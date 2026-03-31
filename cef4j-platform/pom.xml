@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-platform</artifactId>
+    <packaging>pom</packaging>
+    <name>cef4j-platform</name>
+    <description>CEF runtime binaries for ${cef.platform}</description>
+
+    <build>
+        <plugins>
+            <!-- Step 1: Download + extract CEF (shared cache with cef4j-native) -->
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>download-cef</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${cef.dist.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpack>false</unpack>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>extract-cef</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <condition property="cef.already.extracted">
+                                    <available file="${cef.dist.dir}/include/cef_version.h"/>
+                                </condition>
+                                <echo if:set="cef.already.extracted">CEF distribution already extracted, skipping.</echo>
+                                <untar unless:set="cef.already.extracted"
+                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2"
+                                       dest="${cef.dist.cache}" compression="bzip2"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 2: Generate file-list.txt for runtime extraction -->
+                    <execution>
+                        <id>generate-file-list</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/file-list"/>
+                                <fileset id="release.files" dir="${cef.dist.dir}/Release">
+                                    <include name="libcef.so"/>
+                                    <include name="libEGL.so"/>
+                                    <include name="libGLESv2.so"/>
+                                    <include name="libvk_swiftshader.so"/>
+                                    <include name="libvulkan.so.1"/>
+                                    <include name="v8_context_snapshot.bin"/>
+                                    <include name="vk_swiftshader_icd.json"/>
+                                    <!-- Windows -->
+                                    <include name="libcef.dll"/>
+                                    <include name="chrome_elf.dll"/>
+                                    <include name="d3dcompiler_47.dll"/>
+                                    <include name="vk_swiftshader.dll"/>
+                                    <include name="vulkan-1.dll"/>
+                                </fileset>
+                                <fileset id="resource.files" dir="${cef.dist.dir}/Resources">
+                                    <include name="icudtl.dat"/>
+                                    <include name="resources.pak"/>
+                                    <include name="chrome_100_percent.pak"/>
+                                    <include name="chrome_200_percent.pak"/>
+                                    <include name="locales/*.pak"/>
+                                </fileset>
+                                <pathconvert pathsep="&#10;" property="release.list" refid="release.files">
+                                    <map from="${cef.dist.dir}/Release/" to=""/>
+                                </pathconvert>
+                                <pathconvert pathsep="&#10;" property="resource.list" refid="resource.files">
+                                    <map from="${cef.dist.dir}/Resources/" to=""/>
+                                </pathconvert>
+                                <echo file="${project.build.directory}/file-list/cef-runtime/file-list.txt">${release.list}
+${resource.list}</echo>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 3: Assemble classified JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>assemble-platform-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/platform.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

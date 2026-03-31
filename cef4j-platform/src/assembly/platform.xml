@@ -1,0 +1,55 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>${cef.platform}</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <!-- Generated file list for runtime extraction -->
+        <fileSet>
+            <directory>${project.build.directory}/file-list</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>cef-runtime/file-list.txt</include>
+            </includes>
+        </fileSet>
+
+        <!-- CEF shared libraries from Release/ -->
+        <fileSet>
+            <directory>${cef.dist.dir}/Release</directory>
+            <outputDirectory>cef-runtime</outputDirectory>
+            <includes>
+                <!-- Linux -->
+                <include>libcef.so</include>
+                <include>libEGL.so</include>
+                <include>libGLESv2.so</include>
+                <include>libvk_swiftshader.so</include>
+                <include>libvulkan.so.1</include>
+                <include>v8_context_snapshot.bin</include>
+                <include>vk_swiftshader_icd.json</include>
+                <!-- Windows -->
+                <include>libcef.dll</include>
+                <include>chrome_elf.dll</include>
+                <include>d3dcompiler_47.dll</include>
+                <include>vk_swiftshader.dll</include>
+                <include>vulkan-1.dll</include>
+            </includes>
+        </fileSet>
+
+        <!-- Resources: icudtl.dat, .pak files, locales/ -->
+        <fileSet>
+            <directory>${cef.dist.dir}/Resources</directory>
+            <outputDirectory>cef-runtime</outputDirectory>
+            <includes>
+                <include>icudtl.dat</include>
+                <include>resources.pak</include>
+                <include>chrome_100_percent.pak</include>
+                <include>chrome_200_percent.pak</include>
+                <include>locales/*.pak</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

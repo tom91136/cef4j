@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-native</artifactId>
+    <packaging>pom</packaging>
+    <name>cef4j-native</name>
+    <description>C++ JNI layer for CEF bindings</description>
+
+    <build>
+        <plugins>
+            <!-- Step 1: Download + extract CEF binary distribution (cached in .cef-dist/) -->
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>download-cef</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${cef.dist.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpack>false</unpack>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>extract-cef</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <condition property="cef.already.extracted">
+                                    <available file="${cef.dist.dir}/include/cef_version.h"/>
+                                </condition>
+                                <echo if:set="cef.already.extracted">CEF distribution already extracted, skipping.</echo>
+                                <untar unless:set="cef.already.extracted"
+                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2"
+                                       dest="${cef.dist.cache}" compression="bzip2"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 2: Invoke codegen -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>run-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.dist.dir}/include</argument>
+                                <argument>--out-cpp=${project.basedir}/native/gen</argument>
+                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java/net/kurobako/cef4j/gen</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-configure</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cmake</executable>
+                            <workingDirectory>${project.build.directory}/cmake-build</workingDirectory>
+                            <arguments>
+                                <argument>${project.basedir}</argument>
+                                <argument>-G${cmake.generator}</argument>
+                                <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
+                                <argument>-DJAVA_HOME=${java.home}</argument>
+                                <argument>-DCMAKE_BUILD_TYPE=Release</argument>
+                                <argument>-DCMAKE_CXX_STANDARD=17</argument>
+                                <argument>-DCMAKE_CXX_STANDARD_REQUIRED=ON</argument>
+                                <argument>-DCEF4J_STATIC_RUNTIME=ON</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cmake</executable>
+                            <arguments>
+                                <argument>--build</argument>
+                                <argument>${project.build.directory}/cmake-build</argument>
+                                <argument>--config</argument>
+                                <argument>Release</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>format-generated-java</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/../mvnw</executable>
+                            <workingDirectory>${project.basedir}/..</workingDirectory>
+                            <arguments>
+                                <argument>-pl</argument>
+                                <argument>cef4j-api</argument>
+                                <argument>spotless:apply</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.kurobako.cef4j</groupId>
+                        <artifactId>cef4j-codegen</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Step 4: Copy native lib + helper into cef4j-api resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-native-lib</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/../cef4j-api/src/main/resources/native/${cef.platform}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/cmake-build</directory>
+                                    <includes>
+                                        <include>libcef4j.so</include>
+                                        <include>cef4j.dll</include>
+                                        <include>libcef4j.dylib</include>
+                                        <include>cef4j_helper</include>
+                                        <include>cef4j_helper.exe</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

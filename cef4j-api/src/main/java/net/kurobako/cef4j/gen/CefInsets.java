@@ -1,0 +1,40 @@
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+package net.kurobako.cef4j.gen;
+
+/** Structure representing insets. */
+public final class CefInsets {
+
+    public final int top;
+    public final int left;
+    public final int bottom;
+    public final int right;
+
+    public CefInsets(int top, int left, int bottom, int right) {
+        this.top = top;
+        this.left = left;
+        this.bottom = bottom;
+        this.right = right;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefInsets)) return false;
+        CefInsets other = (CefInsets) obj;
+        return this.top == other.top
+                && this.left == other.left
+                && this.bottom == other.bottom
+                && this.right == other.right;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(top, left, bottom, right);
+    }
+
+    @Override
+    public String toString() {
+        return "CefInsets{" + "top=" + top + ", " + "left=" + left + ", " + "bottom=" + bottom + ", " + "right=" + right
+                + "}";
+    }
+}

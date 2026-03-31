@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.kurobako.cef4j</groupId>
+    <artifactId>cef4j-parent</artifactId>
+    <version>146.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>cef4j</name>
+    <description>Code-generated, OSR-only Java CEF binding</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <github.user>tom91136</github.user>
+        <github.repo>cef4j</github.repo>
+
+        <cef.version>146.0.9+g3ca6a87+chromium-146.0.7680.165</cef.version>
+        <cef.api.version>146</cef.api.version>
+        <cef.dist.cache>${maven.multiModuleProjectDirectory}/.cef-dist</cef.dist.cache>
+        <cef.dist.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal</cef.dist.dir>
+
+        <!-- Dependency versions -->
+        <scala.version>3.8.2</scala.version>
+        <munit.version>1.1.0</munit.version>
+        <jsr305.version>3.0.2</jsr305.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <assertj.version>3.27.3</assertj.version>
+        <javafx.version>11.0.2</javafx.version>
+        <palantir.java.format.version>2.72.0</palantir.java.format.version>
+
+        <!-- exec-maven-plugin: skip by default, override in modules that need it.
+             Dummy mainClass required because Maven validates required params before checking skip. -->
+        <exec.skip>true</exec.skip>
+        <exec.mainClass>none</exec.mainClass>
+
+        <!-- Resolved by platform-detection profile below -->
+        <cef.platform/>
+        <cef.dist.url/>
+        <cmake.generator/>
+        <native.compiler.id/>
+    </properties>
+
+    <modules>
+        <module>cef4j-codegen</module>
+        <module>cef4j-native</module>
+        <module>cef4j-platform</module>
+        <module>cef4j-api</module>
+        <module>cef4j-osr-swing</module>
+        <module>cef4j-osr-jfx</module>
+        <module>cef4j-sample</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala3-library_3</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scalameta</groupId>
+                <artifactId>munit_3</artifactId>
+                <version>${munit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-base</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <!-- Platform detection - activated automatically -->
+        <profile>
+            <id>linux-x86_64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <cef.platform>linux64</cef.platform>
+                <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_linux64_minimal.tar.bz2</cef.dist.url>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+                <native.compiler.id>gcc</native.compiler.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-aarch64</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <cef.platform>linuxarm64</cef.platform>
+                <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_linuxarm64_minimal.tar.bz2</cef.dist.url>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+                <native.compiler.id>gcc</native.compiler.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>macos-x86_64</id>
+            <activation>
+                <os>
+                    <name>Mac OS X</name>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <cef.platform>macosx64</cef.platform>
+                <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosx64_minimal.tar.bz2</cef.dist.url>
+                <cmake.generator>Xcode</cmake.generator>
+                <native.compiler.id>clang</native.compiler.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>macos-aarch64</id>
+            <activation>
+                <os>
+                    <name>Mac OS X</name>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <cef.platform>macosarm64</cef.platform>
+                <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosarm64_minimal.tar.bz2</cef.dist.url>
+                <cmake.generator>Xcode</cmake.generator>
+                <native.compiler.id>clang</native.compiler.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x86_64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <cef.platform>windows64</cef.platform>
+                <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_windows64_minimal.tar.bz2</cef.dist.url>
+                <cmake.generator>Visual Studio 17 2022</cmake.generator>
+                <native.compiler.id>msvc</native.compiler.id>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>4.9.10</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.15.0</version>
+                    <configuration>
+                        <release>8</release>
+                        <parameters>true</parameters>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                            <arg>-Xlint:-options</arg>
+                        </compilerArgs>
+                        <showWarnings>true</showWarnings>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.5.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.6.3</version>
+                    <configuration>
+                        <!-- Skip by default so `compile exec:java -am` doesn't run on every reactor module -->
+                        <skip>${exec.skip}</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>1.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>3.4.0</version>
+                    <configuration>
+                        <formats>
+                            <format>
+                                <includes>
+                                    <include>.gitattributes</include>
+                                    <include>.gitignore</include>
+                                </includes>
+                                <trimTrailingWhitespace/>
+                                <endWithNewline/>
+                                <indent>
+                                    <spaces>true</spaces>
+                                    <spacesPerTab>2</spacesPerTab>
+                                </indent>
+                            </format>
+                        </formats>
+                        <java>
+                            <palantirJavaFormat>
+                                <version>${palantir.java.format.version}</version>
+                                <style>PALANTIR</style>
+                                <formatJavadoc>true</formatJavadoc>
+                            </palantirJavaFormat>
+                        </java>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>spotless-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Tom Lin</name>
+            <organization>kurobako.net</organization>
+            <organizationUrl>https://www.kurobako.net</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
+        <developerConnection>
+            scm:git:git@github.com:${github.user}/${github.repo}.git
+        </developerConnection>
+        <url>https://github.com/${github.user}/${github.repo}</url>
+        <tag>HEAD</tag>
+    </scm>
+
+</project>
