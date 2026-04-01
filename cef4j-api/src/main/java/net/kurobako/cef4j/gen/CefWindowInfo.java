@@ -1,11 +1,32 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Class representing window information. */
+/**
+ * Class representing window information.
+ *
+ * <p>Definition generated from cef_types_linux.h
+ *
+ * <pre>typedef struct _cef_window_info_t {
+ *   size_t size;
+ *   cef_string_t* window_name;
+ *   cef_rect_t* bounds;
+ *   int64_t parent_window;
+ *   int windowless_rendering_enabled;
+ *   int shared_texture_enabled;
+ *   int external_begin_frame_enabled;
+ *   int64_t window;
+ *   cef_runtime_style_t runtime_style;
+ * } cef_window_info_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:85</a>
+ */
 public final class CefWindowInfo {
 
-    public final long size;
-    public final int windowName;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
+
+    public final String windowName;
     public final CefRect bounds;
     public final long parentWindow;
     public final int windowlessRenderingEnabled;
@@ -15,8 +36,7 @@ public final class CefWindowInfo {
     public final CefRuntimeStyle runtimeStyle;
 
     public CefWindowInfo(
-            long size,
-            int windowName,
+            String windowName,
             CefRect bounds,
             long parentWindow,
             int windowlessRenderingEnabled,
@@ -24,7 +44,6 @@ public final class CefWindowInfo {
             int externalBeginFrameEnabled,
             long window,
             CefRuntimeStyle runtimeStyle) {
-        this.size = size;
         this.windowName = windowName;
         this.bounds = bounds;
         this.parentWindow = parentWindow;
@@ -35,13 +54,25 @@ public final class CefWindowInfo {
         this.runtimeStyle = runtimeStyle;
     }
 
+    /** Create a mutable copy of this instance. */
+    public CefMutableWindowInfo toMutable() {
+        return new CefMutableWindowInfo(
+                this.windowName,
+                this.bounds,
+                this.parentWindow,
+                this.windowlessRenderingEnabled,
+                this.sharedTextureEnabled,
+                this.externalBeginFrameEnabled,
+                this.window,
+                this.runtimeStyle);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefWindowInfo)) return false;
         CefWindowInfo other = (CefWindowInfo) obj;
-        return this.size == other.size
-                && this.windowName == other.windowName
+        return java.util.Objects.equals(this.windowName, other.windowName)
                 && java.util.Objects.equals(this.bounds, other.bounds)
                 && this.parentWindow == other.parentWindow
                 && this.windowlessRenderingEnabled == other.windowlessRenderingEnabled
@@ -54,7 +85,6 @@ public final class CefWindowInfo {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(
-                size,
                 windowName,
                 bounds,
                 parentWindow,
@@ -67,9 +97,10 @@ public final class CefWindowInfo {
 
     @Override
     public String toString() {
-        return "CefWindowInfo{" + "size=" + size + ", " + "windowName=" + windowName + ", " + "bounds=" + bounds + ", "
-                + "parentWindow=" + parentWindow + ", " + "windowlessRenderingEnabled=" + windowlessRenderingEnabled
-                + ", " + "sharedTextureEnabled=" + sharedTextureEnabled + ", " + "externalBeginFrameEnabled="
-                + externalBeginFrameEnabled + ", " + "window=" + window + ", " + "runtimeStyle=" + runtimeStyle + "}";
+        return "CefWindowInfo{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "windowName="
+                + windowName + ", " + "bounds=" + bounds + ", " + "parentWindow=" + parentWindow + ", "
+                + "windowlessRenderingEnabled=" + windowlessRenderingEnabled + ", " + "sharedTextureEnabled="
+                + sharedTextureEnabled + ", " + "externalBeginFrameEnabled=" + externalBeginFrameEnabled + ", "
+                + "window=" + window + ", " + "runtimeStyle=" + runtimeStyle + "}";
     }
 }

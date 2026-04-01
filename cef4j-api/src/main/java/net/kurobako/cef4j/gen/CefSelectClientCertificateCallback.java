@@ -1,26 +1,79 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Callback interface used to select a client certificate for authentication. */
-public interface CefSelectClientCertificateCallback {
+import javax.annotation.Nullable;
+
+/**
+ * Callback interface used to select a client certificate for authentication.
+ *
+ * <p>Definition generated from cef_request_handler_capi.h
+ *
+ * <pre>typedef struct _cef_select_client_certificate_callback_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_select_client_certificate_callback_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:54</a>
+ */
+public interface CefSelectClientCertificateCallback extends CefLibraryObject {
 
     /**
-     * Chooses the specified certificate for client certificate authentication. NULL value means that no client
+     * Chooses the specified certificate for client certificate authentication. {@code null} value means that no client
      * certificate should be used.
      *
+     * <p>Definition generated from cef_request_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* select)(struct _cef_select_client_certificate_callback_t* self, struct _cef_x509_certificate_t* cert);
+     * </pre>
+     *
      * @param cert may be null
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:60</a>
      */
-    void select(long cert);
+    void select(@Nullable CefX509Certificate cert);
 
-    static class NativePeer implements CefSelectClientCertificateCallback {
-        private volatile long nativePtr;
+    final class NativePeer implements CefSelectClientCertificateCallback, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public void select(long cert) {
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log =
+                org.slf4j.LoggerFactory.getLogger(CefSelectClientCertificateCallback.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled())
+                    _log.trace("release CefSelectClientCertificateCallback 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public void select(@Nullable CefX509Certificate cert) {
             N_Select(nativePtr, cert);
         }
 
-        private native void N_Select(long self, long cert);
+        private static native void N_Select(long self, CefX509Certificate cert);
 
         @Override
         public boolean equals(Object obj) {

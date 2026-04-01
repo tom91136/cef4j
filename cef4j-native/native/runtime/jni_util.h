@@ -338,4 +338,77 @@ inline cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMa
     return mmap;
 }
 
+// ---------------------------------------------------------------------------
+// Writeback: copy CEF string collection back into existing Java collection
+// ---------------------------------------------------------------------------
+
+/** Append all strings from a CEF string list into an existing Java List<String>, then free the CEF list. */
+inline void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject jList) {
+    if (!list || !jList) { if (list) cef_string_list_free(list); return; }
+    jclass cls = env->GetObjectClass(jList);
+    jmethodID add = env->GetMethodID(cls, "add", "(Ljava/lang/Object;)Z");
+    int count = static_cast<int>(cef_string_list_size(list));
+    cef_string_t str = {};
+    for (int i = 0; i < count; i++) {
+        cef_string_list_value(list, i, &str);
+        jstring jStr = CefStringToJString(env, &str);
+        env->CallBooleanMethod(jList, add, jStr);
+        env->DeleteLocalRef(jStr);
+    }
+    cef_string_clear(&str);
+    cef_string_list_free(list);
+}
+
+/** Put all entries from a CEF string map into an existing Java Map<String,String>, then free the CEF map. */
+inline void CefStringMapWriteBack(JNIEnv* env, cef_string_map_t map, jobject jMap) {
+    if (!map || !jMap) { if (map) cef_string_map_free(map); return; }
+    jclass cls = env->GetObjectClass(jMap);
+    jmethodID put = env->GetMethodID(cls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    int count = static_cast<int>(cef_string_map_size(map));
+    cef_string_t key = {}, val = {};
+    for (int i = 0; i < count; i++) {
+        cef_string_map_key(map, i, &key);
+        cef_string_map_value(map, i, &val);
+        jstring jKey = CefStringToJString(env, &key);
+        jstring jVal = CefStringToJString(env, &val);
+        env->CallObjectMethod(jMap, put, jKey, jVal);
+        env->DeleteLocalRef(jKey);
+        env->DeleteLocalRef(jVal);
+    }
+    cef_string_clear(&key);
+    cef_string_clear(&val);
+    cef_string_map_free(map);
+}
+
+/** Put all entries from a CEF string multimap into an existing Java Map<String,List<String>>, then free the CEF multimap. */
+inline void CefStringMultimapWriteBack(JNIEnv* env, cef_string_multimap_t mmap, jobject jMap) {
+    if (!mmap || !jMap) { if (mmap) cef_string_multimap_free(mmap); return; }
+    jclass mapCls = env->GetObjectClass(jMap);
+    jclass listCls = env->FindClass("java/util/ArrayList");
+    jmethodID getMid = env->GetMethodID(mapCls, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    jmethodID putMid = env->GetMethodID(mapCls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    jmethodID listInit = env->GetMethodID(listCls, "<init>", "()V");
+    jmethodID listAdd = env->GetMethodID(listCls, "add", "(Ljava/lang/Object;)Z");
+    int count = static_cast<int>(cef_string_multimap_size(mmap));
+    cef_string_t key = {}, val = {};
+    for (int i = 0; i < count; i++) {
+        cef_string_multimap_key(mmap, i, &key);
+        cef_string_multimap_value(mmap, i, &val);
+        jstring jKey = CefStringToJString(env, &key);
+        jstring jVal = CefStringToJString(env, &val);
+        jobject existing = env->CallObjectMethod(jMap, getMid, jKey);
+        if (!existing) {
+            existing = env->NewObject(listCls, listInit);
+            env->CallObjectMethod(jMap, putMid, jKey, existing);
+        }
+        env->CallBooleanMethod(existing, listAdd, jVal);
+        env->DeleteLocalRef(jKey);
+        env->DeleteLocalRef(jVal);
+        env->DeleteLocalRef(existing);
+    }
+    cef_string_clear(&key);
+    cef_string_clear(&val);
+    cef_string_multimap_free(mmap);
+}
+
 #endif // CEF4J_JNI_UTIL_H

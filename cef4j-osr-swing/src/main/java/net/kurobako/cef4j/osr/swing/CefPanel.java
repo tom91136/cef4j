@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import javax.swing.*;
 import net.kurobako.cef4j.CefBrowserOsr;
-import net.kurobako.cef4j.CefClient;
 import net.kurobako.cef4j.CefFrameBuffer;
+import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefMutableRect;
 import net.kurobako.cef4j.gen.CefPaintElementType;
@@ -18,8 +18,8 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
  * A Swing {@link JPanel} that displays a CEF off-screen rendered browser.
  *
  * <p>Handles the full OSR pipeline: pixel buffer management, render handler, mouse/keyboard forwarding, cursor mapping,
- * and resize notification. Create a browser via {@link #createBrowser(CefClient, String, int)} after the panel is
- * visible and has a non-zero size.
+ * and resize notification. Use {@link #createRenderHandler()} to obtain a render handler for the panel, then attach the
+ * browser via {@link #setBrowser(CefBrowserOsr)}.
  */
 @SuppressWarnings({"serial", "this-escape"})
 public class CefPanel extends JPanel {
@@ -147,30 +147,22 @@ public class CefPanel extends JPanel {
     }
 
     /**
-     * Create a CEF browser attached to this panel.
-     *
-     * <p>Must be called on the Swing EDT. The returned browser's {@link CefBrowserOsr#createImmediately()} must be
-     * called on the CEF UI thread (typically the main thread).
-     *
-     * @param client the CEF client to attach handlers to
-     * @param url initial URL to load
-     * @param frameRate target frame rate (use monitor refresh rate)
-     * @return the browser instance
+     * Create a render handler that paints into this panel's frame buffer. Use this when building a
+     * {@link net.kurobako.cef4j.gen.CefClient} implementation for this panel.
      */
-    public CefBrowserOsr createBrowser(CefClient client, String url, int frameRate) {
-        CefPanel self = this;
-        client.addRenderHandler(new CefRenderHandler() {
+    public CefRenderHandler createRenderHandler() {
+        return new CefRenderHandler() {
             @Override
-            public void getViewRect(long b, CefMutableRect rect) {
+            public void getViewRect(CefBrowser b, CefMutableRect rect) {
                 rect.x = 0;
                 rect.y = 0;
-                rect.width = self.getWidth();
-                rect.height = self.getHeight();
+                rect.width = getWidth();
+                rect.height = getHeight();
             }
 
             @Override
             public void onPaint(
-                    long b,
+                    CefBrowser b,
                     CefPaintElementType type,
                     long dirtyRectsCount,
                     CefRect[] dirtyRects,
@@ -178,14 +170,18 @@ public class CefPanel extends JPanel {
                     int width,
                     int height) {
                 if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
-                    self.repaint();
+                    repaint();
                 }
             }
-        });
+        };
+    }
 
-        CefBrowserOsr b = client.createBrowser(url, frameRate);
-        this.browser = b;
-        return b;
+    /**
+     * Attach a browser to this panel. Call this after creating a browser via
+     * {@link net.kurobako.cef4j.CefApp#createBrowser(net.kurobako.cef4j.gen.CefClient, String)}.
+     */
+    public void setBrowser(CefBrowserOsr browser) {
+        this.browser = browser;
     }
 
     /** Returns the browser instance, or {@code null} if {@link #createBrowser} hasn't been called yet. */
@@ -206,40 +202,43 @@ public class CefPanel extends JPanel {
 
     /** Maps a CEF cursor type to a Swing {@link Cursor}. Override to customise. */
     public Cursor mapCursor(CefCursorType type) {
-        switch (type) {
-            case CT_CROSS:
+        return type.kind().map(CefPanel::cursorForKind).orElse(Cursor.getDefaultCursor());
+    }
+
+    private static Cursor cursorForKind(CefCursorType.Kind k) {
+        switch (k) {
+            case CROSS:
                 return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-            case CT_HAND:
+            case HAND:
                 return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-            case CT_IBEAM:
+            case IBEAM:
                 return Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
-            case CT_WAIT:
+            case WAIT:
                 return Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-            case CT_MOVE:
+            case MOVE:
                 return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-            case CT_NORTHRESIZE:
+            case NORTHRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
-            case CT_SOUTHRESIZE:
+            case SOUTHRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR);
-            case CT_EASTRESIZE:
+            case EASTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
-            case CT_WESTRESIZE:
+            case WESTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
-            case CT_NORTHEASTRESIZE:
+            case NORTHEASTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR);
-            case CT_NORTHWESTRESIZE:
+            case NORTHWESTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR);
-            case CT_SOUTHEASTRESIZE:
+            case SOUTHEASTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR);
-            case CT_SOUTHWESTRESIZE:
+            case SOUTHWESTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR);
-            case CT_NORTHSOUTHRESIZE:
-            case CT_ROWRESIZE:
+            case NORTHSOUTHRESIZE:
+            case ROWRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
-            case CT_EASTWESTRESIZE:
-            case CT_COLUMNRESIZE:
+            case EASTWESTRESIZE:
+            case COLUMNRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
-            case CT_POINTER:
             default:
                 return Cursor.getDefaultCursor();
         }

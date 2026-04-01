@@ -1,64 +1,124 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Callback interface for CefBrowserHost::AddDevToolsMessageObserver. The methods of this class will be called on the
- * browser process UI thread.
+ * Callback interface for {@link CefBrowserHost#addDevToolsMessageObserver(CefDevToolsMessageObserver)}. The methods of
+ * this class will be called on the browser process UI thread.
+ *
+ * <p>Definition generated from cef_devtools_message_observer_capi.h
+ *
+ * <pre>typedef struct _cef_dev_tools_message_observer_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_dev_tools_message_observer_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
  */
-public interface CefDevToolsMessageObserver {
+public interface CefDevToolsMessageObserver extends CefClientHandler {
 
     /**
-     * Method that will be called on receipt of a DevTools protocol message. |browser| is the originating browser
-     * instance. |message| is a UTF8-encoded JSON dictionary representing either a method result or an event. |message|
-     * is only valid for the scope of this callback and should be copied if necessary. Return true if the message was
-     * handled or false if the message should be further processed and passed to the OnDevToolsMethodResult or
-     * OnDevToolsEvent methods as appropriate. Method result dictionaries include an "id" (int) value that identifies
-     * the orginating method call sent from CefBrowserHost::SendDevToolsMessage, and optionally either a "result"
-     * (dictionary) or "error" (dictionary) value. The "error" dictionary will contain "code" (int) and "message"
-     * (string) values. Event dictionaries include a "method" (string) value and optionally a "params" (dictionary)
-     * value. See the DevTools protocol documentation at https://chromedevtools.github.io/devtools-protocol/ for details
-     * of supported method calls and the expected "result" or "params" dictionary contents. JSON dictionaries can be
-     * parsed using the CefParseJSON function if desired, however be aware of performance considerations when parsing
-     * large messages (some of which may exceed 1MB in size).
+     * Method that will be called on receipt of a DevTools protocol message. {@code browser} is the originating browser
+     * instance. {@code message} is a UTF8-encoded JSON dictionary representing either a method result or an event.
+     * {@code message} is only valid for the scope of this callback and should be copied if necessary. Return
+     * {@code true} if the message was handled or {@code false} if the message should be further processed and passed to
+     * the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
+     *
+     * <p>Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from
+     * {@link CefBrowserHost#sendDevToolsMessage(ByteBuffer)}, and optionally either a "result" (dictionary) or "error"
+     * (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event
+     * dictionaries include a "method" (string) value and optionally a "params" (dictionary) value. See the DevTools
+     * protocol documentation at <a
+     * href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>
+     * for details of supported method calls and the expected "result" or "params" dictionary contents. JSON
+     * dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance
+     * considerations when parsing large messages (some of which may exceed 1MB in size).
+     *
+     * <p>Definition generated from cef_devtools_message_observer_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* on_dev_tools_message)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const void* message, size_t message_size);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
-    default boolean onDevToolsMessage(long browser, long message, long messageSize) {
+    default boolean onDevToolsMessage(@Nonnull CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
     }
 
     /**
-     * Method that will be called after attempted execution of a DevTools protocol method. |browser| is the originating
-     * browser instance. |message_id| is the "id" value that identifies the originating method call message. If the
-     * method succeeded |success| will be true and |result| will be the UTF8-encoded JSON "result" dictionary value
-     * (which may be empty). If the method failed |success| will be false and |result| will be the UTF8-encoded JSON
-     * "error" dictionary value. |result| is only valid for the scope of this callback and should be copied if
-     * necessary. See the OnDevToolsMessage documentation for additional details on |result| contents.
+     * Method that will be called after attempted execution of a DevTools protocol method. {@code browser} is the
+     * originating browser instance. {@code message_id} is the "id" value that identifies the originating method call
+     * message. If the method succeeded {@code success} will be {@code true} and {@code result} will be the UTF8-encoded
+     * JSON "result" dictionary value (which may be empty). If the method failed {@code success} will be {@code false}
+     * and {@code result} will be the UTF8-encoded JSON "error" dictionary value. {@code result} is only valid for the
+     * scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional
+     * details on {@code result} contents.
+     *
+     * <p>Definition generated from cef_devtools_message_observer_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_dev_tools_method_result)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, int message_id, int success, const void* result, size_t result_size);
+     * </pre>
      *
      * @param result may be null
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
      */
-    default void onDevToolsMethodResult(long browser, int messageId, boolean success, long result, long resultSize) {}
+    default void onDevToolsMethodResult(
+            @Nonnull CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {}
 
     /**
-     * Method that will be called on receipt of a DevTools protocol event. |browser| is the originating browser
-     * instance. |method| is the "method" value. |params| is the UTF8-encoded JSON "params" dictionary value (which may
-     * be empty). |params| is only valid for the scope of this callback and should be copied if necessary. See the
-     * OnDevToolsMessage documentation for additional details on |params| contents.
+     * Method that will be called on receipt of a DevTools protocol event. {@code browser} is the originating browser
+     * instance. {@code method} is the "method" value. {@code params} is the UTF8-encoded JSON "params" dictionary value
+     * (which may be empty). {@code params} is only valid for the scope of this callback and should be copied if
+     * necessary. See the OnDevToolsMessage documentation for additional details on {@code params} contents.
+     *
+     * <p>Definition generated from cef_devtools_message_observer_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_dev_tools_event)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const cef_string_t* method, const void* params, size_t params_size);
+     * </pre>
      *
      * @param params may be null
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
      */
-    default void onDevToolsEvent(long browser, @Nonnull String method, long params, long paramsSize) {}
+    default void onDevToolsEvent(@Nonnull CefBrowser browser, @Nonnull String method, @Nullable ByteBuffer params) {}
 
     /**
-     * Method that will be called when the DevTools agent has attached. |browser| is the originating browser instance.
-     * This will generally occur in response to the first message sent while the agent is detached.
+     * Method that will be called when the DevTools agent has attached. {@code browser} is the originating browser
+     * instance. This will generally occur in response to the first message sent while the agent is detached.
+     *
+     * <p>Definition generated from cef_devtools_message_observer_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_dev_tools_agent_attached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
      */
-    default void onDevToolsAgentAttached(long browser) {}
+    default void onDevToolsAgentAttached(@Nonnull CefBrowser browser) {}
 
     /**
-     * Method that will be called when the DevTools agent has detached. |browser| is the originating browser instance.
-     * Any method results that were pending before the agent became detached will not be delivered, and any active event
-     * subscriptions will be canceled.
+     * Method that will be called when the DevTools agent has detached. {@code browser} is the originating browser
+     * instance. Any method results that were pending before the agent became detached will not be delivered, and any
+     * active event subscriptions will be canceled.
+     *
+     * <p>Definition generated from cef_devtools_message_observer_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_dev_tools_agent_detached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
      */
-    default void onDevToolsAgentDetached(long browser) {}
+    default void onDevToolsAgentDetached(@Nonnull CefBrowser browser) {}
 }

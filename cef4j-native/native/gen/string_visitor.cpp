@@ -1,0 +1,44 @@
+// GENERATED - do not edit.
+#include <jni.h>
+#include "include/capi/cef_string_visitor_capi.h"
+#include "jni_util.h"
+
+#include <atomic>
+#include "ref_counted_base.h"
+
+// JNI wrapper struct for cef_string_visitor_t
+struct JniCefStringVisitor: public cef_string_visitor_t {
+    JavaVM *jvm;
+    jobject javaHandler;  // global ref
+    std::atomic<int> refCount { 1 };
+
+    JniCefStringVisitor(JavaVM *vm, jobject handler) : cef_string_visitor_t { }, jvm(vm) {
+        javaHandler = handler;
+        InitRefCount<JniCefStringVisitor, cef_string_visitor_t> (&base);
+        visit = &_visit;
+    }
+
+    static void CEF_CALLBACK _visit(cef_string_visitor_t* self, const cef_string_t* string) {
+        auto* h = reinterpret_cast<JniCefStringVisitor*>(self);
+        ScopedJNIEnv env(h->jvm);
+        if (env->PushLocalFrame(6) < 0) {return;}
+        auto j_string = CefStringToJString(env, string);
+        auto cls = env->GetObjectClass(h->javaHandler);
+        auto mid = env->GetMethodID(cls, "visit", "(Ljava/lang/String;)V");
+        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        env->CallVoidMethod(h->javaHandler, mid, j_string);
+        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        env->PopLocalFrame(nullptr);
+    }
+};
+
+extern "C" cef_string_visitor_t* Create_JniCefStringVisitor(JNIEnv *env, jobject handler) {
+    JavaVM *jvm;
+    env->GetJavaVM(&jvm);
+    auto globalRef = env->NewGlobalRef(handler);
+    return reinterpret_cast<cef_string_visitor_t*>(new JniCefStringVisitor(jvm, globalRef));
+}
+
+extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefStringVisitor_1N_N_1Create(JNIEnv* env, jobject obj) {
+    return reinterpret_cast<jlong>(Create_JniCefStringVisitor(env, obj));
+}

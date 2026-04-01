@@ -1,22 +1,95 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-public enum CefColorType {
-    CEF_COLOR_TYPE_RGBA_8888(0L),
-    CEF_COLOR_TYPE_BGRA_8888(1L),
-    CEF_COLOR_TYPE_NUM_VALUES(2L),
-    UNKNOWN(-1L);
+/** Possible values: {@link Kind#RGBA_8888}, {@link Kind#BGRA_8888}, {@link Kind#NUM_VALUES} */
+public final class CefColorType implements CefEnum<CefColorType> {
 
-    public final long value;
+    /** Known constants for {@link CefColorType}. */
+    public enum Kind {
+        RGBA_8888(0, "0", "CEF_COLOR_TYPE_RGBA_8888"),
+        BGRA_8888(1, "1", "CEF_COLOR_TYPE_BGRA_8888"),
+        NUM_VALUES(2, "2", "CEF_COLOR_TYPE_NUM_VALUES");
 
-    CefColorType(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_color_type_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefColorType fromLong(long v) {
-        for (CefColorType e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefColorType(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefColorType of(long v) {
+        return new CefColorType(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefColorType of(Kind k) {
+        return new CefColorType(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefColorType)) return false;
+        return this.value == ((CefColorType) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

@@ -7,130 +7,412 @@ import javax.annotation.Nonnull;
 /**
  * Class that supports the reading of XML data via the libxml streaming API. The methods of this class should only be
  * called on the thread that creates the object.
+ *
+ * <p>Definition generated from cef_xml_reader_capi.h
+ *
+ * <pre>typedef struct _cef_xml_reader_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_xml_reader_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:44</a>
  */
-public interface CefXmlReader {
+public interface CefXmlReader extends CefLibraryObject {
 
     /**
      * Moves the cursor to the next node in the document. This method must be called at least once to set the current
-     * cursor position. Returns true if the cursor position was set successfully.
+     * cursor position. Returns {@code true} if the cursor position was set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* move_to_next_node)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
      */
     boolean moveToNextNode();
 
-    /** Close the document. This should be called directly to ensure that cleanup occurs on the correct thread. */
-    boolean close();
+    /**
+     * Close the document. This should be called directly to ensure that cleanup occurs on the correct thread.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* close)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
+     */
+    boolean cefClose();
 
-    /** Returns true if an error has been reported by the XML parser. */
+    /**
+     * Returns {@code true} if an error has been reported by the XML parser.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_error)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
+     */
     boolean hasError();
 
-    /** Returns the error string. */
+    /**
+     * Returns the error string.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_error)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
+     */
     Optional<String> getError();
 
     /**
-     * Returns the item type for the specified |command_id|.
+     * Returns the item type for the specified {@code command_id}.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_xml_node_type_t (CEF_CALLBACK* get_type)(struct _cef_xml_reader_t* self);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
      */
     CefXmlNodeType getType();
 
-    /** Returns the node depth. Depth starts at 0 for the root node. */
+    /**
+     * Returns the node depth. Depth starts at 0 for the root node.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_depth)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
+     */
     int getDepth();
 
-    /** Returns the local name. See http://www.w3.org/TR/REC-xml-names/#NT-LocalPart for additional details. */
+    /**
+     * Returns the local name. See <a
+     * href="http://www.w3.org/TR/REC-xml-names/#NT-LocalPart">http://www.w3.org/TR/REC-xml-names/#NT-LocalPart</a> for
+     * additional details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_local_name)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
+     */
     Optional<String> getLocalName();
 
-    /** Returns the namespace prefix. See http://www.w3.org/TR/REC-xml-names/ for additional details. */
+    /**
+     * Returns the namespace prefix. See <a
+     * href="http://www.w3.org/TR/REC-xml-names/">http://www.w3.org/TR/REC-xml-names/</a> for additional details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_prefix)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
+     */
     Optional<String> getPrefix();
 
     /**
-     * Returns the qualified name, equal to (Prefix:)LocalName. See http://www.w3.org/TR/REC-xml-names/#ns-qualnames for
+     * Returns the qualified name, equal to (Prefix:)LocalName. See <a
+     * href="http://www.w3.org/TR/REC-xml-names/#ns-qualnames">http://www.w3.org/TR/REC-xml-names/#ns-qualnames</a> for
      * additional details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_qualified_name)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
      */
     Optional<String> getQualifiedName();
 
+    /**
+     * Returns the URI defining the namespace associated with the node. See <a
+     * href="http://www.w3.org/TR/REC-xml-names/">http://www.w3.org/TR/REC-xml-names/</a> for additional details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_namespace_uri)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
+     */
     Optional<String> getNamespaceUri();
 
+    /**
+     * Returns the base URI of the node. See <a href="http://www.w3.org/TR/xmlbase/">http://www.w3.org/TR/xmlbase/</a>
+     * for additional details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_base_uri)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
+     */
     Optional<String> getBaseUri();
 
     /**
-     * Returns the xml:lang scope within which the node resides. See http://www.w3.org/TR/REC-xml/#sec-lang-tag for
-     * additional details.
+     * Returns the xml:lang scope within which the node resides. See <a
+     * href="http://www.w3.org/TR/REC-xml/#sec-lang-tag">http://www.w3.org/TR/REC-xml/#sec-lang-tag</a> for additional
+     * details.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_xml_lang)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
      */
     Optional<String> getXmlLang();
 
-    /** Returns true if the node represents an empty element. "<a/>" is considered empty but "<a></a>" is not. */
+    /**
+     * Returns {@code true} if the node represents an empty element. "<a/>" is considered empty but "<a></a>" is not.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_empty_element)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
+     */
     boolean isEmptyElement();
 
-    /** Returns true if the object has a value with the specified identifier. */
+    /**
+     * Returns {@code true} if the object has a value with the specified identifier.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_value)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:814</a>
+     */
     boolean hasValue();
 
-    /** Returns the value of this node. */
+    /**
+     * Returns the value of this node.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_value)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:221</a>
+     */
     Optional<String> getValue();
 
-    /** Returns true if the node has attributes. */
+    /**
+     * Returns {@code true} if the node has attributes.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_attributes)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
+     */
     boolean hasAttributes();
 
-    /** Returns the number of attributes. */
+    /**
+     * Returns the number of attributes.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>size_t (CEF_CALLBACK* get_attribute_count)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
+     */
     long getAttributeCount();
 
     /**
      * Returns the value of the attribute at the specified 0-based index.
      *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_attribute_byindex)(struct _cef_xml_reader_t* self, int index);
+     * </pre>
+     *
      * @param index zero-based index
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
      */
     Optional<String> getAttributeByindex(int index);
 
-    /** Returns the value of the attribute with the specified qualified name. */
-    Optional<String> getAttributeByqname(@Nonnull String qualifiedName);
+    /**
+     * Returns the value of the attribute with the specified qualified name.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>
+     * cef_string_userfree_t (CEF_CALLBACK* get_attribute_byqname)(struct _cef_xml_reader_t* self, const cef_string_t* qualifiedName);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
+     */
+    Optional<String> getAttributeByqname(@Nonnull String qualifiedname);
 
-    /** Returns the value of the attribute with the specified local name and namespace URI. */
-    Optional<String> getAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI);
+    /**
+     * Returns the value of the attribute with the specified local name and namespace URI.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>
+     * cef_string_userfree_t (CEF_CALLBACK* get_attribute_bylname)(struct _cef_xml_reader_t* self, const cef_string_t* localName, const cef_string_t* namespaceURI);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
+     */
+    Optional<String> getAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri);
 
-    /** Returns an XML representation of the current node's children. */
+    /**
+     * Returns an XML representation of the current node's children.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_inner_xml)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
+     */
     Optional<String> getInnerXml();
 
-    /** Returns an XML representation of the current node including its children. */
+    /**
+     * Returns an XML representation of the current node including its children.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_outer_xml)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
+     */
     Optional<String> getOuterXml();
 
-    /** Returns the 1-based line number for the function call or 0 if unknown. */
+    /**
+     * Returns the 1-based line number for the function call or 0 if unknown.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1108</a>
+     */
     int getLineNumber();
 
     /**
-     * Moves the cursor to the attribute at the specified 0-based index. Returns true if the cursor position was set
-     * successfully.
+     * Moves the cursor to the attribute at the specified 0-based index. Returns {@code true} if the cursor position was
+     * set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* move_to_attribute_byindex)(struct _cef_xml_reader_t* self, int index);</pre>
      *
      * @param index zero-based index
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
      */
     int moveToAttributeByindex(int index);
 
     /**
-     * Moves the cursor to the attribute with the specified qualified name. Returns true if the cursor position was set
-     * successfully.
+     * Moves the cursor to the attribute with the specified qualified name. Returns {@code true} if the cursor position
+     * was set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* move_to_attribute_byqname)(struct _cef_xml_reader_t* self, const cef_string_t* qualifiedName);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
      */
-    int moveToAttributeByqname(@Nonnull String qualifiedName);
+    int moveToAttributeByqname(@Nonnull String qualifiedname);
 
     /**
-     * Moves the cursor to the attribute with the specified local name and namespace URI. Returns true if the cursor
-     * position was set successfully.
+     * Moves the cursor to the attribute with the specified local name and namespace URI. Returns {@code true} if the
+     * cursor position was set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* move_to_attribute_bylname)(struct _cef_xml_reader_t* self, const cef_string_t* localName, const cef_string_t* namespaceURI);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
      */
-    int moveToAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI);
+    int moveToAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri);
 
     /**
-     * Moves the cursor to the first attribute in the current element. Returns true if the cursor position was set
-     * successfully.
+     * Moves the cursor to the first attribute in the current element. Returns {@code true} if the cursor position was
+     * set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* move_to_first_attribute)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
      */
     boolean moveToFirstAttribute();
 
     /**
-     * Moves the cursor to the next attribute in the current element. Returns true if the cursor position was set
-     * successfully.
+     * Moves the cursor to the next attribute in the current element. Returns {@code true} if the cursor position was
+     * set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* move_to_next_attribute)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
      */
     boolean moveToNextAttribute();
 
-    /** Moves the cursor back to the carrying element. Returns true if the cursor position was set successfully. */
+    /**
+     * Moves the cursor back to the carrying element. Returns {@code true} if the cursor position was set successfully.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* move_to_carrying_element)(struct _cef_xml_reader_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
+     */
     boolean moveToCarryingElement();
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_xml_reader_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT cef_xml_reader_t* cef_xml_reader_create(struct _cef_stream_reader_t* stream, cef_xml_encoding_type_t encodingType, const cef_string_t* URI);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefXmlReader> create(
+            @Nonnull CefStreamReader stream, @Nonnull CefXmlEncodingType encodingtype, @Nonnull String uri) {
+        return Optional.ofNullable(NativePeer.N_Create(stream, encodingtype, uri));
+    }
 
-    static class NativePeer implements CefXmlReader {
-        private volatile long nativePtr;
+    final class NativePeer implements CefXmlReader, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefXmlReader.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefXmlReader 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public boolean moveToNextNode() {
@@ -138,7 +420,7 @@ public interface CefXmlReader {
         }
 
         @Override
-        public boolean close() {
+        public boolean cefClose() {
             return N_Close(nativePtr);
         }
 
@@ -223,13 +505,13 @@ public interface CefXmlReader {
         }
 
         @Override
-        public Optional<String> getAttributeByqname(String qualifiedName) {
-            return Optional.ofNullable(N_GetAttributeByqname(nativePtr, qualifiedName));
+        public Optional<String> getAttributeByqname(@Nonnull String qualifiedname) {
+            return Optional.ofNullable(N_GetAttributeByqname(nativePtr, qualifiedname));
         }
 
         @Override
-        public Optional<String> getAttributeBylname(String localName, String namespaceURI) {
-            return Optional.ofNullable(N_GetAttributeBylname(nativePtr, localName, namespaceURI));
+        public Optional<String> getAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri) {
+            return Optional.ofNullable(N_GetAttributeBylname(nativePtr, localname, namespaceuri));
         }
 
         @Override
@@ -253,13 +535,13 @@ public interface CefXmlReader {
         }
 
         @Override
-        public int moveToAttributeByqname(String qualifiedName) {
-            return N_MoveToAttributeByqname(nativePtr, qualifiedName);
+        public int moveToAttributeByqname(@Nonnull String qualifiedname) {
+            return N_MoveToAttributeByqname(nativePtr, qualifiedname);
         }
 
         @Override
-        public int moveToAttributeBylname(String localName, String namespaceURI) {
-            return N_MoveToAttributeBylname(nativePtr, localName, namespaceURI);
+        public int moveToAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri) {
+            return N_MoveToAttributeBylname(nativePtr, localname, namespaceuri);
         }
 
         @Override
@@ -277,63 +559,65 @@ public interface CefXmlReader {
             return N_MoveToCarryingElement(nativePtr);
         }
 
-        private native boolean N_MoveToNextNode(long self);
+        private static native boolean N_MoveToNextNode(long self);
 
-        private native boolean N_Close(long self);
+        private static native boolean N_Close(long self);
 
-        private native boolean N_HasError(long self);
+        private static native boolean N_HasError(long self);
 
-        private native String N_GetError(long self);
+        private static native String N_GetError(long self);
 
-        private native CefXmlNodeType N_GetType(long self);
+        private static native CefXmlNodeType N_GetType(long self);
 
-        private native int N_GetDepth(long self);
+        private static native int N_GetDepth(long self);
 
-        private native String N_GetLocalName(long self);
+        private static native String N_GetLocalName(long self);
 
-        private native String N_GetPrefix(long self);
+        private static native String N_GetPrefix(long self);
 
-        private native String N_GetQualifiedName(long self);
+        private static native String N_GetQualifiedName(long self);
 
-        private native String N_GetNamespaceUri(long self);
+        private static native String N_GetNamespaceUri(long self);
 
-        private native String N_GetBaseUri(long self);
+        private static native String N_GetBaseUri(long self);
 
-        private native String N_GetXmlLang(long self);
+        private static native String N_GetXmlLang(long self);
 
-        private native boolean N_IsEmptyElement(long self);
+        private static native boolean N_IsEmptyElement(long self);
 
-        private native boolean N_HasValue(long self);
+        private static native boolean N_HasValue(long self);
 
-        private native String N_GetValue(long self);
+        private static native String N_GetValue(long self);
 
-        private native boolean N_HasAttributes(long self);
+        private static native boolean N_HasAttributes(long self);
 
-        private native long N_GetAttributeCount(long self);
+        private static native long N_GetAttributeCount(long self);
 
-        private native String N_GetAttributeByindex(long self, int index);
+        private static native String N_GetAttributeByindex(long self, int index);
 
-        private native String N_GetAttributeByqname(long self, String qualifiedName);
+        private static native String N_GetAttributeByqname(long self, String qualifiedname);
 
-        private native String N_GetAttributeBylname(long self, String localName, String namespaceURI);
+        private static native String N_GetAttributeBylname(long self, String localname, String namespaceuri);
 
-        private native String N_GetInnerXml(long self);
+        private static native String N_GetInnerXml(long self);
 
-        private native String N_GetOuterXml(long self);
+        private static native String N_GetOuterXml(long self);
 
-        private native int N_GetLineNumber(long self);
+        private static native int N_GetLineNumber(long self);
 
-        private native int N_MoveToAttributeByindex(long self, int index);
+        private static native int N_MoveToAttributeByindex(long self, int index);
 
-        private native int N_MoveToAttributeByqname(long self, String qualifiedName);
+        private static native int N_MoveToAttributeByqname(long self, String qualifiedname);
 
-        private native int N_MoveToAttributeBylname(long self, String localName, String namespaceURI);
+        private static native int N_MoveToAttributeBylname(long self, String localname, String namespaceuri);
 
-        private native boolean N_MoveToFirstAttribute(long self);
+        private static native boolean N_MoveToFirstAttribute(long self);
 
-        private native boolean N_MoveToNextAttribute(long self);
+        private static native boolean N_MoveToNextAttribute(long self);
 
-        private native boolean N_MoveToCarryingElement(long self);
+        private static native boolean N_MoveToCarryingElement(long self);
+
+        static native CefXmlReader N_Create(CefStreamReader stream, CefXmlEncodingType encodingtype, String uri);
 
         @Override
         public boolean equals(Object obj) {

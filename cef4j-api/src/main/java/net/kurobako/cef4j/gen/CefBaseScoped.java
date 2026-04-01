@@ -1,30 +1,37 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** All scoped framework structures must include this structure first. */
+/**
+ * All scoped framework structures must include this structure first.
+ *
+ * <p>Definition generated from cef_base_capi.h
+ *
+ * <pre>typedef struct _cef_base_scoped_t {
+ *   size_t size;
+ * } cef_base_scoped_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__base__capi_8h.html">cef_base_capi.h</a>
+ */
 public final class CefBaseScoped {
 
-    public final long size;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
 
-    public CefBaseScoped(long size) {
-        this.size = size;
-    }
+    public CefBaseScoped() {}
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof CefBaseScoped)) return false;
-        CefBaseScoped other = (CefBaseScoped) obj;
-        return this.size == other.size;
+        return this == obj || obj instanceof CefBaseScoped;
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(size);
+        return java.util.Objects.hash();
     }
 
     @Override
     public String toString() {
-        return "CefBaseScoped{" + "size=" + size + "}";
+        return "CefBaseScoped{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + "}";
     }
 }

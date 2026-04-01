@@ -205,7 +205,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.15.0</version>
                     <configuration>
-                        <release>8</release>
+                        <release>11</release>
                         <parameters>true</parameters>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
@@ -285,6 +285,16 @@
                                 <formatJavadoc>true</formatJavadoc>
                             </palantirJavaFormat>
                         </java>
+                        <cpp>
+                            <includes>
+                                <include>cef4j-native/native/gen/**/*.cpp</include>
+                                <include>cef4j-native/native/gen/**/*.h</include>
+                            </includes>
+                            <eclipseCdt>
+                                <version>11.6</version>
+                                <file>${maven.multiModuleProjectDirectory}/eclipse-cdt-format.xml</file>
+                            </eclipseCdt>
+                        </cpp>
                     </configuration>
                 </plugin>
             </plugins>

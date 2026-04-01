@@ -1,40 +1,158 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Class representing a binary value. Can be used on any process and thread. */
-public interface CefBinaryValue {
+import java.nio.ByteBuffer;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 
-    /** Returns true if this object is valid. Do not call any other methods if this function returns false. */
-    boolean isValid();
-
-    /** Returns true if this object is currently owned by another object. */
-    boolean isOwned();
-
-    /** Returns true if this object is pointing to the same handle as |that| object. */
-    boolean isSame(long that);
+/**
+ * Class representing a binary value. Can be used on any process and thread.
+ *
+ * <p>Definition generated from cef_values_capi.h
+ *
+ * <pre>typedef struct _cef_binary_value_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_binary_value_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:233</a>
+ */
+public interface CefBinaryValue extends CefLibraryObject {
 
     /**
-     * Returns true if this object and |that| object have an equivalent underlying value but are not necessarily the
-     * same object.
+     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
+     * {@code false}.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_binary_value_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
      */
-    boolean isEqual(long that);
+    boolean isValid();
 
-    /** Returns a writable copy of this object. */
-    long copy();
+    /**
+     * Returns {@code true} if this object is currently owned by another object.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_owned)(struct _cef_binary_value_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:558</a>
+     */
+    boolean isOwned();
 
-    long getRawData();
+    /**
+     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_same)(struct _cef_binary_value_t* self, struct _cef_binary_value_t* that);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     */
+    boolean isSame(@Nonnull CefBinaryValue that);
 
-    /** Returns the number of values. */
+    /**
+     * Returns {@code true} if this object and {@code that} object have an equivalent underlying value but are not
+     * necessarily the same object.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_equal)(struct _cef_binary_value_t* self, struct _cef_binary_value_t* that);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:579</a>
+     */
+    boolean isEqual(@Nonnull CefBinaryValue that);
+
+    /**
+     * Returns a writable copy of this object.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>cef_binary_value_t* (CEF_CALLBACK* copy)(struct _cef_binary_value_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     */
+    Optional<CefBinaryValue> copy();
+
+    NativePointer getRawData();
+
+    /**
+     * Returns the number of values.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>size_t (CEF_CALLBACK* get_size)(struct _cef_binary_value_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:599</a>
+     */
     long getSize();
 
     /**
-     * Read up to |buffer_size| number of bytes into |buffer|. Reading begins at the specified byte |data_offset|.
-     * Returns the number of bytes read.
+     * Read up to {@code buffer_size} number of bytes into {@code buffer}. Reading begins at the specified byte
+     * {@code data_offset}. Returns the number of bytes read.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>
+     * size_t (CEF_CALLBACK* get_data)(struct _cef_binary_value_t* self, void* buffer, size_t buffer_size, size_t data_offset);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:295</a>
      */
-    long getData(long buffer, long bufferSize, long dataOffset);
+    long getData(@Nonnull ByteBuffer buffer, long dataOffset);
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>CEF_EXPORT cef_binary_value_t* cef_binary_value_create(const void* data, size_t data_size);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefBinaryValue> create(@Nonnull ByteBuffer data) {
+        return Optional.ofNullable(NativePeer.N_Create(data));
+    }
 
-    static class NativePeer implements CefBinaryValue {
-        private volatile long nativePtr;
+    static Optional<CefBinaryValue> base64Decode(@Nonnull String data) {
+        return Optional.ofNullable(NativePeer.N_Base64Decode(data));
+    }
+
+    final class NativePeer implements CefBinaryValue, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefBinaryValue.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefBinaryValue 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public boolean isValid() {
@@ -47,22 +165,22 @@ public interface CefBinaryValue {
         }
 
         @Override
-        public boolean isSame(long that) {
+        public boolean isSame(@Nonnull CefBinaryValue that) {
             return N_IsSame(nativePtr, that);
         }
 
         @Override
-        public boolean isEqual(long that) {
+        public boolean isEqual(@Nonnull CefBinaryValue that) {
             return N_IsEqual(nativePtr, that);
         }
 
         @Override
-        public long copy() {
-            return N_Copy(nativePtr);
+        public Optional<CefBinaryValue> copy() {
+            return Optional.ofNullable(N_Copy(nativePtr));
         }
 
         @Override
-        public long getRawData() {
+        public NativePointer getRawData() {
             return N_GetRawData(nativePtr);
         }
 
@@ -72,25 +190,29 @@ public interface CefBinaryValue {
         }
 
         @Override
-        public long getData(long buffer, long bufferSize, long dataOffset) {
-            return N_GetData(nativePtr, buffer, bufferSize, dataOffset);
+        public long getData(@Nonnull ByteBuffer buffer, long dataOffset) {
+            return N_GetData(nativePtr, buffer, dataOffset);
         }
 
-        private native boolean N_IsValid(long self);
+        private static native boolean N_IsValid(long self);
 
-        private native boolean N_IsOwned(long self);
+        private static native boolean N_IsOwned(long self);
 
-        private native boolean N_IsSame(long self, long that);
+        private static native boolean N_IsSame(long self, CefBinaryValue that);
 
-        private native boolean N_IsEqual(long self, long that);
+        private static native boolean N_IsEqual(long self, CefBinaryValue that);
 
-        private native long N_Copy(long self);
+        private static native CefBinaryValue N_Copy(long self);
 
-        private native long N_GetRawData(long self);
+        private static native NativePointer N_GetRawData(long self);
 
-        private native long N_GetSize(long self);
+        private static native long N_GetSize(long self);
 
-        private native long N_GetData(long self, long buffer, long bufferSize, long dataOffset);
+        private static native long N_GetData(long self, ByteBuffer buffer, long dataOffset);
+
+        static native CefBinaryValue N_Create(ByteBuffer data);
+
+        static native CefBinaryValue N_Base64Decode(String data);
 
         @Override
         public boolean equals(Object obj) {

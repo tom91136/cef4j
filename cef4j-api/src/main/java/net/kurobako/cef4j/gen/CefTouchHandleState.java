@@ -3,7 +3,10 @@ package net.kurobako.cef4j.gen;
 
 public final class CefTouchHandleState {
 
-    public final long size;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
+
     public final int touchHandleId;
     public final int flags;
     public final int enabled;
@@ -14,7 +17,6 @@ public final class CefTouchHandleState {
     public final float alpha;
 
     public CefTouchHandleState(
-            long size,
             int touchHandleId,
             int flags,
             int enabled,
@@ -23,7 +25,6 @@ public final class CefTouchHandleState {
             int mirrorHorizontal,
             CefPoint origin,
             float alpha) {
-        this.size = size;
         this.touchHandleId = touchHandleId;
         this.flags = flags;
         this.enabled = enabled;
@@ -39,8 +40,7 @@ public final class CefTouchHandleState {
         if (this == obj) return true;
         if (!(obj instanceof CefTouchHandleState)) return false;
         CefTouchHandleState other = (CefTouchHandleState) obj;
-        return this.size == other.size
-                && this.touchHandleId == other.touchHandleId
+        return this.touchHandleId == other.touchHandleId
                 && this.flags == other.flags
                 && this.enabled == other.enabled
                 && java.util.Objects.equals(this.orientation, other.orientation)
@@ -53,14 +53,14 @@ public final class CefTouchHandleState {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(
-                size, touchHandleId, flags, enabled, orientation, mirrorVertical, mirrorHorizontal, origin, alpha);
+                touchHandleId, flags, enabled, orientation, mirrorVertical, mirrorHorizontal, origin, alpha);
     }
 
     @Override
     public String toString() {
-        return "CefTouchHandleState{" + "size=" + size + ", " + "touchHandleId=" + touchHandleId + ", " + "flags="
-                + flags + ", " + "enabled=" + enabled + ", " + "orientation=" + orientation + ", " + "mirrorVertical="
-                + mirrorVertical + ", " + "mirrorHorizontal=" + mirrorHorizontal + ", " + "origin=" + origin + ", "
-                + "alpha=" + alpha + "}";
+        return "CefTouchHandleState{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
+                + "touchHandleId=" + touchHandleId + ", " + "flags=" + flags + ", " + "enabled=" + enabled + ", "
+                + "orientation=" + orientation + ", " + "mirrorVertical=" + mirrorVertical + ", " + "mirrorHorizontal="
+                + mirrorHorizontal + ", " + "origin=" + origin + ", " + "alpha=" + alpha + "}";
     }
 }

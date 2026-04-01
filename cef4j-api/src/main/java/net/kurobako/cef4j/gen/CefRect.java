@@ -1,7 +1,20 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing a rectangle. */
+/**
+ * Structure representing a rectangle.
+ *
+ * <p>Definition generated from cef_types_geometry.h
+ *
+ * <pre>typedef struct _cef_rect_t {
+ *   int x;
+ *   int y;
+ *   int width;
+ *   int height;
+ * } cef_rect_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:46</a>
+ */
 public final class CefRect {
 
     public final int x;

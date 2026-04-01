@@ -1,30 +1,95 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Class that manages custom scheme registrations. */
-public final class CefSchemeRegistrar {
+import javax.annotation.Nonnull;
 
-    public final CefBaseScoped base;
+/**
+ * Class that manages custom scheme registrations.
+ *
+ * <p>Definition generated from cef_scheme_capi.h
+ *
+ * <pre>typedef struct _cef_scheme_registrar_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_scheme_registrar_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:79</a>
+ */
+public interface CefSchemeRegistrar extends CefLibraryObject {
 
-    public CefSchemeRegistrar(CefBaseScoped base) {
-        this.base = base;
-    }
+    /**
+     * Register a custom scheme. This method should not be called for the built-in HTTP, HTTPS, FILE, FTP, ABOUT and
+     * DATA schemes.
+     *
+     * <p>See cef_scheme_options_t for possible values for {@code options}.
+     *
+     * <p>This function may be called on any thread. It should only be called once per unique {@code scheme_name} value.
+     * If {@code scheme_name} is already registered or if an error occurs this method will return {@code false}.
+     *
+     * <p>Definition generated from cef_scheme_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* add_custom_scheme)(struct _cef_scheme_registrar_t* self, const cef_string_t* scheme_name, int options);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:85</a>
+     */
+    boolean addCustomScheme(@Nonnull String schemeName, int options);
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof CefSchemeRegistrar)) return false;
-        CefSchemeRegistrar other = (CefSchemeRegistrar) obj;
-        return java.util.Objects.equals(this.base, other.base);
-    }
+    final class NativePeer implements CefSchemeRegistrar, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
 
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(base);
-    }
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
-    @Override
-    public String toString() {
-        return "CefSchemeRegistrar{" + "base=" + base + "}";
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefSchemeRegistrar.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefSchemeRegistrar 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public boolean addCustomScheme(@Nonnull String schemeName, int options) {
+            return N_AddCustomScheme(nativePtr, schemeName, options);
+        }
+
+        private static native boolean N_AddCustomScheme(long self, String schemeName, int options);
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof NativePeer)) return false;
+            return this.nativePtr == ((NativePeer) obj).nativePtr;
+        }
+
+        @Override
+        public int hashCode() {
+            return Long.hashCode(nativePtr);
+        }
+
+        @Override
+        public String toString() {
+            return "CefSchemeRegistrar{0x" + Long.toHexString(nativePtr) + "}";
+        }
     }
 }

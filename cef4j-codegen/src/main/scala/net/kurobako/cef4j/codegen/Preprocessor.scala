@@ -1,6 +1,5 @@
 package net.kurobako.cef4j.codegen
 
-import java.io.ByteArrayOutputStream
 import java.nio.file.Path
 
 object Preprocessor {
@@ -15,29 +14,12 @@ object Preprocessor {
     val proc = new ProcessBuilder(cmd*)
       .redirectErrorStream(true)
       .start()
-    val out  = readFully(proc.getInputStream)
+    val out  = proc.getInputStream.readAllBytes()
     val exit = proc.waitFor()
     if (exit != 0) {
       sys.error(s"Preprocessor failed (exit $exit): ${new String(out, "UTF-8")}")
     }
     stripLineMarkers(new String(out, "UTF-8"))
-  }
-
-  private def readFully(is: java.io.InputStream): Array[Byte] = {
-    val buf = new ByteArrayOutputStream()
-    val tmp = new Array[Byte](8192)
-
-    @annotation.tailrec
-    def loop(): Unit = {
-      val n = is.read(tmp)
-      if (n != -1) {
-        buf.write(tmp, 0, n)
-        loop()
-      }
-    }
-
-    loop()
-    buf.toByteArray
   }
 
   private def unixCommand(file: Path, includes: Seq[Path]): List[String] =

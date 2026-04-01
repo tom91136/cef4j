@@ -1,12 +1,33 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/**
- * Callback interface for CefMediaSink::GetDeviceInfo. The methods of this class will be called on the browser process
- * UI thread.
- */
-public interface CefMediaSinkDeviceInfoCallback {
+import javax.annotation.Nonnull;
 
-    /** Method that will be executed asyncronously once device information has been retrieved. */
-    default void onMediaSinkDeviceInfo(long deviceInfo) {}
+/**
+ * Callback interface for {@link CefMediaSink#getDeviceInfo(CefMediaSinkDeviceInfoCallback)}. The methods of this class
+ * will be called on the browser process UI thread.
+ *
+ * <p>Definition generated from cef_media_router_capi.h
+ *
+ * <pre>typedef struct _cef_media_sink_device_info_callback_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_media_sink_device_info_callback_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:275</a>
+ */
+public interface CefMediaSinkDeviceInfoCallback extends CefClientHandler {
+
+    /**
+     * Method that will be executed asyncronously once device information has been retrieved.
+     *
+     * <p>Definition generated from cef_media_router_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_media_sink_device_info)(struct _cef_media_sink_device_info_callback_t* self, const struct _cef_media_sink_device_info_t* device_info);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:282</a>
+     */
+    default void onMediaSinkDeviceInfo(@Nonnull NativePointer deviceInfo) {}
 }

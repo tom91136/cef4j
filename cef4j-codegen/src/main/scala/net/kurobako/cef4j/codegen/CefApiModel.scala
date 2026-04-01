@@ -1,19 +1,34 @@
 package net.kurobako.cef4j.codegen
 
 enum CefDecl {
-  case ObjectStruct(name: String, fns: List[FnPtr], sourceHeader: String = "")
+  case ObjectStruct(name: String, fns: List[FnPtr], sourceHeader: String = "", scoped: Boolean = false)
   case HandlerStruct(name: String, fns: List[FnPtr], sourceHeader: String = "")
   case DataStruct(name: String, fields: List[Field], sourceHeader: String = "")
-  case Enum(name: String, values: List[(String, Long)], doc: String = "", valueDocs: Map[String, String] = Map.empty)
+  case Enum(
+      name: String,
+      values: List[(String, Long, String)],
+      doc: String = "",
+      valueDocs: Map[String, String] = Map.empty
+  )
+  case FreeFunction(
+      cName: String,
+      ret: CType,
+      params: List[Param],
+      ownerStruct: String,
+      javaMethodName: String,
+      sourceHeader: String = "",
+      metaAttrs: List[(String, String)] = Nil
+  )
 }
 
 extension (decl: CefDecl) {
   def namedStruct: Option[String] =
     decl match {
-      case CefDecl.ObjectStruct(name, _, _)  => Some(name)
-      case CefDecl.HandlerStruct(name, _, _) => Some(name)
-      case CefDecl.DataStruct(name, _, _)    => Some(name)
-      case CefDecl.Enum(_, _, _, _)          => None
+      case CefDecl.ObjectStruct(name, _, _, _)       => Some(name)
+      case CefDecl.HandlerStruct(name, _, _)         => Some(name)
+      case CefDecl.DataStruct(name, _, _)            => Some(name)
+      case CefDecl.Enum(_, _, _, _)                  => None
+      case CefDecl.FreeFunction(_, _, _, _, _, _, _) => None
     }
 
   def withSourceHeader(sourceHeader: String): CefDecl =
@@ -21,6 +36,7 @@ extension (decl: CefDecl) {
       case d: CefDecl.ObjectStruct  => d.copy(sourceHeader = sourceHeader)
       case d: CefDecl.HandlerStruct => d.copy(sourceHeader = sourceHeader)
       case d: CefDecl.DataStruct    => d.copy(sourceHeader = sourceHeader)
+      case d: CefDecl.FreeFunction  => d.copy(sourceHeader = sourceHeader)
       case other                    => other
     }
 
@@ -33,8 +49,8 @@ extension (decl: CefDecl) {
 
   def isCppGenerated: Boolean =
     decl match {
-      case _: CefDecl.ObjectStruct | _: CefDecl.HandlerStruct => true
-      case _                                                  => false
+      case _: CefDecl.ObjectStruct | _: CefDecl.HandlerStruct | _: CefDecl.FreeFunction => true
+      case _                                                                            => false
     }
 }
 
@@ -43,7 +59,8 @@ case class FnPtr(
     ret: CType,
     params: List[Param],
     isSpecial: Option[SpecialFn] = None,
-    metaAttrs: List[(String, String)] = Nil
+    metaAttrs: List[(String, String)] = Nil,
+    cppName: Option[String] = None
 )
 
 enum SpecialFn {
@@ -61,19 +78,40 @@ enum CType {
   case UInt
   case Long
   case SizeT
+  case Char
   case Float
   case Double
   case JString
   case Ptr(inner: String)
+  case ObjectPtr(cefName: String)
+  case OutObjectPtr(cefName: String)
+  case OutPrimitivePtr(primitiveType: CType)
+  case OpaquePtr
+  case ObjectPtrArray(cefName: String)
   case OutInt
   case OutBool
   case ByValueIn(cefName: String)
   case ByValueOut(cefName: String)
   case ByValueArray(cefName: String)
   case PixelBuffer
+  case Buffer(sizeParam: String)
+  case BufferSize(bufferParam: String)
   case Enum(cefName: String)
   case DataStruct(cefName: String)
   case StringList
   case StringMap
   case StringMultimap
+
+  /** Array out-param flattened from the count_func two-pass C API pattern. The Java method returns the array directly;
+    * both the count and array C params are hidden.
+    * @param elementType
+    *   the type of each element (ObjectPtr, ByValueIn, Long, etc.)
+    * @param countFuncCName
+    *   snake_case C function-pointer name on the same struct (e.g. "get_page_ranges_count")
+    * @param countParamName
+    *   original C param name for the size_t* count (e.g. "rangesCount")
+    * @param arrayParamName
+    *   original C param name for the array (e.g. "ranges")
+    */
+  case CountFuncArray(elementType: CType, countFuncCName: String, countParamName: String, arrayParamName: String)
 }

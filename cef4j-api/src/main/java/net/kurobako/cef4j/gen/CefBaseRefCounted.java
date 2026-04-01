@@ -1,27 +1,37 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** All ref-counted framework structures must include this structure first. */
-public interface CefBaseRefCounted {
+/**
+ * All ref-counted framework structures must include this structure first.
+ *
+ * <p>Definition generated from cef_base_capi.h
+ *
+ * <pre>typedef struct _cef_base_ref_counted_t {
+ *   size_t size;
+ * } cef_base_ref_counted_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__base__capi_8h.html">cef_base_capi.h</a>
+ */
+public final class CefBaseRefCounted {
 
-    static class NativePeer implements CefBaseRefCounted {
-        private volatile long nativePtr;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
 
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof NativePeer)) return false;
-            return this.nativePtr == ((NativePeer) obj).nativePtr;
-        }
+    public CefBaseRefCounted() {}
 
-        @Override
-        public int hashCode() {
-            return Long.hashCode(nativePtr);
-        }
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj instanceof CefBaseRefCounted;
+    }
 
-        @Override
-        public String toString() {
-            return "CefBaseRefCounted{0x" + Long.toHexString(nativePtr) + "}";
-        }
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash();
+    }
+
+    @Override
+    public String toString() {
+        return "CefBaseRefCounted{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + "}";
     }
 }

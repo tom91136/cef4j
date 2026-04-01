@@ -4,27 +4,115 @@ package net.kurobako.cef4j.gen;
 /**
  * "Verb" of a drag-and-drop operation as negotiated between the source and destination. These constants match their
  * equivalents in WebCore's DragActions.h and should not be renumbered.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   DRAG_OPERATION_NONE = 0,
+ *   DRAG_OPERATION_COPY = 1,
+ *   DRAG_OPERATION_LINK = 2,
+ *   DRAG_OPERATION_GENERIC = 4,
+ *   DRAG_OPERATION_PRIVATE = 8,
+ *   ...
+ * } cef_drag_operations_mask_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC},
+ * {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
-public enum CefDragOperationsMask {
-    DRAG_OPERATION_NONE(0L),
-    DRAG_OPERATION_COPY(1L),
-    DRAG_OPERATION_LINK(2L),
-    DRAG_OPERATION_GENERIC(4L),
-    DRAG_OPERATION_PRIVATE(8L),
-    DRAG_OPERATION_MOVE(16L),
-    DRAG_OPERATION_DELETE(32L),
-    UNKNOWN(-1L);
+public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMask> {
 
-    public final long value;
+    /** Known constants for {@link CefDragOperationsMask}. */
+    public enum Kind {
+        NONE(0, "0", "DRAG_OPERATION_NONE"),
+        COPY(1, "1", "DRAG_OPERATION_COPY"),
+        LINK(2, "2", "DRAG_OPERATION_LINK"),
+        GENERIC(4, "4", "DRAG_OPERATION_GENERIC"),
+        PRIVATE(8, "8", "DRAG_OPERATION_PRIVATE"),
+        MOVE(16, "16", "DRAG_OPERATION_MOVE"),
+        DELETE(32, "32", "DRAG_OPERATION_DELETE");
 
-    CefDragOperationsMask(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_drag_operations_mask_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefDragOperationsMask fromLong(long v) {
-        for (CefDragOperationsMask e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefDragOperationsMask(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefDragOperationsMask of(long v) {
+        return new CefDragOperationsMask(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefDragOperationsMask of(Kind k) {
+        return new CefDragOperationsMask(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefDragOperationsMask)) return false;
+        return this.value == ((CefDragOperationsMask) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

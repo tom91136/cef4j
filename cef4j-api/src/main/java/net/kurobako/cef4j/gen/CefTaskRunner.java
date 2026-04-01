@@ -1,6 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
@@ -8,35 +9,137 @@ import javax.annotation.Nonnull;
  * any thread. CEF maintains multiple internal threads that are used for handling different types of tasks in different
  * processes. The cef_thread_id_t definitions in cef_types.h list the common CEF threads. Task runners are also
  * available for other CEF threads as appropriate (for example, V8 WebWorker threads).
+ *
+ * <p>Definition generated from cef_task_capi.h
+ *
+ * <pre>typedef struct _cef_task_runner_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_task_runner_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:62</a>
  */
-public interface CefTaskRunner {
+public interface CefTaskRunner extends CefLibraryObject {
 
-    /** Returns true if this object is pointing to the same handle as |that| object. */
-    boolean isSame(long that);
+    /**
+     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_same)(struct _cef_task_runner_t* self, struct _cef_task_runner_t* that);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     */
+    boolean isSame(@Nonnull CefTaskRunner that);
 
-    /** Returns true if this task runner belongs to the current thread. */
+    /**
+     * Returns {@code true} if this task runner belongs to the current thread.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* belongs_to_current_thread)(struct _cef_task_runner_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:95</a>
+     */
     boolean belongsToCurrentThread();
 
-    /** Returns true if this task runner is for the specified CEF thread. */
-    boolean belongsToThread(@Nonnull CefThreadId threadId);
+    /**
+     * Returns {@code true} if this task runner is for the specified CEF thread.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* belongs_to_thread)(struct _cef_task_runner_t* self, cef_thread_id_t threadId);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:101</a>
+     */
+    boolean belongsToThread(@Nonnull CefThreadId threadid);
 
     /**
      * Post a task for execution on the thread associated with this task runner. Execution will occur asynchronously.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* post_task)(struct _cef_task_runner_t* self, struct _cef_task_t* task);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:107</a>
      */
-    boolean postTask(long task);
+    boolean postTask(@Nonnull CefTask task);
 
     /**
      * Post a task for delayed execution on the thread associated with this task runner. Execution will occur
      * asynchronously. Delayed tasks are not supported on V8 WebWorker threads and will be executed without the
      * specified delay.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* post_delayed_task)(struct _cef_task_runner_t* self, struct _cef_task_t* task, int64_t delay_ms);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:114</a>
      */
-    boolean postDelayedTask(long task, long delayMs);
+    boolean postDelayedTask(@Nonnull CefTask task, long delayMs);
+    /**
+     * Returns the task runner for the current thread. Only CEF threads will have task runners. An empty reference will
+     * be returned if this method is called on an invalid thread.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_current_thread(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:74</a>
+     */
+    static Optional<CefTaskRunner> getForCurrentThread() {
+        return Optional.ofNullable(NativePeer.N_GetForCurrentThread());
+    }
 
-    static class NativePeer implements CefTaskRunner {
-        private volatile long nativePtr;
+    /**
+     * Returns the task runner for the specified CEF thread.
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_thread(cef_thread_id_t threadId);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:82</a>
+     */
+    static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadid) {
+        return Optional.ofNullable(NativePeer.N_GetForThread(threadid));
+    }
+
+    final class NativePeer implements CefTaskRunner, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public boolean isSame(long that) {
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefTaskRunner.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefTaskRunner 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public boolean isSame(@Nonnull CefTaskRunner that) {
             return N_IsSame(nativePtr, that);
         }
 
@@ -46,29 +149,33 @@ public interface CefTaskRunner {
         }
 
         @Override
-        public boolean belongsToThread(CefThreadId threadId) {
-            return N_BelongsToThread(nativePtr, threadId);
+        public boolean belongsToThread(@Nonnull CefThreadId threadid) {
+            return N_BelongsToThread(nativePtr, threadid);
         }
 
         @Override
-        public boolean postTask(long task) {
+        public boolean postTask(@Nonnull CefTask task) {
             return N_PostTask(nativePtr, task);
         }
 
         @Override
-        public boolean postDelayedTask(long task, long delayMs) {
+        public boolean postDelayedTask(@Nonnull CefTask task, long delayMs) {
             return N_PostDelayedTask(nativePtr, task, delayMs);
         }
 
-        private native boolean N_IsSame(long self, long that);
+        private static native boolean N_IsSame(long self, CefTaskRunner that);
 
-        private native boolean N_BelongsToCurrentThread(long self);
+        private static native boolean N_BelongsToCurrentThread(long self);
 
-        private native boolean N_BelongsToThread(long self, CefThreadId threadId);
+        private static native boolean N_BelongsToThread(long self, CefThreadId threadid);
 
-        private native boolean N_PostTask(long self, long task);
+        private static native boolean N_PostTask(long self, CefTask task);
 
-        private native boolean N_PostDelayedTask(long self, long task, long delayMs);
+        private static native boolean N_PostDelayedTask(long self, CefTask task, long delayMs);
+
+        static native CefTaskRunner N_GetForCurrentThread();
+
+        static native CefTaskRunner N_GetForThread(CefThreadId threadid);
 
         @Override
         public boolean equals(Object obj) {

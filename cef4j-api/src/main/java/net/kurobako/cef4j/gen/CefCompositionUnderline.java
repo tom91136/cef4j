@@ -4,10 +4,26 @@ package net.kurobako.cef4j.gen;
 /**
  * Structure representing IME composition underline information. This is a thin wrapper around Blink's
  * WebCompositionUnderline class and should be kept in sync with that.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_composition_underline_t {
+ *   size_t size;
+ *   cef_range_t* range;
+ *   unsigned int color;
+ *   unsigned int background_color;
+ *   int thick;
+ *   cef_composition_underline_style_t style;
+ * } cef_composition_underline_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:3362</a>
  */
 public final class CefCompositionUnderline {
 
-    public final long size;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
+
     public final CefRange range;
     public final int color;
     public final int backgroundColor;
@@ -15,8 +31,7 @@ public final class CefCompositionUnderline {
     public final CefCompositionUnderlineStyle style;
 
     public CefCompositionUnderline(
-            long size, CefRange range, int color, int backgroundColor, int thick, CefCompositionUnderlineStyle style) {
-        this.size = size;
+            CefRange range, int color, int backgroundColor, int thick, CefCompositionUnderlineStyle style) {
         this.range = range;
         this.color = color;
         this.backgroundColor = backgroundColor;
@@ -29,8 +44,7 @@ public final class CefCompositionUnderline {
         if (this == obj) return true;
         if (!(obj instanceof CefCompositionUnderline)) return false;
         CefCompositionUnderline other = (CefCompositionUnderline) obj;
-        return this.size == other.size
-                && java.util.Objects.equals(this.range, other.range)
+        return java.util.Objects.equals(this.range, other.range)
                 && this.color == other.color
                 && this.backgroundColor == other.backgroundColor
                 && this.thick == other.thick
@@ -39,12 +53,13 @@ public final class CefCompositionUnderline {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(size, range, color, backgroundColor, thick, style);
+        return java.util.Objects.hash(range, color, backgroundColor, thick, style);
     }
 
     @Override
     public String toString() {
-        return "CefCompositionUnderline{" + "size=" + size + ", " + "range=" + range + ", " + "color=" + color + ", "
-                + "backgroundColor=" + backgroundColor + ", " + "thick=" + thick + ", " + "style=" + style + "}";
+        return "CefCompositionUnderline{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "range="
+                + range + ", " + "color=" + color + ", " + "backgroundColor=" + backgroundColor + ", " + "thick="
+                + thick + ", " + "style=" + style + "}";
     }
 }

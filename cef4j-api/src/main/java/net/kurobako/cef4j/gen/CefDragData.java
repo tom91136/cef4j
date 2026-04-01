@@ -1,126 +1,389 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/** Class used to represent drag data. The methods of this class may be called on any thread. */
-public interface CefDragData {
+/**
+ * Class used to represent drag data. The methods of this class may be called on any thread.
+ *
+ * <p>Definition generated from cef_drag_data_capi.h
+ *
+ * <pre>typedef struct _cef_drag_data_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_drag_data_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:47</a>
+ */
+public interface CefDragData extends CefLibraryObject {
 
-    /** Returns a copy of the current object. */
-    long cefClone();
+    /**
+     * Returns a copy of the current object.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_drag_data_t* (CEF_CALLBACK* clone)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:60</a>
+     */
+    Optional<CefDragData> cefClone();
 
-    /** Returns true if the values of this object are read-only. Some APIs may expose read-only objects. */
+    /**
+     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     */
     boolean isReadOnly();
 
-    /** Returns true if the drag data is a link. */
+    /**
+     * Returns {@code true} if the drag data is a link.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_link)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
+     */
     boolean isLink();
 
-    /** Returns true if the drag data is a text or html fragment. */
+    /**
+     * Returns {@code true} if the drag data is a text or html fragment.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_fragment)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
+     */
     boolean isFragment();
 
-    /** Returns true if the drag data is a file. */
+    /**
+     * Returns {@code true} if the drag data is a file.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_file)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
+     */
     boolean isFile();
 
-    /** Returns the URL of the link, if any, that encloses the node that the context menu was invoked on. */
+    /**
+     * Returns the URL of the link, if any, that encloses the node that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_url)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     */
     Optional<String> getLinkUrl();
 
-    /** Return the title associated with the link being dragged. */
+    /**
+     * Return the title associated with the link being dragged.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_title)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
+     */
     Optional<String> getLinkTitle();
 
-    /** Return the metadata, if any, associated with the link being dragged. */
+    /**
+     * Return the metadata, if any, associated with the link being dragged.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_metadata)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
+     */
     Optional<String> getLinkMetadata();
 
-    /** Return the plain text fragment that is being dragged. */
+    /**
+     * Return the plain text fragment that is being dragged.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_text)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
+     */
     Optional<String> getFragmentText();
 
-    /** Return the text/html fragment that is being dragged. */
+    /**
+     * Return the text/html fragment that is being dragged.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_html)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
+     */
     Optional<String> getFragmentHtml();
 
+    /**
+     * Return the base URL that the fragment came from. This value is used for resolving relative URLs and may be empty.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_base_url)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
+     */
     Optional<String> getFragmentBaseUrl();
 
-    /** Return the name of the file being dragged out of the browser window. */
+    /**
+     * Return the name of the file being dragged out of the browser window.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_file_name)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
+     */
     Optional<String> getFileName();
 
     /**
-     * Write the contents of the file being dragged out of the web view into |writer|. Returns the number of bytes sent
-     * to |writer|. If |writer| is NULL this method will return the size of the file contents in bytes. Call
-     * GetFileName() to get a suggested name for the file.
+     * Write the contents of the file being dragged out of the web view into {@code writer}. Returns the number of bytes
+     * sent to {@code writer}. If {@code writer} is {@code null} this method will return the size of the file contents
+     * in bytes. Call GetFileName() to get a suggested name for the file.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>
+     * size_t (CEF_CALLBACK* get_file_contents)(struct _cef_drag_data_t* self, struct _cef_stream_writer_t* writer);
+     * </pre>
      *
      * @param writer may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
      */
-    long getFileContents(long writer);
+    long getFileContents(@Nullable CefStreamWriter writer);
 
-    /** Retrieve the list of file names that are being dragged into the browser window. */
-    boolean getFileNames(@Nonnull java.util.List<String> names);
+    /**
+     * Retrieve the list of file names that are being dragged into the browser window.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_file_names)(struct _cef_drag_data_t* self, cef_string_list_t names);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
+     */
+    boolean getFileNames(@Nonnull List<String> names);
 
-    /** Retrieve the list of file paths that are being dragged into the browser window. */
-    boolean getFilePaths(@Nonnull java.util.List<String> paths);
+    /**
+     * Retrieve the list of file paths that are being dragged into the browser window.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_file_paths)(struct _cef_drag_data_t* self, cef_string_list_t paths);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
+     */
+    boolean getFilePaths(@Nonnull List<String> paths);
 
-    void setLinkUrl(@Nonnull String url);
+    /**
+     * Set the link URL that is being dragged.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_link_url)(struct _cef_drag_data_t* self, const cef_string_t* url);</pre>
+     *
+     * @param url may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
+     */
+    void setLinkUrl(@Nullable String url);
 
     /**
      * Set the title associated with the link being dragged.
      *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_link_title)(struct _cef_drag_data_t* self, const cef_string_t* title);</pre>
+     *
      * @param title may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
      */
     void setLinkTitle(@Nullable String title);
 
     /**
      * Set the metadata associated with the link being dragged.
      *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_link_metadata)(struct _cef_drag_data_t* self, const cef_string_t* data);</pre>
+     *
      * @param data may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
      */
     void setLinkMetadata(@Nullable String data);
 
     /**
      * Set the plain text fragment that is being dragged.
      *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_fragment_text)(struct _cef_drag_data_t* self, const cef_string_t* text);</pre>
+     *
      * @param text may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
      */
     void setFragmentText(@Nullable String text);
 
     /**
      * Set the text/html fragment that is being dragged.
      *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_fragment_html)(struct _cef_drag_data_t* self, const cef_string_t* html);</pre>
+     *
      * @param html may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
      */
     void setFragmentHtml(@Nullable String html);
 
-    void setFragmentBaseUrl(@Nonnull String baseUrl);
+    /**
+     * Set the base URL that the fragment came from.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* set_fragment_base_url)(struct _cef_drag_data_t* self, const cef_string_t* base_url);
+     * </pre>
+     *
+     * @param baseUrl may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
+     */
+    void setFragmentBaseUrl(@Nullable String baseUrl);
 
     /**
-     * Reset the file contents. You should do this before calling CefBrowserHost::DragTargetDragEnter as the web view
-     * does not allow us to drag in this kind of data.
+     * Reset the file contents. You should do this before calling {@link CefBrowserHost#dragTargetDragEnter(CefDragData,
+     * CefMouseEvent, CefDragOperationsMask)} as the web view does not allow us to drag in this kind of data.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* reset_file_contents)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
      */
     void resetFileContents();
 
     /**
      * Add a file that is being dragged into the webview.
      *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* add_file)(struct _cef_drag_data_t* self, const cef_string_t* path, const cef_string_t* display_name);
+     * </pre>
+     *
      * @param displayName may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
     void addFile(@Nonnull String path, @Nullable String displayName);
 
-    /** Clear list of filenames. */
+    /**
+     * Clear list of filenames.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* clear_filenames)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
+     */
     void clearFilenames();
 
-    /** Get the image representation of drag data. May return NULL if no image representation is available. */
-    long getImage();
+    /**
+     * Get the image representation of drag data. May return {@code null} if no image representation is available.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_image_t* (CEF_CALLBACK* get_image)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
+     */
+    Optional<CefImage> getImage();
 
-    /** Get the image hotspot (drag start location relative to image dimensions). */
+    /**
+     * Get the image hotspot (drag start location relative to image dimensions).
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>cef_point_t* (CEF_CALLBACK* get_image_hotspot)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
+     */
     CefPoint getImageHotspot();
 
-    /** Returns true if an image representation of drag data is available. */
+    /**
+     * Returns {@code true} if an image representation of drag data is available.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_image)(struct _cef_drag_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
+     */
     boolean hasImage();
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_drag_data_capi.h
+     *
+     * <pre>CEF_EXPORT cef_drag_data_t* cef_drag_data_create(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefDragData> create() {
+        return Optional.ofNullable(NativePeer.N_Create());
+    }
 
-    static class NativePeer implements CefDragData {
-        private volatile long nativePtr;
+    final class NativePeer implements CefDragData, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public long cefClone() {
-            return N_Clone(nativePtr);
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefDragData.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefDragData 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public Optional<CefDragData> cefClone() {
+            return Optional.ofNullable(N_Clone(nativePtr));
         }
 
         @Override
@@ -179,47 +442,47 @@ public interface CefDragData {
         }
 
         @Override
-        public long getFileContents(long writer) {
+        public long getFileContents(@Nullable CefStreamWriter writer) {
             return N_GetFileContents(nativePtr, writer);
         }
 
         @Override
-        public boolean getFileNames(java.util.List<String> names) {
+        public boolean getFileNames(@Nonnull List<String> names) {
             return N_GetFileNames(nativePtr, names);
         }
 
         @Override
-        public boolean getFilePaths(java.util.List<String> paths) {
+        public boolean getFilePaths(@Nonnull List<String> paths) {
             return N_GetFilePaths(nativePtr, paths);
         }
 
         @Override
-        public void setLinkUrl(String url) {
+        public void setLinkUrl(@Nullable String url) {
             N_SetLinkUrl(nativePtr, url);
         }
 
         @Override
-        public void setLinkTitle(String title) {
+        public void setLinkTitle(@Nullable String title) {
             N_SetLinkTitle(nativePtr, title);
         }
 
         @Override
-        public void setLinkMetadata(String data) {
+        public void setLinkMetadata(@Nullable String data) {
             N_SetLinkMetadata(nativePtr, data);
         }
 
         @Override
-        public void setFragmentText(String text) {
+        public void setFragmentText(@Nullable String text) {
             N_SetFragmentText(nativePtr, text);
         }
 
         @Override
-        public void setFragmentHtml(String html) {
+        public void setFragmentHtml(@Nullable String html) {
             N_SetFragmentHtml(nativePtr, html);
         }
 
         @Override
-        public void setFragmentBaseUrl(String baseUrl) {
+        public void setFragmentBaseUrl(@Nullable String baseUrl) {
             N_SetFragmentBaseUrl(nativePtr, baseUrl);
         }
 
@@ -229,7 +492,7 @@ public interface CefDragData {
         }
 
         @Override
-        public void addFile(String path, String displayName) {
+        public void addFile(@Nonnull String path, @Nullable String displayName) {
             N_AddFile(nativePtr, path, displayName);
         }
 
@@ -239,8 +502,8 @@ public interface CefDragData {
         }
 
         @Override
-        public long getImage() {
-            return N_GetImage(nativePtr);
+        public Optional<CefImage> getImage() {
+            return Optional.ofNullable(N_GetImage(nativePtr));
         }
 
         @Override
@@ -253,59 +516,61 @@ public interface CefDragData {
             return N_HasImage(nativePtr);
         }
 
-        private native long N_Clone(long self);
+        private static native CefDragData N_Clone(long self);
 
-        private native boolean N_IsReadOnly(long self);
+        private static native boolean N_IsReadOnly(long self);
 
-        private native boolean N_IsLink(long self);
+        private static native boolean N_IsLink(long self);
 
-        private native boolean N_IsFragment(long self);
+        private static native boolean N_IsFragment(long self);
 
-        private native boolean N_IsFile(long self);
+        private static native boolean N_IsFile(long self);
 
-        private native String N_GetLinkUrl(long self);
+        private static native String N_GetLinkUrl(long self);
 
-        private native String N_GetLinkTitle(long self);
+        private static native String N_GetLinkTitle(long self);
 
-        private native String N_GetLinkMetadata(long self);
+        private static native String N_GetLinkMetadata(long self);
 
-        private native String N_GetFragmentText(long self);
+        private static native String N_GetFragmentText(long self);
 
-        private native String N_GetFragmentHtml(long self);
+        private static native String N_GetFragmentHtml(long self);
 
-        private native String N_GetFragmentBaseUrl(long self);
+        private static native String N_GetFragmentBaseUrl(long self);
 
-        private native String N_GetFileName(long self);
+        private static native String N_GetFileName(long self);
 
-        private native long N_GetFileContents(long self, long writer);
+        private static native long N_GetFileContents(long self, CefStreamWriter writer);
 
-        private native boolean N_GetFileNames(long self, java.util.List<String> names);
+        private static native boolean N_GetFileNames(long self, List<String> names);
 
-        private native boolean N_GetFilePaths(long self, java.util.List<String> paths);
+        private static native boolean N_GetFilePaths(long self, List<String> paths);
 
-        private native void N_SetLinkUrl(long self, String url);
+        private static native void N_SetLinkUrl(long self, String url);
 
-        private native void N_SetLinkTitle(long self, String title);
+        private static native void N_SetLinkTitle(long self, String title);
 
-        private native void N_SetLinkMetadata(long self, String data);
+        private static native void N_SetLinkMetadata(long self, String data);
 
-        private native void N_SetFragmentText(long self, String text);
+        private static native void N_SetFragmentText(long self, String text);
 
-        private native void N_SetFragmentHtml(long self, String html);
+        private static native void N_SetFragmentHtml(long self, String html);
 
-        private native void N_SetFragmentBaseUrl(long self, String baseUrl);
+        private static native void N_SetFragmentBaseUrl(long self, String baseUrl);
 
-        private native void N_ResetFileContents(long self);
+        private static native void N_ResetFileContents(long self);
 
-        private native void N_AddFile(long self, String path, String displayName);
+        private static native void N_AddFile(long self, String path, String displayName);
 
-        private native void N_ClearFilenames(long self);
+        private static native void N_ClearFilenames(long self);
 
-        private native long N_GetImage(long self);
+        private static native CefImage N_GetImage(long self);
 
-        private native CefPoint N_GetImageHotspot(long self);
+        private static native CefPoint N_GetImageHotspot(long self);
 
-        private native boolean N_HasImage(long self);
+        private static native boolean N_HasImage(long self);
+
+        static native CefDragData N_Create();
 
         @Override
         public boolean equals(Object obj) {

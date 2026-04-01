@@ -6,69 +6,155 @@ import javax.annotation.Nonnull;
 /**
  * Class used to implement a custom request handler interface. The methods of this class will be called on the IO thread
  * unless otherwise indicated.
+ *
+ * <p>Definition generated from cef_resource_handler_capi.h
+ *
+ * <pre>typedef struct _cef_resource_handler_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_resource_handler_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:82</a>
  */
-public interface CefResourceHandler {
+public interface CefResourceHandler extends CefClientHandler {
 
     /**
-     * Open the response stream. To handle the request immediately set |handle_request| to true and return true. To
-     * decide at a later time set |handle_request| to false, return true, and execute |callback| to continue or cancel
-     * the request. To cancel the request immediately set |handle_request| to true and return false. This method will be
-     * called in sequence but not from a dedicated thread. For backwards compatibility set |handle_request| to false and
-     * return false and the ProcessRequest method will be called.
+     * Open the response stream. To handle the request immediately set {@code handle_request} to {@code true} and return
+     * {@code true}. To decide at a later time set {@code handle_request} to {@code false}, return {@code true}, and
+     * execute {@code callback} to continue or cancel the request. To cancel the request immediately set
+     * {@code handle_request} to {@code true} and return {@code false}. This method will be called in sequence but not
+     * from a dedicated thread. For backwards compatibility set {@code handle_request} to {@code false} and return
+     * {@code false} and the ProcessRequest method will be called.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* open)(struct _cef_resource_handler_t* self, struct _cef_request_t* request, int* handle_request, struct _cef_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:89</a>
      */
-    default boolean open(long request, int[] handleRequest, long callback) {
+    default boolean open(@Nonnull CefRequest request, int[] handleRequest, @Nonnull CefCallback callback) {
         return false;
     }
 
     /**
-     * Begin processing the request. To handle the request return true and call CefCallback::Continue() once the
-     * response header information is available (CefCallback::Continue() can also be called from inside this method if
-     * header information is available immediately). To cancel the request return false. WARNING: This method is
-     * deprecated. Use Open instead.
+     * Begin processing the request. To handle the request return {@code true} and call CefCallback.continue() once the
+     * response header information is available (CefCallback.continue() can also be called from inside this method if
+     * header information is available immediately). To cancel the request return {@code false}.
+     *
+     * <p><b>WARNING:</b> This method is deprecated. Use Open instead.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* process_request)(struct _cef_resource_handler_t* self, struct _cef_request_t* request, struct _cef_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
      */
-    default boolean processRequest(long request, long callback) {
+    default boolean processRequest(@Nonnull CefRequest request, @Nonnull CefCallback callback) {
         return false;
     }
 
     /**
-     * Retrieve response header information. If the response length is not known set |response_length| to -1 and
-     * ReadResponse() will be called until it returns false. If the response length is known set |response_length| to a
-     * positive value and ReadResponse() will be called until it returns false or the specified number of bytes have
-     * been read. Use the |response| object to set the mime type, http status code and other optional header values. To
-     * redirect the request to a new URL set |redirectUrl| to the new URL. |redirectUrl| can be either a relative or
-     * fully qualified URL. It is also possible to set |response| to a redirect http status code and pass the new URL
-     * via a Location header. Likewise with |redirectUrl| it is valid to set a relative or fully qualified URL as the
-     * Location header value. If an error occured while setting up the request you can call SetError() on |response| to
-     * indicate the error condition.
+     * Retrieve response header information. If the response length is not known set {@code response_length} to -1 and
+     * ReadResponse() will be called until it returns {@code false}. If the response length is known set
+     * {@code response_length} to a positive value and ReadResponse() will be called until it returns {@code false} or
+     * the specified number of bytes have been read. Use the {@code response} object to set the mime type, http status
+     * code and other optional header values. To redirect the request to a new URL set {@code redirectUrl} to the new
+     * URL. {@code redirectUrl} can be either a relative or fully qualified URL. It is also possible to set
+     * {@code response} to a redirect http status code and pass the new URL via a Location header. Likewise with
+     * {@code redirectUrl} it is valid to set a relative or fully qualified URL as the Location header value. If an
+     * error occured while setting up the request you can call SetError() on {@code response} to indicate the error
+     * condition.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* get_response_headers)(struct _cef_resource_handler_t* self, struct _cef_response_t* response, int64_t* response_length, cef_string_t* redirectUrl);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:122</a>
      */
-    default void getResponseHeaders(long response, long responseLength, @Nonnull String redirectUrl) {}
+    default void getResponseHeaders(
+            @Nonnull CefResponse response, long[] responseLength, @Nonnull String redirecturl) {}
 
     /**
-     * Skip response data when requested by a Range header. Skip over and discard |bytes_to_skip| bytes of response
-     * data. If data is available immediately set |bytes_skipped| to the number of bytes skipped and return true. To
-     * read the data at a later time set |bytes_skipped| to 0, return true and execute |callback| when the data is
-     * available. To indicate failure set |bytes_skipped| to < 0 (e.g. -2 for ERR_FAILED) and return false. This method
-     * will be called in sequence but not from a dedicated thread.
+     * Skip response data when requested by a Range header. Skip over and discard {@code bytes_to_skip} bytes of
+     * response data. If data is available immediately set {@code bytes_skipped} to the number of bytes skipped and
+     * return {@code true}. To read the data at a later time set {@code bytes_skipped} to 0, return {@code true} and
+     * execute {@code callback} when the data is available. To indicate failure set {@code bytes_skipped} to < 0 (e.g.
+     * -2 for {@code ERR_FAILED}) and return {@code false}. This method will be called in sequence but not from a
+     * dedicated thread.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* skip)(struct _cef_resource_handler_t* self, int64_t bytes_to_skip, int64_t* bytes_skipped, struct _cef_resource_skip_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:142</a>
      */
-    default boolean skip(long bytesToSkip, long bytesSkipped, long callback) {
+    default boolean skip(long bytesToSkip, long[] bytesSkipped, @Nonnull CefResourceSkipCallback callback) {
         return false;
     }
 
-    /** Read raw binary data. */
-    default int read(long dataOut, int bytesToRead, int[] bytesRead, long callback) {
+    /**
+     * Read raw binary data.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* read)(struct _cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_resource_read_callback_t* callback);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:110</a>
+     */
+    default int read(
+            @Nonnull NativePointer dataOut,
+            int bytesToRead,
+            int[] bytesRead,
+            @Nonnull CefResourceReadCallback callback) {
         return 0;
     }
 
     /**
-     * Read response data. If data is available immediately copy up to |bytes_to_read| bytes into |data_out|, set
-     * |bytes_read| to the number of bytes copied, and return true. To read the data at a later time set |bytes_read| to
-     * 0, return true and call CefCallback::Continue() when the data is available. To indicate response completion
-     * return false. WARNING: This method is deprecated. Use Skip and Read instead.
+     * Read response data. If data is available immediately copy up to {@code bytes_to_read} bytes into
+     * {@code data_out}, set {@code bytes_read} to the number of bytes copied, and return {@code true}. To read the data
+     * at a later time set {@code bytes_read} to 0, return {@code true} and call CefCallback.continue() when the data is
+     * available. To indicate response completion return {@code false}.
+     *
+     * <p><b>WARNING:</b> This method is deprecated. Use Skip and Read instead.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* read_response)(struct _cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:181</a>
      */
-    default boolean readResponse(long dataOut, int bytesToRead, int[] bytesRead, long callback) {
+    default boolean readResponse(
+            @Nonnull NativePointer dataOut, int bytesToRead, int[] bytesRead, @Nonnull CefCallback callback) {
         return false;
     }
 
-    /** Call to cancel the download. */
+    /**
+     * Call to cancel the download.
+     *
+     * <p>Definition generated from cef_resource_handler_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* cancel)(struct _cef_resource_handler_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     */
     default void cancel() {}
 }

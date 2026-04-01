@@ -3,49 +3,142 @@ package net.kurobako.cef4j.gen;
 
 /**
  * Supported menu IDs. Non-English translations can be provided for the IDS_MENU_* strings in
- * CefResourceBundleHandler::GetLocalizedString().
+ * {@link CefResourceBundleHandler#getLocalizedString(int, String)}.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   MENU_ID_BACK = 100,
+ *   MENU_ID_FORWARD = 101,
+ *   MENU_ID_RELOAD = 102,
+ *   MENU_ID_RELOAD_NOCACHE = 103,
+ *   MENU_ID_STOPLOAD = 104,
+ *   ...
+ * } cef_menu_id_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#BACK}, {@link Kind#FORWARD}, {@link Kind#RELOAD}, {@link Kind#RELOAD_NOCACHE},
+ * {@link Kind#STOPLOAD}, {@link Kind#UNDO}, {@link Kind#REDO}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE},
+ * {@link Kind#PASTE_MATCH_STYLE}, {@link Kind#DELETE}, {@link Kind#SELECT_ALL}, {@link Kind#FIND}, {@link Kind#PRINT},
+ * {@link Kind#VIEW_SOURCE}, {@link Kind#SPELLCHECK_SUGGESTION_0}, {@link Kind#SPELLCHECK_SUGGESTION_1},
+ * {@link Kind#SPELLCHECK_SUGGESTION_2}, {@link Kind#SPELLCHECK_SUGGESTION_3}, {@link Kind#SPELLCHECK_SUGGESTION_4},
+ * {@link Kind#SPELLCHECK_SUGGESTION_LAST}, {@link Kind#NO_SPELLING_SUGGESTIONS}, {@link Kind#ADD_TO_DICTIONARY},
+ * {@link Kind#CUSTOM_FIRST}, {@link Kind#CUSTOM_LAST}, {@link Kind#USER_FIRST}, {@link Kind#USER_LAST}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
-public enum CefMenuId {
-    MENU_ID_BACK(100L),
-    MENU_ID_FORWARD(101L),
-    MENU_ID_RELOAD(102L),
-    MENU_ID_RELOAD_NOCACHE(103L),
-    MENU_ID_STOPLOAD(104L),
-    MENU_ID_UNDO(110L),
-    MENU_ID_REDO(111L),
-    MENU_ID_CUT(112L),
-    MENU_ID_COPY(113L),
-    MENU_ID_PASTE(114L),
-    MENU_ID_PASTE_MATCH_STYLE(115L),
-    MENU_ID_DELETE(116L),
-    MENU_ID_SELECT_ALL(117L),
-    MENU_ID_FIND(130L),
-    MENU_ID_PRINT(131L),
-    MENU_ID_VIEW_SOURCE(132L),
-    MENU_ID_SPELLCHECK_SUGGESTION_0(200L),
-    MENU_ID_SPELLCHECK_SUGGESTION_1(201L),
-    MENU_ID_SPELLCHECK_SUGGESTION_2(202L),
-    MENU_ID_SPELLCHECK_SUGGESTION_3(203L),
-    MENU_ID_SPELLCHECK_SUGGESTION_4(204L),
-    MENU_ID_SPELLCHECK_SUGGESTION_LAST(204L),
-    MENU_ID_NO_SPELLING_SUGGESTIONS(205L),
-    MENU_ID_ADD_TO_DICTIONARY(206L),
-    MENU_ID_CUSTOM_FIRST(220L),
-    MENU_ID_CUSTOM_LAST(250L),
-    MENU_ID_USER_FIRST(26500L),
-    MENU_ID_USER_LAST(28500L),
-    UNKNOWN(-1L);
+public final class CefMenuId implements CefEnum<CefMenuId> {
 
-    public final long value;
+    /** Known constants for {@link CefMenuId}. */
+    public enum Kind {
+        BACK(100, "100", "MENU_ID_BACK"),
+        FORWARD(101, "101", "MENU_ID_FORWARD"),
+        RELOAD(102, "102", "MENU_ID_RELOAD"),
+        RELOAD_NOCACHE(103, "103", "MENU_ID_RELOAD_NOCACHE"),
+        STOPLOAD(104, "104", "MENU_ID_STOPLOAD"),
+        UNDO(110, "110", "MENU_ID_UNDO"),
+        REDO(111, "111", "MENU_ID_REDO"),
+        CUT(112, "112", "MENU_ID_CUT"),
+        COPY(113, "113", "MENU_ID_COPY"),
+        PASTE(114, "114", "MENU_ID_PASTE"),
+        PASTE_MATCH_STYLE(115, "115", "MENU_ID_PASTE_MATCH_STYLE"),
+        DELETE(116, "116", "MENU_ID_DELETE"),
+        SELECT_ALL(117, "117", "MENU_ID_SELECT_ALL"),
+        FIND(130, "130", "MENU_ID_FIND"),
+        PRINT(131, "131", "MENU_ID_PRINT"),
+        VIEW_SOURCE(132, "132", "MENU_ID_VIEW_SOURCE"),
+        SPELLCHECK_SUGGESTION_0(200, "200", "MENU_ID_SPELLCHECK_SUGGESTION_0"),
+        SPELLCHECK_SUGGESTION_1(201, "201", "MENU_ID_SPELLCHECK_SUGGESTION_1"),
+        SPELLCHECK_SUGGESTION_2(202, "202", "MENU_ID_SPELLCHECK_SUGGESTION_2"),
+        SPELLCHECK_SUGGESTION_3(203, "203", "MENU_ID_SPELLCHECK_SUGGESTION_3"),
+        SPELLCHECK_SUGGESTION_4(204, "204", "MENU_ID_SPELLCHECK_SUGGESTION_4"),
+        SPELLCHECK_SUGGESTION_LAST(204, "204", "MENU_ID_SPELLCHECK_SUGGESTION_LAST"),
+        NO_SPELLING_SUGGESTIONS(205, "205", "MENU_ID_NO_SPELLING_SUGGESTIONS"),
+        ADD_TO_DICTIONARY(206, "206", "MENU_ID_ADD_TO_DICTIONARY"),
+        CUSTOM_FIRST(220, "220", "MENU_ID_CUSTOM_FIRST"),
+        CUSTOM_LAST(250, "250", "MENU_ID_CUSTOM_LAST"),
+        USER_FIRST(26500, "26500", "MENU_ID_USER_FIRST"),
+        USER_LAST(28500, "28500", "MENU_ID_USER_LAST");
 
-    CefMenuId(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_menu_id_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefMenuId fromLong(long v) {
-        for (CefMenuId e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefMenuId(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefMenuId of(long v) {
+        return new CefMenuId(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefMenuId of(Kind k) {
+        return new CefMenuId(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefMenuId)) return false;
+        return this.value == ((CefMenuId) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

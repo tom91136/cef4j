@@ -5,17 +5,22 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 import net.kurobako.cef4j.CefApp;
 import net.kurobako.cef4j.CefBrowserOsr;
-import net.kurobako.cef4j.CefClient;
 import net.kurobako.cef4j.SystemBootstrap;
+import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
+import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
+import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.NativePointer;
 import net.kurobako.cef4j.osr.swing.CefPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +50,11 @@ public final class SwingBrowserApp {
         browser.createImmediately();
         browser.setFocus(true);
 
-        installSigintHandler(Thread.currentThread());
+        Thread mainThread = Thread.currentThread();
+        SigintHelper.install(() -> {
+            shutdownRequested = true;
+            mainThread.interrupt();
+        });
 
         // Auto-exit for headless testing: -Dcef4j.exit.after=<millis>
         String exitAfter = System.getProperty("cef4j.exit.after");
@@ -142,17 +151,30 @@ public final class SwingBrowserApp {
 
         window.setVisible(true);
 
-        CefClient client = cefApp.createClient();
-        client.addLifeSpanHandler(new CefLifeSpanHandler() {
+        CefRenderHandler renderHandler = surface.createRenderHandler();
+
+        CefClient client = new CefClient() {
+            @Override
+            public Optional<CefRenderHandler> getRenderHandler() {
+                return Optional.of(renderHandler);
+            }
+
+            @Override
+            public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
+                return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(long b) {
+                    public void onAfterCreated(CefBrowser b) {
                         SwingUtilities.invokeLater(() -> surface.requestFocusInWindow());
                     }
-                })
-                .addLoadHandler(new CefLoadHandler() {
+                });
+            }
+
+            @Override
+            public Optional<CefLoadHandler> getLoadHandler() {
+                return Optional.of(new CefLoadHandler() {
                     @Override
                     public void onLoadingStateChange(
-                            long b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                            CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                         SwingUtilities.invokeLater(() -> {
                             backBtn.setEnabled(canGoBack);
                             fwdBtn.setEnabled(canGoForward);
@@ -162,26 +184,30 @@ public final class SwingBrowserApp {
                             }
                         });
                     }
-                })
-                .addDisplayHandler(new CefDisplayHandler() {
+                });
+            }
+
+            @Override
+            public Optional<CefDisplayHandler> getDisplayHandler() {
+                return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(long b, String title) {
+                    public void onTitleChange(CefBrowser b, String title) {
                         SwingUtilities.invokeLater(() -> window.setTitle(title + " - cef4j (Swing)"));
                     }
 
                     @Override
-                    public void onAddressChange(long b, long f, String url) {
+                    public void onAddressChange(CefBrowser b, CefFrame f, String url) {
                         SwingUtilities.invokeLater(() -> urlBar.setText(url));
                     }
 
                     @Override
-                    public void onStatusMessage(long b, String value) {
+                    public void onStatusMessage(CefBrowser b, String value) {
                         SwingUtilities.invokeLater(
                                 () -> statusLabel.setText(value != null && !value.isEmpty() ? value : " "));
                     }
 
                     @Override
-                    public void onLoadingProgressChange(long b, double progress) {
+                    public void onLoadingProgressChange(CefBrowser b, double progress) {
                         SwingUtilities.invokeLater(() -> {
                             if (progress >= 0 && progress < 1.0) {
                                 progressBar.setVisible(true);
@@ -193,35 +219,17 @@ public final class SwingBrowserApp {
                     }
 
                     @Override
-                    public boolean onCursorChange(long b, long cursor, CefCursorType type, long customCursorInfo) {
+                    public boolean onCursorChange(
+                            CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
                         Cursor awtCursor = surface.mapCursor(type);
                         SwingUtilities.invokeLater(() -> surface.setCursor(awtCursor));
                         return true;
                     }
                 });
+            }
+        };
 
-        browser = surface.createBrowser(client, urlBar.getText().trim(), getMonitorRefreshRate());
-    }
-
-    private static void installSigintHandler(Thread threadToInterrupt) {
-        try {
-            Class<?> signalClass = Class.forName("sun.misc.Signal");
-            Class<?> handlerClass = Class.forName("sun.misc.SignalHandler");
-            Object sigInt = signalClass.getConstructor(String.class).newInstance("INT");
-            Object handler = java.lang.reflect.Proxy.newProxyInstance(
-                    handlerClass.getClassLoader(), new Class<?>[] {handlerClass}, (proxy, method, margs) -> {
-                        if ("handle".equals(method.getName())) {
-                            shutdownRequested = true;
-                            threadToInterrupt.interrupt();
-                        }
-                        return null;
-                    });
-            signalClass.getMethod("handle", signalClass, handlerClass).invoke(null, sigInt, handler);
-        } catch (Exception e) {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                shutdownRequested = true;
-                threadToInterrupt.interrupt();
-            }));
-        }
+        browser = cefApp.createBrowser(client, urlBar.getText().trim(), getMonitorRefreshRate());
+        surface.setBrowser(browser);
     }
 }

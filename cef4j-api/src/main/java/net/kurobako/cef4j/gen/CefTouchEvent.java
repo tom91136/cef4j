@@ -1,7 +1,26 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing touch event information. */
+/**
+ * Structure representing touch event information.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_touch_event_t {
+ *   int id;
+ *   float x;
+ *   float y;
+ *   float radius_x;
+ *   float radius_y;
+ *   float rotation_angle;
+ *   float pressure;
+ *   cef_touch_event_type_t type;
+ *   unsigned int modifiers;
+ *   cef_pointer_type_t pointer_type;
+ * } cef_touch_event_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:2096</a>
+ */
 public final class CefTouchEvent {
 
     public final int id;

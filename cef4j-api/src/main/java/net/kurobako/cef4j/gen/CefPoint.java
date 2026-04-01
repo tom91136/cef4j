@@ -1,7 +1,18 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing a point. */
+/**
+ * Structure representing a point.
+ *
+ * <p>Definition generated from cef_types_geometry.h
+ *
+ * <pre>typedef struct _cef_point_t {
+ *   int x;
+ *   int y;
+ * } cef_point_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:38</a>
+ */
 public final class CefPoint {
 
     public final int x;

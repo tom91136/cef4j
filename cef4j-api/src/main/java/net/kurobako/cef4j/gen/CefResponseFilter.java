@@ -1,41 +1,78 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.nio.ByteBuffer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Implement this interface to filter resource response content. The methods of this class will be called on the browser
  * process IO thread.
+ *
+ * <p>Definition generated from cef_response_filter_capi.h
+ *
+ * <pre>typedef struct _cef_response_filter_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_response_filter_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:43</a>
  */
-public interface CefResponseFilter {
+public interface CefResponseFilter extends CefClientHandler {
 
     /**
      * Initialize the response filter. Will only be called a single time. The filter will not be installed if this
-     * method returns false.
+     * method returns {@code false}.
+     *
+     * <p>Definition generated from cef_response_filter_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* init_filter)(struct _cef_response_filter_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:52</a>
      */
     default boolean initFilter() {
         return false;
     }
 
     /**
-     * Called to filter a chunk of data. Expected usage is as follows: 1. Read input data from |data_in| and set
-     * |data_in_read| to the number of bytes that were read up to a maximum of |data_in_size|. |data_in| will be NULL if
-     * |data_in_size| is zero. 2. Write filtered output data to |data_out| and set |data_out_written| to the number of
-     * bytes that were written up to a maximum of |data_out_size|. If no output data was written then all data must be
-     * read from |data_in| (user must set |data_in_read| = |data_in_size|). 3. Return RESPONSE_FILTER_DONE if all output
-     * data was written or RESPONSE_FILTER_NEED_MORE_DATA if output data is still pending. This method will be called
-     * repeatedly until the input buffer has been fully read (user sets |data_in_read| = |data_in_size|) and there is no
-     * more input data to filter (the resource response is complete). This method may then be called an additional time
-     * with an empty input buffer if the user filled the output buffer (set |data_out_written| = |data_out_size|) and
-     * returned RESPONSE_FILTER_NEED_MORE_DATA to indicate that output data is still pending. Calls to this method will
-     * stop when one of the following conditions is met: 1. There is no more input data to filter (the resource response
-     * is complete) and the user sets |data_out_written| = 0 or returns RESPONSE_FILTER_DONE to indicate that all data
-     * has been written, or; 2. The user returns RESPONSE_FILTER_ERROR to indicate an error. Do not keep a reference to
-     * the buffers passed to this method.
+     * Called to filter a chunk of data. Expected usage is as follows:
+     *
+     * <p>1. Read input data from {@code data_in} and set {@code data_in_read} to the number of bytes that were read up
+     * to a maximum of {@code data_in_size}. {@code data_in} will be {@code null} if {@code data_in_size} is zero. 2.
+     * Write filtered output data to {@code data_out} and set {@code data_out_written} to the number of bytes that were
+     * written up to a maximum of {@code data_out_size}. If no output data was written then all data must be read from
+     * {@code data_in} (user must set {@code data_in_read} = {@code data_in_size}). 3. Return RESPONSE_FILTER_DONE if
+     * all output data was written or RESPONSE_FILTER_NEED_MORE_DATA if output data is still pending.
+     *
+     * <p>This method will be called repeatedly until the input buffer has been fully read (user sets
+     * {@code data_in_read} = {@code data_in_size}) and there is no more input data to filter (the resource response is
+     * complete). This method may then be called an additional time with an empty input buffer if the user filled the
+     * output buffer (set {@code data_out_written} = {@code data_out_size}) and returned RESPONSE_FILTER_NEED_MORE_DATA
+     * to indicate that output data is still pending.
+     *
+     * <p>Calls to this method will stop when one of the following conditions is met:
+     *
+     * <p>1. There is no more input data to filter (the resource response is complete) and the user sets
+     * {@code data_out_written} = 0 or returns RESPONSE_FILTER_DONE to indicate that all data has been written, or; 2.
+     * The user returns RESPONSE_FILTER_ERROR to indicate an error.
+     *
+     * <p>Do not keep a reference to the buffers passed to this method.
+     *
+     * <p>Definition generated from cef_response_filter_capi.h
+     *
+     * <pre>
+     * cef_response_filter_status_t (CEF_CALLBACK* filter)(struct _cef_response_filter_t* self, void* data_in, size_t data_in_size, size_t* data_in_read, void* data_out, size_t data_out_size, size_t* data_out_written);
+     * </pre>
      *
      * @param dataIn may be null
      * @return the result, or {@code RESPONSE_FILTER_ERROR} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:59</a>
      */
     default CefResponseFilterStatus filter(
-            long dataIn, long dataInSize, long dataInRead, long dataOut, long dataOutSize, long dataOutWritten) {
-        return CefResponseFilterStatus.RESPONSE_FILTER_ERROR;
+            @Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+        return CefResponseFilterStatus.of(CefResponseFilterStatus.Kind.ERROR);
     }
 }

@@ -1,40 +1,155 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Class used to represent post data for a web request. The methods of this class may be called on any thread. */
-public interface CefPostData {
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 
-    /** Returns true if the values of this object are read-only. Some APIs may expose read-only objects. */
+/**
+ * Class used to represent post data for a web request. The methods of this class may be called on any thread.
+ *
+ * <p>Definition generated from cef_request_capi.h
+ *
+ * <pre>typedef struct _cef_post_data_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_post_data_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:224</a>
+ */
+public interface CefPostData extends CefLibraryObject {
+
+    /**
+     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_post_data_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     */
     boolean isReadOnly();
 
     /**
-     * Returns true if the underlying POST data includes elements that are not represented by this CefPostData object
-     * (for example, multi-part file upload data). Modifying CefPostData objects with excluded elements may result in
-     * the request failing.
+     * Returns {@code true} if the underlying POST data includes elements that are not represented by this CefPostData
+     * object (for example, multi-part file upload data). Modifying CefPostData objects with excluded elements may
+     * result in the request failing.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_excluded_elements)(struct _cef_post_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:245</a>
      */
     boolean hasExcludedElements();
 
-    /** Returns the number of existing post data elements. */
+    /**
+     * Returns the number of existing post data elements.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>size_t (CEF_CALLBACK* get_element_count)(struct _cef_post_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:254</a>
+     */
     long getElementCount();
 
     /**
      * Retrieve the post data elements.
      *
-     * <p>The size of {@code elements} is determined by {@code GetElementCount()}.
+     * <p>The C API exposes this as a two-pass pattern: first call {@link #getElementCount()} to obtain the count, then
+     * allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>cef_post_data_element_t** (CEF_CALLBACK* get_elements)(struct _cef_post_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:260</a>
      */
-    void getElements(long elementsCount, long elements);
+    List<CefPostDataElement> getElements();
 
-    /** Remove the specified post data element. Returns true if the removal succeeds. */
-    boolean removeElement(long element);
+    /**
+     * Remove the specified post data element. Returns {@code true} if the removal succeeds.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* remove_element)(struct _cef_post_data_t* self, struct _cef_post_data_element_t* element);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:266</a>
+     */
+    boolean removeElement(@Nonnull CefPostDataElement element);
 
-    /** Add the specified post data element. Returns true if the add succeeds. */
-    boolean addElement(long element);
+    /**
+     * Add the specified post data element. Returns {@code true} if the add succeeds.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* add_element)(struct _cef_post_data_t* self, struct _cef_post_data_element_t* element);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:273</a>
+     */
+    boolean addElement(@Nonnull CefPostDataElement element);
 
-    /** Remove all existing post data elements. */
+    /**
+     * Remove all existing post data elements.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* remove_elements)(struct _cef_post_data_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:279</a>
+     */
     void removeElements();
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_request_capi.h
+     *
+     * <pre>CEF_EXPORT cef_post_data_t* cef_post_data_create(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefPostData> create() {
+        return Optional.ofNullable(NativePeer.N_Create());
+    }
 
-    static class NativePeer implements CefPostData {
-        private volatile long nativePtr;
+    final class NativePeer implements CefPostData, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefPostData.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefPostData 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public boolean isReadOnly() {
@@ -52,17 +167,17 @@ public interface CefPostData {
         }
 
         @Override
-        public void getElements(long elementsCount, long elements) {
-            N_GetElements(nativePtr, elementsCount, elements);
+        public List<CefPostDataElement> getElements() {
+            return Arrays.asList(N_GetElements(nativePtr));
         }
 
         @Override
-        public boolean removeElement(long element) {
+        public boolean removeElement(@Nonnull CefPostDataElement element) {
             return N_RemoveElement(nativePtr, element);
         }
 
         @Override
-        public boolean addElement(long element) {
+        public boolean addElement(@Nonnull CefPostDataElement element) {
             return N_AddElement(nativePtr, element);
         }
 
@@ -71,19 +186,21 @@ public interface CefPostData {
             N_RemoveElements(nativePtr);
         }
 
-        private native boolean N_IsReadOnly(long self);
+        private static native boolean N_IsReadOnly(long self);
 
-        private native boolean N_HasExcludedElements(long self);
+        private static native boolean N_HasExcludedElements(long self);
 
-        private native long N_GetElementCount(long self);
+        private static native long N_GetElementCount(long self);
 
-        private native void N_GetElements(long self, long elementsCount, long elements);
+        private static native CefPostDataElement[] N_GetElements(long self);
 
-        private native boolean N_RemoveElement(long self, long element);
+        private static native boolean N_RemoveElement(long self, CefPostDataElement element);
 
-        private native boolean N_AddElement(long self, long element);
+        private static native boolean N_AddElement(long self, CefPostDataElement element);
 
-        private native void N_RemoveElements(long self);
+        private static native void N_RemoveElements(long self);
+
+        static native CefPostData N_Create();
 
         @Override
         public boolean equals(Object obj) {

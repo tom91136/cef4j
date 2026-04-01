@@ -9,228 +9,750 @@ import javax.annotation.Nullable;
  * Supports creation and modification of menus. See cef_menu_id_t for the command ids that have default implementations.
  * All user-defined command ids should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. The methods of this class
  * can only be accessed on the browser process the UI thread.
+ *
+ * <p>Definition generated from cef_menu_model_capi.h
+ *
+ * <pre>typedef struct _cef_menu_model_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_menu_model_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:44</a>
  */
-public interface CefMenuModel {
+public interface CefMenuModel extends CefLibraryObject {
 
-    /** Returns true if this menu is a submenu. */
+    /**
+     * Returns {@code true} if this menu is a submenu.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_sub_menu)(struct _cef_menu_model_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
+     */
     boolean isSubMenu();
 
-    /** Clears the menu. Returns true on success. */
+    /**
+     * Clears the menu. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* clear)(struct _cef_menu_model_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
+     */
     boolean clear();
 
-    /** Returns the number of items in this menu. */
+    /**
+     * Returns the number of items in this menu.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>size_t (CEF_CALLBACK* get_count)(struct _cef_menu_model_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
+     */
     long getCount();
 
-    /** Add a separator to the menu. Returns true on success. */
+    /**
+     * Add a separator to the menu. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* add_separator)(struct _cef_menu_model_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
+     */
     boolean addSeparator();
 
-    /** Add an item to the menu. Returns true on success. */
+    /**
+     * Add an item to the menu. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* add_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
+     */
     boolean addItem(int commandId, @Nonnull String label);
 
-    /** Add a check item to the menu. Returns true on success. */
+    /**
+     * Add a check item to the menu. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* add_check_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
+     */
     boolean addCheckItem(int commandId, @Nonnull String label);
 
     /**
-     * Add a radio item to the menu. Only a single item with the specified |group_id| can be checked at a time. Returns
-     * true on success.
+     * Add a radio item to the menu. Only a single item with the specified {@code group_id} can be checked at a time.
+     * Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* add_radio_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label, int group_id);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
      */
     boolean addRadioItem(int commandId, @Nonnull String label, int groupId);
 
-    /** Add a sub-menu to the menu. The new sub-menu is returned. */
-    long addSubMenu(int commandId, @Nonnull String label);
+    /**
+     * Add a sub-menu to the menu. The new sub-menu is returned.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * cef_menu_model_t* (CEF_CALLBACK* add_sub_menu)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
+     */
+    Optional<CefMenuModel> addSubMenu(int commandId, @Nonnull String label);
 
-    /** Insert a separator in the menu at the specified |index|. Returns true on success. */
+    /**
+     * Insert a separator in the menu at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* insert_separator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
+     */
     boolean insertSeparatorAt(long index);
 
-    /** Insert an item in the menu at the specified |index|. Returns true on success. */
+    /**
+     * Insert an item in the menu at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* insert_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
+     */
     boolean insertItemAt(long index, int commandId, @Nonnull String label);
 
-    /** Insert a check item in the menu at the specified |index|. Returns true on success. */
+    /**
+     * Insert a check item in the menu at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* insert_check_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
+     */
     boolean insertCheckItemAt(long index, int commandId, @Nonnull String label);
 
     /**
-     * Insert a radio item in the menu at the specified |index|. Only a single item with the specified |group_id| can be
-     * checked at a time. Returns true on success.
+     * Insert a radio item in the menu at the specified {@code index}. Only a single item with the specified
+     * {@code group_id} can be checked at a time. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* insert_radio_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label, int group_id);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
      */
     boolean insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId);
 
-    /** Insert a sub-menu in the menu at the specified |index|. The new sub-menu is returned. */
-    long insertSubMenuAt(long index, int commandId, @Nonnull String label);
+    /**
+     * Insert a sub-menu in the menu at the specified {@code index}. The new sub-menu is returned.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * cef_menu_model_t* (CEF_CALLBACK* insert_sub_menu_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
+     */
+    Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label);
 
-    /** Removes the item with the specified |command_id|. Returns true on success. */
+    /**
+     * Removes the item with the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* remove)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
+     */
     boolean remove(int commandId);
 
-    /** Removes the item at the specified |index|. Returns true on success. */
+    /**
+     * Removes the item at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* remove_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
+     */
     boolean removeAt(long index);
 
     /**
-     * Returns the index associated with the specified |command_id| or -1 if not found due to the command id not
+     * Returns the index associated with the specified {@code command_id} or -1 if not found due to the command id not
      * existing in the menu.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_index_of)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
      */
     int getIndexOf(int commandId);
 
     /**
-     * Returns the command id at the specified |index| or -1 if not found due to invalid range or the index being a
-     * separator.
+     * Returns the command id at the specified {@code index} or -1 if not found due to invalid range or the index being
+     * a separator.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_command_id_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
      */
     int getCommandIdAt(long index);
 
-    /** Sets the command id at the specified |index|. Returns true on success. */
+    /**
+     * Sets the command id at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_command_id_at)(struct _cef_menu_model_t* self, size_t index, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
+     */
     boolean setCommandIdAt(long index, int commandId);
 
-    /** Returns the label for the specified |command_id| or empty if not found. */
+    /**
+     * Returns the label for the specified {@code command_id} or empty if not found.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_label)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
+     */
     Optional<String> getLabel(int commandId);
 
-    /** Sets the label for the specified |command_id|. Returns true on success. */
+    /**
+     * Sets the label for the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_label)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
+     */
     boolean setLabel(int commandId, @Nonnull String label);
 
-    /** Set the label at the specified |index|. Returns true on success. */
+    /**
+     * Set the label at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_label_at)(struct _cef_menu_model_t* self, size_t index, const cef_string_t* label);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
+     */
     boolean setLabelAt(long index, @Nonnull String label);
 
     /**
-     * Returns the item type for the specified |command_id|.
+     * Returns the item type for the specified {@code command_id}.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>cef_menu_item_type_t (CEF_CALLBACK* get_type)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
      */
     CefMenuItemType getType(int commandId);
 
-    /** Returns the group id for the specified |command_id| or -1 if invalid. */
+    /**
+     * Returns the group id for the specified {@code command_id} or -1 if invalid.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_group_id)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
+     */
     int getGroupId(int commandId);
 
-    /** Returns the group id at the specified |index| or -1 if invalid. */
+    /**
+     * Returns the group id at the specified {@code index} or -1 if invalid.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_group_id_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
+     */
     int getGroupIdAt(long index);
 
-    /** Sets the group id for the specified |command_id|. Returns true on success. */
+    /**
+     * Sets the group id for the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_group_id)(struct _cef_menu_model_t* self, int command_id, int group_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
+     */
     boolean setGroupId(int commandId, int groupId);
 
-    /** Sets the group id at the specified |index|. Returns true on success. */
+    /**
+     * Sets the group id at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_group_id_at)(struct _cef_menu_model_t* self, size_t index, int group_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
+     */
     boolean setGroupIdAt(long index, int groupId);
 
-    /** Returns the submenu for the specified |command_id| or empty if invalid. */
-    long getSubMenu(int commandId);
+    /**
+     * Returns the submenu for the specified {@code command_id} or empty if invalid.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>cef_menu_model_t* (CEF_CALLBACK* get_sub_menu)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
+     */
+    Optional<CefMenuModel> getSubMenu(int commandId);
 
-    /** Returns the submenu at the specified |index| or empty if invalid. */
-    long getSubMenuAt(long index);
+    /**
+     * Returns the submenu at the specified {@code index} or empty if invalid.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>cef_menu_model_t* (CEF_CALLBACK* get_sub_menu_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
+     */
+    Optional<CefMenuModel> getSubMenuAt(long index);
 
-    /** Returns true if the specified |command_id| is visible. */
+    /**
+     * Returns {@code true} if the specified {@code command_id} is visible.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_visible)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
+     */
     boolean isVisible(int commandId);
 
-    /** Returns true if the specified |index| is visible. */
+    /**
+     * Returns {@code true} if the specified {@code index} is visible.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_visible_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
+     */
     boolean isVisibleAt(long index);
 
-    /** Change the visibility of the specified |command_id|. Returns true on success. */
+    /**
+     * Change the visibility of the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_visible)(struct _cef_menu_model_t* self, int command_id, int visible);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
+     */
     boolean setVisible(int commandId, boolean visible);
 
-    /** Change the visibility at the specified |index|. Returns true on success. */
+    /**
+     * Change the visibility at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_visible_at)(struct _cef_menu_model_t* self, size_t index, int visible);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
+     */
     boolean setVisibleAt(long index, boolean visible);
 
-    /** Returns true if the specified |command_id| is enabled. */
+    /**
+     * Returns {@code true} if the specified {@code command_id} is enabled.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_enabled)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
+     */
     boolean isEnabled(int commandId);
 
-    /** Returns true if the specified |index| is enabled. */
+    /**
+     * Returns {@code true} if the specified {@code index} is enabled.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_enabled_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
+     */
     boolean isEnabledAt(long index);
 
-    /** Change the enabled status of the specified |command_id|. Returns true on success. */
+    /**
+     * Change the enabled status of the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_enabled)(struct _cef_menu_model_t* self, int command_id, int enabled);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
+     */
     boolean setEnabled(int commandId, boolean enabled);
 
-    /** Change the enabled status at the specified |index|. Returns true on success. */
+    /**
+     * Change the enabled status at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_enabled_at)(struct _cef_menu_model_t* self, size_t index, int enabled);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
+     */
     boolean setEnabledAt(long index, boolean enabled);
 
-    /** Returns true if the specified |command_id| is checked. Only applies to check and radio items. */
+    /**
+     * Returns {@code true} if the specified {@code command_id} is checked. Only applies to check and radio items.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_checked)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
+     */
     boolean isChecked(int commandId);
 
-    /** Returns true if the specified |index| is checked. Only applies to check and radio items. */
+    /**
+     * Returns {@code true} if the specified {@code index} is checked. Only applies to check and radio items.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_checked_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
+     */
     boolean isCheckedAt(long index);
 
-    /** Check the specified |command_id|. Only applies to check and radio items. Returns true on success. */
+    /**
+     * Check the specified {@code command_id}. Only applies to check and radio items. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_checked)(struct _cef_menu_model_t* self, int command_id, int checked);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
+     */
     boolean setChecked(int commandId, boolean checked);
 
-    /** Check the specified |index|. Only applies to check and radio items. Returns true on success. */
+    /**
+     * Check the specified {@code index}. Only applies to check and radio items. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* set_checked_at)(struct _cef_menu_model_t* self, size_t index, int checked);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
+     */
     boolean setCheckedAt(long index, boolean checked);
 
-    /** Returns true if the specified |command_id| has a keyboard accelerator assigned. */
+    /**
+     * Returns {@code true} if the specified {@code command_id} has a keyboard accelerator assigned.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_accelerator)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
+     */
     boolean hasAccelerator(int commandId);
 
-    /** Returns true if the specified |index| has a keyboard accelerator assigned. */
+    /**
+     * Returns {@code true} if the specified {@code index} has a keyboard accelerator assigned.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_accelerator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
+     */
     boolean hasAcceleratorAt(long index);
 
     /**
-     * Set the keyboard accelerator for the specified |command_id|. |key_code| can be any virtual key or character
-     * value. Returns true on success.
+     * Set the keyboard accelerator for the specified {@code command_id}. {@code key_code} can be any virtual key or
+     * character value. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_accelerator)(struct _cef_menu_model_t* self, int command_id, int key_code, int shift_pressed, int ctrl_pressed, int alt_pressed);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     boolean setAccelerator(int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
     /**
-     * Set the keyboard accelerator at the specified |index|. |key_code| can be any virtual key or character value.
-     * Returns true on success.
+     * Set the keyboard accelerator at the specified {@code index}. {@code key_code} can be any virtual key or character
+     * value. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_accelerator_at)(struct _cef_menu_model_t* self, size_t index, int key_code, int shift_pressed, int ctrl_pressed, int alt_pressed);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
      */
     boolean setAcceleratorAt(long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
-    /** Remove the keyboard accelerator for the specified |command_id|. Returns true on success. */
+    /**
+     * Remove the keyboard accelerator for the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* remove_accelerator)(struct _cef_menu_model_t* self, int command_id);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
+     */
     boolean removeAccelerator(int commandId);
 
-    /** Remove the keyboard accelerator at the specified |index|. Returns true on success. */
+    /**
+     * Remove the keyboard accelerator at the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* remove_accelerator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
+     */
     boolean removeAcceleratorAt(long index);
 
-    /** Retrieves the keyboard accelerator for the specified |command_id|. Returns true on success. */
+    /**
+     * Retrieves the keyboard accelerator for the specified {@code command_id}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* get_accelerator)(struct _cef_menu_model_t* self, int command_id, int* key_code, int* shift_pressed, int* ctrl_pressed, int* alt_pressed);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:391</a>
+     */
     boolean getAccelerator(int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-    /** Retrieves the keyboard accelerator for the specified |index|. Returns true on success. */
+    /**
+     * Retrieves the keyboard accelerator for the specified {@code index}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* get_accelerator_at)(struct _cef_menu_model_t* self, size_t index, int* key_code, int* shift_pressed, int* ctrl_pressed, int* alt_pressed);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:402</a>
+     */
     boolean getAcceleratorAt(long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
     /**
-     * Set the explicit color for |command_id| and |color_type| to |color|. Specify a |color| value of 0 to remove the
-     * explicit color. If no explicit color or default color is set for |color_type| then the system color will be used.
-     * Returns true on success.
+     * Set the explicit color for {@code command_id} and {@code color_type} to {@code color}. Specify a {@code color}
+     * value of 0 to remove the explicit color. If no explicit color or default color is set for {@code color_type} then
+     * the system color will be used. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_color)(struct _cef_menu_model_t* self, int command_id, cef_menu_color_type_t color_type, cef_color_t color);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
     boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color);
 
     /**
-     * Set the explicit color for |command_id| and |index| to |color|. Specify a |color| value of 0 to remove the
-     * explicit color. Specify an |index| value of -1 to set the default color for items that do not have an explicit
-     * color set. If no explicit color or default color is set for |color_type| then the system color will be used.
-     * Returns true on success.
+     * Set the explicit color for {@code command_id} and {@code index} to {@code color}. Specify a {@code color} value
+     * of 0 to remove the explicit color. Specify an {@code index} value of -1 to set the default color for items that
+     * do not have an explicit color set. If no explicit color or default color is set for {@code color_type} then the
+     * system color will be used. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_color_at)(struct _cef_menu_model_t* self, int index, cef_menu_color_type_t color_type, cef_color_t color);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
     boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color);
 
     /**
-     * Returns in |color| the color that was explicitly set for |command_id| and |color_type|. If a color was not set
-     * then 0 will be returned in |color|. Returns true on success.
+     * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. If a
+     * color was not set then 0 will be returned in {@code color}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* get_color)(struct _cef_menu_model_t* self, int command_id, cef_menu_color_type_t color_type, cef_color_t* color);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
      */
-    boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, long color);
+    boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color);
 
     /**
-     * Returns in |color| the color that was explicitly set for |command_id| and |color_type|. Specify an |index| value
-     * of -1 to return the default color in |color|. If a color was not set then 0 will be returned in |color|. Returns
-     * true on success.
+     * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. Specify
+     * an {@code index} value of -1 to return the default color in {@code color}. If a color was not set then 0 will be
+     * returned in {@code color}. Returns {@code true} on success.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* get_color_at)(struct _cef_menu_model_t* self, int index, cef_menu_color_type_t color_type, cef_color_t* color);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
      */
-    boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, long color);
+    boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color);
 
     /**
-     * Sets the font list for the specified |command_id|. If |font_list| is empty the system font will be used. Returns
-     * true on success. The format is "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where: - FONT_FAMILY_LIST is a
-     * comma-separated list of font family names, - STYLES is an optional space-separated list of style names
-     * (case-sensitive "Bold" and "Italic" are supported), and - SIZE is an integer font size in pixels with the suffix
-     * "px". Here are examples of valid font description strings: - "Arial, Helvetica, Bold Italic 14px" - "Arial, 14px"
+     * Sets the font list for the specified {@code command_id}. If {@code font_list} is empty the system font will be
+     * used. Returns {@code true} on success. The format is "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where:
+     *
+     * <ul>
+     *   <li>FONT_FAMILY_LIST is a comma-separated list of font family names,
+     *   <li>STYLES is an optional space-separated list of style names
+     * </ul>
+     *
+     * (case-sensitive "Bold" and "Italic" are supported), and
+     *
+     * <ul>
+     *   <li>SIZE is an integer font size in pixels with the suffix "px".
+     * </ul>
+     *
+     * <p>Here are examples of valid font description strings:
+     *
+     * <ul>
+     *   <li>"Arial, Helvetica, Bold Italic 14px"
+     *   <li>"Arial, 14px"
+     * </ul>
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_font_list)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* font_list);
+     * </pre>
      *
      * @param fontList may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     boolean setFontList(int commandId, @Nullable String fontList);
 
     /**
-     * Sets the font list for the specified |index|. Specify an |index| value of -1 to set the default font. If
-     * |font_list| is empty the system font will be used. Returns true on success. The format is
-     * "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where: - FONT_FAMILY_LIST is a comma-separated list of font family names, -
-     * STYLES is an optional space-separated list of style names (case-sensitive "Bold" and "Italic" are supported), and
-     * - SIZE is an integer font size in pixels with the suffix "px". Here are examples of valid font description
-     * strings: - "Arial, Helvetica, Bold Italic 14px" - "Arial, 14px"
+     * Sets the font list for the specified {@code index}. Specify an {@code index} value of -1 to set the default font.
+     * If {@code font_list} is empty the system font will be used. Returns {@code true} on success. The format is
+     * "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where:
+     *
+     * <ul>
+     *   <li>FONT_FAMILY_LIST is a comma-separated list of font family names,
+     *   <li>STYLES is an optional space-separated list of style names
+     * </ul>
+     *
+     * (case-sensitive "Bold" and "Italic" are supported), and
+     *
+     * <ul>
+     *   <li>SIZE is an integer font size in pixels with the suffix "px".
+     * </ul>
+     *
+     * <p>Here are examples of valid font description strings:
+     *
+     * <ul>
+     *   <li>"Arial, Helvetica, Bold Italic 14px"
+     *   <li>"Arial, 14px"
+     * </ul>
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* set_font_list_at)(struct _cef_menu_model_t* self, int index, const cef_string_t* font_list);
+     * </pre>
      *
      * @param fontList may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
      */
     boolean setFontListAt(int index, @Nullable String fontList);
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_menu_model_capi.h
+     *
+     * <pre>CEF_EXPORT cef_menu_model_t* cef_menu_model_create(struct _cef_menu_model_delegate_t* delegate);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefMenuModel> create(@Nonnull CefMenuModelDelegate delegate) {
+        return Optional.ofNullable(NativePeer.N_Create(delegate));
+    }
 
-    static class NativePeer implements CefMenuModel {
-        private volatile long nativePtr;
+    final class NativePeer implements CefMenuModel, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMenuModel.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefMenuModel 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public boolean isSubMenu() {
@@ -253,23 +775,23 @@ public interface CefMenuModel {
         }
 
         @Override
-        public boolean addItem(int commandId, String label) {
+        public boolean addItem(int commandId, @Nonnull String label) {
             return N_AddItem(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean addCheckItem(int commandId, String label) {
+        public boolean addCheckItem(int commandId, @Nonnull String label) {
             return N_AddCheckItem(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean addRadioItem(int commandId, String label, int groupId) {
+        public boolean addRadioItem(int commandId, @Nonnull String label, int groupId) {
             return N_AddRadioItem(nativePtr, commandId, label, groupId);
         }
 
         @Override
-        public long addSubMenu(int commandId, String label) {
-            return N_AddSubMenu(nativePtr, commandId, label);
+        public Optional<CefMenuModel> addSubMenu(int commandId, @Nonnull String label) {
+            return Optional.ofNullable(N_AddSubMenu(nativePtr, commandId, label));
         }
 
         @Override
@@ -278,23 +800,23 @@ public interface CefMenuModel {
         }
 
         @Override
-        public boolean insertItemAt(long index, int commandId, String label) {
+        public boolean insertItemAt(long index, int commandId, @Nonnull String label) {
             return N_InsertItemAt(nativePtr, index, commandId, label);
         }
 
         @Override
-        public boolean insertCheckItemAt(long index, int commandId, String label) {
+        public boolean insertCheckItemAt(long index, int commandId, @Nonnull String label) {
             return N_InsertCheckItemAt(nativePtr, index, commandId, label);
         }
 
         @Override
-        public boolean insertRadioItemAt(long index, int commandId, String label, int groupId) {
+        public boolean insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId) {
             return N_InsertRadioItemAt(nativePtr, index, commandId, label, groupId);
         }
 
         @Override
-        public long insertSubMenuAt(long index, int commandId, String label) {
-            return N_InsertSubMenuAt(nativePtr, index, commandId, label);
+        public Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label) {
+            return Optional.ofNullable(N_InsertSubMenuAt(nativePtr, index, commandId, label));
         }
 
         @Override
@@ -328,12 +850,12 @@ public interface CefMenuModel {
         }
 
         @Override
-        public boolean setLabel(int commandId, String label) {
+        public boolean setLabel(int commandId, @Nonnull String label) {
             return N_SetLabel(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean setLabelAt(long index, String label) {
+        public boolean setLabelAt(long index, @Nonnull String label) {
             return N_SetLabelAt(nativePtr, index, label);
         }
 
@@ -363,13 +885,13 @@ public interface CefMenuModel {
         }
 
         @Override
-        public long getSubMenu(int commandId) {
-            return N_GetSubMenu(nativePtr, commandId);
+        public Optional<CefMenuModel> getSubMenu(int commandId) {
+            return Optional.ofNullable(N_GetSubMenu(nativePtr, commandId));
         }
 
         @Override
-        public long getSubMenuAt(long index) {
-            return N_GetSubMenuAt(nativePtr, index);
+        public Optional<CefMenuModel> getSubMenuAt(long index) {
+            return Optional.ofNullable(N_GetSubMenuAt(nativePtr, index));
         }
 
         @Override
@@ -477,146 +999,149 @@ public interface CefMenuModel {
         }
 
         @Override
-        public boolean setColor(int commandId, CefMenuColorType colorType, int color) {
+        public boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color) {
             return N_SetColor(nativePtr, commandId, colorType, color);
         }
 
         @Override
-        public boolean setColorAt(int index, CefMenuColorType colorType, int color) {
+        public boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color) {
             return N_SetColorAt(nativePtr, index, colorType, color);
         }
 
         @Override
-        public boolean getColor(int commandId, CefMenuColorType colorType, long color) {
+        public boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color) {
             return N_GetColor(nativePtr, commandId, colorType, color);
         }
 
         @Override
-        public boolean getColorAt(int index, CefMenuColorType colorType, long color) {
+        public boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color) {
             return N_GetColorAt(nativePtr, index, colorType, color);
         }
 
         @Override
-        public boolean setFontList(int commandId, String fontList) {
+        public boolean setFontList(int commandId, @Nullable String fontList) {
             return N_SetFontList(nativePtr, commandId, fontList);
         }
 
         @Override
-        public boolean setFontListAt(int index, String fontList) {
+        public boolean setFontListAt(int index, @Nullable String fontList) {
             return N_SetFontListAt(nativePtr, index, fontList);
         }
 
-        private native boolean N_IsSubMenu(long self);
+        private static native boolean N_IsSubMenu(long self);
 
-        private native boolean N_Clear(long self);
+        private static native boolean N_Clear(long self);
 
-        private native long N_GetCount(long self);
+        private static native long N_GetCount(long self);
 
-        private native boolean N_AddSeparator(long self);
+        private static native boolean N_AddSeparator(long self);
 
-        private native boolean N_AddItem(long self, int commandId, String label);
+        private static native boolean N_AddItem(long self, int commandId, String label);
 
-        private native boolean N_AddCheckItem(long self, int commandId, String label);
+        private static native boolean N_AddCheckItem(long self, int commandId, String label);
 
-        private native boolean N_AddRadioItem(long self, int commandId, String label, int groupId);
+        private static native boolean N_AddRadioItem(long self, int commandId, String label, int groupId);
 
-        private native long N_AddSubMenu(long self, int commandId, String label);
+        private static native CefMenuModel N_AddSubMenu(long self, int commandId, String label);
 
-        private native boolean N_InsertSeparatorAt(long self, long index);
+        private static native boolean N_InsertSeparatorAt(long self, long index);
 
-        private native boolean N_InsertItemAt(long self, long index, int commandId, String label);
+        private static native boolean N_InsertItemAt(long self, long index, int commandId, String label);
 
-        private native boolean N_InsertCheckItemAt(long self, long index, int commandId, String label);
+        private static native boolean N_InsertCheckItemAt(long self, long index, int commandId, String label);
 
-        private native boolean N_InsertRadioItemAt(long self, long index, int commandId, String label, int groupId);
+        private static native boolean N_InsertRadioItemAt(
+                long self, long index, int commandId, String label, int groupId);
 
-        private native long N_InsertSubMenuAt(long self, long index, int commandId, String label);
+        private static native CefMenuModel N_InsertSubMenuAt(long self, long index, int commandId, String label);
 
-        private native boolean N_Remove(long self, int commandId);
+        private static native boolean N_Remove(long self, int commandId);
 
-        private native boolean N_RemoveAt(long self, long index);
+        private static native boolean N_RemoveAt(long self, long index);
 
-        private native int N_GetIndexOf(long self, int commandId);
+        private static native int N_GetIndexOf(long self, int commandId);
 
-        private native int N_GetCommandIdAt(long self, long index);
+        private static native int N_GetCommandIdAt(long self, long index);
 
-        private native boolean N_SetCommandIdAt(long self, long index, int commandId);
+        private static native boolean N_SetCommandIdAt(long self, long index, int commandId);
 
-        private native String N_GetLabel(long self, int commandId);
+        private static native String N_GetLabel(long self, int commandId);
 
-        private native boolean N_SetLabel(long self, int commandId, String label);
+        private static native boolean N_SetLabel(long self, int commandId, String label);
 
-        private native boolean N_SetLabelAt(long self, long index, String label);
+        private static native boolean N_SetLabelAt(long self, long index, String label);
 
-        private native CefMenuItemType N_GetType(long self, int commandId);
+        private static native CefMenuItemType N_GetType(long self, int commandId);
 
-        private native int N_GetGroupId(long self, int commandId);
+        private static native int N_GetGroupId(long self, int commandId);
 
-        private native int N_GetGroupIdAt(long self, long index);
+        private static native int N_GetGroupIdAt(long self, long index);
 
-        private native boolean N_SetGroupId(long self, int commandId, int groupId);
+        private static native boolean N_SetGroupId(long self, int commandId, int groupId);
 
-        private native boolean N_SetGroupIdAt(long self, long index, int groupId);
+        private static native boolean N_SetGroupIdAt(long self, long index, int groupId);
 
-        private native long N_GetSubMenu(long self, int commandId);
+        private static native CefMenuModel N_GetSubMenu(long self, int commandId);
 
-        private native long N_GetSubMenuAt(long self, long index);
+        private static native CefMenuModel N_GetSubMenuAt(long self, long index);
 
-        private native boolean N_IsVisible(long self, int commandId);
+        private static native boolean N_IsVisible(long self, int commandId);
 
-        private native boolean N_IsVisibleAt(long self, long index);
+        private static native boolean N_IsVisibleAt(long self, long index);
 
-        private native boolean N_SetVisible(long self, int commandId, boolean visible);
+        private static native boolean N_SetVisible(long self, int commandId, boolean visible);
 
-        private native boolean N_SetVisibleAt(long self, long index, boolean visible);
+        private static native boolean N_SetVisibleAt(long self, long index, boolean visible);
 
-        private native boolean N_IsEnabled(long self, int commandId);
+        private static native boolean N_IsEnabled(long self, int commandId);
 
-        private native boolean N_IsEnabledAt(long self, long index);
+        private static native boolean N_IsEnabledAt(long self, long index);
 
-        private native boolean N_SetEnabled(long self, int commandId, boolean enabled);
+        private static native boolean N_SetEnabled(long self, int commandId, boolean enabled);
 
-        private native boolean N_SetEnabledAt(long self, long index, boolean enabled);
+        private static native boolean N_SetEnabledAt(long self, long index, boolean enabled);
 
-        private native boolean N_IsChecked(long self, int commandId);
+        private static native boolean N_IsChecked(long self, int commandId);
 
-        private native boolean N_IsCheckedAt(long self, long index);
+        private static native boolean N_IsCheckedAt(long self, long index);
 
-        private native boolean N_SetChecked(long self, int commandId, boolean checked);
+        private static native boolean N_SetChecked(long self, int commandId, boolean checked);
 
-        private native boolean N_SetCheckedAt(long self, long index, boolean checked);
+        private static native boolean N_SetCheckedAt(long self, long index, boolean checked);
 
-        private native boolean N_HasAccelerator(long self, int commandId);
+        private static native boolean N_HasAccelerator(long self, int commandId);
 
-        private native boolean N_HasAcceleratorAt(long self, long index);
+        private static native boolean N_HasAcceleratorAt(long self, long index);
 
-        private native boolean N_SetAccelerator(
+        private static native boolean N_SetAccelerator(
                 long self, int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
-        private native boolean N_SetAcceleratorAt(
+        private static native boolean N_SetAcceleratorAt(
                 long self, long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
-        private native boolean N_RemoveAccelerator(long self, int commandId);
+        private static native boolean N_RemoveAccelerator(long self, int commandId);
 
-        private native boolean N_RemoveAcceleratorAt(long self, long index);
+        private static native boolean N_RemoveAcceleratorAt(long self, long index);
 
-        private native boolean N_GetAccelerator(
+        private static native boolean N_GetAccelerator(
                 long self, int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        private native boolean N_GetAcceleratorAt(
+        private static native boolean N_GetAcceleratorAt(
                 long self, long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        private native boolean N_SetColor(long self, int commandId, CefMenuColorType colorType, int color);
+        private static native boolean N_SetColor(long self, int commandId, CefMenuColorType colorType, int color);
 
-        private native boolean N_SetColorAt(long self, int index, CefMenuColorType colorType, int color);
+        private static native boolean N_SetColorAt(long self, int index, CefMenuColorType colorType, int color);
 
-        private native boolean N_GetColor(long self, int commandId, CefMenuColorType colorType, long color);
+        private static native boolean N_GetColor(long self, int commandId, CefMenuColorType colorType, int[] color);
 
-        private native boolean N_GetColorAt(long self, int index, CefMenuColorType colorType, long color);
+        private static native boolean N_GetColorAt(long self, int index, CefMenuColorType colorType, int[] color);
 
-        private native boolean N_SetFontList(long self, int commandId, String fontList);
+        private static native boolean N_SetFontList(long self, int commandId, String fontList);
 
-        private native boolean N_SetFontListAt(long self, int index, String fontList);
+        private static native boolean N_SetFontListAt(long self, int index, String fontList);
+
+        static native CefMenuModel N_Create(CefMenuModelDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

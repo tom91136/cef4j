@@ -9,9 +9,33 @@ object CHeaderParser {
 
   /** Structs marshaled by value between Java and native. */
   val ByValueStructs: Set[String] =
-    Set("cef_rect_t", "cef_point_t", "cef_size_t", "cef_insets_t", "cef_range_t", "cef_screen_info_t")
+    Set(
+      "cef_rect_t",
+      "cef_point_t",
+      "cef_size_t",
+      "cef_insets_t",
+      "cef_range_t",
+      "cef_screen_info_t",
+      "cef_mouse_event_t",
+      "cef_key_event_t",
+      "cef_audio_parameters_t",
+      "cef_touch_handle_state_t",
+      "cef_basetime_t",
+      "cef_touch_event_t",
+      "cef_composition_underline_t",
+      "cef_cookie_t",
+      "cef_window_info_t",
+      "cef_browser_settings_t",
+      "cef_pdf_print_settings_t"
+    )
+
+  val OpaqueStructs: Set[String] = Set.empty
 
   def isByValueStruct(name: String): Boolean = ByValueStructs.contains(name)
+
+  private def cppHeaders(dir: Path): List[Path] =
+    Files.list(dir).toScala(List)
+      .filter(p => p.toString.endsWith(".h") && !p.toString.contains("capi") && !p.toString.contains("internal"))
 
   private def isIdentifier(value: String): Boolean =
     value.nonEmpty && value.head.isLetter && value.forall(ch => ch.isLetterOrDigit || ch == '_')
@@ -30,6 +54,20 @@ object CHeaderParser {
   private def isMetaCommentEnd(line: String): Boolean =
     line.contains("--*/")
 
+  private val StructTypedefRe    = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
+  private val EnumTypedefRe      = """typedef\s+enum\s*\{""".r
+  private val StructClosingRe    = """\}\s*cef_\w+_t\s*;""".r
+  private val CppClassDeclRe     = """class\s+(\w+)\s*:""".r
+  private val CppMethodRe        = """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r
+  private val NonVirtualMethodRe = """[\w:<>]+\s+(\w+)\s*\(""".r
+  private val FnPtrLineRe        = """\w\s*\*?\s*\(\s*\*\s*\w+\s*\)""".r
+  private val CamelCaseSplitRe   = """([a-z])([A-Z])""".r
+  private val EnumClosingRe      = """\}\s*\w+\s*;""".r
+  private val BaseFieldRe        = """.*cef_\w+_t\s+base\s*;.*""".r
+  private val ScopedBaseRe       = """.*cef_base_scoped_t\s+base\s*;.*""".r
+  private val StructOpenRe       = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
+  private val StructCloseRe      = """\}\s*(cef_\w+_t)\s*;""".r
+
   // -- Immutable parse state for the top-level scan --
   private case class TopState(decls: List[CefDecl], idx: Int)
 
@@ -42,10 +80,10 @@ object CHeaderParser {
       if (state.idx >= lines.length) state
       else {
         val line = lines(state.idx)
-        if (line.matches("""typedef\s+struct\s+_cef_\w+_t\s*\{""")) {
+        if (StructTypedefRe.matches(line)) {
           val (decl, next) = parseStruct(lines, state.idx, handlerNames, dataStructNames)
           loop(TopState(decl :: state.decls, next))
-        } else if (line.matches("""typedef\s+enum\s*\{""")) {
+        } else if (EnumTypedefRe.matches(line)) {
           val (decl, next) = parseEnum(lines, state.idx)
           loop(TopState(decl :: state.decls, next))
         } else {
@@ -56,36 +94,27 @@ object CHeaderParser {
     loop(TopState(Nil, 0)).decls.reverse
   }
 
-  def parseHandlerAnnotations(cefIncludeDir: Path): Set[String] = {
-    val cppHeaders = Files.list(cefIncludeDir)
-      .toScala(List)
-      .filter(p => p.toString.endsWith(".h") && !p.toString.contains("capi"))
-
-    cppHeaders.flatMap { header =>
+  def parseHandlerAnnotations(cefIncludeDir: Path): Set[String] =
+    cppHeaders(cefIncludeDir).flatMap { header =>
       val lines = Files.readString(header).linesIterator.toVector
       lines.zipWithIndex.collect {
         case (line, j) if line.contains("source=client") =>
           lines.drop(j + 1)
             .collectFirst {
-              case l if """class\s+(\w+)\s*:""".r.findFirstMatchIn(l).isDefined =>
-                val m = """class\s+(\w+)\s*:""".r.findFirstMatchIn(l).get
-                cppNameToCapiName(m.group(1))
+              case l if CppClassDeclRe.findFirstMatchIn(l).isDefined =>
+                cppNameToCapiName(CppClassDeclRe.findFirstMatchIn(l).get.group(1))
             }
       }.flatten
     }.toSet
-  }
 
   /** Extract Javadoc-style comments from C++ headers, keyed by function name. Also indexes by capi_name when present
     * (e.g., Continue -> cont).
     */
   def parseDocComments(cefIncludeDir: Path): Map[String, String] = {
-    val cppHeaders = Files.list(cefIncludeDir)
-      .toScala(List)
-      .filter(p => p.toString.endsWith(".h") && !p.toString.contains("capi") && !p.toString.contains("internal"))
-
-    val entries = cppHeaders.flatMap { header =>
-      val lines = Files.readString(header).linesIterator.toVector
-      extractDocComments(lines)
+    val entries = cppHeaders(cefIncludeDir).flatMap { header =>
+      val fileName = header.getFileName.toString
+      val lines    = Files.readString(header).linesIterator.toVector
+      extractDocComments(lines, fileName)
     }
 
     // Also index by capi_name when a --cef(capi_name=X)-- attribute is present
@@ -114,18 +143,21 @@ object CHeaderParser {
     // C++ class docs take priority over capi/internal typedef struct docs
     val cppDocs = allHeaders
       .filter(p => !p.toString.contains("capi") && !p.toString.contains("internal"))
-      .flatMap(h => extractClassDocs(Files.readString(h).linesIterator.toVector))
+      .flatMap(h => extractClassDocs(Files.readString(h).linesIterator.toVector, h.getFileName.toString))
 
     val structDocs = allHeaders
       .filter(p => p.toString.contains("capi") || p.toString.contains("internal"))
-      .flatMap(h => extractStructDocs(Files.readString(h).linesIterator.toVector))
+      .flatMap(h => extractStructDocs(Files.readString(h).linesIterator.toVector, h.getFileName.toString))
 
     // C++ class docs win over capi/internal typedef docs
     (structDocs ++ cppDocs).toMap
   }
 
   /** Extract class docs from C++ headers: /// doc -> /*--cef()--*/ -> class Name : */
-  private def extractClassDocs(lines: Vector[String]): List[(String, String)] = {
+  private def extractClassDocs(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+    def withSrc(comment: String, lineIdx: Int): String =
+      if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
+
     @tailrec
     def loop(idx: Int, acc: List[(String, String)]): List[(String, String)] =
       if (idx >= lines.length) acc
@@ -144,11 +176,11 @@ object CHeaderParser {
           }
 
           val nextLine   = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
-          val classMatch = """class\s+(\w+)\s*:""".r.findFirstMatchIn(nextLine)
+          val classMatch = CppClassDeclRe.findFirstMatchIn(nextLine)
           classMatch match {
             case Some(m) =>
               val capiName = cppNameToCapiName(m.group(1))
-              loop(searchStart + 1, (capiName, comment) :: acc)
+              loop(searchStart + 1, (capiName, withSrc(comment, idx)) :: acc)
             case None =>
               loop(afterComment, acc)
           }
@@ -159,9 +191,12 @@ object CHeaderParser {
     loop(0, Nil).reverse
   }
 
+  private val StructTypedefNameRe = """typedef\s+struct\s+_(\w+)\s*\{""".r
+
   /** Extract struct docs from C/internal headers: /// doc -> typedef struct _cef_xxx_t { */
-  private def extractStructDocs(lines: Vector[String]): List[(String, String)] = {
-    val StructTypedefRe = """typedef\s+struct\s+_(\w+)\s*\{""".r
+  private def extractStructDocs(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+    def withSrc(comment: String, lineIdx: Int): String =
+      if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
 
     @tailrec
     def skipAdditionalDocBlocks(idx: Int): Int =
@@ -184,10 +219,10 @@ object CHeaderParser {
           val searchStart = skipAdditionalDocBlocks(afterComment)
 
           val nextLine = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
-          StructTypedefRe.findFirstMatchIn(nextLine) match {
+          StructTypedefNameRe.findFirstMatchIn(nextLine) match {
             case Some(m) =>
               val structName = m.group(1) // e.g., "cef_cookie_t"
-              loop(searchStart + 1, (structName, comment) :: acc)
+              loop(searchStart + 1, (structName, withSrc(comment, idx)) :: acc)
             case None =>
               loop(afterComment, acc)
           }
@@ -205,15 +240,11 @@ object CHeaderParser {
     * (bool->int, etc.).
     */
   def parseCppTypeInfo(cefIncludeDir: Path): Map[String, CppMethodTypeInfo] = {
-    val cppHeaders = Files.list(cefIncludeDir)
-      .toScala(List)
-      .filter(p => p.toString.endsWith(".h") && !p.toString.contains("capi") && !p.toString.contains("internal"))
+    val CppMethodWithParamsRe = """virtual\s+([\w:<>]+)\s+(\w+)\s*\(([^)]*)\)""".r
 
-    val CppMethodRe = """virtual\s+([\w:<>]+)\s+(\w+)\s*\(([^)]*)\)""".r
-
-    cppHeaders.flatMap { header =>
+    cppHeaders(cefIncludeDir).flatMap { header =>
       val content = Files.readString(header)
-      CppMethodRe.findAllMatchIn(content).flatMap { m =>
+      CppMethodWithParamsRe.findAllMatchIn(content).flatMap { m =>
         val retType = m.group(1).trim
         val name    = m.group(2).trim
         val params  = m.group(3).trim
@@ -342,7 +373,10 @@ object CHeaderParser {
     } else None
   }
 
-  private def extractDocComments(lines: Vector[String]): List[(String, String)] = {
+  private def extractDocComments(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+    def withSrc(comment: String, lineIdx: Int): String =
+      if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
+
     // Scan for ///... or /* ... */ blocks followed by virtual method declarations.
     // CEF headers follow the pattern: /// doc /// \n /*--cef()--*/ \n virtual ...
     // The metacomment may span multiple lines.
@@ -364,7 +398,7 @@ object CHeaderParser {
           val methodLine = lines.drop(methodSearchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
           val methodName = extractMethodName(methodLine)
           methodName match {
-            case Some(name) => loop(methodSearchStart, (name, mergedComment) :: acc)
+            case Some(name) => loop(methodSearchStart, (name, withSrc(mergedComment, idx)) :: acc)
             case None       => loop(methodSearchStart, acc)
           }
         } else {
@@ -374,7 +408,7 @@ object CHeaderParser {
               val methodLine = lines.drop(afterMeta).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
               val methodName = extractMethodName(methodLine)
               methodName match {
-                case Some(name) => loop(afterMeta, (name, meta) :: acc)
+                case Some(name) => loop(afterMeta, (name, withSrc(meta, idx)) :: acc)
                 case None       => loop(afterMeta, acc)
               }
             case None if line.startsWith("/*") =>
@@ -382,7 +416,7 @@ object CHeaderParser {
               val methodLine              = lines.drop(afterComment).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
               val methodName              = extractMethodName(methodLine)
               methodName match {
-                case Some(name) => loop(afterComment, (name, comment) :: acc)
+                case Some(name) => loop(afterComment, (name, withSrc(comment, idx)) :: acc)
                 case None       => loop(afterComment, acc)
               }
             case None =>
@@ -413,16 +447,110 @@ object CHeaderParser {
   }
 
   private def extractMethodName(line: String): Option[String] =
-    // Match: virtual RetType<...> MethodName(...) - handles CefRefPtr<T>, bool, void, etc.
-    """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r.findFirstMatchIn(line).map(_.group(1))
-      .orElse {
-        // Match: RetType<...> MethodName(...) - non-virtual member
-        """[\w:<>]+\s+(\w+)\s*\(""".r.findFirstMatchIn(line).map(_.group(1))
+    CppMethodRe.findFirstMatchIn(line).map(_.group(1))
+      .orElse(NonVirtualMethodRe.findFirstMatchIn(line).map(_.group(1)))
+
+  private def cppNameToCapiName(cppName: String): String =
+    s"${CamelCaseSplitRe.replaceAllIn(cppName, "$1_$2").toLowerCase}_t"
+
+  /** Build a map from CAPI struct name to C++ class name. e.g., "cef_domvisitor_t" -> "CefDOMVisitor", "cef_browser_t"
+    * -> "CefBrowser". Also picks up data struct wrappers from cef_types_wrappers.h.
+    */
+  def parseCppClassNames(cefIncludeDir: Path): Map[String, String] = {
+    val fromClasses = cppHeaders(cefIncludeDir).flatMap { header =>
+      val content = Files.readString(header)
+      CppClassDeclRe.findAllMatchIn(content).map { m =>
+        val cppName  = m.group(1)
+        val capiName = cppNameToCapiName(cppName)
+        capiName -> cppName
+      }
+    }
+
+    // Also pick up data struct wrappers: "class CefXxx : public cef_xxx_t" and "using CefXxx = CefStructBase<...>"
+    val wrappersFile = cefIncludeDir.resolve("internal/cef_types_wrappers.h")
+    val fromWrappers = if (Files.exists(wrappersFile)) {
+      val content       = Files.readString(wrappersFile)
+      val classInherits = """class\s+(Cef\w+)\s*:\s*public\s+(cef_\w+_t)""".r
+        .findAllMatchIn(content).map(m => m.group(2) -> m.group(1)).toList
+      val usingAliases = """using\s+(Cef\w+)\s*=\s*\w+<\w+>""".r
+        .findAllMatchIn(content).map { m =>
+          val cppName = m.group(1)
+          cppNameToCapiName(cppName) -> cppName
+        }.toList
+      classInherits ++ usingAliases
+    } else Nil
+
+    (fromClasses ++ fromWrappers).toMap
+  }
+
+  /** Derive compound segment mappings from C++ class names and typedef aliases. Compares each C API segment (between
+    * underscores) with the C++ PascalCase words to find merged segments. e.g., "CefJSDialogHandler" has capi name
+    * "cef_jsdialog_handler_t" so "jsdialog" -> List("JS", "Dialog").
+    */
+  def deriveCompoundSegments(cefIncludeDir: Path, cppClassNames: Map[String, String]): Map[String, List[String]] = {
+    // From class names: align C struct segments with PascalCase words
+    val fromClasses = cppClassNames.values.flatMap { cppName =>
+      val capiWords = cppNameToCapiName(cppName).stripPrefix("_").stripSuffix("_t").split("_").toList
+      val cppWords  = splitPascalWords(cppName)
+      alignCompoundSegments(capiWords, cppWords)
+    }
+
+    // From typedef aliases in C++ headers: "typedef cef_xxx_t AliasName;"
+    val TypedefAliasRe = """typedef\s+(cef_\w+_t)\s+(\w+)\s*;""".r
+    val fromTypedefs   = (cppHeaders(cefIncludeDir) :+ cefIncludeDir.resolve("internal/cef_types_wrappers.h"))
+      .filter(Files.exists(_))
+      .flatMap { header =>
+        val content = Files.readString(header)
+        TypedefAliasRe.findAllMatchIn(content).flatMap { m =>
+          val cName  = m.group(1) // e.g. "cef_v8_propertyattribute_t"
+          val alias  = m.group(2) // e.g. "PropertyAttribute"
+          val cWords = cName.stripPrefix("cef_").stripSuffix("_t").split("_").toList
+          val aWords = splitPascalWords(alias)
+          alignCompoundSegments(cWords, aWords)
+        }
       }
 
-  private def cppNameToCapiName(cppName: String): String = {
-    val snake = cppName.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase
-    s"${snake}_t"
+    (fromClasses ++ fromTypedefs).toMap
+  }
+
+  /** Split PascalCase (with acronyms) into words: "JSDialog" -> ["JS", "Dialog"]. */
+  private def splitPascalWords(s: String): List[String] = {
+    val buf    = new StringBuilder
+    val result = List.newBuilder[String]
+    for (i <- s.indices) {
+      val c = s(i)
+      if (c.isUpper && buf.nonEmpty) {
+        val prev          = s(i - 1)
+        val nextIsLower   = i + 1 < s.length && s(i + 1).isLower
+        val startsNewWord = prev.isLower || (prev.isUpper && nextIsLower)
+        if (startsNewWord) { result += buf.toString; buf.clear() }
+      }
+      buf += c
+    }
+    if (buf.nonEmpty) result += buf.toString
+    result.result()
+  }
+
+  /** Align snake_case segments against PascalCase words to find compound segments (where one snake_case segment
+    * corresponds to multiple PascalCase words). Returns compound entries only.
+    */
+  private def alignCompoundSegments(
+      capiWords: List[String],
+      cppWords: List[String]
+  ): List[(String, List[String])] = {
+    @tailrec
+    def go(capi: List[String], cpp: List[String], acc: List[(String, List[String])]): List[(String, List[String])] =
+      (capi, cpp) match {
+        case (Nil, _) | (_, Nil) => acc
+        case (c :: cs, _)        =>
+          val found = (1 to cpp.length).find(n => cpp.take(n).mkString.toLowerCase == c.toLowerCase)
+          found match {
+            case Some(n) if n > 1 => go(cs, cpp.drop(n), (c.toLowerCase, cpp.take(n)) :: acc)
+            case Some(n)          => go(cs, cpp.drop(n), acc)
+            case None             => go(cs, cpp, acc) // skip unmatched capi word (e.g. prefix not in alias)
+          }
+      }
+    go(capiWords, cppWords, Nil)
   }
 
   // -- Immutable state for struct parsing --
@@ -430,6 +558,7 @@ object CHeaderParser {
       fnPtrs: List[FnPtr],
       fields: List[Field],
       hasBase: Boolean,
+      isScoped: Boolean,
       idx: Int
   )
 
@@ -442,12 +571,13 @@ object CHeaderParser {
 
     @tailrec
     def loop(state: StructState): StructState =
-      if (state.idx >= lines.length || lines(state.idx).matches("""\}\s*cef_\w+_t\s*;""")) {
+      if (state.idx >= lines.length || StructClosingRe.matches(lines(state.idx))) {
         state
       } else {
         val line = lines(state.idx)
-        if (line.contains("cef_base_ref_counted_t") && line.contains("base")) {
-          loop(state.copy(hasBase = true, idx = state.idx + 1))
+        if (BaseFieldRe.matches(line)) {
+          val scoped = ScopedBaseRe.matches(line)
+          loop(state.copy(hasBase = true, isScoped = scoped, idx = state.idx + 1))
         } else if (isFnPtrLine(line)) {
           val fnText = collectFnPtr(lines, state.idx)
           val newFns = parseFnPtr(fnText, dataStructNames).fold(state.fnPtrs)(_ :: state.fnPtrs)
@@ -460,7 +590,7 @@ object CHeaderParser {
         }
       }
 
-    val result = loop(StructState(Nil, Nil, hasBase = false, startIdx + 1))
+    val result = loop(StructState(Nil, Nil, hasBase = false, isScoped = false, startIdx + 1))
 
     val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
     val structName  = """\}\s*(cef_\w+_t)\s*;""".r
@@ -473,7 +603,7 @@ object CHeaderParser {
     } else if (handlerNames.contains(structName)) {
       CefDecl.HandlerStruct(structName, result.fnPtrs.reverse.map(classifySpecial))
     } else {
-      CefDecl.ObjectStruct(structName, result.fnPtrs.reverse.map(classifySpecial))
+      CefDecl.ObjectStruct(structName, result.fnPtrs.reverse.map(classifySpecial), scoped = result.isScoped)
     }
 
     (decl, result.idx + 1)
@@ -502,11 +632,9 @@ object CHeaderParser {
     if (idx >= lines.length || lines(idx).contains(";")) idx + 1
     else skipPastSemicolon(lines, idx + 1)
 
-  /** Detect function pointer lines - both pre-preprocessed (CEF_CALLBACK*) and post-preprocessed ((* name)) */
   private def isFnPtrLine(line: String): Boolean =
     line.contains("CEF_CALLBACK*") || line.contains("CEF_CALLBACK *") ||
-      // Post-preprocessed: `type(* name)(` or `type (* name)(`
-      """[a-z_*]\s*\(\s*\*\s*\w+\s*\)""".r.findFirstIn(line).isDefined
+      FnPtrLineRe.findFirstIn(line).isDefined
 
   // Matches both `ret (CEF_CALLBACK* name)(params);` and `ret(* name)(params);`
   private val FnPtrPattern =
@@ -542,13 +670,8 @@ object CHeaderParser {
       }
     }
 
-  private def splitParams(s: String): List[String] = {
-    val (parts, last) = s.foldLeft((List.empty[String], "")) {
-      case ((acc, cur), ',') => (acc :+ cur, "")
-      case ((acc, cur), ch)  => (acc, cur + ch)
-    }
-    (parts :+ last).map(_.trim).filter(_.nonEmpty)
-  }
+  private def splitParams(s: String): List[String] =
+    s.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
 
   private def splitTypeName(s: String): (String, String) = {
     val trimmed      = s.trim
@@ -571,6 +694,7 @@ object CHeaderParser {
     val s = typeStr.trim
       .replaceAll("\\bstruct\\b", "")
       .replaceAll("\\s+", " ")
+      .replaceAll("\\b_(?=cef_)", "") // strip leading _ prefix from _cef_xxx_t
       .trim
 
     s match {
@@ -580,14 +704,20 @@ object CHeaderParser {
       case "int64_t" | "int64" | "long long"            => CType.Long
       case "uint64_t" | "uint64" | "unsigned long long" => CType.Long
       case "size_t"                                     => CType.SizeT
+      case "char16_t" | "char16"                        => CType.Char
       case "float"                                      => CType.Float
       case "double"                                     => CType.Double
+      case "cef_string_t"                               => CType.JString
       case "cef_string_t*" | "const cef_string_t*"      => CType.JString
       case "cef_string_userfree_t"                      => CType.JString
-      case "const void*"                                => CType.Ptr("const void")
-      case "cef_string_list_t"                          => CType.StringList
-      case "cef_string_map_t"                           => CType.StringMap
-      case "cef_string_multimap_t"                      => CType.StringMultimap
+      case "const void*" | "void*"                      => CType.OpaquePtr
+      case t if t.endsWith("**") => CType.Ptr(t.stripSuffix("*").trim) // double pointers — reclassify resolves later
+      case "char16_t*" | "const char16_t*" => CType.OpaquePtr // raw char pointers
+      case "char*" | "const char*"         => CType.OpaquePtr
+      case "wchar_t*" | "const wchar_t*"   => CType.OpaquePtr
+      case "cef_string_list_t"             => CType.StringList
+      case "cef_string_map_t"              => CType.StringMap
+      case "cef_string_multimap_t"         => CType.StringMultimap
       // Platform-specific opaque handles - always map to long (pointer-sized)
       case "cef_window_handle_t" | "cef_cursor_handle_t" | "cef_event_handle_t"
           | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t" => CType.Long
@@ -645,7 +775,7 @@ object CHeaderParser {
     if (promoted.name == "on_paint" && promoted.params.exists(p => p.name == "buffer")) {
       // Upgrade the `buffer` param (const void*) to PixelBuffer for OnPaint
       val upgradedParams = promoted.params.map {
-        case p if p.name == "buffer" && p.typ == CType.Ptr("const void") =>
+        case p if p.name == "buffer" && p.typ == CType.OpaquePtr =>
           p.copy(typ = CType.PixelBuffer)
         case p => p
       }
@@ -661,14 +791,10 @@ object CHeaderParser {
     * distinguish data structs from enums for non-pointer cef_xxx_t types.
     */
   private def prescanDataStructs(lines: Vector[String]): Set[String] = {
-    val StructOpen  = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
-    val StructClose = """\}\s*(cef_\w+_t)\s*;""".r
-
     @tailrec
     def scan(idx: Int, acc: Set[String]): Set[String] =
       if (idx >= lines.length) acc
-      else if (StructOpen.findFirstIn(lines(idx)).isDefined) {
-        // Scan forward to closing brace, checking for base_ref_counted
+      else if (StructOpenRe.findFirstIn(lines(idx)).isDefined) {
         val (hasBase, name, endIdx) = scanStruct(lines, idx + 1)
         if (!hasBase && name.nonEmpty) scan(endIdx, acc + name)
         else scan(endIdx, acc)
@@ -678,14 +804,9 @@ object CHeaderParser {
       @tailrec
       def loop(i: Int, hasBase: Boolean): (Boolean, String, Int) =
         if (i >= lines.length) (hasBase, "", i)
-        else {
-          val line = lines(i)
-          StructClose.findFirstMatchIn(line) match {
-            case Some(m) => (hasBase, m.group(1), i + 1)
-            case None    =>
-              val newBase = hasBase || line.contains("cef_base_ref_counted_t")
-              loop(i + 1, newBase)
-          }
+        else StructCloseRe.findFirstMatchIn(lines(i)) match {
+          case Some(m) => (hasBase, m.group(1), i + 1)
+          case None    => loop(i + 1, hasBase || BaseFieldRe.matches(lines(i)))
         }
       loop(startIdx, false)
     }
@@ -694,13 +815,13 @@ object CHeaderParser {
   }
 
   // -- Immutable state for enum parsing --
-  private case class EnumState(values: List[(String, Long)], lastValue: Long, idx: Int)
+  private case class EnumState(values: List[(String, Long, String)], lastValue: Long, idx: Int)
 
   private def parseEnum(lines: Vector[String], startIdx: Int): (CefDecl, Int) = {
 
     @tailrec
     def loop(state: EnumState): EnumState =
-      if (state.idx >= lines.length || lines(state.idx).matches("""\}\s*\w+\s*;""")) {
+      if (state.idx >= lines.length || EnumClosingRe.matches(lines(state.idx))) {
         state
       } else {
         val line      = lines(state.idx).trim.stripSuffix(",").trim
@@ -708,11 +829,12 @@ object CHeaderParser {
           line match {
             case s"$name = $expr" if isIdentifier(name.trim) =>
               val cleanName = name.trim
-              val v         = parseEnumValue(expr.trim, state.values)
-              state.copy(values = (cleanName, v) :: state.values, lastValue = v)
+              val rawExpr   = expr.trim
+              val v         = parseEnumValue(rawExpr, state.values)
+              state.copy(values = (cleanName, v, rawExpr) :: state.values, lastValue = v)
             case name if isIdentifier(name) && name.head.isUpper =>
               val v = state.lastValue + 1
-              state.copy(values = (name, v) :: state.values, lastValue = v)
+              state.copy(values = (name, v, s"$v") :: state.values, lastValue = v)
             case _ => state
           }
         } else {
@@ -732,7 +854,7 @@ object CHeaderParser {
     (CefDecl.Enum(enumName, result.values.reverse), result.idx + 1)
   }
 
-  private def parseEnumValue(expr: String, existing: List[(String, Long)]): Long = {
+  private def parseEnumValue(expr: String, existing: List[(String, Long, String)]): Long = {
     val trimmed = expr.trim
     if (trimmed.startsWith("0x") || trimmed.startsWith("0X")) {
       java.lang.Long.parseLong(trimmed.substring(2), 16)
@@ -753,6 +875,317 @@ object CHeaderParser {
             existing.find(_._1 == trimmed).map(_._2).getOrElse(0L)
         }
       }
+    }
+  }
+
+  // -- Free function parsing --
+
+  /** Explicit mapping for free functions that don't follow return-type or name-prefix conventions. */
+  private val ExplicitOwnerMap: Map[String, String] = Map(
+    "cef_browser_host_create_browser"               -> "cef_browser_host_t",
+    "cef_browser_host_create_browser_sync"          -> "cef_browser_host_t",
+    "cef_browser_host_get_browser_by_identifier"    -> "cef_browser_host_t",
+    "cef_v8_context_get_current_context"            -> "cef_v8_context_t",
+    "cef_v8_context_get_entered_context"            -> "cef_v8_context_t",
+    "cef_v8_context_in_context"                     -> "cef_v8_context_t",
+    "cef_request_context_cef_create_context_shared" -> "cef_request_context_t"
+  )
+
+  /** Parse CEF_EXPORT free functions from raw (non-preprocessed) CAPI headers. Returns FreeFunction decls with initial
+    * CType.Ptr types (reclassification happens later).
+    */
+  def parseFreeExports(
+      capiDir: Path,
+      knownStructNames: Set[String],
+      dataStructNames: Set[String]
+  ): List[CefDecl.FreeFunction] = {
+    val capiHeaders = Files.list(capiDir).toScala(List)
+      .filter(p => p.toString.endsWith("_capi.h") && !p.toString.contains("test/"))
+
+    capiHeaders.flatMap { header =>
+      val headerName = header.getFileName.toString
+      val lines      = Files.readString(header).linesIterator.toVector
+      parseFreeExportsFromFile(lines, headerName, knownStructNames, dataStructNames)
+    }
+  }
+
+  private val CefExportRe = """CEF_EXPORT\s+(.+)""".r
+
+  private def parseFreeExportsFromFile(
+      lines: Vector[String],
+      headerName: String,
+      knownStructNames: Set[String],
+      dataStructNames: Set[String]
+  ): List[CefDecl.FreeFunction] = {
+    // Track struct block depth to skip CEF_EXPORT-like lines inside structs
+    var inStructBlock = false
+    var braceDepth    = 0
+    val result        = List.newBuilder[CefDecl.FreeFunction]
+
+    var i = 0
+    while (i < lines.length) {
+      val line = lines(i).trim
+
+      // Track typedef struct blocks
+      if (StructTypedefRe.findFirstIn(line).isDefined) {
+        inStructBlock = true
+        braceDepth = 0
+      }
+      if (inStructBlock) {
+        braceDepth += line.count(_ == '{') - line.count(_ == '}')
+        if (braceDepth <= 0 && line.contains("}")) {
+          inStructBlock = false
+        }
+        i += 1
+      } else if (line.startsWith("CEF_EXPORT")) {
+        // Collect the full declaration (may span multiple lines)
+        val sb = new StringBuilder(line)
+        var j  = i + 1
+        while (!sb.toString.contains(";") && j < lines.length) {
+          sb.append(" ").append(lines(j).trim)
+          j += 1
+        }
+        val fullDecl = sb.toString.replaceAll("\\s+", " ").trim
+
+        parseFreeFunction(fullDecl, headerName, knownStructNames, dataStructNames).foreach(result += _)
+        i = j
+      } else {
+        i += 1
+      }
+    }
+    result.result()
+  }
+
+  /** Parse a single CEF_EXPORT declaration into a FreeFunction. */
+  private val FreeFuncPattern =
+    """CEF_EXPORT\s+(.+?)\s+(\w+)\s*\(([^)]*)\)\s*;""".r
+
+  private def parseFreeFunction(
+      decl: String,
+      headerName: String,
+      knownStructNames: Set[String],
+      dataStructNames: Set[String]
+  ): Option[CefDecl.FreeFunction] =
+    FreeFuncPattern.findFirstMatchIn(decl).flatMap { m =>
+      val retStr   = m.group(1).trim
+      val cName    = m.group(2).trim
+      val paramStr = m.group(3).trim
+
+      // Skip string utility functions
+      if (cName.startsWith("cef_string_") || cName.startsWith("cef_time_")) return None
+
+      val ret    = parseType(retStr, dataStructNames)
+      val params = parseParams(paramStr, dataStructNames)
+
+      // Determine owner struct
+      val ownerStruct = resolveOwnerStruct(cName, ret, knownStructNames)
+
+      // Compute Java method name by stripping the owner prefix
+      val javaMethodName = computeJavaMethodName(cName, ownerStruct)
+
+      Some(CefDecl.FreeFunction(
+        cName = cName,
+        ret = ret,
+        params = params,
+        ownerStruct = ownerStruct,
+        javaMethodName = javaMethodName,
+        sourceHeader = headerName
+      ))
+    }
+
+  /** Resolve which struct a free function belongs to. */
+  private def resolveOwnerStruct(cName: String, ret: CType, knownStructNames: Set[String]): String = {
+    // 1. Explicit mapping
+    ExplicitOwnerMap.get(cName) match {
+      case Some(owner) => return owner
+      case None        =>
+    }
+
+    // 2. Return type match: if returns cef_xxx_t*, it belongs on that struct
+    ret match {
+      case CType.Ptr(inner) =>
+        val stripped = inner.stripPrefix("struct ").stripPrefix("_").trim
+        if (knownStructNames.contains(stripped)) return stripped
+      case CType.ObjectPtr(name) if knownStructNames.contains(name) =>
+        return name
+      case _ =>
+    }
+
+    // 3. Name prefix match: try longest matching struct prefix
+    //    cef_browser_host_create_browser -> check cef_browser_host_t, cef_browser_t, etc.
+    val candidates = knownStructNames.filter { structName =>
+      val prefix = structName.stripSuffix("_t")
+      cName.startsWith(prefix + "_")
+    }
+    if (candidates.nonEmpty) {
+      // Pick the longest prefix match (most specific)
+      return candidates.maxBy(_.length)
+    }
+
+    // 4. Orphan — goes to CefGlobals
+    ""
+  }
+
+  /** Compute the Java method name by stripping the owner prefix. */
+  private def computeJavaMethodName(cName: String, ownerStruct: String): String = {
+    val prefix = if (ownerStruct.nonEmpty) ownerStruct.stripSuffix("_t") + "_"
+    else "cef_"
+    val stripped = if (cName.startsWith(prefix)) cName.stripPrefix(prefix) else cName.stripPrefix("cef_")
+    Naming.toCamelCase(stripped)
+  }
+
+  /** Primitive types that can appear as out-param pointers (e.g. `int64_t*`, `float*`, `cef_color_t*`). */
+  private val PrimitiveOutPtrMap: Map[String, CType] = Map(
+    "int64_t"     -> CType.Long,
+    "int64"       -> CType.Long,
+    "uint64_t"    -> CType.Long,
+    "long long"   -> CType.Long,
+    "float"       -> CType.Float,
+    "double"      -> CType.Double,
+    "cef_color_t" -> CType.UInt,
+    "size_t"      -> CType.SizeT
+  )
+
+  /** Post-process all declarations to reclassify CType.Ptr into specific typed variants.
+    *
+    * Called after all files are parsed so that the full set of object/handler struct names is known.
+    */
+  def reclassifyPointers(decls: List[CefDecl], handlerNames: Set[String]): List[CefDecl] = {
+    val objectStructNames = decls.collect {
+      case d: CefDecl.ObjectStruct  => d.name
+      case d: CefDecl.HandlerStruct => d.name
+    }.toSet
+    val dataStructNames = decls.collect { case d: CefDecl.DataStruct => d.name }.toSet
+
+    /** Strip all qualifiers and prefixes to get the bare cef type name. */
+    def stripToBareName(s: String): String =
+      s.replaceAll("\\bconst\\b", "").replaceAll("\\bstruct\\b", "").replaceAll("\\*", "")
+        .stripPrefix("_").trim
+
+    def reclassifyType(ct: CType): CType = ct match {
+      case CType.Ptr(inner) =>
+        val stripped = inner.stripPrefix("const ").stripPrefix("struct ").stripPrefix("_")
+          .stripSuffix("const").trim
+        if (stripped.endsWith("*")) {
+          // Double pointer or const-qualified pointer array
+          val bare = stripToBareName(stripped)
+          if (objectStructNames.contains(bare))
+            CType.OutObjectPtr(bare)
+          else CType.OpaquePtr // Treat unknown double pointers as opaque
+        } else if (objectStructNames.contains(stripped))
+          CType.ObjectPtr(stripped)
+        else if (stripped == "void" || stripped.isEmpty)
+          CType.OpaquePtr
+        else if (OpaqueStructs.contains(stripped))
+          CType.OpaquePtr
+        else if (dataStructNames.contains(stripped))
+          CType.OpaquePtr // Data struct pointers not in ByValueStructs → opaque for now
+        else
+          PrimitiveOutPtrMap.get(stripped) match {
+            case Some(prim) => CType.OutPrimitivePtr(prim)
+            case None       =>
+              // Try stripping more aggressively for const-qualified types
+              val bare = stripToBareName(inner)
+              if (objectStructNames.contains(bare)) CType.ObjectPtr(bare)
+              else if (dataStructNames.contains(bare)) CType.OpaquePtr
+              else CType.OpaquePtr // Fallback to opaque — will be logged
+          }
+      case other => other
+    }
+
+    def reclassifyFn(fn: FnPtr): FnPtr =
+      fn.copy(ret = reclassifyType(fn.ret), params = fn.params.map(p => p.copy(typ = reclassifyType(p.typ))))
+
+    decls.map {
+      case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(reclassifyFn))
+      case d: CefDecl.HandlerStruct => d.copy(fns = d.fns.map(reclassifyFn))
+      case d: CefDecl.FreeFunction  =>
+        d.copy(ret = reclassifyType(d.ret), params = d.params.map(p => p.copy(typ = reclassifyType(p.typ))))
+      case other => other
+    }
+  }
+
+  /** Promote OutObjectPtr params preceded by a count param to ObjectPtrArray, and promote OutPrimitivePtr arrays
+    * similarly. Also handles the count_func metacomment pattern.
+    */
+  def promoteArrayParams(decls: List[CefDecl]): List[CefDecl] = {
+    def promote(fn: FnPtr): FnPtr = {
+      val promoted = fn.params.zipWithIndex.map { case (p, i) =>
+        p.typ match {
+          case CType.OutObjectPtr(cefName) if i > 0 =>
+            val prev           = fn.params(i - 1)
+            val isCountForThis =
+              (prev.typ == CType.SizeT || prev.typ == CType.OutPrimitivePtr(CType.SizeT)) &&
+                prev.name.toLowerCase == s"${p.name.toLowerCase}count"
+            if (isCountForThis) p.copy(typ = CType.ObjectPtrArray(cefName))
+            else p
+          case _ => p
+        }
+      }
+      fn.copy(params = promoted)
+    }
+
+    decls.map {
+      case d: CefDecl.FreeFunction =>
+        val promoted = promote(FnPtr("_ff", d.ret, d.params))
+        d.copy(params = promoted.params)
+      case other => other.mapFns(promote)
+    }
+  }
+
+  /** Promote OpaquePtr params whose rawCType is void-ptr or const-void-ptr and that have an adjacent size param to
+    * Buffer/BufferSize pairs. The size param is hidden from the Java API — its value is derived from
+    * ByteBuffer.capacity() on the JNI side.
+    */
+  def promoteBufferParams(decls: List[CefDecl]): List[CefDecl] = {
+    def isSizeType(ct: CType): Boolean = ct match {
+      case CType.SizeT | CType.Long | CType.Int => true
+      case _                                    => false
+    }
+
+    def isVoidPtr(p: Param): Boolean =
+      p.typ == CType.OpaquePtr && p.rawCType.replaceAll("\\s+", " ").trim.matches("(const )?void\\s*\\*")
+
+    def findSizeParam(bufName: String, params: List[Param]): Option[String] = {
+      val lower = bufName.toLowerCase
+      params.collectFirst {
+        case p
+            if isSizeType(p.typ) && (
+              p.name.toLowerCase == s"${lower}size" ||
+                p.name.toLowerCase == s"${lower}_size" ||
+                p.name.toLowerCase == s"${lower}length" ||
+                p.name.toLowerCase == s"${lower}_length" ||
+                // Generic "size" for params named "bytes", "buffer", "data"
+                (Set("bytes", "buffer", "data").contains(lower) && p.name.toLowerCase == "size")
+            ) =>
+          p.name
+      }
+    }
+
+    def promote(fn: FnPtr): FnPtr = {
+      // First pass: identify buffer+size pairs
+      val bufferSizePairs = fn.params.collect {
+        case p if isVoidPtr(p) => findSizeParam(p.name, fn.params).map(sp => (p.name, sp))
+      }.flatten.toMap
+
+      if (bufferSizePairs.isEmpty) return fn
+
+      val sizeToBuffer = bufferSizePairs.map(_.swap)
+      val promoted     = fn.params.map { p =>
+        if (bufferSizePairs.contains(p.name))
+          p.copy(typ = CType.Buffer(bufferSizePairs(p.name)))
+        else if (sizeToBuffer.contains(p.name))
+          p.copy(typ = CType.BufferSize(sizeToBuffer(p.name)))
+        else p
+      }
+      fn.copy(params = promoted)
+    }
+
+    decls.map {
+      case d: CefDecl.FreeFunction =>
+        val promoted = promote(FnPtr("_ff", d.ret, d.params))
+        d.copy(params = promoted.params)
+      case other => other.mapFns(promote)
     }
   }
 }

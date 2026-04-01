@@ -1,6 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.Optional;
+
 /**
  * WaitableEvent is a thread synchronization tool that allows one thread to wait for another thread to finish some work.
  * This is equivalent to using a Lock+ConditionVariable to protect a simple boolean value. However, using WaitableEvent
@@ -8,36 +10,129 @@ package net.kurobako.cef4j.gen;
  * recommended. In that case consider using a ConditionVariable instead of a WaitableEvent. It is safe to create and/or
  * signal a WaitableEvent from any thread. Blocking on a WaitableEvent by calling the *Wait() methods is not allowed on
  * the browser process UI or IO threads.
+ *
+ * <p>Definition generated from cef_waitable_event_capi.h
+ *
+ * <pre>typedef struct _cef_waitable_event_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_waitable_event_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:43</a>
  */
-public interface CefWaitableEvent {
+public interface CefWaitableEvent extends CefLibraryObject {
 
-    /** Put the event in the un-signaled state. */
+    /**
+     * Put the event in the un-signaled state.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* reset)(struct _cef_waitable_event_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
+     */
     void reset();
 
-    /** Put the event in the signaled state. This causes any thread blocked on Wait to be woken up. */
+    /**
+     * Put the event in the signaled state. This causes any thread blocked on Wait to be woken up.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* signal)(struct _cef_waitable_event_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
+     */
     void signal();
 
     /**
-     * Returns true if the event is in the signaled state, else false. If the event was created with |automatic_reset|
-     * set to true then calling this method will also cause a reset.
+     * Returns {@code true} if the event is in the signaled state, else {@code false}. If the event was created with
+     * {@code automatic_reset} set to {@code true} then calling this method will also cause a reset.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_signaled)(struct _cef_waitable_event_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
      */
     boolean isSignaled();
 
     /**
      * Wait indefinitely for the event to be signaled. This method will not return until after the call to Signal() has
      * completed. This method cannot be called on the browser process UI or IO threads.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* wait)(struct _cef_waitable_event_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
      */
     void cefWait();
 
     /**
-     * Wait up to |max_ms| milliseconds for the event to be signaled. Returns true if the event was signaled. A return
-     * value of false does not necessarily mean that |max_ms| was exceeded. This method will not return until after the
-     * call to Signal() has completed. This method cannot be called on the browser process UI or IO threads.
+     * Wait up to {@code max_ms} milliseconds for the event to be signaled. Returns {@code true} if the event was
+     * signaled. A return value of {@code false} does not necessarily mean that {@code max_ms} was exceeded. This method
+     * will not return until after the call to Signal() has completed. This method cannot be called on the browser
+     * process UI or IO threads.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* timed_wait)(struct _cef_waitable_event_t* self, int64_t max_ms);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
      */
     boolean timedWait(long maxMs);
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_waitable_event_capi.h
+     *
+     * <pre>CEF_EXPORT cef_waitable_event_t* cef_waitable_event_create(int automatic_reset, int initially_signaled);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefWaitableEvent> create(int automaticReset, int initiallySignaled) {
+        return Optional.ofNullable(NativePeer.N_Create(automaticReset, initiallySignaled));
+    }
 
-    static class NativePeer implements CefWaitableEvent {
-        private volatile long nativePtr;
+    final class NativePeer implements CefWaitableEvent, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefWaitableEvent.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefWaitableEvent 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public void reset() {
@@ -64,15 +159,17 @@ public interface CefWaitableEvent {
             return N_TimedWait(nativePtr, maxMs);
         }
 
-        private native void N_Reset(long self);
+        private static native void N_Reset(long self);
 
-        private native void N_Signal(long self);
+        private static native void N_Signal(long self);
 
-        private native boolean N_IsSignaled(long self);
+        private static native boolean N_IsSignaled(long self);
 
-        private native void N_Wait(long self);
+        private static native void N_Wait(long self);
 
-        private native boolean N_TimedWait(long self, long maxMs);
+        private static native boolean N_TimedWait(long self, long maxMs);
+
+        static native CefWaitableEvent N_Create(int automaticReset, int initiallySignaled);
 
         @Override
         public boolean equals(Object obj) {

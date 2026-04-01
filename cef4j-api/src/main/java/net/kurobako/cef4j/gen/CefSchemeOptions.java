@@ -1,27 +1,103 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-public enum CefSchemeOptions {
-    CEF_SCHEME_OPTION_NONE(0L),
-    CEF_SCHEME_OPTION_STANDARD(1L),
-    CEF_SCHEME_OPTION_LOCAL(2L),
-    CEF_SCHEME_OPTION_DISPLAY_ISOLATED(4L),
-    CEF_SCHEME_OPTION_SECURE(8L),
-    CEF_SCHEME_OPTION_CORS_ENABLED(16L),
-    CEF_SCHEME_OPTION_CSP_BYPASSING(32L),
-    CEF_SCHEME_OPTION_FETCH_ENABLED(64L),
-    UNKNOWN(-1L);
+/**
+ * Possible values: {@link Kind#NONE}, {@link Kind#STANDARD}, {@link Kind#LOCAL}, {@link Kind#DISPLAY_ISOLATED},
+ * {@link Kind#SECURE}, {@link Kind#CORS_ENABLED}, {@link Kind#CSP_BYPASSING}, {@link Kind#FETCH_ENABLED}
+ */
+public final class CefSchemeOptions implements CefEnum<CefSchemeOptions> {
 
-    public final long value;
+    /** Known constants for {@link CefSchemeOptions}. */
+    public enum Kind {
+        NONE(0, "0", "CEF_SCHEME_OPTION_NONE"),
+        STANDARD(1 << 0, "1 << 0", "CEF_SCHEME_OPTION_STANDARD"),
+        LOCAL(1 << 1, "1 << 1", "CEF_SCHEME_OPTION_LOCAL"),
+        DISPLAY_ISOLATED(1 << 2, "1 << 2", "CEF_SCHEME_OPTION_DISPLAY_ISOLATED"),
+        SECURE(1 << 3, "1 << 3", "CEF_SCHEME_OPTION_SECURE"),
+        CORS_ENABLED(1 << 4, "1 << 4", "CEF_SCHEME_OPTION_CORS_ENABLED"),
+        CSP_BYPASSING(1 << 5, "1 << 5", "CEF_SCHEME_OPTION_CSP_BYPASSING"),
+        FETCH_ENABLED(1 << 6, "1 << 6", "CEF_SCHEME_OPTION_FETCH_ENABLED");
 
-    CefSchemeOptions(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_scheme_options_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefSchemeOptions fromLong(long v) {
-        for (CefSchemeOptions e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefSchemeOptions(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefSchemeOptions of(long v) {
+        return new CefSchemeOptions(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefSchemeOptions of(Kind k) {
+        return new CefSchemeOptions(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefSchemeOptions)) return false;
+        return this.value == ((CefSchemeOptions) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

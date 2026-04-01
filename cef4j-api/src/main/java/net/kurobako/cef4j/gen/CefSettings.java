@@ -2,76 +2,115 @@
 package net.kurobako.cef4j.gen;
 
 /**
- * Initialization settings. Specify NULL or 0 to get the recommended default values. Many of these and other settings
- * can also configured using command- line switches.
+ * Initialization settings. Specify {@code null} or 0 to get the recommended default values. Many of these and other
+ * settings can also configured using command-line switches.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_settings_t {
+ *   size_t size;
+ *   int no_sandbox;
+ *   cef_string_t* browser_subprocess_path;
+ *   cef_string_t* framework_dir_path;
+ *   cef_string_t* main_bundle_path;
+ *   int multi_threaded_message_loop;
+ *   int external_message_pump;
+ *   int windowless_rendering_enabled;
+ *   int command_line_args_disabled;
+ *   cef_string_t* cache_path;
+ *   cef_string_t* root_cache_path;
+ *   int persist_session_cookies;
+ *   cef_string_t* user_agent;
+ *   cef_string_t* user_agent_product;
+ *   cef_string_t* locale;
+ *   cef_string_t* log_file;
+ *   cef_log_severity_t log_severity;
+ *   cef_log_items_t log_items;
+ *   cef_string_t* javascript_flags;
+ *   cef_string_t* resources_dir_path;
+ *   cef_string_t* locales_dir_path;
+ *   int remote_debugging_port;
+ *   int uncaught_exception_stack_size;
+ *   unsigned int background_color;
+ *   cef_string_t* accept_language_list;
+ *   cef_string_t* cookieable_schemes_list;
+ *   int cookieable_schemes_exclude_defaults;
+ *   cef_string_t* chrome_policy_id;
+ *   int chrome_app_icon_id;
+ *   int disable_signal_handlers;
+ *   int use_views_default_popup;
+ * } cef_settings_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:199</a>
  */
 public final class CefSettings {
 
-    public final long size;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
+
     public final int noSandbox;
-    public final int browserSubprocessPath;
-    public final int frameworkDirPath;
-    public final int mainBundlePath;
+    public final String browserSubprocessPath;
+    public final String frameworkDirPath;
+    public final String mainBundlePath;
     public final int multiThreadedMessageLoop;
     public final int externalMessagePump;
     public final int windowlessRenderingEnabled;
     public final int commandLineArgsDisabled;
-    public final int cachePath;
-    public final int rootCachePath;
+    public final String cachePath;
+    public final String rootCachePath;
     public final int persistSessionCookies;
-    public final int userAgent;
-    public final int userAgentProduct;
-    public final int locale;
-    public final int logFile;
+    public final String userAgent;
+    public final String userAgentProduct;
+    public final String locale;
+    public final String logFile;
     public final CefLogSeverity logSeverity;
     public final CefLogItems logItems;
-    public final int javascriptFlags;
-    public final int resourcesDirPath;
-    public final int localesDirPath;
+    public final String javascriptFlags;
+    public final String resourcesDirPath;
+    public final String localesDirPath;
     public final int remoteDebuggingPort;
     public final int uncaughtExceptionStackSize;
     public final int backgroundColor;
-    public final int acceptLanguageList;
-    public final int cookieableSchemesList;
+    public final String acceptLanguageList;
+    public final String cookieableSchemesList;
     public final int cookieableSchemesExcludeDefaults;
-    public final int chromePolicyId;
+    public final String chromePolicyId;
     public final int chromeAppIconId;
     public final int disableSignalHandlers;
     public final int useViewsDefaultPopup;
 
     public CefSettings(
-            long size,
             int noSandbox,
-            int browserSubprocessPath,
-            int frameworkDirPath,
-            int mainBundlePath,
+            String browserSubprocessPath,
+            String frameworkDirPath,
+            String mainBundlePath,
             int multiThreadedMessageLoop,
             int externalMessagePump,
             int windowlessRenderingEnabled,
             int commandLineArgsDisabled,
-            int cachePath,
-            int rootCachePath,
+            String cachePath,
+            String rootCachePath,
             int persistSessionCookies,
-            int userAgent,
-            int userAgentProduct,
-            int locale,
-            int logFile,
+            String userAgent,
+            String userAgentProduct,
+            String locale,
+            String logFile,
             CefLogSeverity logSeverity,
             CefLogItems logItems,
-            int javascriptFlags,
-            int resourcesDirPath,
-            int localesDirPath,
+            String javascriptFlags,
+            String resourcesDirPath,
+            String localesDirPath,
             int remoteDebuggingPort,
             int uncaughtExceptionStackSize,
             int backgroundColor,
-            int acceptLanguageList,
-            int cookieableSchemesList,
+            String acceptLanguageList,
+            String cookieableSchemesList,
             int cookieableSchemesExcludeDefaults,
-            int chromePolicyId,
+            String chromePolicyId,
             int chromeAppIconId,
             int disableSignalHandlers,
             int useViewsDefaultPopup) {
-        this.size = size;
         this.noSandbox = noSandbox;
         this.browserSubprocessPath = browserSubprocessPath;
         this.frameworkDirPath = frameworkDirPath;
@@ -109,34 +148,33 @@ public final class CefSettings {
         if (this == obj) return true;
         if (!(obj instanceof CefSettings)) return false;
         CefSettings other = (CefSettings) obj;
-        return this.size == other.size
-                && this.noSandbox == other.noSandbox
-                && this.browserSubprocessPath == other.browserSubprocessPath
-                && this.frameworkDirPath == other.frameworkDirPath
-                && this.mainBundlePath == other.mainBundlePath
+        return this.noSandbox == other.noSandbox
+                && java.util.Objects.equals(this.browserSubprocessPath, other.browserSubprocessPath)
+                && java.util.Objects.equals(this.frameworkDirPath, other.frameworkDirPath)
+                && java.util.Objects.equals(this.mainBundlePath, other.mainBundlePath)
                 && this.multiThreadedMessageLoop == other.multiThreadedMessageLoop
                 && this.externalMessagePump == other.externalMessagePump
                 && this.windowlessRenderingEnabled == other.windowlessRenderingEnabled
                 && this.commandLineArgsDisabled == other.commandLineArgsDisabled
-                && this.cachePath == other.cachePath
-                && this.rootCachePath == other.rootCachePath
+                && java.util.Objects.equals(this.cachePath, other.cachePath)
+                && java.util.Objects.equals(this.rootCachePath, other.rootCachePath)
                 && this.persistSessionCookies == other.persistSessionCookies
-                && this.userAgent == other.userAgent
-                && this.userAgentProduct == other.userAgentProduct
-                && this.locale == other.locale
-                && this.logFile == other.logFile
+                && java.util.Objects.equals(this.userAgent, other.userAgent)
+                && java.util.Objects.equals(this.userAgentProduct, other.userAgentProduct)
+                && java.util.Objects.equals(this.locale, other.locale)
+                && java.util.Objects.equals(this.logFile, other.logFile)
                 && java.util.Objects.equals(this.logSeverity, other.logSeverity)
                 && java.util.Objects.equals(this.logItems, other.logItems)
-                && this.javascriptFlags == other.javascriptFlags
-                && this.resourcesDirPath == other.resourcesDirPath
-                && this.localesDirPath == other.localesDirPath
+                && java.util.Objects.equals(this.javascriptFlags, other.javascriptFlags)
+                && java.util.Objects.equals(this.resourcesDirPath, other.resourcesDirPath)
+                && java.util.Objects.equals(this.localesDirPath, other.localesDirPath)
                 && this.remoteDebuggingPort == other.remoteDebuggingPort
                 && this.uncaughtExceptionStackSize == other.uncaughtExceptionStackSize
                 && this.backgroundColor == other.backgroundColor
-                && this.acceptLanguageList == other.acceptLanguageList
-                && this.cookieableSchemesList == other.cookieableSchemesList
+                && java.util.Objects.equals(this.acceptLanguageList, other.acceptLanguageList)
+                && java.util.Objects.equals(this.cookieableSchemesList, other.cookieableSchemesList)
                 && this.cookieableSchemesExcludeDefaults == other.cookieableSchemesExcludeDefaults
-                && this.chromePolicyId == other.chromePolicyId
+                && java.util.Objects.equals(this.chromePolicyId, other.chromePolicyId)
                 && this.chromeAppIconId == other.chromeAppIconId
                 && this.disableSignalHandlers == other.disableSignalHandlers
                 && this.useViewsDefaultPopup == other.useViewsDefaultPopup;
@@ -145,7 +183,6 @@ public final class CefSettings {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(
-                size,
                 noSandbox,
                 browserSubprocessPath,
                 frameworkDirPath,
@@ -180,21 +217,21 @@ public final class CefSettings {
 
     @Override
     public String toString() {
-        return "CefSettings{" + "size=" + size + ", " + "noSandbox=" + noSandbox + ", " + "browserSubprocessPath="
-                + browserSubprocessPath + ", " + "frameworkDirPath=" + frameworkDirPath + ", " + "mainBundlePath="
-                + mainBundlePath + ", " + "multiThreadedMessageLoop=" + multiThreadedMessageLoop + ", "
-                + "externalMessagePump=" + externalMessagePump + ", " + "windowlessRenderingEnabled="
-                + windowlessRenderingEnabled + ", " + "commandLineArgsDisabled=" + commandLineArgsDisabled + ", "
-                + "cachePath=" + cachePath + ", " + "rootCachePath=" + rootCachePath + ", " + "persistSessionCookies="
-                + persistSessionCookies + ", " + "userAgent=" + userAgent + ", " + "userAgentProduct="
-                + userAgentProduct + ", " + "locale=" + locale + ", " + "logFile=" + logFile + ", " + "logSeverity="
-                + logSeverity + ", " + "logItems=" + logItems + ", " + "javascriptFlags=" + javascriptFlags + ", "
-                + "resourcesDirPath=" + resourcesDirPath + ", " + "localesDirPath=" + localesDirPath + ", "
-                + "remoteDebuggingPort=" + remoteDebuggingPort + ", " + "uncaughtExceptionStackSize="
-                + uncaughtExceptionStackSize + ", " + "backgroundColor=" + backgroundColor + ", "
-                + "acceptLanguageList=" + acceptLanguageList + ", " + "cookieableSchemesList=" + cookieableSchemesList
-                + ", " + "cookieableSchemesExcludeDefaults=" + cookieableSchemesExcludeDefaults + ", "
-                + "chromePolicyId=" + chromePolicyId + ", " + "chromeAppIconId=" + chromeAppIconId + ", "
+        return "CefSettings{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "noSandbox="
+                + noSandbox + ", " + "browserSubprocessPath=" + browserSubprocessPath + ", " + "frameworkDirPath="
+                + frameworkDirPath + ", " + "mainBundlePath=" + mainBundlePath + ", " + "multiThreadedMessageLoop="
+                + multiThreadedMessageLoop + ", " + "externalMessagePump=" + externalMessagePump + ", "
+                + "windowlessRenderingEnabled=" + windowlessRenderingEnabled + ", " + "commandLineArgsDisabled="
+                + commandLineArgsDisabled + ", " + "cachePath=" + cachePath + ", " + "rootCachePath=" + rootCachePath
+                + ", " + "persistSessionCookies=" + persistSessionCookies + ", " + "userAgent=" + userAgent + ", "
+                + "userAgentProduct=" + userAgentProduct + ", " + "locale=" + locale + ", " + "logFile=" + logFile
+                + ", " + "logSeverity=" + logSeverity + ", " + "logItems=" + logItems + ", " + "javascriptFlags="
+                + javascriptFlags + ", " + "resourcesDirPath=" + resourcesDirPath + ", " + "localesDirPath="
+                + localesDirPath + ", " + "remoteDebuggingPort=" + remoteDebuggingPort + ", "
+                + "uncaughtExceptionStackSize=" + uncaughtExceptionStackSize + ", " + "backgroundColor="
+                + backgroundColor + ", " + "acceptLanguageList=" + acceptLanguageList + ", " + "cookieableSchemesList="
+                + cookieableSchemesList + ", " + "cookieableSchemesExcludeDefaults=" + cookieableSchemesExcludeDefaults
+                + ", " + "chromePolicyId=" + chromePolicyId + ", " + "chromeAppIconId=" + chromeAppIconId + ", "
                 + "disableSignalHandlers=" + disableSignalHandlers + ", " + "useViewsDefaultPopup="
                 + useViewsDefaultPopup + "}";
     }

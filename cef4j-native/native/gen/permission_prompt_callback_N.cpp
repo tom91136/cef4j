@@ -1,0 +1,16 @@
+// GENERATED - do not edit.
+#include <jni.h>
+#include "include/capi/cef_permission_handler_capi.h"
+#include "jni_util.h"
+
+extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPermissionPromptCallback_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+    auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
+    if (b) b->release(b);
+}
+
+extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPermissionPromptCallback_00024NativePeer_N_1Cont(JNIEnv* env, jobject obj, jlong self, jobject result) {
+    auto* s = reinterpret_cast<cef_permission_prompt_callback_t*>(self);
+    if (!s) return;
+    if (!result) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "result must not be null"); return;}
+    s->cont(s, static_cast<cef_permission_request_result_t>(env->GetLongField(result, env->GetFieldID(env->GetObjectClass(result), "value", "J"))));
+}

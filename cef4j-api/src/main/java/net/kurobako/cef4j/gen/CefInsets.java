@@ -1,7 +1,20 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing insets. */
+/**
+ * Structure representing insets.
+ *
+ * <p>Definition generated from cef_types_geometry.h
+ *
+ * <pre>typedef struct _cef_insets_t {
+ *   int top;
+ *   int left;
+ *   int bottom;
+ *   int right;
+ * } cef_insets_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:64</a>
+ */
 public final class CefInsets {
 
     public final int top;

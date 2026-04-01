@@ -1,7 +1,18 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing CefExecuteProcess arguments. */
+/**
+ * Structure representing CefExecuteProcess arguments.
+ *
+ * <p>Definition generated from cef_types_linux.h
+ *
+ * <pre>typedef struct _cef_main_args_t {
+ *   int argc;
+ *   char** argv;
+ * } cef_main_args_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:77</a>
+ */
 public final class CefMainArgs {
 
     public final int argc;

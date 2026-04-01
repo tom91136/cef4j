@@ -3,24 +3,83 @@ package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
 
-/** Callback interface used for continuation of custom quick menu display. */
-public interface CefRunQuickMenuCallback {
+/**
+ * Callback interface used for continuation of custom quick menu display.
+ *
+ * <p>Definition generated from cef_context_menu_handler_capi.h
+ *
+ * <pre>typedef struct _cef_run_quick_menu_callback_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_run_quick_menu_callback_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:68</a>
+ */
+public interface CefRunQuickMenuCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set |download_path| to the full file path for the download including the file name
-     * or leave blank to use the suggested name and the default temp directory. Set |show_dialog| to true if you do wish
-     * to show the default "Save As" dialog.
+     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
+     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
+     * {@code true} if you do wish to show the default "Save As" dialog.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* cont)(struct _cef_run_quick_menu_callback_t* self, int command_id, cef_event_flags_t event_flags);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
     void cont(int commandId, @Nonnull CefEventFlags eventFlags);
 
-    /** Call to cancel the download. */
+    /**
+     * Call to cancel the download.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* cancel)(struct _cef_run_quick_menu_callback_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     */
     void cancel();
 
-    static class NativePeer implements CefRunQuickMenuCallback {
-        private volatile long nativePtr;
+    final class NativePeer implements CefRunQuickMenuCallback, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public void cont(int commandId, CefEventFlags eventFlags) {
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefRunQuickMenuCallback.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefRunQuickMenuCallback 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public void cont(int commandId, @Nonnull CefEventFlags eventFlags) {
             N_Cont(nativePtr, commandId, eventFlags);
         }
 
@@ -29,9 +88,9 @@ public interface CefRunQuickMenuCallback {
             N_Cancel(nativePtr);
         }
 
-        private native void N_Cont(long self, int commandId, CefEventFlags eventFlags);
+        private static native void N_Cont(long self, int commandId, CefEventFlags eventFlags);
 
-        private native void N_Cancel(long self);
+        private static native void N_Cancel(long self);
 
         @Override
         public boolean equals(Object obj) {

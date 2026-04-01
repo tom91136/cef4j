@@ -6,15 +6,33 @@ import javax.annotation.Nonnull;
 /**
  * Implement this interface to handle events related to dragging. The methods of this class will be called on the UI
  * thread.
+ *
+ * <p>Definition generated from cef_drag_handler_capi.h
+ *
+ * <pre>typedef struct _cef_drag_handler_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_drag_handler_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:46</a>
  */
-public interface CefDragHandler {
+public interface CefDragHandler extends CefClientHandler {
 
     /**
-     * Called when an external drag event enters the browser window. |dragData| contains the drag event data and |mask|
-     * represents the type of drag operation. Return false for default drag handling behavior or true to cancel the drag
-     * event.
+     * Called when an external drag event enters the browser window. {@code dragData} contains the drag event data and
+     * {@code mask} represents the type of drag operation. Return {@code false} for default drag handling behavior or
+     * {@code true} to cancel the drag event.
+     *
+     * <p>Definition generated from cef_drag_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* on_drag_enter)(struct _cef_drag_handler_t* self, struct _cef_browser_t* browser, struct _cef_drag_data_t* dragData, cef_drag_operations_mask_t mask);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
-    default boolean onDragEnter(long browser, long dragData, @Nonnull CefDragOperationsMask mask) {
+    default boolean onDragEnter(
+            @Nonnull CefBrowser browser, @Nonnull CefDragData dragdata, @Nonnull CefDragOperationsMask mask) {
         return false;
     }
 
@@ -23,6 +41,15 @@ public interface CefDragHandler {
      * '-webkit-app-region: drag/no-drag' CSS-property. If draggable regions are never defined in a document this method
      * will also never be called. If the last draggable region is removed from a document this method will be called
      * with an empty vector.
+     *
+     * <p>Definition generated from cef_drag_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_draggable_regions_changed)(struct _cef_drag_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, size_t regionsCount, cef_draggable_region_t const* regions);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
      */
-    default void onDraggableRegionsChanged(long browser, long frame, long regionsCount, long regions) {}
+    default void onDraggableRegionsChanged(
+            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, long regionscount, @Nonnull NativePointer regions) {}
 }

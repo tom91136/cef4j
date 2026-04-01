@@ -3,10 +3,10 @@ package net.kurobako.cef4j.gen;
 
 public final class CefStringUtf8 {
 
-    public final long str;
+    public final NativePointer str;
     public final long length;
 
-    public CefStringUtf8(long str, long length) {
+    public CefStringUtf8(NativePointer str, long length) {
         this.str = str;
         this.length = length;
     }

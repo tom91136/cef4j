@@ -1,67 +1,219 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Structure representing a V8 context handle. V8 handles can only be accessed from the thread on which they are
- * created. Valid threads for creating a V8 handle include the render process main thread (TID_RENDERER) and WebWorker
- * threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * cef_v8_context_t::get_task_runner() function. NOTE: This struct is allocated DLL-side.
+ * created. Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and
+ * WebWorker threads. A task runner for posting tasks on the associated thread can be retrieved via the
+ * {@link CefV8Context#getTaskRunner()} function. NOTE: This struct is allocated DLL-side.
+ *
+ * <p>Definition generated from cef_v8_capi.h
+ *
+ * <pre>typedef struct _cef_v8_context_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_v8_context_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:64</a>
  */
-public interface CefV8Context {
+public interface CefV8Context extends CefLibraryObject {
 
     /**
      * Returns the CefTaskRunner that will execute code on this thread's message loop. This method is safe to call from
      * any thread.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
      */
-    long getTaskRunner();
+    Optional<CefTaskRunner> getTaskRunner();
 
-    /** Returns true if this object is valid. Do not call any other methods if this function returns false. */
+    /**
+     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
+     * {@code false}.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     */
     boolean isValid();
 
-    /** Returns the browser for this context. This method will return an empty reference for WebWorker contexts. */
-    long getBrowser();
+    /**
+     * Returns the browser for this context. This method will return an empty reference for WebWorker contexts.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     */
+    Optional<CefBrowser> getBrowser();
 
-    /** Returns the stack frame at the specified 0-based index. */
-    long getFrame();
+    /**
+     * Returns the stack frame at the specified 0-based index.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>cef_frame_t* (CEF_CALLBACK* get_frame)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1063</a>
+     */
+    Optional<CefFrame> getFrame();
 
-    /** Returns the global object for this context. The context must be entered before calling this method. */
-    long getGlobal();
+    /**
+     * Returns the global object for this context. The context must be entered before calling this method.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>cef_v8_value_t* (CEF_CALLBACK* get_global)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     */
+    Optional<CefV8Value> getGlobal();
 
     /**
      * Enter this context. A context must be explicitly entered before creating a V8 Object, Array, Function or Date
      * asynchronously. Exit() must be called the same number of times as Enter() before releasing this context. V8
-     * objects belong to the context in which they are created. Returns true if the scope was entered successfully.
+     * objects belong to the context in which they are created. Returns {@code true} if the scope was entered
+     * successfully.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* enter)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:184</a>
      */
     boolean enter();
 
     /**
-     * Exit this context. Call this method only after calling Enter(). Returns true if the scope was exited
+     * Exit this context. Call this method only after calling Enter(). Returns {@code true} if the scope was exited
      * successfully.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* exit)(struct _cef_v8_context_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:194</a>
      */
     boolean exit();
 
-    /** Returns true if this object is pointing to the same handle as |that| object. */
-    boolean isSame(long that);
+    /**
+     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_same)(struct _cef_v8_context_t* self, struct _cef_v8_context_t* that);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     */
+    boolean isSame(@Nonnull CefV8Context that);
 
     /**
-     * Execute a string of JavaScript code in this V8 context. The |script_url| parameter is the URL where the script in
-     * question can be found, if any. The |start_line| parameter is the base line number to use for error reporting. On
-     * success |retval| will be set to the return value, if any, and the function will return true. On failure
-     * |exception| will be set to the exception, if any, and the function will return false.
+     * Execute a string of JavaScript code in this V8 context. The {@code script_url} parameter is the URL where the
+     * script in question can be found, if any. The {@code start_line} parameter is the base line number to use for
+     * error reporting. On success {@code retval} will be set to the return value, if any, and the function will return
+     * {@code true}. On failure {@code exception} will be set to the exception, if any, and the function will return
+     * {@code false}.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* eval)(struct _cef_v8_context_t* self, const cef_string_t* code, const cef_string_t* script_url, int start_line, struct _cef_v8_value_t** retval, struct _cef_v8_exception_t** exception);
+     * </pre>
      *
      * @param scriptUrl may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:208</a>
      */
-    boolean eval(@Nonnull String code, @Nullable String scriptUrl, int startLine, long retval, long exception);
+    boolean eval(
+            @Nonnull String code,
+            @Nullable String scriptUrl,
+            int startLine,
+            @Nonnull AtomicReference<CefV8Value> retval,
+            @Nonnull AtomicReference<CefV8Exception> exception);
+    /**
+     * Returns the current (top) context object in the V8 context stack.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>CEF_EXPORT cef_v8_context_t* cef_v8_context_get_current_context(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:129</a>
+     */
+    static Optional<CefV8Context> getCurrentContext() {
+        return Optional.ofNullable(NativePeer.N_GetCurrentContext());
+    }
 
-    static class NativePeer implements CefV8Context {
-        private volatile long nativePtr;
+    /**
+     * Returns the entered (bottom) context object in the V8 context stack.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>CEF_EXPORT cef_v8_context_t* cef_v8_context_get_entered_context(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:135</a>
+     */
+    static Optional<CefV8Context> getEnteredContext() {
+        return Optional.ofNullable(NativePeer.N_GetEnteredContext());
+    }
+
+    /**
+     * Returns {@code true} if V8 is currently inside a context.
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_v8_context_in_context(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:141</a>
+     */
+    static int inContext() {
+        return NativePeer.N_InContext();
+    }
+
+    final class NativePeer implements CefV8Context, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public long getTaskRunner() {
-            return N_GetTaskRunner(nativePtr);
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Context.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefV8Context 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public Optional<CefTaskRunner> getTaskRunner() {
+            return Optional.ofNullable(N_GetTaskRunner(nativePtr));
         }
 
         @Override
@@ -70,18 +222,18 @@ public interface CefV8Context {
         }
 
         @Override
-        public long getBrowser() {
-            return N_GetBrowser(nativePtr);
+        public Optional<CefBrowser> getBrowser() {
+            return Optional.ofNullable(N_GetBrowser(nativePtr));
         }
 
         @Override
-        public long getFrame() {
-            return N_GetFrame(nativePtr);
+        public Optional<CefFrame> getFrame() {
+            return Optional.ofNullable(N_GetFrame(nativePtr));
         }
 
         @Override
-        public long getGlobal() {
-            return N_GetGlobal(nativePtr);
+        public Optional<CefV8Value> getGlobal() {
+            return Optional.ofNullable(N_GetGlobal(nativePtr));
         }
 
         @Override
@@ -95,33 +247,49 @@ public interface CefV8Context {
         }
 
         @Override
-        public boolean isSame(long that) {
+        public boolean isSame(@Nonnull CefV8Context that) {
             return N_IsSame(nativePtr, that);
         }
 
         @Override
-        public boolean eval(String code, String scriptUrl, int startLine, long retval, long exception) {
+        public boolean eval(
+                @Nonnull String code,
+                @Nullable String scriptUrl,
+                int startLine,
+                @Nonnull AtomicReference<CefV8Value> retval,
+                @Nonnull AtomicReference<CefV8Exception> exception) {
             return N_Eval(nativePtr, code, scriptUrl, startLine, retval, exception);
         }
 
-        private native long N_GetTaskRunner(long self);
+        private static native CefTaskRunner N_GetTaskRunner(long self);
 
-        private native boolean N_IsValid(long self);
+        private static native boolean N_IsValid(long self);
 
-        private native long N_GetBrowser(long self);
+        private static native CefBrowser N_GetBrowser(long self);
 
-        private native long N_GetFrame(long self);
+        private static native CefFrame N_GetFrame(long self);
 
-        private native long N_GetGlobal(long self);
+        private static native CefV8Value N_GetGlobal(long self);
 
-        private native boolean N_Enter(long self);
+        private static native boolean N_Enter(long self);
 
-        private native boolean N_Exit(long self);
+        private static native boolean N_Exit(long self);
 
-        private native boolean N_IsSame(long self, long that);
+        private static native boolean N_IsSame(long self, CefV8Context that);
 
-        private native boolean N_Eval(
-                long self, String code, String scriptUrl, int startLine, long retval, long exception);
+        private static native boolean N_Eval(
+                long self,
+                String code,
+                String scriptUrl,
+                int startLine,
+                AtomicReference<CefV8Value> retval,
+                AtomicReference<CefV8Exception> exception);
+
+        static native CefV8Context N_GetCurrentContext();
+
+        static native CefV8Context N_GetEnteredContext();
+
+        static native int N_InContext();
 
         @Override
         public boolean equals(Object obj) {

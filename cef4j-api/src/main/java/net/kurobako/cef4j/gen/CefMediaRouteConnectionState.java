@@ -4,26 +4,114 @@ package net.kurobako.cef4j.gen;
 /**
  * Connection state for a MediaRoute object. Should be kept in sync with Chromium's
  * blink::mojom::PresentationConnectionState type.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   CEF_MRCS_UNKNOWN = -1,
+ *   CEF_MRCS_CONNECTING = 0,
+ *   CEF_MRCS_CONNECTED = 1,
+ *   CEF_MRCS_CLOSED = 2,
+ *   CEF_MRCS_TERMINATED = 3,
+ *   ...
+ * } cef_media_route_connection_state_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CONNECTING}, {@link Kind#CONNECTED}, {@link Kind#CLOSED},
+ * {@link Kind#TERMINATED}, {@link Kind#NUM_VALUES}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
-public enum CefMediaRouteConnectionState {
-    CEF_MRCS_UNKNOWN(-1L),
-    CEF_MRCS_CONNECTING(0L),
-    CEF_MRCS_CONNECTED(1L),
-    CEF_MRCS_CLOSED(2L),
-    CEF_MRCS_TERMINATED(3L),
-    CEF_MRCS_NUM_VALUES(4L),
-    UNKNOWN(-1L);
+public final class CefMediaRouteConnectionState implements CefEnum<CefMediaRouteConnectionState> {
 
-    public final long value;
+    /** Known constants for {@link CefMediaRouteConnectionState}. */
+    public enum Kind {
+        UNKNOWN(-1, "-1", "CEF_MRCS_UNKNOWN"),
+        CONNECTING(0, "0", "CEF_MRCS_CONNECTING"),
+        CONNECTED(1, "1", "CEF_MRCS_CONNECTED"),
+        CLOSED(2, "2", "CEF_MRCS_CLOSED"),
+        TERMINATED(3, "3", "CEF_MRCS_TERMINATED"),
+        NUM_VALUES(4, "4", "CEF_MRCS_NUM_VALUES");
 
-    CefMediaRouteConnectionState(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_media_route_connection_state_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefMediaRouteConnectionState fromLong(long v) {
-        for (CefMediaRouteConnectionState e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefMediaRouteConnectionState(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefMediaRouteConnectionState of(long v) {
+        return new CefMediaRouteConnectionState(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefMediaRouteConnectionState of(Kind k) {
+        return new CefMediaRouteConnectionState(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefMediaRouteConnectionState)) return false;
+        return this.value == ((CefMediaRouteConnectionState) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

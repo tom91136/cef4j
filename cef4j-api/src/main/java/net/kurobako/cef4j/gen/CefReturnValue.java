@@ -1,27 +1,112 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Return value types. */
-public enum CefReturnValue {
+/**
+ * Return value types.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   RV_CANCEL = 0,
+ *   RV_CONTINUE = 1,
+ *   RV_CONTINUE_ASYNC = 2
+ * } cef_return_value_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#CANCEL}, {@link Kind#CONTINUE}, {@link Kind#CONTINUE_ASYNC}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ */
+public final class CefReturnValue implements CefEnum<CefReturnValue> {
 
-    /** Cancel immediately. */
-    RV_CANCEL(0L),
-    /** Continue immediately. */
-    RV_CONTINUE(1L),
-    /** Continue asynchronously (usually via a callback). */
-    RV_CONTINUE_ASYNC(2L),
-    UNKNOWN(-1L);
+    /** Known constants for {@link CefReturnValue}. */
+    public enum Kind {
+        /** Cancel immediately. */
+        CANCEL(0, "0", "RV_CANCEL"),
+        /** Continue immediately. */
+        CONTINUE(1, "1", "RV_CONTINUE"),
+        /** Continue asynchronously (usually via a callback). */
+        CONTINUE_ASYNC(2, "2", "RV_CONTINUE_ASYNC");
 
-    public final long value;
+        private static final Kind[] VALUES = Kind.values();
 
-    CefReturnValue(long v) {
-        this.value = v;
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_return_value_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefReturnValue fromLong(long v) {
-        for (CefReturnValue e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefReturnValue(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefReturnValue of(long v) {
+        return new CefReturnValue(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefReturnValue of(Kind k) {
+        return new CefReturnValue(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefReturnValue)) return false;
+        return this.value == ((CefReturnValue) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

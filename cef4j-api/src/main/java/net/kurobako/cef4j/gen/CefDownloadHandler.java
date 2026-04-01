@@ -3,33 +3,79 @@ package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
 
-/** Class used to handle file downloads. The methods of this class will called on the browser process UI thread. */
-public interface CefDownloadHandler {
+/**
+ * Class used to handle file downloads. The methods of this class will called on the browser process UI thread.
+ *
+ * <p>Definition generated from cef_download_handler_capi.h
+ *
+ * <pre>typedef struct _cef_download_handler_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_download_handler_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:86</a>
+ */
+public interface CefDownloadHandler extends CefClientHandler {
 
     /**
      * Called before a download begins in response to a user-initiated action (e.g. alt + link click or link click that
-     * returns a `Content-Disposition: attachment` response from the server). |url| is the target download URL and
-     * |request_method| is the target method (GET, POST, etc). Return true to proceed with the download or false to
-     * cancel the download.
+     * returns a `Content-Disposition: attachment` response from the server). {@code url} is the target download URL and
+     * {@code request_method} is the target method (GET, POST, etc). Return {@code true} to proceed with the download or
+     * {@code false} to cancel the download.
+     *
+     * <p>Definition generated from cef_download_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* can_download)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, const cef_string_t* url, const cef_string_t* request_method);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
      */
-    default boolean canDownload(long browser, @Nonnull String url, @Nonnull String requestMethod) {
+    default boolean canDownload(@Nonnull CefBrowser browser, @Nonnull String url, @Nonnull String requestMethod) {
         return false;
     }
 
     /**
-     * Called before a download begins. |suggested_name| is the suggested name for the download file. Return true and
-     * execute |callback| either asynchronously or in this method to continue or cancel the download. Return false to
-     * proceed with default handling (cancel with Alloy style, download shelf with Chrome style). Do not keep a
-     * reference to |download_item| outside of this method.
+     * Called before a download begins. {@code suggested_name} is the suggested name for the download file. Return
+     * {@code true} and execute {@code callback} either asynchronously or in this method to continue or cancel the
+     * download. Return {@code false} to proceed with default handling (cancel with Alloy style, download shelf with
+     * Chrome style). Do not keep a reference to {@code download_item} outside of this method.
+     *
+     * <p>Definition generated from cef_download_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* on_before_download)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, struct _cef_download_item_t* download_item, const cef_string_t* suggested_name, struct _cef_before_download_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
      */
-    default boolean onBeforeDownload(long browser, long downloadItem, @Nonnull String suggestedName, long callback) {
+    default boolean onBeforeDownload(
+            @Nonnull CefBrowser browser,
+            @Nonnull CefDownloadItem downloadItem,
+            @Nonnull String suggestedName,
+            @Nonnull CefBeforeDownloadCallback callback) {
         return false;
     }
 
     /**
      * Called when a download's status or progress information has been updated. This may be called multiple times
-     * before and after OnBeforeDownload(). Execute |callback| either asynchronously or in this method to cancel the
-     * download if desired. Do not keep a reference to |download_item| outside of this method.
+     * before and after OnBeforeDownload(). Execute {@code callback} either asynchronously or in this method to cancel
+     * the download if desired. Do not keep a reference to {@code download_item} outside of this method.
+     *
+     * <p>Definition generated from cef_download_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_download_updated)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, struct _cef_download_item_t* download_item, struct _cef_download_item_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
      */
-    default void onDownloadUpdated(long browser, long downloadItem, long callback) {}
+    default void onDownloadUpdated(
+            @Nonnull CefBrowser browser,
+            @Nonnull CefDownloadItem downloadItem,
+            @Nonnull CefDownloadItemCallback callback) {}
 }

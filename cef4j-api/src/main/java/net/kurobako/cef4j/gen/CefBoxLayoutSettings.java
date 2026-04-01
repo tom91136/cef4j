@@ -1,10 +1,32 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Settings used when initializing a CefBoxLayout. */
+/**
+ * Settings used when initializing a CefBoxLayout.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_box_layout_settings_t {
+ *   size_t size;
+ *   int horizontal;
+ *   int inside_border_horizontal_spacing;
+ *   int inside_border_vertical_spacing;
+ *   cef_insets_t* inside_border_insets;
+ *   int between_child_spacing;
+ *   cef_axis_alignment_t main_axis_alignment;
+ *   cef_axis_alignment_t cross_axis_alignment;
+ *   int minimum_cross_axis_size;
+ *   int default_flex;
+ * } cef_box_layout_settings_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:3117</a>
+ */
 public final class CefBoxLayoutSettings {
 
-    public final long size;
+    // Native struct size — set by JNI, not user-modifiable.
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile long size = -1;
+
     public final int horizontal;
     public final int insideBorderHorizontalSpacing;
     public final int insideBorderVerticalSpacing;
@@ -16,7 +38,6 @@ public final class CefBoxLayoutSettings {
     public final int defaultFlex;
 
     public CefBoxLayoutSettings(
-            long size,
             int horizontal,
             int insideBorderHorizontalSpacing,
             int insideBorderVerticalSpacing,
@@ -26,7 +47,6 @@ public final class CefBoxLayoutSettings {
             CefAxisAlignment crossAxisAlignment,
             int minimumCrossAxisSize,
             int defaultFlex) {
-        this.size = size;
         this.horizontal = horizontal;
         this.insideBorderHorizontalSpacing = insideBorderHorizontalSpacing;
         this.insideBorderVerticalSpacing = insideBorderVerticalSpacing;
@@ -43,8 +63,7 @@ public final class CefBoxLayoutSettings {
         if (this == obj) return true;
         if (!(obj instanceof CefBoxLayoutSettings)) return false;
         CefBoxLayoutSettings other = (CefBoxLayoutSettings) obj;
-        return this.size == other.size
-                && this.horizontal == other.horizontal
+        return this.horizontal == other.horizontal
                 && this.insideBorderHorizontalSpacing == other.insideBorderHorizontalSpacing
                 && this.insideBorderVerticalSpacing == other.insideBorderVerticalSpacing
                 && java.util.Objects.equals(this.insideBorderInsets, other.insideBorderInsets)
@@ -58,7 +77,6 @@ public final class CefBoxLayoutSettings {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(
-                size,
                 horizontal,
                 insideBorderHorizontalSpacing,
                 insideBorderVerticalSpacing,
@@ -72,8 +90,8 @@ public final class CefBoxLayoutSettings {
 
     @Override
     public String toString() {
-        return "CefBoxLayoutSettings{" + "size=" + size + ", " + "horizontal=" + horizontal + ", "
-                + "insideBorderHorizontalSpacing=" + insideBorderHorizontalSpacing + ", "
+        return "CefBoxLayoutSettings{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "horizontal="
+                + horizontal + ", " + "insideBorderHorizontalSpacing=" + insideBorderHorizontalSpacing + ", "
                 + "insideBorderVerticalSpacing=" + insideBorderVerticalSpacing + ", " + "insideBorderInsets="
                 + insideBorderInsets + ", " + "betweenChildSpacing=" + betweenChildSpacing + ", " + "mainAxisAlignment="
                 + mainAxisAlignment + ", " + "crossAxisAlignment=" + crossAxisAlignment + ", " + "minimumCrossAxisSize="

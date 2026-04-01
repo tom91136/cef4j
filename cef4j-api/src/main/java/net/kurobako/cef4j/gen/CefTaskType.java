@@ -4,45 +4,135 @@ package net.kurobako.cef4j.gen;
 /**
  * Specifies the task type variants supported by CefTaskManager. Should be kept in sync with Chromium's
  * task_manager::Task::Type type.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   CEF_TASK_TYPE_UNKNOWN = 0,
+ *   CEF_TASK_TYPE_BROWSER = 1,
+ *   CEF_TASK_TYPE_GPU = 2,
+ *   CEF_TASK_TYPE_ZYGOTE = 3,
+ *   CEF_TASK_TYPE_UTILITY = 4,
+ *   ...
+ * } cef_task_type_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#BROWSER}, {@link Kind#GPU}, {@link Kind#ZYGOTE},
+ * {@link Kind#UTILITY}, {@link Kind#RENDERER}, {@link Kind#EXTENSION}, {@link Kind#GUEST},
+ * {@link Kind#PLUGIN_DEPRECATED}, {@link Kind#SANDBOX_HELPER}, {@link Kind#DEDICATED_WORKER},
+ * {@link Kind#SHARED_WORKER}, {@link Kind#SERVICE_WORKER}, {@link Kind#NUM_VALUES}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
-public enum CefTaskType {
-    CEF_TASK_TYPE_UNKNOWN(0L),
-    /** The main browser process. */
-    CEF_TASK_TYPE_BROWSER(1L),
-    /** A graphics process. */
-    CEF_TASK_TYPE_GPU(2L),
-    /** A Linux zygote process. */
-    CEF_TASK_TYPE_ZYGOTE(3L),
-    /** A browser utility process. */
-    CEF_TASK_TYPE_UTILITY(4L),
-    /** A normal WebContents renderer process. */
-    CEF_TASK_TYPE_RENDERER(5L),
-    /** An extension or app process. */
-    CEF_TASK_TYPE_EXTENSION(6L),
-    /** A browser plugin guest process. */
-    CEF_TASK_TYPE_GUEST(7L),
-    CEF_TASK_TYPE_PLUGIN_DEPRECATED(8L),
-    /** A sandbox helper process */
-    CEF_TASK_TYPE_SANDBOX_HELPER(9L),
-    /** A dedicated worker running on the renderer process. */
-    CEF_TASK_TYPE_DEDICATED_WORKER(10L),
-    /** A shared worker running on the renderer process. */
-    CEF_TASK_TYPE_SHARED_WORKER(11L),
-    /** A service worker running on the renderer process. */
-    CEF_TASK_TYPE_SERVICE_WORKER(12L),
-    CEF_TASK_TYPE_NUM_VALUES(13L),
-    UNKNOWN(-1L);
+public final class CefTaskType implements CefEnum<CefTaskType> {
 
-    public final long value;
+    /** Known constants for {@link CefTaskType}. */
+    public enum Kind {
+        UNKNOWN(0, "0", "CEF_TASK_TYPE_UNKNOWN"),
+        /** The main browser process. */
+        BROWSER(1, "1", "CEF_TASK_TYPE_BROWSER"),
+        /** A graphics process. */
+        GPU(2, "2", "CEF_TASK_TYPE_GPU"),
+        /** A Linux zygote process. */
+        ZYGOTE(3, "3", "CEF_TASK_TYPE_ZYGOTE"),
+        /** A browser utility process. */
+        UTILITY(4, "4", "CEF_TASK_TYPE_UTILITY"),
+        /** A normal WebContents renderer process. */
+        RENDERER(5, "5", "CEF_TASK_TYPE_RENDERER"),
+        /** An extension or app process. */
+        EXTENSION(6, "6", "CEF_TASK_TYPE_EXTENSION"),
+        /** A browser plugin guest process. */
+        GUEST(7, "7", "CEF_TASK_TYPE_GUEST"),
+        PLUGIN_DEPRECATED(8, "8", "CEF_TASK_TYPE_PLUGIN_DEPRECATED"),
+        /** A sandbox helper process */
+        SANDBOX_HELPER(9, "9", "CEF_TASK_TYPE_SANDBOX_HELPER"),
+        /** A dedicated worker running on the renderer process. */
+        DEDICATED_WORKER(10, "10", "CEF_TASK_TYPE_DEDICATED_WORKER"),
+        /** A shared worker running on the renderer process. */
+        SHARED_WORKER(11, "11", "CEF_TASK_TYPE_SHARED_WORKER"),
+        /** A service worker running on the renderer process. */
+        SERVICE_WORKER(12, "12", "CEF_TASK_TYPE_SERVICE_WORKER"),
+        NUM_VALUES(13, "13", "CEF_TASK_TYPE_NUM_VALUES");
 
-    CefTaskType(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_task_type_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefTaskType fromLong(long v) {
-        for (CefTaskType e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefTaskType(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefTaskType of(long v) {
+        return new CefTaskType(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefTaskType of(Kind k) {
+        return new CefTaskType(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefTaskType)) return false;
+        return this.value == ((CefTaskType) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

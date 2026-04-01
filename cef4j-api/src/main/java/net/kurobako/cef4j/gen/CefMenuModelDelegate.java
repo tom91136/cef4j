@@ -6,35 +6,118 @@ import javax.annotation.Nonnull;
 /**
  * Implement this interface to handle menu model events. The methods of this class will be called on the browser process
  * UI thread unless otherwise indicated.
+ *
+ * <p>Definition generated from cef_menu_model_delegate_capi.h
+ *
+ * <pre>typedef struct _cef_menu_model_delegate_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_menu_model_delegate_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:45</a>
  */
-public interface CefMenuModelDelegate {
-
-    /** Perform the action associated with the specified |command_id| and optional |event_flags|. */
-    default void executeCommand(long menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {}
-
-    /** Called when the user moves the mouse outside the menu and over the owning window. */
-    default void mouseOutsideMenu(long menuModel, @Nonnull CefPoint screenPoint) {}
+public interface CefMenuModelDelegate extends CefClientHandler {
 
     /**
-     * Called on unhandled open submenu keyboard commands. |is_rtl| will be true if the menu is displaying a
-     * right-to-left language.
+     * Perform the action associated with the specified {@code command_id} and optional {@code event_flags}.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* execute_command)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int command_id, cef_event_flags_t event_flags);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
-    default void unhandledOpenSubmenu(long menuModel, boolean isRtl) {}
+    default void executeCommand(@Nonnull CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {}
 
     /**
-     * Called on unhandled close submenu keyboard commands. |is_rtl| will be true if the menu is displaying a
-     * right-to-left language.
+     * Called when the user moves the mouse outside the menu and over the owning window.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* mouse_outside_menu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, const cef_point_t* screen_point);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
      */
-    default void unhandledCloseSubmenu(long menuModel, boolean isRtl) {}
+    default void mouseOutsideMenu(@Nonnull CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {}
 
-    /** The menu is about to show. */
-    default void menuWillShow(long menuModel) {}
+    /**
+     * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying
+     * a right-to-left language.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* unhandled_open_submenu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int is_rtl);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:70</a>
+     */
+    default void unhandledOpenSubmenu(@Nonnull CefMenuModel menuModel, boolean isRtl) {}
 
-    /** The menu has closed. */
-    default void menuClosed(long menuModel) {}
+    /**
+     * Called on unhandled close submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is
+     * displaying a right-to-left language.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* unhandled_close_submenu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int is_rtl);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:78</a>
+     */
+    default void unhandledCloseSubmenu(@Nonnull CefMenuModel menuModel, boolean isRtl) {}
 
-    /** Optionally modify a menu item label. Return true if |label| was modified. */
-    default boolean formatLabel(long menuModel, @Nonnull String label) {
+    /**
+     * The menu is about to show.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* menu_will_show)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:86</a>
+     */
+    default void menuWillShow(@Nonnull CefMenuModel menuModel) {}
+
+    /**
+     * The menu has closed.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* menu_closed)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:92</a>
+     */
+    default void menuClosed(@Nonnull CefMenuModel menuModel) {}
+
+    /**
+     * Optionally modify a menu item label. Return {@code true} if {@code label} was modified.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* format_label)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, cef_string_t* label);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
+     */
+    default boolean formatLabel(@Nonnull CefMenuModel menuModel, @Nonnull String label) {
         return false;
     }
 }

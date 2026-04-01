@@ -164,16 +164,29 @@ public final class CefApp {
     }
 
     /**
-     * Create a new CefClient for handler registration and browser creation. Initializes CEF if not already done.
+     * Create an offscreen browser with the given client and URL.
      *
-     * @return a new CefClient instance
+     * @param client the CefClient implementation providing handler callbacks
+     * @param url the initial URL to load
+     * @return a new CefBrowserOsr instance
      */
-    public CefClient createClient() {
+    public CefBrowserOsr createBrowser(net.kurobako.cef4j.gen.CefClient client, String url) {
+        return createBrowser(client, url, 0);
+    }
+
+    /**
+     * Create an offscreen browser with the given client, URL, and frame rate.
+     *
+     * @param client the CefClient implementation providing handler callbacks
+     * @param url the initial URL to load
+     * @param frameRate the target frame rate for OSR rendering (0 for default 60fps)
+     * @return a new CefBrowserOsr instance
+     */
+    public CefBrowserOsr createBrowser(net.kurobako.cef4j.gen.CefClient client, String url, int frameRate) {
         if (state != State.INITIALIZED) {
             initialize();
         }
-        log.debug("Created new CefClient");
-        return new CefClient();
+        return new CefBrowserOsr(client, url, frameRate);
     }
 
     /**
@@ -186,7 +199,9 @@ public final class CefApp {
         state = State.SHUTTING_DOWN;
         log.info("CEF shutting down");
 
-        N_Shutdown();
+        int released = NativeCleaner.INSTANCE.releaseAll();
+        log.info("Released {} outstanding NativePeers before shutdown", released);
+        net.kurobako.cef4j.gen.CefGlobals.shutdown();
         state = State.TERMINATED;
         INSTANCE.set(null);
         log.info("CEF terminated");
@@ -207,11 +222,11 @@ public final class CefApp {
      */
     public void doMessageLoopWork() {
         if (state == State.INITIALIZED) {
-            N_DoMessageLoopWork();
+            net.kurobako.cef4j.gen.CefGlobals.doMessageLoopWork();
         }
     }
 
-    // Native methods - implemented in cef_app.cpp
+    // Native methods - implemented in cef_app.cpp (only initialize remains hand-written)
     private native boolean N_Initialize(
             String cachePath,
             String userAgent,
@@ -220,12 +235,4 @@ public final class CefApp {
             String subprocessPath,
             String resourcesPath,
             String[] extraArgs);
-
-    private native void N_Shutdown();
-
-    private native void N_DoMessageLoopWork();
-
-    private native void N_RunMessageLoop();
-
-    private native void N_QuitMessageLoop();
 }

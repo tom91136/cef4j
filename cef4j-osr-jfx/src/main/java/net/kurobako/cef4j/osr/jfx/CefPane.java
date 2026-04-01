@@ -15,10 +15,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Screen;
+import net.kurobako.cef4j.CefApp;
 import net.kurobako.cef4j.CefBrowserOsr;
-import net.kurobako.cef4j.CefClient;
 import net.kurobako.cef4j.CefFrameBuffer;
+import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorType;
+import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefMutableRect;
 import net.kurobako.cef4j.gen.CefMutableScreenInfo;
@@ -107,32 +110,24 @@ public class CefPane extends Region {
     }
 
     /**
-     * Create a CEF browser attached to this pane.
-     *
-     * <p>Must be called on the JavaFX application thread. The returned browser's
-     * {@link CefBrowserOsr#createImmediately()} must be called on the CEF UI thread (typically the main thread).
-     *
-     * @param client the CEF client to attach handlers to
-     * @param url initial URL to load
-     * @param frameRate target frame rate
-     * @return the browser instance
+     * Create a render handler that paints into this pane's frame buffer. Use this when building a {@link CefClient}
+     * implementation for this pane.
      */
-    public CefBrowserOsr createBrowser(CefClient client, String url, int frameRate) {
-        CefPane self = this;
-        client.addRenderHandler(new CefRenderHandler() {
+    public CefRenderHandler createRenderHandler() {
+        return new CefRenderHandler() {
             @Override
-            public void getViewRect(long b, CefMutableRect rect) {
+            public void getViewRect(CefBrowser b, CefMutableRect rect) {
                 rect.x = 0;
                 rect.y = 0;
-                rect.width = Math.max(1, (int) self.getWidth());
-                rect.height = Math.max(1, (int) self.getHeight());
+                rect.width = Math.max(1, (int) getWidth());
+                rect.height = Math.max(1, (int) getHeight());
             }
 
             @Override
-            public boolean getScreenInfo(long b, CefMutableScreenInfo screenInfo) {
+            public boolean getScreenInfo(CefBrowser b, CefMutableScreenInfo screenInfo) {
                 float scale = getDeviceScaleFactor();
-                int w = Math.max(1, (int) self.getWidth());
-                int h = Math.max(1, (int) self.getHeight());
+                int w = Math.max(1, (int) getWidth());
+                int h = Math.max(1, (int) getHeight());
                 screenInfo.deviceScaleFactor = scale;
                 screenInfo.depth = 32;
                 screenInfo.depthPerComponent = 8;
@@ -142,7 +137,7 @@ public class CefPane extends Region {
             }
 
             @Override
-            public boolean getScreenPoint(long b, int viewX, int viewY, int[] screenX, int[] screenY) {
+            public boolean getScreenPoint(CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
                 float scale = getDeviceScaleFactor();
                 screenX[0] = Math.round(viewX * scale);
                 screenY[0] = Math.round(viewY * scale);
@@ -151,36 +146,41 @@ public class CefPane extends Region {
 
             @Override
             public void onPaint(
-                    long b,
+                    CefBrowser b,
                     CefPaintElementType type,
                     long dirtyRectsCount,
                     CefRect[] dirtyRects,
                     ByteBuffer buffer,
                     int width,
                     int height) {
-                // Copy pixels from native memory on the CEF thread (buffer is only valid here).
                 if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
                     Platform.runLater(() -> blitFrame(width, height));
                 }
             }
-        });
+        };
+    }
 
-        // Inject scrollbar CSS that approximates the current JFX theme
+    /** Create a load handler that injects scrollbar CSS matching the current JFX theme on each page load. */
+    public CefLoadHandler createScrollbarLoadHandler() {
         String scrollbarCss = ScrollbarTheme.generateCss(getScene());
         String scrollbarScript = ScrollbarTheme.injectScript(scrollbarCss);
-        client.addLoadHandler(new CefLoadHandler() {
+        return new CefLoadHandler() {
             @Override
-            public void onLoadEnd(long browser, long frame, int httpStatusCode) {
+            public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 CefBrowserOsr br = CefPane.this.browser;
                 if (br != null) {
                     br.executeJavaScript(scrollbarScript, "", 0);
                 }
             }
-        });
+        };
+    }
 
-        CefBrowserOsr b = client.createBrowser(url, frameRate);
-        this.browser = b;
-        return b;
+    /**
+     * Attach a browser to this pane. Call this after creating a browser via {@link CefApp#createBrowser(CefClient,
+     * String)}.
+     */
+    public void setBrowser(CefBrowserOsr browser) {
+        this.browser = browser;
     }
 
     /** Returns the browser instance, or {@code null} if {@link #createBrowser} hasn't been called yet. */
@@ -229,40 +229,43 @@ public class CefPane extends Region {
 
     /** Maps a CEF cursor type to a JavaFX {@link Cursor}. Override to customise. */
     public Cursor mapCursor(CefCursorType type) {
-        switch (type) {
-            case CT_CROSS:
+        return type.kind().map(CefPane::cursorForKind).orElse(Cursor.DEFAULT);
+    }
+
+    private static Cursor cursorForKind(CefCursorType.Kind k) {
+        switch (k) {
+            case CROSS:
                 return Cursor.CROSSHAIR;
-            case CT_HAND:
+            case HAND:
                 return Cursor.HAND;
-            case CT_IBEAM:
+            case IBEAM:
                 return Cursor.TEXT;
-            case CT_WAIT:
+            case WAIT:
                 return Cursor.WAIT;
-            case CT_MOVE:
+            case MOVE:
                 return Cursor.MOVE;
-            case CT_NORTHRESIZE:
+            case NORTHRESIZE:
                 return Cursor.N_RESIZE;
-            case CT_SOUTHRESIZE:
+            case SOUTHRESIZE:
                 return Cursor.S_RESIZE;
-            case CT_EASTRESIZE:
+            case EASTRESIZE:
                 return Cursor.E_RESIZE;
-            case CT_WESTRESIZE:
+            case WESTRESIZE:
                 return Cursor.W_RESIZE;
-            case CT_NORTHEASTRESIZE:
+            case NORTHEASTRESIZE:
                 return Cursor.NE_RESIZE;
-            case CT_NORTHWESTRESIZE:
+            case NORTHWESTRESIZE:
                 return Cursor.NW_RESIZE;
-            case CT_SOUTHEASTRESIZE:
+            case SOUTHEASTRESIZE:
                 return Cursor.SE_RESIZE;
-            case CT_SOUTHWESTRESIZE:
+            case SOUTHWESTRESIZE:
                 return Cursor.SW_RESIZE;
-            case CT_NORTHSOUTHRESIZE:
-            case CT_ROWRESIZE:
+            case NORTHSOUTHRESIZE:
+            case ROWRESIZE:
                 return Cursor.N_RESIZE;
-            case CT_EASTWESTRESIZE:
-            case CT_COLUMNRESIZE:
+            case EASTWESTRESIZE:
+            case COLUMNRESIZE:
                 return Cursor.E_RESIZE;
-            case CT_POINTER:
             default:
                 return Cursor.DEFAULT;
         }
@@ -304,13 +307,18 @@ public class CefPane extends Region {
 
     private void handleScroll(ScrollEvent e) {
         if (browser != null) {
-            browser.sendMouseWheelEvent((int) e.getX(), (int) e.getY(), scrollModifiers(e), 0, (int) e.getDeltaY());
+            browser.sendMouseWheelEvent(
+                    (int) e.getX(),
+                    (int) e.getY(),
+                    baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown()),
+                    0,
+                    (int) e.getDeltaY());
         }
     }
 
     private void handleKeyPressed(KeyEvent e) {
         if (browser == null) return;
-        int mods = keyModifiers(e);
+        int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = mapKeyCode(e.getCode());
         browser.sendKeyEvent(KEYEVENT_RAWKEYDOWN, mods, keyCode, keyCode, (char) 0, (char) 0, false);
         String text = e.getText();
@@ -327,7 +335,7 @@ public class CefPane extends Region {
 
     private void handleKeyReleased(KeyEvent e) {
         if (browser != null) {
-            int mods = keyModifiers(e);
+            int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
             int keyCode = mapKeyCode(e.getCode());
             browser.sendKeyEvent(KEYEVENT_KEYUP, mods, keyCode, keyCode, (char) 0, (char) 0, false);
         }
@@ -340,33 +348,20 @@ public class CefPane extends Region {
         return 0;
     }
 
-    private static int mouseModifiers(MouseEvent e) {
+    private static int baseModifiers(boolean shift, boolean ctrl, boolean alt, boolean meta) {
         int mods = 0;
-        if (e.isShiftDown()) mods |= EVENTFLAG_SHIFT_DOWN;
-        if (e.isControlDown()) mods |= EVENTFLAG_CONTROL_DOWN;
-        if (e.isAltDown()) mods |= EVENTFLAG_ALT_DOWN;
-        if (e.isMetaDown()) mods |= EVENTFLAG_COMMAND_DOWN;
+        if (shift) mods |= EVENTFLAG_SHIFT_DOWN;
+        if (ctrl) mods |= EVENTFLAG_CONTROL_DOWN;
+        if (alt) mods |= EVENTFLAG_ALT_DOWN;
+        if (meta) mods |= EVENTFLAG_COMMAND_DOWN;
+        return mods;
+    }
+
+    private static int mouseModifiers(MouseEvent e) {
+        int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         if (e.isPrimaryButtonDown()) mods |= EVENTFLAG_LEFT_MOUSE_BUTTON;
         if (e.isMiddleButtonDown()) mods |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
         if (e.isSecondaryButtonDown()) mods |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
-        return mods;
-    }
-
-    private static int scrollModifiers(ScrollEvent e) {
-        int mods = 0;
-        if (e.isShiftDown()) mods |= EVENTFLAG_SHIFT_DOWN;
-        if (e.isControlDown()) mods |= EVENTFLAG_CONTROL_DOWN;
-        if (e.isAltDown()) mods |= EVENTFLAG_ALT_DOWN;
-        if (e.isMetaDown()) mods |= EVENTFLAG_COMMAND_DOWN;
-        return mods;
-    }
-
-    private static int keyModifiers(KeyEvent e) {
-        int mods = 0;
-        if (e.isShiftDown()) mods |= EVENTFLAG_SHIFT_DOWN;
-        if (e.isControlDown()) mods |= EVENTFLAG_CONTROL_DOWN;
-        if (e.isAltDown()) mods |= EVENTFLAG_ALT_DOWN;
-        if (e.isMetaDown()) mods |= EVENTFLAG_COMMAND_DOWN;
         return mods;
     }
 

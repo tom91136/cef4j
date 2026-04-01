@@ -35,6 +35,8 @@ public final class SystemBootstrap {
 
     private static volatile boolean loaded = false;
     private static volatile Path extractionDir;
+    private static volatile Path cachedLibcefDir;
+    private static volatile boolean libcefDirResolved = false;
 
     /**
      * Load the native library. Tries system path first, falls back to classpath extraction with LIBCEF_DIR.
@@ -92,19 +94,22 @@ public final class SystemBootstrap {
         return extractionDir;
     }
 
-    /** Returns the resolved LIBCEF_DIR, or null if not set. */
+    /** Returns the resolved LIBCEF_DIR, or null if not set. Result is cached after first call. */
     public static Path getLibcefDir() {
+        if (libcefDirResolved) return cachedLibcefDir;
         String env = System.getenv("LIBCEF_DIR");
         if (env == null || env.isEmpty()) {
             env = System.getProperty("cef4j.libcef.dir");
         }
-        if (env != null) return Paths.get(env);
-
-        // Auto-discover from .cef-dist/ in project tree (works when running from IDE)
-        Path discovered = discoverCefDist();
-        if (discovered != null) return discovered;
-
-        return null;
+        Path result;
+        if (env != null) {
+            result = Paths.get(env);
+        } else {
+            result = discoverCefDist();
+        }
+        cachedLibcefDir = result;
+        libcefDirResolved = true;
+        return result;
     }
 
     /**

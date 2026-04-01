@@ -1,6 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
+
 /**
  * A simple thread abstraction that establishes a message loop on a new thread. The consumer uses CefTaskRunner to
  * execute code on the thread's message loop. The thread is terminated when the CefThread object is destroyed or Stop()
@@ -8,41 +11,123 @@ package net.kurobako.cef4j.gen;
  * terminated. CreateThread() can be called on any valid CEF thread in either the browser or render process. This class
  * should only be used for tasks that require a dedicated thread. In most cases you can post tasks to an existing CEF
  * thread instead of creating a new one; see cef_task.h for details.
+ *
+ * <p>Definition generated from cef_thread_capi.h
+ *
+ * <pre>typedef struct _cef_thread_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_thread_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:44</a>
  */
-public interface CefThread {
+public interface CefThread extends CefLibraryObject {
 
     /**
      * Returns the CefTaskRunner that will execute code on this thread's message loop. This method is safe to call from
      * any thread.
+     *
+     * <p>Definition generated from cef_thread_capi.h
+     *
+     * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_thread_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
      */
-    long getTaskRunner();
+    Optional<CefTaskRunner> getTaskRunner();
 
     /**
      * Returns the platform thread ID. It will return the same value after Stop() is called. This method is safe to call
      * from any thread.
      *
+     * <p>Definition generated from cef_thread_capi.h
+     *
+     * <pre>int64_t (CEF_CALLBACK* get_platform_thread_id)(struct _cef_thread_t* self);</pre>
+     *
      * @return the result, or {@code kInvalidPlatformThreadId} for default handling
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:94</a>
      */
     long getPlatformThreadId();
 
     /**
      * Stop and join the thread. This method must be called from the same thread that called CreateThread(). Do not call
-     * this method if CreateThread() was called with a |stoppable| value of false.
+     * this method if CreateThread() was called with a {@code stoppable} value of {@code false}.
+     *
+     * <p>Definition generated from cef_thread_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* stop)(struct _cef_thread_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:101</a>
      */
     void stop();
 
     /**
-     * Returns true if the thread is currently running. This method must be called from the same thread that called
-     * CreateThread().
+     * Returns {@code true} if the thread is currently running. This method must be called from the same thread that
+     * called CreateThread().
+     *
+     * <p>Definition generated from cef_thread_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_running)(struct _cef_thread_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:109</a>
      */
     boolean isRunning();
+    /**
+     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
+     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
+     * threads. Returns {@code null} on failure.
+     *
+     * <p>Definition generated from cef_thread_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT cef_thread_t* cef_thread_create(const cef_string_t* display_name, cef_thread_priority_t priority, cef_message_loop_type_t message_loop_type, int stoppable, cef_com_init_mode_t com_init_mode);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     */
+    static Optional<CefThread> create(
+            @Nonnull String displayName,
+            @Nonnull CefThreadPriority priority,
+            @Nonnull CefMessageLoopType messageLoopType,
+            int stoppable,
+            @Nonnull CefComInitMode comInitMode) {
+        return Optional.ofNullable(NativePeer.N_Create(displayName, priority, messageLoopType, stoppable, comInitMode));
+    }
 
-    static class NativePeer implements CefThread {
-        private volatile long nativePtr;
+    final class NativePeer implements CefThread, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
 
         @Override
-        public long getTaskRunner() {
-            return N_GetTaskRunner(nativePtr);
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefThread.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefThread 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public Optional<CefTaskRunner> getTaskRunner() {
+            return Optional.ofNullable(N_GetTaskRunner(nativePtr));
         }
 
         @Override
@@ -60,13 +145,20 @@ public interface CefThread {
             return N_IsRunning(nativePtr);
         }
 
-        private native long N_GetTaskRunner(long self);
+        private static native CefTaskRunner N_GetTaskRunner(long self);
 
-        private native long N_GetPlatformThreadId(long self);
+        private static native long N_GetPlatformThreadId(long self);
 
-        private native void N_Stop(long self);
+        private static native void N_Stop(long self);
 
-        private native boolean N_IsRunning(long self);
+        private static native boolean N_IsRunning(long self);
+
+        static native CefThread N_Create(
+                String displayName,
+                CefThreadPriority priority,
+                CefMessageLoopType messageLoopType,
+                int stoppable,
+                CefComInitMode comInitMode);
 
         @Override
         public boolean equals(Object obj) {

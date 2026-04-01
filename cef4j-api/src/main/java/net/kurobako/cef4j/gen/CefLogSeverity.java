@@ -1,37 +1,126 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Log severity levels. */
-public enum CefLogSeverity {
+/**
+ * Log severity levels.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   LOGSEVERITY_DEFAULT = 0,
+ *   LOGSEVERITY_VERBOSE = 1,
+ *   LOGSEVERITY_DEBUG = LOGSEVERITY_VERBOSE,
+ *   LOGSEVERITY_INFO = 2,
+ *   LOGSEVERITY_WARNING = 3,
+ *   ...
+ * } cef_log_severity_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#VERBOSE}, {@link Kind#DEBUG}, {@link Kind#INFO},
+ * {@link Kind#WARNING}, {@link Kind#ERROR}, {@link Kind#FATAL}, {@link Kind#DISABLE}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ */
+public final class CefLogSeverity implements CefEnum<CefLogSeverity> {
 
-    /** Default logging (currently INFO logging). */
-    LOGSEVERITY_DEFAULT(0L),
-    /** Verbose logging. */
-    LOGSEVERITY_VERBOSE(1L),
-    /** DEBUG logging. */
-    LOGSEVERITY_DEBUG(1L),
-    /** INFO logging. */
-    LOGSEVERITY_INFO(2L),
-    /** WARNING logging. */
-    LOGSEVERITY_WARNING(3L),
-    /** ERROR logging. */
-    LOGSEVERITY_ERROR(4L),
-    /** FATAL logging. */
-    LOGSEVERITY_FATAL(5L),
-    /** Disable logging to file for all messages, and to stderr for messages with severity less than FATAL. */
-    LOGSEVERITY_DISABLE(99L),
-    UNKNOWN(-1L);
+    /** Known constants for {@link CefLogSeverity}. */
+    public enum Kind {
+        /** Default logging (currently INFO logging). */
+        DEFAULT(0, "0", "LOGSEVERITY_DEFAULT"),
+        /** Verbose logging. */
+        VERBOSE(1, "1", "LOGSEVERITY_VERBOSE"),
+        /** DEBUG logging. */
+        DEBUG(1L, "LOGSEVERITY_VERBOSE", "LOGSEVERITY_DEBUG"),
+        /** INFO logging. */
+        INFO(2, "2", "LOGSEVERITY_INFO"),
+        /** WARNING logging. */
+        WARNING(3, "3", "LOGSEVERITY_WARNING"),
+        /** ERROR logging. */
+        ERROR(4, "4", "LOGSEVERITY_ERROR"),
+        /** FATAL logging. */
+        FATAL(5, "5", "LOGSEVERITY_FATAL"),
+        /** Disable logging to file for all messages, and to stderr for messages with severity less than FATAL. */
+        DISABLE(99, "99", "LOGSEVERITY_DISABLE");
 
-    public final long value;
+        private static final Kind[] VALUES = Kind.values();
 
-    CefLogSeverity(long v) {
-        this.value = v;
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_log_severity_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefLogSeverity fromLong(long v) {
-        for (CefLogSeverity e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefLogSeverity(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefLogSeverity of(long v) {
+        return new CefLogSeverity(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefLogSeverity of(Kind k) {
+        return new CefLogSeverity(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefLogSeverity)) return false;
+        return this.value == ((CefLogSeverity) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

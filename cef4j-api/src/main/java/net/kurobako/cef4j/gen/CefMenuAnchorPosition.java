@@ -3,24 +3,109 @@ package net.kurobako.cef4j.gen;
 
 /**
  * Specifies how a menu will be anchored for non-RTL languages. The opposite position will be used for RTL languages.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   CEF_MENU_ANCHOR_TOPLEFT = 0,
+ *   CEF_MENU_ANCHOR_TOPRIGHT = 1,
+ *   CEF_MENU_ANCHOR_BOTTOMCENTER = 2,
+ *   CEF_MENU_ANCHOR_NUM_VALUES = 3
+ * } cef_menu_anchor_position_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#TOPLEFT}, {@link Kind#TOPRIGHT}, {@link Kind#BOTTOMCENTER}, {@link Kind#NUM_VALUES}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
-public enum CefMenuAnchorPosition {
-    CEF_MENU_ANCHOR_TOPLEFT(0L),
-    CEF_MENU_ANCHOR_TOPRIGHT(1L),
-    CEF_MENU_ANCHOR_BOTTOMCENTER(2L),
-    CEF_MENU_ANCHOR_NUM_VALUES(3L),
-    UNKNOWN(-1L);
+public final class CefMenuAnchorPosition implements CefEnum<CefMenuAnchorPosition> {
 
-    public final long value;
+    /** Known constants for {@link CefMenuAnchorPosition}. */
+    public enum Kind {
+        TOPLEFT(0, "0", "CEF_MENU_ANCHOR_TOPLEFT"),
+        TOPRIGHT(1, "1", "CEF_MENU_ANCHOR_TOPRIGHT"),
+        BOTTOMCENTER(2, "2", "CEF_MENU_ANCHOR_BOTTOMCENTER"),
+        NUM_VALUES(3, "3", "CEF_MENU_ANCHOR_NUM_VALUES");
 
-    CefMenuAnchorPosition(long v) {
-        this.value = v;
+        private static final Kind[] VALUES = Kind.values();
+
+        /** The underlying C enum numeric value. */
+        public final long value;
+
+        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        public final String expr;
+
+        /** The C constant name (e.g., {@code "cef_menu_anchor_position_t"}). */
+        public final String name;
+
+        Kind(long value, String expr, String name) {
+            this.value = value;
+            this.expr = expr;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name + "(expr=" + expr + ", value=" + value + ")";
+        }
     }
 
-    public static CefMenuAnchorPosition fromLong(long v) {
-        for (CefMenuAnchorPosition e : values()) {
-            if (e.value == v) return e;
+    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefMenuAnchorPosition(long value) {
+        this.value = value;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String expr() {
+        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+    }
+
+    @Override
+    public String name() {
+        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value == value) return java.util.Optional.of(k);
         }
-        return UNKNOWN;
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    public static CefMenuAnchorPosition of(long v) {
+        return new CefMenuAnchorPosition(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefMenuAnchorPosition of(Kind k) {
+        return new CefMenuAnchorPosition(k.value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefMenuAnchorPosition)) return false;
+        return this.value == ((CefMenuAnchorPosition) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
     }
 }

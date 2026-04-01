@@ -5,71 +5,162 @@ import javax.annotation.Nonnull;
 
 /**
  * Implement this interface to handle context menu events. The methods of this class will be called on the UI thread.
+ *
+ * <p>Definition generated from cef_context_menu_handler_capi.h
+ *
+ * <pre>typedef struct _cef_context_menu_handler_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_context_menu_handler_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:88</a>
  */
-public interface CefContextMenuHandler {
+public interface CefContextMenuHandler extends CefClientHandler {
 
     /**
-     * Called before a context menu is displayed. |params| provides information about the context menu state. |model|
-     * initially contains the default context menu. The |model| can be cleared to show no context menu or modified to
-     * show a custom menu. Do not keep references to |params| or |model| outside of this callback.
+     * Called before a context menu is displayed. {@code params} provides information about the context menu state.
+     * {@code model} initially contains the default context menu. The {@code model} can be cleared to show no context
+     * menu or modified to show a custom menu. Do not keep references to {@code params} or {@code model} outside of this
+     * callback.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_before_context_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, struct _cef_menu_model_t* model);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
      */
-    default void onBeforeContextMenu(long browser, long frame, long params, long model) {}
+    default void onBeforeContextMenu(
+            @Nonnull CefBrowser browser,
+            @Nonnull CefFrame frame,
+            @Nonnull CefContextMenuParams params,
+            @Nonnull CefMenuModel model) {}
 
     /**
-     * Called to allow custom display of the context menu. |params| provides information about the context menu state.
-     * |model| contains the context menu model resulting from OnBeforeContextMenu. For custom display return true and
-     * execute |callback| either synchronously or asynchronously with the selected command ID. For default display
-     * return false. Do not keep references to |params| or |model| outside of this callback.
+     * Called to allow custom display of the context menu. {@code params} provides information about the context menu
+     * state. {@code model} contains the context menu model resulting from OnBeforeContextMenu. For custom display
+     * return {@code true} and execute {@code callback} either synchronously or asynchronously with the selected command
+     * ID. For default display return {@code false}. Do not keep references to {@code params} or {@code model} outside
+     * of this callback.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* run_context_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, struct _cef_menu_model_t* model, struct _cef_run_context_menu_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
      */
-    default boolean runContextMenu(long browser, long frame, long params, long model, long callback) {
+    default boolean runContextMenu(
+            @Nonnull CefBrowser browser,
+            @Nonnull CefFrame frame,
+            @Nonnull CefContextMenuParams params,
+            @Nonnull CefMenuModel model,
+            @Nonnull CefRunContextMenuCallback callback) {
         return false;
     }
 
     /**
-     * Called to execute a command selected from the context menu. Return true if the command was handled or false for
-     * the default implementation. See cef_menu_id_t for the command ids that have default implementations. All
-     * user-defined command ids should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. |params| will have the same
-     * values as what was passed to OnBeforeContextMenu(). Do not keep a reference to |params| outside of this callback.
+     * Called to execute a command selected from the context menu. Return {@code true} if the command was handled or
+     * {@code false} for the default implementation. See cef_menu_id_t for the command ids that have default
+     * implementations. All user-defined command ids should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST.
+     * {@code params} will have the same values as what was passed to OnBeforeContextMenu(). Do not keep a reference to
+     * {@code params} outside of this callback.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* on_context_menu_command)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, int command_id, cef_event_flags_t event_flags);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
      */
     default boolean onContextMenuCommand(
-            long browser, long frame, long params, int commandId, @Nonnull CefEventFlags eventFlags) {
+            @Nonnull CefBrowser browser,
+            @Nonnull CefFrame frame,
+            @Nonnull CefContextMenuParams params,
+            int commandId,
+            @Nonnull CefEventFlags eventFlags) {
         return false;
     }
 
     /**
      * Called when the context menu is dismissed irregardless of whether the menu was canceled or a command was
      * selected.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_context_menu_dismissed)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
      */
-    default void onContextMenuDismissed(long browser, long frame) {}
+    default void onContextMenuDismissed(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
 
     /**
-     * Called to allow custom display of the quick menu for a windowless browser. |location| is the top left corner of
-     * the selected region. |size| is the size of the selected region. |edit_state_flags| is a combination of flags that
-     * represent the state of the quick menu. Return true if the menu will be handled and execute |callback| either
-     * synchronously or asynchronously with the selected command ID. Return false to cancel the menu.
+     * Called to allow custom display of the quick menu for a windowless browser. {@code location} is the top left
+     * corner of the selected region. {@code size} is the size of the selected region. {@code edit_state_flags} is a
+     * combination of flags that represent the state of the quick menu. Return {@code true} if the menu will be handled
+     * and execute {@code callback} either synchronously or asynchronously with the selected command ID. Return
+     * {@code false} to cancel the menu.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* run_quick_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_point_t* location, const cef_size_t* size, cef_quick_menu_edit_state_flags_t edit_state_flags, struct _cef_run_quick_menu_callback_t* callback);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
      */
     default boolean runQuickMenu(
-            long browser,
-            long frame,
+            @Nonnull CefBrowser browser,
+            @Nonnull CefFrame frame,
             @Nonnull CefPoint location,
             @Nonnull CefSize size,
             @Nonnull CefQuickMenuEditStateFlags editStateFlags,
-            long callback) {
+            @Nonnull CefRunQuickMenuCallback callback) {
         return false;
     }
 
     /**
-     * Called to execute a command selected from the quick menu for a windowless browser. Return true if the command was
-     * handled or false for the default implementation. See cef_menu_id_t for command IDs that have default
-     * implementations.
+     * Called to execute a command selected from the quick menu for a windowless browser. Return {@code true} if the
+     * command was handled or {@code false} for the default implementation. See cef_menu_id_t for command IDs that have
+     * default implementations.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* on_quick_menu_command)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, int command_id, cef_event_flags_t event_flags);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
-    default boolean onQuickMenuCommand(long browser, long frame, int commandId, @Nonnull CefEventFlags eventFlags) {
+    default boolean onQuickMenuCommand(
+            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
         return false;
     }
 
     /**
      * Called when the quick menu for a windowless browser is dismissed irregardless of whether the menu was canceled or
      * a command was selected.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_quick_menu_dismissed)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
      */
-    default void onQuickMenuDismissed(long browser, long frame) {}
+    default void onQuickMenuDismissed(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
 }

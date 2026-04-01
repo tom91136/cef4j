@@ -1,25 +1,72 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Callback interface for asynchronous continuation of print job requests. */
-public interface CefPrintJobCallback {
+/**
+ * Callback interface for asynchronous continuation of print job requests.
+ *
+ * <p>Definition generated from cef_print_handler_capi.h
+ *
+ * <pre>typedef struct _cef_print_job_callback_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_print_job_callback_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:64</a>
+ */
+public interface CefPrintJobCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set |download_path| to the full file path for the download including the file name
-     * or leave blank to use the suggested name and the default temp directory. Set |show_dialog| to true if you do wish
-     * to show the default "Save As" dialog.
+     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
+     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
+     * {@code true} if you do wish to show the default "Save As" dialog.
+     *
+     * <p>Definition generated from cef_print_handler_capi.h
+     *
+     * <pre>void (CEF_CALLBACK* cont)(struct _cef_print_job_callback_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
     void cont();
 
-    static class NativePeer implements CefPrintJobCallback {
-        private volatile long nativePtr;
+    final class NativePeer implements CefPrintJobCallback, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefPrintJobCallback.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefPrintJobCallback 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public void cont() {
             N_Cont(nativePtr);
         }
 
-        private native void N_Cont(long self);
+        private static native void N_Cont(long self);
 
         @Override
         public boolean equals(Object obj) {

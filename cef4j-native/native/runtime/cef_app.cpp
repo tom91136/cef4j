@@ -114,39 +114,5 @@ Java_net_kurobako_cef4j_CefApp_N_1Initialize(
     return result ? JNI_TRUE : JNI_FALSE;
 }
 
-// ---------------------------------------------------------------------------
-// Java_net_kurobako_cef4j_CefApp_N_1Shutdown
-// ---------------------------------------------------------------------------
-extern "C" JNIEXPORT void JNICALL
-Java_net_kurobako_cef4j_CefApp_N_1Shutdown(JNIEnv* /*env*/, jobject /*obj*/) {
-    cef_shutdown();
-}
-
-// ---------------------------------------------------------------------------
-// Java_net_kurobako_cef4j_CefApp_N_1DoMessageLoopWork
-//
-// Called from the Java message pump timer when external_message_pump is true.
-// ---------------------------------------------------------------------------
-extern "C" JNIEXPORT void JNICALL
-Java_net_kurobako_cef4j_CefApp_N_1DoMessageLoopWork(JNIEnv* /*env*/, jobject /*obj*/) {
-    cef_do_message_loop_work();
-}
-
-// ---------------------------------------------------------------------------
-// Java_net_kurobako_cef4j_CefApp_N_1RunMessageLoop
-//
-// Blocks until CefQuitMessageLoop is called. Used when external_message_pump
-// is false - the caller runs this on a dedicated thread.
-// ---------------------------------------------------------------------------
-extern "C" JNIEXPORT void JNICALL
-Java_net_kurobako_cef4j_CefApp_N_1RunMessageLoop(JNIEnv* /*env*/, jobject /*obj*/) {
-    cef_run_message_loop();
-}
-
-// ---------------------------------------------------------------------------
-// Java_net_kurobako_cef4j_CefApp_N_1QuitMessageLoop
-// ---------------------------------------------------------------------------
-extern "C" JNIEXPORT void JNICALL
-Java_net_kurobako_cef4j_CefApp_N_1QuitMessageLoop(JNIEnv* /*env*/, jobject /*obj*/) {
-    cef_quit_message_loop();
-}
+// N_Shutdown, N_DoMessageLoopWork, N_RunMessageLoop, N_QuitMessageLoop
+// are now delegated to generated CefGlobals static methods on the Java side.

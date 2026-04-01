@@ -5,6 +5,14 @@ package net.kurobako.cef4j.gen;
  * Represents a wall clock time in UTC. Values are not guaranteed to be monotonically non-decreasing and are subject to
  * large amounts of skew. Time is stored internally as microseconds since the Windows epoch (1601). This is equivalent
  * of Chromium `base::Time` (see base/time/time.h).
+ *
+ * <p>Definition generated from cef_time.h
+ *
+ * <pre>typedef struct _cef_basetime_t {
+ *   int64_t val;
+ * } cef_basetime_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">cef_time.h:46</a>
  */
 public final class CefBasetime {
 

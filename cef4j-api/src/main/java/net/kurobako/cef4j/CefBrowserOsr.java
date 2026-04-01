@@ -1,5 +1,7 @@
 package net.kurobako.cef4j;
 
+import net.kurobako.cef4j.gen.*;
+
 /**
  * An off-screen rendered CEF browser.
  *
@@ -15,8 +17,8 @@ public class CefBrowserOsr {
     private final CefClient client;
     private final String initialUrl;
     private final int frameRate;
-    private volatile long browserPtr;
-    private volatile long hostPtr;
+    private volatile CefBrowser browser;
+    private volatile CefBrowserHost host;
 
     CefBrowserOsr(CefClient client, String url, int frameRate) {
         this.client = client;
@@ -31,8 +33,23 @@ public class CefBrowserOsr {
      */
     public void createImmediately() {
         log.debug("Creating browser synchronously for: {}", initialUrl);
-        browserPtr = N_CreateBrowserSync(client, initialUrl, frameRate);
-        log.info("Browser created (ptr=0x{})", Long.toHexString(browserPtr));
+
+        var windowInfo = new CefMutableWindowInfo();
+        windowInfo.windowlessRenderingEnabled = 1;
+
+        var settings = new CefMutableBrowserSettings();
+        settings.windowlessFrameRate = frameRate > 0 ? frameRate : 60;
+
+        browser = CefBrowserHost.createBrowserSync(
+                        windowInfo.toImmutable(), client, initialUrl, settings.toImmutable(), null, null)
+                .orElse(null);
+
+        if (browser != null) {
+            host = browser.getHost().orElse(null);
+            log.info("Browser created");
+        } else {
+            log.error("createBrowserSync returned null");
+        }
     }
 
     /**
@@ -41,7 +58,7 @@ public class CefBrowserOsr {
      * @return true if the browser is valid
      */
     public boolean isValid() {
-        return browserPtr != 0;
+        return browser != null;
     }
 
     /**
@@ -50,8 +67,7 @@ public class CefBrowserOsr {
      * @return the browser's unique identifier, or -1 if not valid
      */
     public int getIdentifier() {
-        if (browserPtr == 0) return -1;
-        return N_GetIdentifier(browserPtr);
+        return browser != null ? browser.getIdentifier() : -1;
     }
 
     // --- Navigation ---
@@ -62,9 +78,12 @@ public class CefBrowserOsr {
      * @param url the URL to load
      */
     public void loadURL(String url) {
-        if (browserPtr == 0) return;
+        if (browser == null) return;
         log.debug("Loading URL: {}", url);
-        N_LoadURL(browserPtr, url);
+        browser.getMainFrame().ifPresent(f -> {
+            f.loadUrl(url);
+            f.close();
+        });
     }
 
     /**
@@ -75,65 +94,47 @@ public class CefBrowserOsr {
      * @param line the base line number for error reporting
      */
     public void executeJavaScript(String code, String url, int line) {
-        if (browserPtr == 0) return;
-        N_ExecuteJavaScript(browserPtr, code, url, line);
+        if (browser == null) return;
+        browser.getMainFrame().ifPresent(f -> {
+            f.executeJavaScript(code, url, line);
+            f.close();
+        });
     }
 
     public boolean canGoBack() {
-        return browserPtr != 0 && N_CanGoBack(browserPtr) != 0;
+        return browser != null && browser.canGoBack();
     }
 
     public void goBack() {
-        if (browserPtr == 0) return;
-        N_GoBack(browserPtr);
+        if (browser != null) browser.goBack();
     }
 
     public boolean canGoForward() {
-        return browserPtr != 0 && N_CanGoForward(browserPtr) != 0;
+        return browser != null && browser.canGoForward();
     }
 
     public void goForward() {
-        if (browserPtr == 0) return;
-        N_GoForward(browserPtr);
+        if (browser != null) browser.goForward();
     }
 
     public void reload() {
-        if (browserPtr == 0) return;
-        N_Reload(browserPtr);
+        if (browser != null) browser.reload();
     }
 
     public void stopLoad() {
-        if (browserPtr == 0) return;
-        N_StopLoad(browserPtr);
-    }
-
-    // --- Host access ---
-
-    /**
-     * Get the host pointer for advanced operations (input dispatch, etc.). The host pointer is cached after the first
-     * retrieval.
-     *
-     * @return the native host pointer, or 0 if the browser is not valid
-     */
-    public long getHostPtr() {
-        if (hostPtr == 0 && browserPtr != 0) {
-            hostPtr = N_GetHost(browserPtr);
-        }
-        return hostPtr;
+        if (browser != null) browser.stopLoad();
     }
 
     // --- OSR notifications ---
 
     /** Notify the browser that it was resized. The render handler's getViewRect will be queried for the new size. */
     public void wasResized() {
-        long host = getHostPtr();
-        if (host != 0) N_WasResized(host);
+        if (host != null) host.wasResized();
     }
 
     /** Invalidate the browser's paint buffer. CEF will call onPaint. */
     public void invalidate() {
-        long host = getHostPtr();
-        if (host != 0) N_Invalidate(host);
+        if (host != null) host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
     }
 
     /**
@@ -147,9 +148,9 @@ public class CefBrowserOsr {
      * @param clickCount number of clicks (1 for single, 2 for double)
      */
     public void sendMouseClickEvent(int x, int y, int modifiers, int buttonType, boolean mouseUp, int clickCount) {
-        long host = getHostPtr();
-        if (host != 0) {
-            N_SendMouseClickEvent(host, x, y, modifiers, buttonType, mouseUp ? 1 : 0, clickCount);
+        if (host != null) {
+            host.sendMouseClickEvent(
+                    new CefMouseEvent(x, y, modifiers), CefMouseButtonType.of(buttonType), mouseUp, clickCount);
         }
     }
 
@@ -162,9 +163,8 @@ public class CefBrowserOsr {
      * @param mouseLeave true if the mouse is leaving the browser area
      */
     public void sendMouseMoveEvent(int x, int y, int modifiers, boolean mouseLeave) {
-        long host = getHostPtr();
-        if (host != 0) {
-            N_SendMouseMoveEvent(host, x, y, modifiers, mouseLeave ? 1 : 0);
+        if (host != null) {
+            host.sendMouseMoveEvent(new CefMouseEvent(x, y, modifiers), mouseLeave);
         }
     }
 
@@ -178,9 +178,8 @@ public class CefBrowserOsr {
      * @param deltaY vertical scroll delta
      */
     public void sendMouseWheelEvent(int x, int y, int modifiers, int deltaX, int deltaY) {
-        long host = getHostPtr();
-        if (host != 0) {
-            N_SendMouseWheelEvent(host, x, y, modifiers, deltaX, deltaY);
+        if (host != null) {
+            host.sendMouseWheelEvent(new CefMouseEvent(x, y, modifiers), deltaX, deltaY);
         }
     }
 
@@ -203,17 +202,16 @@ public class CefBrowserOsr {
             char character,
             char unmodifiedCharacter,
             boolean isSystemKey) {
-        long host = getHostPtr();
-        if (host != 0) {
-            N_SendKeyEvent(
-                    host,
-                    type,
+        if (host != null) {
+            host.sendKeyEvent(new CefKeyEvent(
+                    CefKeyEventType.of(type),
                     modifiers,
                     windowsKeyCode,
                     nativeKeyCode,
+                    isSystemKey ? 1 : 0,
                     character,
                     unmodifiedCharacter,
-                    isSystemKey ? 1 : 0);
+                    0));
         }
     }
 
@@ -227,12 +225,17 @@ public class CefBrowserOsr {
      */
     public void close(boolean forceClose) {
         log.info("Closing browser (force={})", forceClose);
-        long host = getHostPtr();
-        if (host != 0) {
-            N_CloseBrowser(host, forceClose ? 1 : 0);
+        if (host != null) {
+            host.closeBrowser(forceClose);
         }
-        browserPtr = 0;
-        hostPtr = 0;
+        if (host != null) {
+            host.close();
+            host = null;
+        }
+        if (browser != null) {
+            browser.close();
+            browser = null;
+        }
         log.debug("Browser closed");
     }
 
@@ -242,57 +245,6 @@ public class CefBrowserOsr {
      * @param focus true to set focus, false to remove
      */
     public void setFocus(boolean focus) {
-        long host = getHostPtr();
-        if (host != 0) N_SetFocus(host, focus ? 1 : 0);
+        if (host != null) host.setFocus(focus);
     }
-
-    // --- Native methods ---
-    // These are implemented in the hand-written cef_browser_osr.cpp runtime file.
-
-    private static native long N_CreateBrowserSync(CefClient client, String url, int frameRate);
-
-    private static native int N_GetIdentifier(long browser);
-
-    private static native void N_LoadURL(long browser, String url);
-
-    private static native void N_ExecuteJavaScript(long browser, String code, String url, int line);
-
-    private static native int N_CanGoBack(long browser);
-
-    private static native void N_GoBack(long browser);
-
-    private static native int N_CanGoForward(long browser);
-
-    private static native void N_GoForward(long browser);
-
-    private static native void N_Reload(long browser);
-
-    private static native void N_StopLoad(long browser);
-
-    private static native long N_GetHost(long browser);
-
-    private static native void N_WasResized(long host);
-
-    private static native void N_Invalidate(long host);
-
-    private static native void N_SendMouseClickEvent(
-            long host, int x, int y, int modifiers, int buttonType, int mouseUp, int clickCount);
-
-    private static native void N_SendMouseMoveEvent(long host, int x, int y, int modifiers, int mouseLeave);
-
-    private static native void N_SendMouseWheelEvent(long host, int x, int y, int modifiers, int deltaX, int deltaY);
-
-    private static native void N_SendKeyEvent(
-            long host,
-            int type,
-            int modifiers,
-            int windowsKeyCode,
-            int nativeKeyCode,
-            char character,
-            char unmodifiedCharacter,
-            int isSystemKey);
-
-    private static native void N_CloseBrowser(long host, int forceClose);
-
-    private static native void N_SetFocus(long host, int focus);
 }

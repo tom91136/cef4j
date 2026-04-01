@@ -1,7 +1,19 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing mouse event information. */
+/**
+ * Structure representing mouse event information.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_mouse_event_t {
+ *   int x;
+ *   int y;
+ *   unsigned int modifiers;
+ * } cef_mouse_event_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:2054</a>
+ */
 public final class CefMouseEvent {
 
     public final int x;

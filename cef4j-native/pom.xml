@@ -15,6 +15,10 @@
     <name>cef4j-native</name>
     <description>C++ JNI layer for CEF bindings</description>
 
+    <properties>
+        <exec.skip>false</exec.skip>
+    </properties>
+
     <build>
         <plugins>
             <!-- Step 1: Download + extract CEF binary distribution (cached in .cef-dist/) -->
@@ -133,6 +137,21 @@
                             <arguments>
                                 <argument>-pl</argument>
                                 <argument>cef4j-api</argument>
+                                <argument>spotless:apply</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>format-generated-cpp</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/../mvnw</executable>
+                            <workingDirectory>${project.basedir}/..</workingDirectory>
+                            <arguments>
+                                <argument>-N</argument>
                                 <argument>spotless:apply</argument>
                             </arguments>
                         </configuration>

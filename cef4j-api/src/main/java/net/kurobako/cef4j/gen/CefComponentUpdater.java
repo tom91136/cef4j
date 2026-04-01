@@ -1,42 +1,145 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This class provides access to Chromium's component updater service, allowing clients to discover registered
  * components and trigger on-demand updates. The methods of this class may only be called on the browser process UI
  * thread. If the CEF context is not initialized or the component updater service is not available, methods will return
- * safe defaults (0, nullptr, or empty).
+ * safe defaults (0, {@code null}, or empty).
+ *
+ * <p>Definition generated from cef_component_updater_capi.h
+ *
+ * <pre>typedef struct _cef_component_updater_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_component_updater_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:104</a>
  */
-public interface CefComponentUpdater {
+public interface CefComponentUpdater extends CefLibraryObject {
 
-    /** Returns the number of registered components, or 0 if the service is not available. */
+    /**
+     * Returns the number of registered components, or 0 if the service is not available.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>size_t (CEF_CALLBACK* get_component_count)(struct _cef_component_updater_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
+     */
     long getComponentCount();
 
     /**
-     * Populates |components| with all registered components. Any existing contents will be cleared first.
+     * Populates {@code components} with all registered components. Any existing contents will be cleared first.
      *
-     * <p>The size of {@code components} is determined by {@code GetComponentCount()}.
+     * <p>The C API exposes this as a two-pass pattern: first call {@link #getComponentCount()} to obtain the count,
+     * then allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>cef_component_t** (CEF_CALLBACK* get_components)(struct _cef_component_updater_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:128</a>
      */
-    void getComponents(long componentsCount, long components);
-
-    long getComponentById(@Nonnull String componentId);
+    List<CefComponent> getComponents();
 
     /**
-     * Triggers an on-demand update for the component with the specified |component_id|. |priority| specifies whether
-     * the update should be processed in the background or foreground. Use CEF_COMPONENT_UPDATE_PRIORITY_FOREGROUND for
-     * user-initiated updates. |callback| will be called asynchronously on the UI thread when the update operation
-     * completes. The callback is always executed, including when the component is already up-to-date (returns
-     * CEF_COMPONENT_UPDATE_ERROR_NONE), when the requested component doesn't exist, or when the service is unavailable
-     * (returns CEF_COMPONENT_UPDATE_ERROR_SERVICE_ERROR). The callback may be nullptr if no notification is needed.
+     * Returns the component with the specified {@code component_id}, or {@code null} if not found or the service is not
+     * available.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>
+     * cef_component_t* (CEF_CALLBACK* get_component_by_id)(struct _cef_component_updater_t* self, const cef_string_t* component_id);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
+     */
+    Optional<CefComponent> getComponentById(@Nonnull String componentId);
+
+    /**
+     * Triggers an on-demand update for the component with the specified {@code component_id}. {@code priority}
+     * specifies whether the update should be processed in the background or foreground. Use
+     * {@link CefComponentUpdatePriority.Kind#FOREGROUND} for user-initiated updates.
+     *
+     * <p>{@code callback} will be called asynchronously on the UI thread when the update operation completes. The
+     * callback is always executed, including when the component is already up-to-date (returns
+     * {@link CefComponentUpdateError.Kind#NONE}), when the requested component doesn't exist, or when the service is
+     * unavailable (returns {@link CefComponentUpdateError.Kind#SERVICE_ERROR}). The callback may be {@code null} if no
+     * notification is needed.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* update)(struct _cef_component_updater_t* self, const cef_string_t* component_id, cef_component_update_priority_t priority, struct _cef_component_update_callback_t* callback);
+     * </pre>
      *
      * @param callback may be null
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
-    void update(@Nonnull String componentId, @Nonnull CefComponentUpdatePriority priority, long callback);
+    void update(
+            @Nonnull String componentId,
+            @Nonnull CefComponentUpdatePriority priority,
+            @Nullable CefComponentUpdateCallback callback);
+    /**
+     * Handle retrieval of the interceptor value identified by {@code index}. {@code object} is the receiver ('this'
+     * object) of the interceptor. If retrieval succeeds, set {@code retval} to the return value. If the requested value
+     * does not exist, don't set either {@code retval} or {@code exception}. If retrieval fails, set {@code exception}
+     * to the exception that will be thrown. Return {@code true} if interceptor retrieval was handled, {@code false}
+     * otherwise.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>CEF_EXPORT cef_component_updater_t* cef_component_updater_get(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
+     */
+    static Optional<CefComponentUpdater> get() {
+        return Optional.ofNullable(NativePeer.N_Get());
+    }
 
-    static class NativePeer implements CefComponentUpdater {
-        private volatile long nativePtr;
+    final class NativePeer implements CefComponentUpdater, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
+
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefComponentUpdater.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefComponentUpdater 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
 
         @Override
         public long getComponentCount() {
@@ -44,27 +147,36 @@ public interface CefComponentUpdater {
         }
 
         @Override
-        public void getComponents(long componentsCount, long components) {
-            N_GetComponents(nativePtr, componentsCount, components);
+        public List<CefComponent> getComponents() {
+            return Arrays.asList(N_GetComponents(nativePtr));
         }
 
         @Override
-        public long getComponentById(String componentId) {
-            return N_GetComponentById(nativePtr, componentId);
+        public Optional<CefComponent> getComponentById(@Nonnull String componentId) {
+            return Optional.ofNullable(N_GetComponentById(nativePtr, componentId));
         }
 
         @Override
-        public void update(String componentId, CefComponentUpdatePriority priority, long callback) {
+        public void update(
+                @Nonnull String componentId,
+                @Nonnull CefComponentUpdatePriority priority,
+                @Nullable CefComponentUpdateCallback callback) {
             N_Update(nativePtr, componentId, priority, callback);
         }
 
-        private native long N_GetComponentCount(long self);
+        private static native long N_GetComponentCount(long self);
 
-        private native void N_GetComponents(long self, long componentsCount, long components);
+        private static native CefComponent[] N_GetComponents(long self);
 
-        private native long N_GetComponentById(long self, String componentId);
+        private static native CefComponent N_GetComponentById(long self, String componentId);
 
-        private native void N_Update(long self, String componentId, CefComponentUpdatePriority priority, long callback);
+        private static native void N_Update(
+                long self,
+                String componentId,
+                CefComponentUpdatePriority priority,
+                CefComponentUpdateCallback callback);
+
+        static native CefComponentUpdater N_Get();
 
         @Override
         public boolean equals(Object obj) {

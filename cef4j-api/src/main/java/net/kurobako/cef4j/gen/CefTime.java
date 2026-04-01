@@ -1,7 +1,24 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Time information. Values should always be in UTC. */
+/**
+ * Time information. Values should always be in UTC.
+ *
+ * <p>Definition generated from cef_time.h
+ *
+ * <pre>typedef struct _cef_time_t {
+ *   int year;
+ *   int month;
+ *   int day_of_week;
+ *   int day_of_month;
+ *   int hour;
+ *   int minute;
+ *   int second;
+ *   int millisecond;
+ * } cef_time_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">cef_time.h:57</a>
+ */
 public final class CefTime {
 
     public final int year;

@@ -1,60 +1,174 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
  * Provides information about the context menu state. The methods of this class can only be accessed on browser process
  * the UI thread.
+ *
+ * <p>Definition generated from cef_context_menu_handler_capi.h
+ *
+ * <pre>typedef struct _cef_context_menu_params_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_context_menu_params_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:195</a>
  */
-public interface CefContextMenuParams {
+public interface CefContextMenuParams extends CefLibraryObject {
 
-    int getXcoord();
+    /**
+     * Returns the X coordinate of the mouse where the context menu was invoked. Coords are relative to the associated
+     * RenderView's origin.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_xcoord)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
+     */
+    int getXCoord();
 
-    int getYcoord();
+    /**
+     * Returns the Y coordinate of the mouse where the context menu was invoked. Coords are relative to the associated
+     * RenderView's origin.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* get_ycoord)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
+     */
+    int getYCoord();
 
     /**
      * Returns flags representing the type of node that the context menu was invoked on.
      *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_context_menu_type_flags_t (CEF_CALLBACK* get_type_flags)(struct _cef_context_menu_params_t* self);</pre>
+     *
      * @return the result, or {@code CM_TYPEFLAG_NONE} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
      */
     CefContextMenuTypeFlags getTypeFlags();
 
-    /** Returns the URL of the link, if any, that encloses the node that the context menu was invoked on. */
+    /**
+     * Returns the URL of the link, if any, that encloses the node that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_url)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     */
     Optional<String> getLinkUrl();
 
     /**
      * Returns the link URL, if any, to be used ONLY for "copy link address". We don't validate this field in the
      * frontend process.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_unfiltered_link_url)(struct _cef_context_menu_params_t* self);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
      */
     Optional<String> getUnfilteredLinkUrl();
 
     /**
      * Returns the source URL, if any, for the element that the context menu was invoked on. Example of elements with
      * source URLs are img, audio, and video.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_source_url)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
      */
     Optional<String> getSourceUrl();
 
-    /** Returns true if the context menu was invoked on an image which has non-empty contents. */
+    /**
+     * Returns {@code true} if the context menu was invoked on an image which has non-empty contents.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* has_image_contents)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
+     */
     boolean hasImageContents();
 
-    /** Returns the title text or the alt text if the context menu was invoked on an image. */
+    /**
+     * Returns the title text or the alt text if the context menu was invoked on an image.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_title_text)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
+     */
     Optional<String> getTitleText();
 
-    /** Returns the URL of the top level page that the context menu was invoked on. */
+    /**
+     * Returns the URL of the top level page that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_page_url)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
+     */
     Optional<String> getPageUrl();
 
-    /** Returns the URL of the subframe that the context menu was invoked on. */
+    /**
+     * Returns the URL of the subframe that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_frame_url)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
+     */
     Optional<String> getFrameUrl();
 
-    /** Returns the character encoding of the subframe that the context menu was invoked on. */
+    /**
+     * Returns the character encoding of the subframe that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_frame_charset)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
+     */
     Optional<String> getFrameCharset();
 
     /**
      * Returns the type of context node that the context menu was invoked on.
      *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_context_menu_media_type_t (CEF_CALLBACK* get_media_type)(struct _cef_context_menu_params_t* self);</pre>
+     *
      * @return the result, or {@code CM_MEDIATYPE_NONE} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
      */
     CefContextMenuMediaType getMediaType();
 
@@ -62,50 +176,148 @@ public interface CefContextMenuParams {
      * Returns flags representing the actions supported by the media element, if any, that the context menu was invoked
      * on.
      *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * cef_context_menu_media_state_flags_t (CEF_CALLBACK* get_media_state_flags)(struct _cef_context_menu_params_t* self);
+     * </pre>
+     *
      * @return the result, or {@code CM_MEDIAFLAG_NONE} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
      */
     CefContextMenuMediaStateFlags getMediaStateFlags();
 
-    /** Returns the text of the selection, if any, that the context menu was invoked on. */
+    /**
+     * Returns the text of the selection, if any, that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_selection_text)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
+     */
     Optional<String> getSelectionText();
 
-    /** Returns the text of the misspelled word, if any, that the context menu was invoked on. */
+    /**
+     * Returns the text of the misspelled word, if any, that the context menu was invoked on.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_misspelled_word)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
+     */
     Optional<String> getMisspelledWord();
 
     /**
-     * Returns true if suggestions exist, false otherwise. Fills in |suggestions| from the spell check service for the
-     * misspelled word if there is one.
+     * Returns {@code true} if suggestions exist, {@code false} otherwise. Fills in {@code suggestions} from the spell
+     * check service for the misspelled word if there is one.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* get_dictionary_suggestions)(struct _cef_context_menu_params_t* self, cef_string_list_t suggestions);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
-    boolean getDictionarySuggestions(@Nonnull java.util.List<String> suggestions);
+    boolean getDictionarySuggestions(@Nonnull List<String> suggestions);
 
-    /** Returns true if this is an editable node. */
+    /**
+     * Returns {@code true} if this is an editable node.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_editable)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:190</a>
+     */
     boolean isEditable();
 
-    /** Returns true if the context menu was invoked on an editable node where spell-check is enabled. */
+    /**
+     * Returns {@code true} if the context menu was invoked on an editable node where spell-check is enabled.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_spell_check_enabled)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
+     */
     boolean isSpellCheckEnabled();
 
     /**
      * Returns flags representing the actions supported by the editable node, if any, that the context menu was invoked
      * on.
      *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>
+     * cef_context_menu_edit_state_flags_t (CEF_CALLBACK* get_edit_state_flags)(struct _cef_context_menu_params_t* self);
+     * </pre>
+     *
      * @return the result, or {@code CM_EDITFLAG_NONE} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
      */
     CefContextMenuEditStateFlags getEditStateFlags();
 
-    /** Returns true if the context menu contains items specified by the renderer process. */
+    /**
+     * Returns {@code true} if the context menu contains items specified by the renderer process.
+     *
+     * <p>Definition generated from cef_context_menu_handler_capi.h
+     *
+     * <pre>int (CEF_CALLBACK* is_custom_menu)(struct _cef_context_menu_params_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
+     */
     boolean isCustomMenu();
 
-    static class NativePeer implements CefContextMenuParams {
-        private volatile long nativePtr;
+    final class NativePeer implements CefContextMenuParams, AutoCloseable {
+        private final long nativePtr;
+        private final java.lang.ref.Cleaner.Cleanable cleanable;
 
-        @Override
-        public int getXcoord() {
-            return N_GetXcoord(nativePtr);
+        NativePeer(long ptr) {
+            this.nativePtr = ptr;
+            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
         }
 
         @Override
-        public int getYcoord() {
-            return N_GetYcoord(nativePtr);
+        public void close() {
+            cleanable.clean();
+        }
+
+        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefContextMenuParams.class);
+
+        private static class Release implements Runnable {
+            private final long ptr;
+
+            Release(long ptr) {
+                this.ptr = ptr;
+            }
+
+            @Override
+            public void run() {
+                if (_log.isTraceEnabled()) _log.trace("release CefContextMenuParams 0x{}", Long.toHexString(ptr));
+                N_Release(ptr);
+            }
+        }
+
+        private static native void N_Release(long ptr);
+
+        @Override
+        public int getXCoord() {
+            return N_GetXCoord(nativePtr);
+        }
+
+        @Override
+        public int getYCoord() {
+            return N_GetYCoord(nativePtr);
         }
 
         @Override
@@ -174,7 +386,7 @@ public interface CefContextMenuParams {
         }
 
         @Override
-        public boolean getDictionarySuggestions(java.util.List<String> suggestions) {
+        public boolean getDictionarySuggestions(@Nonnull List<String> suggestions) {
             return N_GetDictionarySuggestions(nativePtr, suggestions);
         }
 
@@ -198,45 +410,45 @@ public interface CefContextMenuParams {
             return N_IsCustomMenu(nativePtr);
         }
 
-        private native int N_GetXcoord(long self);
+        private static native int N_GetXCoord(long self);
 
-        private native int N_GetYcoord(long self);
+        private static native int N_GetYCoord(long self);
 
-        private native CefContextMenuTypeFlags N_GetTypeFlags(long self);
+        private static native CefContextMenuTypeFlags N_GetTypeFlags(long self);
 
-        private native String N_GetLinkUrl(long self);
+        private static native String N_GetLinkUrl(long self);
 
-        private native String N_GetUnfilteredLinkUrl(long self);
+        private static native String N_GetUnfilteredLinkUrl(long self);
 
-        private native String N_GetSourceUrl(long self);
+        private static native String N_GetSourceUrl(long self);
 
-        private native boolean N_HasImageContents(long self);
+        private static native boolean N_HasImageContents(long self);
 
-        private native String N_GetTitleText(long self);
+        private static native String N_GetTitleText(long self);
 
-        private native String N_GetPageUrl(long self);
+        private static native String N_GetPageUrl(long self);
 
-        private native String N_GetFrameUrl(long self);
+        private static native String N_GetFrameUrl(long self);
 
-        private native String N_GetFrameCharset(long self);
+        private static native String N_GetFrameCharset(long self);
 
-        private native CefContextMenuMediaType N_GetMediaType(long self);
+        private static native CefContextMenuMediaType N_GetMediaType(long self);
 
-        private native CefContextMenuMediaStateFlags N_GetMediaStateFlags(long self);
+        private static native CefContextMenuMediaStateFlags N_GetMediaStateFlags(long self);
 
-        private native String N_GetSelectionText(long self);
+        private static native String N_GetSelectionText(long self);
 
-        private native String N_GetMisspelledWord(long self);
+        private static native String N_GetMisspelledWord(long self);
 
-        private native boolean N_GetDictionarySuggestions(long self, java.util.List<String> suggestions);
+        private static native boolean N_GetDictionarySuggestions(long self, List<String> suggestions);
 
-        private native boolean N_IsEditable(long self);
+        private static native boolean N_IsEditable(long self);
 
-        private native boolean N_IsSpellCheckEnabled(long self);
+        private static native boolean N_IsSpellCheckEnabled(long self);
 
-        private native CefContextMenuEditStateFlags N_GetEditStateFlags(long self);
+        private static native CefContextMenuEditStateFlags N_GetEditStateFlags(long self);
 
-        private native boolean N_IsCustomMenu(long self);
+        private static native boolean N_IsCustomMenu(long self);
 
         @Override
         public boolean equals(Object obj) {

@@ -71,6 +71,36 @@ class CHeaderParserSpec extends munit.FunSuite {
     assertEquals(ds.fields.map(_.name), List("x", "y", "width", "height"))
   }
 
+  test("recognises transitive base field as ref-counted (e.g. cef_preference_manager_t base)") {
+    val stub  = """typedef struct _cef_request_context_t {
+      cef_preference_manager_t base;
+      int (CEF_CALLBACK* is_same)(struct _cef_request_context_t* self,
+          struct _cef_request_context_t* other);
+    } cef_request_context_t;"""
+    val decls = CHeaderParser.parse(stub, Set.empty)
+    assert(
+      decls.head.isInstanceOf[CefDecl.ObjectStruct],
+      s"Expected ObjectStruct for transitive base, got ${decls.head.getClass.getSimpleName}"
+    )
+    val obj = decls.head.asInstanceOf[CefDecl.ObjectStruct]
+    assertEquals(obj.name, "cef_request_context_t")
+    assertEquals(obj.fns.map(_.name), List("is_same"))
+  }
+
+  test("parses function pointer returning a struct pointer (preprocessed form)") {
+    val stub  = """typedef struct _cef_render_handler_t {
+      cef_base_ref_counted_t base;
+      struct _cef_accessibility_handler_t*(* get_accessibility_handler)(
+          struct _cef_render_handler_t* self);
+      void(* on_popup_show)(struct _cef_render_handler_t* self,
+          struct _cef_browser_t* browser, int show);
+    } cef_render_handler_t;"""
+    val decls = CHeaderParser.parse(stub, handlerNames = Set("cef_render_handler_t"))
+    val fns   = decls.head.asInstanceOf[CefDecl.HandlerStruct].fns
+    assertEquals(fns.map(_.name), List("get_accessibility_handler", "on_popup_show"))
+    assertEquals(fns.head.ret, CType.Ptr("cef_accessibility_handler_t"))
+  }
+
   test("parses function pointer with multiple non-self params") {
     val stub  = """typedef struct _cef_browser_host_t {
       cef_base_ref_counted_t base;

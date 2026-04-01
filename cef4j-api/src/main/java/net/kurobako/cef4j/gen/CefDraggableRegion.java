@@ -1,7 +1,18 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-/** Structure representing a draggable region. */
+/**
+ * Structure representing a draggable region.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef struct _cef_draggable_region_t {
+ *   cef_rect_t* bounds;
+ *   int draggable;
+ * } cef_draggable_region_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:1703</a>
+ */
 public final class CefDraggableRegion {
 
     public final CefRect bounds;

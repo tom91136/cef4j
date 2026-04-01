@@ -2,6 +2,9 @@ package net.kurobako.cef4j.codegen
 
 class EnumParserSpec extends munit.FunSuite {
 
+  private def findValue(enum_ : CefDecl.Enum, name: String): (Long, String) =
+    enum_.values.find(_._1 == name).map(v => (v._2, v._3)).getOrElse(fail(s"$name not found"))
+
   test("parses all enum values with correct integers") {
     val stub  = """typedef enum {
       RT_MAIN_FRAME = 0,
@@ -11,8 +14,8 @@ class EnumParserSpec extends munit.FunSuite {
     } cef_resource_type_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
     val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
-    assert(enum_.values.contains("RT_NAVIGATION_PRELOAD_MAIN_FRAME" -> 19L))
-    assert(enum_.values.contains("RT_NAVIGATION_PRELOAD_SUB_FRAME" -> 20L))
+    assertEquals(findValue(enum_, "RT_NAVIGATION_PRELOAD_MAIN_FRAME")._1, 19L)
+    assertEquals(findValue(enum_, "RT_NAVIGATION_PRELOAD_SUB_FRAME")._1, 20L)
   }
 
   test("parses hex enum values") {
@@ -23,9 +26,9 @@ class EnumParserSpec extends munit.FunSuite {
     } cef_event_flags_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
     val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
-    assertEquals(enum_.values.find(_._1 == "EVENTFLAG_SHIFT_DOWN").get._2, 0x02L)
-    assertEquals(enum_.values.find(_._1 == "EVENTFLAG_CONTROL_DOWN").get._2, 0x04L)
-    assertEquals(enum_.values.find(_._1 == "EVENTFLAG_ALT_DOWN").get._2, 0x08L)
+    assertEquals(findValue(enum_, "EVENTFLAG_SHIFT_DOWN")._1, 0x02L)
+    assertEquals(findValue(enum_, "EVENTFLAG_CONTROL_DOWN")._1, 0x04L)
+    assertEquals(findValue(enum_, "EVENTFLAG_ALT_DOWN")._1, 0x08L)
   }
 
   test("parses sequential enum values without explicit assignment") {
@@ -36,32 +39,38 @@ class EnumParserSpec extends munit.FunSuite {
     } cef_state_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
     val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
-    assertEquals(enum_.values.find(_._1 == "STATE_DEFAULT").get._2, 0L)
-    assertEquals(enum_.values.find(_._1 == "STATE_ENABLED").get._2, 1L)
-    assertEquals(enum_.values.find(_._1 == "STATE_DISABLED").get._2, 2L)
+    assertEquals(findValue(enum_, "STATE_DEFAULT")._1, 0L)
+    assertEquals(findValue(enum_, "STATE_ENABLED")._1, 1L)
+    assertEquals(findValue(enum_, "STATE_DISABLED")._1, 2L)
   }
 
-  test("parses bit-shift enum expressions") {
-    val stub  = """typedef enum {
+  test("parses bit-shift enum expressions and preserves raw expr") {
+    val stub                    = """typedef enum {
       TT_LINK = 1,
       TT_SERVER_REDIRECT_QUALIFIER = 1 << 24,
       TT_CLIENT_REDIRECT_QUALIFIER = 1 << 25,
     } cef_transition_type_t;"""
-    val decls = CHeaderParser.parse(stub, Set.empty)
-    val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
-    assertEquals(enum_.values.find(_._1 == "TT_SERVER_REDIRECT_QUALIFIER").get._2, 1L << 24)
-    assertEquals(enum_.values.find(_._1 == "TT_CLIENT_REDIRECT_QUALIFIER").get._2, 1L << 25)
+    val decls                   = CHeaderParser.parse(stub, Set.empty)
+    val enum_                   = decls.head.asInstanceOf[CefDecl.Enum]
+    val (serverVal, serverExpr) = findValue(enum_, "TT_SERVER_REDIRECT_QUALIFIER")
+    assertEquals(serverVal, 1L << 24)
+    assertEquals(serverExpr, "1 << 24")
+    val (clientVal, clientExpr) = findValue(enum_, "TT_CLIENT_REDIRECT_QUALIFIER")
+    assertEquals(clientVal, 1L << 25)
+    assertEquals(clientExpr, "1 << 25")
   }
 
   test("parses OR-combined enum expressions") {
-    val stub  = """typedef enum {
+    val stub            = """typedef enum {
       FLAG_A = 0x01,
       FLAG_B = 0x02,
       FLAG_AB = FLAG_A | FLAG_B,
     } cef_flags_t;"""
-    val decls = CHeaderParser.parse(stub, Set.empty)
-    val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
-    assertEquals(enum_.values.find(_._1 == "FLAG_AB").get._2, 0x03L)
+    val decls           = CHeaderParser.parse(stub, Set.empty)
+    val enum_           = decls.head.asInstanceOf[CefDecl.Enum]
+    val (abVal, abExpr) = findValue(enum_, "FLAG_AB")
+    assertEquals(abVal, 0x03L)
+    assertEquals(abExpr, "FLAG_A | FLAG_B")
   }
 
   test("enum name extracted from closing line") {
