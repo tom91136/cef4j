@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to focus. The methods of this class will be called on the UI
@@ -32,7 +33,7 @@ public interface CefFocusHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:55</a>
      */
-    default void onTakeFocus(@Nonnull CefBrowser browser, boolean next) {}
+    default void onTakeFocus(@Nullable CefBrowser browser, boolean next) {}
 
     /**
      * Called when the browser component is requesting focus. {@code source} indicates where the focus request is
@@ -47,7 +48,7 @@ public interface CefFocusHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
      */
-    default boolean onSetFocus(@Nonnull CefBrowser browser, @Nonnull CefFocusSource source) {
+    default boolean onSetFocus(@Nullable CefBrowser browser, @Nonnull CefFocusSource source) {
         return false;
     }
 
@@ -61,5 +62,5 @@ public interface CefFocusHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:74</a>
      */
-    default void onGotFocus(@Nonnull CefBrowser browser) {}
+    default void onGotFocus(@Nullable CefBrowser browser) {}
 }

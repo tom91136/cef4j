@@ -20,14 +20,13 @@ import java.util.Optional;
 public interface CefMediaSource extends CefLibraryObject {
 
     /**
-     * Returns the unique identifier for this download.
+     * Returns the ID (media source URN or URL) for this source.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_media_source_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     Optional<String> getId();
 
@@ -56,6 +55,7 @@ public interface CefMediaSource extends CefLibraryObject {
     final class NativePeer implements CefMediaSource, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -64,7 +64,17 @@ public interface CefMediaSource extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMediaSource has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMediaSource.class);
@@ -87,16 +97,19 @@ public interface CefMediaSource extends CefLibraryObject {
 
         @Override
         public Optional<String> getId() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetId(nativePtr));
         }
 
         @Override
         public boolean isCastSource() {
+            checkNotClosed();
             return N_IsCastSource(nativePtr);
         }
 
         @Override
         public boolean isDialSource() {
+            checkNotClosed();
             return N_IsDialSource(nativePtr);
         }
 

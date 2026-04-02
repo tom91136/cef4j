@@ -34,6 +34,7 @@ public interface CefResourceReadCallback extends CefLibraryObject {
     final class NativePeer implements CefResourceReadCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -42,7 +43,17 @@ public interface CefResourceReadCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefResourceReadCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefResourceReadCallback.class);
@@ -65,6 +76,7 @@ public interface CefResourceReadCallback extends CefLibraryObject {
 
         @Override
         public void cont(int bytesRead) {
+            checkNotClosed();
             N_Cont(nativePtr, bytesRead);
         }
 

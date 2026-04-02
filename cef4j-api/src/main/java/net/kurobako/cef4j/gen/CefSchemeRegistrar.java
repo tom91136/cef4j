@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that manages custom scheme registrations.
@@ -34,11 +34,12 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:85</a>
      */
-    boolean addCustomScheme(@Nonnull String schemeName, int options);
+    boolean addCustomScheme(@Nullable String schemeName, int options);
 
     final class NativePeer implements CefSchemeRegistrar, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -47,7 +48,17 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSchemeRegistrar has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefSchemeRegistrar.class);
@@ -69,7 +80,8 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean addCustomScheme(@Nonnull String schemeName, int options) {
+        public boolean addCustomScheme(@Nullable String schemeName, int options) {
+            checkNotClosed();
             return N_AddCustomScheme(nativePtr, schemeName, options);
         }
 

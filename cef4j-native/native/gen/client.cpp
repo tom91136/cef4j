@@ -25,7 +25,7 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
 extern "C" cef_audio_handler_t* Create_JniCefAudioHandler(JNIEnv *env, jobject handler);
 extern "C" cef_command_handler_t* Create_JniCefCommandHandler(JNIEnv *env, jobject handler);
@@ -46,7 +46,6 @@ extern "C" cef_print_handler_t* Create_JniCefPrintHandler(JNIEnv *env, jobject h
 extern "C" cef_render_handler_t* Create_JniCefRenderHandler(JNIEnv *env, jobject handler);
 extern "C" cef_request_handler_t* Create_JniCefRequestHandler(JNIEnv *env, jobject handler);
 
-// JNI wrapper struct for cef_client_t
 struct JniCefClient: public cef_client_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

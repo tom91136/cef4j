@@ -228,13 +228,14 @@ public interface CefContextMenuParams extends CefLibraryObject {
     boolean getDictionarySuggestions(@Nonnull List<String> suggestions);
 
     /**
-     * Returns {@code true} if this is an editable node.
+     * Returns {@code true} if the context menu was invoked on an editable node.
      *
      * <p>Definition generated from cef_context_menu_handler_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_editable)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:190</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
      */
     boolean isEditable();
 
@@ -281,6 +282,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
     final class NativePeer implements CefContextMenuParams, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -289,7 +291,17 @@ public interface CefContextMenuParams extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefContextMenuParams has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefContextMenuParams.class);
@@ -312,101 +324,121 @@ public interface CefContextMenuParams extends CefLibraryObject {
 
         @Override
         public int getXCoord() {
+            checkNotClosed();
             return N_GetXCoord(nativePtr);
         }
 
         @Override
         public int getYCoord() {
+            checkNotClosed();
             return N_GetYCoord(nativePtr);
         }
 
         @Override
         public CefContextMenuTypeFlags getTypeFlags() {
+            checkNotClosed();
             return N_GetTypeFlags(nativePtr);
         }
 
         @Override
         public Optional<String> getLinkUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLinkUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getUnfilteredLinkUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUnfilteredLinkUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getSourceUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSourceUrl(nativePtr));
         }
 
         @Override
         public boolean hasImageContents() {
+            checkNotClosed();
             return N_HasImageContents(nativePtr);
         }
 
         @Override
         public Optional<String> getTitleText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTitleText(nativePtr));
         }
 
         @Override
         public Optional<String> getPageUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPageUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getFrameUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFrameUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getFrameCharset() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFrameCharset(nativePtr));
         }
 
         @Override
         public CefContextMenuMediaType getMediaType() {
+            checkNotClosed();
             return N_GetMediaType(nativePtr);
         }
 
         @Override
         public CefContextMenuMediaStateFlags getMediaStateFlags() {
+            checkNotClosed();
             return N_GetMediaStateFlags(nativePtr);
         }
 
         @Override
         public Optional<String> getSelectionText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSelectionText(nativePtr));
         }
 
         @Override
         public Optional<String> getMisspelledWord() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMisspelledWord(nativePtr));
         }
 
         @Override
         public boolean getDictionarySuggestions(@Nonnull List<String> suggestions) {
+            checkNotClosed();
             return N_GetDictionarySuggestions(nativePtr, suggestions);
         }
 
         @Override
         public boolean isEditable() {
+            checkNotClosed();
             return N_IsEditable(nativePtr);
         }
 
         @Override
         public boolean isSpellCheckEnabled() {
+            checkNotClosed();
             return N_IsSpellCheckEnabled(nativePtr);
         }
 
         @Override
         public CefContextMenuEditStateFlags getEditStateFlags() {
+            checkNotClosed();
             return N_GetEditStateFlags(nativePtr);
         }
 
         @Override
         public boolean isCustomMenu() {
+            checkNotClosed();
             return N_IsCustomMenu(nativePtr);
         }
 

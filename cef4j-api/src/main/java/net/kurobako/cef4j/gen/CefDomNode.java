@@ -4,6 +4,7 @@ package net.kurobako.cef4j.gen;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to represent a DOM node. The methods of this class should only be called on the render process main
@@ -21,14 +22,14 @@ import javax.annotation.Nonnull;
 public interface CefDomNode extends CefLibraryObject {
 
     /**
-     * Returns the item type for the specified {@code command_id}.
+     * Returns the type for this node.
      *
      * <p>Definition generated from cef_dom_capi.h
      *
      * <pre>cef_dom_node_type_t (CEF_CALLBACK* get_type)(struct _cef_domnode_t* self);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:172</a>
      */
     CefDomNodeType getType();
 
@@ -99,7 +100,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
      */
-    boolean isSame(@Nonnull CefDomNode that);
+    boolean isSame(@Nullable CefDomNode that);
 
     /**
      * Returns the name of this node.
@@ -132,7 +133,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:227</a>
      */
-    boolean setValue(@Nonnull String value);
+    boolean setValue(@Nullable String value);
 
     /**
      * Returns the contents of this node as markup.
@@ -253,7 +254,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:295</a>
      */
-    boolean hasElementAttribute(@Nonnull String attrname);
+    boolean hasElementAttribute(@Nullable String attrName);
 
     /**
      * Returns the element attribute named {@code attrName}.
@@ -266,7 +267,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:301</a>
      */
-    Optional<String> getElementAttribute(@Nonnull String attrname);
+    Optional<String> getElementAttribute(@Nullable String attrName);
 
     /**
      * Returns a map of all element attributes.
@@ -277,7 +278,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:307</a>
      */
-    void getElementAttributes(@Nonnull Map<String, String> attrmap);
+    void getElementAttributes(@Nonnull Map<String, String> attrMap);
 
     /**
      * Set the value for the element attribute named {@code attrName}. Returns {@code true} on success.
@@ -290,7 +291,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:313</a>
      */
-    boolean setElementAttribute(@Nonnull String attrname, @Nonnull String value);
+    boolean setElementAttribute(@Nullable String attrName, @Nullable String value);
 
     /**
      * Returns the inner text of the element.
@@ -317,6 +318,7 @@ public interface CefDomNode extends CefLibraryObject {
     final class NativePeer implements CefDomNode, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -325,7 +327,17 @@ public interface CefDomNode extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefDomNode has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefDomNode.class);
@@ -348,131 +360,158 @@ public interface CefDomNode extends CefLibraryObject {
 
         @Override
         public CefDomNodeType getType() {
+            checkNotClosed();
             return N_GetType(nativePtr);
         }
 
         @Override
         public boolean isText() {
+            checkNotClosed();
             return N_IsText(nativePtr);
         }
 
         @Override
         public boolean isElement() {
+            checkNotClosed();
             return N_IsElement(nativePtr);
         }
 
         @Override
         public boolean isEditable() {
+            checkNotClosed();
             return N_IsEditable(nativePtr);
         }
 
         @Override
         public boolean isFormControlElement() {
+            checkNotClosed();
             return N_IsFormControlElement(nativePtr);
         }
 
         @Override
         public CefDomFormControlType getFormControlElementType() {
+            checkNotClosed();
             return N_GetFormControlElementType(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefDomNode that) {
+        public boolean isSame(@Nullable CefDomNode that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefDomNode");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
         public Optional<String> getName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetName(nativePtr));
         }
 
         @Override
         public Optional<String> getValue() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetValue(nativePtr));
         }
 
         @Override
-        public boolean setValue(@Nonnull String value) {
+        public boolean setValue(@Nullable String value) {
+            checkNotClosed();
             return N_SetValue(nativePtr, value);
         }
 
         @Override
         public Optional<String> getAsMarkup() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAsMarkup(nativePtr));
         }
 
         @Override
         public Optional<CefDomDocument> getDocument() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDocument(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getParent() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetParent(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getPreviousSibling() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPreviousSibling(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getNextSibling() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetNextSibling(nativePtr));
         }
 
         @Override
         public boolean hasChildren() {
+            checkNotClosed();
             return N_HasChildren(nativePtr);
         }
 
         @Override
         public Optional<CefDomNode> getFirstChild() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFirstChild(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getLastChild() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLastChild(nativePtr));
         }
 
         @Override
         public Optional<String> getElementTagName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetElementTagName(nativePtr));
         }
 
         @Override
         public boolean hasElementAttributes() {
+            checkNotClosed();
             return N_HasElementAttributes(nativePtr);
         }
 
         @Override
-        public boolean hasElementAttribute(@Nonnull String attrname) {
-            return N_HasElementAttribute(nativePtr, attrname);
+        public boolean hasElementAttribute(@Nullable String attrName) {
+            checkNotClosed();
+            return N_HasElementAttribute(nativePtr, attrName);
         }
 
         @Override
-        public Optional<String> getElementAttribute(@Nonnull String attrname) {
-            return Optional.ofNullable(N_GetElementAttribute(nativePtr, attrname));
+        public Optional<String> getElementAttribute(@Nullable String attrName) {
+            checkNotClosed();
+            return Optional.ofNullable(N_GetElementAttribute(nativePtr, attrName));
         }
 
         @Override
-        public void getElementAttributes(@Nonnull Map<String, String> attrmap) {
-            N_GetElementAttributes(nativePtr, attrmap);
+        public void getElementAttributes(@Nonnull Map<String, String> attrMap) {
+            checkNotClosed();
+            N_GetElementAttributes(nativePtr, attrMap);
         }
 
         @Override
-        public boolean setElementAttribute(@Nonnull String attrname, @Nonnull String value) {
-            return N_SetElementAttribute(nativePtr, attrname, value);
+        public boolean setElementAttribute(@Nullable String attrName, @Nullable String value) {
+            checkNotClosed();
+            return N_SetElementAttribute(nativePtr, attrName, value);
         }
 
         @Override
         public Optional<String> getElementInnerText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetElementInnerText(nativePtr));
         }
 
         @Override
         public CefRect getElementBounds() {
+            checkNotClosed();
             return N_GetElementBounds(nativePtr);
         }
 
@@ -516,13 +555,13 @@ public interface CefDomNode extends CefLibraryObject {
 
         private static native boolean N_HasElementAttributes(long self);
 
-        private static native boolean N_HasElementAttribute(long self, String attrname);
+        private static native boolean N_HasElementAttribute(long self, String attrName);
 
-        private static native String N_GetElementAttribute(long self, String attrname);
+        private static native String N_GetElementAttribute(long self, String attrName);
 
-        private static native void N_GetElementAttributes(long self, Map<String, String> attrmap);
+        private static native void N_GetElementAttributes(long self, Map<String, String> attrMap);
 
-        private static native boolean N_SetElementAttribute(long self, String attrname, String value);
+        private static native boolean N_SetElementAttribute(long self, String attrName, String value);
 
         private static native String N_GetElementInnerText(long self);
 

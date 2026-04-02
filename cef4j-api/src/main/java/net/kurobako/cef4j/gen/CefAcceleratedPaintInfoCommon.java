@@ -27,21 +27,33 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefAcceleratedPaintInfoCommon {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** Timestamp of the frame in microseconds since capture start. */
     public final long timestamp;
+    /** The full dimensions of the video frame. */
     public final CefSize codedSize;
+    /** The visible area of the video frame. */
     public final CefRect visibleRect;
+    /** The region of the video frame that capturer would like to populate. */
     public final CefRect contentRect;
+    /** Full size of the source frame. */
     public final CefSize sourceSize;
+    /** Updated area of frame, can be considered as the `dirty` area. */
     public final CefRect captureUpdateRect;
+    /** May reflects where the frame's contents originate from if region capture is used internally. */
     public final CefRect regionCaptureRect;
+    /** The increamental counter of the frame. */
     public final long captureCounter;
+    /** Optional flag of capture_update_rect */
     public final int hasCaptureUpdateRect;
+    /** Optional flag of region_capture_rect */
     public final int hasRegionCaptureRect;
+    /** Optional flag of source_size */
     public final int hasSourceSize;
+    /** Optional flag of capture_counter */
     public final int hasCaptureCounter;
 
     public CefAcceleratedPaintInfoCommon(

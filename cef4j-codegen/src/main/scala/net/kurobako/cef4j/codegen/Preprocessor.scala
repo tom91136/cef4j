@@ -29,7 +29,7 @@ object Preprocessor {
 
   private def msvcCommand(file: Path, includes: Seq[Path]): List[String] =
     List("cl.exe", "/nologo", "/E", "/EP") ++
-      includes.flatMap(d => List(s"/I${d}")) ++
+      includes.flatMap(d => List(s"/I$d")) ++
       List(file.toString)
 
   private def stripLineMarkers(src: String): String =

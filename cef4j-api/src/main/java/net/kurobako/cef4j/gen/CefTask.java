@@ -19,16 +19,13 @@ package net.kurobako.cef4j.gen;
 public interface CefTask extends CefClientHandler {
 
     /**
-     * Handle execution of the function identified by {@code name}. {@code object} is the receiver ('this' object) of
-     * the function. {@code arguments} is the list of arguments passed to the function. If execution succeeds set
-     * {@code retval} to the function return value. If execution fails set {@code exception} to the exception that will
-     * be thrown. Return {@code true} if execution was handled.
+     * Method that will be executed on the target thread.
      *
      * <p>Definition generated from cef_task_capi.h
      *
      * <pre>void (CEF_CALLBACK* execute)(struct _cef_task_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:234</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:55</a>
      */
     default void execute() {}
 }

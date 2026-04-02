@@ -8,9 +8,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_cookie_access_filter_t
 struct JniCefCookieAccessFilter: public cef_cookie_access_filter_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle menu model events. The methods of this class will be called on the browser process
@@ -31,7 +32,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
-    default void executeCommand(@Nonnull CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {}
+    default void executeCommand(@Nullable CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {}
 
     /**
      * Called when the user moves the mouse outside the menu and over the owning window.
@@ -45,7 +46,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
      */
-    default void mouseOutsideMenu(@Nonnull CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {}
+    default void mouseOutsideMenu(@Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {}
 
     /**
      * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying
@@ -60,7 +61,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:70</a>
      */
-    default void unhandledOpenSubmenu(@Nonnull CefMenuModel menuModel, boolean isRtl) {}
+    default void unhandledOpenSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {}
 
     /**
      * Called on unhandled close submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is
@@ -75,7 +76,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:78</a>
      */
-    default void unhandledCloseSubmenu(@Nonnull CefMenuModel menuModel, boolean isRtl) {}
+    default void unhandledCloseSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {}
 
     /**
      * The menu is about to show.
@@ -89,7 +90,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:86</a>
      */
-    default void menuWillShow(@Nonnull CefMenuModel menuModel) {}
+    default void menuWillShow(@Nullable CefMenuModel menuModel) {}
 
     /**
      * The menu has closed.
@@ -103,7 +104,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:92</a>
      */
-    default void menuClosed(@Nonnull CefMenuModel menuModel) {}
+    default void menuClosed(@Nullable CefMenuModel menuModel) {}
 
     /**
      * Optionally modify a menu item label. Return {@code true} if {@code label} was modified.
@@ -117,7 +118,7 @@ public interface CefMenuModelDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
      */
-    default boolean formatLabel(@Nonnull CefMenuModel menuModel, @Nonnull String label) {
+    default boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
         return false;
     }
 }

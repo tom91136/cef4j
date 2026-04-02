@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that supports the reading of XML data via the libxml streaming API. The methods of this class should only be
@@ -65,14 +66,14 @@ public interface CefXmlReader extends CefLibraryObject {
     Optional<String> getError();
 
     /**
-     * Returns the item type for the specified {@code command_id}.
+     * Returns the node type.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
      * <pre>cef_xml_node_type_t (CEF_CALLBACK* get_type)(struct _cef_xml_reader_t* self);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
      */
     CefXmlNodeType getType();
 
@@ -163,7 +164,8 @@ public interface CefXmlReader extends CefLibraryObject {
     Optional<String> getXmlLang();
 
     /**
-     * Returns {@code true} if the node represents an empty element. "<a/>" is considered empty but "<a></a>" is not.
+     * Returns {@code true} if the node represents an empty element. "&lt;a/&gt;" is considered empty but
+     * "&lt;a&gt;&lt;/a&gt;" is not.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
@@ -174,24 +176,24 @@ public interface CefXmlReader extends CefLibraryObject {
     boolean isEmptyElement();
 
     /**
-     * Returns {@code true} if the object has a value with the specified identifier.
+     * Returns {@code true} if the node has a text value.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
      * <pre>int (CEF_CALLBACK* has_value)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:814</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
      */
     boolean hasValue();
 
     /**
-     * Returns the value of this node.
+     * Returns the text value.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_value)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
      */
     Optional<String> getValue();
 
@@ -241,7 +243,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
      */
-    Optional<String> getAttributeByqname(@Nonnull String qualifiedname);
+    Optional<String> getAttributeByqname(@Nullable String qualifiedName);
 
     /**
      * Returns the value of the attribute with the specified local name and namespace URI.
@@ -254,7 +256,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
      */
-    Optional<String> getAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri);
+    Optional<String> getAttributeBylname(@Nullable String localName, @Nullable String namespaceURI);
 
     /**
      * Returns an XML representation of the current node's children.
@@ -279,13 +281,13 @@ public interface CefXmlReader extends CefLibraryObject {
     Optional<String> getOuterXml();
 
     /**
-     * Returns the 1-based line number for the function call or 0 if unknown.
+     * Returns the line number for the current node.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
      */
     int getLineNumber();
 
@@ -314,7 +316,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
      */
-    int moveToAttributeByqname(@Nonnull String qualifiedname);
+    int moveToAttributeByqname(@Nullable String qualifiedName);
 
     /**
      * Moves the cursor to the attribute with the specified local name and namespace URI. Returns {@code true} if the
@@ -328,7 +330,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
      */
-    int moveToAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri);
+    int moveToAttributeBylname(@Nullable String localName, @Nullable String namespaceURI);
 
     /**
      * Moves the cursor to the first attribute in the current element. Returns {@code true} if the cursor position was
@@ -378,13 +380,14 @@ public interface CefXmlReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefXmlReader> create(
-            @Nonnull CefStreamReader stream, @Nonnull CefXmlEncodingType encodingtype, @Nonnull String uri) {
-        return Optional.ofNullable(NativePeer.N_Create(stream, encodingtype, uri));
+            @Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI) {
+        return Optional.ofNullable(NativePeer.N_Create(stream, encodingType, uRI));
     }
 
     final class NativePeer implements CefXmlReader, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -393,7 +396,17 @@ public interface CefXmlReader extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefXmlReader has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefXmlReader.class);
@@ -416,146 +429,175 @@ public interface CefXmlReader extends CefLibraryObject {
 
         @Override
         public boolean moveToNextNode() {
+            checkNotClosed();
             return N_MoveToNextNode(nativePtr);
         }
 
         @Override
         public boolean cefClose() {
+            checkNotClosed();
             return N_Close(nativePtr);
         }
 
         @Override
         public boolean hasError() {
+            checkNotClosed();
             return N_HasError(nativePtr);
         }
 
         @Override
         public Optional<String> getError() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetError(nativePtr));
         }
 
         @Override
         public CefXmlNodeType getType() {
+            checkNotClosed();
             return N_GetType(nativePtr);
         }
 
         @Override
         public int getDepth() {
+            checkNotClosed();
             return N_GetDepth(nativePtr);
         }
 
         @Override
         public Optional<String> getLocalName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLocalName(nativePtr));
         }
 
         @Override
         public Optional<String> getPrefix() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPrefix(nativePtr));
         }
 
         @Override
         public Optional<String> getQualifiedName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetQualifiedName(nativePtr));
         }
 
         @Override
         public Optional<String> getNamespaceUri() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetNamespaceUri(nativePtr));
         }
 
         @Override
         public Optional<String> getBaseUri() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBaseUri(nativePtr));
         }
 
         @Override
         public Optional<String> getXmlLang() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetXmlLang(nativePtr));
         }
 
         @Override
         public boolean isEmptyElement() {
+            checkNotClosed();
             return N_IsEmptyElement(nativePtr);
         }
 
         @Override
         public boolean hasValue() {
+            checkNotClosed();
             return N_HasValue(nativePtr);
         }
 
         @Override
         public Optional<String> getValue() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetValue(nativePtr));
         }
 
         @Override
         public boolean hasAttributes() {
+            checkNotClosed();
             return N_HasAttributes(nativePtr);
         }
 
         @Override
         public long getAttributeCount() {
+            checkNotClosed();
             return N_GetAttributeCount(nativePtr);
         }
 
         @Override
         public Optional<String> getAttributeByindex(int index) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAttributeByindex(nativePtr, index));
         }
 
         @Override
-        public Optional<String> getAttributeByqname(@Nonnull String qualifiedname) {
-            return Optional.ofNullable(N_GetAttributeByqname(nativePtr, qualifiedname));
+        public Optional<String> getAttributeByqname(@Nullable String qualifiedName) {
+            checkNotClosed();
+            return Optional.ofNullable(N_GetAttributeByqname(nativePtr, qualifiedName));
         }
 
         @Override
-        public Optional<String> getAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri) {
-            return Optional.ofNullable(N_GetAttributeBylname(nativePtr, localname, namespaceuri));
+        public Optional<String> getAttributeBylname(@Nullable String localName, @Nullable String namespaceURI) {
+            checkNotClosed();
+            return Optional.ofNullable(N_GetAttributeBylname(nativePtr, localName, namespaceURI));
         }
 
         @Override
         public Optional<String> getInnerXml() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetInnerXml(nativePtr));
         }
 
         @Override
         public Optional<String> getOuterXml() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetOuterXml(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
+            checkNotClosed();
             return N_GetLineNumber(nativePtr);
         }
 
         @Override
         public int moveToAttributeByindex(int index) {
+            checkNotClosed();
             return N_MoveToAttributeByindex(nativePtr, index);
         }
 
         @Override
-        public int moveToAttributeByqname(@Nonnull String qualifiedname) {
-            return N_MoveToAttributeByqname(nativePtr, qualifiedname);
+        public int moveToAttributeByqname(@Nullable String qualifiedName) {
+            checkNotClosed();
+            return N_MoveToAttributeByqname(nativePtr, qualifiedName);
         }
 
         @Override
-        public int moveToAttributeBylname(@Nonnull String localname, @Nonnull String namespaceuri) {
-            return N_MoveToAttributeBylname(nativePtr, localname, namespaceuri);
+        public int moveToAttributeBylname(@Nullable String localName, @Nullable String namespaceURI) {
+            checkNotClosed();
+            return N_MoveToAttributeBylname(nativePtr, localName, namespaceURI);
         }
 
         @Override
         public boolean moveToFirstAttribute() {
+            checkNotClosed();
             return N_MoveToFirstAttribute(nativePtr);
         }
 
         @Override
         public boolean moveToNextAttribute() {
+            checkNotClosed();
             return N_MoveToNextAttribute(nativePtr);
         }
 
         @Override
         public boolean moveToCarryingElement() {
+            checkNotClosed();
             return N_MoveToCarryingElement(nativePtr);
         }
 
@@ -595,9 +637,9 @@ public interface CefXmlReader extends CefLibraryObject {
 
         private static native String N_GetAttributeByindex(long self, int index);
 
-        private static native String N_GetAttributeByqname(long self, String qualifiedname);
+        private static native String N_GetAttributeByqname(long self, String qualifiedName);
 
-        private static native String N_GetAttributeBylname(long self, String localname, String namespaceuri);
+        private static native String N_GetAttributeBylname(long self, String localName, String namespaceURI);
 
         private static native String N_GetInnerXml(long self);
 
@@ -607,9 +649,9 @@ public interface CefXmlReader extends CefLibraryObject {
 
         private static native int N_MoveToAttributeByindex(long self, int index);
 
-        private static native int N_MoveToAttributeByqname(long self, String qualifiedname);
+        private static native int N_MoveToAttributeByqname(long self, String qualifiedName);
 
-        private static native int N_MoveToAttributeBylname(long self, String localname, String namespaceuri);
+        private static native int N_MoveToAttributeBylname(long self, String localName, String namespaceURI);
 
         private static native boolean N_MoveToFirstAttribute(long self);
 
@@ -617,7 +659,7 @@ public interface CefXmlReader extends CefLibraryObject {
 
         private static native boolean N_MoveToCarryingElement(long self);
 
-        static native CefXmlReader N_Create(CefStreamReader stream, CefXmlEncodingType encodingtype, String uri);
+        static native CefXmlReader N_Create(CefStreamReader stream, CefXmlEncodingType encodingType, String uRI);
 
         @Override
         public boolean equals(Object obj) {

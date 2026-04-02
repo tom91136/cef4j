@@ -18,9 +18,10 @@ import javax.annotation.Nonnull;
 public interface CefCookieVisitor extends CefClientHandler {
 
     /**
-     * Method executed for visiting the DOM. The document object passed to this method represents a snapshot of the DOM
-     * at the time this method is executed. DOM objects are only valid for the scope of this method. Do not keep
-     * references to or attempt to access any DOM objects outside the scope of this method.
+     * Method that will be called once for each cookie. {@code count} is the 0-based index for the current cookie.
+     * {@code total} is the total number of cookies. Set {@code deleteCookie} to {@code true} to delete the cookie
+     * currently being visited. Return {@code false} to stop visiting cookies. This method may never be called if no
+     * cookies are found.
      *
      * <p>Definition generated from cef_cookie_capi.h
      *
@@ -28,9 +29,9 @@ public interface CefCookieVisitor extends CefClientHandler {
      * int (CEF_CALLBACK* visit)(struct _cef_cookie_visitor_t* self, const struct _cef_cookie_t* cookie, int count, int total, int* deleteCookie);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:136</a>
      */
-    default int visit(@Nonnull CefCookie cookie, int count, int total, int[] deletecookie) {
+    default int visit(@Nonnull CefCookie cookie, int count, int total, int[] deleteCookie) {
         return 0;
     }
 }

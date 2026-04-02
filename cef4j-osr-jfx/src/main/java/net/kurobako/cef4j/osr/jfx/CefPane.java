@@ -15,19 +15,24 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Screen;
+import javax.annotation.Nonnull;
 import net.kurobako.cef4j.CefApp;
 import net.kurobako.cef4j.CefBrowserOsr;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefFrame;
+import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefKeyEventType;
 import net.kurobako.cef4j.gen.CefLoadHandler;
-import net.kurobako.cef4j.gen.CefMutableRect;
-import net.kurobako.cef4j.gen.CefMutableScreenInfo;
+import net.kurobako.cef4j.gen.CefMouseButtonType;
+import net.kurobako.cef4j.gen.CefMouseEvent;
 import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.CefScreenInfo;
 
 /**
  * A JavaFX {@link Region} that displays a CEF off-screen rendered browser.
@@ -39,11 +44,6 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
  */
 @SuppressWarnings("this-escape")
 public class CefPane extends Region {
-
-    // CEF key event types (cef_key_event_type_t)
-    private static final int KEYEVENT_RAWKEYDOWN = 0;
-    private static final int KEYEVENT_KEYUP = 2;
-    private static final int KEYEVENT_CHAR = 3;
 
     // CEF event flags (cef_event_flags_t)
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
@@ -59,12 +59,12 @@ public class CefPane extends Region {
     private final ImageView imageView = new ImageView();
     private volatile CefBrowserOsr browser;
 
-    // Frame buffer — copies pixels from native memory on CEF thread.
+    // Frame buffer - copies pixels from native memory on CEF thread.
     // The stamp callback returns the pixel array itself (identity); the actual
     // PixelBuffer update happens on the JFX application thread.
     private final CefFrameBuffer<int[]> frameBuffer;
 
-    // PixelBuffer state — managed on JFX application thread, recreated on resize.
+    // PixelBuffer state - managed on JFX application thread, recreated on resize.
     private IntBuffer pixelBuf;
     private PixelBuffer<IntBuffer> pixelBuffer;
     private WritableImage writableImage;
@@ -101,12 +101,18 @@ public class CefPane extends Region {
 
         // Focus
         focusedProperty().addListener((obs, was, is) -> {
-            if (browser != null) browser.setFocus(is);
+            CefBrowserHost h = host();
+            if (h != null) h.setFocus(is);
         });
 
         // Resize
         widthProperty().addListener((obs, oldV, newV) -> onResize());
         heightProperty().addListener((obs, oldV, newV) -> onResize());
+    }
+
+    private CefBrowserHost host() {
+        CefBrowserOsr b = browser;
+        return b != null ? b.getHost() : null;
     }
 
     /**
@@ -116,7 +122,7 @@ public class CefPane extends Region {
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
-            public void getViewRect(CefBrowser b, CefMutableRect rect) {
+            public void getViewRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
                 rect.x = 0;
                 rect.y = 0;
                 rect.width = Math.max(1, (int) getWidth());
@@ -124,7 +130,7 @@ public class CefPane extends Region {
             }
 
             @Override
-            public boolean getScreenInfo(CefBrowser b, CefMutableScreenInfo screenInfo) {
+            public boolean getScreenInfo(CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
                 float scale = getDeviceScaleFactor();
                 int w = Math.max(1, (int) getWidth());
                 int h = Math.max(1, (int) getHeight());
@@ -147,10 +153,10 @@ public class CefPane extends Region {
             @Override
             public void onPaint(
                     CefBrowser b,
-                    CefPaintElementType type,
+                    @Nonnull CefPaintElementType type,
                     long dirtyRectsCount,
-                    CefRect[] dirtyRects,
-                    ByteBuffer buffer,
+                    @Nonnull CefRect[] dirtyRects,
+                    @Nonnull ByteBuffer buffer,
                     int width,
                     int height) {
                 if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
@@ -183,7 +189,7 @@ public class CefPane extends Region {
         this.browser = browser;
     }
 
-    /** Returns the browser instance, or {@code null} if {@link #createBrowser} hasn't been called yet. */
+    /** Returns the browser instance, or {@code null} if not yet attached. */
     public CefBrowserOsr getBrowser() {
         return browser;
     }
@@ -193,8 +199,6 @@ public class CefPane extends Region {
         imageView.setFitWidth(getWidth());
         imageView.setFitHeight(getHeight());
     }
-
-    // --- Pixel buffer management ---
 
     private void ensureBuffer(int w, int h) {
         if (pixelBuffer != null && bufWidth == w && bufHeight == h) return;
@@ -211,21 +215,20 @@ public class CefPane extends Region {
         if (pixels == null) return;
 
         ensureBuffer(width, height);
-        // Copy directly into the backing array — never touch IntBuffer position/limit,
+        // Copy directly into the backing array - never touch IntBuffer position/limit,
         // since JFX's render thread may read the buffer asynchronously after updateBuffer.
         System.arraycopy(pixels, 0, pixelBuf.array(), 0, width * height);
         pixelBuffer.updateBuffer(pb -> null);
     }
 
     private void onResize() {
-        if (browser != null) {
+        CefBrowserHost h = host();
+        if (h != null) {
             frameBuffer.resetBackPressure();
-            browser.wasResized();
-            browser.invalidate();
+            h.wasResized();
+            h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
         }
     }
-
-    // --- Cursor mapping ---
 
     /** Maps a CEF cursor type to a JavaFX {@link Cursor}. Override to customise. */
     public Cursor mapCursor(CefCursorType type) {
@@ -271,9 +274,6 @@ public class CefPane extends Region {
         }
     }
 
-    // --- Scale factor ---
-
-    /** Returns the device scale factor for HiDPI rendering. */
     private static float getDeviceScaleFactor() {
         try {
             return (float) Screen.getPrimary().getOutputScaleX();
@@ -282,45 +282,56 @@ public class CefPane extends Region {
         }
     }
 
-    // --- Input event helpers ---
-
     private void handleMousePressed(MouseEvent e) {
         requestFocus();
-        if (browser != null) {
-            browser.sendMouseClickEvent(
-                    (int) e.getX(), (int) e.getY(), mouseModifiers(e), cefButton(e), false, e.getClickCount());
+        CefBrowserHost h = host();
+        if (h != null) {
+            h.sendMouseClickEvent(
+                    new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
+                    CefMouseButtonType.of(cefButton(e)),
+                    false,
+                    e.getClickCount());
         }
     }
 
     private void handleMouseReleased(MouseEvent e) {
-        if (browser != null) {
-            browser.sendMouseClickEvent(
-                    (int) e.getX(), (int) e.getY(), mouseModifiers(e), cefButton(e), true, e.getClickCount());
+        CefBrowserHost h = host();
+        if (h != null) {
+            h.sendMouseClickEvent(
+                    new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
+                    CefMouseButtonType.of(cefButton(e)),
+                    true,
+                    e.getClickCount());
         }
     }
 
     private void handleMouseMoved(MouseEvent e) {
-        if (browser != null) {
-            browser.sendMouseMoveEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e), false);
+        CefBrowserHost h = host();
+        if (h != null) {
+            h.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), false);
         }
     }
 
     private void handleScroll(ScrollEvent e) {
-        if (browser != null) {
-            browser.sendMouseWheelEvent(
-                    (int) e.getX(),
-                    (int) e.getY(),
-                    baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown()),
+        CefBrowserHost h = host();
+        if (h != null) {
+            h.sendMouseWheelEvent(
+                    new CefMouseEvent(
+                            (int) e.getX(),
+                            (int) e.getY(),
+                            baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown())),
                     0,
                     (int) e.getDeltaY());
         }
     }
 
     private void handleKeyPressed(KeyEvent e) {
-        if (browser == null) return;
+        CefBrowserHost h = host();
+        if (h == null) return;
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = mapKeyCode(e.getCode());
-        browser.sendKeyEvent(KEYEVENT_RAWKEYDOWN, mods, keyCode, keyCode, (char) 0, (char) 0, false);
+        h.sendKeyEvent(new CefKeyEvent(
+                CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN), mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         String text = e.getText();
         if (text != null
                 && !text.isEmpty()
@@ -329,15 +340,18 @@ public class CefPane extends Region {
                 && !e.getCode().isNavigationKey()
                 && !e.getCode().isModifierKey()) {
             char c = text.charAt(0);
-            browser.sendKeyEvent(KEYEVENT_CHAR, mods, (int) c, (int) c, c, c, false);
+            h.sendKeyEvent(
+                    new CefKeyEvent(CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, (int) c, (int) c, 0, c, c, 0));
         }
     }
 
     private void handleKeyReleased(KeyEvent e) {
-        if (browser != null) {
+        CefBrowserHost h = host();
+        if (h != null) {
             int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
             int keyCode = mapKeyCode(e.getCode());
-            browser.sendKeyEvent(KEYEVENT_KEYUP, mods, keyCode, keyCode, (char) 0, (char) 0, false);
+            h.sendKeyEvent(new CefKeyEvent(
+                    CefKeyEventType.of(CefKeyEventType.Kind.KEYUP), mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         }
     }
 
@@ -365,7 +379,7 @@ public class CefPane extends Region {
         return mods;
     }
 
-    /** Map JavaFX KeyCode to AWT KeyEvent.VK_* code (CEF uses Windows virtual key codes which align with AWT). */
+    // CEF uses Windows virtual key codes which align with AWT's VK_* constants.
     private static int mapKeyCode(KeyCode code) {
         return code.getCode();
     }

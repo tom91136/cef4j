@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that facilitates managing the browser-related tasks. The methods of this class may only be called on the UI
@@ -39,8 +39,8 @@ public interface CefTaskManager extends CefLibraryObject {
      * The task IDs are unique within the application lifespan. Returns {@code false} if the method was called from the
      * incorrect thread.
      *
-     * <p>The C API exposes this as a two-pass pattern: first call {@link #getTasksCount()} to obtain the count, then
-     * allocate and populate the array. This method performs both steps and returns the result directly.
+     * <p><b>The C API exposes this as a two-pass pattern: first call {@link #getTasksCount()} to obtain the count, then
+     * allocate and populate the array. This method performs both steps and returns the result directly.</b>
      *
      * <p>Definition generated from cef_task_manager_capi.h
      *
@@ -63,7 +63,7 @@ public interface CefTaskManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:82</a>
      */
-    boolean getTaskInfo(long taskId, @Nonnull NativePointer info);
+    boolean getTaskInfo(long taskId, @Nullable NativePointer info);
 
     /**
      * Attempts to terminate a task with {@code task_id}. Returns {@code false} if the {@code task_id} is invalid, the
@@ -109,6 +109,7 @@ public interface CefTaskManager extends CefLibraryObject {
     final class NativePeer implements CefTaskManager, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -117,7 +118,17 @@ public interface CefTaskManager extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefTaskManager has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefTaskManager.class);
@@ -140,26 +151,31 @@ public interface CefTaskManager extends CefLibraryObject {
 
         @Override
         public long getTasksCount() {
+            checkNotClosed();
             return N_GetTasksCount(nativePtr);
         }
 
         @Override
         public long[] getTaskIdsList() {
+            checkNotClosed();
             return N_GetTaskIdsList(nativePtr);
         }
 
         @Override
-        public boolean getTaskInfo(long taskId, @Nonnull NativePointer info) {
+        public boolean getTaskInfo(long taskId, @Nullable NativePointer info) {
+            checkNotClosed();
             return N_GetTaskInfo(nativePtr, taskId, info);
         }
 
         @Override
         public boolean killTask(long taskId) {
+            checkNotClosed();
             return N_KillTask(nativePtr, taskId);
         }
 
         @Override
         public long getTaskIdForBrowserId(int browserId) {
+            checkNotClosed();
             return N_GetTaskIdForBrowserId(nativePtr, browserId);
         }
 

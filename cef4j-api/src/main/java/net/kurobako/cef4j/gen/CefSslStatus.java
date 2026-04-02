@@ -36,7 +36,7 @@ public interface CefSslStatus extends CefLibraryObject {
      * <pre>cef_cert_status_t (CEF_CALLBACK* get_cert_status)(struct _cef_sslstatus_t* self);</pre>
      *
      * @return the result, or {@code CERT_STATUS_NONE} for default handling
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
      */
     CefCertStatus getCertStatus();
 
@@ -71,13 +71,14 @@ public interface CefSslStatus extends CefLibraryObject {
      *
      * <pre>cef_x509_certificate_t* (CEF_CALLBACK* get_x509_certificate)(struct _cef_sslstatus_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
      */
     Optional<CefX509Certificate> getX509certificate();
 
     final class NativePeer implements CefSslStatus, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -86,7 +87,17 @@ public interface CefSslStatus extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSslStatus has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefSslStatus.class);
@@ -109,26 +120,31 @@ public interface CefSslStatus extends CefLibraryObject {
 
         @Override
         public boolean isSecureConnection() {
+            checkNotClosed();
             return N_IsSecureConnection(nativePtr);
         }
 
         @Override
         public CefCertStatus getCertStatus() {
+            checkNotClosed();
             return N_GetCertStatus(nativePtr);
         }
 
         @Override
         public CefSslVersion getSslVersion() {
+            checkNotClosed();
             return N_GetSslVersion(nativePtr);
         }
 
         @Override
         public CefSslContentStatus getContentStatus() {
+            checkNotClosed();
             return N_GetContentStatus(nativePtr);
         }
 
         @Override
         public Optional<CefX509Certificate> getX509certificate() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetX509certificate(nativePtr));
         }
 

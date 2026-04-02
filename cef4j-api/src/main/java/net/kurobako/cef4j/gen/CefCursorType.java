@@ -92,7 +92,7 @@ public final class CefCursorType implements CefEnum<CefCursorType> {
         /** The underlying C enum numeric value. */
         public final long value;
 
-        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
         public final String expr;
 
         /** The C constant name (e.g., {@code "cef_cursor_type_t"}). */
@@ -110,23 +110,26 @@ public final class CefCursorType implements CefEnum<CefCursorType> {
         }
     }
 
-    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
     public final long value;
 
     private CefCursorType(long value) {
         this.value = value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public long value() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String expr() {
         return kind().map(k -> k.expr).orElse(String.valueOf(value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String name() {
         return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
@@ -143,7 +146,7 @@ public final class CefCursorType implements CefEnum<CefCursorType> {
         return java.util.Optional.empty();
     }
 
-    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
     public static CefCursorType of(long v) {
         return new CefCursorType(v);
     }

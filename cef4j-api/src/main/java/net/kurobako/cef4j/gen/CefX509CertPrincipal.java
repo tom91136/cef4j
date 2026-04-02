@@ -113,6 +113,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
     final class NativePeer implements CefX509CertPrincipal, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -121,7 +122,17 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefX509CertPrincipal has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefX509CertPrincipal.class);
@@ -144,36 +155,43 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
 
         @Override
         public Optional<String> getDisplayName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDisplayName(nativePtr));
         }
 
         @Override
         public Optional<String> getCommonName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCommonName(nativePtr));
         }
 
         @Override
         public Optional<String> getLocalityName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLocalityName(nativePtr));
         }
 
         @Override
         public Optional<String> getStateOrProvinceName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetStateOrProvinceName(nativePtr));
         }
 
         @Override
         public Optional<String> getCountryName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCountryName(nativePtr));
         }
 
         @Override
         public void getOrganizationNames(@Nonnull List<String> names) {
+            checkNotClosed();
             N_GetOrganizationNames(nativePtr, names);
         }
 
         @Override
         public void getOrganizationUnitNames(@Nonnull List<String> names) {
+            checkNotClosed();
             N_GetOrganizationUnitNames(nativePtr, names);
         }
 

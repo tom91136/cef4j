@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that manages custom preference registrations.
@@ -35,11 +35,12 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:53</a>
      */
-    boolean addPreference(@Nonnull String name, @Nonnull CefValue defaultValue);
+    boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue);
 
     final class NativePeer implements CefPreferenceRegistrar, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -48,7 +49,17 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefPreferenceRegistrar has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefPreferenceRegistrar.class);
@@ -70,7 +81,9 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean addPreference(@Nonnull String name, @Nonnull CefValue defaultValue) {
+        public boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(defaultValue, "CefValue");
             return N_AddPreference(nativePtr, name, defaultValue);
         }
 

@@ -8,9 +8,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_life_span_handler_t
 struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref
@@ -56,7 +55,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_cls = env->FindClass("net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
-        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefMutableWindowInfo");
+        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor, _bv_windowInfo_window_name, _bv_windowInfo_bounds, static_cast<jlong>(windowInfo->parent_window), static_cast<jint>(windowInfo->windowless_rendering_enabled), static_cast<jint>(windowInfo->shared_texture_enabled), static_cast<jint>(windowInfo->external_begin_frame_enabled), static_cast<jlong>(windowInfo->window), _bv_windowInfo_runtime_style) : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
@@ -122,7 +121,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_settings_ax_viewport_collapse_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
-        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefMutableBrowserSettings");
+        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings ? env->NewObject(j_settings_cls, j_settings_ctor, static_cast<jint>(settings->windowless_frame_rate), _bv_settings_standard_font_family, _bv_settings_fixed_font_family, _bv_settings_serif_font_family, _bv_settings_sans_serif_font_family, _bv_settings_cursive_font_family, _bv_settings_fantasy_font_family, static_cast<jint>(settings->default_font_size), static_cast<jint>(settings->default_fixed_font_size), static_cast<jint>(settings->minimum_font_size), static_cast<jint>(settings->minimum_logical_font_size), _bv_settings_default_encoding, _bv_settings_remote_fonts, _bv_settings_javascript, _bv_settings_javascript_close_windows, _bv_settings_javascript_access_clipboard, _bv_settings_javascript_dom_paste, _bv_settings_image_loading, _bv_settings_image_shrink_standalone_to_fit, _bv_settings_text_area_resize, _bv_settings_tab_to_links, _bv_settings_local_storage, _bv_settings_databases_deprecated, _bv_settings_webgl, static_cast<jint>(settings->background_color), _bv_settings_chrome_status_bubble, _bv_settings_chrome_zoom_bubble, _bv_settings_ax_viewport_collapse) : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
@@ -139,7 +138,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         jintArray j_no_javascript_access = env->NewIntArray(1);
         if (no_javascript_access) {jint _v = *no_javascript_access; env->SetIntArrayRegion(j_no_javascript_access, 0, 1, &_v);}
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onBeforePopup", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefFrame;ILjava/lang/String;Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefWindowOpenDisposition;ZLnet/kurobako/cef4j/gen/NativePointer;Lnet/kurobako/cef4j/gen/CefMutableWindowInfo;Ljava/util/concurrent/atomic/AtomicReference;Lnet/kurobako/cef4j/gen/CefMutableBrowserSettings;Ljava/util/concurrent/atomic/AtomicReference;[I)Z");
+        auto mid = env->GetMethodID(cls, "onBeforePopup", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefFrame;ILjava/lang/String;Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefWindowOpenDisposition;ZLnet/kurobako/cef4j/gen/NativePointer;Lnet/kurobako/cef4j/gen/CefWindowInfo$Mutable;Ljava/util/concurrent/atomic/AtomicReference;Lnet/kurobako/cef4j/gen/CefBrowserSettings$Mutable;Ljava/util/concurrent/atomic/AtomicReference;[I)Z");
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_frame, static_cast<jint>(popup_id), j_target_url, j_target_frame_name, j_target_disposition, static_cast<jboolean>(user_gesture), j_popupFeatures, j_windowInfo, j_client, j_settings, j_extra_info, j_no_javascript_access);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
@@ -205,7 +204,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_cls = env->FindClass("net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
-        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefMutableWindowInfo");
+        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor, _bv_windowInfo_window_name, _bv_windowInfo_bounds, static_cast<jlong>(windowInfo->parent_window), static_cast<jint>(windowInfo->windowless_rendering_enabled), static_cast<jint>(windowInfo->shared_texture_enabled), static_cast<jint>(windowInfo->external_begin_frame_enabled), static_cast<jlong>(windowInfo->window), _bv_windowInfo_runtime_style) : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
@@ -271,7 +270,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_settings_ax_viewport_collapse_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
-        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefMutableBrowserSettings");
+        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings ? env->NewObject(j_settings_cls, j_settings_ctor, static_cast<jint>(settings->windowless_frame_rate), _bv_settings_standard_font_family, _bv_settings_fixed_font_family, _bv_settings_serif_font_family, _bv_settings_sans_serif_font_family, _bv_settings_cursive_font_family, _bv_settings_fantasy_font_family, static_cast<jint>(settings->default_font_size), static_cast<jint>(settings->default_fixed_font_size), static_cast<jint>(settings->minimum_font_size), static_cast<jint>(settings->minimum_logical_font_size), _bv_settings_default_encoding, _bv_settings_remote_fonts, _bv_settings_javascript, _bv_settings_javascript_close_windows, _bv_settings_javascript_access_clipboard, _bv_settings_javascript_dom_paste, _bv_settings_image_loading, _bv_settings_image_shrink_standalone_to_fit, _bv_settings_text_area_resize, _bv_settings_tab_to_links, _bv_settings_local_storage, _bv_settings_databases_deprecated, _bv_settings_webgl, static_cast<jint>(settings->background_color), _bv_settings_chrome_status_bubble, _bv_settings_chrome_zoom_bubble, _bv_settings_ax_viewport_collapse) : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
@@ -288,7 +287,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         jintArray j_use_default_window = env->NewIntArray(1);
         if (use_default_window) {jint _v = *use_default_window; env->SetIntArrayRegion(j_use_default_window, 0, 1, &_v);}
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onBeforeDevToolsPopup", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefMutableWindowInfo;Ljava/util/concurrent/atomic/AtomicReference;Lnet/kurobako/cef4j/gen/CefMutableBrowserSettings;Ljava/util/concurrent/atomic/AtomicReference;[I)V");
+        auto mid = env->GetMethodID(cls, "onBeforeDevToolsPopup", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefWindowInfo$Mutable;Ljava/util/concurrent/atomic/AtomicReference;Lnet/kurobako/cef4j/gen/CefBrowserSettings$Mutable;Ljava/util/concurrent/atomic/AtomicReference;[I)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_windowInfo, j_client, j_settings, j_extra_info, j_use_default_window);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}

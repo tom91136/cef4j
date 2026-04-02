@@ -15,7 +15,9 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefDraggableRegion {
 
+    /** Bounds of the region. */
     public final CefRect bounds;
+    /** True (1) this this region is draggable and {@code false} (0) otherwise. */
     public final int draggable;
 
     public CefDraggableRegion(CefRect bounds, int draggable) {

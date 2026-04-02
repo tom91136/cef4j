@@ -37,7 +37,6 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefCompone
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1GetComponentById(JNIEnv* env, jobject obj, jlong self, jstring component_id) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return nullptr;
-    if (!component_id) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "componentId must not be null"); return nullptr;}
     auto _component_id_str = JStringToCefString(env, component_id);
     auto _r = s->get_component_by_id(s, _component_id_str);
     if (_component_id_str) cef_string_userfree_free(_component_id_str);
@@ -50,7 +49,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpd
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1Update(JNIEnv* env, jobject obj, jlong self, jstring component_id, jobject priority, jobject callback) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return;
-    if (!component_id) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "componentId must not be null"); return;}
     if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return;}
     auto _component_id_str = JStringToCefString(env, component_id);
     cef_component_update_callback_t* _callback_ptr = callback ? Create_JniCefComponentUpdateCallback(env, callback) : nullptr;

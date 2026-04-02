@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Supports discovery of and communication with media devices on the local network via the Cast and DIAL protocols. The
@@ -31,19 +31,21 @@ public interface CefMediaRouter extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:72</a>
      */
-    Optional<CefRegistration> addObserver(@Nonnull CefMediaObserver observer);
+    Optional<CefRegistration> addObserver(@Nullable CefMediaObserver observer);
 
     /**
-     * Retrieve this frame's HTML source as a string sent to the specified visitor.
+     * Returns a MediaSource object for the specified media source URN. Supported URN schemes include "cast:" and
+     * "dial:", and will be already known by the client application (e.g.
+     * "cast:&lt;appId&gt;?clientId=&lt;clientId&gt;").
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_media_source_t* (CEF_CALLBACK* get_source)(struct _cef_media_router_t* self, const cef_string_t* urn);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:80</a>
      */
-    Optional<CefMediaSource> getSource(@Nonnull String urn);
+    Optional<CefMediaSource> getSource(@Nullable String urn);
 
     /**
      * Trigger an asynchronous call to {@link CefMediaObserver#onSinks(long, CefMediaSink[])} on all registered
@@ -72,7 +74,9 @@ public interface CefMediaRouter extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:95</a>
      */
     void createRoute(
-            @Nonnull CefMediaSource source, @Nonnull CefMediaSink sink, @Nonnull CefMediaRouteCreateCallback callback);
+            @Nullable CefMediaSource source,
+            @Nullable CefMediaSink sink,
+            @Nullable CefMediaRouteCreateCallback callback);
 
     /**
      * Trigger an asynchronous call to {@link CefMediaObserver#onRoutes(long, CefMediaRoute[])} on all registered
@@ -95,13 +99,14 @@ public interface CefMediaRouter extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
-    static Optional<CefMediaRouter> getGlobal(@Nonnull CefCompletionCallback callback) {
+    static Optional<CefMediaRouter> getGlobal(@Nullable CefCompletionCallback callback) {
         return Optional.ofNullable(NativePeer.N_GetGlobal(callback));
     }
 
     final class NativePeer implements CefMediaRouter, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -110,7 +115,17 @@ public interface CefMediaRouter extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMediaRouter has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMediaRouter.class);
@@ -132,30 +147,37 @@ public interface CefMediaRouter extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public Optional<CefRegistration> addObserver(@Nonnull CefMediaObserver observer) {
+        public Optional<CefRegistration> addObserver(@Nullable CefMediaObserver observer) {
+            checkNotClosed();
             return Optional.ofNullable(N_AddObserver(nativePtr, observer));
         }
 
         @Override
-        public Optional<CefMediaSource> getSource(@Nonnull String urn) {
+        public Optional<CefMediaSource> getSource(@Nullable String urn) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSource(nativePtr, urn));
         }
 
         @Override
         public void notifyCurrentSinks() {
+            checkNotClosed();
             N_NotifyCurrentSinks(nativePtr);
         }
 
         @Override
         public void createRoute(
-                @Nonnull CefMediaSource source,
-                @Nonnull CefMediaSink sink,
-                @Nonnull CefMediaRouteCreateCallback callback) {
+                @Nullable CefMediaSource source,
+                @Nullable CefMediaSink sink,
+                @Nullable CefMediaRouteCreateCallback callback) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(source, "CefMediaSource");
+            CefLibraryObject.requireOpen(sink, "CefMediaSink");
             N_CreateRoute(nativePtr, source, sink, callback);
         }
 
         @Override
         public void notifyCurrentRoutes() {
+            checkNotClosed();
             N_NotifyCurrentRoutes(nativePtr);
         }
 

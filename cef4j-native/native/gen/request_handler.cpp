@@ -12,9 +12,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_request_handler_t
 struct JniCefRequestHandler: public cef_request_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

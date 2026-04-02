@@ -6,9 +6,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_print_handler_t
 struct JniCefPrintHandler: public cef_print_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref
@@ -143,7 +142,7 @@ struct JniCefPrintHandler: public cef_print_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, static_cast<jint>(device_units_per_inch));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
-        cef_size_t nativeResult = /* TODO: DataStruct by-value return (cef_size_t) */cef_size_t {};
+        cef_size_t nativeResult = ([&]() {cef_size_t _result = {}; if (jResult) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize"); _result.width = static_cast<decltype(_result.width)>(env->GetIntField(jResult, env->GetFieldID(_c, "width", "I"))); _result.height = static_cast<decltype(_result.height)>(env->GetIntField(jResult, env->GetFieldID(_c, "height", "I")));}return _result;})();
         env->PopLocalFrame(nullptr);
         return nativeResult;
     }

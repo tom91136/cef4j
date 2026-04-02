@@ -32,14 +32,13 @@ public interface CefDragData extends CefLibraryObject {
     Optional<CefDragData> cefClone();
 
     /**
-     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     * Returns {@code true} if this object is read-only.
      *
      * <p>Definition generated from cef_drag_data_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
      */
     boolean isReadOnly();
 
@@ -289,7 +288,7 @@ public interface CefDragData extends CefLibraryObject {
      * @param displayName may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
-    void addFile(@Nonnull String path, @Nullable String displayName);
+    void addFile(@Nullable String path, @Nullable String displayName);
 
     /**
      * Clear list of filenames.
@@ -352,6 +351,7 @@ public interface CefDragData extends CefLibraryObject {
     final class NativePeer implements CefDragData, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -360,7 +360,17 @@ public interface CefDragData extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefDragData has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefDragData.class);
@@ -383,136 +393,164 @@ public interface CefDragData extends CefLibraryObject {
 
         @Override
         public Optional<CefDragData> cefClone() {
+            checkNotClosed();
             return Optional.ofNullable(N_Clone(nativePtr));
         }
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public boolean isLink() {
+            checkNotClosed();
             return N_IsLink(nativePtr);
         }
 
         @Override
         public boolean isFragment() {
+            checkNotClosed();
             return N_IsFragment(nativePtr);
         }
 
         @Override
         public boolean isFile() {
+            checkNotClosed();
             return N_IsFile(nativePtr);
         }
 
         @Override
         public Optional<String> getLinkUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLinkUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getLinkTitle() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLinkTitle(nativePtr));
         }
 
         @Override
         public Optional<String> getLinkMetadata() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLinkMetadata(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFragmentText(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentHtml() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFragmentHtml(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentBaseUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFragmentBaseUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getFileName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFileName(nativePtr));
         }
 
         @Override
         public long getFileContents(@Nullable CefStreamWriter writer) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(writer, "CefStreamWriter");
             return N_GetFileContents(nativePtr, writer);
         }
 
         @Override
         public boolean getFileNames(@Nonnull List<String> names) {
+            checkNotClosed();
             return N_GetFileNames(nativePtr, names);
         }
 
         @Override
         public boolean getFilePaths(@Nonnull List<String> paths) {
+            checkNotClosed();
             return N_GetFilePaths(nativePtr, paths);
         }
 
         @Override
         public void setLinkUrl(@Nullable String url) {
+            checkNotClosed();
             N_SetLinkUrl(nativePtr, url);
         }
 
         @Override
         public void setLinkTitle(@Nullable String title) {
+            checkNotClosed();
             N_SetLinkTitle(nativePtr, title);
         }
 
         @Override
         public void setLinkMetadata(@Nullable String data) {
+            checkNotClosed();
             N_SetLinkMetadata(nativePtr, data);
         }
 
         @Override
         public void setFragmentText(@Nullable String text) {
+            checkNotClosed();
             N_SetFragmentText(nativePtr, text);
         }
 
         @Override
         public void setFragmentHtml(@Nullable String html) {
+            checkNotClosed();
             N_SetFragmentHtml(nativePtr, html);
         }
 
         @Override
         public void setFragmentBaseUrl(@Nullable String baseUrl) {
+            checkNotClosed();
             N_SetFragmentBaseUrl(nativePtr, baseUrl);
         }
 
         @Override
         public void resetFileContents() {
+            checkNotClosed();
             N_ResetFileContents(nativePtr);
         }
 
         @Override
-        public void addFile(@Nonnull String path, @Nullable String displayName) {
+        public void addFile(@Nullable String path, @Nullable String displayName) {
+            checkNotClosed();
             N_AddFile(nativePtr, path, displayName);
         }
 
         @Override
         public void clearFilenames() {
+            checkNotClosed();
             N_ClearFilenames(nativePtr);
         }
 
         @Override
         public Optional<CefImage> getImage() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetImage(nativePtr));
         }
 
         @Override
         public CefPoint getImageHotspot() {
+            checkNotClosed();
             return N_GetImageHotspot(nativePtr);
         }
 
         @Override
         public boolean hasImage() {
+            checkNotClosed();
             return N_HasImage(nativePtr);
         }
 

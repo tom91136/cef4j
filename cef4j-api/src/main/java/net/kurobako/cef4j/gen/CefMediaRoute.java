@@ -23,25 +23,24 @@ import javax.annotation.Nonnull;
 public interface CefMediaRoute extends CefLibraryObject {
 
     /**
-     * Returns the unique identifier for this download.
+     * Returns the ID for this route.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_media_route_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:168</a>
      */
     Optional<String> getId();
 
     /**
-     * Retrieve this frame's HTML source as a string sent to the specified visitor.
+     * Returns the source associated with this route.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_media_source_t* (CEF_CALLBACK* get_source)(struct _cef_media_route_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:174</a>
      */
     Optional<CefMediaSource> getSource();
 
@@ -59,31 +58,38 @@ public interface CefMediaRoute extends CefLibraryObject {
     /**
      * Send a message over this route. {@code message} will be copied if necessary.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* send_route_message)(struct _cef_media_route_t* self, const void* message, size_t message_size);
      * </pre>
      *
+     * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:186</a>
      */
     void sendRouteMessage(@Nonnull ByteBuffer message);
 
     /**
-     * Terminate the unresponsive process.
+     * Terminate this route. Will result in an asynchronous call to {@link CefMediaObserver#onRoutes(long,
+     * CefMediaRoute[])} on all registered observers.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>void (CEF_CALLBACK* terminate)(struct _cef_media_route_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:192</a>
      */
     void terminate();
 
     final class NativePeer implements CefMediaRoute, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -92,7 +98,17 @@ public interface CefMediaRoute extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMediaRoute has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMediaRoute.class);
@@ -115,26 +131,31 @@ public interface CefMediaRoute extends CefLibraryObject {
 
         @Override
         public Optional<String> getId() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetId(nativePtr));
         }
 
         @Override
         public Optional<CefMediaSource> getSource() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSource(nativePtr));
         }
 
         @Override
         public Optional<CefMediaSink> getSink() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSink(nativePtr));
         }
 
         @Override
         public void sendRouteMessage(@Nonnull ByteBuffer message) {
+            checkNotClosed();
             N_SendRouteMessage(nativePtr, message);
         }
 
         @Override
         public void terminate() {
+            checkNotClosed();
             N_Terminate(nativePtr);
         }
 

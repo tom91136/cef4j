@@ -37,6 +37,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
     final class NativePeer implements CefPermissionPromptCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -45,7 +46,17 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefPermissionPromptCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log =
@@ -70,6 +81,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
 
         @Override
         public void cont(@Nonnull CefPermissionRequestResult result) {
+            checkNotClosed();
             N_Cont(nativePtr, result);
         }
 

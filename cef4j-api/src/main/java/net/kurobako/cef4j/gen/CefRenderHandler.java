@@ -50,7 +50,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:70</a>
      */
-    default boolean getRootScreenRect(@Nonnull CefBrowser browser, @Nonnull CefMutableRect rect) {
+    default boolean getRootScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
         return false;
     }
 
@@ -67,7 +67,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:80</a>
      */
-    default void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefMutableRect rect) {}
+    default void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {}
 
     /**
      * Called to retrieve the translation from view DIP coordinates to screen coordinates. Windows/Linux should provide
@@ -83,7 +83,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:87</a>
      */
-    default boolean getScreenPoint(@Nonnull CefBrowser browser, int viewx, int viewy, int[] screenx, int[] screeny) {
+    default boolean getScreenPoint(@Nullable CefBrowser browser, int viewX, int viewY, int[] screenX, int[] screenY) {
         return false;
     }
 
@@ -103,7 +103,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:102</a>
      */
-    default boolean getScreenInfo(@Nonnull CefBrowser browser, @Nonnull CefMutableScreenInfo screenInfo) {
+    default boolean getScreenInfo(@Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
         return false;
     }
 
@@ -120,7 +120,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:117</a>
      */
-    default void onPopupShow(@Nonnull CefBrowser browser, boolean show) {}
+    default void onPopupShow(@Nullable CefBrowser browser, boolean show) {}
 
     /**
      * Called when the browser wants to move or resize the popup widget. {@code rect} contains the new location and size
@@ -135,7 +135,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
      */
-    default void onPopupSize(@Nonnull CefBrowser browser, @Nonnull CefRect rect) {}
+    default void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {}
 
     /**
      * Called when an element should be painted. Pixel values passed to this method are scaled relative to view
@@ -145,20 +145,26 @@ public interface CefRenderHandler extends CefClientHandler {
      * {@code buffer} will be {@code width}*{@code height}*4 bytes in size and represents a BGRA image with an
      * upper-left origin. This method is only called when CefWindowInfo.sharedTextureEnabled() is set to {@code false}.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_render_handler_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* on_paint)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_paint_element_type_t type, size_t dirtyRectsCount, cef_rect_t const* dirtyRects, const void* buffer, int width, int height);
      * </pre>
      *
+     * @param buffer <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:132</a>
      */
     default void onPaint(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefPaintElementType type,
-            long dirtyrectscount,
-            @Nonnull CefRect[] dirtyrects,
+            long dirtyRectsCount,
+            @Nonnull CefRect[] dirtyRects,
             @Nonnull ByteBuffer buffer,
             int width,
             int height) {}
@@ -187,11 +193,11 @@ public interface CefRenderHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:151</a>
      */
     default void onAcceleratedPaint(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefPaintElementType type,
-            long dirtyrectscount,
-            @Nonnull CefRect[] dirtyrects,
-            @Nonnull NativePointer info) {}
+            long dirtyRectsCount,
+            @Nonnull CefRect[] dirtyRects,
+            @Nullable NativePointer info) {}
 
     /**
      * Called to retrieve the size of the touch handle for the specified {@code orientation}.
@@ -206,7 +212,7 @@ public interface CefRenderHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:175</a>
      */
     default void getTouchHandleSize(
-            @Nonnull CefBrowser browser, @Nonnull CefHorizontalAlignment orientation, @Nonnull CefMutableSize size) {}
+            @Nullable CefBrowser browser, @Nonnull CefHorizontalAlignment orientation, @Nonnull CefSize.Mutable size) {}
 
     /**
      * Called when touch handle state is updated. The client is responsible for rendering the touch handles.
@@ -220,7 +226,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:184</a>
      */
-    default void onTouchHandleStateChanged(@Nonnull CefBrowser browser, @Nonnull CefTouchHandleState state) {}
+    default void onTouchHandleStateChanged(@Nullable CefBrowser browser, @Nonnull CefTouchHandleState state) {}
 
     /**
      * Called when the user starts dragging content in the web view. Contextual information about the dragged content is
@@ -244,8 +250,8 @@ public interface CefRenderHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
      */
     default boolean startDragging(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefDragData dragData,
+            @Nullable CefBrowser browser,
+            @Nullable CefDragData dragData,
             @Nonnull CefDragOperationsMask allowedOps,
             int x,
             int y) {
@@ -253,7 +259,7 @@ public interface CefRenderHandler extends CefClientHandler {
     }
 
     /**
-     * Called when the web view wants to update the mouse cursor during a drag & drop operation. {@code operation}
+     * Called when the web view wants to update the mouse cursor during a drag &amp; drop operation. {@code operation}
      * describes the allowed operation (none, move, copy, link).
      *
      * <p>Definition generated from cef_render_handler_capi.h
@@ -265,7 +271,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:216</a>
      */
-    default void updateDragCursor(@Nonnull CefBrowser browser, @Nonnull CefDragOperationsMask operation) {}
+    default void updateDragCursor(@Nullable CefBrowser browser, @Nonnull CefDragOperationsMask operation) {}
 
     /**
      * Called when the scroll offset has changed.
@@ -279,7 +285,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:225</a>
      */
-    default void onScrollOffsetChanged(@Nonnull CefBrowser browser, double x, double y) {}
+    default void onScrollOffsetChanged(@Nullable CefBrowser browser, double x, double y) {}
 
     /**
      * Called when the IME composition range has changed. {@code selected_range} is the range of characters that have
@@ -295,7 +301,7 @@ public interface CefRenderHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:233</a>
      */
     default void onImeCompositionRangeChanged(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefRange selectedRange,
             long characterBoundsCount,
             @Nonnull CefRect[] characterBounds) {}
@@ -316,7 +322,7 @@ public interface CefRenderHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
      */
     default void onTextSelectionChanged(
-            @Nonnull CefBrowser browser, @Nullable String selectedText, @Nullable CefRange selectedRange) {}
+            @Nullable CefBrowser browser, @Nullable String selectedText, @Nullable CefRange selectedRange) {}
 
     /**
      * Called when an on-screen keyboard should be shown or hidden for the specified {@code browser}. {@code input_mode}
@@ -332,5 +338,5 @@ public interface CefRenderHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:253</a>
      */
-    default void onVirtualKeyboardRequested(@Nonnull CefBrowser browser, @Nonnull CefTextInputMode inputMode) {}
+    default void onVirtualKeyboardRequested(@Nullable CefBrowser browser, @Nonnull CefTextInputMode inputMode) {}
 }

@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that creates CefResourceHandler instances for handling scheme requests. The methods of this class will always
@@ -20,9 +20,10 @@ import javax.annotation.Nonnull;
 public interface CefSchemeHandlerFactory extends CefClientHandler {
 
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Return a new resource handler instance to handle the request or an empty reference to allow default handling of
+     * the request. {@code browser} and {@code frame} will be the browser window and frame respectively that originated
+     * the request or {@code null} if the request did not originate from a browser window (for example, if the request
+     * came from CefURLRequest). The {@code request} object passed to this method cannot be modified.
      *
      * <p>Definition generated from cef_scheme_capi.h
      *
@@ -30,13 +31,15 @@ public interface CefSchemeHandlerFactory extends CefClientHandler {
      * cef_resource_handler_t* (CEF_CALLBACK* create)(struct _cef_scheme_handler_factory_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_string_t* scheme_name, struct _cef_request_t* request);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @param browser may be null
+     * @param frame may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:106</a>
      */
     default Optional<CefResourceHandler> create(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull String schemeName,
-            @Nonnull CefRequest request) {
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable String schemeName,
+            @Nullable CefRequest request) {
         return Optional.empty();
     }
 }

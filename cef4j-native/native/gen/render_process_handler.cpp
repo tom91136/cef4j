@@ -11,11 +11,10 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
 extern "C" cef_load_handler_t* Create_JniCefLoadHandler(JNIEnv *env, jobject handler);
 
-// JNI wrapper struct for cef_render_process_handler_t
 struct JniCefRenderProcessHandler: public cef_render_process_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

@@ -33,7 +33,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:56</a>
      */
     default void onLoadingStateChange(
-            @Nonnull CefBrowser browser, boolean isloading, boolean cangoback, boolean cangoforward) {}
+            @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {}
 
     /**
      * Called after a navigation has been committed and before the browser begins loading contents in the frame. The
@@ -53,7 +53,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
      */
     default void onLoadStart(
-            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, @Nonnull CefTransitionType transitionType) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {}
 
     /**
      * Called when the browser is done loading a frame. The {@code frame} value will never be empty -- call the IsMain()
@@ -70,7 +70,7 @@ public interface CefLoadHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:86</a>
      */
-    default void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {}
+    default void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {}
 
     /**
      * Called when a navigation fails or is canceled. This method may be called by itself if before commit or in
@@ -84,13 +84,13 @@ public interface CefLoadHandler extends CefClientHandler {
      * void (CEF_CALLBACK* on_load_error)(struct _cef_load_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, cef_errorcode_t errorCode, const cef_string_t* errorText, const cef_string_t* failedUrl);
      * </pre>
      *
-     * @param errortext may be null
+     * @param errorText may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:101</a>
      */
     default void onLoadError(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
             @Nonnull CefErrorCode errorCode,
-            @Nullable String errortext,
-            @Nonnull String failedurl) {}
+            @Nullable String errorText,
+            @Nullable String failedUrl) {}
 }

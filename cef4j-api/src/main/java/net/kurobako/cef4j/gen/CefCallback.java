@@ -30,20 +30,20 @@ public interface CefCallback extends CefLibraryObject {
     void cont();
 
     /**
-     * Call to cancel the download.
+     * Cancel processing.
      *
      * <p>Definition generated from cef_callback_capi.h
      *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_callback_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:55</a>
      */
     void cancel();
 
     final class NativePeer implements CefCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -52,7 +52,17 @@ public interface CefCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefCallback.class);
@@ -75,11 +85,13 @@ public interface CefCallback extends CefLibraryObject {
 
         @Override
         public void cont() {
+            checkNotClosed();
             N_Cont(nativePtr);
         }
 
         @Override
         public void cancel() {
+            checkNotClosed();
             N_Cancel(nativePtr);
         }
 

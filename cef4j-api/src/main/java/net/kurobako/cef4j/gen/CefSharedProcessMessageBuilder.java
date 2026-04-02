@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that builds a CefProcessMessage containing a shared memory region. This class is not thread-safe but may be
@@ -21,15 +21,14 @@ import javax.annotation.Nonnull;
 public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if the builder is valid.
      *
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_shared_process_message_builder_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
      */
     boolean isValid();
 
@@ -72,13 +71,14 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
-    static Optional<CefSharedProcessMessageBuilder> create(@Nonnull String name, long byteSize) {
+    static Optional<CefSharedProcessMessageBuilder> create(@Nullable String name, long byteSize) {
         return Optional.ofNullable(NativePeer.N_Create(name, byteSize));
     }
 
     final class NativePeer implements CefSharedProcessMessageBuilder, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -87,7 +87,17 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSharedProcessMessageBuilder has been closed");
         }
 
         private static final org.slf4j.Logger _log =
@@ -112,21 +122,25 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public long size() {
+            checkNotClosed();
             return N_Size(nativePtr);
         }
 
         @Override
         public NativePointer memory() {
+            checkNotClosed();
             return N_Memory(nativePtr);
         }
 
         @Override
         public Optional<CefProcessMessage> build() {
+            checkNotClosed();
             return Optional.ofNullable(N_Build(nativePtr));
         }
 

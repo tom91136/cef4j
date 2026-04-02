@@ -39,7 +39,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:63</a>
      */
     default Optional<CefCookieAccessFilter> getCookieAccessFilter(
-            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefRequest request) {
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request) {
         return Optional.empty();
     }
 
@@ -66,8 +66,8 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default CefReturnValue onBeforeResourceLoad(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefCallback callback) {
+            @Nullable CefRequest request,
+            @Nullable CefCallback callback) {
         return CefReturnValue.of(CefReturnValue.Kind.CONTINUE);
     }
 
@@ -89,7 +89,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:98</a>
      */
     default Optional<CefResourceHandler> getResourceHandler(
-            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefRequest request) {
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request) {
         return Optional.empty();
     }
 
@@ -115,9 +115,9 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default void onResourceRedirect(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefResponse response,
-            @Nonnull String newUrl) {}
+            @Nullable CefRequest request,
+            @Nullable CefResponse response,
+            @Nullable String newUrl) {}
 
     /**
      * Called on the IO thread when a resource response is received. The {@code browser} and {@code frame} values
@@ -144,8 +144,8 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default boolean onResourceResponse(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefResponse response) {
+            @Nullable CefRequest request,
+            @Nullable CefResponse response) {
         return false;
     }
 
@@ -169,8 +169,8 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default Optional<CefResponseFilter> getResourceResponseFilter(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefResponse response) {
+            @Nullable CefRequest request,
+            @Nullable CefResponse response) {
         return Optional.empty();
     }
 
@@ -200,8 +200,8 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default void onResourceLoadComplete(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefResponse response,
+            @Nullable CefRequest request,
+            @Nullable CefResponse response,
             @Nonnull CefUrlRequestStatus status,
             long receivedContentLength) {}
 
@@ -227,6 +227,6 @@ public interface CefResourceRequestHandler extends CefClientHandler {
     default void onProtocolExecution(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
+            @Nullable CefRequest request,
             int[] allowOsExecution) {}
 }

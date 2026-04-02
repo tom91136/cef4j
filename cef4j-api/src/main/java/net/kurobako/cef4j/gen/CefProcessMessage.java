@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class representing a message. Can be used on any process and thread.
@@ -28,7 +28,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_process_message_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:59</a>
      */
     boolean isValid();
 
@@ -40,29 +40,31 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_process_message_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:66</a>
      */
     boolean isReadOnly();
 
     /**
-     * Returns a writable copy of this object.
+     * Returns a writable copy of this object. Returns {@code null} when message contains a shared memory region.
      *
      * <p>Definition generated from cef_process_message_capi.h
      *
      * <pre>cef_process_message_t* (CEF_CALLBACK* copy)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:73</a>
      */
     Optional<CefProcessMessage> copy();
 
     /**
-     * Returns the name of this node.
+     * Returns the message name.
      *
      * <p>Definition generated from cef_process_message_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:80</a>
      */
     Optional<String> getName();
 
@@ -101,13 +103,14 @@ public interface CefProcessMessage extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
-    static Optional<CefProcessMessage> create(@Nonnull String name) {
+    static Optional<CefProcessMessage> create(@Nullable String name) {
         return Optional.ofNullable(NativePeer.N_Create(name));
     }
 
     final class NativePeer implements CefProcessMessage, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -116,7 +119,17 @@ public interface CefProcessMessage extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefProcessMessage has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefProcessMessage.class);
@@ -139,31 +152,37 @@ public interface CefProcessMessage extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public Optional<CefProcessMessage> copy() {
+            checkNotClosed();
             return Optional.ofNullable(N_Copy(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetName(nativePtr));
         }
 
         @Override
         public Optional<CefListValue> getArgumentList() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetArgumentList(nativePtr));
         }
 
         @Override
         public Optional<CefSharedMemoryRegion> getSharedMemoryRegion() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSharedMemoryRegion(nativePtr));
         }
 

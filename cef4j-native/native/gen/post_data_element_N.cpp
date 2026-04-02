@@ -24,7 +24,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPostDataElement
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPostDataElement_00024NativePeer_N_1SetToFile(JNIEnv* env, jobject obj, jlong self, jstring fileName) {
     auto* s = reinterpret_cast<cef_post_data_element_t*>(self);
     if (!s) return;
-    if (!fileName) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "filename must not be null"); return;}
     auto _fileName_str = JStringToCefString(env, fileName);
     s->set_to_file(s, _fileName_str);
     if (_fileName_str) cef_string_userfree_free(_fileName_str);
@@ -35,6 +34,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPostDataElement
     if (!s) return;
     if (!bytes) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return;}
     const void* _bytes_addr = bytes ? env->GetDirectBufferAddress(bytes) : nullptr;
+    if (bytes && !_bytes_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
     s->set_to_bytes(s, static_cast<size_t>(env->GetDirectBufferCapacity(bytes)), _bytes_addr);
 }
 
@@ -68,6 +68,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefPostDataElemen
     if (!s) return 0;
     if (!bytes) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return 0;}
     void* _bytes_addr = bytes ? env->GetDirectBufferAddress(bytes) : nullptr;
+    if (bytes && !_bytes_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
     return static_cast<jlong>(s->get_bytes(s, static_cast<size_t>(env->GetDirectBufferCapacity(bytes)), _bytes_addr));
 }
 

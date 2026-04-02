@@ -27,19 +27,20 @@ public interface CefNavigationEntry extends CefLibraryObject {
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_navigation_entry_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:52</a>
      */
     boolean isValid();
 
     /**
-     * Returns the URL.
+     * Returns the actual URL of the page. For some pages this may be data: URL or similar. Use GetDisplayURL() to
+     * return a display-friendly version.
      *
      * <p>Definition generated from cef_navigation_entry_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_navigation_entry_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:143</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:59</a>
      */
     Optional<String> getUrl();
 
@@ -68,13 +69,14 @@ public interface CefNavigationEntry extends CefLibraryObject {
     Optional<String> getOriginalUrl();
 
     /**
-     * Returns the title of an HTML document.
+     * Returns the title set by the page. This value may be empty.
      *
      * <p>Definition generated from cef_navigation_entry_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_title)(struct _cef_navigation_entry_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:99</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
      */
     Optional<String> getTitle();
 
@@ -144,6 +146,7 @@ public interface CefNavigationEntry extends CefLibraryObject {
     final class NativePeer implements CefNavigationEntry, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -152,7 +155,17 @@ public interface CefNavigationEntry extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefNavigationEntry has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefNavigationEntry.class);
@@ -175,51 +188,61 @@ public interface CefNavigationEntry extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getDisplayUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDisplayUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getOriginalUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetOriginalUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getTitle() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTitle(nativePtr));
         }
 
         @Override
         public CefTransitionType getTransitionType() {
+            checkNotClosed();
             return N_GetTransitionType(nativePtr);
         }
 
         @Override
         public boolean hasPostData() {
+            checkNotClosed();
             return N_HasPostData(nativePtr);
         }
 
         @Override
         public CefBasetime getCompletionTime() {
+            checkNotClosed();
             return N_GetCompletionTime(nativePtr);
         }
 
         @Override
         public int getHttpStatusCode() {
+            checkNotClosed();
             return N_GetHttpStatusCode(nativePtr);
         }
 
         @Override
         public Optional<CefSslStatus> getSslStatus() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSslStatus(nativePtr));
         }
 

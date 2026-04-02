@@ -7,11 +7,10 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
 extern "C" cef_client_t* Create_JniCefClient(JNIEnv *env, jobject handler);
 
-// JNI wrapper struct for cef_browser_process_handler_t
 struct JniCefBrowserProcessHandler: public cef_browser_process_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

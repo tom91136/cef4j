@@ -20,13 +20,17 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefLinuxWindowProperties {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** Main window's Wayland's app_id */
     public final String waylandAppId;
+    /** Main window's WM_CLASS_CLASS in X11 */
     public final String wmClassClass;
+    /** Main window's WM_CLASS_NAME in X11 */
     public final String wmClassName;
+    /** Main window's WM_WINDOW_ROLE in X11 */
     public final String wmRoleName;
 
     public CefLinuxWindowProperties(String waylandAppId, String wmClassClass, String wmClassName, String wmRoleName) {

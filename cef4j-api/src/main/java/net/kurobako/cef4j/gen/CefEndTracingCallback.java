@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to receive notification when tracing has completed. The methods of this class will be called
@@ -30,5 +30,5 @@ public interface CefEndTracingCallback extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:54</a>
      */
-    default void onEndTracingComplete(@Nonnull String tracingFile) {}
+    default void onEndTracingComplete(@Nullable String tracingFile) {}
 }

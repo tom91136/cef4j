@@ -41,8 +41,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1GetDeviceInfo(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return;
-    if (!callback) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "callback must not be null"); return;}
-    cef_media_sink_device_info_callback_t* _callback_ptr = Create_JniCefMediaSinkDeviceInfoCallback(env, callback);
+    cef_media_sink_device_info_callback_t* _callback_ptr = callback ? Create_JniCefMediaSinkDeviceInfoCallback(env, callback) : nullptr;
     s->get_device_info(s, _callback_ptr);
 }
 
@@ -63,8 +62,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1IsCompatibleWith(JNIEnv* env, jobject obj, jlong self, jobject source) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!source) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "source must not be null"); return JNI_FALSE;}
-    cef_media_source_t* _source_ptr = reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J")));
+    cef_media_source_t* _source_ptr = source ? reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J"))) : nullptr;
     if (_source_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_source_ptr); _b->add_ref(_b);}
     auto _r = s->is_compatible_with(s, _source_ptr);
     return static_cast<jboolean>(_r);

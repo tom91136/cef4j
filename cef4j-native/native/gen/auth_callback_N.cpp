@@ -11,8 +11,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00024NativePeer_N_1Cont(JNIEnv* env, jobject obj, jlong self, jstring username, jstring password) {
     auto* s = reinterpret_cast<cef_auth_callback_t*>(self);
     if (!s) return;
-    if (!username) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "username must not be null"); return;}
-    if (!password) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "password must not be null"); return;}
     auto _username_str = JStringToCefString(env, username);
     auto _password_str = JStringToCefString(env, password);
     s->cont(s, _username_str, _password_str);

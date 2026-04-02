@@ -23,31 +23,32 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefPopupFeatures {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
     public final int x;
-    public final int xset;
+    public final int xSet;
     public final int y;
-    public final int yset;
+    public final int ySet;
     public final int width;
-    public final int widthset;
+    public final int widthSet;
     public final int height;
-    public final int heightset;
-    public final int ispopup;
+    public final int heightSet;
+    /** True (1) if browser interface elements should be hidden. */
+    public final int isPopup;
 
     public CefPopupFeatures(
-            int x, int xset, int y, int yset, int width, int widthset, int height, int heightset, int ispopup) {
+            int x, int xSet, int y, int ySet, int width, int widthSet, int height, int heightSet, int isPopup) {
         this.x = x;
-        this.xset = xset;
+        this.xSet = xSet;
         this.y = y;
-        this.yset = yset;
+        this.ySet = ySet;
         this.width = width;
-        this.widthset = widthset;
+        this.widthSet = widthSet;
         this.height = height;
-        this.heightset = heightset;
-        this.ispopup = ispopup;
+        this.heightSet = heightSet;
+        this.isPopup = isPopup;
     }
 
     @Override
@@ -56,26 +57,26 @@ public final class CefPopupFeatures {
         if (!(obj instanceof CefPopupFeatures)) return false;
         CefPopupFeatures other = (CefPopupFeatures) obj;
         return this.x == other.x
-                && this.xset == other.xset
+                && this.xSet == other.xSet
                 && this.y == other.y
-                && this.yset == other.yset
+                && this.ySet == other.ySet
                 && this.width == other.width
-                && this.widthset == other.widthset
+                && this.widthSet == other.widthSet
                 && this.height == other.height
-                && this.heightset == other.heightset
-                && this.ispopup == other.ispopup;
+                && this.heightSet == other.heightSet
+                && this.isPopup == other.isPopup;
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(x, xset, y, yset, width, widthset, height, heightset, ispopup);
+        return java.util.Objects.hash(x, xSet, y, ySet, width, widthSet, height, heightSet, isPopup);
     }
 
     @Override
     public String toString() {
         return "CefPopupFeatures{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "x=" + x + ", "
-                + "xset=" + xset + ", " + "y=" + y + ", " + "yset=" + yset + ", " + "width=" + width + ", "
-                + "widthset=" + widthset + ", " + "height=" + height + ", " + "heightset=" + heightset + ", "
-                + "ispopup=" + ispopup + "}";
+                + "xSet=" + xSet + ", " + "y=" + y + ", " + "ySet=" + ySet + ", " + "width=" + width + ", "
+                + "widthSet=" + widthSet + ", " + "height=" + height + ", " + "heightSet=" + heightSet + ", "
+                + "isPopup=" + isPopup + "}";
     }
 }

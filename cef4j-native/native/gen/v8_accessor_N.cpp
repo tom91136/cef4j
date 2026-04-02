@@ -11,12 +11,8 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefV8Accessor_0002
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Accessor_00024NativePeer_N_1Get(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject retval, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_accessor_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return JNI_FALSE;}
-    if (!object) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "object must not be null"); return JNI_FALSE;}
-    if (!retval) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "retval must not be null"); return JNI_FALSE;}
-    if (!exception) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "exception must not be null"); return JNI_FALSE;}
     auto _name_str = JStringToCefString(env, name);
-    cef_v8_value_t* _object_ptr = reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J")));
+    cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;
     if (_object_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_object_ptr); _b->add_ref(_b);}
     cef_v8_value_t* _retval_ptr = nullptr;
     if (retval) {
@@ -42,14 +38,10 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Accessor_
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Accessor_00024NativePeer_N_1Set(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject value, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_accessor_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return JNI_FALSE;}
-    if (!object) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "object must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
-    if (!exception) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "exception must not be null"); return JNI_FALSE;}
     auto _name_str = JStringToCefString(env, name);
-    cef_v8_value_t* _object_ptr = reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J")));
+    cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;
     if (_object_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_object_ptr); _b->add_ref(_b);}
-    cef_v8_value_t* _value_ptr = reinterpret_cast<cef_v8_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J")));
+    cef_v8_value_t* _value_ptr = value ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
     auto _exception_str = JStringToCefString(env, exception);
     auto _r = s->set(s, _name_str, _object_ptr, _value_ptr, _exception_str);

@@ -105,6 +105,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
     final class NativePeer implements CefWaitableEvent, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -113,7 +114,17 @@ public interface CefWaitableEvent extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefWaitableEvent has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefWaitableEvent.class);
@@ -136,26 +147,31 @@ public interface CefWaitableEvent extends CefLibraryObject {
 
         @Override
         public void reset() {
+            checkNotClosed();
             N_Reset(nativePtr);
         }
 
         @Override
         public void signal() {
+            checkNotClosed();
             N_Signal(nativePtr);
         }
 
         @Override
         public boolean isSignaled() {
+            checkNotClosed();
             return N_IsSignaled(nativePtr);
         }
 
         @Override
         public void cefWait() {
+            checkNotClosed();
             N_Wait(nativePtr);
         }
 
         @Override
         public boolean timedWait(long maxMs) {
+            checkNotClosed();
             return N_TimedWait(nativePtr, maxMs);
         }
 

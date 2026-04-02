@@ -23,18 +23,34 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefTaskInfo {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** The task ID. */
     public final long id;
+    /** The task type. */
     public final CefTaskType type;
+    /** Set to {@code true} (1) if the task is killable. */
     public final int isKillable;
+    /** The task title. */
     public final String title;
+    /**
+     * The CPU usage of the process on which the task is running. The value is in the range zero to number_of_processors
+     * * 100%.
+     */
     public final double cpuUsage;
+    /** The number of processors available on the system. */
     public final int numberOfProcessors;
+    /** The memory footprint of the task in bytes. A value of -1 means no valid value is currently available. */
     public final long memory;
+    /** The GPU memory usage of the task in bytes. A value of -1 means no valid value is currently available. */
     public final long gpuMemory;
+    /**
+     * Set to {@code true} (1) if this task process' GPU resource count is inflated because it is counting other
+     * processes' resources (e.g, the GPU process has this value set to {@code true} because it is the aggregate of all
+     * processes).
+     */
     public final int isGpuMemoryInflated;
 
     public CefTaskInfo(

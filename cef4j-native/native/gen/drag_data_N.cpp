@@ -203,7 +203,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDragData_00024N
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDragData_00024NativePeer_N_1AddFile(JNIEnv* env, jobject obj, jlong self, jstring path, jstring display_name) {
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return;
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return;}
     auto _path_str = JStringToCefString(env, path);
     auto _display_name_str = display_name ? JStringToCefString(env, display_name) : nullptr;
     s->add_file(s, _path_str, _display_name_str);

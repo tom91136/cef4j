@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Callback interface used for asynchronous continuation of JavaScript dialog requests.
@@ -32,11 +32,12 @@ public interface CefJsDialogCallback extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
-    void cont(int success, @Nonnull String userInput);
+    void cont(int success, @Nullable String userInput);
 
     final class NativePeer implements CefJsDialogCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -45,7 +46,17 @@ public interface CefJsDialogCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefJsDialogCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefJsDialogCallback.class);
@@ -67,7 +78,8 @@ public interface CefJsDialogCallback extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public void cont(int success, @Nonnull String userInput) {
+        public void cont(int success, @Nullable String userInput) {
+            checkNotClosed();
             N_Cont(nativePtr, success, userInput);
         }
 

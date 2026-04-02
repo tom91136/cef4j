@@ -23,13 +23,13 @@ import javax.annotation.Nullable;
 public interface CefBrowserHost extends CefLibraryObject {
 
     /**
-     * Returns the browser for this context. This method will return an empty reference for WebWorker contexts.
+     * Returns the hosted browser object.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
      * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_browser_host_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:333</a>
      */
     Optional<CefBrowser> getBrowser();
 
@@ -152,13 +152,13 @@ public interface CefBrowserHost extends CefLibraryObject {
     boolean hasView();
 
     /**
-     * Returns the client.
+     * Returns the client for this browser.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
      * <pre>cef_client_t* (CEF_CALLBACK* get_client)(struct _cef_browser_host_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:434</a>
      */
     Optional<CefClient> getClient();
 
@@ -231,7 +231,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:475</a>
      */
-    void setZoomLevel(double zoomlevel);
+    void setZoomLevel(double zoomLevel);
 
     /**
      * Call to run a file chooser dialog. Only a single file chooser dialog may be pending at any given time.
@@ -260,7 +260,7 @@ public interface CefBrowserHost extends CefLibraryObject {
             @Nullable String title,
             @Nullable String defaultFilePath,
             @Nullable List<String> acceptFilters,
-            @Nonnull CefRunFileDialogCallback callback);
+            @Nullable CefRunFileDialogCallback callback);
 
     /**
      * Download the file at {@code url} using CefDownloadHandler.
@@ -271,14 +271,14 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:508</a>
      */
-    void startDownload(@Nonnull String url);
+    void startDownload(@Nullable String url);
 
     /**
      * Download {@code image_url} and execute {@code callback} on completion with the images received from the renderer.
      * If {@code is_favicon} is {@code true} then cookies are not sent and not accepted during download. Images with
      * density independent pixel (DIP) sizes larger than {@code max_image_size} are filtered out from the image results.
      * Versions of the image at different scale factors may be downloaded up to the maximum scale factor supported by
-     * the system. If there are no image results <= {@code max_image_size} then the smallest image is resized to
+     * the system. If there are no image results &lt;= {@code max_image_size} then the smallest image is resized to
      * {@code max_image_size} and is the only result. A {@code max_image_size} of 0 means unlimited. If
      * {@code bypass_cache} is {@code true} then {@code image_url} is requested from the server even if it is present in
      * the browser cache.
@@ -292,11 +292,11 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:514</a>
      */
     void downloadImage(
-            @Nonnull String imageUrl,
+            @Nullable String imageUrl,
             boolean isFavicon,
             int maxImageSize,
             boolean bypassCache,
-            @Nonnull CefDownloadImageCallback callback);
+            @Nullable CefDownloadImageCallback callback);
 
     /**
      * Print the current browser contents.
@@ -324,7 +324,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:539</a>
      */
     void printToPdf(
-            @Nonnull String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback);
+            @Nullable String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback);
 
     /**
      * Search for {@code searchText}. {@code forward} indicates whether to search forward or backward within the page.
@@ -341,7 +341,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:550</a>
      */
-    void find(@Nonnull String searchtext, boolean forward, boolean matchcase, boolean findnext);
+    void find(@Nullable String searchText, boolean forward, boolean matchCase, boolean findNext);
 
     /**
      * Cancel all searches that are currently going on.
@@ -352,7 +352,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:565</a>
      */
-    void stopFinding(boolean clearselection);
+    void stopFinding(boolean clearSelection);
 
     /**
      * Open developer tools (DevTools) in its own browser. The DevTools browser will remain associated with this
@@ -367,14 +367,14 @@ public interface CefBrowserHost extends CefLibraryObject {
      * void (CEF_CALLBACK* show_dev_tools)(struct _cef_browser_host_t* self, const struct _cef_window_info_t* windowInfo, struct _cef_client_t* client, const struct _cef_browser_settings_t* settings, const cef_point_t* inspect_element_at);
      * </pre>
      *
-     * @param windowinfo may be null
+     * @param windowInfo may be null
      * @param client may be null
      * @param settings may be null
      * @param inspectElementAt may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:571</a>
      */
     void showDevTools(
-            @Nullable CefWindowInfo windowinfo,
+            @Nullable CefWindowInfo windowInfo,
             @Nullable CefClient client,
             @Nullable CefBrowserSettings settings,
             @Nullable CefPoint inspectElementAt);
@@ -416,8 +416,8 @@ public interface CefBrowserHost extends CefLibraryObject {
      * <p>Every valid method call will result in an asynchronous method result or error message that references the sent
      * message "id". Event messages are received while notifications are enabled (for example, between method calls for
      * "Page.enable" and "Page.disable"). All received messages will be delivered to the observer(s) registered with
-     * AddDevToolsMessageObserver. See {@link CefDevToolsMessageObserver#onDevToolsMessage(CefBrowser, ByteBuffer)}
-     * documentation for details of received message contents.
+     * AddDevToolsMessageObserver. See {@link CefDevToolsMessageObserver#onDevToolsMessage(CefBrowser,
+     * java.nio.ByteBuffer)} documentation for details of received message contents.
      *
      * <p>Usage of the SendDevToolsMessage, ExecuteDevToolsMethod and AddDevToolsMessageObserver methods does not
      * require an active DevTools front-end or remote-debugging session. Other active DevTools sessions will continue to
@@ -425,7 +425,10 @@ public interface CefBrowserHost extends CefLibraryObject {
      * the UI of other sessions.
      *
      * <p>Communication with the DevTools front-end (when displayed) can be logged for development purposes by passing
-     * the `--devtools-protocol-log-file=<path>` command-line flag.
+     * the `--devtools-protocol-log-file=&lt;path&gt;` command-line flag.
+     *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code messageSize} parameter is derived from the buffer's capacity.</b>
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -433,6 +436,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * int (CEF_CALLBACK* send_dev_tools_message)(struct _cef_browser_host_t* self, const void* message, size_t message_size);
      * </pre>
      *
+     * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:600</a>
      */
     boolean sendDevToolsMessage(@Nonnull ByteBuffer message);
@@ -455,7 +461,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @param params may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:636</a>
      */
-    int executeDevToolsMethod(int messageId, @Nonnull String method, @Nullable CefDictionaryValue params);
+    int executeDevToolsMethod(int messageId, @Nullable String method, @Nullable CefDictionaryValue params);
 
     /**
      * Add an observer for DevTools protocol messages (method results and events). The observer will remain registered
@@ -470,7 +476,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:653</a>
      */
-    Optional<CefRegistration> addDevToolsMessageObserver(@Nonnull CefDevToolsMessageObserver observer);
+    Optional<CefRegistration> addDevToolsMessageObserver(@Nullable CefDevToolsMessageObserver observer);
 
     /**
      * Retrieve a snapshot of current navigation entries as values sent to the specified visitor. If
@@ -485,7 +491,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:663</a>
      */
-    void getNavigationEntries(@Nonnull CefNavigationEntryVisitor visitor, boolean currentOnly);
+    void getNavigationEntries(@Nullable CefNavigationEntryVisitor visitor, boolean currentOnly);
 
     /**
      * If a misspelled word is currently selected in an editable node calling this method will replace it with the
@@ -497,7 +503,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:673</a>
      */
-    void replaceMisspelling(@Nonnull String word);
+    void replaceMisspelling(@Nullable String word);
 
     /**
      * Add the specified {@code word} to the spelling dictionary.
@@ -509,7 +515,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:680</a>
      */
-    void addWordToDictionary(@Nonnull String word);
+    void addWordToDictionary(@Nullable String word);
 
     /**
      * Returns {@code true} if window rendering is disabled.
@@ -524,8 +530,8 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Notify the browser that the widget has been resized. The browser will first call
-     * {@link CefRenderHandler#getViewRect(CefBrowser, CefMutableRect)} to get the new size and then call
-     * {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[], ByteBuffer, int, int)}
+     * {@link CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)} to get the new size and then call
+     * {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)}
      * asynchronously with the updated regions. This method is only used when window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
@@ -538,8 +544,8 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Notify the browser that it has been hidden or shown. Layouting and {@link CefRenderHandler#onPaint(CefBrowser,
-     * CefPaintElementType, long, CefRect[], ByteBuffer, int, int)} notification will stop when the browser is hidden.
-     * This method is only used when window rendering is disabled.
+     * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} notification will stop when the browser is
+     * hidden. This method is only used when window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -559,13 +565,13 @@ public interface CefBrowserHost extends CefLibraryObject {
      * root window.
      *
      * <p>With windowless rendering the browser will call {@link CefRenderHandler#getScreenInfo(CefBrowser,
-     * CefMutableScreenInfo)}, {@link CefRenderHandler#getRootScreenRect(CefBrowser, CefMutableRect)} and
-     * {@link CefRenderHandler#getViewRect(CefBrowser, CefMutableRect)}. This simulates moving or resizing the root
+     * CefScreenInfo.Mutable)}, {@link CefRenderHandler#getRootScreenRect(CefBrowser, CefRect.Mutable)} and
+     * {@link CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)}. This simulates moving or resizing the root
      * window in the current display, moving the root window from one display to another, or changing the properties of
      * the current display.
      *
      * <p>With windowed rendering the browser will call {@link CefDisplayHandler#getRootWindowScreenRect(CefBrowser,
-     * CefMutableRect)} and use the associated display properties.
+     * CefRect.Mutable)} and use the associated display properties.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -577,7 +583,8 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Invalidate the view. The browser will call {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long,
-     * CefRect[], ByteBuffer, int, int)} asynchronously. This method is only used when window rendering is disabled.
+     * CefRect[], java.nio.ByteBuffer, int, int)} asynchronously. This method is only used when window rendering is
+     * disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -623,7 +630,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:753</a>
      */
     void sendMouseClickEvent(
-            @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseup, int clickcount);
+            @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseUp, int clickCount);
 
     /**
      * Send a mouse move event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left
@@ -637,7 +644,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:763</a>
      */
-    void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseleave);
+    void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseLeave);
 
     /**
      * Send a mouse wheel event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left
@@ -653,7 +660,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:771</a>
      */
-    void sendMouseWheelEvent(@Nonnull CefMouseEvent event, int deltax, int deltay);
+    void sendMouseWheelEvent(@Nonnull CefMouseEvent event, int deltaX, int deltaY);
 
     /**
      * Send a touch event to the browser for a windowless browser.
@@ -692,9 +699,9 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Returns the maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser,
-     * CefPaintElementType, long, CefRect[], ByteBuffer, int, int)} will be called for a windowless browser. The actual
-     * fps may be lower if the browser cannot generate frames at the requested rate. The minimum value is 1 and the
-     * default value is 30. This method can only be called on the UI thread.
+     * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless browser.
+     * The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum value is 1
+     * and the default value is 30. This method can only be called on the UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -748,7 +755,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      */
     void imeSetComposition(
             @Nullable String text,
-            long underlinescount,
+            long underlinesCount,
             @Nullable CefCompositionUnderline[] underlines,
             @Nonnull CefRange replacementRange,
             @Nonnull CefRange selectionRange);
@@ -813,7 +820,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:887</a>
      */
     void dragTargetDragEnter(
-            @Nonnull CefDragData dragData, @Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps);
+            @Nullable CefDragData dragData, @Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps);
 
     /**
      * Call this method each time the mouse is moved across the web view during a drag operation (after calling
@@ -1053,7 +1060,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Enable or disable CDP accessibility tree viewport collapse for this browser. When enabled, off-screen landmarks
      * and headings are serialized as summaries and other off-screen nodes are pruned. Overrides the
      * CefBrowserSettings.ax_viewport_collapse value. If called on the UI thread the change will be applied immediately.
-     * Otherwise, the change will be applied asynchronously on the UI thread. <b>WARNING:</b> This collapses the CDP
+     * Otherwise, the change will be applied asynchronously on the UI thread. WARNING: This collapses the CDP
      * accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel
      * will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected — they use a
      * separate code path.
@@ -1084,13 +1091,13 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:289</a>
      */
     static int createBrowser(
-            @Nonnull CefWindowInfo windowinfo,
+            @Nonnull CefWindowInfo windowInfo,
             @Nullable CefClient client,
             @Nullable String url,
             @Nonnull CefBrowserSettings settings,
             @Nullable CefDictionaryValue extraInfo,
             @Nullable CefRequestContext requestContext) {
-        return NativePeer.N_CreateBrowser(windowinfo, client, url, settings, extraInfo, requestContext);
+        return NativePeer.N_CreateBrowser(windowInfo, client, url, settings, extraInfo, requestContext);
     }
 
     /**
@@ -1109,14 +1116,14 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:308</a>
      */
     static Optional<CefBrowser> createBrowserSync(
-            @Nonnull CefWindowInfo windowinfo,
+            @Nonnull CefWindowInfo windowInfo,
             @Nullable CefClient client,
             @Nullable String url,
             @Nonnull CefBrowserSettings settings,
             @Nullable CefDictionaryValue extraInfo,
             @Nullable CefRequestContext requestContext) {
         return Optional.ofNullable(
-                NativePeer.N_CreateBrowserSync(windowinfo, client, url, settings, extraInfo, requestContext));
+                NativePeer.N_CreateBrowserSync(windowInfo, client, url, settings, extraInfo, requestContext));
     }
 
     /**
@@ -1135,6 +1142,7 @@ public interface CefBrowserHost extends CefLibraryObject {
     final class NativePeer implements CefBrowserHost, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -1143,7 +1151,17 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefBrowserHost has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefBrowserHost.class);
@@ -1166,82 +1184,98 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         @Override
         public Optional<CefBrowser> getBrowser() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBrowser(nativePtr));
         }
 
         @Override
         public void closeBrowser(boolean forceClose) {
+            checkNotClosed();
             N_CloseBrowser(nativePtr, forceClose);
         }
 
         @Override
         public boolean tryCloseBrowser() {
+            checkNotClosed();
             return N_TryCloseBrowser(nativePtr);
         }
 
         @Override
         public boolean isReadyToBeClosed() {
+            checkNotClosed();
             return N_IsReadyToBeClosed(nativePtr);
         }
 
         @Override
         public void setFocus(boolean focus) {
+            checkNotClosed();
             N_SetFocus(nativePtr, focus);
         }
 
         @Override
         public long getWindowHandle() {
+            checkNotClosed();
             return N_GetWindowHandle(nativePtr);
         }
 
         @Override
         public long getOpenerWindowHandle() {
+            checkNotClosed();
             return N_GetOpenerWindowHandle(nativePtr);
         }
 
         @Override
         public int getOpenerIdentifier() {
+            checkNotClosed();
             return N_GetOpenerIdentifier(nativePtr);
         }
 
         @Override
         public boolean hasView() {
+            checkNotClosed();
             return N_HasView(nativePtr);
         }
 
         @Override
         public Optional<CefClient> getClient() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetClient(nativePtr));
         }
 
         @Override
         public Optional<CefRequestContext> getRequestContext() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetRequestContext(nativePtr));
         }
 
         @Override
         public boolean canZoom(@Nonnull CefZoomCommand command) {
+            checkNotClosed();
             return N_CanZoom(nativePtr, command);
         }
 
         @Override
         public void zoom(@Nonnull CefZoomCommand command) {
+            checkNotClosed();
             N_Zoom(nativePtr, command);
         }
 
         @Override
         public double getDefaultZoomLevel() {
+            checkNotClosed();
             return N_GetDefaultZoomLevel(nativePtr);
         }
 
         @Override
         public double getZoomLevel() {
+            checkNotClosed();
             return N_GetZoomLevel(nativePtr);
         }
 
         @Override
-        public void setZoomLevel(double zoomlevel) {
-            N_SetZoomLevel(nativePtr, zoomlevel);
+        public void setZoomLevel(double zoomLevel) {
+            checkNotClosed();
+            N_SetZoomLevel(nativePtr, zoomLevel);
         }
 
         @Override
@@ -1250,286 +1284,341 @@ public interface CefBrowserHost extends CefLibraryObject {
                 @Nullable String title,
                 @Nullable String defaultFilePath,
                 @Nullable List<String> acceptFilters,
-                @Nonnull CefRunFileDialogCallback callback) {
+                @Nullable CefRunFileDialogCallback callback) {
+            checkNotClosed();
             N_RunFileDialog(nativePtr, mode, title, defaultFilePath, acceptFilters, callback);
         }
 
         @Override
-        public void startDownload(@Nonnull String url) {
+        public void startDownload(@Nullable String url) {
+            checkNotClosed();
             N_StartDownload(nativePtr, url);
         }
 
         @Override
         public void downloadImage(
-                @Nonnull String imageUrl,
+                @Nullable String imageUrl,
                 boolean isFavicon,
                 int maxImageSize,
                 boolean bypassCache,
-                @Nonnull CefDownloadImageCallback callback) {
+                @Nullable CefDownloadImageCallback callback) {
+            checkNotClosed();
             N_DownloadImage(nativePtr, imageUrl, isFavicon, maxImageSize, bypassCache, callback);
         }
 
         @Override
         public void print() {
+            checkNotClosed();
             N_Print(nativePtr);
         }
 
         @Override
         public void printToPdf(
-                @Nonnull String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback) {
+                @Nullable String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback) {
+            checkNotClosed();
             N_PrintToPdf(nativePtr, path, settings, callback);
         }
 
         @Override
-        public void find(@Nonnull String searchtext, boolean forward, boolean matchcase, boolean findnext) {
-            N_Find(nativePtr, searchtext, forward, matchcase, findnext);
+        public void find(@Nullable String searchText, boolean forward, boolean matchCase, boolean findNext) {
+            checkNotClosed();
+            N_Find(nativePtr, searchText, forward, matchCase, findNext);
         }
 
         @Override
-        public void stopFinding(boolean clearselection) {
-            N_StopFinding(nativePtr, clearselection);
+        public void stopFinding(boolean clearSelection) {
+            checkNotClosed();
+            N_StopFinding(nativePtr, clearSelection);
         }
 
         @Override
         public void showDevTools(
-                @Nullable CefWindowInfo windowinfo,
+                @Nullable CefWindowInfo windowInfo,
                 @Nullable CefClient client,
                 @Nullable CefBrowserSettings settings,
                 @Nullable CefPoint inspectElementAt) {
-            N_ShowDevTools(nativePtr, windowinfo, client, settings, inspectElementAt);
+            checkNotClosed();
+            N_ShowDevTools(nativePtr, windowInfo, client, settings, inspectElementAt);
         }
 
         @Override
         public void closeDevTools() {
+            checkNotClosed();
             N_CloseDevTools(nativePtr);
         }
 
         @Override
         public boolean hasDevTools() {
+            checkNotClosed();
             return N_HasDevTools(nativePtr);
         }
 
         @Override
         public boolean sendDevToolsMessage(@Nonnull ByteBuffer message) {
+            checkNotClosed();
             return N_SendDevToolsMessage(nativePtr, message);
         }
 
         @Override
-        public int executeDevToolsMethod(int messageId, @Nonnull String method, @Nullable CefDictionaryValue params) {
+        public int executeDevToolsMethod(int messageId, @Nullable String method, @Nullable CefDictionaryValue params) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(params, "CefDictionaryValue");
             return N_ExecuteDevToolsMethod(nativePtr, messageId, method, params);
         }
 
         @Override
-        public Optional<CefRegistration> addDevToolsMessageObserver(@Nonnull CefDevToolsMessageObserver observer) {
+        public Optional<CefRegistration> addDevToolsMessageObserver(@Nullable CefDevToolsMessageObserver observer) {
+            checkNotClosed();
             return Optional.ofNullable(N_AddDevToolsMessageObserver(nativePtr, observer));
         }
 
         @Override
-        public void getNavigationEntries(@Nonnull CefNavigationEntryVisitor visitor, boolean currentOnly) {
+        public void getNavigationEntries(@Nullable CefNavigationEntryVisitor visitor, boolean currentOnly) {
+            checkNotClosed();
             N_GetNavigationEntries(nativePtr, visitor, currentOnly);
         }
 
         @Override
-        public void replaceMisspelling(@Nonnull String word) {
+        public void replaceMisspelling(@Nullable String word) {
+            checkNotClosed();
             N_ReplaceMisspelling(nativePtr, word);
         }
 
         @Override
-        public void addWordToDictionary(@Nonnull String word) {
+        public void addWordToDictionary(@Nullable String word) {
+            checkNotClosed();
             N_AddWordToDictionary(nativePtr, word);
         }
 
         @Override
         public boolean isWindowRenderingDisabled() {
+            checkNotClosed();
             return N_IsWindowRenderingDisabled(nativePtr);
         }
 
         @Override
         public void wasResized() {
+            checkNotClosed();
             N_WasResized(nativePtr);
         }
 
         @Override
         public void wasHidden(boolean hidden) {
+            checkNotClosed();
             N_WasHidden(nativePtr, hidden);
         }
 
         @Override
         public void notifyScreenInfoChanged() {
+            checkNotClosed();
             N_NotifyScreenInfoChanged(nativePtr);
         }
 
         @Override
         public void invalidate(@Nonnull CefPaintElementType type) {
+            checkNotClosed();
             N_Invalidate(nativePtr, type);
         }
 
         @Override
         public void sendExternalBeginFrame() {
+            checkNotClosed();
             N_SendExternalBeginFrame(nativePtr);
         }
 
         @Override
         public void sendKeyEvent(@Nonnull CefKeyEvent event) {
+            checkNotClosed();
             N_SendKeyEvent(nativePtr, event);
         }
 
         @Override
         public void sendMouseClickEvent(
-                @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseup, int clickcount) {
-            N_SendMouseClickEvent(nativePtr, event, type, mouseup, clickcount);
+                @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseUp, int clickCount) {
+            checkNotClosed();
+            N_SendMouseClickEvent(nativePtr, event, type, mouseUp, clickCount);
         }
 
         @Override
-        public void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseleave) {
-            N_SendMouseMoveEvent(nativePtr, event, mouseleave);
+        public void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseLeave) {
+            checkNotClosed();
+            N_SendMouseMoveEvent(nativePtr, event, mouseLeave);
         }
 
         @Override
-        public void sendMouseWheelEvent(@Nonnull CefMouseEvent event, int deltax, int deltay) {
-            N_SendMouseWheelEvent(nativePtr, event, deltax, deltay);
+        public void sendMouseWheelEvent(@Nonnull CefMouseEvent event, int deltaX, int deltaY) {
+            checkNotClosed();
+            N_SendMouseWheelEvent(nativePtr, event, deltaX, deltaY);
         }
 
         @Override
         public void sendTouchEvent(@Nonnull CefTouchEvent event) {
+            checkNotClosed();
             N_SendTouchEvent(nativePtr, event);
         }
 
         @Override
         public void sendCaptureLostEvent() {
+            checkNotClosed();
             N_SendCaptureLostEvent(nativePtr);
         }
 
         @Override
         public void notifyMoveOrResizeStarted() {
+            checkNotClosed();
             N_NotifyMoveOrResizeStarted(nativePtr);
         }
 
         @Override
         public int getWindowlessFrameRate() {
+            checkNotClosed();
             return N_GetWindowlessFrameRate(nativePtr);
         }
 
         @Override
         public void setWindowlessFrameRate(int frameRate) {
+            checkNotClosed();
             N_SetWindowlessFrameRate(nativePtr, frameRate);
         }
 
         @Override
         public void imeSetComposition(
                 @Nullable String text,
-                long underlinescount,
+                long underlinesCount,
                 @Nullable CefCompositionUnderline[] underlines,
                 @Nonnull CefRange replacementRange,
                 @Nonnull CefRange selectionRange) {
-            N_ImeSetComposition(nativePtr, text, underlinescount, underlines, replacementRange, selectionRange);
+            checkNotClosed();
+            N_ImeSetComposition(nativePtr, text, underlinesCount, underlines, replacementRange, selectionRange);
         }
 
         @Override
         public void imeCommitText(@Nullable String text, @Nonnull CefRange replacementRange, int relativeCursorPos) {
+            checkNotClosed();
             N_ImeCommitText(nativePtr, text, replacementRange, relativeCursorPos);
         }
 
         @Override
         public void imeFinishComposingText(boolean keepSelection) {
+            checkNotClosed();
             N_ImeFinishComposingText(nativePtr, keepSelection);
         }
 
         @Override
         public void imeCancelComposition() {
+            checkNotClosed();
             N_ImeCancelComposition(nativePtr);
         }
 
         @Override
         public void dragTargetDragEnter(
-                @Nonnull CefDragData dragData,
+                @Nullable CefDragData dragData,
                 @Nonnull CefMouseEvent event,
                 @Nonnull CefDragOperationsMask allowedOps) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(dragData, "CefDragData");
             N_DragTargetDragEnter(nativePtr, dragData, event, allowedOps);
         }
 
         @Override
         public void dragTargetDragOver(@Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps) {
+            checkNotClosed();
             N_DragTargetDragOver(nativePtr, event, allowedOps);
         }
 
         @Override
         public void dragTargetDragLeave() {
+            checkNotClosed();
             N_DragTargetDragLeave(nativePtr);
         }
 
         @Override
         public void dragTargetDrop(@Nonnull CefMouseEvent event) {
+            checkNotClosed();
             N_DragTargetDrop(nativePtr, event);
         }
 
         @Override
         public void dragSourceEndedAt(int x, int y, @Nonnull CefDragOperationsMask op) {
+            checkNotClosed();
             N_DragSourceEndedAt(nativePtr, x, y, op);
         }
 
         @Override
         public void dragSourceSystemDragEnded() {
+            checkNotClosed();
             N_DragSourceSystemDragEnded(nativePtr);
         }
 
         @Override
         public Optional<CefNavigationEntry> getVisibleNavigationEntry() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetVisibleNavigationEntry(nativePtr));
         }
 
         @Override
         public void setAccessibilityState(@Nonnull CefState accessibilityState) {
+            checkNotClosed();
             N_SetAccessibilityState(nativePtr, accessibilityState);
         }
 
         @Override
         public void setAutoResizeEnabled(boolean enabled, @Nonnull CefSize minSize, @Nonnull CefSize maxSize) {
+            checkNotClosed();
             N_SetAutoResizeEnabled(nativePtr, enabled, minSize, maxSize);
         }
 
         @Override
         public void setAudioMuted(boolean mute) {
+            checkNotClosed();
             N_SetAudioMuted(nativePtr, mute);
         }
 
         @Override
         public boolean isAudioMuted() {
+            checkNotClosed();
             return N_IsAudioMuted(nativePtr);
         }
 
         @Override
         public boolean isFullscreen() {
+            checkNotClosed();
             return N_IsFullscreen(nativePtr);
         }
 
         @Override
         public void exitFullscreen(boolean willCauseResize) {
+            checkNotClosed();
             N_ExitFullscreen(nativePtr, willCauseResize);
         }
 
         @Override
         public boolean canExecuteChromeCommand(int commandId) {
+            checkNotClosed();
             return N_CanExecuteChromeCommand(nativePtr, commandId);
         }
 
         @Override
         public void executeChromeCommand(int commandId, @Nonnull CefWindowOpenDisposition disposition) {
+            checkNotClosed();
             N_ExecuteChromeCommand(nativePtr, commandId, disposition);
         }
 
         @Override
         public boolean isRenderProcessUnresponsive() {
+            checkNotClosed();
             return N_IsRenderProcessUnresponsive(nativePtr);
         }
 
         @Override
         public CefRuntimeStyle getRuntimeStyle() {
+            checkNotClosed();
             return N_GetRuntimeStyle(nativePtr);
         }
 
         @Override
         public void setAxViewportCollapse(boolean enabled) {
+            checkNotClosed();
             N_SetAxViewportCollapse(nativePtr, enabled);
         }
 
@@ -1563,7 +1652,7 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         private static native double N_GetZoomLevel(long self);
 
-        private static native void N_SetZoomLevel(long self, double zoomlevel);
+        private static native void N_SetZoomLevel(long self, double zoomLevel);
 
         private static native void N_RunFileDialog(
                 long self,
@@ -1589,13 +1678,13 @@ public interface CefBrowserHost extends CefLibraryObject {
                 long self, String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
 
         private static native void N_Find(
-                long self, String searchtext, boolean forward, boolean matchcase, boolean findnext);
+                long self, String searchText, boolean forward, boolean matchCase, boolean findNext);
 
-        private static native void N_StopFinding(long self, boolean clearselection);
+        private static native void N_StopFinding(long self, boolean clearSelection);
 
         private static native void N_ShowDevTools(
                 long self,
-                CefWindowInfo windowinfo,
+                CefWindowInfo windowInfo,
                 CefClient client,
                 CefBrowserSettings settings,
                 CefPoint inspectElementAt);
@@ -1634,11 +1723,11 @@ public interface CefBrowserHost extends CefLibraryObject {
         private static native void N_SendKeyEvent(long self, CefKeyEvent event);
 
         private static native void N_SendMouseClickEvent(
-                long self, CefMouseEvent event, CefMouseButtonType type, boolean mouseup, int clickcount);
+                long self, CefMouseEvent event, CefMouseButtonType type, boolean mouseUp, int clickCount);
 
-        private static native void N_SendMouseMoveEvent(long self, CefMouseEvent event, boolean mouseleave);
+        private static native void N_SendMouseMoveEvent(long self, CefMouseEvent event, boolean mouseLeave);
 
-        private static native void N_SendMouseWheelEvent(long self, CefMouseEvent event, int deltax, int deltay);
+        private static native void N_SendMouseWheelEvent(long self, CefMouseEvent event, int deltaX, int deltaY);
 
         private static native void N_SendTouchEvent(long self, CefTouchEvent event);
 
@@ -1653,7 +1742,7 @@ public interface CefBrowserHost extends CefLibraryObject {
         private static native void N_ImeSetComposition(
                 long self,
                 String text,
-                long underlinescount,
+                long underlinesCount,
                 CefCompositionUnderline[] underlines,
                 CefRange replacementRange,
                 CefRange selectionRange);
@@ -1705,7 +1794,7 @@ public interface CefBrowserHost extends CefLibraryObject {
         private static native void N_SetAxViewportCollapse(long self, boolean enabled);
 
         static native int N_CreateBrowser(
-                CefWindowInfo windowinfo,
+                CefWindowInfo windowInfo,
                 CefClient client,
                 String url,
                 CefBrowserSettings settings,
@@ -1713,7 +1802,7 @@ public interface CefBrowserHost extends CefLibraryObject {
                 CefRequestContext requestContext);
 
         static native CefBrowser N_CreateBrowserSync(
-                CefWindowInfo windowinfo,
+                CefWindowInfo windowInfo,
                 CefClient client,
                 String url,
                 CefBrowserSettings settings,

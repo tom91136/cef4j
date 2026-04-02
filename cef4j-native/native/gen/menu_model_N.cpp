@@ -40,7 +40,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->add_item(s, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -50,7 +49,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddCheckItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->add_check_item(s, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -60,7 +58,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddRadioItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->add_radio_item(s, command_id, _label_str, group_id);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -70,7 +67,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddSubMenu(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return nullptr;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->add_sub_menu(s, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -90,7 +86,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->insert_item_at(s, index, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -100,7 +95,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertCheckItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->insert_check_item_at(s, index, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -110,7 +104,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertRadioItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->insert_radio_item_at(s, index, command_id, _label_str, group_id);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -120,7 +113,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertSubMenuAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return nullptr;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->insert_sub_menu_at(s, index, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -176,7 +168,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetLabel(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->set_label(s, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -186,7 +177,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetLabelAt(JNIEnv* env, jobject obj, jlong self, jlong index, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!label) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "label must not be null"); return JNI_FALSE;}
     auto _label_str = JStringToCefString(env, label);
     auto _r = s->set_label_at(s, index, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
@@ -469,8 +459,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
 }
 
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jobject delegate) {
-    if (!delegate) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "delegate must not be null"); return nullptr;}
-    cef_menu_model_delegate_t* _delegate_ptr = Create_JniCefMenuModelDelegate(env, delegate);
+    cef_menu_model_delegate_t* _delegate_ptr = delegate ? Create_JniCefMenuModelDelegate(env, delegate) : nullptr;
     auto _r = cef_menu_model_create(_delegate_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");

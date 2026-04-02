@@ -24,19 +24,36 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefUrlParts {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** The complete URL specification. */
     public final String spec;
+    /** Scheme component not including the colon (e.g., "http"). */
     public final String scheme;
+    /** User name component. */
     public final String username;
+    /** Password component. */
     public final String password;
+    /**
+     * Host component. This may be a hostname, an IPv4 address or an IPv6 literal surrounded by square brackets (e.g.,
+     * "[2001:db8::1]").
+     */
     public final String host;
+    /** Port number component. */
     public final String port;
+    /**
+     * Origin contains just the scheme, host, and port from a URL. Equivalent to clearing any username and password,
+     * replacing the path with a slash, and clearing everything after that. This value will be empty for non-standard
+     * URLs.
+     */
     public final String origin;
+    /** Path component including the first slash following the host. */
     public final String path;
+    /** Query string component (i.e., everything following the '?'). */
     public final String query;
+    /** Fragment (hash) identifier component (i.e., the string following the '#'). */
     public final String fragment;
 
     public CefUrlParts(

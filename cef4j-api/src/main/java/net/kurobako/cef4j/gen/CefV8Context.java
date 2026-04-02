@@ -3,7 +3,6 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -116,7 +115,7 @@ public interface CefV8Context extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
      */
-    boolean isSame(@Nonnull CefV8Context that);
+    boolean isSame(@Nullable CefV8Context that);
 
     /**
      * Execute a string of JavaScript code in this V8 context. The {@code script_url} parameter is the URL where the
@@ -135,11 +134,11 @@ public interface CefV8Context extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:208</a>
      */
     boolean eval(
-            @Nonnull String code,
+            @Nullable String code,
             @Nullable String scriptUrl,
             int startLine,
-            @Nonnull AtomicReference<CefV8Value> retval,
-            @Nonnull AtomicReference<CefV8Exception> exception);
+            @Nullable AtomicReference<CefV8Value> retval,
+            @Nullable AtomicReference<CefV8Exception> exception);
     /**
      * Returns the current (top) context object in the V8 context stack.
      *
@@ -182,6 +181,7 @@ public interface CefV8Context extends CefLibraryObject {
     final class NativePeer implements CefV8Context, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -190,7 +190,17 @@ public interface CefV8Context extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8Context has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Context.class);
@@ -213,51 +223,61 @@ public interface CefV8Context extends CefLibraryObject {
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTaskRunner(nativePtr));
         }
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public Optional<CefBrowser> getBrowser() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBrowser(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getFrame() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFrame(nativePtr));
         }
 
         @Override
         public Optional<CefV8Value> getGlobal() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetGlobal(nativePtr));
         }
 
         @Override
         public boolean enter() {
+            checkNotClosed();
             return N_Enter(nativePtr);
         }
 
         @Override
         public boolean exit() {
+            checkNotClosed();
             return N_Exit(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefV8Context that) {
+        public boolean isSame(@Nullable CefV8Context that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefV8Context");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
         public boolean eval(
-                @Nonnull String code,
+                @Nullable String code,
                 @Nullable String scriptUrl,
                 int startLine,
-                @Nonnull AtomicReference<CefV8Value> retval,
-                @Nonnull AtomicReference<CefV8Exception> exception) {
+                @Nullable AtomicReference<CefV8Value> retval,
+                @Nullable AtomicReference<CefV8Exception> exception) {
+            checkNotClosed();
             return N_Eval(nativePtr, code, scriptUrl, startLine, retval, exception);
         }
 

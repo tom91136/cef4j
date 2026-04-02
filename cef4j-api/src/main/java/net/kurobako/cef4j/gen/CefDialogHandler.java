@@ -50,14 +50,14 @@ public interface CefDialogHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:74</a>
      */
     default boolean onFileDialog(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefFileDialogMode mode,
             @Nullable String title,
             @Nullable String defaultFilePath,
             @Nullable List<String> acceptFilters,
             @Nullable List<String> acceptExtensions,
             @Nullable List<String> acceptDescriptions,
-            @Nonnull CefFileDialogCallback callback) {
+            @Nullable CefFileDialogCallback callback) {
         return false;
     }
 }

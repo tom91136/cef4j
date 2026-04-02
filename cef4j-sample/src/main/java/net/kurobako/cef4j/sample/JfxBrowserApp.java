@@ -39,7 +39,6 @@ public final class JfxBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(JfxBrowserApp.class);
 
-    static CefApp cefApp;
     static final AtomicReference<CefBrowserOsr> browserRef = new AtomicReference<>();
     static volatile boolean shutdownRequested;
     static final CountDownLatch uiReady = new CountDownLatch(1);
@@ -52,11 +51,12 @@ public final class JfxBrowserApp {
         Path cacheDir = Files.createTempDirectory("cef4j-jfx-");
         cacheDir.toFile().deleteOnExit();
 
-        cefApp = CefApp.getInstance(
-                cacheDir.toAbsolutePath().toString(), null, true, null, new String[] {"--ozone-platform=x11"});
-        cefApp.initialize();
+        CefApp.INSTANCE
+                .cachePath(cacheDir.toAbsolutePath().toString())
+                .extraArgs("--ozone-platform=x11")
+                .initialize();
 
-        // Launch JavaFX on a daemon thread — main thread stays as CEF UI thread.
+        // Launch JavaFX on a daemon thread - main thread stays as CEF UI thread.
         Thread jfxThread = new Thread(() -> Application.launch(JfxApp.class, args));
         jfxThread.setDaemon(true);
         jfxThread.start();
@@ -67,7 +67,8 @@ public final class JfxBrowserApp {
         CefBrowserOsr browser = browserRef.get();
         if (browser != null) {
             browser.createImmediately();
-            browser.setFocus(true);
+            var host = browser.getHost();
+            if (host != null) host.setFocus(true);
         }
 
         Thread mainThread = Thread.currentThread();
@@ -90,8 +91,8 @@ public final class JfxBrowserApp {
         }
 
         try {
-            while (!shutdownRequested && cefApp.getState() == CefApp.State.INITIALIZED) {
-                cefApp.doMessageLoopWork();
+            while (!shutdownRequested && CefApp.INSTANCE.getState() == CefApp.State.INITIALIZED) {
+                CefApp.INSTANCE.doMessageLoopWork();
                 Thread.sleep(8);
             }
         } catch (InterruptedException ignored) {
@@ -99,7 +100,7 @@ public final class JfxBrowserApp {
 
         log.info("Shutting down");
         if (browser != null) browser.close(true);
-        cefApp.dispose();
+        CefApp.INSTANCE.dispose();
         log.info("Exiting");
         System.exit(0);
     }
@@ -122,15 +123,18 @@ public final class JfxBrowserApp {
             Button fwdBtn = new Button("\u25B6");
             Button reloadBtn = new Button("\u21BB");
             backBtn.setOnAction(e -> {
-                CefBrowserOsr b = browserRef.get();
+                CefBrowserOsr osr = browserRef.get();
+                var b = osr != null ? osr.getBrowser() : null;
                 if (b != null) b.goBack();
             });
             fwdBtn.setOnAction(e -> {
-                CefBrowserOsr b = browserRef.get();
+                CefBrowserOsr osr = browserRef.get();
+                var b = osr != null ? osr.getBrowser() : null;
                 if (b != null) b.goForward();
             });
             reloadBtn.setOnAction(e -> {
-                CefBrowserOsr b = browserRef.get();
+                CefBrowserOsr osr = browserRef.get();
+                var b = osr != null ? osr.getBrowser() : null;
                 if (b != null) b.reload();
             });
 
@@ -242,7 +246,8 @@ public final class JfxBrowserApp {
                 }
             };
 
-            CefBrowserOsr b = cefApp.createBrowser(client, urlBar.getText().trim(), 60);
+            CefBrowserOsr b =
+                    CefApp.INSTANCE.createBrowser(client, urlBar.getText().trim(), 60);
             surface.setBrowser(b);
             browserRef.set(b);
             uiReady.countDown();

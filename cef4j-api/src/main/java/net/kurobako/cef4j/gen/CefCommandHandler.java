@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to commands. The methods of this class will be called on the UI
@@ -37,7 +38,7 @@ public interface CefCommandHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
      */
     default boolean onChromeCommand(
-            @Nonnull CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
+            @Nullable CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
         return false;
     }
 
@@ -55,7 +56,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
      */
-    default boolean isChromeAppMenuItemVisible(@Nonnull CefBrowser browser, int commandId) {
+    default boolean isChromeAppMenuItemVisible(@Nullable CefBrowser browser, int commandId) {
         return false;
     }
 
@@ -73,7 +74,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
      */
-    default boolean isChromeAppMenuItemEnabled(@Nonnull CefBrowser browser, int commandId) {
+    default boolean isChromeAppMenuItemEnabled(@Nullable CefBrowser browser, int commandId) {
         return false;
     }
 

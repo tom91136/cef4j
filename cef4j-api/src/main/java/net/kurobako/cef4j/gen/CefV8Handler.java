@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Structure that should be implemented to handle V8 function calls. The functions of this structure will be called on
@@ -34,16 +34,17 @@ public interface CefV8Handler extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:234</a>
      */
     boolean execute(
-            @Nonnull String name,
-            @Nonnull CefV8Value object,
-            long argumentscount,
-            @Nonnull CefV8Value[] arguments,
-            @Nonnull AtomicReference<CefV8Value> retval,
-            @Nonnull String exception);
+            @Nullable String name,
+            @Nullable CefV8Value object,
+            long argumentsCount,
+            @Nullable CefV8Value[] arguments,
+            @Nullable AtomicReference<CefV8Value> retval,
+            @Nullable String exception);
 
     final class NativePeer implements CefV8Handler, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -52,7 +53,17 @@ public interface CefV8Handler extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8Handler has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Handler.class);
@@ -75,20 +86,22 @@ public interface CefV8Handler extends CefLibraryObject {
 
         @Override
         public boolean execute(
-                @Nonnull String name,
-                @Nonnull CefV8Value object,
-                long argumentscount,
-                @Nonnull CefV8Value[] arguments,
-                @Nonnull AtomicReference<CefV8Value> retval,
-                @Nonnull String exception) {
-            return N_Execute(nativePtr, name, object, argumentscount, arguments, retval, exception);
+                @Nullable String name,
+                @Nullable CefV8Value object,
+                long argumentsCount,
+                @Nullable CefV8Value[] arguments,
+                @Nullable AtomicReference<CefV8Value> retval,
+                @Nullable String exception) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(object, "CefV8Value");
+            return N_Execute(nativePtr, name, object, argumentsCount, arguments, retval, exception);
         }
 
         private static native boolean N_Execute(
                 long self,
                 String name,
                 CefV8Value object,
-                long argumentscount,
+                long argumentsCount,
                 CefV8Value[] arguments,
                 AtomicReference<CefV8Value> retval,
                 String exception);

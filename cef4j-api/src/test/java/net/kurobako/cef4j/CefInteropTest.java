@@ -1,6 +1,7 @@
 package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -42,8 +43,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefInteropTest {
 
-    private static CefApp app;
-
     @BeforeAll
     static void initCef() throws Exception {
         SystemBootstrap.load();
@@ -51,20 +50,17 @@ class CefInteropTest {
         Path cacheDir = Files.createTempDirectory("cef4j-test-cache-");
         cacheDir.toFile().deleteOnExit();
 
-        app = CefApp.getInstance(cacheDir.toAbsolutePath().toString(), null, true, null);
-        app.initialize();
+        if (CefApp.INSTANCE.getState() == CefApp.State.UNCONFIGURED) {
+            CefApp.INSTANCE.cachePath(cacheDir.toAbsolutePath().toString());
+        }
+        CefApp.INSTANCE.initialize();
     }
 
     @AfterAll
     static void shutdownCef() {
-        if (app != null && app.getState() == CefApp.State.INITIALIZED) {
-            app.dispose();
-        }
+        // Do not dispose - CEF cannot be re-initialized after shutdown, and other test
+        // classes in the same JVM fork need it. The process exit cleans up CEF resources.
     }
-
-    // -----------------------------------------------------------------------
-    // 1. Basic lifecycle: initialize, create browser, callbacks fire, close
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(1)
@@ -107,7 +103,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(createdLatch, 10_000))
@@ -124,10 +120,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 2. Render handler: getViewRect output parameter and onPaint callback
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(2)
@@ -149,7 +141,7 @@ class CefInteropTest {
                     @Override
                     public void getViewRect(
                             @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefMutableRect rect) {
+                            @javax.annotation.Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -169,11 +161,9 @@ class CefInteropTest {
                         if (paintLatch.getCount() > 0) {
                             paintWidth.set(width);
                             paintHeight.set(height);
-                            if (buffer != null) {
-                                byte[] copy = new byte[buffer.remaining()];
-                                buffer.get(copy);
-                                pixelBuffer.set(copy);
-                            }
+                            byte[] copy = new byte[buffer.remaining()];
+                            buffer.get(copy);
+                            pixelBuffer.set(copy);
                             paintLatch.countDown();
                         }
                     }
@@ -181,7 +171,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(paintLatch, 15_000))
@@ -198,10 +188,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 3. Display handler: title change callback with string marshaling
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(3)
@@ -233,7 +219,7 @@ class CefInteropTest {
         String html = "<html><head><title>cef4j-test-title</title></head><body></body></html>";
         String dataUrl = "data:text/html;charset=utf-8," + html.replace(" ", "%20");
 
-        CefBrowserOsr browser = app.createBrowser(client, dataUrl);
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, dataUrl);
         browser.createImmediately();
 
         assertThat(pumpUntil(titleLatch, 10_000))
@@ -243,10 +229,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 4. Load handler: full loading state sequence
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(4)
@@ -295,7 +277,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(doneLatch, 10_000))
@@ -308,10 +290,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 5. Multiple browsers on a single client (object ownership)
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(5)
@@ -338,8 +316,8 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser1 = app.createBrowser(client, "about:blank");
-        CefBrowserOsr browser2 = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser1 = CefApp.INSTANCE.createBrowser(client, "about:blank");
+        CefBrowserOsr browser2 = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser1.createImmediately();
         browser2.createImmediately();
 
@@ -355,10 +333,6 @@ class CefInteropTest {
         browser1.close(true);
         browser2.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 6. Console message - exercises enum + string + int marshaling
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(6)
@@ -407,7 +381,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(loadLatch, 10_000)).isTrue();
@@ -422,10 +396,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 7. Frame handler: frame lifecycle callbacks
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(7)
@@ -460,7 +430,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(frameCreatedLatch, 10_000))
@@ -473,10 +443,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // -----------------------------------------------------------------------
-    // 8. Request handler: onRenderViewReady fires
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(8)
@@ -501,7 +467,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(readyLatch, 10_000))
@@ -510,14 +476,6 @@ class CefInteropTest {
 
         browser.close(true);
     }
-
-    // =======================================================================
-    // Complex JNI interaction tests
-    // =======================================================================
-
-    // -----------------------------------------------------------------------
-    // 9. Static factory: CefValue / CefDictionaryValue creation and round-trip
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(9)
@@ -548,10 +506,6 @@ class CefInteropTest {
         assertThat(keys).containsExactlyInAnyOrder("key1", "key2", "key3", "key4", "key5");
     }
 
-    // -----------------------------------------------------------------------
-    // 10. Static factory: CefValue wrapping and type inspection
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(10)
     void staticFactory_cefValueTypes() {
@@ -581,10 +535,6 @@ class CefInteropTest {
         assertThat(val.getType()).isEqualTo(CefValueType.of(CefValueType.Kind.NULL));
     }
 
-    // -----------------------------------------------------------------------
-    // 11. Static factory: CefResponse with enum get/set
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(11)
     void staticFactory_responseEnumAndStrings() {
@@ -610,10 +560,6 @@ class CefInteropTest {
         assertThat(resp.getHeaderByName("X-Custom")).hasValue("value123");
     }
 
-    // -----------------------------------------------------------------------
-    // 12. Static factory: CefRequest with header map (multimap marshaling)
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(12)
     void staticFactory_requestHeaderMap() {
@@ -637,10 +583,6 @@ class CefInteropTest {
         assertThat(retrieved).containsKey("Content-Type");
     }
 
-    // -----------------------------------------------------------------------
-    // 13. Static factory: CefCommandLine string marshaling
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(13)
     void staticFactory_commandLine() {
@@ -663,10 +605,6 @@ class CefInteropTest {
 
         assertThat(cmd.getCommandLineString()).isPresent();
     }
-
-    // -----------------------------------------------------------------------
-    // 14. CefGlobals: string utility statics (URI encode/decode, MIME, base64)
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(14)
@@ -693,10 +631,6 @@ class CefInteropTest {
         assertThat(CefGlobals.base64Encode(buf)).hasValue("SGVsbG8sIENFRiE=");
     }
 
-    // -----------------------------------------------------------------------
-    // 15. CefGlobals: thread ID enum parameter
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(15)
     void globals_currentlyOnThread() {
@@ -705,10 +639,6 @@ class CefInteropTest {
         // We're NOT on the IO thread
         assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.IO))).isEqualTo(0);
     }
-
-    // -----------------------------------------------------------------------
-    // 16. Static factory: CefWaitableEvent signal/wait
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(16)
@@ -731,10 +661,6 @@ class CefInteropTest {
         assertThat(autoEvent.isSignaled()).isFalse();
     }
 
-    // -----------------------------------------------------------------------
-    // 17. Static factory: CefRequestContext global context
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(17)
     void staticFactory_globalRequestContext() {
@@ -747,10 +673,6 @@ class CefInteropTest {
         // Global context may or may not have a cache path
         assertThat(cachePath).isNotNull(); // Optional itself is non-null
     }
-
-    // -----------------------------------------------------------------------
-    // 18. Nested dictionary + list value (deep structure marshaling)
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(18)
@@ -784,13 +706,9 @@ class CefInteropTest {
         assertThat(outer.getType("items")).isEqualTo(CefValueType.of(CefValueType.Kind.LIST));
     }
 
-    // -----------------------------------------------------------------------
-    // 19. ObjectPtr parameter ref-counting: isSame/isEqual across objects
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(19)
-    void objectPtr_isSameIsEqual_preservesArgValidity() throws Exception {
+    void objectPtr_isSameIsEqual_preservesArgValidity() {
         CefDictionaryValue d1 = CefDictionaryValue.create().orElseThrow();
         CefDictionaryValue d2 = CefDictionaryValue.create().orElseThrow();
 
@@ -819,10 +737,6 @@ class CefInteropTest {
         d2.close();
     }
 
-    // -----------------------------------------------------------------------
-    // 20. ObjectPtr parameter ref-counting: setDictionary/setBinary/setList
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(20)
     void objectPtr_setters_preserveArgValidity() throws Exception {
@@ -849,10 +763,6 @@ class CefInteropTest {
         parent.close();
     }
 
-    // -----------------------------------------------------------------------
-    // 21. Dictionary copy and isEqual
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(21)
     void dictionaryCopy_isEqual() throws Exception {
@@ -877,10 +787,6 @@ class CefInteropTest {
         original.close();
     }
 
-    // -----------------------------------------------------------------------
-    // 22. CefValue with ObjectPtr setters (setValue on CefDictionaryValue)
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(22)
     void cefValue_objectPtr_roundTrip() {
@@ -896,20 +802,18 @@ class CefInteropTest {
         assertThat(extracted.getString("inside")).hasValue("value");
     }
 
-    // -----------------------------------------------------------------------
-    // 23. By-value struct size field: -1 on JVM, sizeof on native
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(23)
     void byValueSize_pendingOnJvm_sizeofFromNative() throws Exception {
         // Entering CEF: Java-created structs show "pending" in toString (size == -1)
-        CefMutableWindowInfo windowInfo = new CefMutableWindowInfo();
-        assertThat(windowInfo.toString()).as("JVM-created CefMutableWindowInfo").contains("size=pending");
+        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
+        assertThat(windowInfo.toString())
+                .as("JVM-created CefWindowInfo.Mutable")
+                .contains("size=pending");
 
-        CefMutableBrowserSettings browserSettings = new CefMutableBrowserSettings();
+        CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         assertThat(browserSettings.toString())
-                .as("JVM-created CefMutableBrowserSettings")
+                .as("JVM-created CefBrowserSettings.Mutable")
                 .contains("size=pending");
 
         CefKeyEvent jvmKeyEvent =
@@ -967,15 +871,25 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = app.createBrowser(client, "about:blank");
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
         browser.createImmediately();
 
         assertThat(pumpUntil(createdLatch, 10_000)).as("browser created").isTrue();
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
 
         // Leaving CEF: send a key event and capture it back via keyboard handler
-        browser.setFocus(true);
-        browser.sendKeyEvent(2, 0, 65, 0, 'A', 'A', false); // KEYUP, VK_A
+        var host = browser.getHost();
+        assertThat(host).as("browser host").isNotNull();
+        host.setFocus(true);
+        host.sendKeyEvent(new net.kurobako.cef4j.gen.CefKeyEvent(
+                net.kurobako.cef4j.gen.CefKeyEventType.of(net.kurobako.cef4j.gen.CefKeyEventType.Kind.KEYUP),
+                0,
+                65,
+                0,
+                0,
+                'A',
+                'A',
+                0));
         assertThat(pumpUntil(keyLatch, 10_000)).as("onKeyEvent should fire").isTrue();
 
         CefKeyEvent nativeEvent = capturedEvent.get();
@@ -988,18 +902,209 @@ class CefInteropTest {
         browser.close(true);
     }
 
-    // -----------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------
+    @Test
+    @Order(24)
+    void binaryValue_roundTrip() {
+        byte[] data = "Hello, binary!".getBytes(StandardCharsets.UTF_8);
+        ByteBuffer direct = ByteBuffer.allocateDirect(data.length);
+        direct.put(data);
 
-    /**
-     * Pump the CEF message loop on this thread until the latch reaches zero or timeout expires. CEF requires
-     * doMessageLoopWork to run on the same thread as cef_initialize.
-     */
+        CefBinaryValue bin = CefBinaryValue.create(direct).orElseThrow();
+        assertThat(bin.isValid()).isTrue();
+        assertThat(bin.getSize()).isEqualTo(data.length);
+
+        ByteBuffer out = ByteBuffer.allocateDirect(data.length);
+        long copied = bin.getData(out, 0);
+        assertThat(copied).isEqualTo(data.length);
+
+        byte[] result = new byte[data.length];
+        out.position(0);
+        out.get(result);
+        assertThat(new String(result, StandardCharsets.UTF_8)).isEqualTo("Hello, binary!");
+
+        // copy() returns a distinct but equal value
+        CefBinaryValue copy = bin.copy().orElseThrow();
+        assertThat(copy.isEqual(bin)).isTrue();
+        assertThat(copy.isSame(bin)).isFalse();
+
+        copy.close();
+        bin.close();
+    }
+
+    @Test
+    @Order(25)
+    void multimapValues_roundTrip() {
+        CefRequest req = CefRequest.create().orElseThrow();
+
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Accept", List.of("text/html", "application/json"));
+        headers.put("X-Custom", List.of("one", "two", "three"));
+        req.setHeaderMap(headers);
+
+        Map<String, List<String>> retrieved = new HashMap<>();
+        req.getHeaderMap(retrieved);
+
+        assertThat(retrieved.get("Accept")).containsExactlyInAnyOrder("text/html", "application/json");
+        assertThat(retrieved.get("X-Custom")).containsExactlyInAnyOrder("one", "two", "three");
+    }
+
+    @Test
+    @Order(26)
+    void processMessage_createAndAccessArgList() {
+        CefProcessMessage msg = CefProcessMessage.create("test-msg").orElseThrow();
+        assertThat(msg.isValid()).isTrue();
+        assertThat(msg.isReadOnly()).isFalse();
+        assertThat(msg.getName()).hasValue("test-msg");
+
+        CefListValue args = msg.getArgumentList().orElseThrow();
+        assertThat(args.isValid()).isTrue();
+        args.setSize(2);
+        args.setString(0, "arg0");
+        args.setInt(1, 99);
+
+        // Read back through the message's argument list
+        CefListValue args2 = msg.getArgumentList().orElseThrow();
+        assertThat(args2.getSize()).isEqualTo(2);
+        assertThat(args2.getValue(0).orElseThrow().getString()).hasValue("arg0");
+        assertThat(args2.getValue(1).orElseThrow().getInt()).isEqualTo(99);
+
+        // copy preserves the argument list
+        CefProcessMessage copy = msg.copy().orElseThrow();
+        assertThat(copy.getName()).hasValue("test-msg");
+        CefListValue copyArgs = copy.getArgumentList().orElseThrow();
+        assertThat(copyArgs.getSize()).isEqualTo(2);
+        assertThat(copyArgs.getValue(0).orElseThrow().getString()).hasValue("arg0");
+
+        copy.close();
+        msg.close();
+    }
+
+    @Test
+    @Order(27)
+    void renderHandler_getScreenInfoWithNestedRect() throws Exception {
+        AtomicBoolean screenInfoCalled = new AtomicBoolean(false);
+        AtomicReference<CefScreenInfo.Mutable> captured = new AtomicReference<>();
+        CountDownLatch paintLatch = new CountDownLatch(1);
+
+        CefClient client = new CefClient() {
+            @Override
+            public Optional<CefRenderHandler> getRenderHandler() {
+                return Optional.of(new CefRenderHandler() {
+                    @Override
+                    public void getViewRect(
+                            @javax.annotation.Nonnull CefBrowser browser,
+                            @javax.annotation.Nonnull CefRect.Mutable rect) {
+                        rect.x = 0;
+                        rect.y = 0;
+                        rect.width = 200;
+                        rect.height = 150;
+                    }
+
+                    @Override
+                    public boolean getScreenInfo(
+                            @javax.annotation.Nonnull CefBrowser browser,
+                            @javax.annotation.Nonnull CefScreenInfo.Mutable screenInfo) {
+                        screenInfo.deviceScaleFactor = 2.0f;
+                        screenInfo.depth = 32;
+                        screenInfo.depthPerComponent = 8;
+                        screenInfo.rect = new CefRect(0, 0, 200, 150);
+                        screenInfo.availableRect = new CefRect(0, 0, 200, 150);
+                        screenInfoCalled.set(true);
+                        captured.set(screenInfo);
+                        return true;
+                    }
+
+                    @Override
+                    public void onPaint(
+                            @javax.annotation.Nonnull CefBrowser browser,
+                            @javax.annotation.Nonnull CefPaintElementType type,
+                            long dirtyRectsCount,
+                            @javax.annotation.Nonnull CefRect[] dirtyRects,
+                            @javax.annotation.Nonnull ByteBuffer buffer,
+                            int width,
+                            int height) {
+                        paintLatch.countDown();
+                    }
+                });
+            }
+        };
+
+        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
+        browser.createImmediately();
+
+        assertThat(pumpUntil(paintLatch, 15_000)).as("onPaint should fire").isTrue();
+        assertThat(screenInfoCalled.get()).as("getScreenInfo was called").isTrue();
+
+        // Verify CEF passed the mutable struct correctly (nested CefRect fields survived the boundary)
+        CefScreenInfo.Mutable info = captured.get();
+        assertThat(info).isNotNull();
+        assertThat(info.deviceScaleFactor).isEqualTo(2.0f);
+        assertThat(info.depth).isEqualTo(32);
+        assertThat(info.rect).isNotNull();
+        assertThat(info.rect.width).isEqualTo(200);
+        assertThat(info.rect.height).isEqualTo(150);
+
+        browser.close(true);
+    }
+
+    @Test
+    @Order(28)
+    void nativePeer_doubleCloseIsSafe() {
+        CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
+        dict.setString("k", "v");
+        assertThat(dict.isValid()).isTrue();
+
+        dict.close();
+        // Second close must not crash (Cleaner.Cleanable.clean() is idempotent)
+        dict.close();
+        // Methods on a closed peer throw IllegalStateException instead of crashing the JVM
+        assertThatThrownBy(dict::isValid).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @Order(29)
+    void closedPeerAsArgument_shouldThrow() {
+        ByteBuffer buf1 = ByteBuffer.allocateDirect(4);
+        buf1.put(new byte[] {1, 2, 3, 4});
+        ByteBuffer buf2 = ByteBuffer.allocateDirect(4);
+        buf2.put(new byte[] {1, 2, 3, 4});
+        CefBinaryValue val1 = CefBinaryValue.create(buf1).orElseThrow();
+        CefBinaryValue val2 = CefBinaryValue.create(buf2).orElseThrow();
+        val2.close();
+        // val2.nativePtr is non-zero but freed; C++ reads it via GetLongField and calls add_ref on garbage
+        assertThatThrownBy(() -> val1.isSame(val2)).isInstanceOf(IllegalStateException.class);
+        val1.close();
+    }
+
+    @Test
+    @Order(30)
+    void heapByteBuffer_throwsIllegalArgument() {
+        ByteBuffer heap = ByteBuffer.allocate(10);
+        heap.put("test".getBytes(StandardCharsets.UTF_8));
+        // Codegen emits a guard: GetDirectBufferAddress returns null for heap buffers
+        assertThatThrownBy(() -> CefBinaryValue.create(heap))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("direct");
+    }
+
+    @Test
+    @Order(31)
+    void closedPeerAsNestedArgument_shouldThrow() {
+        CefDictionaryValue outer = CefDictionaryValue.create().orElseThrow();
+        CefDictionaryValue inner = CefDictionaryValue.create().orElseThrow();
+        inner.setString("k", "v");
+        inner.close();
+        // inner.nativePtr is stale; C++ unwraps it and passes to cef_dictionary_value_t::set_dictionary
+        assertThatThrownBy(() -> outer.setDictionary("nested", inner)).isInstanceOf(IllegalStateException.class);
+        outer.close();
+    }
+
+    // Pump CEF message loop until latch reaches zero or timeout.
+    // Must run on the same thread as cef_initialize.
     private static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-            app.doMessageLoopWork();
+            CefApp.INSTANCE.doMessageLoopWork();
             Thread.sleep(16); // ~60Hz
         }
         return latch.getCount() == 0;
@@ -1020,7 +1125,7 @@ class CefInteropTest {
 
         @Override
         public void getViewRect(
-                @javax.annotation.Nonnull CefBrowser browser, @javax.annotation.Nonnull CefMutableRect rect) {
+                @javax.annotation.Nonnull CefBrowser browser, @javax.annotation.Nonnull CefRect.Mutable rect) {
             rect.x = 0;
             rect.y = 0;
             rect.width = width;

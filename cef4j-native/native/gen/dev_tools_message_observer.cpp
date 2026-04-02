@@ -5,9 +5,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_dev_tools_message_observer_t
 struct JniCefDevToolsMessageObserver: public cef_dev_tools_message_observer_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

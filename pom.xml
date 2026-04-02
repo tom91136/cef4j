@@ -43,6 +43,7 @@
         <cef.dist.url/>
         <cmake.generator/>
         <native.compiler.id/>
+        <cef4j.generated.java.package>net.kurobako.cef4j.gen</cef4j.generated.java.package>
     </properties>
 
     <modules>
@@ -219,6 +220,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.11.2</version>
+                    <configuration>
+                        <failOnError>true</failOnError>
+                        <doclint>all,-missing</doclint>
+                        <quiet>false</quiet>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

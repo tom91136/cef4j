@@ -8,10 +8,10 @@ package net.kurobako.cef4j.gen;
  *
  * <pre>typedef enum {
  *   UU_NONE = 0,
- *   UU_NORMAL = 1 << 0,
- *   UU_SPACES = 1 << 1,
- *   UU_PATH_SEPARATORS = 1 << 2,
- *   UU_URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS = 1 << 3,
+ *   UU_NORMAL = 1 &lt;&lt; 0,
+ *   UU_SPACES = 1 &lt;&lt; 1,
+ *   UU_PATH_SEPARATORS = 1 &lt;&lt; 2,
+ *   UU_URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS = 1 &lt;&lt; 3,
  *   ...
  * } cef_uri_unescape_rule_t;</pre>
  *
@@ -46,7 +46,7 @@ public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
          */
         PATH_SEPARATORS(1 << 2, "1 << 2", "UU_PATH_SEPARATORS"),
         /**
-         * Unescapes various characters that will change the meaning of URLs, including '%', '+', '&', '#'. Does not
+         * Unescapes various characters that will change the meaning of URLs, including '%', '+', '&amp;', '#'. Does not
          * unescape path separators. If these characters were unescaped, the resulting URL won't be the same as the
          * source one. This flag is used when generating final output like filenames for URLs where we won't be
          * interpreting as a URL and want to do as much unescaping as possible.
@@ -60,7 +60,7 @@ public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
         /** The underlying C enum numeric value. */
         public final long value;
 
-        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
         public final String expr;
 
         /** The C constant name (e.g., {@code "cef_uri_unescape_rule_t"}). */
@@ -78,23 +78,26 @@ public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
         }
     }
 
-    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
     public final long value;
 
     private CefUriUnescapeRule(long value) {
         this.value = value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public long value() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String expr() {
         return kind().map(k -> k.expr).orElse(String.valueOf(value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String name() {
         return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
@@ -111,7 +114,7 @@ public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
         return java.util.Optional.empty();
     }
 
-    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
     public static CefUriUnescapeRule of(long v) {
         return new CefUriUnescapeRule(v);
     }

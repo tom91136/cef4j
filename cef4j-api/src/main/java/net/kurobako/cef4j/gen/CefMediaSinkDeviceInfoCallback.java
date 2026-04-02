@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Callback interface for {@link CefMediaSink#getDeviceInfo(CefMediaSinkDeviceInfoCallback)}. The methods of this class
@@ -29,5 +29,5 @@ public interface CefMediaSinkDeviceInfoCallback extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:282</a>
      */
-    default void onMediaSinkDeviceInfo(@Nonnull NativePointer deviceInfo) {}
+    default void onMediaSinkDeviceInfo(@Nullable NativePointer deviceInfo) {}
 }

@@ -112,10 +112,8 @@ public final class SystemBootstrap {
         return result;
     }
 
-    /**
-     * Walk up from the working directory looking for {@code .cef-dist/<any>/Release/libcef.so}. This allows IDE run
-     * configurations to work without setting LIBCEF_DIR.
-     */
+    // Walk up from working directory looking for .cef-dist/*/Release/libcef.so,
+    // so IDE run configs work without setting LIBCEF_DIR.
     private static Path discoverCefDist() {
         String cefLib = OS.isWindows() ? "libcef.dll" : "libcef.so";
         Path dir = Paths.get(System.getProperty("user.dir"));

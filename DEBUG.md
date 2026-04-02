@@ -8,9 +8,62 @@ Native crashes manifest as:
 - Exit codes like 133 (128 + SIGTRAP), 134 (128 + SIGABRT), 139 (128 + SIGSEGV)
 - glibc errors: `malloc(): invalid size (unsorted)`, `malloc(): corrupted top size`
 
-## Step 1: Isolate the Crash
+## Step 1: Check chrome_debug.log
 
-Maven surefire hides native crash output. Create a standalone `.java` reproducer:
+CEF writes its own log file alongside the user data directory. FATAL errors that
+kill the process appear here even when they don't appear in application logs.
+
+Look for the most recent `chrome_debug.log`:
+
+```sh
+find /tmp -name 'chrome_debug.log' -mmin -5 2>/dev/null
+```
+
+Grep for FATAL:
+
+```sh
+grep FATAL /tmp/cef4j-test-*/chrome_debug.log
+```
+
+### Why FATAL errors don't appear in application logs
+
+CEF's `LOG(FATAL)` writes to `chrome_debug.log` via its internal file logger but
+does **not** write to stderr. It then calls `__builtin_trap()` (SIGTRAP on
+Linux), killing the process immediately. Since the message never reaches the
+stderr pipe, the SLF4J daemon reader thread has nothing to capture.
+
+Normal CEF output (WARNING, ERROR) does go to stderr and appears in SLF4J.
+
+The crash signal handler in `stderr_redirect.cpp` catches SIGTRAP/SIGABRT and
+emits a hint pointing to `chrome_debug.log` on the original stderr, so you'll
+see this in surefire output:
+
+```
+[cef4j] Native crash detected. Check chrome_debug.log in the CEF user-data directory for details.
+[cef4j] Hint: find /tmp -name chrome_debug.log -mmin 1
+```
+
+## Step 2: Disable the Stderr Redirect
+
+For interactive debugging, bypass `NativeStderr` so all native output goes
+straight to the terminal. In your test code, load the library manually instead
+of calling `SystemBootstrap.load()`:
+
+```java
+// Skip NativeStderr.install() — load libs directly
+Path cacheDir = Path.of("/tmp/cef4j-cache/linux64");
+System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
+System.load(cacheDir.resolve("libcef4j.so").toAbsolutePath().toString());
+```
+
+Or, if using surefire, add `-Dcef4j.noStderrRedirect=true` and check for it in
+a modified `SystemBootstrap` flow. The simplest approach is a standalone
+reproducer (see Step 3).
+
+## Step 3: Create a Standalone Reproducer
+
+Maven surefire hides native crash output and forks a JVM that may crash before
+producing any report. Create a standalone `.java` file:
 
 ```java
 import net.kurobako.cef4j.gen.*;
@@ -19,48 +72,79 @@ import java.nio.file.Path;
 
 public class CrashTest {
     public static void main(String[] args) throws Exception {
-        net.kurobako.cef4j.SystemBootstrap.load();
-        Path cacheDir = Files.createTempDirectory("cef4j-test-");
-        cacheDir.toFile().deleteOnExit();
-        net.kurobako.cef4j.CefApp app = net.kurobako.cef4j.CefApp.getInstance(
-            cacheDir.toAbsolutePath().toString(), null, true, null);
-        app.initialize();
+        // Load without stderr redirect so FATAL output is visible
+        Path cacheDir = Path.of("/tmp/cef4j-cache/linux64");
+        System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
+        System.load(cacheDir.resolve("libcef4j.so").toAbsolutePath().toString());
+
+        Path dataDir = Files.createTempDirectory("cef4j-test-");
+        dataDir.toFile().deleteOnExit();
+        net.kurobako.cef4j.CefApp.INSTANCE
+            .cachePath(dataDir.toAbsolutePath().toString())
+            .initialize();
 
         // ... reproduce the crash here ...
 
-        app.dispose();
+        net.kurobako.cef4j.CefApp.INSTANCE.dispose();
         System.err.println("=== done");
     }
 }
 ```
 
-Run directly (outside maven) to see native error output:
+Run directly:
 
 ```sh
-java -cp "cef4j-api/target/classes:$HOME/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:$HOME/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar" \
-  -Djava.library.path=/tmp/cef4j-cache/linux64 \
+java -cp "cef4j-api/target/classes:$HOME/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:$HOME/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:$HOME/.m2/repository/org/slf4j/slf4j-simple/2.0.17/slf4j-simple-2.0.17.jar" \
   --source 21 CrashTest.java
 ```
 
-## Step 2: Bisect with Print Statements
-
-Add `System.err.println` + `System.err.flush()` before and after suspect operations.
-The last printed line tells you which native call crashed.
-
-Common pattern: the crash occurs NOT during the suspect call itself but during
-a later `release()` or `close()` — this indicates heap corruption from an earlier operation.
-
-## Step 3: Classify the Bug
+## Step 4: Classify the Crash
 
 | Symptom | Likely Cause |
 |---|---|
+| `invalid version -1` in chrome_debug.log | `cef_api_hash` not called — check `JNI_OnLoad` runs (symbol must be exported in `cef4j.map`) |
 | Crash during `close()` after passing object as argument | Missing `add_ref` — CEF consumed a reference via `CppToC::Unwrap()` |
 | `malloc(): invalid size` | Heap corruption, often from leaked `cef_string_userfree_t` or double-free |
 | Crash in `release()` at shutdown | Object freed twice, or freed after CEF shutdown |
-| SIGTRAP with no malloc error | CEF `DCHECK` assertion failure (usually indicates API misuse) |
+| SIGTRAP with no malloc error | CEF `DCHECK` / `LOG(FATAL)` assertion — check `chrome_debug.log` for the message |
 | SIGSEGV in generated JNI code | Null native pointer, stale pointer, or wrong struct cast |
 
-## Step 4: ASAN / Valgrind
+## Step 5: Updating the .so After Rebuilding
+
+The test suite extracts `libcef4j.so` from the classpath JAR resource on every
+run, overwriting any manual copy in `/tmp/cef4j-cache/linux64/`. To test a
+rebuilt library:
+
+```sh
+# 1. Rebuild
+mvn compile -pl cef4j-native
+
+# 2. Copy to BOTH locations
+cp cef4j-native/target/cmake-build/libcef4j.so \
+   cef4j-api/src/main/resources/native/linux64/libcef4j.so
+cp cef4j-native/target/cmake-build/libcef4j.so \
+   /tmp/cef4j-cache/linux64/libcef4j.so
+
+# 3. Run tests (recompiles cef4j-api, picking up the new resource)
+mvn test -pl cef4j-api -Dtest='CefInteropTest#browserLifecycle_onAfterCreatedAndOnLoadEndFire'
+```
+
+For standalone reproducers that load from `/tmp/cef4j-cache/linux64/`, only the
+second copy is needed.
+
+### Verifying the right library is loaded
+
+```sh
+# Check all copies are the same build
+md5sum cef4j-native/target/cmake-build/libcef4j.so \
+       cef4j-api/src/main/resources/native/linux64/libcef4j.so \
+       /tmp/cef4j-cache/linux64/libcef4j.so
+
+# Verify key symbols are exported
+nm -D /tmp/cef4j-cache/linux64/libcef4j.so | grep 'JNI_OnLoad\|cef_api'
+```
+
+## Step 6: ASAN / Valgrind
 
 For heap corruption, build `libcef4j.so` with AddressSanitizer:
 
@@ -81,15 +165,7 @@ LD_PRELOAD=$(gcc -print-file-name=libasan.so) \
   --source 21 CrashTest.java
 ```
 
-Or use Valgrind (slower but no rebuild needed):
-
-```sh
-valgrind --suppressions=cef4j-native/cef.supp \
-  java -Djava.library.path=/tmp/cef4j-cache/linux64 \
-  --source 21 CrashTest.java
-```
-
-## Step 5: GDB
+## Step 7: GDB
 
 For SIGTRAP / SIGSEGV, attach GDB:
 
@@ -148,15 +224,3 @@ or doubled entries in mutable lists after setter calls.
 
 **Fix:** Only write back for `get_*` functions. For `set_*` functions, just free
 the temporary native collection.
-
-## Updating the .so After Rebuilding
-
-The standalone test runner loads `libcef4j.so` from `/tmp/cef4j-cache/linux64/`.
-After rebuilding the native module, copy the new .so:
-
-```sh
-cp cef4j-native/target/cmake-build/libcef4j.so /tmp/cef4j-cache/linux64/
-```
-
-Maven surefire uses the .so from the installed artifact, so `mvn install -pl cef4j-native`
-is needed before `mvn test -pl cef4j-api`.

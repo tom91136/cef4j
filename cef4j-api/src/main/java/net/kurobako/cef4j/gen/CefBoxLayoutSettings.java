@@ -23,18 +23,32 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefBoxLayoutSettings {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** If {@code true} (1) the layout will be horizontal, otherwise the layout will be vertical. */
     public final int horizontal;
+    /** Adds additional horizontal space between the child view area and the host view border. */
     public final int insideBorderHorizontalSpacing;
+    /** Adds additional vertical space between the child view area and the host view border. */
     public final int insideBorderVerticalSpacing;
+    /** Adds additional space around the child view area. */
     public final CefInsets insideBorderInsets;
+    /** Adds additional space between child views. */
     public final int betweenChildSpacing;
+    /** Specifies where along the main axis the child views should be laid out. */
     public final CefAxisAlignment mainAxisAlignment;
+    /** Specifies where along the cross axis the child views should be laid out. */
     public final CefAxisAlignment crossAxisAlignment;
+    /** Minimum cross axis size. */
     public final int minimumCrossAxisSize;
+    /**
+     * Default flex for views when none is specified via CefBoxLayout methods. Using the preferred size as the basis,
+     * free space along the main axis is distributed to views in the ratio of their flex weights. Similarly, if the
+     * views will overflow the parent, space is subtracted in these ratios. A flex of 0 means this view is not resized.
+     * Flex values must not be negative.
+     */
     public final int defaultFlex;
 
     public CefBoxLayoutSettings(

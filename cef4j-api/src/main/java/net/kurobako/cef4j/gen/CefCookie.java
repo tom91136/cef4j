@@ -26,21 +26,36 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefCookie {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** The cookie name. */
     public final String name;
+    /** The cookie value. */
     public final String value;
+    /**
+     * If {@code domain} is empty a host cookie will be created instead of a domain cookie. Domain cookies are stored
+     * with a leading "." and are visible to sub-domains whereas host cookies are not.
+     */
     public final String domain;
+    /** If {@code path} is non-empty only URLs at or below the path will get the cookie value. */
     public final String path;
+    /** If {@code secure} is {@code true} the cookie will only be sent for HTTPS requests. */
     public final int secure;
+    /** If {@code httponly} is {@code true} the cookie will only be sent for HTTP requests. */
     public final int httponly;
+    /** The cookie creation date. This is automatically populated by the system on cookie creation. */
     public final CefBasetime creation;
+    /** The cookie last access date. This is automatically populated by the system on access. */
     public final CefBasetime lastAccess;
+    /** The cookie expiration date is only valid if {@code has_expires} is {@code true}. */
     public final int hasExpires;
+
     public final CefBasetime expires;
+    /** Same site. */
     public final CefCookieSameSite sameSite;
+    /** Priority. */
     public final CefCookiePriority priority;
 
     public CefCookie(
@@ -68,6 +83,23 @@ public final class CefCookie {
         this.expires = expires;
         this.sameSite = sameSite;
         this.priority = priority;
+    }
+
+    /** Create a mutable copy of this instance. */
+    public Mutable toMutable() {
+        return new Mutable(
+                this.name,
+                this.value,
+                this.domain,
+                this.path,
+                this.secure,
+                this.httponly,
+                this.creation,
+                this.lastAccess,
+                this.hasExpires,
+                this.expires,
+                this.sameSite,
+                this.priority);
     }
 
     @Override
@@ -113,5 +145,138 @@ public final class CefCookie {
                 + ", " + "httponly=" + httponly + ", " + "creation=" + creation + ", " + "lastAccess=" + lastAccess
                 + ", " + "hasExpires=" + hasExpires + ", " + "expires=" + expires + ", " + "sameSite=" + sameSite + ", "
                 + "priority=" + priority + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefCookie}. Cookie information.
+     *
+     * <p>Definition generated from cef_types.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:846</a>
+     */
+    public static final class Mutable {
+
+        // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+        @SuppressWarnings("FieldMayBeFinal")
+        private volatile long size = -1;
+
+        /** The cookie name. */
+        public String name;
+        /** The cookie value. */
+        public String value;
+        /**
+         * If {@code domain} is empty a host cookie will be created instead of a domain cookie. Domain cookies are
+         * stored with a leading "." and are visible to sub-domains whereas host cookies are not.
+         */
+        public String domain;
+        /** If {@code path} is non-empty only URLs at or below the path will get the cookie value. */
+        public String path;
+        /** If {@code secure} is {@code true} the cookie will only be sent for HTTPS requests. */
+        public int secure;
+        /** If {@code httponly} is {@code true} the cookie will only be sent for HTTP requests. */
+        public int httponly;
+        /** The cookie creation date. This is automatically populated by the system on cookie creation. */
+        public CefBasetime creation;
+        /** The cookie last access date. This is automatically populated by the system on access. */
+        public CefBasetime lastAccess;
+        /** The cookie expiration date is only valid if {@code has_expires} is {@code true}. */
+        public int hasExpires;
+
+        public CefBasetime expires;
+        /** Same site. */
+        public CefCookieSameSite sameSite;
+        /** Priority. */
+        public CefCookiePriority priority;
+
+        public Mutable() {}
+
+        public Mutable(
+                String name,
+                String value,
+                String domain,
+                String path,
+                int secure,
+                int httponly,
+                CefBasetime creation,
+                CefBasetime lastAccess,
+                int hasExpires,
+                CefBasetime expires,
+                CefCookieSameSite sameSite,
+                CefCookiePriority priority) {
+            this.name = name;
+            this.value = value;
+            this.domain = domain;
+            this.path = path;
+            this.secure = secure;
+            this.httponly = httponly;
+            this.creation = creation;
+            this.lastAccess = lastAccess;
+            this.hasExpires = hasExpires;
+            this.expires = expires;
+            this.sameSite = sameSite;
+            this.priority = priority;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefCookie toImmutable() {
+            return new CefCookie(
+                    this.name,
+                    this.value,
+                    this.domain,
+                    this.path,
+                    this.secure,
+                    this.httponly,
+                    this.creation,
+                    this.lastAccess,
+                    this.hasExpires,
+                    this.expires,
+                    this.sameSite,
+                    this.priority);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return java.util.Objects.equals(this.name, other.name)
+                    && java.util.Objects.equals(this.value, other.value)
+                    && java.util.Objects.equals(this.domain, other.domain)
+                    && java.util.Objects.equals(this.path, other.path)
+                    && this.secure == other.secure
+                    && this.httponly == other.httponly
+                    && java.util.Objects.equals(this.creation, other.creation)
+                    && java.util.Objects.equals(this.lastAccess, other.lastAccess)
+                    && this.hasExpires == other.hasExpires
+                    && java.util.Objects.equals(this.expires, other.expires)
+                    && java.util.Objects.equals(this.sameSite, other.sameSite)
+                    && java.util.Objects.equals(this.priority, other.priority);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(
+                    name,
+                    value,
+                    domain,
+                    path,
+                    secure,
+                    httponly,
+                    creation,
+                    lastAccess,
+                    hasExpires,
+                    expires,
+                    sameSite,
+                    priority);
+        }
+
+        @Override
+        public String toString() {
+            return "CefCookie.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "name="
+                    + name + ", " + "value=" + value + ", " + "domain=" + domain + ", " + "path=" + path + ", "
+                    + "secure=" + secure + ", " + "httponly=" + httponly + ", " + "creation=" + creation + ", "
+                    + "lastAccess=" + lastAccess + ", " + "hasExpires=" + hasExpires + ", " + "expires=" + expires
+                    + ", " + "sameSite=" + sameSite + ", " + "priority=" + priority + "}";
+        }
     }
 }

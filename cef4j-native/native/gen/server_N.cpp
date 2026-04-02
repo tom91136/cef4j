@@ -60,10 +60,10 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefServer_0002
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttp200response(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return;}
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
     auto _content_type_str = JStringToCefString(env, content_type);
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
+    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
     s->send_http200_response(s, connection_id, _content_type_str, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (_content_type_str) cef_string_userfree_free(_content_type_str);
 }
@@ -77,7 +77,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttp500response(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring error_message) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!error_message) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "errorMessage must not be null"); return;}
     auto _error_message_str = JStringToCefString(env, error_message);
     s->send_http500_response(s, connection_id, _error_message_str);
     if (_error_message_str) cef_string_userfree_free(_error_message_str);
@@ -86,7 +85,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttpResponse(JNIEnv* env, jobject obj, jlong self, jint connection_id, jint response_code, jstring content_type, jlong content_length, jobject extra_headers) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return;}
     auto _content_type_str = JStringToCefString(env, content_type);
     auto _extra_headers_csmm = JavaMapToCefStringMultimap(env, extra_headers);
     s->send_http_response(s, connection_id, response_code, _content_type_str, content_length, _extra_headers_csmm);
@@ -99,6 +97,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
+    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
     s->send_raw_data(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 
@@ -113,14 +112,13 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
+    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
     s->send_web_socket_message(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring address, jint port, jint backlog, jobject handler) {
-    if (!address) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "address must not be null"); return;}
-    if (!handler) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "handler must not be null"); return;}
     auto _address_str = JStringToCefString(env, address);
-    cef_server_handler_t* _handler_ptr = Create_JniCefServerHandler(env, handler);
+    cef_server_handler_t* _handler_ptr = handler ? Create_JniCefServerHandler(env, handler) : nullptr;
     cef_server_create(_address_str, port, backlog, _handler_ptr);
     if (_address_str) cef_string_userfree_free(_address_str);
 }

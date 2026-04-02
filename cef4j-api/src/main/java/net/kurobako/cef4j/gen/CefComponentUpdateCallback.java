@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Callback interface for component update results.
@@ -19,7 +20,8 @@ import javax.annotation.Nonnull;
 public interface CefComponentUpdateCallback extends CefClientHandler {
 
     /**
-     * Method that will be called upon completion. {@code num_deleted} will be the number of cookies that were deleted.
+     * Called when the component update operation completes. {@code component_id} is the ID of the component that was
+     * updated. {@code error} contains the result of the operation.
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *
@@ -27,7 +29,8 @@ public interface CefComponentUpdateCallback extends CefClientHandler {
      * void (CEF_CALLBACK* on_complete)(struct _cef_component_update_callback_t* self, const cef_string_t* component_id, cef_component_update_error_t error);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:172</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:55</a>
      */
-    default void onComplete(@Nonnull String componentId, @Nonnull CefComponentUpdateError error) {}
+    default void onComplete(@Nullable String componentId, @Nonnull CefComponentUpdateError error) {}
 }

@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to implement a custom request handler interface. The methods of this class will be called on the IO thread
@@ -36,7 +36,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:89</a>
      */
-    default boolean open(@Nonnull CefRequest request, int[] handleRequest, @Nonnull CefCallback callback) {
+    default boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
         return false;
     }
 
@@ -56,7 +56,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
      */
-    default boolean processRequest(@Nonnull CefRequest request, @Nonnull CefCallback callback) {
+    default boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
         return false;
     }
 
@@ -82,14 +82,14 @@ public interface CefResourceHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:122</a>
      */
     default void getResponseHeaders(
-            @Nonnull CefResponse response, long[] responseLength, @Nonnull String redirecturl) {}
+            @Nullable CefResponse response, long[] responseLength, @Nullable String redirectUrl) {}
 
     /**
      * Skip response data when requested by a Range header. Skip over and discard {@code bytes_to_skip} bytes of
      * response data. If data is available immediately set {@code bytes_skipped} to the number of bytes skipped and
      * return {@code true}. To read the data at a later time set {@code bytes_skipped} to 0, return {@code true} and
-     * execute {@code callback} when the data is available. To indicate failure set {@code bytes_skipped} to < 0 (e.g.
-     * -2 for {@code ERR_FAILED}) and return {@code false}. This method will be called in sequence but not from a
+     * execute {@code callback} when the data is available. To indicate failure set {@code bytes_skipped} to &lt; 0
+     * (e.g. -2 for {@code ERR_FAILED}) and return {@code false}. This method will be called in sequence but not from a
      * dedicated thread.
      *
      * <p>Definition generated from cef_resource_handler_capi.h
@@ -101,12 +101,19 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:142</a>
      */
-    default boolean skip(long bytesToSkip, long[] bytesSkipped, @Nonnull CefResourceSkipCallback callback) {
+    default boolean skip(long bytesToSkip, long[] bytesSkipped, @Nullable CefResourceSkipCallback callback) {
         return false;
     }
 
     /**
-     * Read raw binary data.
+     * Read response data. If data is available immediately copy up to {@code bytes_to_read} bytes into
+     * {@code data_out}, set {@code bytes_read} to the number of bytes copied, and return {@code true}. To read the data
+     * at a later time keep a pointer to {@code data_out}, set {@code bytes_read} to 0, return {@code true} and execute
+     * {@code callback} when the data is available ({@code data_out} will remain valid until the callback is executed).
+     * To indicate response completion set {@code bytes_read} to 0 and return {@code false}. To indicate failure set
+     * {@code bytes_read} to &lt; 0 (e.g. -2 for {@code ERR_FAILED}) and return {@code false}. This method will be
+     * called in sequence but not from a dedicated thread. For backwards compatibility set {@code bytes_read} to -1 and
+     * return {@code false} and the ReadResponse method will be called.
      *
      * <p>Definition generated from cef_resource_handler_capi.h
      *
@@ -114,13 +121,14 @@ public interface CefResourceHandler extends CefClientHandler {
      * int (CEF_CALLBACK* read)(struct _cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_resource_read_callback_t* callback);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:110</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
      */
     default int read(
-            @Nonnull NativePointer dataOut,
+            @Nullable NativePointer dataOut,
             int bytesToRead,
             int[] bytesRead,
-            @Nonnull CefResourceReadCallback callback) {
+            @Nullable CefResourceReadCallback callback) {
         return 0;
     }
 
@@ -142,19 +150,19 @@ public interface CefResourceHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:181</a>
      */
     default boolean readResponse(
-            @Nonnull NativePointer dataOut, int bytesToRead, int[] bytesRead, @Nonnull CefCallback callback) {
+            @Nullable NativePointer dataOut, int bytesToRead, int[] bytesRead, @Nullable CefCallback callback) {
         return false;
     }
 
     /**
-     * Call to cancel the download.
+     * Request processing has been canceled.
      *
      * <p>Definition generated from cef_resource_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_resource_handler_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:199</a>
      */
     default void cancel() {}
 }

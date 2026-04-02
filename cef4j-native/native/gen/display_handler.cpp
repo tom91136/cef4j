@@ -6,9 +6,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_display_handler_t
 struct JniCefDisplayHandler: public cef_display_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref
@@ -277,11 +276,11 @@ struct JniCefDisplayHandler: public cef_display_handler_t {
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
-        auto j_rect_cls = env->FindClass("net/kurobako/cef4j/gen/CefMutableRect");
+        auto j_rect_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect$Mutable");
         auto j_rect_ctor = env->GetMethodID(j_rect_cls, "<init>", "(IIII)V");
         auto j_rect = rect ? env->NewObject(j_rect_cls, j_rect_ctor, static_cast<jint>(rect->x), static_cast<jint>(rect->y), static_cast<jint>(rect->width), static_cast<jint>(rect->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getRootWindowScreenRect", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefMutableRect;)Z");
+        auto mid = env->GetMethodID(cls, "getRootWindowScreenRect", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefRect$Mutable;)Z");
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_rect);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}

@@ -50,8 +50,7 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefPostDat
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPostData_00024NativePeer_N_1RemoveElement(JNIEnv* env, jobject obj, jlong self, jobject element) {
     auto* s = reinterpret_cast<cef_post_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!element) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "element must not be null"); return JNI_FALSE;}
-    cef_post_data_element_t* _element_ptr = reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J")));
+    cef_post_data_element_t* _element_ptr = element ? reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J"))) : nullptr;
     if (_element_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b);}
     auto _r = s->remove_element(s, _element_ptr);
     return static_cast<jboolean>(_r);
@@ -60,8 +59,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPostData_00
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPostData_00024NativePeer_N_1AddElement(JNIEnv* env, jobject obj, jlong self, jobject element) {
     auto* s = reinterpret_cast<cef_post_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!element) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "element must not be null"); return JNI_FALSE;}
-    cef_post_data_element_t* _element_ptr = reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J")));
+    cef_post_data_element_t* _element_ptr = element ? reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J"))) : nullptr;
     if (_element_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b);}
     auto _r = s->add_element(s, _element_ptr);
     return static_cast<jboolean>(_r);

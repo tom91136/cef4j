@@ -8,10 +8,10 @@ package net.kurobako.cef4j.gen;
  *
  * <pre>typedef enum {
  *   CEF_MEDIA_PERMISSION_NONE = 0,
- *   CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE = 1 << 0,
- *   CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE = 1 << 1,
- *   CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE = 1 << 2,
- *   CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE = 1 << 3
+ *   CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE = 1 &lt;&lt; 0,
+ *   CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE = 1 &lt;&lt; 1,
+ *   CEF_MEDIA_PERMISSION_DESKTOP_AUDIO_CAPTURE = 1 &lt;&lt; 2,
+ *   CEF_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE = 1 &lt;&lt; 3
  * } cef_media_access_permission_types_t;</pre>
  *
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#DEVICE_AUDIO_CAPTURE}, {@link Kind#DEVICE_VIDEO_CAPTURE},
@@ -39,7 +39,7 @@ public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAcce
         /** The underlying C enum numeric value. */
         public final long value;
 
-        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
         public final String expr;
 
         /** The C constant name (e.g., {@code "cef_media_access_permission_types_t"}). */
@@ -57,23 +57,26 @@ public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAcce
         }
     }
 
-    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
     public final long value;
 
     private CefMediaAccessPermissionTypes(long value) {
         this.value = value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public long value() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String expr() {
         return kind().map(k -> k.expr).orElse(String.valueOf(value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String name() {
         return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
@@ -90,7 +93,7 @@ public final class CefMediaAccessPermissionTypes implements CefEnum<CefMediaAcce
         return java.util.Optional.empty();
     }
 
-    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
     public static CefMediaAccessPermissionTypes of(long v) {
         return new CefMediaAccessPermissionTypes(v);
     }

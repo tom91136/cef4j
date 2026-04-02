@@ -33,6 +33,7 @@ public interface CefResourceSkipCallback extends CefLibraryObject {
     final class NativePeer implements CefResourceSkipCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -41,7 +42,17 @@ public interface CefResourceSkipCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefResourceSkipCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefResourceSkipCallback.class);
@@ -64,6 +75,7 @@ public interface CefResourceSkipCallback extends CefLibraryObject {
 
         @Override
         public void cont(long bytesSkipped) {
+            checkNotClosed();
             N_Cont(nativePtr, bytesSkipped);
         }
 

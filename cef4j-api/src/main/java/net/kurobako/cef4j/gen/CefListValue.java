@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -20,15 +19,15 @@ import javax.annotation.Nullable;
 public interface CefListValue extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if this object is valid. This object may become invalid if the underlying data is owned by
+     * another object (e.g. list or dictionary) and that other object is then modified or destroyed. Do not call any
+     * other methods if this method returns {@code false}.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_list_value_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:549</a>
      */
     boolean isValid();
 
@@ -50,21 +49,21 @@ public interface CefListValue extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_list_value_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:564</a>
      */
     boolean isReadOnly();
 
     /**
-     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     * Returns {@code true} if this object and {@code that} object have the same underlying data. If {@code true}
+     * modifications to this object will also affect {@code that} object and vice-versa.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_list_value_t* self, struct _cef_list_value_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:571</a>
      */
-    boolean isSame(@Nonnull CefListValue that);
+    boolean isSame(@Nullable CefListValue that);
 
     /**
      * Returns {@code true} if this object and {@code that} object have an equivalent underlying value but are not
@@ -76,7 +75,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:579</a>
      */
-    boolean isEqual(@Nonnull CefListValue that);
+    boolean isEqual(@Nullable CefListValue that);
 
     /**
      * Returns a writable copy of this object.
@@ -85,7 +84,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * <pre>cef_list_value_t* (CEF_CALLBACK* copy)(struct _cef_list_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:586</a>
      */
     Optional<CefListValue> copy();
 
@@ -113,47 +112,49 @@ public interface CefListValue extends CefLibraryObject {
     long getSize();
 
     /**
-     * Clears the menu. Returns {@code true} on success.
+     * Removes all values. Returns {@code true} on success.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>int (CEF_CALLBACK* clear)(struct _cef_list_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:605</a>
      */
     boolean clear();
 
     /**
-     * Removes the item with the specified {@code command_id}. Returns {@code true} on success.
+     * Removes the value at the specified index.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>int (CEF_CALLBACK* remove)(struct _cef_list_value_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:611</a>
      */
     boolean remove(long index);
 
     /**
-     * Returns the item type for the specified {@code command_id}.
+     * Returns the value type at the specified index.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>cef_value_type_t (CEF_CALLBACK* get_type)(struct _cef_list_value_t* self, size_t index);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:617</a>
      */
     CefValueType getType(long index);
 
     /**
-     * Returns the value of this node.
+     * Returns the value at the specified index. For simple types the returned value will copy existing data and
+     * modifications to the value will not modify this object. For complex types (binary, dictionary and list) the
+     * returned value will reference existing data and modifications to the value will modify this object.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>cef_value_t* (CEF_CALLBACK* get_value)(struct _cef_list_value_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:623</a>
      */
     Optional<CefValue> getValue(long index);
 
@@ -203,16 +204,19 @@ public interface CefListValue extends CefLibraryObject {
     Optional<CefDictionaryValue> getDictionary(long index);
 
     /**
-     * Set the value of this node. Returns {@code true} on success.
+     * Sets the value at the specified index. Returns {@code true} if the value was set successfully. If {@code value}
+     * represents simple data then the underlying data will be copied and modifications to {@code value} will not modify
+     * this object. If {@code value} represents complex data (binary, dictionary or list) then the underlying data will
+     * be referenced and modifications to {@code value} will modify this object.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>int (CEF_CALLBACK* set_value)(struct _cef_list_value_t* self, size_t index, struct _cef_value_t* value);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:680</a>
      */
-    boolean setValue(long index, @Nonnull CefValue value);
+    boolean setValue(long index, @Nullable CefValue value);
 
     /**
      * Sets the value at the specified index as type null. Returns {@code true} if the value was set successfully.
@@ -285,7 +289,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:726</a>
      */
-    boolean setBinary(long index, @Nonnull CefBinaryValue value);
+    boolean setBinary(long index, @Nullable CefBinaryValue value);
 
     /**
      * Sets the value at the specified index as type dict. Returns {@code true} if the value was set successfully. If
@@ -301,7 +305,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:736</a>
      */
-    boolean setDictionary(long index, @Nonnull CefDictionaryValue value);
+    boolean setDictionary(long index, @Nullable CefDictionaryValue value);
 
     /**
      * Sets the value at the specified index as type list. Returns {@code true} if the value was set successfully. If
@@ -316,7 +320,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:747</a>
      */
-    boolean setList(long index, @Nonnull CefListValue value);
+    boolean setList(long index, @Nullable CefListValue value);
     /**
      * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
      * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
@@ -335,6 +339,7 @@ public interface CefListValue extends CefLibraryObject {
     final class NativePeer implements CefListValue, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -343,7 +348,17 @@ public interface CefListValue extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefListValue has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefListValue.class);
@@ -366,126 +381,157 @@ public interface CefListValue extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public boolean isOwned() {
+            checkNotClosed();
             return N_IsOwned(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefListValue that) {
+        public boolean isSame(@Nullable CefListValue that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefListValue");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
-        public boolean isEqual(@Nonnull CefListValue that) {
+        public boolean isEqual(@Nullable CefListValue that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefListValue");
             return N_IsEqual(nativePtr, that);
         }
 
         @Override
         public Optional<CefListValue> copy() {
+            checkNotClosed();
             return Optional.ofNullable(N_Copy(nativePtr));
         }
 
         @Override
         public boolean setSize(long size) {
+            checkNotClosed();
             return N_SetSize(nativePtr, size);
         }
 
         @Override
         public long getSize() {
+            checkNotClosed();
             return N_GetSize(nativePtr);
         }
 
         @Override
         public boolean clear() {
+            checkNotClosed();
             return N_Clear(nativePtr);
         }
 
         @Override
         public boolean remove(long index) {
+            checkNotClosed();
             return N_Remove(nativePtr, index);
         }
 
         @Override
         public CefValueType getType(long index) {
+            checkNotClosed();
             return N_GetType(nativePtr, index);
         }
 
         @Override
         public Optional<CefValue> getValue(long index) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetValue(nativePtr, index));
         }
 
         @Override
         public boolean getBool(long index) {
+            checkNotClosed();
             return N_GetBool(nativePtr, index);
         }
 
         @Override
         public int getInt(long index) {
+            checkNotClosed();
             return N_GetInt(nativePtr, index);
         }
 
         @Override
         public double getDouble(long index) {
+            checkNotClosed();
             return N_GetDouble(nativePtr, index);
         }
 
         @Override
         public Optional<CefDictionaryValue> getDictionary(long index) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDictionary(nativePtr, index));
         }
 
         @Override
-        public boolean setValue(long index, @Nonnull CefValue value) {
+        public boolean setValue(long index, @Nullable CefValue value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefValue");
             return N_SetValue(nativePtr, index, value);
         }
 
         @Override
         public boolean setNull(long index) {
+            checkNotClosed();
             return N_SetNull(nativePtr, index);
         }
 
         @Override
         public boolean setBool(long index, boolean value) {
+            checkNotClosed();
             return N_SetBool(nativePtr, index, value);
         }
 
         @Override
         public boolean setInt(long index, int value) {
+            checkNotClosed();
             return N_SetInt(nativePtr, index, value);
         }
 
         @Override
         public boolean setDouble(long index, double value) {
+            checkNotClosed();
             return N_SetDouble(nativePtr, index, value);
         }
 
         @Override
         public boolean setString(long index, @Nullable String value) {
+            checkNotClosed();
             return N_SetString(nativePtr, index, value);
         }
 
         @Override
-        public boolean setBinary(long index, @Nonnull CefBinaryValue value) {
+        public boolean setBinary(long index, @Nullable CefBinaryValue value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefBinaryValue");
             return N_SetBinary(nativePtr, index, value);
         }
 
         @Override
-        public boolean setDictionary(long index, @Nonnull CefDictionaryValue value) {
+        public boolean setDictionary(long index, @Nullable CefDictionaryValue value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefDictionaryValue");
             return N_SetDictionary(nativePtr, index, value);
         }
 
         @Override
-        public boolean setList(long index, @Nonnull CefListValue value) {
+        public boolean setList(long index, @Nullable CefListValue value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefListValue");
             return N_SetList(nativePtr, index, value);
         }
 

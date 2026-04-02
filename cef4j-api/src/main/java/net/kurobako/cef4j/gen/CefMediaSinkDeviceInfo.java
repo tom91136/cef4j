@@ -17,7 +17,7 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefMediaSinkDeviceInfo {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 

@@ -26,7 +26,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1MoveToFile(JNIEnv* env, jobject obj, jlong self, jstring fileName, jboolean caseSensitive) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!fileName) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "filename must not be null"); return JNI_FALSE;}
     auto _fileName_str = JStringToCefString(env, fileName);
     auto _r = s->move_to_file(s, _fileName_str, static_cast<bool>(caseSensitive));
     if (_fileName_str) cef_string_userfree_free(_fileName_str);
@@ -87,6 +86,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024
     if (!s) return 0;
     if (!buffer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0;}
     void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
+    if (buffer && !_buffer_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
     return static_cast<jint>(s->read_file(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer))));
 }
 
@@ -103,8 +103,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024
 }
 
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jobject stream) {
-    if (!stream) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "stream must not be null"); return nullptr;}
-    cef_stream_reader_t* _stream_ptr = reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J")));
+    cef_stream_reader_t* _stream_ptr = stream ? reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J"))) : nullptr;
     if (_stream_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b);}
     auto _r = cef_zip_reader_create(_stream_ptr);
     if (!_r) return nullptr;

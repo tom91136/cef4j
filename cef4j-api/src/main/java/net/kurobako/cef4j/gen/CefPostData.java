@@ -4,7 +4,7 @@ package net.kurobako.cef4j.gen;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to represent post data for a web request. The methods of this class may be called on any thread.
@@ -21,14 +21,13 @@ import javax.annotation.Nonnull;
 public interface CefPostData extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     * Returns {@code true} if this object is read-only.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:239</a>
      */
     boolean isReadOnly();
 
@@ -59,8 +58,9 @@ public interface CefPostData extends CefLibraryObject {
     /**
      * Retrieve the post data elements.
      *
-     * <p>The C API exposes this as a two-pass pattern: first call {@link #getElementCount()} to obtain the count, then
-     * allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     * <p><b>The C API exposes this as a two-pass pattern: first call {@link #getElementCount()} to obtain the count,
+     * then allocate and populate the array/collection. This method performs both steps and returns the result
+     * directly.</b>
      *
      * <p>Definition generated from cef_request_capi.h
      *
@@ -80,7 +80,7 @@ public interface CefPostData extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:266</a>
      */
-    boolean removeElement(@Nonnull CefPostDataElement element);
+    boolean removeElement(@Nullable CefPostDataElement element);
 
     /**
      * Add the specified post data element. Returns {@code true} if the add succeeds.
@@ -92,7 +92,7 @@ public interface CefPostData extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:273</a>
      */
-    boolean addElement(@Nonnull CefPostDataElement element);
+    boolean addElement(@Nullable CefPostDataElement element);
 
     /**
      * Remove all existing post data elements.
@@ -122,6 +122,7 @@ public interface CefPostData extends CefLibraryObject {
     final class NativePeer implements CefPostData, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -130,7 +131,17 @@ public interface CefPostData extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefPostData has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefPostData.class);
@@ -153,36 +164,45 @@ public interface CefPostData extends CefLibraryObject {
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public boolean hasExcludedElements() {
+            checkNotClosed();
             return N_HasExcludedElements(nativePtr);
         }
 
         @Override
         public long getElementCount() {
+            checkNotClosed();
             return N_GetElementCount(nativePtr);
         }
 
         @Override
         public List<CefPostDataElement> getElements() {
+            checkNotClosed();
             return Arrays.asList(N_GetElements(nativePtr));
         }
 
         @Override
-        public boolean removeElement(@Nonnull CefPostDataElement element) {
+        public boolean removeElement(@Nullable CefPostDataElement element) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(element, "CefPostDataElement");
             return N_RemoveElement(nativePtr, element);
         }
 
         @Override
-        public boolean addElement(@Nonnull CefPostDataElement element) {
+        public boolean addElement(@Nullable CefPostDataElement element) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(element, "CefPostDataElement");
             return N_AddElement(nativePtr, element);
         }
 
         @Override
         public void removeElements() {
+            checkNotClosed();
             N_RemoveElements(nativePtr);
         }
 

@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a sink to which media can be routed. Instances of this object are retrieved via
@@ -21,25 +21,24 @@ import javax.annotation.Nonnull;
 public interface CefMediaSink extends CefLibraryObject {
 
     /**
-     * Returns the unique identifier for this download.
+     * Returns the ID for this sink.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:231</a>
      */
     Optional<String> getId();
 
     /**
-     * Returns the name of this node.
+     * Returns the name of this sink.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:237</a>
      */
     Optional<String> getName();
 
@@ -66,7 +65,7 @@ public interface CefMediaSink extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:249</a>
      */
-    void getDeviceInfo(@Nonnull CefMediaSinkDeviceInfoCallback callback);
+    void getDeviceInfo(@Nullable CefMediaSinkDeviceInfoCallback callback);
 
     /**
      * Returns {@code true} if this sink accepts content via Cast.
@@ -100,11 +99,12 @@ public interface CefMediaSink extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:268</a>
      */
-    boolean isCompatibleWith(@Nonnull CefMediaSource source);
+    boolean isCompatibleWith(@Nullable CefMediaSource source);
 
     final class NativePeer implements CefMediaSink, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -113,7 +113,17 @@ public interface CefMediaSink extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMediaSink has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMediaSink.class);
@@ -136,36 +146,44 @@ public interface CefMediaSink extends CefLibraryObject {
 
         @Override
         public Optional<String> getId() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetId(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetName(nativePtr));
         }
 
         @Override
         public CefMediaSinkIconType getIconType() {
+            checkNotClosed();
             return N_GetIconType(nativePtr);
         }
 
         @Override
-        public void getDeviceInfo(@Nonnull CefMediaSinkDeviceInfoCallback callback) {
+        public void getDeviceInfo(@Nullable CefMediaSinkDeviceInfoCallback callback) {
+            checkNotClosed();
             N_GetDeviceInfo(nativePtr, callback);
         }
 
         @Override
         public boolean isCastSink() {
+            checkNotClosed();
             return N_IsCastSink(nativePtr);
         }
 
         @Override
         public boolean isDialSink() {
+            checkNotClosed();
             return N_IsDialSink(nativePtr);
         }
 
         @Override
-        public boolean isCompatibleWith(@Nonnull CefMediaSource source) {
+        public boolean isCompatibleWith(@Nullable CefMediaSource source) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(source, "CefMediaSource");
             return N_IsCompatibleWith(nativePtr, source);
         }
 

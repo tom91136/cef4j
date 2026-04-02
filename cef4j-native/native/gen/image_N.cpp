@@ -19,8 +19,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_image_t* _that_ptr = reinterpret_cast<cef_image_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_image_t* _that_ptr = that ? reinterpret_cast<cef_image_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -33,6 +32,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     if (!alpha_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "alphaType must not be null"); return JNI_FALSE;}
     if (!pixel_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "pixelData must not be null"); return JNI_FALSE;}
     const void* _pixel_data_addr = pixel_data ? env->GetDirectBufferAddress(pixel_data) : nullptr;
+    if (pixel_data && !_pixel_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "pixelData must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE;}
     auto _r = s->add_bitmap(s, scale_factor, pixel_width, pixel_height, static_cast<cef_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), static_cast<cef_alpha_type_t>(env->GetLongField(alpha_type, env->GetFieldID(env->GetObjectClass(alpha_type), "value", "J"))), _pixel_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(pixel_data)));
     return static_cast<jboolean>(_r);
 }
@@ -42,6 +42,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     if (!s) return JNI_FALSE;
     if (!png_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "pngData must not be null"); return JNI_FALSE;}
     const void* _png_data_addr = png_data ? env->GetDirectBufferAddress(png_data) : nullptr;
+    if (png_data && !_png_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "pngData must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE;}
     auto _r = s->add_png(s, scale_factor, _png_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(png_data)));
     return static_cast<jboolean>(_r);
 }
@@ -51,6 +52,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     if (!s) return JNI_FALSE;
     if (!jpeg_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "jpegData must not be null"); return JNI_FALSE;}
     const void* _jpeg_data_addr = jpeg_data ? env->GetDirectBufferAddress(jpeg_data) : nullptr;
+    if (jpeg_data && !_jpeg_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "jpegData must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE;}
     auto _r = s->add_jpeg(s, scale_factor, _jpeg_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(jpeg_data)));
     return static_cast<jboolean>(_r);
 }

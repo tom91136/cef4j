@@ -40,7 +40,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
     default boolean canSendCookie(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
+            @Nullable CefRequest request,
             @Nonnull CefCookie cookie) {
         return false;
     }
@@ -65,8 +65,8 @@ public interface CefCookieAccessFilter extends CefClientHandler {
     default boolean canSaveCookie(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,
-            @Nonnull CefRequest request,
-            @Nonnull CefResponse response,
+            @Nullable CefRequest request,
+            @Nullable CefResponse response,
             @Nonnull CefCookie cookie) {
         return false;
     }

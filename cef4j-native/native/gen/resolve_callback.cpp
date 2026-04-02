@@ -4,9 +4,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_resolve_callback_t
 struct JniCefResolveCallback: public cef_resolve_callback_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

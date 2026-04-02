@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 /**
- * Return values for {@link CefResponseFilter#filter(ByteBuffer, long[], ByteBuffer, long[])}.
+ * Return values for {@link CefResponseFilter#filter(java.nio.ByteBuffer, long[], java.nio.ByteBuffer, long[])}.
  *
  * <p>Definition generated from cef_types.h
  *
@@ -37,7 +37,7 @@ public final class CefResponseFilterStatus implements CefEnum<CefResponseFilterS
         /** The underlying C enum numeric value. */
         public final long value;
 
-        /** The original C expression (e.g., {@code "1 << 3"}), or the numeric string. */
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
         public final String expr;
 
         /** The C constant name (e.g., {@code "cef_response_filter_status_t"}). */
@@ -55,23 +55,26 @@ public final class CefResponseFilterStatus implements CefEnum<CefResponseFilterS
         }
     }
 
-    /** The underlying C enum numeric value. May not correspond to any known {@link Kind}. */
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
     public final long value;
 
     private CefResponseFilterStatus(long value) {
         this.value = value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public long value() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String expr() {
         return kind().map(k -> k.expr).orElse(String.valueOf(value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String name() {
         return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
@@ -88,7 +91,7 @@ public final class CefResponseFilterStatus implements CefEnum<CefResponseFilterS
         return java.util.Optional.empty();
     }
 
-    /** Returns an instance for the given raw value. No data is lost — unknown or composite values are preserved. */
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
     public static CefResponseFilterStatus of(long v) {
         return new CefResponseFilterStatus(v);
     }

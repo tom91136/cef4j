@@ -57,8 +57,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_domnode_t* _that_ptr = reinterpret_cast<cef_domnode_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_domnode_t* _that_ptr = that ? reinterpret_cast<cef_domnode_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -87,7 +86,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1SetValue(JNIEnv* env, jobject obj, jlong self, jstring value) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _value_str = JStringToCefString(env, value);
     auto _r = s->set_value(s, _value_str);
     if (_value_str) cef_string_userfree_free(_value_str);
@@ -191,7 +189,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1HasElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!attrName) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrname must not be null"); return JNI_FALSE;}
     auto _attrName_str = JStringToCefString(env, attrName);
     auto _r = s->has_element_attribute(s, _attrName_str);
     if (_attrName_str) cef_string_userfree_free(_attrName_str);
@@ -201,7 +198,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
-    if (!attrName) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrname must not be null"); return nullptr;}
     auto _attrName_str = JStringToCefString(env, attrName);
     auto result = s->get_element_attribute(s, _attrName_str);
     if (_attrName_str) cef_string_userfree_free(_attrName_str);
@@ -214,7 +210,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementAttributes(JNIEnv* env, jobject obj, jlong self, jobject attrMap) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return;
-    if (!attrMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrmap must not be null"); return;}
+    if (!attrMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrMap must not be null"); return;}
     auto _attrMap_csm = JavaMapToCefStringMap(env, attrMap);
     s->get_element_attributes(s, _attrMap_csm);
     CefStringMapWriteBack(env, _attrMap_csm, attrMap);
@@ -223,8 +219,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024Na
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1SetElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName, jstring value) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!attrName) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrname must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _attrName_str = JStringToCefString(env, attrName);
     auto _value_str = JStringToCefString(env, value);
     auto _r = s->set_element_attribute(s, _attrName_str, _value_str);

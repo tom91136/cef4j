@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Callback interface used for asynchronous continuation of authentication requests.
@@ -31,23 +31,24 @@ public interface CefAuthCallback extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
-    void cont(@Nonnull String username, @Nonnull String password);
+    void cont(@Nullable String username, @Nullable String password);
 
     /**
-     * Call to cancel the download.
+     * Cancel the authentication request.
      *
      * <p>Definition generated from cef_auth_callback_capi.h
      *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_auth_callback_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__auth__callback_8h.html">cef_auth_callback.h:57</a>
      */
     void cancel();
 
     final class NativePeer implements CefAuthCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -56,7 +57,17 @@ public interface CefAuthCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefAuthCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefAuthCallback.class);
@@ -78,12 +89,14 @@ public interface CefAuthCallback extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public void cont(@Nonnull String username, @Nonnull String password) {
+        public void cont(@Nullable String username, @Nullable String password) {
+            checkNotClosed();
             N_Cont(nativePtr, username, password);
         }
 
         @Override
         public void cancel() {
+            checkNotClosed();
             N_Cancel(nativePtr);
         }
 

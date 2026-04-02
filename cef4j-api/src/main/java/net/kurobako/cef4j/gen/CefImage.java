@@ -4,6 +4,7 @@ package net.kurobako.cef4j.gen;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Container for a single image represented at different scale factors. All image representations should be the same
@@ -34,15 +35,16 @@ public interface CefImage extends CefLibraryObject {
     boolean isEmpty();
 
     /**
-     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     * Returns {@code true} if this Image and {@code that} Image share the same underlying storage. Will also return
+     * {@code true} if both images are empty.
      *
      * <p>Definition generated from cef_image_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_image_t* self, struct _cef_image_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:68</a>
      */
-    boolean isSame(@Nonnull CefImage that);
+    boolean isSame(@Nullable CefImage that);
 
     /**
      * Add a bitmap image representation for {@code scale_factor}. Only 32-bit RGBA/BGRA formats are supported.
@@ -50,12 +52,18 @@ public interface CefImage extends CefLibraryObject {
      * {@code pixel_data} is the array of pixel data and should be {@code pixel_width} x {@code pixel_height} x 4 bytes
      * in size. {@code color_type} and {@code alpha_type} values specify the pixel format.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code pixelDataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_image_capi.h
      *
      * <pre>
      * int (CEF_CALLBACK* add_bitmap)(struct _cef_image_t* self, float scale_factor, int pixel_width, int pixel_height, cef_color_type_t color_type, cef_alpha_type_t alpha_type, const void* pixel_data, size_t pixel_data_size);
      * </pre>
      *
+     * @param pixelData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:75</a>
      */
     boolean addBitmap(
@@ -70,12 +78,18 @@ public interface CefImage extends CefLibraryObject {
      * Add a PNG image representation for {@code scale_factor}. {@code png_data} is the image data of size
      * {@code png_data_size}. Any alpha transparency in the PNG data will be maintained.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code pngDataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_image_capi.h
      *
      * <pre>
      * int (CEF_CALLBACK* add_png)(struct _cef_image_t* self, float scale_factor, const void* png_data, size_t png_data_size);
      * </pre>
      *
+     * @param pngData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:91</a>
      */
     boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData);
@@ -85,12 +99,18 @@ public interface CefImage extends CefLibraryObject {
      * {@code jpeg_data_size}. The JPEG format does not support transparency so the alpha byte will be set to 0xFF for
      * all pixels.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code jpegDataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_image_capi.h
      *
      * <pre>
      * int (CEF_CALLBACK* add_jpeg)(struct _cef_image_t* self, float scale_factor, const void* jpeg_data, size_t jpeg_data_size);
      * </pre>
      *
+     * @param jpegData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:101</a>
      */
     boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData);
@@ -225,6 +245,7 @@ public interface CefImage extends CefLibraryObject {
     final class NativePeer implements CefImage, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -233,7 +254,17 @@ public interface CefImage extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefImage has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefImage.class);
@@ -256,11 +287,14 @@ public interface CefImage extends CefLibraryObject {
 
         @Override
         public boolean isEmpty() {
+            checkNotClosed();
             return N_IsEmpty(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefImage that) {
+        public boolean isSame(@Nullable CefImage that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefImage");
             return N_IsSame(nativePtr, that);
         }
 
@@ -272,42 +306,50 @@ public interface CefImage extends CefLibraryObject {
                 @Nonnull CefColorType colorType,
                 @Nonnull CefAlphaType alphaType,
                 @Nonnull ByteBuffer pixelData) {
+            checkNotClosed();
             return N_AddBitmap(nativePtr, scaleFactor, pixelWidth, pixelHeight, colorType, alphaType, pixelData);
         }
 
         @Override
         public boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData) {
+            checkNotClosed();
             return N_AddPng(nativePtr, scaleFactor, pngData);
         }
 
         @Override
         public boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData) {
+            checkNotClosed();
             return N_AddJpeg(nativePtr, scaleFactor, jpegData);
         }
 
         @Override
         public long getWidth() {
+            checkNotClosed();
             return N_GetWidth(nativePtr);
         }
 
         @Override
         public long getHeight() {
+            checkNotClosed();
             return N_GetHeight(nativePtr);
         }
 
         @Override
         public boolean hasRepresentation(float scaleFactor) {
+            checkNotClosed();
             return N_HasRepresentation(nativePtr, scaleFactor);
         }
 
         @Override
         public boolean removeRepresentation(float scaleFactor) {
+            checkNotClosed();
             return N_RemoveRepresentation(nativePtr, scaleFactor);
         }
 
         @Override
         public boolean getRepresentationInfo(
                 float scaleFactor, float[] actualScaleFactor, int[] pixelWidth, int[] pixelHeight) {
+            checkNotClosed();
             return N_GetRepresentationInfo(nativePtr, scaleFactor, actualScaleFactor, pixelWidth, pixelHeight);
         }
 
@@ -318,6 +360,7 @@ public interface CefImage extends CefLibraryObject {
                 @Nonnull CefAlphaType alphaType,
                 int[] pixelWidth,
                 int[] pixelHeight) {
+            checkNotClosed();
             return Optional.ofNullable(
                     N_GetAsBitmap(nativePtr, scaleFactor, colorType, alphaType, pixelWidth, pixelHeight));
         }
@@ -325,11 +368,13 @@ public interface CefImage extends CefLibraryObject {
         @Override
         public Optional<CefBinaryValue> getAsPng(
                 float scaleFactor, boolean withTransparency, int[] pixelWidth, int[] pixelHeight) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAsPng(nativePtr, scaleFactor, withTransparency, pixelWidth, pixelHeight));
         }
 
         @Override
         public Optional<CefBinaryValue> getAsJpeg(float scaleFactor, int quality, int[] pixelWidth, int[] pixelHeight) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAsJpeg(nativePtr, scaleFactor, quality, pixelWidth, pixelHeight));
         }
 

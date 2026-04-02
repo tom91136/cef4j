@@ -86,6 +86,7 @@ public interface CefResourceBundle extends CefLibraryObject {
     final class NativePeer implements CefResourceBundle, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -94,7 +95,17 @@ public interface CefResourceBundle extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefResourceBundle has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefResourceBundle.class);
@@ -117,16 +128,19 @@ public interface CefResourceBundle extends CefLibraryObject {
 
         @Override
         public Optional<String> getLocalizedString(int stringId) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLocalizedString(nativePtr, stringId));
         }
 
         @Override
         public Optional<CefBinaryValue> getDataResource(int resourceId) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDataResource(nativePtr, resourceId));
         }
 
         @Override
         public Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDataResourceForScale(nativePtr, resourceId, scaleFactor));
         }
 

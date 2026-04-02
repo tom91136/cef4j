@@ -35,7 +35,6 @@ extern "C" JNIEXPORT jlongArray JNICALL Java_net_kurobako_cef4j_gen_CefTaskManag
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefTaskManager_00024NativePeer_N_1GetTaskInfo(JNIEnv* env, jobject obj, jlong self, jlong task_id, jobject info) {
     auto* s = reinterpret_cast<cef_task_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!info) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "info must not be null"); return JNI_FALSE;}
     auto _r = s->get_task_info(s, task_id, reinterpret_cast<struct _cef_task_info_t*>(info ? env->GetLongField(info, env->GetFieldID(env->GetObjectClass(info), "address", "J")) : 0));
     return static_cast<jboolean>(_r);
 }

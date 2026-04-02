@@ -9,14 +9,12 @@
 #include "include/capi/cef_base_capi.h"
 #include "include/internal/cef_string.h"
 
-// ---------------------------------------------------------------------------
 // ScopedJNIEnv: Ensures a JNIEnv* is available on the current thread.
 //
 // CEF callbacks arrive on CEF's threads (IO, UI, renderer). The JVM only
 // knows about threads that have been attached. ScopedJNIEnv calls
 // AttachCurrentThread if necessary and DetachCurrentThread in its destructor
 // (only if it was the one that attached).
-// ---------------------------------------------------------------------------
 class ScopedJNIEnv {
 public:
     explicit ScopedJNIEnv(JavaVM* jvm) : jvm_(jvm), env_(nullptr), didAttach_(false) {
@@ -47,9 +45,7 @@ private:
     bool didAttach_;
 };
 
-// ---------------------------------------------------------------------------
 // String conversion
-// ---------------------------------------------------------------------------
 
 // Convert a CEF string (UTF-16) to a Java String.
 // Returns nullptr if cefStr is null.
@@ -81,9 +77,7 @@ inline cef_string_userfree_t JStringToCefString(JNIEnv* env, jstring jStr) {
     return s;
 }
 
-// ---------------------------------------------------------------------------
 // Reference counting helpers
-// ---------------------------------------------------------------------------
 
 // Initialize the cef_base_ref_counted_t of a CEF C struct with a simple
 // ref-count implementation. Called by handler wrapper constructors.
@@ -140,9 +134,7 @@ void InitRefCount(cef_base_ref_counted_t* base) {
     };
 }
 
-// ---------------------------------------------------------------------------
 // JNI exception checking
-// ---------------------------------------------------------------------------
 
 // Check for pending Java exception after a JNI call. Returns true if an
 // exception is pending (and clears it so native code can continue safely).
@@ -155,9 +147,7 @@ inline bool CheckJNIException(JNIEnv* env) {
     return false;
 }
 
-// ---------------------------------------------------------------------------
 // String collection conversion (native -> Java)
-// ---------------------------------------------------------------------------
 
 #include "include/internal/cef_string_list.h"
 #include "include/internal/cef_string_map.h"
@@ -168,7 +158,7 @@ inline jobject CefStringListToJavaList(JNIEnv* env, cef_string_list_t list) {
     int count = list ? static_cast<int>(cef_string_list_size(list)) : 0;
     jmethodID init = env->GetMethodID(cls, "<init>", "(I)V");
     jmethodID add = env->GetMethodID(cls, "add", "(Ljava/lang/Object;)Z");
-    jobject jList = env->NewObject(cls, init, (jint)count);
+    jobject jList = env->NewObject(cls, init, static_cast<jint>(count));
     cef_string_t str = {};
     for (int i = 0; i < count; i++) {
         cef_string_list_value(list, i, &str);
@@ -186,7 +176,7 @@ inline jobject CefStringMapToJavaMap(JNIEnv* env, cef_string_map_t map) {
     jmethodID init = env->GetMethodID(cls, "<init>", "(I)V");
     jmethodID put = env->GetMethodID(cls, "put",
         "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    jobject jMap = env->NewObject(cls, init, (jint)count);
+    jobject jMap = env->NewObject(cls, init, static_cast<jint>(count));
     cef_string_t key = {}, val = {};
     for (int i = 0; i < count; i++) {
         cef_string_map_key(map, i, &key);
@@ -236,9 +226,7 @@ inline jobject CefStringMultimapToJavaMap(JNIEnv* env, cef_string_multimap_t mma
     return jMap;
 }
 
-// ---------------------------------------------------------------------------
 // String collection conversion (Java -> native)
-// ---------------------------------------------------------------------------
 
 inline cef_string_list_t JavaListToCefStringList(JNIEnv* env, jobject jList) {
     cef_string_list_t list = cef_string_list_alloc();
@@ -248,7 +236,7 @@ inline cef_string_list_t JavaListToCefStringList(JNIEnv* env, jobject jList) {
     jmethodID getMid = env->GetMethodID(listCls, "get", "(I)Ljava/lang/Object;");
     jint count = env->CallIntMethod(jList, sizeMid);
     for (jint i = 0; i < count; i++) {
-        auto jStr = (jstring)env->CallObjectMethod(jList, getMid, i);
+        auto jStr = static_cast<jstring>(env->CallObjectMethod(jList, getMid, i));
         if (jStr) {
             cef_string_t s = {};
             JStringToCefString(env, jStr, &s);
@@ -277,8 +265,8 @@ inline cef_string_map_t JavaMapToCefStringMap(JNIEnv* env, jobject jMap) {
     jobject iter = env->CallObjectMethod(entrySet, iterMid);
     while (env->CallBooleanMethod(iter, hasNextMid)) {
         jobject entry = env->CallObjectMethod(iter, nextMid);
-        auto jKey = (jstring)env->CallObjectMethod(entry, getKeyMid);
-        auto jVal = (jstring)env->CallObjectMethod(entry, getValMid);
+        auto jKey = static_cast<jstring>(env->CallObjectMethod(entry, getKeyMid));
+        auto jVal = static_cast<jstring>(env->CallObjectMethod(entry, getValMid));
         cef_string_t key = {}, val = {};
         JStringToCefString(env, jKey, &key);
         JStringToCefString(env, jVal, &val);
@@ -315,13 +303,13 @@ inline cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMa
     jobject iter = env->CallObjectMethod(entrySet, iterMid);
     while (env->CallBooleanMethod(iter, hasNextMid)) {
         jobject entry = env->CallObjectMethod(iter, nextMid);
-        auto jKey = (jstring)env->CallObjectMethod(entry, getKeyMid);
+        auto jKey = static_cast<jstring>(env->CallObjectMethod(entry, getKeyMid));
         jobject jValList = env->CallObjectMethod(entry, getValMid);
         cef_string_t key = {};
         JStringToCefString(env, jKey, &key);
         jint count = env->CallIntMethod(jValList, sizeMid);
         for (jint i = 0; i < count; i++) {
-            auto jVal = (jstring)env->CallObjectMethod(jValList, getMid, i);
+            auto jVal = static_cast<jstring>(env->CallObjectMethod(jValList, getMid, i));
             cef_string_t val = {};
             JStringToCefString(env, jVal, &val);
             cef_string_multimap_append(mmap, &key, &val);
@@ -338,11 +326,9 @@ inline cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMa
     return mmap;
 }
 
-// ---------------------------------------------------------------------------
 // Writeback: copy CEF string collection back into existing Java collection
-// ---------------------------------------------------------------------------
 
-/** Append all strings from a CEF string list into an existing Java List<String>, then free the CEF list. */
+// Append all strings from a CEF string list into an existing Java List<String>, then free the CEF list.
 inline void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject jList) {
     if (!list || !jList) { if (list) cef_string_list_free(list); return; }
     jclass cls = env->GetObjectClass(jList);
@@ -359,7 +345,7 @@ inline void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject 
     cef_string_list_free(list);
 }
 
-/** Put all entries from a CEF string map into an existing Java Map<String,String>, then free the CEF map. */
+// Put all entries from a CEF string map into an existing Java Map<String,String>, then free the CEF map.
 inline void CefStringMapWriteBack(JNIEnv* env, cef_string_map_t map, jobject jMap) {
     if (!map || !jMap) { if (map) cef_string_map_free(map); return; }
     jclass cls = env->GetObjectClass(jMap);
@@ -380,7 +366,7 @@ inline void CefStringMapWriteBack(JNIEnv* env, cef_string_map_t map, jobject jMa
     cef_string_map_free(map);
 }
 
-/** Put all entries from a CEF string multimap into an existing Java Map<String,List<String>>, then free the CEF multimap. */
+// Put all entries from a CEF string multimap into an existing Java Map<String,List<String>>, then free the CEF multimap.
 inline void CefStringMultimapWriteBack(JNIEnv* env, cef_string_multimap_t mmap, jobject jMap) {
     if (!mmap || !jMap) { if (mmap) cef_string_multimap_free(mmap); return; }
     jclass mapCls = env->GetObjectClass(jMap);

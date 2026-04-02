@@ -25,14 +25,13 @@ import javax.annotation.Nullable;
 public interface CefServer extends CefLibraryObject {
 
     /**
-     * Returns the CefTaskRunner that will execute code on this thread's message loop. This method is safe to call from
-     * any thread.
+     * Returns the task runner for the dedicated server thread.
      *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:82</a>
      */
     Optional<CefTaskRunner> getTaskRunner();
 
@@ -49,14 +48,15 @@ public interface CefServer extends CefLibraryObject {
     void shutdown();
 
     /**
-     * Returns {@code true} if the thread is currently running. This method must be called from the same thread that
-     * called CreateThread().
+     * Returns {@code true} if the server is currently running and accepting incoming connections. See
+     * {@link CefServerHandler#onServerCreated(CefServer)} documentation for a description of server lifespan. This
+     * method must be called on the dedicated server thread.
      *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_running)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:96</a>
      */
     boolean isRunning();
 
@@ -101,15 +101,21 @@ public interface CefServer extends CefLibraryObject {
      * of {@code data} in bytes. The contents of {@code data} will be copied. The connection will be closed
      * automatically after the response is sent.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* send_http200_response)(struct _cef_server_t* self, int connection_id, const cef_string_t* content_type, const void* data, size_t data_size);
      * </pre>
      *
+     * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:125</a>
      */
-    void sendHttp200response(int connectionId, @Nonnull String contentType, @Nonnull ByteBuffer data);
+    void sendHttp200response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
 
     /**
      * Send an HTTP 404 "Not Found" response to the connection identified by {@code connection_id}. The connection will
@@ -136,7 +142,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:146</a>
      */
-    void sendHttp500response(int connectionId, @Nonnull String errorMessage);
+    void sendHttp500response(int connectionId, @Nullable String errorMessage);
 
     /**
      * Send a custom HTTP response to the connection identified by {@code connection_id}. {@code response_code} is the
@@ -144,7 +150,7 @@ public interface CefServer extends CefLibraryObject {
      * the "Content-Type" header (e.g. "text/html"), {@code content_length} is the expected content length, and
      * {@code extra_headers} is the map of extra response headers. If {@code content_length} is >= 0 then the
      * "Content-Length" header will be sent. If {@code content_length} is 0 then no content is expected and the
-     * connection will be closed automatically after the response is sent. If {@code content_length} is < 0 then no
+     * connection will be closed automatically after the response is sent. If {@code content_length} is &lt; 0 then no
      * "Content-Length" header will be sent and the client will continue reading until the connection is closed. Use the
      * SendRawData method to send the content, if applicable, and call CloseConnection after all content has been sent.
      *
@@ -160,7 +166,7 @@ public interface CefServer extends CefLibraryObject {
     void sendHttpResponse(
             int connectionId,
             int responseCode,
-            @Nonnull String contentType,
+            @Nullable String contentType,
             long contentLength,
             @Nullable Map<String, List<String>> extraHeaders);
 
@@ -170,12 +176,18 @@ public interface CefServer extends CefLibraryObject {
      * validation of {@code data} is performed internally so the client should be careful to send the amount indicated
      * by the "Content-Length" header, if specified. See SendHttpResponse documentation for intended usage.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* send_raw_data)(struct _cef_server_t* self, int connection_id, const void* data, size_t data_size);
      * </pre>
      *
+     * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:177</a>
      */
     void sendRawData(int connectionId, @Nonnull ByteBuffer data);
@@ -197,12 +209,18 @@ public interface CefServer extends CefLibraryObject {
      * See {@link CefServerHandler#onWebSocketRequest(CefServer, int, String, CefRequest, CefCallback)} documentation
      * for intended usage.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* send_web_socket_message)(struct _cef_server_t* self, int connection_id, const void* data, size_t data_size);
      * </pre>
      *
+     * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:197</a>
      */
     void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data);
@@ -219,13 +237,14 @@ public interface CefServer extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
-    static void create(@Nonnull String address, int port, int backlog, @Nonnull CefServerHandler handler) {
+    static void create(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler) {
         NativePeer.N_Create(address, port, backlog, handler);
     }
 
     final class NativePeer implements CefServer, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -234,7 +253,17 @@ public interface CefServer extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefServer has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefServer.class);
@@ -257,46 +286,55 @@ public interface CefServer extends CefLibraryObject {
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTaskRunner(nativePtr));
         }
 
         @Override
         public void shutdown() {
+            checkNotClosed();
             N_Shutdown(nativePtr);
         }
 
         @Override
         public boolean isRunning() {
+            checkNotClosed();
             return N_IsRunning(nativePtr);
         }
 
         @Override
         public Optional<String> getAddress() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAddress(nativePtr));
         }
 
         @Override
         public boolean hasConnection() {
+            checkNotClosed();
             return N_HasConnection(nativePtr);
         }
 
         @Override
         public boolean isValidConnection(int connectionId) {
+            checkNotClosed();
             return N_IsValidConnection(nativePtr, connectionId);
         }
 
         @Override
-        public void sendHttp200response(int connectionId, @Nonnull String contentType, @Nonnull ByteBuffer data) {
+        public void sendHttp200response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data) {
+            checkNotClosed();
             N_SendHttp200response(nativePtr, connectionId, contentType, data);
         }
 
         @Override
         public void sendHttp404response(int connectionId) {
+            checkNotClosed();
             N_SendHttp404response(nativePtr, connectionId);
         }
 
         @Override
-        public void sendHttp500response(int connectionId, @Nonnull String errorMessage) {
+        public void sendHttp500response(int connectionId, @Nullable String errorMessage) {
+            checkNotClosed();
             N_SendHttp500response(nativePtr, connectionId, errorMessage);
         }
 
@@ -304,24 +342,28 @@ public interface CefServer extends CefLibraryObject {
         public void sendHttpResponse(
                 int connectionId,
                 int responseCode,
-                @Nonnull String contentType,
+                @Nullable String contentType,
                 long contentLength,
                 @Nullable Map<String, List<String>> extraHeaders) {
+            checkNotClosed();
             N_SendHttpResponse(nativePtr, connectionId, responseCode, contentType, contentLength, extraHeaders);
         }
 
         @Override
         public void sendRawData(int connectionId, @Nonnull ByteBuffer data) {
+            checkNotClosed();
             N_SendRawData(nativePtr, connectionId, data);
         }
 
         @Override
         public void closeConnection(int connectionId) {
+            checkNotClosed();
             N_CloseConnection(nativePtr, connectionId);
         }
 
         @Override
         public void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data) {
+            checkNotClosed();
             N_SendWebSocketMessage(nativePtr, connectionId, data);
         }
 

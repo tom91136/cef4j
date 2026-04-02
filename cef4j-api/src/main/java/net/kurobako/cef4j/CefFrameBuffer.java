@@ -13,13 +13,13 @@ import net.kurobako.cef4j.gen.CefRect;
  * <p>Key properties:
  *
  * <ul>
- *   <li>Pre-allocated {@code int[]} pixel buffer sized to max monitor dimensions — no GC churn on resize.
+ *   <li>Pre-allocated {@code int[]} pixel buffer sized to max monitor dimensions - no GC churn on resize.
  *   <li>Back-pressure: the producer skips work when the consumer hasn't consumed the last frame. CEF's {@code onPaint}
  *       is demand-driven (only fires on dirty regions), so a dropped frame means no repaint until the next interaction
  *       unless {@code invalidate()} is called.
  *   <li>Thread-safe image handoff via volatile reference. The volatile write of the image reference <em>after</em>
  *       pixel stamping creates the happens-before edge.
- *   <li>Generic over image type {@code I} — provide an {@link ImageWriter} for your toolkit.
+ *   <li>Generic over image type {@code I} - provide an {@link ImageWriter} for your toolkit.
  * </ul>
  *
  * <p>Typical Swing usage:
@@ -57,7 +57,7 @@ public final class CefFrameBuffer<I> {
         /**
          * Stamp pixel data into an image.
          *
-         * <p>When {@code dirtyRects} is non-null, only those regions have been updated in the {@code pixels} array —
+         * <p>When {@code dirtyRects} is non-null, only those regions have been updated in the {@code pixels} array -
          * the implementation may choose to blit only those regions into the image for better performance.
          *
          * @param prev the previous image, or {@code null} if this is the first frame
@@ -161,7 +161,7 @@ public final class CefFrameBuffer<I> {
         }
 
         // BGRA bytes read as little-endian int gives
-        // bits [0:7]=B, [8:15]=G, [16:23]=R, [24:31]=A — exactly TYPE_INT_ARGB layout.
+        // bits [0:7]=B, [8:15]=G, [16:23]=R, [24:31]=A - exactly TYPE_INT_ARGB layout.
         java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
         boolean fullCopy = dirtyRects == null
@@ -176,16 +176,13 @@ public final class CefFrameBuffer<I> {
             hasPending = false;
             src.get(pixelBuffer, 0, pixelCount);
         } else {
-            // Copy this frame's dirty rects into the pixel buffer
             for (CefRect r : dirtyRects) {
                 copyRect(src, r, width, height);
             }
-            // Copy accumulated dirty region from dropped frames
             if (hasPending) {
                 CefRect pending = new CefRect(pendingX1, pendingY1, pendingX2 - pendingX1, pendingY2 - pendingY1);
                 hasPending = false;
                 copyRect(src, pending, width, height);
-                // Merge pending rect into the list passed to stamp
                 CefRect[] merged = new CefRect[dirtyRects.length + 1];
                 System.arraycopy(dirtyRects, 0, merged, 0, dirtyRects.length);
                 merged[dirtyRects.length] = pending;
@@ -198,10 +195,8 @@ public final class CefFrameBuffer<I> {
         lastWidth = width;
         lastHeight = height;
 
-        // Stamp into the back buffer (never the one the EDT is currently drawing).
+        // Stamp into the back buffer, then swap: volatile write creates happens-before edge.
         I img = writer.stamp(backImage, pixelBuffer, width, height, stampRects);
-        // Publish: the volatile write creates the happens-before edge.
-        // The old front becomes the new back for the next frame.
         backImage = frontImage;
         frontImage = img;
         return img;

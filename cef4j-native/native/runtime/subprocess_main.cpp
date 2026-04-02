@@ -8,6 +8,7 @@
 #if defined(_WIN32)
 #include <windows.h>
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
+    cef_api_hash(CEF_API_VERSION, 0);
     cef_main_args_t args{};
     args.instance = hInstance;
     return cef_execute_process(&args, nullptr, nullptr);

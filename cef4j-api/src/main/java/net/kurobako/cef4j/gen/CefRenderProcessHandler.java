@@ -38,8 +38,9 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * browser with the same identifier is destroyed. {@code extra_info} is an optional read-only value originating from
      * CefBrowserHost.createBrowser(), CefBrowserHost.createBrowserSync(),
      * {@link CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition,
-     * boolean, NativePointer, CefMutableWindowInfo, AtomicReference<CefClient>, CefMutableBrowserSettings,
-     * AtomicReference<CefDictionaryValue>, int[])} or CefBrowserView.createBrowserView().
+     * boolean, NativePointer, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference,
+     * CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])} or
+     * CefBrowserView.createBrowserView().
      *
      * <p>Definition generated from cef_render_process_handler_capi.h
      *
@@ -51,7 +52,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
      */
-    default void onBrowserCreated(@Nonnull CefBrowser browser, @Nullable CefDictionaryValue extraInfo) {}
+    default void onBrowserCreated(@Nullable CefBrowser browser, @Nullable CefDictionaryValue extraInfo) {}
 
     /**
      * Called before a browser is destroyed.
@@ -65,7 +66,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
      */
-    default void onBrowserDestroyed(@Nonnull CefBrowser browser) {}
+    default void onBrowserDestroyed(@Nullable CefBrowser browser) {}
 
     /**
      * Return the handler for browser load status events.
@@ -97,7 +98,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:90</a>
      */
     default void onContextCreated(
-            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, @Nonnull CefV8Context context) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {}
 
     /**
      * Called immediately before the V8 context for a frame is released. No references to the context should be kept
@@ -113,7 +114,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:102</a>
      */
     default void onContextReleased(
-            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, @Nonnull CefV8Context context) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {}
 
     /**
      * Called for global uncaught exceptions in a frame. Execution of this callback is disabled by default. To enable
@@ -129,11 +130,11 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:111</a>
      */
     default void onUncaughtException(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull CefV8Context context,
-            @Nonnull CefV8Exception exception,
-            @Nonnull CefV8StackTrace stacktrace) {}
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefV8Context context,
+            @Nullable CefV8Exception exception,
+            @Nullable CefV8StackTrace stackTrace) {}
 
     /**
      * Called when a new node in the the browser gets focus. The {@code node} value may be empty if no specific node has
@@ -153,7 +154,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:123</a>
      */
     default void onFocusedNodeChanged(
-            @Nonnull CefBrowser browser, @Nullable CefFrame frame, @Nullable CefDomNode node) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefDomNode node) {}
 
     /**
      * Called when a new message is received from a different process. Return {@code true} if the message was handled or
@@ -169,10 +170,10 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
      */
     default boolean onProcessMessageReceived(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
             @Nonnull CefProcessId sourceProcess,
-            @Nonnull CefProcessMessage message) {
+            @Nullable CefProcessMessage message) {
         return false;
     }
 }

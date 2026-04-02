@@ -43,6 +43,7 @@ public interface CefSslInfo extends CefLibraryObject {
     final class NativePeer implements CefSslInfo, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -51,7 +52,17 @@ public interface CefSslInfo extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSslInfo has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefSslInfo.class);
@@ -74,11 +85,13 @@ public interface CefSslInfo extends CefLibraryObject {
 
         @Override
         public CefCertStatus getCertStatus() {
+            checkNotClosed();
             return N_GetCertStatus(nativePtr);
         }
 
         @Override
         public Optional<CefX509Certificate> getX509certificate() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetX509certificate(nativePtr));
         }
 

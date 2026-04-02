@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to find results. The methods of this class will be called on the UI
@@ -34,10 +35,10 @@ public interface CefFindHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
      */
     default void onFindResult(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             int identifier,
             int count,
-            @Nonnull CefRect selectionrect,
-            int activematchordinal,
-            boolean finalupdate) {}
+            @Nonnull CefRect selectionRect,
+            int activeMatchOrdinal,
+            boolean finalUpdate) {}
 }

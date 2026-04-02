@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to create and/or parse command line arguments. Arguments with "--", "-" and, on Windows, "/" prefixes are
@@ -33,8 +34,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:76</a>
      */
     boolean isValid();
 
@@ -45,8 +45,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:83</a>
      */
     boolean isReadOnly();
 
@@ -72,7 +71,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:96</a>
      */
-    void initFromArgv(int argc, @Nonnull NativePointer argv);
+    void initFromArgv(int argc, @Nullable NativePointer argv);
 
     /**
      * Initialize the command line with the string returned by calling GetCommandLineW(). This method is only supported
@@ -85,17 +84,16 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:104</a>
      */
-    void initFromString(@Nonnull String commandLine);
+    void initFromString(@Nullable String commandLine);
 
     /**
-     * Put the event in the un-signaled state.
+     * Reset the command-line switches and arguments but leave the program component unchanged.
      *
      * <p>Definition generated from cef_command_line_capi.h
      *
      * <pre>void (CEF_CALLBACK* reset)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:111</a>
      */
     void reset();
 
@@ -143,7 +141,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:139</a>
      */
-    void setProgram(@Nonnull String program);
+    void setProgram(@Nullable String program);
 
     /**
      * Returns {@code true} if the command line has switches.
@@ -165,7 +163,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:151</a>
      */
-    boolean hasSwitch(@Nonnull String name);
+    boolean hasSwitch(@Nullable String name);
 
     /**
      * Returns the value associated with the given switch. If the switch has no value or isn't present this method
@@ -179,7 +177,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:157</a>
      */
-    Optional<String> getSwitchValue(@Nonnull String name);
+    Optional<String> getSwitchValue(@Nullable String name);
 
     /**
      * Returns the map of switch names and values. If a switch has no value an empty string is returned.
@@ -201,7 +199,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:171</a>
      */
-    void appendSwitch(@Nonnull String name);
+    void appendSwitch(@Nullable String name);
 
     /**
      * Add a switch with the specified value to the end of the command line. If the switch has no value pass an empty
@@ -215,7 +213,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:177</a>
      */
-    void appendSwitchWithValue(@Nonnull String name, @Nonnull String value);
+    void appendSwitchWithValue(@Nullable String name, @Nullable String value);
 
     /**
      * True if there are remaining command line arguments.
@@ -248,7 +246,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:206</a>
      */
-    void appendArgument(@Nonnull String argument);
+    void appendArgument(@Nullable String argument);
 
     /**
      * Insert a command before the current command. Common for debuggers, like "valgrind" or "gdb --args".
@@ -259,7 +257,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:212</a>
      */
-    void prependWrapper(@Nonnull String wrapper);
+    void prependWrapper(@Nullable String wrapper);
 
     /**
      * Remove a switch from the command line. If no such switch is present, this has no effect.
@@ -272,7 +270,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:186</a>
      */
-    void removeSwitch(@Nonnull String name);
+    void removeSwitch(@Nullable String name);
     /**
      * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
      * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
@@ -304,6 +302,7 @@ public interface CefCommandLine extends CefLibraryObject {
     final class NativePeer implements CefCommandLine, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -312,7 +311,17 @@ public interface CefCommandLine extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefCommandLine has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefCommandLine.class);
@@ -335,106 +344,127 @@ public interface CefCommandLine extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public Optional<CefCommandLine> copy() {
+            checkNotClosed();
             return Optional.ofNullable(N_Copy(nativePtr));
         }
 
         @Override
-        public void initFromArgv(int argc, @Nonnull NativePointer argv) {
+        public void initFromArgv(int argc, @Nullable NativePointer argv) {
+            checkNotClosed();
             N_InitFromArgv(nativePtr, argc, argv);
         }
 
         @Override
-        public void initFromString(@Nonnull String commandLine) {
+        public void initFromString(@Nullable String commandLine) {
+            checkNotClosed();
             N_InitFromString(nativePtr, commandLine);
         }
 
         @Override
         public void reset() {
+            checkNotClosed();
             N_Reset(nativePtr);
         }
 
         @Override
         public void getArgv(@Nonnull List<String> argv) {
+            checkNotClosed();
             N_GetArgv(nativePtr, argv);
         }
 
         @Override
         public Optional<String> getCommandLineString() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCommandLineString(nativePtr));
         }
 
         @Override
         public Optional<String> getProgram() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetProgram(nativePtr));
         }
 
         @Override
-        public void setProgram(@Nonnull String program) {
+        public void setProgram(@Nullable String program) {
+            checkNotClosed();
             N_SetProgram(nativePtr, program);
         }
 
         @Override
         public boolean hasSwitches() {
+            checkNotClosed();
             return N_HasSwitches(nativePtr);
         }
 
         @Override
-        public boolean hasSwitch(@Nonnull String name) {
+        public boolean hasSwitch(@Nullable String name) {
+            checkNotClosed();
             return N_HasSwitch(nativePtr, name);
         }
 
         @Override
-        public Optional<String> getSwitchValue(@Nonnull String name) {
+        public Optional<String> getSwitchValue(@Nullable String name) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSwitchValue(nativePtr, name));
         }
 
         @Override
         public void getSwitches(@Nonnull Map<String, String> switches) {
+            checkNotClosed();
             N_GetSwitches(nativePtr, switches);
         }
 
         @Override
-        public void appendSwitch(@Nonnull String name) {
+        public void appendSwitch(@Nullable String name) {
+            checkNotClosed();
             N_AppendSwitch(nativePtr, name);
         }
 
         @Override
-        public void appendSwitchWithValue(@Nonnull String name, @Nonnull String value) {
+        public void appendSwitchWithValue(@Nullable String name, @Nullable String value) {
+            checkNotClosed();
             N_AppendSwitchWithValue(nativePtr, name, value);
         }
 
         @Override
         public boolean hasArguments() {
+            checkNotClosed();
             return N_HasArguments(nativePtr);
         }
 
         @Override
         public void getArguments(@Nonnull List<String> arguments) {
+            checkNotClosed();
             N_GetArguments(nativePtr, arguments);
         }
 
         @Override
-        public void appendArgument(@Nonnull String argument) {
+        public void appendArgument(@Nullable String argument) {
+            checkNotClosed();
             N_AppendArgument(nativePtr, argument);
         }
 
         @Override
-        public void prependWrapper(@Nonnull String wrapper) {
+        public void prependWrapper(@Nullable String wrapper) {
+            checkNotClosed();
             N_PrependWrapper(nativePtr, wrapper);
         }
 
         @Override
-        public void removeSwitch(@Nonnull String name) {
+        public void removeSwitch(@Nullable String name) {
+            checkNotClosed();
             N_RemoveSwitch(nativePtr, name);
         }
 

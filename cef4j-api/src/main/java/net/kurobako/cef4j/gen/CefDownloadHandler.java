@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to handle file downloads. The methods of this class will called on the browser process UI thread.
@@ -33,7 +33,7 @@ public interface CefDownloadHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
      */
-    default boolean canDownload(@Nonnull CefBrowser browser, @Nonnull String url, @Nonnull String requestMethod) {
+    default boolean canDownload(@Nullable CefBrowser browser, @Nullable String url, @Nullable String requestMethod) {
         return false;
     }
 
@@ -53,10 +53,10 @@ public interface CefDownloadHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
      */
     default boolean onBeforeDownload(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefDownloadItem downloadItem,
-            @Nonnull String suggestedName,
-            @Nonnull CefBeforeDownloadCallback callback) {
+            @Nullable CefBrowser browser,
+            @Nullable CefDownloadItem downloadItem,
+            @Nullable String suggestedName,
+            @Nullable CefBeforeDownloadCallback callback) {
         return false;
     }
 
@@ -75,7 +75,7 @@ public interface CefDownloadHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
      */
     default void onDownloadUpdated(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefDownloadItem downloadItem,
-            @Nonnull CefDownloadItemCallback callback) {}
+            @Nullable CefBrowser browser,
+            @Nullable CefDownloadItem downloadItem,
+            @Nullable CefDownloadItemCallback callback) {}
 }

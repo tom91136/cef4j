@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -134,7 +133,7 @@ public interface CefFrameHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:117</a>
      */
-    default void onFrameCreated(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
+    default void onFrameCreated(@Nullable CefBrowser browser, @Nullable CefFrame frame) {}
 
     /**
      * Called when an existing frame is destroyed. This will be the last notification that references {@code frame} and
@@ -152,7 +151,7 @@ public interface CefFrameHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:129</a>
      */
-    default void onFrameDestroyed(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
+    default void onFrameDestroyed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {}
 
     /**
      * Called when a frame can begin routing commands to/from the associated renderer process. {@code reattached} will
@@ -169,7 +168,7 @@ public interface CefFrameHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:141</a>
      */
-    default void onFrameAttached(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, boolean reattached) {}
+    default void onFrameAttached(@Nullable CefBrowser browser, @Nullable CefFrame frame, boolean reattached) {}
 
     /**
      * Called when a frame loses its connection to the renderer process. This may occur when a frame is destroyed,
@@ -191,7 +190,7 @@ public interface CefFrameHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:154</a>
      */
-    default void onFrameDetached(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
+    default void onFrameDetached(@Nullable CefBrowser browser, @Nullable CefFrame frame) {}
 
     /**
      * Called when the main frame changes due to (a) initial browser creation, (b) final browser destruction, (c)
@@ -217,5 +216,5 @@ public interface CefFrameHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:171</a>
      */
     default void onMainFrameChanged(
-            @Nonnull CefBrowser browser, @Nullable CefFrame oldFrame, @Nullable CefFrame newFrame) {}
+            @Nullable CefBrowser browser, @Nullable CefFrame oldFrame, @Nullable CefFrame newFrame) {}
 }

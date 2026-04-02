@@ -109,6 +109,7 @@ public interface CefV8Exception extends CefLibraryObject {
     final class NativePeer implements CefV8Exception, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -117,7 +118,17 @@ public interface CefV8Exception extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8Exception has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Exception.class);
@@ -140,41 +151,49 @@ public interface CefV8Exception extends CefLibraryObject {
 
         @Override
         public Optional<String> getMessage() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMessage(nativePtr));
         }
 
         @Override
         public Optional<String> getSourceLine() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSourceLine(nativePtr));
         }
 
         @Override
         public Optional<String> getScriptResourceName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetScriptResourceName(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
+            checkNotClosed();
             return N_GetLineNumber(nativePtr);
         }
 
         @Override
         public int getStartPosition() {
+            checkNotClosed();
             return N_GetStartPosition(nativePtr);
         }
 
         @Override
         public int getEndPosition() {
+            checkNotClosed();
             return N_GetEndPosition(nativePtr);
         }
 
         @Override
         public int getStartColumn() {
+            checkNotClosed();
             return N_GetStartColumn(nativePtr);
         }
 
         @Override
         public int getEndColumn() {
+            checkNotClosed();
             return N_GetEndColumn(nativePtr);
         }
 

@@ -33,7 +33,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:53</a>
      */
-    default void onAddressChange(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, @Nonnull String url) {}
+    default void onAddressChange(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {}
 
     /**
      * Called when the page title changes.
@@ -48,7 +48,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:61</a>
      */
-    default void onTitleChange(@Nonnull CefBrowser browser, @Nullable String title) {}
+    default void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {}
 
     /**
      * Called when the page icon changes.
@@ -63,7 +63,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:68</a>
      */
-    default void onFaviconUrlChange(@Nonnull CefBrowser browser, @Nullable List<String> iconUrls) {}
+    default void onFaviconUrlChange(@Nullable CefBrowser browser, @Nullable List<String> iconUrls) {}
 
     /**
      * Called when web content in the page has toggled fullscreen mode. If {@code fullscreen} is {@code true} the
@@ -83,7 +83,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:75</a>
      */
-    default void onFullscreenModeChange(@Nonnull CefBrowser browser, boolean fullscreen) {}
+    default void onFullscreenModeChange(@Nullable CefBrowser browser, boolean fullscreen) {}
 
     /**
      * Called when the browser is about to display a tooltip. {@code text} contains the text that will be displayed in
@@ -101,7 +101,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
      */
-    default boolean onTooltip(@Nonnull CefBrowser browser, @Nullable String text) {
+    default boolean onTooltip(@Nullable CefBrowser browser, @Nullable String text) {
         return false;
     }
 
@@ -119,7 +119,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:103</a>
      */
-    default void onStatusMessage(@Nonnull CefBrowser browser, @Nullable String value) {}
+    default void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {}
 
     /**
      * Called to display a console message. Return {@code true} to stop the message from being output to the console.
@@ -136,7 +136,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
      */
     default boolean onConsoleMessage(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefLogSeverity level,
             @Nullable String message,
             @Nullable String source,
@@ -158,7 +158,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
      */
-    default boolean onAutoResize(@Nonnull CefBrowser browser, @Nonnull CefSize newSize) {
+    default boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
         return false;
     }
 
@@ -174,7 +174,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:136</a>
      */
-    default void onLoadingProgressChange(@Nonnull CefBrowser browser, double progress) {}
+    default void onLoadingProgressChange(@Nullable CefBrowser browser, double progress) {}
 
     /**
      * Called when the browser's cursor has changed. If {@code type} is CT_CUSTOM then {@code custom_cursor_info} will
@@ -191,10 +191,10 @@ public interface CefDisplayHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:144</a>
      */
     default boolean onCursorChange(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             long cursor,
             @Nonnull CefCursorType type,
-            @Nonnull NativePointer customCursorInfo) {
+            @Nullable NativePointer customCursorInfo) {
         return false;
     }
 
@@ -210,7 +210,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:158</a>
      */
-    default void onMediaAccessChange(@Nonnull CefBrowser browser, boolean hasVideoAccess, boolean hasAudioAccess) {}
+    default void onMediaAccessChange(@Nullable CefBrowser browser, boolean hasVideoAccess, boolean hasAudioAccess) {}
 
     /**
      * Called when JavaScript is requesting new bounds via window.moveTo/By() or window.resizeTo/By().
@@ -220,7 +220,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * passed directly to CefWindow.setBounds(). With external (client-provided) parent on macOS and Windows
      * {@code new_bounds} are the desired frame bounds for the containing root window. With other non-Views browsers
      * {@code new_bounds} are the desired bounds for the browser content only unless the client implements either
-     * {@link CefDisplayHandler#getRootWindowScreenRect(CefBrowser, CefMutableRect)} for windowed browsers or
+     * {@link CefDisplayHandler#getRootWindowScreenRect(CefBrowser, CefRect.Mutable)} for windowed browsers or
      * CefRenderHandler.getWindowScreenRect() for windowless browsers. Clients may expand browser content bounds to
      * window bounds using OS-specific or CefDisplay methods.
      *
@@ -238,7 +238,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
      */
-    default boolean onContentsBoundsChange(@Nonnull CefBrowser browser, @Nonnull CefRect newBounds) {
+    default boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
         return false;
     }
 
@@ -259,7 +259,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:193</a>
      */
-    default boolean getRootWindowScreenRect(@Nonnull CefBrowser browser, @Nonnull CefMutableRect rect) {
+    default boolean getRootWindowScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
         return false;
     }
 }

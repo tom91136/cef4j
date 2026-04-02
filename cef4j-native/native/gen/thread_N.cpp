@@ -39,7 +39,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefThread_0002
 }
 
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring display_name, jobject priority, jobject message_loop_type, jint stoppable, jobject com_init_mode) {
-    if (!display_name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "displayName must not be null"); return nullptr;}
     if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return nullptr;}
     if (!message_loop_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "messageLoopType must not be null"); return nullptr;}
     if (!com_init_mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "comInitMode must not be null"); return nullptr;}

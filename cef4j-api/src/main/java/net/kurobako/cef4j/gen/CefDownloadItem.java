@@ -265,6 +265,7 @@ public interface CefDownloadItem extends CefLibraryObject {
     final class NativePeer implements CefDownloadItem, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -273,7 +274,17 @@ public interface CefDownloadItem extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefDownloadItem has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefDownloadItem.class);
@@ -296,101 +307,121 @@ public interface CefDownloadItem extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public boolean isInProgress() {
+            checkNotClosed();
             return N_IsInProgress(nativePtr);
         }
 
         @Override
         public boolean isComplete() {
+            checkNotClosed();
             return N_IsComplete(nativePtr);
         }
 
         @Override
         public boolean isCanceled() {
+            checkNotClosed();
             return N_IsCanceled(nativePtr);
         }
 
         @Override
         public boolean isInterrupted() {
+            checkNotClosed();
             return N_IsInterrupted(nativePtr);
         }
 
         @Override
         public CefDownloadInterruptReason getInterruptReason() {
+            checkNotClosed();
             return N_GetInterruptReason(nativePtr);
         }
 
         @Override
         public long getCurrentSpeed() {
+            checkNotClosed();
             return N_GetCurrentSpeed(nativePtr);
         }
 
         @Override
         public int getPercentComplete() {
+            checkNotClosed();
             return N_GetPercentComplete(nativePtr);
         }
 
         @Override
         public long getTotalBytes() {
+            checkNotClosed();
             return N_GetTotalBytes(nativePtr);
         }
 
         @Override
         public long getReceivedBytes() {
+            checkNotClosed();
             return N_GetReceivedBytes(nativePtr);
         }
 
         @Override
         public CefBasetime getStartTime() {
+            checkNotClosed();
             return N_GetStartTime(nativePtr);
         }
 
         @Override
         public CefBasetime getEndTime() {
+            checkNotClosed();
             return N_GetEndTime(nativePtr);
         }
 
         @Override
         public Optional<String> getFullPath() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFullPath(nativePtr));
         }
 
         @Override
         public int getId() {
+            checkNotClosed();
             return N_GetId(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getOriginalUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetOriginalUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getSuggestedFileName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSuggestedFileName(nativePtr));
         }
 
         @Override
         public Optional<String> getContentDisposition() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetContentDisposition(nativePtr));
         }
 
         @Override
         public Optional<String> getMimeType() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMimeType(nativePtr));
         }
 
         @Override
         public boolean isPaused() {
+            checkNotClosed();
             return N_IsPaused(nativePtr);
         }
 

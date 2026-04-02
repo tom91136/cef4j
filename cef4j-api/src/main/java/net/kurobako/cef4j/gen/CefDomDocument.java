@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to represent a DOM document. The methods of this class should only be called on the render process main
@@ -20,25 +20,25 @@ import javax.annotation.Nonnull;
 public interface CefDomDocument extends CefLibraryObject {
 
     /**
-     * Returns the item type for the specified {@code command_id}.
+     * Returns the document type.
      *
      * <p>Definition generated from cef_dom_capi.h
      *
      * <pre>cef_dom_document_type_t (CEF_CALLBACK* get_type)(struct _cef_domdocument_t* self);</pre>
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:75</a>
      */
     CefDomDocumentType getType();
 
     /**
-     * Returns the document associated with this node.
+     * Returns the root document node.
      *
      * <p>Definition generated from cef_dom_capi.h
      *
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_document)(struct _cef_domdocument_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:81</a>
      */
     Optional<CefDomNode> getDocument();
 
@@ -85,7 +85,7 @@ public interface CefDomDocument extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:105</a>
      */
-    Optional<CefDomNode> getElementById(@Nonnull String id);
+    Optional<CefDomNode> getElementById(@Nullable String id);
 
     /**
      * Returns the node that currently has keyboard focus.
@@ -175,11 +175,12 @@ public interface CefDomDocument extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:153</a>
      */
-    Optional<String> getCompleteUrl(@Nonnull String partialurl);
+    Optional<String> getCompleteUrl(@Nullable String partialURL);
 
     final class NativePeer implements CefDomDocument, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -188,7 +189,17 @@ public interface CefDomDocument extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefDomDocument has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefDomDocument.class);
@@ -211,72 +222,86 @@ public interface CefDomDocument extends CefLibraryObject {
 
         @Override
         public CefDomDocumentType getType() {
+            checkNotClosed();
             return N_GetType(nativePtr);
         }
 
         @Override
         public Optional<CefDomNode> getDocument() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDocument(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getBody() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBody(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getHead() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetHead(nativePtr));
         }
 
         @Override
         public Optional<String> getTitle() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTitle(nativePtr));
         }
 
         @Override
-        public Optional<CefDomNode> getElementById(@Nonnull String id) {
+        public Optional<CefDomNode> getElementById(@Nullable String id) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetElementById(nativePtr, id));
         }
 
         @Override
         public Optional<CefDomNode> getFocusedNode() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFocusedNode(nativePtr));
         }
 
         @Override
         public boolean hasSelection() {
+            checkNotClosed();
             return N_HasSelection(nativePtr);
         }
 
         @Override
         public int getSelectionStartOffset() {
+            checkNotClosed();
             return N_GetSelectionStartOffset(nativePtr);
         }
 
         @Override
         public int getSelectionEndOffset() {
+            checkNotClosed();
             return N_GetSelectionEndOffset(nativePtr);
         }
 
         @Override
         public Optional<String> getSelectionAsMarkup() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSelectionAsMarkup(nativePtr));
         }
 
         @Override
         public Optional<String> getSelectionAsText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSelectionAsText(nativePtr));
         }
 
         @Override
         public Optional<String> getBaseUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBaseUrl(nativePtr));
         }
 
         @Override
-        public Optional<String> getCompleteUrl(@Nonnull String partialurl) {
-            return Optional.ofNullable(N_GetCompleteUrl(nativePtr, partialurl));
+        public Optional<String> getCompleteUrl(@Nullable String partialURL) {
+            checkNotClosed();
+            return Optional.ofNullable(N_GetCompleteUrl(nativePtr, partialURL));
         }
 
         private static native CefDomDocumentType N_GetType(long self);
@@ -305,7 +330,7 @@ public interface CefDomDocument extends CefLibraryObject {
 
         private static native String N_GetBaseUrl(long self);
 
-        private static native String N_GetCompleteUrl(long self, String partialurl);
+        private static native String N_GetCompleteUrl(long self, String partialURL);
 
         @Override
         public boolean equals(Object obj) {

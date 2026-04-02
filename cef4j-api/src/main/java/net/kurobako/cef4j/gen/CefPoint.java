@@ -23,6 +23,11 @@ public final class CefPoint {
         this.y = y;
     }
 
+    /** Create a mutable copy of this instance. */
+    public Mutable toMutable() {
+        return new Mutable(this.x, this.y);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -39,5 +44,49 @@ public final class CefPoint {
     @Override
     public String toString() {
         return "CefPoint{" + "x=" + x + ", " + "y=" + y + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefPoint}. Structure representing a point.
+     *
+     * <p>Definition generated from cef_types_geometry.h
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:38</a>
+     */
+    public static final class Mutable {
+
+        public int x;
+        public int y;
+
+        public Mutable() {}
+
+        public Mutable(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefPoint toImmutable() {
+            return new CefPoint(this.x, this.y);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return this.x == other.x && this.y == other.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(x, y);
+        }
+
+        @Override
+        public String toString() {
+            return "CefPoint.Mutable{" + "x=" + x + ", " + "y=" + y + "}";
+        }
     }
 }

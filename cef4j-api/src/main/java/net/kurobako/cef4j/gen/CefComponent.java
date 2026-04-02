@@ -33,13 +33,14 @@ public interface CefComponent extends CefLibraryObject {
     Optional<String> getId();
 
     /**
-     * Returns the name of this node.
+     * Returns the human-readable name of this component. Returns an empty string if the component is not installed.
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_component_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
      */
     Optional<String> getName();
 
@@ -74,6 +75,7 @@ public interface CefComponent extends CefLibraryObject {
     final class NativePeer implements CefComponent, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -82,7 +84,17 @@ public interface CefComponent extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefComponent has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefComponent.class);
@@ -105,21 +117,25 @@ public interface CefComponent extends CefLibraryObject {
 
         @Override
         public Optional<String> getId() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetId(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetName(nativePtr));
         }
 
         @Override
         public Optional<String> getVersion() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetVersion(nativePtr));
         }
 
         @Override
         public CefComponentState getState() {
+            checkNotClosed();
             return N_GetState(nativePtr);
         }
 

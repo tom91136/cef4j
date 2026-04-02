@@ -5,9 +5,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_menu_model_delegate_t
 struct JniCefMenuModelDelegate: public cef_menu_model_delegate_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

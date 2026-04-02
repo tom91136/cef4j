@@ -31,20 +31,21 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
     void cont(int allowedPermissions);
 
     /**
-     * Call to cancel the download.
+     * Cancel the media access request.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_media_access_callback_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:62</a>
      */
     void cancel();
 
     final class NativePeer implements CefMediaAccessCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -53,7 +54,17 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMediaAccessCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMediaAccessCallback.class);
@@ -76,11 +87,13 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
 
         @Override
         public void cont(int allowedPermissions) {
+            checkNotClosed();
             N_Cont(nativePtr, allowedPermissions);
         }
 
         @Override
         public void cancel() {
+            checkNotClosed();
             N_Cancel(nativePtr);
         }
 

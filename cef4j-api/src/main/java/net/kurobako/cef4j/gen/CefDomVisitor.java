@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface to implement for visiting the DOM. The methods of this class will be called on the render process main
@@ -29,5 +29,5 @@ public interface CefDomVisitor extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:55</a>
      */
-    default void visit(@Nonnull CefDomDocument document) {}
+    default void visit(@Nullable CefDomDocument document) {}
 }

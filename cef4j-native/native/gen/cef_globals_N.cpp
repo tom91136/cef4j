@@ -28,18 +28,14 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1IsRt
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1BeginTracing(JNIEnv* env, jclass clz, jstring categories, jobject callback) {
-    if (!categories) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "categories must not be null"); return 0;}
-    if (!callback) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "callback must not be null"); return 0;}
     auto _categories_str = JStringToCefString(env, categories);
-    cef_completion_callback_t* _callback_ptr = Create_JniCefCompletionCallback(env, callback);
+    cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     return static_cast<jint>(cef_begin_tracing(_categories_str, _callback_ptr));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1EndTracing(JNIEnv* env, jclass clz, jstring tracing_file, jobject callback) {
-    if (!tracing_file) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "tracingFile must not be null"); return 0;}
-    if (!callback) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "callback must not be null"); return 0;}
     auto _tracing_file_str = JStringToCefString(env, tracing_file);
-    cef_end_tracing_callback_t* _callback_ptr = Create_JniCefEndTracingCallback(env, callback);
+    cef_end_tracing_callback_t* _callback_ptr = callback ? Create_JniCefEndTracingCallback(env, callback) : nullptr;
     return static_cast<jint>(cef_end_tracing(_tracing_file_str, _callback_ptr));
 }
 
@@ -48,9 +44,6 @@ extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Now
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1ResolveUrl(JNIEnv* env, jclass clz, jstring base_url, jstring relative_url, jstring resolved_url) {
-    if (!base_url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "baseUrl must not be null"); return 0;}
-    if (!relative_url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "relativeUrl must not be null"); return 0;}
-    if (!resolved_url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "resolvedUrl must not be null"); return 0;}
     auto _base_url_str = JStringToCefString(env, base_url);
     auto _relative_url_str = JStringToCefString(env, relative_url);
     auto _resolved_url_str = JStringToCefString(env, resolved_url);
@@ -58,21 +51,16 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Reso
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1ParseUrl(JNIEnv* env, jclass clz, jstring url, jobject parts) {
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return 0;}
-    if (!parts) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "parts must not be null"); return 0;}
     auto _url_str = JStringToCefString(env, url);
     return static_cast<jint>(cef_parse_url(_url_str, reinterpret_cast<struct _cef_urlparts_t*>(parts ? env->GetLongField(parts, env->GetFieldID(env->GetObjectClass(parts), "address", "J")) : 0)));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1CreateUrl(JNIEnv* env, jclass clz, jobject parts, jstring url) {
-    if (!parts) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "parts must not be null"); return 0;}
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return 0;}
     auto _url_str = JStringToCefString(env, url);
     return static_cast<jint>(cef_create_url(reinterpret_cast<const struct _cef_urlparts_t*>(parts ? env->GetLongField(parts, env->GetFieldID(env->GetObjectClass(parts), "address", "J")) : 0), _url_str));
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1FormatUrlForSecurityDisplay(JNIEnv* env, jclass clz, jstring origin_url) {
-    if (!origin_url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "originUrl must not be null"); return nullptr;}
     auto _origin_url_str = JStringToCefString(env, origin_url);
     auto result = cef_format_url_for_security_display(_origin_url_str);
     if (_origin_url_str) cef_string_userfree_free(_origin_url_str);
@@ -83,7 +71,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1F
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetMimeType(JNIEnv* env, jclass clz, jstring extension) {
-    if (!extension) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "extension must not be null"); return nullptr;}
     auto _extension_str = JStringToCefString(env, extension);
     auto result = cef_get_mime_type(_extension_str);
     if (_extension_str) cef_string_userfree_free(_extension_str);
@@ -94,7 +81,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1G
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetExtensionsForMimeType(JNIEnv* env, jclass clz, jstring mime_type, jobject extensions) {
-    if (!mime_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mimeType must not be null"); return;}
     if (!extensions) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "extensions must not be null"); return;}
     auto _mime_type_str = JStringToCefString(env, mime_type);
     auto _extensions_csl = JavaListToCefStringList(env, extensions);
@@ -106,6 +92,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetE
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Base64Encode(JNIEnv* env, jclass clz, jobject data) {
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
+    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
     auto result = cef_base64_encode(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (!result) return nullptr;
     auto jstr = CefStringToJString(env, result);
@@ -114,7 +101,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1B
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Uriencode(JNIEnv* env, jclass clz, jstring text, jint use_plus) {
-    if (!text) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "text must not be null"); return nullptr;}
     auto _text_str = JStringToCefString(env, text);
     auto result = cef_uriencode(_text_str, use_plus);
     if (_text_str) cef_string_userfree_free(_text_str);
@@ -125,7 +111,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1U
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Uridecode(JNIEnv* env, jclass clz, jstring text, jint convert_to_utf8, jobject unescape_rule) {
-    if (!text) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "text must not be null"); return nullptr;}
     if (!unescape_rule) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "unescapeRule must not be null"); return nullptr;}
     auto _text_str = JStringToCefString(env, text);
     auto result = cef_uridecode(_text_str, convert_to_utf8, static_cast<cef_uri_unescape_rule_t>(env->GetLongField(unescape_rule, env->GetFieldID(env->GetObjectClass(unescape_rule), "value", "J"))));
@@ -137,9 +122,8 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1U
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1WriteJson(JNIEnv* env, jclass clz, jobject node, jobject options) {
-    if (!node) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "node must not be null"); return nullptr;}
     if (!options) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr;}
-    cef_value_t* _node_ptr = reinterpret_cast<cef_value_t*>(env->GetLongField(node, env->GetFieldID(env->GetObjectClass(node), "nativePtr", "J")));
+    cef_value_t* _node_ptr = node ? reinterpret_cast<cef_value_t*>(env->GetLongField(node, env->GetFieldID(env->GetObjectClass(node), "nativePtr", "J"))) : nullptr;
     if (_node_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_node_ptr); _b->add_ref(_b);}
     auto result = cef_write_json(_node_ptr, static_cast<cef_json_writer_options_t>(env->GetLongField(options, env->GetFieldID(env->GetObjectClass(options), "value", "J"))));
     if (!result) return nullptr;
@@ -153,8 +137,6 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Cras
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1SetCrashKeyValue(JNIEnv* env, jclass clz, jstring key, jstring value) {
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return;}
     auto _key_str = JStringToCefString(env, key);
     auto _value_str = JStringToCefString(env, value);
     cef_set_crash_key_value(_key_str, _value_str);
@@ -163,30 +145,25 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1SetC
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1CurrentlyOn(JNIEnv* env, jclass clz, jobject threadId) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadid must not be null"); return 0;}
+    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return 0;}
     return static_cast<jint>(cef_currently_on(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J")))));
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1PostTask(JNIEnv* env, jclass clz, jobject threadId, jobject task) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadid must not be null"); return JNI_FALSE;}
-    if (!task) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "task must not be null"); return JNI_FALSE;}
-    cef_task_t* _task_ptr = Create_JniCefTask(env, task);
+    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE;}
+    cef_task_t* _task_ptr = task ? Create_JniCefTask(env, task) : nullptr;
     auto _r = cef_post_task(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))), _task_ptr);
     return static_cast<jboolean>(_r);
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1PostDelayedTask(JNIEnv* env, jclass clz, jobject threadId, jobject task, jlong delay_ms) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadid must not be null"); return JNI_FALSE;}
-    if (!task) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "task must not be null"); return JNI_FALSE;}
-    cef_task_t* _task_ptr = Create_JniCefTask(env, task);
+    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE;}
+    cef_task_t* _task_ptr = task ? Create_JniCefTask(env, task) : nullptr;
     auto _r = cef_post_delayed_task(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))), _task_ptr, delay_ms);
     return static_cast<jboolean>(_r);
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1AddCrossOriginWhitelistEntry(JNIEnv* env, jclass clz, jstring source_origin, jstring target_protocol, jstring target_domain, jint allow_target_subdomains) {
-    if (!source_origin) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "sourceOrigin must not be null"); return 0;}
-    if (!target_protocol) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetProtocol must not be null"); return 0;}
-    if (!target_domain) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetDomain must not be null"); return 0;}
     auto _source_origin_str = JStringToCefString(env, source_origin);
     auto _target_protocol_str = JStringToCefString(env, target_protocol);
     auto _target_domain_str = JStringToCefString(env, target_domain);
@@ -194,9 +171,6 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1AddC
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1RemoveCrossOriginWhitelistEntry(JNIEnv* env, jclass clz, jstring source_origin, jstring target_protocol, jstring target_domain, jint allow_target_subdomains) {
-    if (!source_origin) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "sourceOrigin must not be null"); return 0;}
-    if (!target_protocol) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetProtocol must not be null"); return 0;}
-    if (!target_domain) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetDomain must not be null"); return 0;}
     auto _source_origin_str = JStringToCefString(env, source_origin);
     auto _target_protocol_str = JStringToCefString(env, target_protocol);
     auto _target_domain_str = JStringToCefString(env, target_domain);
@@ -213,7 +187,6 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1IsCe
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1RegisterSchemeHandlerFactory(JNIEnv* env, jclass clz, jstring scheme_name, jstring domain_name, jobject factory) {
-    if (!scheme_name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "schemeName must not be null"); return JNI_FALSE;}
     auto _scheme_name_str = JStringToCefString(env, scheme_name);
     auto _domain_name_str = domain_name ? JStringToCefString(env, domain_name) : nullptr;
     cef_scheme_handler_factory_t* _factory_ptr = factory ? Create_JniCefSchemeHandlerFactory(env, factory) : nullptr;
@@ -229,45 +202,36 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1RegisterExtension(JNIEnv* env, jclass clz, jstring extension_name, jstring javascript_code, jobject handler) {
-    if (!extension_name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "extensionName must not be null"); return 0;}
-    if (!javascript_code) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "javascriptCode must not be null"); return 0;}
-    if (!handler) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "handler must not be null"); return 0;}
     auto _extension_name_str = JStringToCefString(env, extension_name);
     auto _javascript_code_str = JStringToCefString(env, javascript_code);
-    cef_v8_handler_t* _handler_ptr = reinterpret_cast<cef_v8_handler_t*>(env->GetLongField(handler, env->GetFieldID(env->GetObjectClass(handler), "nativePtr", "J")));
+    cef_v8_handler_t* _handler_ptr = handler ? reinterpret_cast<cef_v8_handler_t*>(env->GetLongField(handler, env->GetFieldID(env->GetObjectClass(handler), "nativePtr", "J"))) : nullptr;
     if (_handler_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_handler_ptr); _b->add_ref(_b);}
     return static_cast<jint>(cef_register_extension(_extension_name_str, _javascript_code_str, _handler_ptr));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1LaunchProcess(JNIEnv* env, jclass clz, jobject command_line) {
-    if (!command_line) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "commandLine must not be null"); return 0;}
-    cef_command_line_t* _command_line_ptr = reinterpret_cast<cef_command_line_t*>(env->GetLongField(command_line, env->GetFieldID(env->GetObjectClass(command_line), "nativePtr", "J")));
+    cef_command_line_t* _command_line_ptr = command_line ? reinterpret_cast<cef_command_line_t*>(env->GetLongField(command_line, env->GetFieldID(env->GetObjectClass(command_line), "nativePtr", "J"))) : nullptr;
     if (_command_line_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_command_line_ptr); _b->add_ref(_b);}
     return static_cast<jint>(cef_launch_process(_command_line_ptr));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetPath(JNIEnv* env, jclass clz, jobject key, jstring path) {
     if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0;}
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return 0;}
     auto _path_str = JStringToCefString(env, path);
     return static_cast<jint>(cef_get_path(static_cast<cef_path_key_t>(env->GetLongField(key, env->GetFieldID(env->GetObjectClass(key), "value", "J"))), _path_str));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1ExecuteProcess(JNIEnv* env, jclass clz, jobject args, jobject application, jobject windows_sandbox_info) {
-    if (!args) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "args must not be null"); return 0;}
-    if (!application) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "application must not be null"); return 0;}
-    if (!windows_sandbox_info) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowsSandboxInfo must not be null"); return 0;}
-    cef_app_t* _application_ptr = Create_JniCefApp(env, application);
+    cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
     return static_cast<jint>(cef_execute_process(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Initialize(JNIEnv* env, jclass clz, jobject args, jobject settings, jobject application, jobject windows_sandbox_info) {
-    if (!args) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "args must not be null"); return 0;}
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0;}
-    if (!application) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "application must not be null"); return 0;}
-    if (!windows_sandbox_info) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowsSandboxInfo must not be null"); return 0;}
-    cef_app_t* _application_ptr = Create_JniCefApp(env, application);
-    return static_cast<jint>(cef_initialize(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), reinterpret_cast<const struct _cef_settings_t*>(settings ? env->GetLongField(settings, env->GetFieldID(env->GetObjectClass(settings), "address", "J")) : 0), _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
+    cef_settings_t _settings_val = {};
+    if (settings) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSettings"); _settings_val.no_sandbox = static_cast<decltype(_settings_val.no_sandbox)>(env->GetIntField(settings, env->GetFieldID(_c, "noSandbox", "I"))); jstring _rd_browser_subprocess_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "browserSubprocessPath", "Ljava/lang/String;")); if (_rd_browser_subprocess_path) {const jchar* _rd_browser_subprocess_path_chars = env->GetStringChars(_rd_browser_subprocess_path, nullptr); jsize _rd_browser_subprocess_path_len = env->GetStringLength(_rd_browser_subprocess_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_browser_subprocess_path_chars), _rd_browser_subprocess_path_len, &_settings_val.browser_subprocess_path, 1); env->ReleaseStringChars(_rd_browser_subprocess_path, _rd_browser_subprocess_path_chars);}jstring _rd_framework_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "frameworkDirPath", "Ljava/lang/String;")); if (_rd_framework_dir_path) {const jchar* _rd_framework_dir_path_chars = env->GetStringChars(_rd_framework_dir_path, nullptr); jsize _rd_framework_dir_path_len = env->GetStringLength(_rd_framework_dir_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_framework_dir_path_chars), _rd_framework_dir_path_len, &_settings_val.framework_dir_path, 1); env->ReleaseStringChars(_rd_framework_dir_path, _rd_framework_dir_path_chars);}jstring _rd_main_bundle_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "mainBundlePath", "Ljava/lang/String;")); if (_rd_main_bundle_path) {const jchar* _rd_main_bundle_path_chars = env->GetStringChars(_rd_main_bundle_path, nullptr); jsize _rd_main_bundle_path_len = env->GetStringLength(_rd_main_bundle_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_main_bundle_path_chars), _rd_main_bundle_path_len, &_settings_val.main_bundle_path, 1); env->ReleaseStringChars(_rd_main_bundle_path, _rd_main_bundle_path_chars);}_settings_val.multi_threaded_message_loop = static_cast<decltype(_settings_val.multi_threaded_message_loop)>(env->GetIntField(settings, env->GetFieldID(_c, "multiThreadedMessageLoop", "I"))); _settings_val.external_message_pump = static_cast<decltype(_settings_val.external_message_pump)>(env->GetIntField(settings, env->GetFieldID(_c, "externalMessagePump", "I"))); _settings_val.windowless_rendering_enabled = static_cast<decltype(_settings_val.windowless_rendering_enabled)>(env->GetIntField(settings, env->GetFieldID(_c, "windowlessRenderingEnabled", "I"))); _settings_val.command_line_args_disabled = static_cast<decltype(_settings_val.command_line_args_disabled)>(env->GetIntField(settings, env->GetFieldID(_c, "commandLineArgsDisabled", "I"))); jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;")); if (_rd_cache_path) {const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr); jsize _rd_cache_path_len = env->GetStringLength(_rd_cache_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_cache_path_chars), _rd_cache_path_len, &_settings_val.cache_path, 1); env->ReleaseStringChars(_rd_cache_path, _rd_cache_path_chars);}jstring _rd_root_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "rootCachePath", "Ljava/lang/String;")); if (_rd_root_cache_path) {const jchar* _rd_root_cache_path_chars = env->GetStringChars(_rd_root_cache_path, nullptr); jsize _rd_root_cache_path_len = env->GetStringLength(_rd_root_cache_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_root_cache_path_chars), _rd_root_cache_path_len, &_settings_val.root_cache_path, 1); env->ReleaseStringChars(_rd_root_cache_path, _rd_root_cache_path_chars);}_settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_c, "persistSessionCookies", "I"))); jstring _rd_user_agent = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "userAgent", "Ljava/lang/String;")); if (_rd_user_agent) {const jchar* _rd_user_agent_chars = env->GetStringChars(_rd_user_agent, nullptr); jsize _rd_user_agent_len = env->GetStringLength(_rd_user_agent); cef_string_set(reinterpret_cast<const char16_t*>(_rd_user_agent_chars), _rd_user_agent_len, &_settings_val.user_agent, 1); env->ReleaseStringChars(_rd_user_agent, _rd_user_agent_chars);}jstring _rd_user_agent_product = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "userAgentProduct", "Ljava/lang/String;")); if (_rd_user_agent_product) {const jchar* _rd_user_agent_product_chars = env->GetStringChars(_rd_user_agent_product, nullptr); jsize _rd_user_agent_product_len = env->GetStringLength(_rd_user_agent_product); cef_string_set(reinterpret_cast<const char16_t*>(_rd_user_agent_product_chars), _rd_user_agent_product_len, &_settings_val.user_agent_product, 1); env->ReleaseStringChars(_rd_user_agent_product, _rd_user_agent_product_chars);}jstring _rd_locale = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "locale", "Ljava/lang/String;")); if (_rd_locale) {const jchar* _rd_locale_chars = env->GetStringChars(_rd_locale, nullptr); jsize _rd_locale_len = env->GetStringLength(_rd_locale); cef_string_set(reinterpret_cast<const char16_t*>(_rd_locale_chars), _rd_locale_len, &_settings_val.locale, 1); env->ReleaseStringChars(_rd_locale, _rd_locale_chars);}jstring _rd_log_file = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "logFile", "Ljava/lang/String;")); if (_rd_log_file) {const jchar* _rd_log_file_chars = env->GetStringChars(_rd_log_file, nullptr); jsize _rd_log_file_len = env->GetStringLength(_rd_log_file); cef_string_set(reinterpret_cast<const char16_t*>(_rd_log_file_chars), _rd_log_file_len, &_settings_val.log_file, 1); env->ReleaseStringChars(_rd_log_file, _rd_log_file_chars);}auto _rd_log_severity = env->GetObjectField(settings, env->GetFieldID(_c, "logSeverity", "Lnet/kurobako/cef4j/gen/CefLogSeverity;")); if (_rd_log_severity) {_settings_val.log_severity = static_cast<decltype(_settings_val.log_severity)>(env->GetLongField(_rd_log_severity, env->GetFieldID(env->GetObjectClass(_rd_log_severity), "value", "J")));}auto _rd_log_items = env->GetObjectField(settings, env->GetFieldID(_c, "logItems", "Lnet/kurobako/cef4j/gen/CefLogItems;")); if (_rd_log_items) {_settings_val.log_items = static_cast<decltype(_settings_val.log_items)>(env->GetLongField(_rd_log_items, env->GetFieldID(env->GetObjectClass(_rd_log_items), "value", "J")));}jstring _rd_javascript_flags = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "javascriptFlags", "Ljava/lang/String;")); if (_rd_javascript_flags) {const jchar* _rd_javascript_flags_chars = env->GetStringChars(_rd_javascript_flags, nullptr); jsize _rd_javascript_flags_len = env->GetStringLength(_rd_javascript_flags); cef_string_set(reinterpret_cast<const char16_t*>(_rd_javascript_flags_chars), _rd_javascript_flags_len, &_settings_val.javascript_flags, 1); env->ReleaseStringChars(_rd_javascript_flags, _rd_javascript_flags_chars);}jstring _rd_resources_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "resourcesDirPath", "Ljava/lang/String;")); if (_rd_resources_dir_path) {const jchar* _rd_resources_dir_path_chars = env->GetStringChars(_rd_resources_dir_path, nullptr); jsize _rd_resources_dir_path_len = env->GetStringLength(_rd_resources_dir_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_resources_dir_path_chars), _rd_resources_dir_path_len, &_settings_val.resources_dir_path, 1); env->ReleaseStringChars(_rd_resources_dir_path, _rd_resources_dir_path_chars);}jstring _rd_locales_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "localesDirPath", "Ljava/lang/String;")); if (_rd_locales_dir_path) {const jchar* _rd_locales_dir_path_chars = env->GetStringChars(_rd_locales_dir_path, nullptr); jsize _rd_locales_dir_path_len = env->GetStringLength(_rd_locales_dir_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_locales_dir_path_chars), _rd_locales_dir_path_len, &_settings_val.locales_dir_path, 1); env->ReleaseStringChars(_rd_locales_dir_path, _rd_locales_dir_path_chars);}_settings_val.remote_debugging_port = static_cast<decltype(_settings_val.remote_debugging_port)>(env->GetIntField(settings, env->GetFieldID(_c, "remoteDebuggingPort", "I"))); _settings_val.uncaught_exception_stack_size = static_cast<decltype(_settings_val.uncaught_exception_stack_size)>(env->GetIntField(settings, env->GetFieldID(_c, "uncaughtExceptionStackSize", "I"))); _settings_val.background_color = static_cast<decltype(_settings_val.background_color)>(env->GetIntField(settings, env->GetFieldID(_c, "backgroundColor", "I"))); jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "acceptLanguageList", "Ljava/lang/String;")); if (_rd_accept_language_list) {const jchar* _rd_accept_language_list_chars = env->GetStringChars(_rd_accept_language_list, nullptr); jsize _rd_accept_language_list_len = env->GetStringLength(_rd_accept_language_list); cef_string_set(reinterpret_cast<const char16_t*>(_rd_accept_language_list_chars), _rd_accept_language_list_len, &_settings_val.accept_language_list, 1); env->ReleaseStringChars(_rd_accept_language_list, _rd_accept_language_list_chars);}jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cookieableSchemesList", "Ljava/lang/String;")); if (_rd_cookieable_schemes_list) {const jchar* _rd_cookieable_schemes_list_chars = env->GetStringChars(_rd_cookieable_schemes_list, nullptr); jsize _rd_cookieable_schemes_list_len = env->GetStringLength(_rd_cookieable_schemes_list); cef_string_set(reinterpret_cast<const char16_t*>(_rd_cookieable_schemes_list_chars), _rd_cookieable_schemes_list_len, &_settings_val.cookieable_schemes_list, 1); env->ReleaseStringChars(_rd_cookieable_schemes_list, _rd_cookieable_schemes_list_chars);}_settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_c, "cookieableSchemesExcludeDefaults", "I"))); jstring _rd_chrome_policy_id = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "chromePolicyId", "Ljava/lang/String;")); if (_rd_chrome_policy_id) {const jchar* _rd_chrome_policy_id_chars = env->GetStringChars(_rd_chrome_policy_id, nullptr); jsize _rd_chrome_policy_id_len = env->GetStringLength(_rd_chrome_policy_id); cef_string_set(reinterpret_cast<const char16_t*>(_rd_chrome_policy_id_chars), _rd_chrome_policy_id_len, &_settings_val.chrome_policy_id, 1); env->ReleaseStringChars(_rd_chrome_policy_id, _rd_chrome_policy_id_chars);}_settings_val.chrome_app_icon_id = static_cast<decltype(_settings_val.chrome_app_icon_id)>(env->GetIntField(settings, env->GetFieldID(_c, "chromeAppIconId", "I"))); _settings_val.disable_signal_handlers = static_cast<decltype(_settings_val.disable_signal_handlers)>(env->GetIntField(settings, env->GetFieldID(_c, "disableSignalHandlers", "I"))); _settings_val.use_views_default_popup = static_cast<decltype(_settings_val.use_views_default_popup)>(env->GetIntField(settings, env->GetFieldID(_c, "useViewsDefaultPopup", "I"))); _settings_val.size = sizeof(cef_settings_t);}
+    cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
+    return static_cast<jint>(cef_initialize(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), &_settings_val, _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetExitCode(JNIEnv* env, jclass clz) {
@@ -295,29 +259,22 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1SetN
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1CreateDirectory(JNIEnv* env, jclass clz, jstring full_path) {
-    if (!full_path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "fullPath must not be null"); return 0;}
     auto _full_path_str = JStringToCefString(env, full_path);
     return static_cast<jint>(cef_create_directory(_full_path_str));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1GetTempDirectory(JNIEnv* env, jclass clz, jstring temp_dir) {
-    if (!temp_dir) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "tempDir must not be null"); return 0;}
     auto _temp_dir_str = JStringToCefString(env, temp_dir);
     return static_cast<jint>(cef_get_temp_directory(_temp_dir_str));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1CreateNewTempDirectory(JNIEnv* env, jclass clz, jstring prefix, jstring new_temp_path) {
-    if (!prefix) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "prefix must not be null"); return 0;}
-    if (!new_temp_path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "newTempPath must not be null"); return 0;}
     auto _prefix_str = JStringToCefString(env, prefix);
     auto _new_temp_path_str = JStringToCefString(env, new_temp_path);
     return static_cast<jint>(cef_create_new_temp_directory(_prefix_str, _new_temp_path_str));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1CreateTempDirectoryInDirectory(JNIEnv* env, jclass clz, jstring base_dir, jstring prefix, jstring new_dir) {
-    if (!base_dir) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "baseDir must not be null"); return 0;}
-    if (!prefix) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "prefix must not be null"); return 0;}
-    if (!new_dir) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "newDir must not be null"); return 0;}
     auto _base_dir_str = JStringToCefString(env, base_dir);
     auto _prefix_str = JStringToCefString(env, prefix);
     auto _new_dir_str = JStringToCefString(env, new_dir);
@@ -325,27 +282,22 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1Crea
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1DirectoryExists(JNIEnv* env, jclass clz, jstring path) {
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return 0;}
     auto _path_str = JStringToCefString(env, path);
     return static_cast<jint>(cef_directory_exists(_path_str));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1DeleteFile(JNIEnv* env, jclass clz, jstring path, jint recursive) {
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return 0;}
     auto _path_str = JStringToCefString(env, path);
     return static_cast<jint>(cef_delete_file(_path_str, recursive));
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1ZipDirectory(JNIEnv* env, jclass clz, jstring src_dir, jstring dest_file, jint include_hidden_files) {
-    if (!src_dir) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "srcDir must not be null"); return 0;}
-    if (!dest_file) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "destFile must not be null"); return 0;}
     auto _src_dir_str = JStringToCefString(env, src_dir);
     auto _dest_file_str = JStringToCefString(env, dest_file);
     return static_cast<jint>(cef_zip_directory(_src_dir_str, _dest_file_str, include_hidden_files));
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefGlobals_N_1LoadCrlsetsFile(JNIEnv* env, jclass clz, jstring path) {
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return;}
     auto _path_str = JStringToCefString(env, path);
     cef_load_crlsets_file(_path_str);
     if (_path_str) cef_string_userfree_free(_path_str);

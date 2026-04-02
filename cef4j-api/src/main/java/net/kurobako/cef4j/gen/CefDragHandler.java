@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to dragging. The methods of this class will be called on the UI
@@ -32,7 +33,7 @@ public interface CefDragHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
     default boolean onDragEnter(
-            @Nonnull CefBrowser browser, @Nonnull CefDragData dragdata, @Nonnull CefDragOperationsMask mask) {
+            @Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask mask) {
         return false;
     }
 
@@ -51,5 +52,8 @@ public interface CefDragHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
      */
     default void onDraggableRegionsChanged(
-            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, long regionscount, @Nonnull NativePointer regions) {}
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            long regionsCount,
+            @Nullable NativePointer regions) {}
 }

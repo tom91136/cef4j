@@ -32,7 +32,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:131</a>
      */
-    boolean hasPreference(@Nonnull String name);
+    boolean hasPreference(@Nullable String name);
 
     /**
      * Returns the value for the preference with the specified {@code name}. Returns {@code null} if the preference does
@@ -48,7 +48,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:138</a>
      */
-    Optional<CefValue> getPreference(@Nonnull String name);
+    Optional<CefValue> getPreference(@Nullable String name);
 
     /**
      * Returns all preferences as a dictionary. If {@code include_defaults} is {@code true} then preferences currently
@@ -78,7 +78,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:160</a>
      */
-    boolean canSetPreference(@Nonnull String name);
+    boolean canSetPreference(@Nullable String name);
 
     /**
      * Set the {@code value} associated with preference {@code name}. Returns {@code true} if the value is set
@@ -95,7 +95,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @param value may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:169</a>
      */
-    boolean setPreference(@Nonnull String name, @Nullable CefValue value, @Nonnull String error);
+    boolean setPreference(@Nullable String name, @Nullable CefValue value, @Nullable String error);
 
     /**
      * Add an observer for preference changes. {@code name} is the name of the preference to observe. If {@code name} is
@@ -114,7 +114,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @param name may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:183</a>
      */
-    Optional<CefRegistration> addPreferenceObserver(@Nullable String name, @Nonnull CefPreferenceObserver observer);
+    Optional<CefRegistration> addPreferenceObserver(@Nullable String name, @Nullable CefPreferenceObserver observer);
     /**
      * Returns the current Chrome Variations configuration (combination of field trials and chrome://flags) as
      * equivalent command-line switches (`--[enable|disable]-features=XXXX`, etc). These switches can be used to apply
@@ -169,6 +169,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
     final class NativePeer implements CefPreferenceManager, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -177,7 +178,17 @@ public interface CefPreferenceManager extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefPreferenceManager has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefPreferenceManager.class);
@@ -199,33 +210,40 @@ public interface CefPreferenceManager extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean hasPreference(@Nonnull String name) {
+        public boolean hasPreference(@Nullable String name) {
+            checkNotClosed();
             return N_HasPreference(nativePtr, name);
         }
 
         @Override
-        public Optional<CefValue> getPreference(@Nonnull String name) {
+        public Optional<CefValue> getPreference(@Nullable String name) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPreference(nativePtr, name));
         }
 
         @Override
         public Optional<CefDictionaryValue> getAllPreferences(boolean includeDefaults) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetAllPreferences(nativePtr, includeDefaults));
         }
 
         @Override
-        public boolean canSetPreference(@Nonnull String name) {
+        public boolean canSetPreference(@Nullable String name) {
+            checkNotClosed();
             return N_CanSetPreference(nativePtr, name);
         }
 
         @Override
-        public boolean setPreference(@Nonnull String name, @Nullable CefValue value, @Nonnull String error) {
+        public boolean setPreference(@Nullable String name, @Nullable CefValue value, @Nullable String error) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefValue");
             return N_SetPreference(nativePtr, name, value, error);
         }
 
         @Override
         public Optional<CefRegistration> addPreferenceObserver(
-                @Nullable String name, @Nonnull CefPreferenceObserver observer) {
+                @Nullable String name, @Nullable CefPreferenceObserver observer) {
+            checkNotClosed();
             return Optional.ofNullable(N_AddPreferenceObserver(nativePtr, name, observer));
         }
 

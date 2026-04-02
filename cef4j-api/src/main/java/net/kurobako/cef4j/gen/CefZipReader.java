@@ -57,27 +57,27 @@ public interface CefZipReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
      */
-    boolean moveToFile(@Nonnull String filename, boolean casesensitive);
+    boolean moveToFile(@Nullable String fileName, boolean caseSensitive);
 
     /**
-     * Close the document. This should be called directly to ensure that cleanup occurs on the correct thread.
+     * Closes the archive. This should be called directly to ensure that cleanup occurs on the correct thread.
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>int (CEF_CALLBACK* close)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     boolean cefClose();
 
     /**
-     * Return the name of the file being dragged out of the browser window.
+     * Returns the name of the file.
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_file_name)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
      */
     Optional<String> getFileName();
 
@@ -127,36 +127,42 @@ public interface CefZipReader extends CefLibraryObject {
     boolean closeFile();
 
     /**
-     * Read uncompressed file contents into the specified buffer. Returns < 0 if an error occurred, 0 if at the end of
-     * file, or the number of bytes read.
+     * Read uncompressed file contents into the specified buffer. Returns &lt; 0 if an error occurred, 0 if at the end
+     * of file, or the number of bytes read.
+     *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code bufferSize} parameter is derived from the buffer's capacity.</b>
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>int (CEF_CALLBACK* read_file)(struct _cef_zip_reader_t* self, void* buffer, size_t bufferSize);</pre>
      *
+     * @param buffer <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:120</a>
      */
     int readFile(@Nonnull ByteBuffer buffer);
 
     /**
-     * Return the current offset position.
+     * Returns the current offset in the uncompressed file contents.
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>int64_t (CEF_CALLBACK* tell)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
      */
     long tell();
 
     /**
-     * Return non-zero if at end of file.
+     * Returns {@code true} if at end of the file contents.
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>int (CEF_CALLBACK* eof)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:130</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
      */
     int eof();
     /**
@@ -170,13 +176,14 @@ public interface CefZipReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
-    static Optional<CefZipReader> create(@Nonnull CefStreamReader stream) {
+    static Optional<CefZipReader> create(@Nullable CefStreamReader stream) {
         return Optional.ofNullable(NativePeer.N_Create(stream));
     }
 
     final class NativePeer implements CefZipReader, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -185,7 +192,17 @@ public interface CefZipReader extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefZipReader has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefZipReader.class);
@@ -208,61 +225,73 @@ public interface CefZipReader extends CefLibraryObject {
 
         @Override
         public boolean moveToFirstFile() {
+            checkNotClosed();
             return N_MoveToFirstFile(nativePtr);
         }
 
         @Override
         public boolean moveToNextFile() {
+            checkNotClosed();
             return N_MoveToNextFile(nativePtr);
         }
 
         @Override
-        public boolean moveToFile(@Nonnull String filename, boolean casesensitive) {
-            return N_MoveToFile(nativePtr, filename, casesensitive);
+        public boolean moveToFile(@Nullable String fileName, boolean caseSensitive) {
+            checkNotClosed();
+            return N_MoveToFile(nativePtr, fileName, caseSensitive);
         }
 
         @Override
         public boolean cefClose() {
+            checkNotClosed();
             return N_Close(nativePtr);
         }
 
         @Override
         public Optional<String> getFileName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFileName(nativePtr));
         }
 
         @Override
         public long getFileSize() {
+            checkNotClosed();
             return N_GetFileSize(nativePtr);
         }
 
         @Override
         public CefBasetime getFileLastModified() {
+            checkNotClosed();
             return N_GetFileLastModified(nativePtr);
         }
 
         @Override
         public boolean openFile(@Nullable String password) {
+            checkNotClosed();
             return N_OpenFile(nativePtr, password);
         }
 
         @Override
         public boolean closeFile() {
+            checkNotClosed();
             return N_CloseFile(nativePtr);
         }
 
         @Override
         public int readFile(@Nonnull ByteBuffer buffer) {
+            checkNotClosed();
             return N_ReadFile(nativePtr, buffer);
         }
 
         @Override
         public long tell() {
+            checkNotClosed();
             return N_Tell(nativePtr);
         }
 
         @Override
         public int eof() {
+            checkNotClosed();
             return N_Eof(nativePtr);
         }
 
@@ -270,7 +299,7 @@ public interface CefZipReader extends CefLibraryObject {
 
         private static native boolean N_MoveToNextFile(long self);
 
-        private static native boolean N_MoveToFile(long self, String filename, boolean casesensitive);
+        private static native boolean N_MoveToFile(long self, String fileName, boolean caseSensitive);
 
         private static native boolean N_Close(long self);
 

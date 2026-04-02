@@ -29,16 +29,17 @@ import javax.annotation.Nullable;
 public interface CefRequestContext extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     * Returns {@code true} if this object is pointing to the same context as {@code that} object.
      *
      * <p>Definition generated from cef_request_context_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_request_context_t* self, struct _cef_request_context_t* other);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:134</a>
      */
-    boolean isSame(@Nonnull CefRequestContext other);
+    boolean isSame(@Nullable CefRequestContext other);
 
     /**
      * Returns {@code true} if this object is sharing the same storage as {@code that} object.
@@ -52,7 +53,7 @@ public interface CefRequestContext extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:141</a>
      */
-    boolean isSharingWith(@Nonnull CefRequestContext other);
+    boolean isSharingWith(@Nullable CefRequestContext other);
 
     /**
      * Returns {@code true} if this object is the global context. The global context is used by default when creating a
@@ -130,7 +131,7 @@ public interface CefRequestContext extends CefLibraryObject {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:177</a>
      */
     boolean registerSchemeHandlerFactory(
-            @Nonnull String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory);
+            @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory);
 
     /**
      * Clear all registered scheme handler factories. Returns {@code false} on error. This function may be called on any
@@ -210,7 +211,7 @@ public interface CefRequestContext extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:243</a>
      */
-    void resolveHost(@Nonnull String origin, @Nonnull CefResolveCallback callback);
+    void resolveHost(@Nullable String origin, @Nullable CefResolveCallback callback);
 
     /**
      * Returns the MediaRouter object associated with this context. If {@code callback} is non-{@code null} it will be
@@ -398,7 +399,7 @@ public interface CefRequestContext extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:327</a>
      */
-    Optional<CefRegistration> addSettingObserver(@Nonnull CefSettingObserver observer);
+    Optional<CefRegistration> addSettingObserver(@Nullable CefSettingObserver observer);
 
     /**
      * Clears the HTTP cache. If {@code callback} is non-{@code null} it will be executed on the UI thread after
@@ -444,18 +445,19 @@ public interface CefRequestContext extends CefLibraryObject {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:125</a>
      */
     static Optional<CefRequestContext> createContext(
-            @Nonnull NativePointer settings, @Nullable CefRequestContextHandler handler) {
+            @Nonnull CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler) {
         return Optional.ofNullable(NativePeer.N_CreateContext(settings, handler));
     }
 
     static Optional<CefRequestContext> cefCreateContextShared(
-            @Nonnull CefRequestContext other, @Nonnull CefRequestContextHandler handler) {
+            @Nullable CefRequestContext other, @Nullable CefRequestContextHandler handler) {
         return Optional.ofNullable(NativePeer.N_CefCreateContextShared(other, handler));
     }
 
     final class NativePeer implements CefRequestContext, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -464,7 +466,17 @@ public interface CefRequestContext extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefRequestContext has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefRequestContext.class);
@@ -486,68 +498,83 @@ public interface CefRequestContext extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean isSame(@Nonnull CefRequestContext other) {
+        public boolean isSame(@Nullable CefRequestContext other) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(other, "CefRequestContext");
             return N_IsSame(nativePtr, other);
         }
 
         @Override
-        public boolean isSharingWith(@Nonnull CefRequestContext other) {
+        public boolean isSharingWith(@Nullable CefRequestContext other) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(other, "CefRequestContext");
             return N_IsSharingWith(nativePtr, other);
         }
 
         @Override
         public boolean isGlobal() {
+            checkNotClosed();
             return N_IsGlobal(nativePtr);
         }
 
         @Override
         public Optional<CefRequestContextHandler> getHandler() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetHandler(nativePtr));
         }
 
         @Override
         public Optional<String> getCachePath() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCachePath(nativePtr));
         }
 
         @Override
         public Optional<CefCookieManager> getCookieManager(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCookieManager(nativePtr, callback));
         }
 
         @Override
         public boolean registerSchemeHandlerFactory(
-                @Nonnull String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
+                @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
+            checkNotClosed();
             return N_RegisterSchemeHandlerFactory(nativePtr, schemeName, domainName, factory);
         }
 
         @Override
         public boolean clearSchemeHandlerFactories() {
+            checkNotClosed();
             return N_ClearSchemeHandlerFactories(nativePtr);
         }
 
         @Override
         public void clearCertificateExceptions(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             N_ClearCertificateExceptions(nativePtr, callback);
         }
 
         @Override
         public void clearHttpAuthCredentials(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             N_ClearHttpAuthCredentials(nativePtr, callback);
         }
 
         @Override
         public void closeAllConnections(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             N_CloseAllConnections(nativePtr, callback);
         }
 
         @Override
-        public void resolveHost(@Nonnull String origin, @Nonnull CefResolveCallback callback) {
+        public void resolveHost(@Nullable String origin, @Nullable CefResolveCallback callback) {
+            checkNotClosed();
             N_ResolveHost(nativePtr, origin, callback);
         }
 
         @Override
         public Optional<CefMediaRouter> getMediaRouter(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMediaRouter(nativePtr, callback));
         }
 
@@ -556,6 +583,7 @@ public interface CefRequestContext extends CefLibraryObject {
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
                 @Nonnull CefContentSettingTypes contentType) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetWebsiteSetting(nativePtr, requestingUrl, topLevelUrl, contentType));
         }
 
@@ -565,6 +593,8 @@ public interface CefRequestContext extends CefLibraryObject {
                 @Nullable String topLevelUrl,
                 @Nonnull CefContentSettingTypes contentType,
                 @Nullable CefValue value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefValue");
             N_SetWebsiteSetting(nativePtr, requestingUrl, topLevelUrl, contentType, value);
         }
 
@@ -573,6 +603,7 @@ public interface CefRequestContext extends CefLibraryObject {
                 @Nullable String requestingUrl,
                 @Nullable String topLevelUrl,
                 @Nonnull CefContentSettingTypes contentType) {
+            checkNotClosed();
             return N_GetContentSetting(nativePtr, requestingUrl, topLevelUrl, contentType);
         }
 
@@ -582,36 +613,43 @@ public interface CefRequestContext extends CefLibraryObject {
                 @Nullable String topLevelUrl,
                 @Nonnull CefContentSettingTypes contentType,
                 @Nonnull CefContentSettingValues value) {
+            checkNotClosed();
             N_SetContentSetting(nativePtr, requestingUrl, topLevelUrl, contentType, value);
         }
 
         @Override
         public void setChromeColorScheme(@Nonnull CefColorVariant variant, int userColor) {
+            checkNotClosed();
             N_SetChromeColorScheme(nativePtr, variant, userColor);
         }
 
         @Override
         public CefColorVariant getChromeColorSchemeMode() {
+            checkNotClosed();
             return N_GetChromeColorSchemeMode(nativePtr);
         }
 
         @Override
         public int getChromeColorSchemeColor() {
+            checkNotClosed();
             return N_GetChromeColorSchemeColor(nativePtr);
         }
 
         @Override
         public CefColorVariant getChromeColorSchemeVariant() {
+            checkNotClosed();
             return N_GetChromeColorSchemeVariant(nativePtr);
         }
 
         @Override
-        public Optional<CefRegistration> addSettingObserver(@Nonnull CefSettingObserver observer) {
+        public Optional<CefRegistration> addSettingObserver(@Nullable CefSettingObserver observer) {
+            checkNotClosed();
             return Optional.ofNullable(N_AddSettingObserver(nativePtr, observer));
         }
 
         @Override
         public void clearHttpCache(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             N_ClearHttpCache(nativePtr, callback);
         }
 
@@ -676,7 +714,8 @@ public interface CefRequestContext extends CefLibraryObject {
 
         static native CefRequestContext N_GetGlobalContext();
 
-        static native CefRequestContext N_CreateContext(NativePointer settings, CefRequestContextHandler handler);
+        static native CefRequestContext N_CreateContext(
+                CefRequestContextSettings settings, CefRequestContextHandler handler);
 
         static native CefRequestContext N_CefCreateContextShared(
                 CefRequestContext other, CefRequestContextHandler handler);

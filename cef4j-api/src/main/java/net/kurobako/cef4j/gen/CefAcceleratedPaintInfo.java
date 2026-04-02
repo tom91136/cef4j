@@ -19,13 +19,17 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefAcceleratedPaintInfo {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** Plane count. */
     public final int planeCount;
+    /** Modifier could be used with EGL driver. */
     public final long modifier;
+    /** The pixel format of the texture. */
     public final CefColorType format;
+    /** The extra common info. */
     public final CefAcceleratedPaintInfoCommon extra;
 
     public CefAcceleratedPaintInfo(

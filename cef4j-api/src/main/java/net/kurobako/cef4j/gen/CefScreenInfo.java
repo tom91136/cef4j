@@ -3,7 +3,7 @@ package net.kurobako.cef4j.gen;
 
 /**
  * Screen information used when window rendering is disabled. This structure is passed as a parameter to
- * {@link CefRenderHandler#getScreenInfo(CefBrowser, CefMutableScreenInfo)} and should be filled in by the client.
+ * {@link CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)} and should be filled in by the client.
  *
  * <p>Definition generated from cef_types.h
  *
@@ -21,15 +21,33 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefScreenInfo {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** Device scale factor. Specifies the ratio between physical and logical pixels. */
     public final float deviceScaleFactor;
+    /** The screen depth in bits per pixel. */
     public final int depth;
+    /** The bits per color component. This assumes that the colors are balanced equally. */
     public final int depthPerComponent;
+    /** This can be {@code true} for black and white printers. */
     public final int isMonochrome;
+    /**
+     * This is set from the rcMonitor member of MONITORINFOEX, to whit: "A RECT structure that specifies the display
+     * monitor rectangle, expressed in virtual-screen coordinates. Note that if the monitor is not the primary display
+     * monitor, some of the rectangle's coordinates may be negative values." The {@code rect} and {@code available_rect}
+     * properties are used to determine the available surface for rendering popup views.
+     */
     public final CefRect rect;
+    /**
+     * This is set from the rcWork member of MONITORINFOEX, to whit: "A RECT structure that specifies the work area
+     * rectangle of the display monitor that can be used by applications, expressed in virtual-screen coordinates.
+     * Windows uses this rectangle to maximize an application on the monitor. The rest of the area in rcMonitor contains
+     * system windows such as the task bar and side bars. Note that if the monitor is not the primary display monitor,
+     * some of the rectangle's coordinates may be negative values". The {@code rect} and {@code available_rect}
+     * properties are used to determine the available surface for rendering popup views.
+     */
     public final CefRect availableRect;
 
     public CefScreenInfo(
@@ -48,8 +66,8 @@ public final class CefScreenInfo {
     }
 
     /** Create a mutable copy of this instance. */
-    public CefMutableScreenInfo toMutable() {
-        return new CefMutableScreenInfo(
+    public Mutable toMutable() {
+        return new Mutable(
                 this.deviceScaleFactor,
                 this.depth,
                 this.depthPerComponent,
@@ -82,5 +100,101 @@ public final class CefScreenInfo {
                 + deviceScaleFactor + ", " + "depth=" + depth + ", " + "depthPerComponent=" + depthPerComponent + ", "
                 + "isMonochrome=" + isMonochrome + ", " + "rect=" + rect + ", " + "availableRect=" + availableRect
                 + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefScreenInfo}. Screen information used when window rendering is disabled. This
+     * structure is passed as a parameter to {@link CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)}
+     * and should be filled in by the client.
+     *
+     * <p>Definition generated from cef_types.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:1903</a>
+     */
+    public static final class Mutable {
+
+        // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+        @SuppressWarnings("FieldMayBeFinal")
+        private volatile long size = -1;
+
+        /** Device scale factor. Specifies the ratio between physical and logical pixels. */
+        public float deviceScaleFactor;
+        /** The screen depth in bits per pixel. */
+        public int depth;
+        /** The bits per color component. This assumes that the colors are balanced equally. */
+        public int depthPerComponent;
+        /** This can be {@code true} for black and white printers. */
+        public int isMonochrome;
+        /**
+         * This is set from the rcMonitor member of MONITORINFOEX, to whit: "A RECT structure that specifies the display
+         * monitor rectangle, expressed in virtual-screen coordinates. Note that if the monitor is not the primary
+         * display monitor, some of the rectangle's coordinates may be negative values." The {@code rect} and
+         * {@code available_rect} properties are used to determine the available surface for rendering popup views.
+         */
+        public CefRect rect;
+        /**
+         * This is set from the rcWork member of MONITORINFOEX, to whit: "A RECT structure that specifies the work area
+         * rectangle of the display monitor that can be used by applications, expressed in virtual-screen coordinates.
+         * Windows uses this rectangle to maximize an application on the monitor. The rest of the area in rcMonitor
+         * contains system windows such as the task bar and side bars. Note that if the monitor is not the primary
+         * display monitor, some of the rectangle's coordinates may be negative values". The {@code rect} and
+         * {@code available_rect} properties are used to determine the available surface for rendering popup views.
+         */
+        public CefRect availableRect;
+
+        public Mutable() {}
+
+        public Mutable(
+                float deviceScaleFactor,
+                int depth,
+                int depthPerComponent,
+                int isMonochrome,
+                CefRect rect,
+                CefRect availableRect) {
+            this.deviceScaleFactor = deviceScaleFactor;
+            this.depth = depth;
+            this.depthPerComponent = depthPerComponent;
+            this.isMonochrome = isMonochrome;
+            this.rect = rect;
+            this.availableRect = availableRect;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefScreenInfo toImmutable() {
+            return new CefScreenInfo(
+                    this.deviceScaleFactor,
+                    this.depth,
+                    this.depthPerComponent,
+                    this.isMonochrome,
+                    this.rect,
+                    this.availableRect);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return this.deviceScaleFactor == other.deviceScaleFactor
+                    && this.depth == other.depth
+                    && this.depthPerComponent == other.depthPerComponent
+                    && this.isMonochrome == other.isMonochrome
+                    && java.util.Objects.equals(this.rect, other.rect)
+                    && java.util.Objects.equals(this.availableRect, other.availableRect);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(
+                    deviceScaleFactor, depth, depthPerComponent, isMonochrome, rect, availableRect);
+        }
+
+        @Override
+        public String toString() {
+            return "CefScreenInfo.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
+                    + "deviceScaleFactor=" + deviceScaleFactor + ", " + "depth=" + depth + ", " + "depthPerComponent="
+                    + depthPerComponent + ", " + "isMonochrome=" + isMonochrome + ", " + "rect=" + rect + ", "
+                    + "availableRect=" + availableRect + "}";
+        }
     }
 }

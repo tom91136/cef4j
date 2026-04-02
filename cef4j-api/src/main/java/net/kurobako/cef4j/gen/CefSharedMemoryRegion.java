@@ -17,27 +17,26 @@ package net.kurobako.cef4j.gen;
 public interface CefSharedMemoryRegion extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if the mapping is valid.
      *
      * <p>Definition generated from cef_shared_memory_region_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_shared_memory_region_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:49</a>
      */
     boolean isValid();
 
     /**
-     * Returns the size of the shared memory region in bytes. Returns 0 for invalid instances.
+     * Returns the size of the mapping in bytes. Returns 0 for invalid instances.
      *
      * <p>Definition generated from cef_shared_memory_region_capi.h
      *
      * <pre>size_t (CEF_CALLBACK* size)(struct _cef_shared_memory_region_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:55</a>
      */
     long size();
 
@@ -46,6 +45,7 @@ public interface CefSharedMemoryRegion extends CefLibraryObject {
     final class NativePeer implements CefSharedMemoryRegion, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -54,7 +54,17 @@ public interface CefSharedMemoryRegion extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSharedMemoryRegion has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefSharedMemoryRegion.class);
@@ -77,16 +87,19 @@ public interface CefSharedMemoryRegion extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public long size() {
+            checkNotClosed();
             return N_Size(nativePtr);
         }
 
         @Override
         public NativePointer memory() {
+            checkNotClosed();
             return N_Memory(nativePtr);
         }
 

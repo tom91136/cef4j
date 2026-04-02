@@ -20,14 +20,19 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefCompositionUnderline {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /** Underline character range. */
     public final CefRange range;
+    /** Text color. */
     public final int color;
+    /** Background color. */
     public final int backgroundColor;
+    /** Set to {@code true} (1) for thick underline. */
     public final int thick;
+    /** Style. */
     public final CefCompositionUnderlineStyle style;
 
     public CefCompositionUnderline(

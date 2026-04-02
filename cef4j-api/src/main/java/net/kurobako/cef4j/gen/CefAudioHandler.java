@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle audio events.
@@ -31,7 +32,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:52</a>
      */
-    default boolean getAudioParameters(@Nonnull CefBrowser browser, @Nonnull CefMutableAudioParameters params) {
+    default boolean getAudioParameters(@Nullable CefBrowser browser, @Nonnull CefAudioParameters.Mutable params) {
         return false;
     }
 
@@ -50,7 +51,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
      */
-    default void onAudioStreamStarted(@Nonnull CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {}
+    default void onAudioStreamStarted(@Nullable CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {}
 
     /**
      * Called on the audio stream thread when a PCM packet is received for the stream. {@code data} is an array
@@ -69,7 +70,8 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:76</a>
      */
-    default void onAudioStreamPacket(@Nonnull CefBrowser browser, @Nonnull NativePointer data, int frames, long pts) {}
+    default void onAudioStreamPacket(
+            @Nullable CefBrowser browser, @Nullable NativePointer data, int frames, long pts) {}
 
     /**
      * Called on the UI thread when the stream has stopped. OnAudioSteamStopped will always be called after
@@ -84,7 +86,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:92</a>
      */
-    default void onAudioStreamStopped(@Nonnull CefBrowser browser) {}
+    default void onAudioStreamStopped(@Nullable CefBrowser browser) {}
 
     /**
      * Called on the UI or audio stream thread when an error occurred. During the stream creation phase this callback
@@ -100,5 +102,5 @@ public interface CefAudioHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:100</a>
      */
-    default void onAudioStreamError(@Nonnull CefBrowser browser, @Nonnull String message) {}
+    default void onAudioStreamError(@Nullable CefBrowser browser, @Nullable String message) {}
 }

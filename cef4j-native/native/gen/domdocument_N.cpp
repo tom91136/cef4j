@@ -60,7 +60,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomDocument_
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomDocument_00024NativePeer_N_1GetElementById(JNIEnv* env, jobject obj, jlong self, jstring id) {
     auto* s = reinterpret_cast<cef_domdocument_t*>(self);
     if (!s) return nullptr;
-    if (!id) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "id must not be null"); return nullptr;}
     auto _id_str = JStringToCefString(env, id);
     auto _r = s->get_element_by_id(s, _id_str);
     if (_id_str) cef_string_userfree_free(_id_str);
@@ -132,7 +131,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomDocument_
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomDocument_00024NativePeer_N_1GetCompleteUrl(JNIEnv* env, jobject obj, jlong self, jstring partialURL) {
     auto* s = reinterpret_cast<cef_domdocument_t*>(self);
     if (!s) return nullptr;
-    if (!partialURL) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "partialurl must not be null"); return nullptr;}
     auto _partialURL_str = JStringToCefString(env, partialURL);
     auto result = s->get_complete_url(s, _partialURL_str);
     if (_partialURL_str) cef_string_userfree_free(_partialURL_str);

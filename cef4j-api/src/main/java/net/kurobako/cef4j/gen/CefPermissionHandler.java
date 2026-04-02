@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to permission requests. The methods of this class will be called on
@@ -38,11 +39,11 @@ public interface CefPermissionHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:89</a>
      */
     default boolean onRequestMediaAccessPermission(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull String requestingOrigin,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable String requestingOrigin,
             int requestedPermissions,
-            @Nonnull CefMediaAccessCallback callback) {
+            @Nullable CefMediaAccessCallback callback) {
         return false;
     }
 
@@ -64,11 +65,11 @@ public interface CefPermissionHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:112</a>
      */
     default boolean onShowPermissionPrompt(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             long promptId,
-            @Nonnull String requestingOrigin,
+            @Nullable String requestingOrigin,
             int requestedPermissions,
-            @Nonnull CefPermissionPromptCallback callback) {
+            @Nullable CefPermissionPromptCallback callback) {
         return false;
     }
 
@@ -89,5 +90,5 @@ public interface CefPermissionHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:133</a>
      */
     default void onDismissPermissionPrompt(
-            @Nonnull CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {}
+            @Nullable CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {}
 }

@@ -32,7 +32,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:139</a>
      */
-    default void onRequestComplete(@Nonnull CefUrlRequest request) {}
+    default void onRequestComplete(@Nullable CefUrlRequest request) {}
 
     /**
      * Notifies the client of upload progress. {@code current} denotes the number of bytes sent so far and {@code total}
@@ -47,7 +47,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:147</a>
      */
-    default void onUploadProgress(@Nonnull CefUrlRequest request, long current, long total) {}
+    default void onUploadProgress(@Nullable CefUrlRequest request, long current, long total) {}
 
     /**
      * Notifies the client of download progress. {@code current} denotes the number of bytes received up to the call and
@@ -61,11 +61,14 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:158</a>
      */
-    default void onDownloadProgress(@Nonnull CefUrlRequest request, long current, long total) {}
+    default void onDownloadProgress(@Nullable CefUrlRequest request, long current, long total) {}
 
     /**
      * Called when some part of the response is read. {@code data} contains the current bytes received since the last
      * call. This method will not be called if the UR_FLAG_NO_DOWNLOAD_DATA flag is set on the request.
+     *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataLength} parameter is derived from the buffer's capacity.</b>
      *
      * <p>Definition generated from cef_urlrequest_capi.h
      *
@@ -73,9 +76,12 @@ public interface CefUrlRequestClient extends CefClientHandler {
      * void (CEF_CALLBACK* on_download_data)(struct _cef_urlrequest_client_t* self, struct _cef_urlrequest_t* request, const void* data, size_t data_length);
      * </pre>
      *
+     * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
      */
-    default void onDownloadData(@Nonnull CefUrlRequest request, @Nonnull ByteBuffer data) {}
+    default void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {}
 
     /**
      * Called on the IO thread when the browser needs credentials from the user. {@code isProxy} indicates whether the
@@ -96,12 +102,12 @@ public interface CefUrlRequestClient extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
      */
     default boolean getAuthCredentials(
-            boolean isproxy,
-            @Nonnull String host,
+            boolean isProxy,
+            @Nullable String host,
             int port,
             @Nullable String realm,
-            @Nonnull String scheme,
-            @Nonnull CefAuthCallback callback) {
+            @Nullable String scheme,
+            @Nullable CefAuthCallback callback) {
         return false;
     }
 }

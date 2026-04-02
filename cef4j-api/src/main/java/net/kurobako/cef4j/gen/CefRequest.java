@@ -22,38 +22,35 @@ import javax.annotation.Nullable;
 public interface CefRequest extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     * Returns {@code true} if this object is read-only.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_request_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:67</a>
      */
     boolean isReadOnly();
 
     /**
-     * Returns the URL.
+     * Get the fully qualified URL.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_request_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:73</a>
      */
     Optional<String> getUrl();
 
     /**
-     * Set the resolved URL after redirects or changed as a result of HSTS.
+     * Set the fully qualified URL.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>void (CEF_CALLBACK* set_url)(struct _cef_request_t* self, const cef_string_t* url);</pre>
      *
-     * @param url may be null
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:79</a>
      */
     void setUrl(@Nullable String url);
 
@@ -77,7 +74,7 @@ public interface CefRequest extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:92</a>
      */
-    void setMethod(@Nonnull String method);
+    void setMethod(@Nullable String method);
 
     /**
      * Set the referrer URL and policy. If non-empty the referrer URL must be fully qualified with an HTTP or HTTPS
@@ -137,32 +134,33 @@ public interface CefRequest extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:125</a>
      */
-    void setPostData(@Nonnull CefPostData postdata);
+    void setPostData(@Nullable CefPostData postData);
 
     /**
-     * Get all response header fields.
+     * Get the header values. Will not include the Referer value if any.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>void (CEF_CALLBACK* get_header_map)(struct _cef_request_t* self, cef_string_multimap_t headerMap);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:131</a>
      */
-    void getHeaderMap(@Nonnull Map<String, List<String>> headermap);
+    void getHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
     /**
-     * Set all response header fields.
+     * Set the header values. If a Referer value exists in the header map it will be removed and ignored.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>void (CEF_CALLBACK* set_header_map)(struct _cef_request_t* self, cef_string_multimap_t headerMap);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:137</a>
      */
-    void setHeaderMap(@Nonnull Map<String, List<String>> headermap);
+    void setHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
     /**
-     * Get the value for the specified response header field.
+     * Returns the first header value for {@code name} or an empty string if not found. Will not return the Referer
+     * value if any. Use GetHeaderMap instead if {@code name} might have multiple values.
      *
      * <p>Definition generated from cef_request_capi.h
      *
@@ -170,13 +168,14 @@ public interface CefRequest extends CefLibraryObject {
      * cef_string_userfree_t (CEF_CALLBACK* get_header_by_name)(struct _cef_request_t* self, const cef_string_t* name);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:144</a>
      */
-    Optional<String> getHeaderByName(@Nonnull String name);
+    Optional<String> getHeaderByName(@Nullable String name);
 
     /**
      * Set the header {@code name} to {@code value}. If {@code overwrite} is {@code true} any existing values will be
      * replaced with the new value. If {@code overwrite} is {@code false} any existing values will not be overwritten.
+     * The Referer value cannot be set using this method.
      *
      * <p>Definition generated from cef_request_capi.h
      *
@@ -185,15 +184,12 @@ public interface CefRequest extends CefLibraryObject {
      * </pre>
      *
      * @param value may be null
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:152</a>
      */
-    void setHeaderByName(@Nonnull String name, @Nullable String value, boolean overwrite);
+    void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite);
 
     /**
-     * Handle assignment of the interceptor value identified by {@code index}. {@code object} is the receiver ('this'
-     * object) of the interceptor. {@code value} is the new value being assigned to the interceptor. If assignment
-     * fails, set {@code exception} to the exception that will be thrown. Return {@code true} if interceptor assignment
-     * was handled, {@code false} otherwise.
+     * Set all values at one time.
      *
      * <p>Definition generated from cef_request_capi.h
      *
@@ -201,13 +197,14 @@ public interface CefRequest extends CefLibraryObject {
      * void (CEF_CALLBACK* set)(struct _cef_request_t* self, const cef_string_t* url, const cef_string_t* method, struct _cef_post_data_t* postData, cef_string_multimap_t headerMap);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:338</a>
+     * @param postData may be null
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:163</a>
      */
     void set(
-            @Nonnull String url,
-            @Nonnull String method,
-            @Nonnull CefPostData postdata,
-            @Nonnull Map<String, List<String>> headermap);
+            @Nullable String url,
+            @Nullable String method,
+            @Nullable CefPostData postData,
+            @Nonnull Map<String, List<String>> headerMap);
 
     /**
      * Get the flags used in combination with CefURLRequest. See cef_urlrequest_flags_t for supported values.
@@ -269,26 +266,28 @@ public interface CefRequest extends CefLibraryObject {
     CefResourceType getResourceType();
 
     /**
-     * Returns the transition type which indicates what the user did to move to this page from the previous page.
+     * Get the transition type for this request. Only available in the browser process and only applies to requests that
+     * represent a main frame or sub-frame navigation.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>cef_transition_type_t (CEF_CALLBACK* get_transition_type)(struct _cef_request_t* self);</pre>
      *
      * @return the result, or {@code TT_EXPLICIT} for default handling
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:207</a>
      */
     CefTransitionType getTransitionType();
 
     /**
-     * Returns the globally unique identifier for this frame or empty if the underlying frame does not yet exist.
+     * Returns the globally unique identifier for this request or 0 if not specified. Can be used by
+     * CefResourceRequestHandler implementations in the browser process to track a single request across multiple
+     * callbacks.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>int64_t (CEF_CALLBACK* get_identifier)(struct _cef_request_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:215</a>
      */
     long getIdentifier();
     /**
@@ -309,6 +308,7 @@ public interface CefRequest extends CefLibraryObject {
     final class NativePeer implements CefRequest, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -317,7 +317,17 @@ public interface CefRequest extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefRequest has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefRequest.class);
@@ -340,115 +350,139 @@ public interface CefRequest extends CefLibraryObject {
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUrl(nativePtr));
         }
 
         @Override
         public void setUrl(@Nullable String url) {
+            checkNotClosed();
             N_SetUrl(nativePtr, url);
         }
 
         @Override
         public Optional<String> getMethod() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMethod(nativePtr));
         }
 
         @Override
-        public void setMethod(@Nonnull String method) {
+        public void setMethod(@Nullable String method) {
+            checkNotClosed();
             N_SetMethod(nativePtr, method);
         }
 
         @Override
         public void setReferrer(@Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy) {
+            checkNotClosed();
             N_SetReferrer(nativePtr, referrerUrl, policy);
         }
 
         @Override
         public Optional<String> getReferrerUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetReferrerUrl(nativePtr));
         }
 
         @Override
         public CefReferrerPolicy getReferrerPolicy() {
+            checkNotClosed();
             return N_GetReferrerPolicy(nativePtr);
         }
 
         @Override
         public Optional<CefPostData> getPostData() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPostData(nativePtr));
         }
 
         @Override
-        public void setPostData(@Nonnull CefPostData postdata) {
-            N_SetPostData(nativePtr, postdata);
+        public void setPostData(@Nullable CefPostData postData) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(postData, "CefPostData");
+            N_SetPostData(nativePtr, postData);
         }
 
         @Override
-        public void getHeaderMap(@Nonnull Map<String, List<String>> headermap) {
-            N_GetHeaderMap(nativePtr, headermap);
+        public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+            checkNotClosed();
+            N_GetHeaderMap(nativePtr, headerMap);
         }
 
         @Override
-        public void setHeaderMap(@Nonnull Map<String, List<String>> headermap) {
-            N_SetHeaderMap(nativePtr, headermap);
+        public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+            checkNotClosed();
+            N_SetHeaderMap(nativePtr, headerMap);
         }
 
         @Override
-        public Optional<String> getHeaderByName(@Nonnull String name) {
+        public Optional<String> getHeaderByName(@Nullable String name) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetHeaderByName(nativePtr, name));
         }
 
         @Override
-        public void setHeaderByName(@Nonnull String name, @Nullable String value, boolean overwrite) {
+        public void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite) {
+            checkNotClosed();
             N_SetHeaderByName(nativePtr, name, value, overwrite);
         }
 
         @Override
         public void set(
-                @Nonnull String url,
-                @Nonnull String method,
-                @Nonnull CefPostData postdata,
-                @Nonnull Map<String, List<String>> headermap) {
-            N_Set(nativePtr, url, method, postdata, headermap);
+                @Nullable String url,
+                @Nullable String method,
+                @Nullable CefPostData postData,
+                @Nonnull Map<String, List<String>> headerMap) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(postData, "CefPostData");
+            N_Set(nativePtr, url, method, postData, headerMap);
         }
 
         @Override
         public int getFlags() {
+            checkNotClosed();
             return N_GetFlags(nativePtr);
         }
 
         @Override
         public void setFlags(int flags) {
+            checkNotClosed();
             N_SetFlags(nativePtr, flags);
         }
 
         @Override
         public Optional<String> getFirstPartyForCookies() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFirstPartyForCookies(nativePtr));
         }
 
         @Override
         public void setFirstPartyForCookies(@Nullable String url) {
+            checkNotClosed();
             N_SetFirstPartyForCookies(nativePtr, url);
         }
 
         @Override
         public CefResourceType getResourceType() {
+            checkNotClosed();
             return N_GetResourceType(nativePtr);
         }
 
         @Override
         public CefTransitionType getTransitionType() {
+            checkNotClosed();
             return N_GetTransitionType(nativePtr);
         }
 
         @Override
         public long getIdentifier() {
+            checkNotClosed();
             return N_GetIdentifier(nativePtr);
         }
 
@@ -470,18 +504,18 @@ public interface CefRequest extends CefLibraryObject {
 
         private static native CefPostData N_GetPostData(long self);
 
-        private static native void N_SetPostData(long self, CefPostData postdata);
+        private static native void N_SetPostData(long self, CefPostData postData);
 
-        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headermap);
+        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headerMap);
 
-        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headermap);
+        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headerMap);
 
         private static native String N_GetHeaderByName(long self, String name);
 
         private static native void N_SetHeaderByName(long self, String name, String value, boolean overwrite);
 
         private static native void N_Set(
-                long self, String url, String method, CefPostData postdata, Map<String, List<String>> headermap);
+                long self, String url, String method, CefPostData postData, Map<String, List<String>> headerMap);
 
         private static native int N_GetFlags(long self);
 

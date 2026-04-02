@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Callback interface for {@link CefBrowserHost#runFileDialog(CefFileDialogMode, String, String, List<String>,
+ * Callback interface for {@link CefBrowserHost#runFileDialog(CefFileDialogMode, String, String, java.util.List,
  * CefRunFileDialogCallback)}. The methods of this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_browser_capi.h

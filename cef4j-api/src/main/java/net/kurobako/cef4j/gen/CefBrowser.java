@@ -23,15 +23,14 @@ import javax.annotation.Nullable;
 public interface CefBrowser extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * True if this object is currently valid. This will return {@code false} after
+     * {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:64</a>
      */
     boolean isValid();
 
@@ -135,13 +134,13 @@ public interface CefBrowser extends CefLibraryObject {
     void stopLoad();
 
     /**
-     * Returns the globally unique identifier for this frame or empty if the underlying frame does not yet exist.
+     * Returns the globally unique identifier for this browser. This value is also used as the tabId for extension APIs.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
      * <pre>int (CEF_CALLBACK* get_identifier)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:126</a>
      */
     int getIdentifier();
 
@@ -152,9 +151,9 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_browser_t* self, struct _cef_browser_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:133</a>
      */
-    boolean isSame(@Nonnull CefBrowser that);
+    boolean isSame(@Nullable CefBrowser that);
 
     /**
      * Returns {@code true} if the browser is a popup.
@@ -215,7 +214,7 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:170</a>
      */
-    Optional<CefFrame> getFrameByIdentifier(@Nonnull String identifier);
+    Optional<CefFrame> getFrameByIdentifier(@Nullable String identifier);
 
     /**
      * Returns the frame with the specified name, or {@code null} if not found.
@@ -230,13 +229,13 @@ public interface CefBrowser extends CefLibraryObject {
     Optional<CefFrame> getFrameByName(@Nullable String name);
 
     /**
-     * Returns the number of stack frames.
+     * Returns the number of frames that currently exist.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
      * <pre>size_t (CEF_CALLBACK* get_frame_count)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1057</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:183</a>
      */
     long getFrameCount();
 
@@ -266,6 +265,7 @@ public interface CefBrowser extends CefLibraryObject {
     final class NativePeer implements CefBrowser, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -274,7 +274,17 @@ public interface CefBrowser extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefBrowser has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefBrowser.class);
@@ -297,106 +307,128 @@ public interface CefBrowser extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public Optional<CefBrowserHost> getHost() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetHost(nativePtr));
         }
 
         @Override
         public boolean canGoBack() {
+            checkNotClosed();
             return N_CanGoBack(nativePtr);
         }
 
         @Override
         public void goBack() {
+            checkNotClosed();
             N_GoBack(nativePtr);
         }
 
         @Override
         public boolean canGoForward() {
+            checkNotClosed();
             return N_CanGoForward(nativePtr);
         }
 
         @Override
         public void goForward() {
+            checkNotClosed();
             N_GoForward(nativePtr);
         }
 
         @Override
         public boolean isLoading() {
+            checkNotClosed();
             return N_IsLoading(nativePtr);
         }
 
         @Override
         public void reload() {
+            checkNotClosed();
             N_Reload(nativePtr);
         }
 
         @Override
         public void reloadIgnoreCache() {
+            checkNotClosed();
             N_ReloadIgnoreCache(nativePtr);
         }
 
         @Override
         public void stopLoad() {
+            checkNotClosed();
             N_StopLoad(nativePtr);
         }
 
         @Override
         public int getIdentifier() {
+            checkNotClosed();
             return N_GetIdentifier(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefBrowser that) {
+        public boolean isSame(@Nullable CefBrowser that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefBrowser");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
         public boolean isPopup() {
+            checkNotClosed();
             return N_IsPopup(nativePtr);
         }
 
         @Override
         public boolean hasDocument() {
+            checkNotClosed();
             return N_HasDocument(nativePtr);
         }
 
         @Override
         public Optional<CefFrame> getMainFrame() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMainFrame(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getFocusedFrame() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFocusedFrame(nativePtr));
         }
 
         @Override
-        public Optional<CefFrame> getFrameByIdentifier(@Nonnull String identifier) {
+        public Optional<CefFrame> getFrameByIdentifier(@Nullable String identifier) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFrameByIdentifier(nativePtr, identifier));
         }
 
         @Override
         public Optional<CefFrame> getFrameByName(@Nullable String name) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFrameByName(nativePtr, name));
         }
 
         @Override
         public long getFrameCount() {
+            checkNotClosed();
             return N_GetFrameCount(nativePtr);
         }
 
         @Override
         public void getFrameIdentifiers(@Nonnull List<String> identifiers) {
+            checkNotClosed();
             N_GetFrameIdentifiers(nativePtr, identifiers);
         }
 
         @Override
         public void getFrameNames(@Nonnull List<String> names) {
+            checkNotClosed();
             N_GetFrameNames(nativePtr, names);
         }
 

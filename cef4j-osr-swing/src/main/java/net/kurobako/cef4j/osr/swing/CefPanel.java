@@ -8,8 +8,12 @@ import javax.swing.*;
 import net.kurobako.cef4j.CefBrowserOsr;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefCursorType;
-import net.kurobako.cef4j.gen.CefMutableRect;
+import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefKeyEventType;
+import net.kurobako.cef4j.gen.CefMouseButtonType;
+import net.kurobako.cef4j.gen.CefMouseEvent;
 import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
@@ -21,13 +25,8 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
  * and resize notification. Use {@link #createRenderHandler()} to obtain a render handler for the panel, then attach the
  * browser via {@link #setBrowser(CefBrowserOsr)}.
  */
-@SuppressWarnings({"serial", "this-escape"})
+@SuppressWarnings({"this-escape"})
 public class CefPanel extends JPanel {
-
-    // CEF key event types (cef_key_event_type_t)
-    private static final int KEYEVENT_RAWKEYDOWN = 0;
-    private static final int KEYEVENT_KEYUP = 2;
-    private static final int KEYEVENT_CHAR = 3;
 
     // CEF event flags (cef_event_flags_t)
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
@@ -67,12 +66,14 @@ public class CefPanel extends JPanel {
         addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (browser != null) browser.setFocus(true);
+                CefBrowserHost h = host();
+                if (h != null) h.setFocus(true);
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (browser != null) browser.setFocus(false);
+                CefBrowserHost h = host();
+                if (h != null) h.setFocus(false);
             }
         });
 
@@ -80,56 +81,84 @@ public class CefPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 requestFocusInWindow();
-                if (browser != null) {
-                    browser.sendMouseClickEvent(
-                            e.getX(), e.getY(), mouseModifiers(e), cefButton(e), false, e.getClickCount());
+                CefBrowserHost h = host();
+                if (h != null) {
+                    h.sendMouseClickEvent(
+                            new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
+                            CefMouseButtonType.of(cefButton(e)),
+                            false,
+                            e.getClickCount());
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (browser != null) {
-                    browser.sendMouseClickEvent(
-                            e.getX(), e.getY(), mouseModifiers(e), cefButton(e), true, e.getClickCount());
+                CefBrowserHost h = host();
+                if (h != null) {
+                    h.sendMouseClickEvent(
+                            new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
+                            CefMouseButtonType.of(cefButton(e)),
+                            true,
+                            e.getClickCount());
                 }
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (browser != null) browser.sendMouseMoveEvent(e.getX(), e.getY(), mouseModifiers(e), false);
+                CefBrowserHost h = host();
+                if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (browser != null) browser.sendMouseMoveEvent(e.getX(), e.getY(), mouseModifiers(e), false);
+                CefBrowserHost h = host();
+                if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
             }
         });
         addMouseWheelListener(e -> {
-            if (browser != null) {
+            CefBrowserHost h = host();
+            if (h != null) {
                 int delta = -e.getUnitsToScroll() * 20;
-                browser.sendMouseWheelEvent(e.getX(), e.getY(), mouseModifiers(e), 0, delta);
+                h.sendMouseWheelEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), 0, delta);
             }
         });
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (browser == null) return;
+                CefBrowserHost h = host();
+                if (h == null) return;
                 int mods = keyModifiers(e);
-                browser.sendKeyEvent(
-                        KEYEVENT_RAWKEYDOWN, mods, e.getKeyCode(), e.getKeyCode(), (char) 0, (char) 0, false);
+                h.sendKeyEvent(new CefKeyEvent(
+                        CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN),
+                        mods,
+                        e.getKeyCode(),
+                        e.getKeyCode(),
+                        0,
+                        (char) 0,
+                        (char) 0,
+                        0));
                 char c = e.getKeyChar();
                 if (c != KeyEvent.CHAR_UNDEFINED && !e.isActionKey()) {
-                    browser.sendKeyEvent(KEYEVENT_CHAR, mods, (int) c, (int) c, c, c, false);
+                    h.sendKeyEvent(new CefKeyEvent(
+                            CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, (int) c, (int) c, 0, c, c, 0));
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (browser != null) {
-                    browser.sendKeyEvent(
-                            KEYEVENT_KEYUP, keyModifiers(e), e.getKeyCode(), e.getKeyCode(), (char) 0, (char) 0, false);
+                CefBrowserHost h = host();
+                if (h != null) {
+                    h.sendKeyEvent(new CefKeyEvent(
+                            CefKeyEventType.of(CefKeyEventType.Kind.KEYUP),
+                            keyModifiers(e),
+                            e.getKeyCode(),
+                            e.getKeyCode(),
+                            0,
+                            (char) 0,
+                            (char) 0,
+                            0));
                 }
             }
         });
@@ -137,13 +166,19 @@ public class CefPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (browser != null) {
+                CefBrowserHost h = host();
+                if (h != null) {
                     frameBuffer.resetBackPressure();
-                    browser.wasResized();
-                    browser.invalidate();
+                    h.wasResized();
+                    h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
                 }
             }
         });
+    }
+
+    private CefBrowserHost host() {
+        CefBrowserOsr b = browser;
+        return b != null ? b.getHost() : null;
     }
 
     /**
@@ -153,7 +188,7 @@ public class CefPanel extends JPanel {
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
-            public void getViewRect(CefBrowser b, CefMutableRect rect) {
+            public void getViewRect(CefBrowser b, CefRect.Mutable rect) {
                 rect.x = 0;
                 rect.y = 0;
                 rect.width = getWidth();
@@ -184,7 +219,7 @@ public class CefPanel extends JPanel {
         this.browser = browser;
     }
 
-    /** Returns the browser instance, or {@code null} if {@link #createBrowser} hasn't been called yet. */
+    /** Returns the browser instance, or {@code null} if not yet attached. */
     public CefBrowserOsr getBrowser() {
         return browser;
     }
@@ -197,8 +232,6 @@ public class CefPanel extends JPanel {
             g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
         }
     }
-
-    // --- Cursor mapping ---
 
     /** Maps a CEF cursor type to a Swing {@link Cursor}. Override to customise. */
     public Cursor mapCursor(CefCursorType type) {
@@ -243,8 +276,6 @@ public class CefPanel extends JPanel {
                 return Cursor.getDefaultCursor();
         }
     }
-
-    // --- Input event helpers ---
 
     private static int cefButton(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) return 0;

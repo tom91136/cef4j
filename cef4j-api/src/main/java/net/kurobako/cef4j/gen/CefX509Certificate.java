@@ -123,8 +123,9 @@ public interface CefX509Certificate extends CefLibraryObject {
      * Returns the DER encoded data for the certificate issuer chain. If we failed to encode a certificate in the chain
      * it is still present in the array but is an empty string.
      *
-     * <p>The C API exposes this as a two-pass pattern: first call {@link #getIssuerChainSize()} to obtain the count,
-     * then allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     * <p><b>The C API exposes this as a two-pass pattern: first call {@link #getIssuerChainSize()} to obtain the count,
+     * then allocate and populate the array/collection. This method performs both steps and returns the result
+     * directly.</b>
      *
      * <p>Definition generated from cef_x509_certificate_capi.h
      *
@@ -140,8 +141,9 @@ public interface CefX509Certificate extends CefLibraryObject {
      * Returns the PEM encoded data for the certificate issuer chain. If we failed to encode a certificate in the chain
      * it is still present in the array but is an empty string.
      *
-     * <p>The C API exposes this as a two-pass pattern: first call {@link #getIssuerChainSize()} to obtain the count,
-     * then allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     * <p><b>The C API exposes this as a two-pass pattern: first call {@link #getIssuerChainSize()} to obtain the count,
+     * then allocate and populate the array/collection. This method performs both steps and returns the result
+     * directly.</b>
      *
      * <p>Definition generated from cef_x509_certificate_capi.h
      *
@@ -156,6 +158,7 @@ public interface CefX509Certificate extends CefLibraryObject {
     final class NativePeer implements CefX509Certificate, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -164,7 +167,17 @@ public interface CefX509Certificate extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefX509Certificate has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefX509Certificate.class);
@@ -187,51 +200,61 @@ public interface CefX509Certificate extends CefLibraryObject {
 
         @Override
         public Optional<CefX509CertPrincipal> getSubject() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSubject(nativePtr));
         }
 
         @Override
         public Optional<CefX509CertPrincipal> getIssuer() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetIssuer(nativePtr));
         }
 
         @Override
         public Optional<CefBinaryValue> getSerialNumber() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSerialNumber(nativePtr));
         }
 
         @Override
         public CefBasetime getValidStart() {
+            checkNotClosed();
             return N_GetValidStart(nativePtr);
         }
 
         @Override
         public CefBasetime getValidExpiry() {
+            checkNotClosed();
             return N_GetValidExpiry(nativePtr);
         }
 
         @Override
         public Optional<CefBinaryValue> getDerEncoded() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetDerEncoded(nativePtr));
         }
 
         @Override
         public Optional<CefBinaryValue> getPemEncoded() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetPemEncoded(nativePtr));
         }
 
         @Override
         public long getIssuerChainSize() {
+            checkNotClosed();
             return N_GetIssuerChainSize(nativePtr);
         }
 
         @Override
         public List<CefBinaryValue> getDerEncodedIssuerChain() {
+            checkNotClosed();
             return Arrays.asList(N_GetDerEncodedIssuerChain(nativePtr));
         }
 
         @Override
         public List<CefBinaryValue> getPemEncodedIssuerChain() {
+            checkNotClosed();
             return Arrays.asList(N_GetPemEncodedIssuerChain(nativePtr));
         }
 

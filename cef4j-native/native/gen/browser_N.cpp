@@ -86,8 +86,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefBrowser_00024Na
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBrowser_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_browser_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_browser_t* _that_ptr = reinterpret_cast<cef_browser_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_browser_t* _that_ptr = that ? reinterpret_cast<cef_browser_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -130,7 +129,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBrowser_0002
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBrowser_00024NativePeer_N_1GetFrameByIdentifier(JNIEnv* env, jobject obj, jlong self, jstring identifier) {
     auto* s = reinterpret_cast<cef_browser_t*>(self);
     if (!s) return nullptr;
-    if (!identifier) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "identifier must not be null"); return nullptr;}
     auto _identifier_str = JStringToCefString(env, identifier);
     auto _r = s->get_frame_by_identifier(s, _identifier_str);
     if (_identifier_str) cef_string_userfree_free(_identifier_str);

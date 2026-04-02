@@ -16,8 +16,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefCookieManager_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefCookieManager_00024NativePeer_N_1VisitAllCookies(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
     auto* s = reinterpret_cast<cef_cookie_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!visitor) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "visitor must not be null"); return JNI_FALSE;}
-    cef_cookie_visitor_t* _visitor_ptr = Create_JniCefCookieVisitor(env, visitor);
+    cef_cookie_visitor_t* _visitor_ptr = visitor ? Create_JniCefCookieVisitor(env, visitor) : nullptr;
     auto _r = s->visit_all_cookies(s, _visitor_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -25,10 +24,8 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefCookieManag
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefCookieManager_00024NativePeer_N_1VisitUrlCookies(JNIEnv* env, jobject obj, jlong self, jstring url, jboolean includeHttpOnly, jobject visitor) {
     auto* s = reinterpret_cast<cef_cookie_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return JNI_FALSE;}
-    if (!visitor) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "visitor must not be null"); return JNI_FALSE;}
     auto _url_str = JStringToCefString(env, url);
-    cef_cookie_visitor_t* _visitor_ptr = Create_JniCefCookieVisitor(env, visitor);
+    cef_cookie_visitor_t* _visitor_ptr = visitor ? Create_JniCefCookieVisitor(env, visitor) : nullptr;
     auto _r = s->visit_url_cookies(s, _url_str, static_cast<bool>(includeHttpOnly), _visitor_ptr);
     if (_url_str) cef_string_userfree_free(_url_str);
     return static_cast<jboolean>(_r);
@@ -37,7 +34,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefCookieManag
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefCookieManager_00024NativePeer_N_1SetCookie(JNIEnv* env, jobject obj, jlong self, jstring url, jobject cookie, jobject callback) {
     auto* s = reinterpret_cast<cef_cookie_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return JNI_FALSE;}
     if (!cookie) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "cookie must not be null"); return JNI_FALSE;}
     auto _url_str = JStringToCefString(env, url);
     cef_cookie_t _cookie_val = {};

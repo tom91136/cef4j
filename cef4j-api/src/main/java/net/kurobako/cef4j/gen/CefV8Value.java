@@ -188,7 +188,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
      */
-    boolean isSame(@Nonnull CefV8Value that);
+    boolean isSame(@Nullable CefV8Value that);
 
     /**
      * Return a bool value.
@@ -408,7 +408,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @param key may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:852</a>
      */
-    int setValueBykey(@Nullable String key, @Nonnull CefV8Value value, @Nonnull CefV8PropertyAttribute attribute);
+    int setValueBykey(@Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute);
 
     /**
      * Associates a value with the specified identifier and returns {@code true} on success. Returns {@code false} if
@@ -424,7 +424,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @param index zero-based index
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:863</a>
      */
-    int setValueByindex(int index, @Nonnull CefV8Value value);
+    int setValueByindex(int index, @Nullable CefV8Value value);
 
     /**
      * Registers an identifier and returns {@code true} on success. Access to the identifier will be forwarded to the
@@ -586,7 +586,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:979</a>
      */
     Optional<CefV8Value> executeFunction(
-            @Nullable CefV8Value object, long argumentscount, @Nonnull CefV8Value[] arguments);
+            @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments);
 
     /**
      * Execute the function using the specified V8 context. {@code object} is the receiver ('this' object) of the
@@ -604,10 +604,10 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:994</a>
      */
     Optional<CefV8Value> executeFunctionWithContext(
-            @Nonnull CefV8Context context,
+            @Nullable CefV8Context context,
             @Nullable CefV8Value object,
-            long argumentscount,
-            @Nonnull CefV8Value[] arguments);
+            long argumentsCount,
+            @Nullable CefV8Value[] arguments);
 
     /**
      * Resolve the Promise using the current V8 context. This method should only be called from within the scope of a
@@ -636,7 +636,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1021</a>
      */
-    boolean rejectPromise(@Nonnull String errormsg);
+    boolean rejectPromise(@Nullable String errorMsg);
     /**
      * Create a new CefV8Value object of type undefined.
      *
@@ -717,7 +717,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:530</a>
      */
-    static Optional<CefV8Value> createDate(@Nonnull CefBasetime date) {
+    static Optional<CefV8Value> createDate(@Nullable CefBasetime date) {
         return Optional.ofNullable(NativePeer.N_CreateDate(date));
     }
 
@@ -786,7 +786,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:567</a>
      */
     static Optional<CefV8Value> createArrayBuffer(
-            @Nullable NativePointer buffer, long length, @Nonnull CefV8ArrayBufferReleaseCallback releaseCallback) {
+            @Nullable NativePointer buffer, long length, @Nullable CefV8ArrayBufferReleaseCallback releaseCallback) {
         return Optional.ofNullable(NativePeer.N_CreateArrayBuffer(buffer, length, releaseCallback));
     }
 
@@ -821,7 +821,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:598</a>
      */
-    static Optional<CefV8Value> createArrayBufferFromBackingStore(@Nonnull CefV8BackingStore backingStore) {
+    static Optional<CefV8Value> createArrayBufferFromBackingStore(@Nullable CefV8BackingStore backingStore) {
         return Optional.ofNullable(NativePeer.N_CreateArrayBufferFromBackingStore(backingStore));
     }
 
@@ -838,7 +838,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:613</a>
      */
-    static Optional<CefV8Value> createFunction(@Nonnull String name, @Nonnull CefV8Handler handler) {
+    static Optional<CefV8Value> createFunction(@Nullable String name, @Nullable CefV8Handler handler) {
         return Optional.ofNullable(NativePeer.N_CreateFunction(name, handler));
     }
 
@@ -860,6 +860,7 @@ public interface CefV8Value extends CefLibraryObject {
     final class NativePeer implements CefV8Value, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -868,7 +869,17 @@ public interface CefV8Value extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8Value has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Value.class);
@@ -891,259 +902,316 @@ public interface CefV8Value extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public boolean isUndefined() {
+            checkNotClosed();
             return N_IsUndefined(nativePtr);
         }
 
         @Override
         public boolean isNull() {
+            checkNotClosed();
             return N_IsNull(nativePtr);
         }
 
         @Override
         public boolean isBool() {
+            checkNotClosed();
             return N_IsBool(nativePtr);
         }
 
         @Override
         public boolean isInt() {
+            checkNotClosed();
             return N_IsInt(nativePtr);
         }
 
         @Override
         public boolean isUInt() {
+            checkNotClosed();
             return N_IsUInt(nativePtr);
         }
 
         @Override
         public boolean isDouble() {
+            checkNotClosed();
             return N_IsDouble(nativePtr);
         }
 
         @Override
         public boolean isDate() {
+            checkNotClosed();
             return N_IsDate(nativePtr);
         }
 
         @Override
         public boolean isString() {
+            checkNotClosed();
             return N_IsString(nativePtr);
         }
 
         @Override
         public boolean isObject() {
+            checkNotClosed();
             return N_IsObject(nativePtr);
         }
 
         @Override
         public boolean isArray() {
+            checkNotClosed();
             return N_IsArray(nativePtr);
         }
 
         @Override
         public boolean isArrayBuffer() {
+            checkNotClosed();
             return N_IsArrayBuffer(nativePtr);
         }
 
         @Override
         public boolean isFunction() {
+            checkNotClosed();
             return N_IsFunction(nativePtr);
         }
 
         @Override
         public boolean isPromise() {
+            checkNotClosed();
             return N_IsPromise(nativePtr);
         }
 
         @Override
-        public boolean isSame(@Nonnull CefV8Value that) {
+        public boolean isSame(@Nullable CefV8Value that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefV8Value");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
         public boolean getBoolValue() {
+            checkNotClosed();
             return N_GetBoolValue(nativePtr);
         }
 
         @Override
         public int getIntValue() {
+            checkNotClosed();
             return N_GetIntValue(nativePtr);
         }
 
         @Override
         public int getUIntValue() {
+            checkNotClosed();
             return N_GetUIntValue(nativePtr);
         }
 
         @Override
         public double getDoubleValue() {
+            checkNotClosed();
             return N_GetDoubleValue(nativePtr);
         }
 
         @Override
         public CefBasetime getDateValue() {
+            checkNotClosed();
             return N_GetDateValue(nativePtr);
         }
 
         @Override
         public Optional<String> getStringValue() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetStringValue(nativePtr));
         }
 
         @Override
         public boolean isUserCreated() {
+            checkNotClosed();
             return N_IsUserCreated(nativePtr);
         }
 
         @Override
         public boolean hasException() {
+            checkNotClosed();
             return N_HasException(nativePtr);
         }
 
         @Override
         public Optional<CefV8Exception> getException() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetException(nativePtr));
         }
 
         @Override
         public boolean clearException() {
+            checkNotClosed();
             return N_ClearException(nativePtr);
         }
 
         @Override
         public boolean willRethrowExceptions() {
+            checkNotClosed();
             return N_WillRethrowExceptions(nativePtr);
         }
 
         @Override
         public boolean setRethrowExceptions(boolean rethrow) {
+            checkNotClosed();
             return N_SetRethrowExceptions(nativePtr, rethrow);
         }
 
         @Override
         public int hasValueBykey(@Nullable String key) {
+            checkNotClosed();
             return N_HasValueBykey(nativePtr, key);
         }
 
         @Override
         public int hasValueByindex(int index) {
+            checkNotClosed();
             return N_HasValueByindex(nativePtr, index);
         }
 
         @Override
         public int deleteValueBykey(@Nullable String key) {
+            checkNotClosed();
             return N_DeleteValueBykey(nativePtr, key);
         }
 
         @Override
         public int deleteValueByindex(int index) {
+            checkNotClosed();
             return N_DeleteValueByindex(nativePtr, index);
         }
 
         @Override
         public Optional<CefV8Value> getValueBykey(@Nullable String key) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetValueBykey(nativePtr, key));
         }
 
         @Override
         public int setValueBykey(
-                @Nullable String key, @Nonnull CefV8Value value, @Nonnull CefV8PropertyAttribute attribute) {
+                @Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefV8Value");
             return N_SetValueBykey(nativePtr, key, value, attribute);
         }
 
         @Override
-        public int setValueByindex(int index, @Nonnull CefV8Value value) {
+        public int setValueByindex(int index, @Nullable CefV8Value value) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(value, "CefV8Value");
             return N_SetValueByindex(nativePtr, index, value);
         }
 
         @Override
         public int setValueByaccessor(@Nullable String key, @Nonnull CefV8PropertyAttribute attribute) {
+            checkNotClosed();
             return N_SetValueByaccessor(nativePtr, key, attribute);
         }
 
         @Override
         public boolean getKeys(@Nonnull List<String> keys) {
+            checkNotClosed();
             return N_GetKeys(nativePtr, keys);
         }
 
         @Override
         public boolean setUserData(@Nullable NativePointer userData) {
+            checkNotClosed();
             return N_SetUserData(nativePtr, userData);
         }
 
         @Override
         public NativePointer getUserData() {
+            checkNotClosed();
             return N_GetUserData(nativePtr);
         }
 
         @Override
         public int getExternallyAllocatedMemory() {
+            checkNotClosed();
             return N_GetExternallyAllocatedMemory(nativePtr);
         }
 
         @Override
         public int adjustExternallyAllocatedMemory(int changeInBytes) {
+            checkNotClosed();
             return N_AdjustExternallyAllocatedMemory(nativePtr, changeInBytes);
         }
 
         @Override
         public int getArrayLength() {
+            checkNotClosed();
             return N_GetArrayLength(nativePtr);
         }
 
         @Override
         public boolean neuterArrayBuffer() {
+            checkNotClosed();
             return N_NeuterArrayBuffer(nativePtr);
         }
 
         @Override
         public long getArrayBufferByteLength() {
+            checkNotClosed();
             return N_GetArrayBufferByteLength(nativePtr);
         }
 
         @Override
         public NativePointer getArrayBufferData() {
+            checkNotClosed();
             return N_GetArrayBufferData(nativePtr);
         }
 
         @Override
         public Optional<String> getFunctionName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFunctionName(nativePtr));
         }
 
         @Override
         public Optional<CefV8Handler> getFunctionHandler() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFunctionHandler(nativePtr));
         }
 
         @Override
         public Optional<CefV8Value> executeFunction(
-                @Nullable CefV8Value object, long argumentscount, @Nonnull CefV8Value[] arguments) {
-            return Optional.ofNullable(N_ExecuteFunction(nativePtr, object, argumentscount, arguments));
+                @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(object, "CefV8Value");
+            return Optional.ofNullable(N_ExecuteFunction(nativePtr, object, argumentsCount, arguments));
         }
 
         @Override
         public Optional<CefV8Value> executeFunctionWithContext(
-                @Nonnull CefV8Context context,
+                @Nullable CefV8Context context,
                 @Nullable CefV8Value object,
-                long argumentscount,
-                @Nonnull CefV8Value[] arguments) {
+                long argumentsCount,
+                @Nullable CefV8Value[] arguments) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(context, "CefV8Context");
+            CefLibraryObject.requireOpen(object, "CefV8Value");
             return Optional.ofNullable(
-                    N_ExecuteFunctionWithContext(nativePtr, context, object, argumentscount, arguments));
+                    N_ExecuteFunctionWithContext(nativePtr, context, object, argumentsCount, arguments));
         }
 
         @Override
         public boolean resolvePromise(@Nullable CefV8Value arg) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(arg, "CefV8Value");
             return N_ResolvePromise(nativePtr, arg);
         }
 
         @Override
-        public boolean rejectPromise(@Nonnull String errormsg) {
-            return N_RejectPromise(nativePtr, errormsg);
+        public boolean rejectPromise(@Nullable String errorMsg) {
+            checkNotClosed();
+            return N_RejectPromise(nativePtr, errorMsg);
         }
 
         private static native boolean N_IsValid(long self);
@@ -1240,14 +1308,14 @@ public interface CefV8Value extends CefLibraryObject {
         private static native CefV8Handler N_GetFunctionHandler(long self);
 
         private static native CefV8Value N_ExecuteFunction(
-                long self, CefV8Value object, long argumentscount, CefV8Value[] arguments);
+                long self, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
 
         private static native CefV8Value N_ExecuteFunctionWithContext(
-                long self, CefV8Context context, CefV8Value object, long argumentscount, CefV8Value[] arguments);
+                long self, CefV8Context context, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
 
         private static native boolean N_ResolvePromise(long self, CefV8Value arg);
 
-        private static native boolean N_RejectPromise(long self, String errormsg);
+        private static native boolean N_RejectPromise(long self, String errorMsg);
 
         static native CefV8Value N_CreateUndefined();
 

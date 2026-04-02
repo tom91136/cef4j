@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle printing on Linux. Each browser will have only one print job in progress at a
@@ -31,7 +31,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:85</a>
      */
-    default void onPrintStart(@Nonnull CefBrowser browser) {}
+    default void onPrintStart(@Nullable CefBrowser browser) {}
 
     /**
      * Synchronize {@code settings} with client state. If {@code get_defaults} is {@code true} then populate
@@ -48,7 +48,7 @@ public interface CefPrintHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:94</a>
      */
     default void onPrintSettings(
-            @Nonnull CefBrowser browser, @Nonnull CefPrintSettings settings, boolean getDefaults) {}
+            @Nullable CefBrowser browser, @Nullable CefPrintSettings settings, boolean getDefaults) {}
 
     /**
      * Show the print dialog. Execute {@code callback} once the dialog is dismissed. Return {@code true} if the dialog
@@ -64,7 +64,7 @@ public interface CefPrintHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
      */
     default boolean onPrintDialog(
-            @Nonnull CefBrowser browser, boolean hasSelection, @Nonnull CefPrintDialogCallback callback) {
+            @Nullable CefBrowser browser, boolean hasSelection, @Nullable CefPrintDialogCallback callback) {
         return false;
     }
 
@@ -82,10 +82,10 @@ public interface CefPrintHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
      */
     default boolean onPrintJob(
-            @Nonnull CefBrowser browser,
-            @Nonnull String documentName,
-            @Nonnull String pdfFilePath,
-            @Nonnull CefPrintJobCallback callback) {
+            @Nullable CefBrowser browser,
+            @Nullable String documentName,
+            @Nullable String pdfFilePath,
+            @Nullable CefPrintJobCallback callback) {
         return false;
     }
 
@@ -100,7 +100,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:125</a>
      */
-    default void onPrintReset(@Nonnull CefBrowser browser) {}
+    default void onPrintReset(@Nullable CefBrowser browser) {}
 
     /**
      * Return the PDF paper size in device units. Used in combination with {@link CefBrowserHost#printToPdf(String,
@@ -115,7 +115,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:131</a>
      */
-    default CefSize getPdfPaperSize(@Nonnull CefBrowser browser, int deviceUnitsPerInch) {
+    default CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
         return null;
     }
 }

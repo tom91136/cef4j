@@ -29,8 +29,8 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
      *
      * <p>Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from
-     * {@link CefBrowserHost#sendDevToolsMessage(ByteBuffer)}, and optionally either a "result" (dictionary) or "error"
-     * (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event
+     * {@link CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a "result" (dictionary) or
+     * "error" (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event
      * dictionaries include a "method" (string) value and optionally a "params" (dictionary) value. See the DevTools
      * protocol documentation at <a
      * href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>
@@ -38,16 +38,22 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance
      * considerations when parsing large messages (some of which may exceed 1MB in size).
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      *
      * <pre>
      * int (CEF_CALLBACK* on_dev_tools_message)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const void* message, size_t message_size);
      * </pre>
      *
+     * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
-    default boolean onDevToolsMessage(@Nonnull CefBrowser browser, @Nonnull ByteBuffer message) {
+    default boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
     }
 
@@ -60,18 +66,24 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional
      * details on {@code result} contents.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code resultSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* on_dev_tools_method_result)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, int message_id, int success, const void* result, size_t result_size);
      * </pre>
      *
-     * @param result may be null
+     * @param result may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer
+     *     is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a
+     *     reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native
+     *     crashes.</b>
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
      */
     default void onDevToolsMethodResult(
-            @Nonnull CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {}
+            @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {}
 
     /**
      * Method that will be called on receipt of a DevTools protocol event. {@code browser} is the originating browser
@@ -79,17 +91,23 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * (which may be empty). {@code params} is only valid for the scope of this callback and should be copied if
      * necessary. See the OnDevToolsMessage documentation for additional details on {@code params} contents.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code paramsSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* on_dev_tools_event)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const cef_string_t* method, const void* params, size_t params_size);
      * </pre>
      *
-     * @param params may be null
+     * @param params may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer
+     *     is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a
+     *     reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native
+     *     crashes.</b>
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
      */
-    default void onDevToolsEvent(@Nonnull CefBrowser browser, @Nonnull String method, @Nullable ByteBuffer params) {}
+    default void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {}
 
     /**
      * Method that will be called when the DevTools agent has attached. {@code browser} is the originating browser
@@ -104,7 +122,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
      */
-    default void onDevToolsAgentAttached(@Nonnull CefBrowser browser) {}
+    default void onDevToolsAgentAttached(@Nullable CefBrowser browser) {}
 
     /**
      * Method that will be called when the DevTools agent has detached. {@code browser} is the originating browser
@@ -120,5 +138,5 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
      */
-    default void onDevToolsAgentDetached(@Nonnull CefBrowser browser) {}
+    default void onDevToolsAgentDetached(@Nullable CefBrowser browser) {}
 }

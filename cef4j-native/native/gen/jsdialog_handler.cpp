@@ -5,9 +5,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_jsdialog_handler_t
 struct JniCefJsDialogHandler: public cef_jsdialog_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

@@ -22,15 +22,13 @@ import javax.annotation.Nullable;
 public interface CefFrame extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * True if this object is currently attached to a valid frame.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:62</a>
      */
     boolean isValid();
 
@@ -68,13 +66,13 @@ public interface CefFrame extends CefLibraryObject {
     void cut();
 
     /**
-     * Returns a writable copy of this object.
+     * Execute copy in this frame.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>void (CEF_CALLBACK* copy)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:86</a>
      */
     void copy();
 
@@ -143,7 +141,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:124</a>
      */
-    void getSource(@Nonnull CefStringVisitor visitor);
+    void getSource(@Nullable CefStringVisitor visitor);
 
     /**
      * Retrieve this frame's display text as a string sent to the specified visitor.
@@ -154,7 +152,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
-    void getText(@Nonnull CefStringVisitor visitor);
+    void getText(@Nullable CefStringVisitor visitor);
 
     /**
      * Load the request represented by the {@code request} object.
@@ -168,7 +166,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:138</a>
      */
-    void loadRequest(@Nonnull CefRequest request);
+    void loadRequest(@Nullable CefRequest request);
 
     /**
      * Load the specified {@code url}.
@@ -179,7 +177,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:148</a>
      */
-    void loadUrl(@Nonnull String url);
+    void loadUrl(@Nullable String url);
 
     /**
      * Execute a string of JavaScript code in this frame. The {@code script_url} parameter is the URL where the script
@@ -195,7 +193,7 @@ public interface CefFrame extends CefLibraryObject {
      * @param scriptUrl may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:154</a>
      */
-    void executeJavaScript(@Nonnull String code, @Nullable String scriptUrl, int startLine);
+    void executeJavaScript(@Nullable String code, @Nullable String scriptUrl, int startLine);
 
     /**
      * Returns {@code true} if this is the main (top-level) frame.
@@ -220,13 +218,15 @@ public interface CefFrame extends CefLibraryObject {
     boolean isFocused();
 
     /**
-     * Returns the name of this node.
+     * Returns the name for this frame. If the frame has an assigned name (for example, set via the iframe "name"
+     * attribute) then that value will be returned. Otherwise a unique name will be constructed based on the frame
+     * parent hierarchy. The main (top-level) frame will always have an empty name value.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:178</a>
      */
     Optional<String> getName();
 
@@ -242,36 +242,35 @@ public interface CefFrame extends CefLibraryObject {
     Optional<String> getIdentifier();
 
     /**
-     * Returns the parent node.
+     * Returns the parent of this frame or {@code null} if this is the main (top-level) frame.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>cef_frame_t* (CEF_CALLBACK* get_parent)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:195</a>
      */
     Optional<CefFrame> getParent();
 
     /**
-     * Returns the URL.
+     * Returns the URL currently loaded in this frame.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:202</a>
      */
     Optional<String> getUrl();
 
     /**
-     * Returns the browser for this context. This method will return an empty reference for WebWorker contexts.
+     * Returns the browser that this frame belongs to.
      *
      * <p>Definition generated from cef_frame_capi.h
      *
      * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:208</a>
      */
     Optional<CefBrowser> getBrowser();
 
@@ -295,7 +294,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:221</a>
      */
-    void visitDom(@Nonnull CefDomVisitor visitor);
+    void visitDom(@Nullable CefDomVisitor visitor);
 
     /**
      * Create a new URL request that will be treated as originating from this frame and the associated browser. Use
@@ -325,7 +324,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:228</a>
      */
-    Optional<CefUrlRequest> createUrlRequest(@Nonnull CefRequest request, @Nonnull CefUrlRequestClient client);
+    Optional<CefUrlRequest> createUrlRequest(@Nullable CefRequest request, @Nullable CefUrlRequestClient client);
 
     /**
      * Send a message to the specified {@code target_process}. Ownership of the message contents will be transferred and
@@ -341,11 +340,12 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:248</a>
      */
-    void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nonnull CefProcessMessage message);
+    void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message);
 
     final class NativePeer implements CefFrame, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -354,7 +354,17 @@ public interface CefFrame extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefFrame has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefFrame.class);
@@ -377,132 +387,161 @@ public interface CefFrame extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public void undo() {
+            checkNotClosed();
             N_Undo(nativePtr);
         }
 
         @Override
         public void redo() {
+            checkNotClosed();
             N_Redo(nativePtr);
         }
 
         @Override
         public void cut() {
+            checkNotClosed();
             N_Cut(nativePtr);
         }
 
         @Override
         public void copy() {
+            checkNotClosed();
             N_Copy(nativePtr);
         }
 
         @Override
         public void paste() {
+            checkNotClosed();
             N_Paste(nativePtr);
         }
 
         @Override
         public void pasteAndMatchStyle() {
+            checkNotClosed();
             N_PasteAndMatchStyle(nativePtr);
         }
 
         @Override
         public void del() {
+            checkNotClosed();
             N_Del(nativePtr);
         }
 
         @Override
         public void selectAll() {
+            checkNotClosed();
             N_SelectAll(nativePtr);
         }
 
         @Override
         public void viewSource() {
+            checkNotClosed();
             N_ViewSource(nativePtr);
         }
 
         @Override
-        public void getSource(@Nonnull CefStringVisitor visitor) {
+        public void getSource(@Nullable CefStringVisitor visitor) {
+            checkNotClosed();
             N_GetSource(nativePtr, visitor);
         }
 
         @Override
-        public void getText(@Nonnull CefStringVisitor visitor) {
+        public void getText(@Nullable CefStringVisitor visitor) {
+            checkNotClosed();
             N_GetText(nativePtr, visitor);
         }
 
         @Override
-        public void loadRequest(@Nonnull CefRequest request) {
+        public void loadRequest(@Nullable CefRequest request) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(request, "CefRequest");
             N_LoadRequest(nativePtr, request);
         }
 
         @Override
-        public void loadUrl(@Nonnull String url) {
+        public void loadUrl(@Nullable String url) {
+            checkNotClosed();
             N_LoadUrl(nativePtr, url);
         }
 
         @Override
-        public void executeJavaScript(@Nonnull String code, @Nullable String scriptUrl, int startLine) {
+        public void executeJavaScript(@Nullable String code, @Nullable String scriptUrl, int startLine) {
+            checkNotClosed();
             N_ExecuteJavaScript(nativePtr, code, scriptUrl, startLine);
         }
 
         @Override
         public boolean isMain() {
+            checkNotClosed();
             return N_IsMain(nativePtr);
         }
 
         @Override
         public boolean isFocused() {
+            checkNotClosed();
             return N_IsFocused(nativePtr);
         }
 
         @Override
         public Optional<String> getName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetName(nativePtr));
         }
 
         @Override
         public Optional<String> getIdentifier() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetIdentifier(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getParent() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetParent(nativePtr));
         }
 
         @Override
         public Optional<String> getUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUrl(nativePtr));
         }
 
         @Override
         public Optional<CefBrowser> getBrowser() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetBrowser(nativePtr));
         }
 
         @Override
         public Optional<CefV8Context> getV8context() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetV8context(nativePtr));
         }
 
         @Override
-        public void visitDom(@Nonnull CefDomVisitor visitor) {
+        public void visitDom(@Nullable CefDomVisitor visitor) {
+            checkNotClosed();
             N_VisitDom(nativePtr, visitor);
         }
 
         @Override
         public Optional<CefUrlRequest> createUrlRequest(
-                @Nonnull CefRequest request, @Nonnull CefUrlRequestClient client) {
+                @Nullable CefRequest request, @Nullable CefUrlRequestClient client) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(request, "CefRequest");
             return Optional.ofNullable(N_CreateUrlRequest(nativePtr, request, client));
         }
 
         @Override
-        public void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nonnull CefProcessMessage message) {
+        public void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(message, "CefProcessMessage");
             N_SendProcessMessage(nativePtr, targetProcess, message);
         }
 

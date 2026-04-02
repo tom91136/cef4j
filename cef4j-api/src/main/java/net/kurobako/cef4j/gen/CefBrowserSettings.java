@@ -44,37 +44,158 @@ package net.kurobako.cef4j.gen;
  */
 public final class CefBrowserSettings {
 
-    // Native struct size — set by JNI, not user-modifiable.
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings("FieldMayBeFinal")
     private volatile long size = -1;
 
+    /**
+     * The maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType,
+     * long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless browser. The actual fps may be
+     * lower if the browser cannot generate frames at the requested rate. The minimum value is 1 and the default value
+     * is 30. This value can also be changed dynamically via {@link CefBrowserHost#setWindowlessFrameRate(int)}.
+     */
     public final int windowlessFrameRate;
+    /**
+     * Font settings.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final String standardFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final String fixedFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final String serifFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final String sansSerifFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final String cursiveFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final String fantasyFontFamily;
+    /** <i>values that map to WebPreferences settings</i> */
     public final int defaultFontSize;
+    /** <i>values that map to WebPreferences settings</i> */
     public final int defaultFixedFontSize;
+    /** <i>values that map to WebPreferences settings</i> */
     public final int minimumFontSize;
+    /** <i>values that map to WebPreferences settings</i> */
     public final int minimumLogicalFontSize;
+    /**
+     * Default encoding for Web content. If empty "ISO-8859-1" will be used. Also configurable using the
+     * "default-encoding" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final String defaultEncoding;
+    /**
+     * Controls the loading of fonts from remote sources. Also configurable using the "disable-remote-fonts"
+     * command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState remoteFonts;
+    /**
+     * Controls whether JavaScript can be executed. Also configurable using the "disable-javascript" command-line
+     * switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState javascript;
+    /**
+     * Controls whether JavaScript can be used to close windows that were not opened via JavaScript. JavaScript can
+     * still be used to close windows that were opened via JavaScript or that have no back/forward history. Also
+     * configurable using the "disable-javascript-close-windows" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState javascriptCloseWindows;
+    /**
+     * Controls whether JavaScript can access the clipboard. Also configurable using the
+     * "disable-javascript-access-clipboard" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState javascriptAccessClipboard;
+    /**
+     * Controls whether DOM pasting is supported in the editor via execCommand("paste"). The
+     * {@code javascript_access_clipboard} setting must also be enabled. Also configurable using the
+     * "disable-javascript-dom-paste" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState javascriptDomPaste;
+    /**
+     * Controls whether image URLs will be loaded from the network. A cached image will still be rendered if requested.
+     * Also configurable using the "disable-image-loading" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState imageLoading;
+    /**
+     * Controls whether standalone images will be shrunk to fit the page. Also configurable using the
+     * "image-shrink-standalone-to-fit" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState imageShrinkStandaloneToFit;
+    /**
+     * Controls whether text areas can be resized. Also configurable using the "disable-text-area-resize" command-line
+     * switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState textAreaResize;
+    /**
+     * Controls whether the tab key can advance focus to links. Also configurable using the "disable-tab-to-links"
+     * command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState tabToLinks;
+    /**
+     * Controls whether local storage can be used. Also configurable using the "disable-local-storage" command-line
+     * switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState localStorage;
+    /**
+     * Controls whether databases can be used. Also configurable using the "disable-databases" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState databasesDeprecated;
+    /**
+     * Controls whether WebGL can be used. Note that WebGL requires hardware support and may not work on all systems
+     * even when enabled. Also configurable using the "disable-webgl" command-line switch.
+     *
+     * <p><i>values that map to WebPreferences settings</i>
+     */
     public final CefState webgl;
+    /**
+     * Background color used for the browser before a document is loaded and when no document color is specified. The
+     * alpha component must be either fully opaque (0xFF) or fully transparent (0x00). If the alpha component is fully
+     * opaque then the RGB components will be used as the background color. If the alpha component is fully transparent
+     * for a windowed browser then the CefSettings.background_color value will be used. If the alpha component is fully
+     * transparent for a windowless (off-screen) browser then transparent painting will be enabled.
+     */
     public final int backgroundColor;
+    /**
+     * Controls whether the Chrome status bubble will be used. Only supported with Chrome style. For details about the
+     * status bubble see <a
+     * href="https://www.chromium.org/user-experience/status-bubble/">https://www.chromium.org/user-experience/status-bubble/</a>
+     */
     public final CefState chromeStatusBubble;
+    /** Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. */
     public final CefState chromeZoomBubble;
+    /**
+     * Controls whether CDP accessibility tree serialization collapses off-screen nodes. When enabled, off-screen
+     * landmarks and headings are serialized as summaries (role + name only) and other off-screen nodes are pruned. This
+     * reduces snapshot size for AI agents using Playwright ariaSnapshot(). WARNING: This collapses the CDP
+     * accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel
+     * will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected — they use a
+     * separate code path. Can also be configured at runtime using
+     * {@link CefBrowserHost#setAxViewportCollapse(boolean)}.
+     */
     public final CefState axViewportCollapse;
 
     public CefBrowserSettings(
@@ -137,8 +258,8 @@ public final class CefBrowserSettings {
     }
 
     /** Create a mutable copy of this instance. */
-    public CefMutableBrowserSettings toMutable() {
-        return new CefMutableBrowserSettings(
+    public Mutable toMutable() {
+        return new Mutable(
                 this.windowlessFrameRate,
                 this.standardFontFamily,
                 this.fixedFontFamily,
@@ -254,5 +375,355 @@ public final class CefBrowserSettings {
                 + localStorage + ", " + "databasesDeprecated=" + databasesDeprecated + ", " + "webgl=" + webgl + ", "
                 + "backgroundColor=" + backgroundColor + ", " + "chromeStatusBubble=" + chromeStatusBubble + ", "
                 + "chromeZoomBubble=" + chromeZoomBubble + ", " + "axViewportCollapse=" + axViewportCollapse + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefBrowserSettings}. Browser initialization settings. Specify {@code null} or 0 to get
+     * the recommended default values. The consequences of using custom values may not be well tested. Many of these and
+     * other settings can also configured using command-line switches.
+     *
+     * <p>Definition generated from cef_types.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:571</a>
+     */
+    public static final class Mutable {
+
+        // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+        @SuppressWarnings("FieldMayBeFinal")
+        private volatile long size = -1;
+
+        /**
+         * The maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser,
+         * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless
+         * browser. The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum
+         * value is 1 and the default value is 30. This value can also be changed dynamically via
+         * {@link CefBrowserHost#setWindowlessFrameRate(int)}.
+         */
+        public int windowlessFrameRate;
+        /**
+         * Font settings.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public String standardFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public String fixedFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public String serifFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public String sansSerifFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public String cursiveFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public String fantasyFontFamily;
+        /** <i>values that map to WebPreferences settings</i> */
+        public int defaultFontSize;
+        /** <i>values that map to WebPreferences settings</i> */
+        public int defaultFixedFontSize;
+        /** <i>values that map to WebPreferences settings</i> */
+        public int minimumFontSize;
+        /** <i>values that map to WebPreferences settings</i> */
+        public int minimumLogicalFontSize;
+        /**
+         * Default encoding for Web content. If empty "ISO-8859-1" will be used. Also configurable using the
+         * "default-encoding" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public String defaultEncoding;
+        /**
+         * Controls the loading of fonts from remote sources. Also configurable using the "disable-remote-fonts"
+         * command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState remoteFonts;
+        /**
+         * Controls whether JavaScript can be executed. Also configurable using the "disable-javascript" command-line
+         * switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState javascript;
+        /**
+         * Controls whether JavaScript can be used to close windows that were not opened via JavaScript. JavaScript can
+         * still be used to close windows that were opened via JavaScript or that have no back/forward history. Also
+         * configurable using the "disable-javascript-close-windows" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState javascriptCloseWindows;
+        /**
+         * Controls whether JavaScript can access the clipboard. Also configurable using the
+         * "disable-javascript-access-clipboard" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState javascriptAccessClipboard;
+        /**
+         * Controls whether DOM pasting is supported in the editor via execCommand("paste"). The
+         * {@code javascript_access_clipboard} setting must also be enabled. Also configurable using the
+         * "disable-javascript-dom-paste" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState javascriptDomPaste;
+        /**
+         * Controls whether image URLs will be loaded from the network. A cached image will still be rendered if
+         * requested. Also configurable using the "disable-image-loading" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState imageLoading;
+        /**
+         * Controls whether standalone images will be shrunk to fit the page. Also configurable using the
+         * "image-shrink-standalone-to-fit" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState imageShrinkStandaloneToFit;
+        /**
+         * Controls whether text areas can be resized. Also configurable using the "disable-text-area-resize"
+         * command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState textAreaResize;
+        /**
+         * Controls whether the tab key can advance focus to links. Also configurable using the "disable-tab-to-links"
+         * command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState tabToLinks;
+        /**
+         * Controls whether local storage can be used. Also configurable using the "disable-local-storage" command-line
+         * switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState localStorage;
+        /**
+         * Controls whether databases can be used. Also configurable using the "disable-databases" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState databasesDeprecated;
+        /**
+         * Controls whether WebGL can be used. Note that WebGL requires hardware support and may not work on all systems
+         * even when enabled. Also configurable using the "disable-webgl" command-line switch.
+         *
+         * <p><i>values that map to WebPreferences settings</i>
+         */
+        public CefState webgl;
+        /**
+         * Background color used for the browser before a document is loaded and when no document color is specified.
+         * The alpha component must be either fully opaque (0xFF) or fully transparent (0x00). If the alpha component is
+         * fully opaque then the RGB components will be used as the background color. If the alpha component is fully
+         * transparent for a windowed browser then the CefSettings.background_color value will be used. If the alpha
+         * component is fully transparent for a windowless (off-screen) browser then transparent painting will be
+         * enabled.
+         */
+        public int backgroundColor;
+        /**
+         * Controls whether the Chrome status bubble will be used. Only supported with Chrome style. For details about
+         * the status bubble see <a
+         * href="https://www.chromium.org/user-experience/status-bubble/">https://www.chromium.org/user-experience/status-bubble/</a>
+         */
+        public CefState chromeStatusBubble;
+        /** Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. */
+        public CefState chromeZoomBubble;
+        /**
+         * Controls whether CDP accessibility tree serialization collapses off-screen nodes. When enabled, off-screen
+         * landmarks and headings are serialized as summaries (role + name only) and other off-screen nodes are pruned.
+         * This reduces snapshot size for AI agents using Playwright ariaSnapshot(). WARNING: This collapses the CDP
+         * accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility
+         * panel will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected — they use
+         * a separate code path. Can also be configured at runtime using
+         * {@link CefBrowserHost#setAxViewportCollapse(boolean)}.
+         */
+        public CefState axViewportCollapse;
+
+        public Mutable() {}
+
+        public Mutable(
+                int windowlessFrameRate,
+                String standardFontFamily,
+                String fixedFontFamily,
+                String serifFontFamily,
+                String sansSerifFontFamily,
+                String cursiveFontFamily,
+                String fantasyFontFamily,
+                int defaultFontSize,
+                int defaultFixedFontSize,
+                int minimumFontSize,
+                int minimumLogicalFontSize,
+                String defaultEncoding,
+                CefState remoteFonts,
+                CefState javascript,
+                CefState javascriptCloseWindows,
+                CefState javascriptAccessClipboard,
+                CefState javascriptDomPaste,
+                CefState imageLoading,
+                CefState imageShrinkStandaloneToFit,
+                CefState textAreaResize,
+                CefState tabToLinks,
+                CefState localStorage,
+                CefState databasesDeprecated,
+                CefState webgl,
+                int backgroundColor,
+                CefState chromeStatusBubble,
+                CefState chromeZoomBubble,
+                CefState axViewportCollapse) {
+            this.windowlessFrameRate = windowlessFrameRate;
+            this.standardFontFamily = standardFontFamily;
+            this.fixedFontFamily = fixedFontFamily;
+            this.serifFontFamily = serifFontFamily;
+            this.sansSerifFontFamily = sansSerifFontFamily;
+            this.cursiveFontFamily = cursiveFontFamily;
+            this.fantasyFontFamily = fantasyFontFamily;
+            this.defaultFontSize = defaultFontSize;
+            this.defaultFixedFontSize = defaultFixedFontSize;
+            this.minimumFontSize = minimumFontSize;
+            this.minimumLogicalFontSize = minimumLogicalFontSize;
+            this.defaultEncoding = defaultEncoding;
+            this.remoteFonts = remoteFonts;
+            this.javascript = javascript;
+            this.javascriptCloseWindows = javascriptCloseWindows;
+            this.javascriptAccessClipboard = javascriptAccessClipboard;
+            this.javascriptDomPaste = javascriptDomPaste;
+            this.imageLoading = imageLoading;
+            this.imageShrinkStandaloneToFit = imageShrinkStandaloneToFit;
+            this.textAreaResize = textAreaResize;
+            this.tabToLinks = tabToLinks;
+            this.localStorage = localStorage;
+            this.databasesDeprecated = databasesDeprecated;
+            this.webgl = webgl;
+            this.backgroundColor = backgroundColor;
+            this.chromeStatusBubble = chromeStatusBubble;
+            this.chromeZoomBubble = chromeZoomBubble;
+            this.axViewportCollapse = axViewportCollapse;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefBrowserSettings toImmutable() {
+            return new CefBrowserSettings(
+                    this.windowlessFrameRate,
+                    this.standardFontFamily,
+                    this.fixedFontFamily,
+                    this.serifFontFamily,
+                    this.sansSerifFontFamily,
+                    this.cursiveFontFamily,
+                    this.fantasyFontFamily,
+                    this.defaultFontSize,
+                    this.defaultFixedFontSize,
+                    this.minimumFontSize,
+                    this.minimumLogicalFontSize,
+                    this.defaultEncoding,
+                    this.remoteFonts,
+                    this.javascript,
+                    this.javascriptCloseWindows,
+                    this.javascriptAccessClipboard,
+                    this.javascriptDomPaste,
+                    this.imageLoading,
+                    this.imageShrinkStandaloneToFit,
+                    this.textAreaResize,
+                    this.tabToLinks,
+                    this.localStorage,
+                    this.databasesDeprecated,
+                    this.webgl,
+                    this.backgroundColor,
+                    this.chromeStatusBubble,
+                    this.chromeZoomBubble,
+                    this.axViewportCollapse);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return this.windowlessFrameRate == other.windowlessFrameRate
+                    && java.util.Objects.equals(this.standardFontFamily, other.standardFontFamily)
+                    && java.util.Objects.equals(this.fixedFontFamily, other.fixedFontFamily)
+                    && java.util.Objects.equals(this.serifFontFamily, other.serifFontFamily)
+                    && java.util.Objects.equals(this.sansSerifFontFamily, other.sansSerifFontFamily)
+                    && java.util.Objects.equals(this.cursiveFontFamily, other.cursiveFontFamily)
+                    && java.util.Objects.equals(this.fantasyFontFamily, other.fantasyFontFamily)
+                    && this.defaultFontSize == other.defaultFontSize
+                    && this.defaultFixedFontSize == other.defaultFixedFontSize
+                    && this.minimumFontSize == other.minimumFontSize
+                    && this.minimumLogicalFontSize == other.minimumLogicalFontSize
+                    && java.util.Objects.equals(this.defaultEncoding, other.defaultEncoding)
+                    && java.util.Objects.equals(this.remoteFonts, other.remoteFonts)
+                    && java.util.Objects.equals(this.javascript, other.javascript)
+                    && java.util.Objects.equals(this.javascriptCloseWindows, other.javascriptCloseWindows)
+                    && java.util.Objects.equals(this.javascriptAccessClipboard, other.javascriptAccessClipboard)
+                    && java.util.Objects.equals(this.javascriptDomPaste, other.javascriptDomPaste)
+                    && java.util.Objects.equals(this.imageLoading, other.imageLoading)
+                    && java.util.Objects.equals(this.imageShrinkStandaloneToFit, other.imageShrinkStandaloneToFit)
+                    && java.util.Objects.equals(this.textAreaResize, other.textAreaResize)
+                    && java.util.Objects.equals(this.tabToLinks, other.tabToLinks)
+                    && java.util.Objects.equals(this.localStorage, other.localStorage)
+                    && java.util.Objects.equals(this.databasesDeprecated, other.databasesDeprecated)
+                    && java.util.Objects.equals(this.webgl, other.webgl)
+                    && this.backgroundColor == other.backgroundColor
+                    && java.util.Objects.equals(this.chromeStatusBubble, other.chromeStatusBubble)
+                    && java.util.Objects.equals(this.chromeZoomBubble, other.chromeZoomBubble)
+                    && java.util.Objects.equals(this.axViewportCollapse, other.axViewportCollapse);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(
+                    windowlessFrameRate,
+                    standardFontFamily,
+                    fixedFontFamily,
+                    serifFontFamily,
+                    sansSerifFontFamily,
+                    cursiveFontFamily,
+                    fantasyFontFamily,
+                    defaultFontSize,
+                    defaultFixedFontSize,
+                    minimumFontSize,
+                    minimumLogicalFontSize,
+                    defaultEncoding,
+                    remoteFonts,
+                    javascript,
+                    javascriptCloseWindows,
+                    javascriptAccessClipboard,
+                    javascriptDomPaste,
+                    imageLoading,
+                    imageShrinkStandaloneToFit,
+                    textAreaResize,
+                    tabToLinks,
+                    localStorage,
+                    databasesDeprecated,
+                    webgl,
+                    backgroundColor,
+                    chromeStatusBubble,
+                    chromeZoomBubble,
+                    axViewportCollapse);
+        }
+
+        @Override
+        public String toString() {
+            return "CefBrowserSettings.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
+                    + "windowlessFrameRate=" + windowlessFrameRate + ", " + "standardFontFamily=" + standardFontFamily
+                    + ", " + "fixedFontFamily=" + fixedFontFamily + ", " + "serifFontFamily=" + serifFontFamily + ", "
+                    + "sansSerifFontFamily=" + sansSerifFontFamily + ", " + "cursiveFontFamily=" + cursiveFontFamily
+                    + ", " + "fantasyFontFamily=" + fantasyFontFamily + ", " + "defaultFontSize=" + defaultFontSize
+                    + ", " + "defaultFixedFontSize=" + defaultFixedFontSize + ", " + "minimumFontSize="
+                    + minimumFontSize + ", " + "minimumLogicalFontSize=" + minimumLogicalFontSize + ", "
+                    + "defaultEncoding=" + defaultEncoding + ", " + "remoteFonts=" + remoteFonts + ", " + "javascript="
+                    + javascript + ", " + "javascriptCloseWindows=" + javascriptCloseWindows + ", "
+                    + "javascriptAccessClipboard=" + javascriptAccessClipboard + ", " + "javascriptDomPaste="
+                    + javascriptDomPaste + ", " + "imageLoading=" + imageLoading + ", " + "imageShrinkStandaloneToFit="
+                    + imageShrinkStandaloneToFit + ", " + "textAreaResize=" + textAreaResize + ", " + "tabToLinks="
+                    + tabToLinks + ", " + "localStorage=" + localStorage + ", " + "databasesDeprecated="
+                    + databasesDeprecated + ", " + "webgl=" + webgl + ", " + "backgroundColor=" + backgroundColor + ", "
+                    + "chromeStatusBubble=" + chromeStatusBubble + ", " + "chromeZoomBubble=" + chromeZoomBubble + ", "
+                    + "axViewportCollapse=" + axViewportCollapse + "}";
+        }
     }
 }

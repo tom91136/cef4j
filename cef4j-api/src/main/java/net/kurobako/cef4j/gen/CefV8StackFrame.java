@@ -115,6 +115,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
     final class NativePeer implements CefV8StackFrame, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -123,7 +124,17 @@ public interface CefV8StackFrame extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8StackFrame has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8StackFrame.class);
@@ -146,41 +157,49 @@ public interface CefV8StackFrame extends CefLibraryObject {
 
         @Override
         public boolean isValid() {
+            checkNotClosed();
             return N_IsValid(nativePtr);
         }
 
         @Override
         public Optional<String> getScriptName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetScriptName(nativePtr));
         }
 
         @Override
         public Optional<String> getScriptNameOrSourceUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetScriptNameOrSourceUrl(nativePtr));
         }
 
         @Override
         public Optional<String> getFunctionName() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetFunctionName(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
+            checkNotClosed();
             return N_GetLineNumber(nativePtr);
         }
 
         @Override
         public int getColumn() {
+            checkNotClosed();
             return N_GetColumn(nativePtr);
         }
 
         @Override
         public boolean isEval() {
+            checkNotClosed();
             return N_IsEval(nativePtr);
         }
 
         @Override
         public boolean isConstructor() {
+            checkNotClosed();
             return N_IsConstructor(nativePtr);
         }
 

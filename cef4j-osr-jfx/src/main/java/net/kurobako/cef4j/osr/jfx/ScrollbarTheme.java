@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
  * Extracts scrollbar appearance from the active JavaFX theme and generates equivalent {@code ::-webkit-scrollbar} CSS
  * for use in CEF OSR pages.
  *
- * <p>This is a best-effort approximation — JavaFX themes use layered backgrounds and derived colors that don't map 1:1
+ * <p>This is a best-effort approximation - JavaFX themes use layered backgrounds and derived colors that don't map 1:1
  * to WebKit scrollbar pseudo-elements.
  */
 final class ScrollbarTheme {

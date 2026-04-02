@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implemented by the client to observe preference changes and registered via
@@ -31,5 +31,5 @@ public interface CefPreferenceObserver extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:78</a>
      */
-    default void onPreferenceChanged(@Nonnull String name) {}
+    default void onPreferenceChanged(@Nullable String name) {}
 }

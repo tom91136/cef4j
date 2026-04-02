@@ -30,7 +30,6 @@ public final class SwingBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(SwingBrowserApp.class);
 
-    private static CefApp cefApp;
     private static CefBrowserOsr browser;
     private static volatile boolean shutdownRequested;
 
@@ -42,13 +41,13 @@ public final class SwingBrowserApp {
         Path cacheDir = Files.createTempDirectory("cef4j-swing-");
         cacheDir.toFile().deleteOnExit();
 
-        cefApp = CefApp.getInstance(cacheDir.toAbsolutePath().toString(), null, true, null, new String[] {});
-        cefApp.initialize();
+        CefApp.INSTANCE.cachePath(cacheDir.toAbsolutePath().toString()).initialize();
 
         SwingUtilities.invokeAndWait(() -> createUI());
 
         browser.createImmediately();
-        browser.setFocus(true);
+        var host = browser.getHost();
+        if (host != null) host.setFocus(true);
 
         Thread mainThread = Thread.currentThread();
         SigintHelper.install(() -> {
@@ -70,8 +69,8 @@ public final class SwingBrowserApp {
         }
 
         try {
-            while (!shutdownRequested && cefApp.getState() == CefApp.State.INITIALIZED) {
-                cefApp.doMessageLoopWork();
+            while (!shutdownRequested && CefApp.INSTANCE.getState() == CefApp.State.INITIALIZED) {
+                CefApp.INSTANCE.doMessageLoopWork();
                 Thread.sleep(8);
             }
         } catch (InterruptedException ignored) {
@@ -79,7 +78,7 @@ public final class SwingBrowserApp {
 
         log.info("Shutting down");
         if (browser != null) browser.close(true);
-        cefApp.dispose();
+        CefApp.INSTANCE.dispose();
         log.info("Exiting");
         System.exit(0);
     }
@@ -106,13 +105,16 @@ public final class SwingBrowserApp {
         JButton fwdBtn = new JButton("\u25B6");
         JButton reloadBtn = new JButton("\u21BB");
         backBtn.addActionListener(e -> {
-            if (browser != null) browser.goBack();
+            var b = browser != null ? browser.getBrowser() : null;
+            if (b != null) b.goBack();
         });
         fwdBtn.addActionListener(e -> {
-            if (browser != null) browser.goForward();
+            var b = browser != null ? browser.getBrowser() : null;
+            if (b != null) b.goForward();
         });
         reloadBtn.addActionListener(e -> {
-            if (browser != null) browser.reload();
+            var b = browser != null ? browser.getBrowser() : null;
+            if (b != null) b.reload();
         });
 
         JPanel navBar = new JPanel(new BorderLayout(4, 0));
@@ -229,7 +231,7 @@ public final class SwingBrowserApp {
             }
         };
 
-        browser = cefApp.createBrowser(client, urlBar.getText().trim(), getMonitorRefreshRate());
+        browser = CefApp.INSTANCE.createBrowser(client, urlBar.getText().trim(), getMonitorRefreshRate());
         surface.setBrowser(browser);
     }
 }

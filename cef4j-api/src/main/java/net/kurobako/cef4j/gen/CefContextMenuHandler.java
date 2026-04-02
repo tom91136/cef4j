@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle context menu events. The methods of this class will be called on the UI thread.
@@ -34,10 +35,10 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
      */
     default void onBeforeContextMenu(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull CefContextMenuParams params,
-            @Nonnull CefMenuModel model) {}
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefContextMenuParams params,
+            @Nullable CefMenuModel model) {}
 
     /**
      * Called to allow custom display of the context menu. {@code params} provides information about the context menu
@@ -56,11 +57,11 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
      */
     default boolean runContextMenu(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull CefContextMenuParams params,
-            @Nonnull CefMenuModel model,
-            @Nonnull CefRunContextMenuCallback callback) {
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefContextMenuParams params,
+            @Nullable CefMenuModel model,
+            @Nullable CefRunContextMenuCallback callback) {
         return false;
     }
 
@@ -81,9 +82,9 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
      */
     default boolean onContextMenuCommand(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull CefContextMenuParams params,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefContextMenuParams params,
             int commandId,
             @Nonnull CefEventFlags eventFlags) {
         return false;
@@ -102,7 +103,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
      */
-    default void onContextMenuDismissed(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
+    default void onContextMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {}
 
     /**
      * Called to allow custom display of the quick menu for a windowless browser. {@code location} is the top left
@@ -121,12 +122,12 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
      */
     default boolean runQuickMenu(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
             @Nonnull CefPoint location,
             @Nonnull CefSize size,
             @Nonnull CefQuickMenuEditStateFlags editStateFlags,
-            @Nonnull CefRunQuickMenuCallback callback) {
+            @Nullable CefRunQuickMenuCallback callback) {
         return false;
     }
 
@@ -145,7 +146,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
     default boolean onQuickMenuCommand(
-            @Nonnull CefBrowser browser, @Nonnull CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
+            @Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
         return false;
     }
 
@@ -162,5 +163,5 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
      */
-    default void onQuickMenuDismissed(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {}
+    default void onQuickMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {}
 }

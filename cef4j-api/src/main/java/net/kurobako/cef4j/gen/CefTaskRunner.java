@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that asynchronously executes tasks on the associated thread. It is safe to call the methods of this class on
@@ -22,15 +23,15 @@ import javax.annotation.Nonnull;
 public interface CefTaskRunner extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
+     * Returns {@code true} if this object is pointing to the same task runner as {@code that} object.
      *
      * <p>Definition generated from cef_task_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_task_runner_t* self, struct _cef_task_runner_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:88</a>
      */
-    boolean isSame(@Nonnull CefTaskRunner that);
+    boolean isSame(@Nullable CefTaskRunner that);
 
     /**
      * Returns {@code true} if this task runner belongs to the current thread.
@@ -52,7 +53,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:101</a>
      */
-    boolean belongsToThread(@Nonnull CefThreadId threadid);
+    boolean belongsToThread(@Nonnull CefThreadId threadId);
 
     /**
      * Post a task for execution on the thread associated with this task runner. Execution will occur asynchronously.
@@ -63,7 +64,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:107</a>
      */
-    boolean postTask(@Nonnull CefTask task);
+    boolean postTask(@Nullable CefTask task);
 
     /**
      * Post a task for delayed execution on the thread associated with this task runner. Execution will occur
@@ -78,7 +79,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:114</a>
      */
-    boolean postDelayedTask(@Nonnull CefTask task, long delayMs);
+    boolean postDelayedTask(@Nullable CefTask task, long delayMs);
     /**
      * Returns the task runner for the current thread. Only CEF threads will have task runners. An empty reference will
      * be returned if this method is called on an invalid thread.
@@ -102,13 +103,14 @@ public interface CefTaskRunner extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:82</a>
      */
-    static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadid) {
-        return Optional.ofNullable(NativePeer.N_GetForThread(threadid));
+    static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadId) {
+        return Optional.ofNullable(NativePeer.N_GetForThread(threadId));
     }
 
     final class NativePeer implements CefTaskRunner, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -117,7 +119,17 @@ public interface CefTaskRunner extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefTaskRunner has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefTaskRunner.class);
@@ -139,27 +151,33 @@ public interface CefTaskRunner extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean isSame(@Nonnull CefTaskRunner that) {
+        public boolean isSame(@Nullable CefTaskRunner that) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(that, "CefTaskRunner");
             return N_IsSame(nativePtr, that);
         }
 
         @Override
         public boolean belongsToCurrentThread() {
+            checkNotClosed();
             return N_BelongsToCurrentThread(nativePtr);
         }
 
         @Override
-        public boolean belongsToThread(@Nonnull CefThreadId threadid) {
-            return N_BelongsToThread(nativePtr, threadid);
+        public boolean belongsToThread(@Nonnull CefThreadId threadId) {
+            checkNotClosed();
+            return N_BelongsToThread(nativePtr, threadId);
         }
 
         @Override
-        public boolean postTask(@Nonnull CefTask task) {
+        public boolean postTask(@Nullable CefTask task) {
+            checkNotClosed();
             return N_PostTask(nativePtr, task);
         }
 
         @Override
-        public boolean postDelayedTask(@Nonnull CefTask task, long delayMs) {
+        public boolean postDelayedTask(@Nullable CefTask task, long delayMs) {
+            checkNotClosed();
             return N_PostDelayedTask(nativePtr, task, delayMs);
         }
 
@@ -167,7 +185,7 @@ public interface CefTaskRunner extends CefLibraryObject {
 
         private static native boolean N_BelongsToCurrentThread(long self);
 
-        private static native boolean N_BelongsToThread(long self, CefThreadId threadid);
+        private static native boolean N_BelongsToThread(long self, CefThreadId threadId);
 
         private static native boolean N_PostTask(long self, CefTask task);
 
@@ -175,7 +193,7 @@ public interface CefTaskRunner extends CefLibraryObject {
 
         static native CefTaskRunner N_GetForCurrentThread();
 
-        static native CefTaskRunner N_GetForThread(CefThreadId threadid);
+        static native CefTaskRunner N_GetForThread(CefThreadId threadId);
 
         @Override
         public boolean equals(Object obj) {

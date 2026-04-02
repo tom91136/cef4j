@@ -6,9 +6,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_app_t
 struct JniCefApp: public cef_app_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

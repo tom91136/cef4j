@@ -43,6 +43,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRoute_0002
     if (!s) return;
     if (!message) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return;}
     const void* _message_addr = message ? env->GetDirectBufferAddress(message) : nullptr;
+    if (message && !_message_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
     s->send_route_message(s, _message_addr, static_cast<size_t>(env->GetDirectBufferCapacity(message)));
 }
 

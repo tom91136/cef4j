@@ -11,10 +11,10 @@ object JavaInterfaceCodeGen {
       classDoc: String = "",
       handlerNames: Set[String] = Set.empty,
       freeFunctions: List[CefDecl.FreeFunction] = Nil
-  ): Unit = {
+  )(using Naming.Context, DocComments.Context): Unit = {
     val javaName       = Naming.structToJavaName(decl.name)
     val ffNativeDecls  = collectFreeFuncNativeDecls(freeFunctions)
-    val nativePeerBody = JavaNativeCodeGen.renderInnerClass(decl, ffNativeDecls)
+    val nativePeerBody = JavaNativeCodeGen.renderInnerClass(decl, ffNativeDecls, handlerNames)
     val content        =
       renderInterface(
         javaName,
@@ -30,12 +30,11 @@ object JavaInterfaceCodeGen {
     JavaCodeGen.writeJavaFile(outDir, javaName, content)
   }
 
-  /** Emit CefGlobals utility class for orphan free functions. */
   def emitGlobals(
       freeFunctions: List[CefDecl.FreeFunction],
       outDir: Path,
       docs: Map[String, String] = Map.empty
-  ): Unit = {
+  )(using Naming.Context, DocComments.Context): Unit = {
     if (freeFunctions.isEmpty) return
     val content = renderGlobalsClass(freeFunctions, docs)
     JavaCodeGen.writeJavaFile(outDir, "CefGlobals", content)
@@ -47,7 +46,7 @@ object JavaInterfaceCodeGen {
       docs: Map[String, String] = Map.empty,
       classDoc: String = "",
       handlerNames: Set[String] = Set.empty
-  ): Unit = {
+  )(using Naming.Context, DocComments.Context): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
     val content  =
       renderInterface(
@@ -69,7 +68,7 @@ object JavaInterfaceCodeGen {
     case _                     => false
   }
 
-  private def handlerPtrJavaType(ret: CType): String = ret match {
+  private def handlerPtrJavaType(ret: CType)(using Naming.Context): String = ret match {
     case CType.ObjectPtr(name) => Naming.structToJavaName(name)
     case CType.Ptr(inner)      => Naming.structToJavaName(inner.stripPrefix("_"))
     case _                     => Naming.javaType(ret)
@@ -86,20 +85,16 @@ object JavaInterfaceCodeGen {
       freeFunctions: List[CefDecl.FreeFunction] = Nil,
       sourceHeader: String = "",
       cefStructName: String = ""
-  ): String = {
+  )(using Naming.Context, DocComments.Context): String = {
     val hasNullable = fns.exists { fn =>
-      collectOptionalParams(fn).exists(pName =>
-        fn.params.exists(p => p.name == pName && JavaCodeGen.isReferenceType(p.typ))
-      )
+      JavaMethods.hasNullableParam(fn.params, fn.metaAttrs)
     }
     val hasNonnull = fns.exists { fn =>
-      val optionals = collectOptionalParams(fn)
-      fn.params.exists(p => !optionals.contains(p.name) && JavaCodeGen.isReferenceType(p.typ))
+      JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs)
     }
 
     val methods = fns.map { fn =>
       val methodName = Naming.javaMethodName(fn)
-      val optionals  = collectOptionalParams(fn)
 
       val retType = if (isObject && JavaCodeGen.isOptionalReturn(fn)) {
         s"Optional<${Naming.javaType(fn.ret)}>"
@@ -108,24 +103,14 @@ object JavaInterfaceCodeGen {
       } else {
         Naming.javaType(fn.ret)
       }
-
-      val params = fn.params.filterNot(_.typ.isInstanceOf[CType.BufferSize]).map { p =>
-        val jType = Naming.javaType(p.typ)
-        val pName = Naming.toCamelCase(p.name)
-        if (optionals.contains(p.name) && JavaCodeGen.isReferenceType(p.typ))
-          s"@Nullable $jType $pName"
-        else if (JavaCodeGen.isReferenceType(p.typ))
-          s"@Nonnull $jType $pName"
-        else
-          s"$jType $pName"
-      }.mkString(", ")
+      val shape = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, Some(retType))
 
       val proto   = if (cefStructName.nonEmpty) DocComments.cPrototypeForMethod(cefStructName, fn) else ""
-      val javadoc = DocComments.forMethod(fn, docs, sourceHeader, proto)
+      val javadoc = DocComments.forMethod(fn, docs, sourceHeader, proto, cefStructName)
 
       // Object interfaces: abstract methods. Handler interfaces: default methods with stub bodies.
       if (isObject) {
-        s"$javadoc    $retType $methodName($params);"
+        s"$javadoc    ${shape.retType} $methodName(${shape.paramsDecl});"
       } else {
         val defaultReturn = if (isHandlerPtrReturn(fn.ret, handlerNames)) {
           "\n        return Optional.empty();"
@@ -135,7 +120,7 @@ object JavaInterfaceCodeGen {
             case None         => defaultReturnForType(fn.ret)
           }
         }
-        s"$javadoc    default $retType $methodName($params) {$defaultReturn\n    }"
+        s"$javadoc    default ${shape.retType} $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
       }
     }.mkString("\n\n")
 
@@ -152,12 +137,10 @@ object JavaInterfaceCodeGen {
 
     // Check if free functions need additional imports
     val ffHasNullable = freeFunctions.exists { ff =>
-      val optionals = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-      optionals.exists(pName => ff.params.exists(p => p.name == pName && JavaCodeGen.isReferenceType(p.typ)))
+      JavaMethods.hasNullableParam(ff.params, ff.metaAttrs)
     }
     val ffHasNonnull = freeFunctions.exists { ff =>
-      val optionals = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-      ff.params.exists(p => !optionals.contains(p.name) && JavaCodeGen.isReferenceType(p.typ))
+      JavaMethods.hasNonnullParam(ff.params, ff.metaAttrs)
     }
     val ffHasOptional = freeFunctions.exists(ff => JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)))
 
@@ -184,27 +167,23 @@ object JavaInterfaceCodeGen {
     )
   }
 
-  /** Collect all parameter names marked as optional from metacomment attributes. */
-  private def collectOptionalParams(fn: FnPtr): Set[String] =
-    fn.metaAttrs.collect { case ("optional_param", p) => p }.toSet
+  private def defaultReturnFromMeta(ret: CType, retVal: String)(using Naming.Context, DocComments.Context): String =
+    ret match {
+      case CType.Enum(cefName) =>
+        val javaEnum  = Naming.structToJavaName(cefName)
+        val javaConst = DocComments.resolveEnumConstant(retVal)
+        s"\n        return $javaEnum.of($javaConst);"
+      case CType.Bool =>
+        if (retVal == "true" || retVal == "1") "\n        return true;"
+        else "\n        return false;"
+      case CType.Int | CType.UInt =>
+        s"\n        return $retVal;"
+      case CType.Long | CType.SizeT =>
+        s"\n        return ${retVal}L;"
+      case _ => defaultReturnForType(ret)
+    }
 
-  /** Default return when --cef(default_retval=X)-- is present. */
-  private def defaultReturnFromMeta(ret: CType, retVal: String): String = ret match {
-    case CType.Enum(cefName) =>
-      val javaEnum  = Naming.structToJavaName(cefName)
-      val javaConst = DocComments.resolveEnumConstant(retVal)
-      s"\n        return $javaEnum.of($javaConst);"
-    case CType.Bool =>
-      if (retVal == "true" || retVal == "1") "\n        return true;"
-      else "\n        return false;"
-    case CType.Int | CType.UInt =>
-      s"\n        return $retVal;"
-    case CType.Long | CType.SizeT =>
-      s"\n        return ${retVal}L;"
-    case _ => defaultReturnForType(ret)
-  }
-
-  private def defaultReturnForType(ret: CType): String = ret match {
+  private def defaultReturnForType(ret: CType)(using Naming.Context): String = ret match {
     case CType.Void                          => ""
     case CType.Bool                          => "\n        return false;"
     case CType.Int | CType.UInt | CType.Char => "\n        return 0;"
@@ -219,19 +198,19 @@ object JavaInterfaceCodeGen {
     case _ => "\n        return null;"
   }
 
-  /** Collect native method declarations for free functions, to embed in NativePeer. */
-  private def collectFreeFuncNativeDecls(freeFunctions: List[CefDecl.FreeFunction]): List[String] =
+  private def collectFreeFuncNativeDecls(freeFunctions: List[CefDecl.FreeFunction])(using
+      Naming.Context
+  ): List[String] =
     freeFunctions.map { ff =>
-      val nativeName   = s"N_${Naming.capitalise(ff.javaMethodName)}"
-      val rawRetType   = Naming.jniNativeReturnType(ff.ret)
-      val nativeParams = ff.params.filterNot(_.typ.isInstanceOf[CType.BufferSize]).map { p =>
-        s"${Naming.javaType(p.typ)} ${Naming.toCamelCase(p.name)}"
-      }.mkString(", ")
-      s"        static native $rawRetType $nativeName($nativeParams);"
+      val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
+      val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
+      s"        static native ${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
     }
 
-  /** Render a simple javadoc from raw doc text, stripping metacomments. */
-  private def renderSimpleJavadoc(text: String, capiSource: String = "", cPrototype: String = ""): String = {
+  private def renderSimpleJavadoc(text: String, capiSource: String = "", cPrototype: String = "")(using
+      Naming.Context,
+      DocComments.Context
+  ): String = {
     val cleaned                  = text.replaceAll("""--cef\([^)]*\)--""", "").trim
     val converted                = DocComments.convertCefDoc(cleaned, capiSource, cPrototype)
     val (docText, sourceRefTags) = DocComments.extractSourceTags(converted)
@@ -248,72 +227,35 @@ ${allLines.mkString("\n")}
     }
   }
 
-  /** Render static methods (from free functions) for embedding in an interface or class. For interfaces, native methods
-    * go in a nested _N class since interfaces can't have native methods. For classes (isClass=true), native methods are
-    * private static on the class itself.
-    */
   private def renderStaticMethods(
       javaName: String,
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String],
       isClass: Boolean = false
-  ): (String, List[String]) = {
+  )(using Naming.Context, DocComments.Context): (String, List[String]) = {
+    // For interfaces, native methods go in a nested _N class since interfaces can't have native methods.
+    // For classes (isClass=true), native methods are private static on the class itself.
     val methods = freeFunctions.map { ff =>
       val methodName = ff.javaMethodName
       val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
-      val optionals  = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-
-      val useOptional = ff.ret match {
-        case CType.JString | CType.ObjectPtr(_) => true
-        case _                                  => false
-      }
-      val rawRetType = Naming.javaType(ff.ret)
-      val retType    = if (useOptional) s"Optional<$rawRetType>" else rawRetType
-
-      val visibleParams = ff.params.filterNot(_.typ.isInstanceOf[CType.BufferSize])
-      val params        = visibleParams.map { p =>
-        val jType = Naming.javaType(p.typ)
-        val pName = Naming.toCamelCase(p.name)
-        if (optionals.contains(p.name) && JavaCodeGen.isReferenceType(p.typ))
-          s"@Nullable $jType $pName"
-        else if (JavaCodeGen.isReferenceType(p.typ))
-          s"@Nonnull $jType $pName"
-        else
-          s"$jType $pName"
-      }.mkString(", ")
-
-      val args            = visibleParams.map(p => Naming.toCamelCase(p.name)).mkString(", ")
-      val useArraysAsList = ff.ret match {
-        case CType.CountFuncArray(elem, _, _, _) => !Naming.isPrimitiveElement(elem)
-        case _                                   => false
-      }
+      val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
       val callTarget = if (isClass) nativeName else s"NativePeer.$nativeName"
-      val body       = if (retType == "void") {
-        s"$callTarget($args);"
-      } else if (useOptional) {
-        s"return Optional.ofNullable($callTarget($args));"
-      } else if (useArraysAsList) {
-        s"return Arrays.asList($callTarget($args));"
-      } else {
-        s"return $callTarget($args);"
-      }
+      val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
 
-      val nativeRetType = Naming.jniNativeReturnType(ff.ret)
-      val nativeParams  = visibleParams.map { p =>
-        s"${Naming.javaType(p.typ)} ${Naming.toCamelCase(p.name)}"
-      }.mkString(", ")
-
-      val javadoc = docs.get(Naming.toPascalCase(ff.javaMethodName))
+      val pascal  = Naming.toPascalCase(ff.javaMethodName)
+      val javadoc = docs.get(s"Cef$pascal") // C++ free functions use CefXxx naming
+        .orElse(docs.get(pascal))
         .orElse(docs.get(ff.javaMethodName))
+        .orElse(docs.get(ff.cName))
         .map(t => renderSimpleJavadoc(t, ff.sourceHeader, DocComments.cPrototypeForFreeFunction(ff)))
         .getOrElse("")
 
       val visibility = if (isClass) "public static" else "static"
       (
-        s"""$javadoc    $visibility $retType $methodName($params) {
+        s"""$javadoc    $visibility ${shape.retType} $methodName(${shape.paramsDecl}) {
         $body
     }""",
-        s"        static native $nativeRetType $nativeName($nativeParams);"
+        s"        static native ${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
       )
     }
 
@@ -323,12 +265,9 @@ ${allLines.mkString("\n")}
     if (isClass) {
       // For classes, emit native methods as private static native directly
       val nativeDecls = freeFunctions.map { ff =>
-        val nativeName   = s"N_${Naming.capitalise(ff.javaMethodName)}"
-        val nativeRetTy  = Naming.jniNativeReturnType(ff.ret)
-        val nativeParams = ff.params.filterNot(_.typ.isInstanceOf[CType.BufferSize]).map { p =>
-          s"${Naming.javaType(p.typ)} ${Naming.toCamelCase(p.name)}"
-        }.mkString(", ")
-        s"    private static native $nativeRetTy $nativeName($nativeParams);"
+        val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
+        val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
+        s"    private static native ${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
       }.mkString("\n\n")
       (s"$publicMethods\n\n$nativeDecls", List.empty[String])
     } else {
@@ -337,26 +276,20 @@ ${allLines.mkString("\n")}
     }
   }
 
-  /** Render the CefGlobals utility class for orphan free functions. */
   private def renderGlobalsClass(
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String]
-  ): String = {
+  )(using Naming.Context, DocComments.Context): String = {
     val (staticMethods, _) = renderStaticMethods("CefGlobals", freeFunctions, docs, isClass = true)
 
     val hasNullable = freeFunctions.exists { ff =>
-      val optionals = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-      optionals.exists(pName => ff.params.exists(p => p.name == pName && JavaCodeGen.isReferenceType(p.typ)))
+      JavaMethods.hasNullableParam(ff.params, ff.metaAttrs)
     }
     val hasNonnull = freeFunctions.exists { ff =>
-      val optionals = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-      ff.params.exists(p => !optionals.contains(p.name) && JavaCodeGen.isReferenceType(p.typ))
+      JavaMethods.hasNonnullParam(ff.params, ff.metaAttrs)
     }
     val hasOptional = freeFunctions.exists { ff =>
-      ff.ret match {
-        case CType.JString | CType.ObjectPtr(_) => true
-        case _                                  => false
-      }
+      JavaMethods.usesOptionalReturn(ff.ret)
     }
 
     val ffTypes     = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))

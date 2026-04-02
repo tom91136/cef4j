@@ -139,11 +139,10 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
     if (!mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mode must not be null"); return;}
-    if (!callback) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "callback must not be null"); return;}
     auto _title_str = title ? JStringToCefString(env, title) : nullptr;
     auto _default_file_path_str = default_file_path ? JStringToCefString(env, default_file_path) : nullptr;
     auto _accept_filters_csl = JavaListToCefStringList(env, accept_filters);
-    cef_run_file_dialog_callback_t* _callback_ptr = Create_JniCefRunFileDialogCallback(env, callback);
+    cef_run_file_dialog_callback_t* _callback_ptr = callback ? Create_JniCefRunFileDialogCallback(env, callback) : nullptr;
     s->run_file_dialog(s, static_cast<cef_file_dialog_mode_t>(env->GetLongField(mode, env->GetFieldID(env->GetObjectClass(mode), "value", "J"))), _title_str, _default_file_path_str, _accept_filters_csl, _callback_ptr);
     if (_title_str) cef_string_userfree_free(_title_str);
     if (_default_file_path_str) cef_string_userfree_free(_default_file_path_str);
@@ -153,7 +152,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1StartDownload(JNIEnv* env, jobject obj, jlong self, jstring url) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return;}
     auto _url_str = JStringToCefString(env, url);
     s->start_download(s, _url_str);
     if (_url_str) cef_string_userfree_free(_url_str);
@@ -162,10 +160,8 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1DownloadImage(JNIEnv* env, jobject obj, jlong self, jstring image_url, jboolean is_favicon, jint max_image_size, jboolean bypass_cache, jobject callback) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!image_url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "imageUrl must not be null"); return;}
-    if (!callback) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "callback must not be null"); return;}
     auto _image_url_str = JStringToCefString(env, image_url);
-    cef_download_image_callback_t* _callback_ptr = Create_JniCefDownloadImageCallback(env, callback);
+    cef_download_image_callback_t* _callback_ptr = callback ? Create_JniCefDownloadImageCallback(env, callback) : nullptr;
     s->download_image(s, _image_url_str, static_cast<bool>(is_favicon), max_image_size, static_cast<bool>(bypass_cache), _callback_ptr);
     if (_image_url_str) cef_string_userfree_free(_image_url_str);
 }
@@ -179,7 +175,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1PrintToPdf(JNIEnv* env, jobject obj, jlong self, jstring path, jobject settings, jobject callback) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!path) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "path must not be null"); return;}
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return;}
     auto _path_str = JStringToCefString(env, path);
     cef_pdf_print_settings_t _settings_val = {};
@@ -192,7 +187,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1Find(JNIEnv* env, jobject obj, jlong self, jstring searchText, jboolean forward, jboolean matchCase, jboolean findNext) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!searchText) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "searchtext must not be null"); return;}
     auto _searchText_str = JStringToCefString(env, searchText);
     s->find(s, _searchText_str, static_cast<bool>(forward), static_cast<bool>(matchCase), static_cast<bool>(findNext));
     if (_searchText_str) cef_string_userfree_free(_searchText_str);
@@ -235,6 +229,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost
     if (!s) return JNI_FALSE;
     if (!message) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return JNI_FALSE;}
     const void* _message_addr = message ? env->GetDirectBufferAddress(message) : nullptr;
+    if (message && !_message_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE;}
     auto _r = s->send_dev_tools_message(s, _message_addr, static_cast<size_t>(env->GetDirectBufferCapacity(message)));
     return static_cast<jboolean>(_r);
 }
@@ -242,7 +237,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1ExecuteDevToolsMethod(JNIEnv* env, jobject obj, jlong self, jint message_id, jstring method, jobject params) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return 0;
-    if (!method) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "method must not be null"); return 0;}
     auto _method_str = JStringToCefString(env, method);
     cef_dictionary_value_t* _params_ptr = params ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(params, env->GetFieldID(env->GetObjectClass(params), "nativePtr", "J"))) : nullptr;
     if (_params_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_params_ptr); _b->add_ref(_b);}
@@ -252,8 +246,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1AddDevToolsMessageObserver(JNIEnv* env, jobject obj, jlong self, jobject observer) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return nullptr;
-    if (!observer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "observer must not be null"); return nullptr;}
-    cef_dev_tools_message_observer_t* _observer_ptr = Create_JniCefDevToolsMessageObserver(env, observer);
+    cef_dev_tools_message_observer_t* _observer_ptr = observer ? Create_JniCefDevToolsMessageObserver(env, observer) : nullptr;
     auto _r = s->add_dev_tools_message_observer(s, _observer_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRegistration$NativePeer");
@@ -264,15 +257,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1GetNavigationEntries(JNIEnv* env, jobject obj, jlong self, jobject visitor, jboolean current_only) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!visitor) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "visitor must not be null"); return;}
-    cef_navigation_entry_visitor_t* _visitor_ptr = Create_JniCefNavigationEntryVisitor(env, visitor);
+    cef_navigation_entry_visitor_t* _visitor_ptr = visitor ? Create_JniCefNavigationEntryVisitor(env, visitor) : nullptr;
     s->get_navigation_entries(s, _visitor_ptr, static_cast<bool>(current_only));
 }
 
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1ReplaceMisspelling(JNIEnv* env, jobject obj, jlong self, jstring word) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!word) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "word must not be null"); return;}
     auto _word_str = JStringToCefString(env, word);
     s->replace_misspelling(s, _word_str);
     if (_word_str) cef_string_userfree_free(_word_str);
@@ -281,7 +272,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1AddWordToDictionary(JNIEnv* env, jobject obj, jlong self, jstring word) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!word) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "word must not be null"); return;}
     auto _word_str = JStringToCefString(env, word);
     s->add_word_to_dictionary(s, _word_str);
     if (_word_str) cef_string_userfree_free(_word_str);
@@ -443,10 +433,9 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1DragTargetDragEnter(JNIEnv* env, jobject obj, jlong self, jobject drag_data, jobject event, jobject allowed_ops) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!drag_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "dragData must not be null"); return;}
     if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
     if (!allowed_ops) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "allowedOps must not be null"); return;}
-    cef_drag_data_t* _drag_data_ptr = reinterpret_cast<cef_drag_data_t*>(env->GetLongField(drag_data, env->GetFieldID(env->GetObjectClass(drag_data), "nativePtr", "J")));
+    cef_drag_data_t* _drag_data_ptr = drag_data ? reinterpret_cast<cef_drag_data_t*>(env->GetLongField(drag_data, env->GetFieldID(env->GetObjectClass(drag_data), "nativePtr", "J"))) : nullptr;
     if (_drag_data_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_drag_data_ptr); _b->add_ref(_b);}
     cef_mouse_event_t _event_val = {};
     if (event) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent"); _event_val.x = static_cast<decltype(_event_val.x)>(env->GetIntField(event, env->GetFieldID(_c, "x", "I"))); _event_val.y = static_cast<decltype(_event_val.y)>(env->GetIntField(event, env->GetFieldID(_c, "y", "I"))); _event_val.modifiers = static_cast<decltype(_event_val.modifiers)>(env->GetIntField(event, env->GetFieldID(_c, "modifiers", "I")));}
@@ -583,7 +572,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1CreateBrowser(JNIEnv* env, jclass clz, jobject windowInfo, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context) {
-    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowinfo must not be null"); return 0;}
+    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return 0;}
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0;}
     cef_window_info_t _windowInfo_val = {};
     if (windowInfo) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo"); jstring _rd_window_name = (jstring)env->GetObjectField(windowInfo, env->GetFieldID(_c, "windowName", "Ljava/lang/String;")); if (_rd_window_name) {const jchar* _rd_window_name_chars = env->GetStringChars(_rd_window_name, nullptr); jsize _rd_window_name_len = env->GetStringLength(_rd_window_name); cef_string_set(reinterpret_cast<const char16_t*>(_rd_window_name_chars), _rd_window_name_len, &_windowInfo_val.window_name, 1); env->ReleaseStringChars(_rd_window_name, _rd_window_name_chars);}auto _rd_bounds = env->GetObjectField(windowInfo, env->GetFieldID(_c, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_rd_bounds) {auto _rd_boundsc = env->GetObjectClass(_rd_bounds); _windowInfo_val.bounds.x = static_cast<decltype(_windowInfo_val.bounds.x)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "x", "I"))); _windowInfo_val.bounds.y = static_cast<decltype(_windowInfo_val.bounds.y)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "y", "I"))); _windowInfo_val.bounds.width = static_cast<decltype(_windowInfo_val.bounds.width)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "width", "I"))); _windowInfo_val.bounds.height = static_cast<decltype(_windowInfo_val.bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));}_windowInfo_val.parent_window = static_cast<decltype(_windowInfo_val.parent_window)>(static_cast<size_t>(env->GetLongField(windowInfo, env->GetFieldID(_c, "parentWindow", "J")))); _windowInfo_val.windowless_rendering_enabled = static_cast<decltype(_windowInfo_val.windowless_rendering_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "windowlessRenderingEnabled", "I"))); _windowInfo_val.shared_texture_enabled = static_cast<decltype(_windowInfo_val.shared_texture_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "sharedTextureEnabled", "I"))); _windowInfo_val.external_begin_frame_enabled = static_cast<decltype(_windowInfo_val.external_begin_frame_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "externalBeginFrameEnabled", "I"))); _windowInfo_val.window = static_cast<decltype(_windowInfo_val.window)>(static_cast<size_t>(env->GetLongField(windowInfo, env->GetFieldID(_c, "window", "J")))); auto _rd_runtime_style = env->GetObjectField(windowInfo, env->GetFieldID(_c, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;")); if (_rd_runtime_style) {_windowInfo_val.runtime_style = static_cast<decltype(_windowInfo_val.runtime_style)>(env->GetLongField(_rd_runtime_style, env->GetFieldID(env->GetObjectClass(_rd_runtime_style), "value", "J")));}_windowInfo_val.size = sizeof(cef_window_info_t);}
@@ -599,7 +588,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_000
 }
 
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1CreateBrowserSync(JNIEnv* env, jclass clz, jobject windowInfo, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context) {
-    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowinfo must not be null"); return nullptr;}
+    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return nullptr;}
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr;}
     cef_window_info_t _windowInfo_val = {};
     if (windowInfo) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo"); jstring _rd_window_name = (jstring)env->GetObjectField(windowInfo, env->GetFieldID(_c, "windowName", "Ljava/lang/String;")); if (_rd_window_name) {const jchar* _rd_window_name_chars = env->GetStringChars(_rd_window_name, nullptr); jsize _rd_window_name_len = env->GetStringLength(_rd_window_name); cef_string_set(reinterpret_cast<const char16_t*>(_rd_window_name_chars), _rd_window_name_len, &_windowInfo_val.window_name, 1); env->ReleaseStringChars(_rd_window_name, _rd_window_name_chars);}auto _rd_bounds = env->GetObjectField(windowInfo, env->GetFieldID(_c, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_rd_bounds) {auto _rd_boundsc = env->GetObjectClass(_rd_bounds); _windowInfo_val.bounds.x = static_cast<decltype(_windowInfo_val.bounds.x)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "x", "I"))); _windowInfo_val.bounds.y = static_cast<decltype(_windowInfo_val.bounds.y)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "y", "I"))); _windowInfo_val.bounds.width = static_cast<decltype(_windowInfo_val.bounds.width)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "width", "I"))); _windowInfo_val.bounds.height = static_cast<decltype(_windowInfo_val.bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));}_windowInfo_val.parent_window = static_cast<decltype(_windowInfo_val.parent_window)>(static_cast<size_t>(env->GetLongField(windowInfo, env->GetFieldID(_c, "parentWindow", "J")))); _windowInfo_val.windowless_rendering_enabled = static_cast<decltype(_windowInfo_val.windowless_rendering_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "windowlessRenderingEnabled", "I"))); _windowInfo_val.shared_texture_enabled = static_cast<decltype(_windowInfo_val.shared_texture_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "sharedTextureEnabled", "I"))); _windowInfo_val.external_begin_frame_enabled = static_cast<decltype(_windowInfo_val.external_begin_frame_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_c, "externalBeginFrameEnabled", "I"))); _windowInfo_val.window = static_cast<decltype(_windowInfo_val.window)>(static_cast<size_t>(env->GetLongField(windowInfo, env->GetFieldID(_c, "window", "J")))); auto _rd_runtime_style = env->GetObjectField(windowInfo, env->GetFieldID(_c, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;")); if (_rd_runtime_style) {_windowInfo_val.runtime_style = static_cast<decltype(_windowInfo_val.runtime_style)>(env->GetLongField(_rd_runtime_style, env->GetFieldID(env->GetObjectClass(_rd_runtime_style), "value", "J")));}_windowInfo_val.size = sizeof(cef_window_info_t);}

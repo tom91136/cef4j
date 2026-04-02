@@ -1,10 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Callback structure that is passed to CefV8Value.createarraybuffer(). NOTE: This struct is allocated client-side.
+ * Callback structure that is passed to CefV8Value.createArrayBuffer(). NOTE: This struct is allocated client-side.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -28,11 +28,12 @@ public interface CefV8ArrayBufferReleaseCallback extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:420</a>
      */
-    void releaseBuffer(@Nonnull NativePointer buffer);
+    void releaseBuffer(@Nullable NativePointer buffer);
 
     final class NativePeer implements CefV8ArrayBufferReleaseCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -41,7 +42,17 @@ public interface CefV8ArrayBufferReleaseCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefV8ArrayBufferReleaseCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log =
@@ -65,7 +76,8 @@ public interface CefV8ArrayBufferReleaseCallback extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public void releaseBuffer(@Nonnull NativePointer buffer) {
+        public void releaseBuffer(@Nullable NativePointer buffer) {
+            checkNotClosed();
             N_ReleaseBuffer(nativePtr, buffer);
         }
 

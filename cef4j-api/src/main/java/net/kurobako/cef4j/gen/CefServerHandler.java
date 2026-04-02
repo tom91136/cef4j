@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle HTTP server requests. A new thread will be created for each
@@ -34,7 +35,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:220</a>
      */
-    default void onServerCreated(@Nonnull CefServer server) {}
+    default void onServerCreated(@Nullable CefServer server) {}
 
     /**
      * Called when {@code server} is destroyed. The server thread will be stopped after this method returns. The client
@@ -48,7 +49,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:230</a>
      */
-    default void onServerDestroyed(@Nonnull CefServer server) {}
+    default void onServerDestroyed(@Nullable CefServer server) {}
 
     /**
      * Called when a client connects to {@code server}. {@code connection_id} uniquely identifies the connection. Each
@@ -62,7 +63,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:239</a>
      */
-    default void onClientConnected(@Nonnull CefServer server, int connectionId) {}
+    default void onClientConnected(@Nullable CefServer server, int connectionId) {}
 
     /**
      * Called when a client disconnects from {@code server}. {@code connection_id} uniquely identifies the connection.
@@ -79,7 +80,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:248</a>
      */
-    default void onClientDisconnected(@Nonnull CefServer server, int connectionId) {}
+    default void onClientDisconnected(@Nullable CefServer server, int connectionId) {}
 
     /**
      * Called when {@code server} receives an HTTP request. {@code connection_id} uniquely identifies the connection,
@@ -96,7 +97,10 @@ public interface CefServerHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:260</a>
      */
     default void onHttpRequest(
-            @Nonnull CefServer server, int connectionId, @Nonnull String clientAddress, @Nonnull CefRequest request) {}
+            @Nullable CefServer server,
+            int connectionId,
+            @Nullable String clientAddress,
+            @Nullable CefRequest request) {}
 
     /**
      * Called when {@code server} receives a WebSocket request. {@code connection_id} uniquely identifies the
@@ -106,7 +110,8 @@ public interface CefServerHandler extends CefClientHandler {
      * request is accepted then OnWebSocketConnected will be called after the WebSocket has connected and incoming
      * messages will be delivered to the OnWebSocketMessage callback. If the request is declined then the client will be
      * disconnected and OnClientDisconnected will be called. Call the {@link CefServer#sendWebSocketMessage(int,
-     * ByteBuffer)} method after receiving the OnWebSocketConnected callback to respond with WebSocket messages.
+     * java.nio.ByteBuffer)} method after receiving the OnWebSocketConnected callback to respond with WebSocket
+     * messages.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -117,11 +122,11 @@ public interface CefServerHandler extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:273</a>
      */
     default void onWebSocketRequest(
-            @Nonnull CefServer server,
+            @Nullable CefServer server,
             int connectionId,
-            @Nonnull String clientAddress,
-            @Nonnull CefRequest request,
-            @Nonnull CefCallback callback) {}
+            @Nullable String clientAddress,
+            @Nullable CefRequest request,
+            @Nullable CefCallback callback) {}
 
     /**
      * Called after the client has accepted the WebSocket connection for {@code server} and {@code connection_id} via
@@ -135,7 +140,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:294</a>
      */
-    default void onWebSocketConnected(@Nonnull CefServer server, int connectionId) {}
+    default void onWebSocketConnected(@Nullable CefServer server, int connectionId) {}
 
     /**
      * Called when {@code server} receives an WebSocket message. {@code connection_id} uniquely identifies the
@@ -143,13 +148,19 @@ public interface CefServerHandler extends CefClientHandler {
      * not keep a reference to {@code data} outside of this method. See OnWebSocketRequest documentation for intended
      * usage.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_server_capi.h
      *
      * <pre>
      * void (CEF_CALLBACK* on_web_socket_message)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id, const void* data, size_t data_size);
      * </pre>
      *
+     * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:303</a>
      */
-    default void onWebSocketMessage(@Nonnull CefServer server, int connectionId, @Nonnull ByteBuffer data) {}
+    default void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {}
 }

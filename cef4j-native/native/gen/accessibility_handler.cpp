@@ -5,9 +5,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_accessibility_handler_t
 struct JniCefAccessibilityHandler: public cef_accessibility_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

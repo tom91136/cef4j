@@ -75,8 +75,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Context_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Context_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_v8_context_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_v8_context_t* _that_ptr = reinterpret_cast<cef_v8_context_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_v8_context_t* _that_ptr = that ? reinterpret_cast<cef_v8_context_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -85,9 +84,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Context_0
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8Context_00024NativePeer_N_1Eval(JNIEnv* env, jobject obj, jlong self, jstring code, jstring script_url, jint start_line, jobject retval, jobject exception) {
     auto* s = reinterpret_cast<cef_v8_context_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!code) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "code must not be null"); return JNI_FALSE;}
-    if (!retval) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "retval must not be null"); return JNI_FALSE;}
-    if (!exception) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "exception must not be null"); return JNI_FALSE;}
     auto _code_str = JStringToCefString(env, code);
     auto _script_url_str = script_url ? JStringToCefString(env, script_url) : nullptr;
     cef_v8_value_t* _retval_ptr = nullptr;

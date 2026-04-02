@@ -3,7 +3,7 @@ package net.kurobako.cef4j.codegen
 enum CefDecl {
   case ObjectStruct(name: String, fns: List[FnPtr], sourceHeader: String = "", scoped: Boolean = false)
   case HandlerStruct(name: String, fns: List[FnPtr], sourceHeader: String = "")
-  case DataStruct(name: String, fields: List[Field], sourceHeader: String = "")
+  case DataStruct(name: String, fields: List[Field], sourceHeader: String = "", needsMutable: Boolean = false)
   case Enum(
       name: String,
       values: List[(String, Long, String)],
@@ -26,7 +26,7 @@ extension (decl: CefDecl) {
     decl match {
       case CefDecl.ObjectStruct(name, _, _, _)       => Some(name)
       case CefDecl.HandlerStruct(name, _, _)         => Some(name)
-      case CefDecl.DataStruct(name, _, _)            => Some(name)
+      case CefDecl.DataStruct(name, _, _, _)         => Some(name)
       case CefDecl.Enum(_, _, _, _)                  => None
       case CefDecl.FreeFunction(_, _, _, _, _, _, _) => None
     }
@@ -54,6 +54,24 @@ extension (decl: CefDecl) {
     }
 }
 
+private def isVisibleParam(param: Param): Boolean =
+  param.typ match {
+    case CType.BufferSize(_) => false
+    case _                   => true
+  }
+
+extension (params: List[Param]) {
+  def visible: List[Param] = params.filter(isVisibleParam)
+}
+
+extension (fn: FnPtr) {
+  def visibleParams: List[Param] = fn.params.visible
+}
+
+extension (ff: CefDecl.FreeFunction) {
+  def visibleParams: List[Param] = ff.params.visible
+}
+
 case class FnPtr(
     name: String,
     ret: CType,
@@ -69,7 +87,7 @@ enum SpecialFn {
 }
 
 case class Param(name: String, typ: CType, isConst: Boolean = false, rawCType: String = "")
-case class Field(name: String, typ: CType)
+case class Field(name: String, typ: CType, doc: String = "")
 
 enum CType {
   case Void
@@ -101,17 +119,5 @@ enum CType {
   case StringList
   case StringMap
   case StringMultimap
-
-  /** Array out-param flattened from the count_func two-pass C API pattern. The Java method returns the array directly;
-    * both the count and array C params are hidden.
-    * @param elementType
-    *   the type of each element (ObjectPtr, ByValueIn, Long, etc.)
-    * @param countFuncCName
-    *   snake_case C function-pointer name on the same struct (e.g. "get_page_ranges_count")
-    * @param countParamName
-    *   original C param name for the size_t* count (e.g. "rangesCount")
-    * @param arrayParamName
-    *   original C param name for the array (e.g. "ranges")
-    */
   case CountFuncArray(elementType: CType, countFuncCName: String, countParamName: String, arrayParamName: String)
 }

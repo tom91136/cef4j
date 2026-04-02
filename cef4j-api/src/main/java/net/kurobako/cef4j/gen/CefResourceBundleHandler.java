@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to implement a custom resource bundle interface. See CefSettings for additional options related to
@@ -20,8 +21,9 @@ import javax.annotation.Nonnull;
 public interface CefResourceBundleHandler extends CefClientHandler {
 
     /**
-     * Returns the localized string for the specified {@code string_id} or an empty string if the value is not found.
-     * Use the cef_id_for_pack_string_name() function for version-safe mapping of string IDS names from
+     * Called to retrieve a localized translation for the specified {@code string_id}. To provide the translation set
+     * {@code string} to the translation string and return {@code true}. To use the default translation return
+     * {@code false}. Use the cef_id_for_pack_string_name() function for version-safe mapping of string IDS names from
      * cef_pack_strings.h to version-specific numerical {@code string_id} values.
      *
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
@@ -31,17 +33,18 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * </pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
      */
-    default int getLocalizedString(int stringId, @Nonnull String string) {
+    default int getLocalizedString(int stringId, @Nullable String string) {
         return 0;
     }
 
     /**
-     * Returns a CefBinaryValue containing the decompressed contents of the specified scale independent
-     * {@code resource_id} or {@code null} if not found. Use the cef_id_for_pack_resource_name() function for
-     * version-safe mapping of resource IDR names from cef_pack_resources.h to version-specific numerical
-     * {@code resource_id} values.
+     * Called to retrieve data for the specified scale independent {@code resource_id}. To provide the resource data set
+     * {@code data} and {@code data_size} to the data pointer and size respectively and return {@code true}. To use the
+     * default resource data return {@code false}. The resource data will not be copied and must remain resident in
+     * memory. Use the cef_id_for_pack_resource_name() function for version-safe mapping of resource IDR names from
+     * cef_pack_resources.h to version-specific numerical {@code resource_id} values.
      *
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
      *
@@ -50,18 +53,18 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * </pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
      */
-    default int getDataResource(int resourceId, @Nonnull NativePointer data, long[] dataSize) {
+    default int getDataResource(int resourceId, @Nullable NativePointer data, long[] dataSize) {
         return 0;
     }
 
     /**
-     * Returns a CefBinaryValue containing the decompressed contents of the specified {@code resource_id} nearest the
-     * scale factor {@code scale_factor} or {@code null} if not found. Use a {@code scale_factor} value of
-     * SCALE_FACTOR_NONE for scale independent resources or call GetDataResource instead. Use the
-     * cef_id_for_pack_resource_name() function for version-safe mapping of resource IDR names from cef_pack_resources.h
-     * to version-specific numerical {@code resource_id} values.
+     * Called to retrieve data for the specified {@code resource_id} nearest the scale factor {@code scale_factor}. To
+     * provide the resource data set {@code data} and {@code data_size} to the data pointer and size respectively and
+     * return {@code true}. To use the default resource data return {@code false}. The resource data will not be copied
+     * and must remain resident in memory. Use the cef_id_for_pack_resource_name() function for version-safe mapping of
+     * resource IDR names from cef_pack_resources.h to version-specific numerical {@code resource_id} values.
      *
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
      *
@@ -70,10 +73,10 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * </pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
      */
     default int getDataResourceForScale(
-            int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nonnull NativePointer data, long[] dataSize) {
+            int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nullable NativePointer data, long[] dataSize) {
         return 0;
     }
 }

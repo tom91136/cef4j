@@ -2,7 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class used to make a URL request. URL requests are not associated with a browser instance so no CefClient callbacks
@@ -92,14 +92,13 @@ public interface CefUrlRequest extends CefLibraryObject {
     boolean responseWasCached();
 
     /**
-     * Call to cancel the download.
+     * Cancel the request.
      *
      * <p>Definition generated from cef_urlrequest_capi.h
      *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:124</a>
      */
     void cancel();
     /**
@@ -116,15 +115,16 @@ public interface CefUrlRequest extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefUrlRequest> create(
-            @Nonnull CefRequest request,
-            @Nonnull CefUrlRequestClient client,
-            @Nonnull CefRequestContext requestContext) {
+            @Nullable CefRequest request,
+            @Nullable CefUrlRequestClient client,
+            @Nullable CefRequestContext requestContext) {
         return Optional.ofNullable(NativePeer.N_Create(request, client, requestContext));
     }
 
     final class NativePeer implements CefUrlRequest, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -133,7 +133,17 @@ public interface CefUrlRequest extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefUrlRequest has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefUrlRequest.class);
@@ -156,36 +166,43 @@ public interface CefUrlRequest extends CefLibraryObject {
 
         @Override
         public Optional<CefRequest> getRequest() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetRequest(nativePtr));
         }
 
         @Override
         public Optional<CefUrlRequestClient> getClient() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetClient(nativePtr));
         }
 
         @Override
         public CefUrlRequestStatus getRequestStatus() {
+            checkNotClosed();
             return N_GetRequestStatus(nativePtr);
         }
 
         @Override
         public CefErrorCode getRequestError() {
+            checkNotClosed();
             return N_GetRequestError(nativePtr);
         }
 
         @Override
         public Optional<CefResponse> getResponse() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetResponse(nativePtr));
         }
 
         @Override
         public boolean responseWasCached() {
+            checkNotClosed();
             return N_ResponseWasCached(nativePtr);
         }
 
         @Override
         public void cancel() {
+            checkNotClosed();
             N_Cancel(nativePtr);
         }
 

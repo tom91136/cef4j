@@ -17,15 +17,14 @@ package net.kurobako.cef4j.gen;
 public interface CefUnresponsiveProcessCallback extends CefLibraryObject {
 
     /**
-     * Wait indefinitely for the event to be signaled. This method will not return until after the call to Signal() has
-     * completed. This method cannot be called on the browser process UI or IO threads.
+     * Reset the timeout for the unresponsive process.
      *
      * <p>Definition generated from cef_unresponsive_process_callback_capi.h
      *
      * <pre>void (CEF_CALLBACK* wait)(struct _cef_unresponsive_process_callback_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:49</a>
      */
     void cefWait();
 
@@ -44,6 +43,7 @@ public interface CefUnresponsiveProcessCallback extends CefLibraryObject {
     final class NativePeer implements CefUnresponsiveProcessCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -52,7 +52,17 @@ public interface CefUnresponsiveProcessCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefUnresponsiveProcessCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log =
@@ -77,11 +87,13 @@ public interface CefUnresponsiveProcessCallback extends CefLibraryObject {
 
         @Override
         public void cefWait() {
+            checkNotClosed();
             N_Wait(nativePtr);
         }
 
         @Override
         public void terminate() {
+            checkNotClosed();
             N_Terminate(nativePtr);
         }
 

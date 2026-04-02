@@ -40,8 +40,9 @@ public interface CefComponentUpdater extends CefLibraryObject {
     /**
      * Populates {@code components} with all registered components. Any existing contents will be cleared first.
      *
-     * <p>The C API exposes this as a two-pass pattern: first call {@link #getComponentCount()} to obtain the count,
-     * then allocate and populate the array/collection. This method performs both steps and returns the result directly.
+     * <p><b>The C API exposes this as a two-pass pattern: first call {@link #getComponentCount()} to obtain the count,
+     * then allocate and populate the array/collection. This method performs both steps and returns the result
+     * directly.</b>
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *
@@ -65,7 +66,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
      */
-    Optional<CefComponent> getComponentById(@Nonnull String componentId);
+    Optional<CefComponent> getComponentById(@Nullable String componentId);
 
     /**
      * Triggers an on-demand update for the component with the specified {@code component_id}. {@code priority}
@@ -89,7 +90,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
     void update(
-            @Nonnull String componentId,
+            @Nullable String componentId,
             @Nonnull CefComponentUpdatePriority priority,
             @Nullable CefComponentUpdateCallback callback);
     /**
@@ -112,6 +113,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
     final class NativePeer implements CefComponentUpdater, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -120,7 +122,17 @@ public interface CefComponentUpdater extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefComponentUpdater has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefComponentUpdater.class);
@@ -143,24 +155,28 @@ public interface CefComponentUpdater extends CefLibraryObject {
 
         @Override
         public long getComponentCount() {
+            checkNotClosed();
             return N_GetComponentCount(nativePtr);
         }
 
         @Override
         public List<CefComponent> getComponents() {
+            checkNotClosed();
             return Arrays.asList(N_GetComponents(nativePtr));
         }
 
         @Override
-        public Optional<CefComponent> getComponentById(@Nonnull String componentId) {
+        public Optional<CefComponent> getComponentById(@Nullable String componentId) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetComponentById(nativePtr, componentId));
         }
 
         @Override
         public void update(
-                @Nonnull String componentId,
+                @Nullable String componentId,
                 @Nonnull CefComponentUpdatePriority priority,
                 @Nullable CefComponentUpdateCallback callback) {
+            checkNotClosed();
             N_Update(nativePtr, componentId, priority, callback);
         }
 

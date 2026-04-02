@@ -22,25 +22,24 @@ import javax.annotation.Nullable;
 public interface CefResponse extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
+     * Returns {@code true} if this object is read-only.
      *
      * <p>Definition generated from cef_response_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_response_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:60</a>
      */
     boolean isReadOnly();
 
     /**
-     * Returns the error string.
+     * Get the response error code. Returns {@code ERR_NONE} if there was no error.
      *
      * <p>Definition generated from cef_response_capi.h
      *
      * <pre>cef_errorcode_t (CEF_CALLBACK* get_error)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:66</a>
      */
     CefErrorCode getError();
 
@@ -96,20 +95,19 @@ public interface CefResponse extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* set_status_text)(struct _cef_response_t* self, const cef_string_t* statusText);</pre>
      *
-     * @param statustext may be null
+     * @param statusText may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:97</a>
      */
-    void setStatusText(@Nullable String statustext);
+    void setStatusText(@Nullable String statusText);
 
     /**
-     * Returns the mime type.
+     * Get the response mime type.
      *
      * <p>Definition generated from cef_response_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_mime_type)(struct _cef_response_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:103</a>
      */
     Optional<String> getMimeType();
 
@@ -120,10 +118,10 @@ public interface CefResponse extends CefLibraryObject {
      *
      * <pre>void (CEF_CALLBACK* set_mime_type)(struct _cef_response_t* self, const cef_string_t* mimeType);</pre>
      *
-     * @param mimetype may be null
+     * @param mimeType may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:109</a>
      */
-    void setMimeType(@Nullable String mimetype);
+    void setMimeType(@Nullable String mimeType);
 
     /**
      * Get the response charset.
@@ -159,7 +157,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:127</a>
      */
-    Optional<String> getHeaderByName(@Nonnull String name);
+    Optional<String> getHeaderByName(@Nullable String name);
 
     /**
      * Set the header {@code name} to {@code value}. If {@code overwrite} is {@code true} any existing values will be
@@ -174,7 +172,7 @@ public interface CefResponse extends CefLibraryObject {
      * @param value may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:133</a>
      */
-    void setHeaderByName(@Nonnull String name, @Nullable String value, boolean overwrite);
+    void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite);
 
     /**
      * Get all response header fields.
@@ -185,7 +183,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:143</a>
      */
-    void getHeaderMap(@Nonnull Map<String, List<String>> headermap);
+    void getHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
     /**
      * Set all response header fields.
@@ -196,17 +194,16 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:149</a>
      */
-    void setHeaderMap(@Nonnull Map<String, List<String>> headermap);
+    void setHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
     /**
-     * Returns the URL.
+     * Get the resolved URL after redirects or changed as a result of HSTS.
      *
      * <p>Definition generated from cef_response_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_response_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
      */
     Optional<String> getUrl();
 
@@ -239,6 +236,7 @@ public interface CefResponse extends CefLibraryObject {
     final class NativePeer implements CefResponse, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -247,7 +245,17 @@ public interface CefResponse extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefResponse has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefResponse.class);
@@ -270,86 +278,103 @@ public interface CefResponse extends CefLibraryObject {
 
         @Override
         public boolean isReadOnly() {
+            checkNotClosed();
             return N_IsReadOnly(nativePtr);
         }
 
         @Override
         public CefErrorCode getError() {
+            checkNotClosed();
             return N_GetError(nativePtr);
         }
 
         @Override
         public void setError(@Nonnull CefErrorCode error) {
+            checkNotClosed();
             N_SetError(nativePtr, error);
         }
 
         @Override
         public int getStatus() {
+            checkNotClosed();
             return N_GetStatus(nativePtr);
         }
 
         @Override
         public void setStatus(int status) {
+            checkNotClosed();
             N_SetStatus(nativePtr, status);
         }
 
         @Override
         public Optional<String> getStatusText() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetStatusText(nativePtr));
         }
 
         @Override
-        public void setStatusText(@Nullable String statustext) {
-            N_SetStatusText(nativePtr, statustext);
+        public void setStatusText(@Nullable String statusText) {
+            checkNotClosed();
+            N_SetStatusText(nativePtr, statusText);
         }
 
         @Override
         public Optional<String> getMimeType() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetMimeType(nativePtr));
         }
 
         @Override
-        public void setMimeType(@Nullable String mimetype) {
-            N_SetMimeType(nativePtr, mimetype);
+        public void setMimeType(@Nullable String mimeType) {
+            checkNotClosed();
+            N_SetMimeType(nativePtr, mimeType);
         }
 
         @Override
         public Optional<String> getCharset() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetCharset(nativePtr));
         }
 
         @Override
         public void setCharset(@Nullable String charset) {
+            checkNotClosed();
             N_SetCharset(nativePtr, charset);
         }
 
         @Override
-        public Optional<String> getHeaderByName(@Nonnull String name) {
+        public Optional<String> getHeaderByName(@Nullable String name) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetHeaderByName(nativePtr, name));
         }
 
         @Override
-        public void setHeaderByName(@Nonnull String name, @Nullable String value, boolean overwrite) {
+        public void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite) {
+            checkNotClosed();
             N_SetHeaderByName(nativePtr, name, value, overwrite);
         }
 
         @Override
-        public void getHeaderMap(@Nonnull Map<String, List<String>> headermap) {
-            N_GetHeaderMap(nativePtr, headermap);
+        public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+            checkNotClosed();
+            N_GetHeaderMap(nativePtr, headerMap);
         }
 
         @Override
-        public void setHeaderMap(@Nonnull Map<String, List<String>> headermap) {
-            N_SetHeaderMap(nativePtr, headermap);
+        public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
+            checkNotClosed();
+            N_SetHeaderMap(nativePtr, headerMap);
         }
 
         @Override
         public Optional<String> getUrl() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetUrl(nativePtr));
         }
 
         @Override
         public void setUrl(@Nullable String url) {
+            checkNotClosed();
             N_SetUrl(nativePtr, url);
         }
 
@@ -365,11 +390,11 @@ public interface CefResponse extends CefLibraryObject {
 
         private static native String N_GetStatusText(long self);
 
-        private static native void N_SetStatusText(long self, String statustext);
+        private static native void N_SetStatusText(long self, String statusText);
 
         private static native String N_GetMimeType(long self);
 
-        private static native void N_SetMimeType(long self, String mimetype);
+        private static native void N_SetMimeType(long self, String mimeType);
 
         private static native String N_GetCharset(long self);
 
@@ -379,9 +404,9 @@ public interface CefResponse extends CefLibraryObject {
 
         private static native void N_SetHeaderByName(long self, String name, String value, boolean overwrite);
 
-        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headermap);
+        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headerMap);
 
-        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headermap);
+        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headerMap);
 
         private static native String N_GetUrl(long self);
 

@@ -4,9 +4,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_write_handler_t
 struct JniCefWriteHandler: public cef_write_handler_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref
@@ -25,14 +24,12 @@ struct JniCefWriteHandler: public cef_write_handler_t {
     static size_t CEF_CALLBACK _write(cef_write_handler_t* self, const void* ptr, size_t size, size_t n) {
         auto* h = reinterpret_cast<JniCefWriteHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(8) < 0) {return 0;}
-        auto j_ptr_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
-        auto j_ptr_ctor = env->GetMethodID(j_ptr_cls, "<init>", "(J)V");
-        auto j_ptr = env->NewObject(j_ptr_cls, j_ptr_ctor, reinterpret_cast<jlong>(ptr));
+        if (env->PushLocalFrame(6) < 0) {return 0;}
+        jobject j_ptr = (size > 0 && ptr) ? env->NewDirectByteBuffer(const_cast<void*>(static_cast<const void*>(ptr)), static_cast<jlong>(size)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "write", "(Lnet/kurobako/cef4j/gen/NativePointer;JJ)J");
+        auto mid = env->GetMethodID(cls, "write", "(Ljava/nio/ByteBuffer;J)J");
         if (!mid) {env->PopLocalFrame(nullptr); return 0;}
-        auto jResult = env->CallLongMethod(h->javaHandler, mid, j_ptr, static_cast<jlong>(size), static_cast<jlong>(n));
+        auto jResult = env->CallLongMethod(h->javaHandler, mid, j_ptr, static_cast<jlong>(n));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
         size_t nativeResult = static_cast<size_t>(jResult);
         env->PopLocalFrame(nullptr);

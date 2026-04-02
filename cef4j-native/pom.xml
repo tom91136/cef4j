@@ -83,7 +83,8 @@
                             <arguments>
                                 <argument>--cef-include=${cef.dist.dir}/include</argument>
                                 <argument>--out-cpp=${project.basedir}/native/gen</argument>
-                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java/net/kurobako/cef4j/gen</argument>
+                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
                             </arguments>
                         </configuration>

@@ -47,7 +47,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
      */
     default void onRegisterCustomPreferences(
-            @Nonnull CefPreferencesType type, @Nonnull CefPreferenceRegistrar registrar) {}
+            @Nonnull CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {}
 
     /**
      * Called on the browser process UI thread immediately after the CEF context has been initialized.
@@ -75,7 +75,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:89</a>
      */
-    default void onBeforeChildProcessLaunch(@Nonnull CefCommandLine commandLine) {}
+    default void onBeforeChildProcessLaunch(@Nullable CefCommandLine commandLine) {}
 
     /**
      * Implement this method to provide app-specific behavior when an already running app is relaunched with the same
@@ -102,7 +102,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
      */
     default boolean onAlreadyRunningAppRelaunch(
-            @Nonnull CefCommandLine commandLine, @Nullable String currentDirectory) {
+            @Nullable CefCommandLine commandLine, @Nullable String currentDirectory) {
         return false;
     }
 
@@ -111,8 +111,8 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * used in combination with cef_settings_t.external_message_pump and CefDoMessageLoopWork() in cases where the CEF
      * message loop must be integrated into an existing application message loop (see additional comments and warnings
      * on CefDoMessageLoopWork). This callback should schedule a CefDoMessageLoopWork() call to happen on the main (UI)
-     * thread. {@code delay_ms} is the requested delay in milliseconds. If {@code delay_ms} is <= 0 then the call should
-     * happen reasonably soon. If {@code delay_ms} is > 0 then the call should be scheduled to happen after the
+     * thread. {@code delay_ms} is the requested delay in milliseconds. If {@code delay_ms} is &lt;= 0 then the call
+     * should happen reasonably soon. If {@code delay_ms} is > 0 then the call should be scheduled to happen after the
      * specified delay and any currently pending scheduled call should be cancelled.
      *
      * <p>Definition generated from cef_browser_process_handler_capi.h

@@ -37,6 +37,7 @@ public interface CefSelectClientCertificateCallback extends CefLibraryObject {
     final class NativePeer implements CefSelectClientCertificateCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -45,7 +46,17 @@ public interface CefSelectClientCertificateCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefSelectClientCertificateCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log =
@@ -70,6 +81,8 @@ public interface CefSelectClientCertificateCallback extends CefLibraryObject {
 
         @Override
         public void select(@Nullable CefX509Certificate cert) {
+            checkNotClosed();
+            CefLibraryObject.requireOpen(cert, "CefX509Certificate");
             N_Select(nativePtr, cert);
         }
 

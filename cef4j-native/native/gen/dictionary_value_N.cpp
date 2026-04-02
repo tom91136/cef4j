@@ -32,8 +32,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_dictionary_value_t* _that_ptr = reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -42,8 +41,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsEqual(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!that) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "that must not be null"); return JNI_FALSE;}
-    cef_dictionary_value_t* _that_ptr = reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J")));
+    cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
     if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
     auto _r = s->is_equal(s, _that_ptr);
     return static_cast<jboolean>(_r);
@@ -75,7 +73,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1HasKey(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->has_key(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -95,7 +92,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Remove(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->remove(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -105,7 +101,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetType(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_type(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -117,7 +112,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetValue(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return nullptr;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_value(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -130,7 +124,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetBool(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_bool(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -140,7 +133,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetInt(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0;}
     auto _key_str = JStringToCefString(env, key);
     return static_cast<jint>(s->get_int(s, _key_str));
 }
@@ -148,7 +140,6 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue
 extern "C" JNIEXPORT jdouble JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetDouble(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0;}
     auto _key_str = JStringToCefString(env, key);
     return static_cast<jdouble>(s->get_double(s, _key_str));
 }
@@ -156,7 +147,6 @@ extern "C" JNIEXPORT jdouble JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetString(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return nullptr;}
     auto _key_str = JStringToCefString(env, key);
     auto result = s->get_string(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -169,7 +159,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetBinary(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return nullptr;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_binary(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -182,7 +171,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetDictionary(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return nullptr;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_dictionary(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -195,7 +183,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetList(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return nullptr;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_list(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -208,10 +195,8 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetValue(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
-    cef_value_t* _value_ptr = reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J")));
+    cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
     auto _r = s->set_value(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -221,7 +206,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetNull(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->set_null(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -231,7 +215,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetBool(JNIEnv* env, jobject obj, jlong self, jstring key, jboolean value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->set_bool(s, _key_str, static_cast<bool>(value));
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -241,7 +224,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetInt(JNIEnv* env, jobject obj, jlong self, jstring key, jint value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->set_int(s, _key_str, value);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -251,7 +233,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetDouble(JNIEnv* env, jobject obj, jlong self, jstring key, jdouble value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->set_double(s, _key_str, value);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -261,7 +242,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetString(JNIEnv* env, jobject obj, jlong self, jstring key, jstring value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
     auto _value_str = value ? JStringToCefString(env, value) : nullptr;
     auto _r = s->set_string(s, _key_str, _value_str);
@@ -273,10 +253,8 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetBinary(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
-    cef_binary_value_t* _value_ptr = reinterpret_cast<cef_binary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J")));
+    cef_binary_value_t* _value_ptr = value ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
     auto _r = s->set_binary(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -286,10 +264,8 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetDictionary(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
-    cef_dictionary_value_t* _value_ptr = reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J")));
+    cef_dictionary_value_t* _value_ptr = value ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
     auto _r = s->set_dictionary(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
@@ -299,10 +275,8 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetList(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return JNI_FALSE;}
-    if (!value) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return JNI_FALSE;}
     auto _key_str = JStringToCefString(env, key);
-    cef_list_value_t* _value_ptr = reinterpret_cast<cef_list_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J")));
+    cef_list_value_t* _value_ptr = value ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
     auto _r = s->set_list(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);

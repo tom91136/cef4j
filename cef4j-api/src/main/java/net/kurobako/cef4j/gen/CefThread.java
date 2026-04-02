@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A simple thread abstraction that establishes a message loop on a new thread. The consumer uses CefTaskRunner to
@@ -85,7 +86,7 @@ public interface CefThread extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefThread> create(
-            @Nonnull String displayName,
+            @Nullable String displayName,
             @Nonnull CefThreadPriority priority,
             @Nonnull CefMessageLoopType messageLoopType,
             int stoppable,
@@ -96,6 +97,7 @@ public interface CefThread extends CefLibraryObject {
     final class NativePeer implements CefThread, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -104,7 +106,17 @@ public interface CefThread extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefThread has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefThread.class);
@@ -127,21 +139,25 @@ public interface CefThread extends CefLibraryObject {
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
+            checkNotClosed();
             return Optional.ofNullable(N_GetTaskRunner(nativePtr));
         }
 
         @Override
         public long getPlatformThreadId() {
+            checkNotClosed();
             return N_GetPlatformThreadId(nativePtr);
         }
 
         @Override
         public void stop() {
+            checkNotClosed();
             N_Stop(nativePtr);
         }
 
         @Override
         public boolean isRunning() {
+            checkNotClosed();
             return N_IsRunning(nativePtr);
         }
 

@@ -8,11 +8,10 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
 extern "C" cef_resource_handler_t* Create_JniCefResourceHandler(JNIEnv *env, jobject handler);
 
-// JNI wrapper struct for cef_scheme_handler_factory_t
 struct JniCefSchemeHandlerFactory: public cef_scheme_handler_factory_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

@@ -2,7 +2,18 @@ package net.kurobako.cef4j.codegen
 
 class CodeGenOutputSpec extends munit.FunSuite {
 
-  private val codegen = new JniCppCodeGen(Map.empty)
+  private val codegen        = new JniCppCodeGen(Map.empty)
+  private val byValueCodegen = new JniCppCodeGen(
+    Map(
+      "cef_size_t" -> CefDecl.DataStruct(
+        "cef_size_t",
+        List(
+          Field("width", CType.Int),
+          Field("height", CType.Int)
+        )
+      )
+    )
+  )
 
   test("Java native codegen produces correct JNI symbol mangling") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
@@ -38,6 +49,28 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(
       cpp.contains("std::atomic<int> refCount{1}"),
       s"Expected refCount member not found in:\n$cpp"
+    )
+  }
+
+  test("generated C++ does not introduce extra blank lines at include-body boundaries") {
+    val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct("cef_client_t", Nil)
+    val objectDecl: CefDecl.ObjectStruct   =
+      CefDecl.ObjectStruct("cef_browser_t", List(FnPtr("go_back", CType.Void, Nil)))
+
+    val handlerCpp = codegen.emitHandlerToString(handlerDecl)
+    val objectCpp  = codegen.emitToString(objectDecl)
+
+    assert(
+      !handlerCpp.contains("#include \"jni_util.h\"\n\n\n"),
+      s"Unexpected extra blank line after native includes in:\n$handlerCpp"
+    )
+    assert(
+      !handlerCpp.contains("InitRefCount<JniCefClient, cef_client_t>(&base);\n\n    }"),
+      s"Unexpected blank line before handler constructor close in:\n$handlerCpp"
+    )
+    assert(
+      !objectCpp.contains("#include \"jni_util.h\"\n\n\n"),
+      s"Unexpected extra blank line after JNI includes in:\n$objectCpp"
     )
   }
 
@@ -98,10 +131,176 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(result.contains("command-line"), s"Expected 'command-line' in:\n$result")
   }
 
+  test("doc comment joining removes ordinary prose line-wrap artifacts") {
+    val input =
+      "Class used to represent the browser process aspects of a browser. The\nmethods of this class can only be called in the browser process. They may be\ncalled on any thread in that process unless otherwise indicated in the\ncomments."
+
+    val result = DocComments.convertCefDoc(input)
+
+    assert(
+      result.contains(
+        "Class used to represent the browser process aspects of a browser. The methods of this class can only be called in the browser process. They may be called on any thread in that process unless otherwise indicated in the comments."
+      ),
+      s"Expected prose lines to be joined into one paragraph in:\n$result"
+    )
+  }
+
+  test("class doc source refs keep Doxygen links in @see tags") {
+    given DocComments.Context = DocComments.baseContext(146, 0)
+
+    val result = JavaCodeGen.renderClassDoc(
+      classDoc = "Reads data from a stream.\n@_cefsrc:cef_stream.h:42"
+    )
+
+    assert(
+      result.contains(
+        """@see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:42</a>"""
+      ),
+      s"Expected linked @see tag in:\n$result"
+    )
+  }
+
+  test("method doc source refs keep Doxygen links in @see tags") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+
+    val fn     = FnPtr("read", CType.Long, List(Param("buffer", CType.Buffer("size"))))
+    val result = DocComments.forMethod(
+      fn = fn,
+      docs = Map("read" -> "Reads from a stream.\n@_cefsrc:cef_stream.h:42"),
+      capiSource = "cef_stream_capi.h",
+      cPrototype = "size_t (CEF_CALLBACK* read)(struct _cef_read_handler_t* self, void* ptr, size_t size, size_t n);"
+    )
+
+    assert(
+      result.contains(
+        """@see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:42</a>"""
+      ),
+      s"Expected linked method @see tag in:\n$result"
+    )
+  }
+
+  test("method doc cross references keep Javadoc links") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context(
+      docsBaseUrl = "https://cef-builds.spotifycdn.com/docs/146.0",
+      classNameMap = Map("CefLifeSpanHandler" -> "CefLifeSpanHandler"),
+      methodSigMap = Map(
+        ("CefLifeSpanHandler", "onBeforeClose") -> List(List("CefBrowser"))
+      )
+    )
+
+    val fn     = FnPtr("get_main_frame", CType.ObjectPtr("cef_frame_t"), Nil)
+    val result = DocComments.forMethod(
+      fn = fn,
+      docs = Map(
+        "get_main_frame" ->
+          "Returns the main frame after CefLifeSpanHandler::OnBeforeClose() is called.\n@_cefsrc:cef_browser.h:152"
+      ),
+      capiSource = "cef_browser_capi.h",
+      cPrototype = "cef_frame_t* (CEF_CALLBACK* get_main_frame)(struct _cef_browser_t* self);"
+    )
+
+    assert(
+      result.contains("{@link CefLifeSpanHandler#onBeforeClose(CefBrowser)}"),
+      s"Expected method cross-reference link in:\n$result"
+    )
+  }
+
+  test("doc conversion escapes shift expressions inside generated C prototypes") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      "Flags used to customize the behavior of CefURLRequest.",
+      capiSource = "cef_types.h",
+      cPrototype = "typedef enum {\n  UR_FLAG_SKIP_CACHE = 1 << 0\n} cef_urlrequest_flags_t;"
+    )
+
+    assert(result.contains("1 &lt;&lt; 0"), s"Expected escaped shift expression in:\n$result")
+  }
+
+  test("doc comment conversion escapes literal self-closing tags in prose") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      """Returns {@code true} if the node represents an empty element. "<a/>" is considered empty."""
+    )
+
+    assert(result.contains("&lt;a/&gt;"), s"Expected literal XML tag to be escaped in:\n$result")
+  }
+
+  test("doc comment conversion escapes literal closing tags in prose") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      """"<a>" is considered empty while "</a>" is not."""
+    )
+
+    assert(result.contains("&lt;/a&gt;"), s"Expected literal closing tag to be escaped in:\n$result")
+  }
+
+  test("doc comment conversion escapes literal placeholder tags in prose") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      """Pass the `--devtools-protocol-log-file=<path>` command-line flag."""
+    )
+
+    assert(result.contains("&lt;path&gt;"), s"Expected literal placeholder tag to be escaped in:\n$result")
+  }
+
+  test("doc comment conversion escapes ampersands in prose") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      "Called during a drag & drop operation."
+    )
+
+    assert(result.contains("drag &amp; drop"), s"Expected ampersand to be escaped in:\n$result")
+  }
+
+  test("doc comment conversion escapes comparison operators in prose") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val result = DocComments.convertCefDoc(
+      "If delay_ms is <= 0 then the callback should happen soon."
+    )
+
+    assert(result.contains("&lt;= 0"), s"Expected <= comparison to be escaped in:\n$result")
+  }
+
   test("JNI symbol for multi-word function name is correct") {
     val fn  = FnPtr("send_mouse_click_event", CType.Void, Nil)
     val sym = Naming.jniSymbol("cef_browser_host_t", fn)
     assertEquals(sym, "Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1SendMouseClickEvent")
+  }
+
+  test("generated Java package is configurable through Naming context") {
+    given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
+    given emptyDocContext: DocComments.Context    = DocComments.Context.empty
+
+    val java = JavaCodeGen.renderJavaFile(
+      declaration = "public final class Example",
+      body = "    private Example() {}"
+    )
+
+    assert(java.contains("package com.example.cef.gen;"), s"Expected configured package in:\n$java")
+  }
+
+  test("JNI symbols track configured generated package") {
+    given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
+
+    val fn  = FnPtr("go_back", CType.Void, Nil)
+    val sym = Naming.jniSymbol("cef_browser_t", fn)
+
+    assertEquals(sym, "Java_com_example_cef_gen_CefBrowser_00024NativePeer_N_1GoBack")
+    assertEquals(Naming.nativePointerInternalName, "com/example/cef/gen/NativePointer")
   }
 
   test("handler trampoline marshals args and calls Java method") {
@@ -175,6 +374,27 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(cpp.contains("GetIntArrayRegion"), s"Missing GetIntArrayRegion in:\n$cpp")
   }
 
+  test("handler codegen supports by-value data-struct returns") {
+    val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_example_handler_t",
+      List(
+        FnPtr("get_size", CType.DataStruct("cef_size_t"), Nil)
+      )
+    )
+
+    val cpp = byValueCodegen.emitHandlerToString(decl)
+
+    assert(cpp.contains("cef_size_t nativeResult = ([&]()"), s"Missing by-value return conversion in:\n$cpp")
+    assert(
+      cpp.contains("""env->FindClass("net/kurobako/cef4j/gen/CefSize")"""),
+      s"Missing struct class lookup in:\n$cpp"
+    )
+    assert(
+      cpp.contains("""env->GetIntField(jResult, env->GetFieldID(_c, "width", "I"))"""),
+      s"Missing field extraction in:\n$cpp"
+    )
+  }
+
   test("handler emits C-linkage factory function") {
     val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct("cef_client_t", Nil)
     val cpp                         = codegen.emitHandlerToString(decl)
@@ -182,13 +402,22 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(cpp.contains("cef_client_t* Create_JniCefClient"), s"Missing return type in:\n$cpp")
   }
 
-  test("NativePeer emits @Nonnull on non-optional reference params") {
+  test("NativePeer emits @Nullable on non-optional String params (not strict-null-check)") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
       "cef_jsdialog_callback_t",
       List(FnPtr("cont", CType.Void, List(Param("success", CType.Int), Param("user_input", CType.JString))))
     )
     val java = JavaNativeCodeGen.renderInnerClass(decl)
-    assert(java.contains("@Nonnull String userInput"), s"Missing @Nonnull on String param in:\n$java")
+    assert(java.contains("@Nullable String userInput"), s"Missing @Nullable on String param in:\n$java")
+  }
+
+  test("NativePeer emits @Nonnull on strict-null-check params (enums, by-value structs)") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_test_t",
+      List(FnPtr("set_mode", CType.Void, List(Param("mode", CType.Enum("cef_mode_t")))))
+    )
+    val java = JavaNativeCodeGen.renderInnerClass(decl)
+    assert(java.contains("@Nonnull"), s"Missing @Nonnull on enum param in:\n$java")
   }
 
   test("NativePeer emits @Nullable on optional reference params") {

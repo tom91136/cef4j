@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to provide handler implementations.
@@ -208,8 +209,7 @@ public interface CefClient extends CefClientHandler {
      *
      * <pre>cef_load_handler_t* (CEF_CALLBACK* get_load_handler)(struct _cef_client_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__client_8h.html">cef_client.h:163</a>
      */
     default Optional<CefLoadHandler> getLoadHandler() {
         return Optional.empty();
@@ -265,14 +265,13 @@ public interface CefClient extends CefClientHandler {
      * int (CEF_CALLBACK* on_process_message_received)(struct _cef_client_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, cef_process_id_t source_process, struct _cef_process_message_t* message);
      * </pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__client_8h.html">cef_client.h:188</a>
      */
     default boolean onProcessMessageReceived(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
             @Nonnull CefProcessId sourceProcess,
-            @Nonnull CefProcessMessage message) {
+            @Nullable CefProcessMessage message) {
         return false;
     }
 }

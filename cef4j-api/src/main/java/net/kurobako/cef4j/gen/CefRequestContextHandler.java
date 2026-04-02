@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to provide handler implementations. The handler instance will not be released until all
@@ -31,5 +31,5 @@ public interface CefRequestContextHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context__handler_8h.html">cef_request_context_handler.h:56</a>
      */
-    default void onRequestContextInitialized(@Nonnull CefRequestContext requestContext) {}
+    default void onRequestContextInitialized(@Nullable CefRequestContext requestContext) {}
 }

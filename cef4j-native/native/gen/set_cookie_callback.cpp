@@ -4,9 +4,8 @@
 #include "jni_util.h"
 
 #include <atomic>
-#include "ref_counted_base.h"
+#include "jni_util.h"
 
-// JNI wrapper struct for cef_set_cookie_callback_t
 struct JniCefSetCookieCallback: public cef_set_cookie_callback_t {
     JavaVM *jvm;
     jobject javaHandler;  // global ref

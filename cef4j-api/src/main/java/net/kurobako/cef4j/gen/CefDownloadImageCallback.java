@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -33,5 +32,5 @@ public interface CefDownloadImageCallback extends CefClientHandler {
      * @param image may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:263</a>
      */
-    default void onDownloadImageFinished(@Nonnull String imageUrl, int httpStatusCode, @Nullable CefImage image) {}
+    default void onDownloadImageFinished(@Nullable String imageUrl, int httpStatusCode, @Nullable CefImage image) {}
 }

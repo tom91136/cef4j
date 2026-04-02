@@ -46,7 +46,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefRequest_0002
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1SetMethod(JNIEnv* env, jobject obj, jlong self, jstring method) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!method) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "method must not be null"); return;}
     auto _method_str = JStringToCefString(env, method);
     s->set_method(s, _method_str);
     if (_method_str) cef_string_userfree_free(_method_str);
@@ -93,8 +92,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequest_0002
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1SetPostData(JNIEnv* env, jobject obj, jlong self, jobject postData) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!postData) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "postdata must not be null"); return;}
-    cef_post_data_t* _postData_ptr = reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J")));
+    cef_post_data_t* _postData_ptr = postData ? reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J"))) : nullptr;
     if (_postData_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b);}
     s->set_post_data(s, _postData_ptr);
 }
@@ -102,7 +100,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024Na
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1GetHeaderMap(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headermap must not be null"); return;}
+    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->get_header_map(s, _headerMap_csmm);
     CefStringMultimapWriteBack(env, _headerMap_csmm, headerMap);
@@ -111,7 +109,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024Na
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1SetHeaderMap(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headermap must not be null"); return;}
+    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set_header_map(s, _headerMap_csmm);
     cef_string_multimap_free(_headerMap_csmm);
@@ -120,7 +118,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024Na
 extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1GetHeaderByName(JNIEnv* env, jobject obj, jlong self, jstring name) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return nullptr;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return nullptr;}
     auto _name_str = JStringToCefString(env, name);
     auto result = s->get_header_by_name(s, _name_str);
     if (_name_str) cef_string_userfree_free(_name_str);
@@ -133,7 +130,6 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefRequest_0002
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1SetHeaderByName(JNIEnv* env, jobject obj, jlong self, jstring name, jstring value, jboolean overwrite) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return;}
     auto _name_str = JStringToCefString(env, name);
     auto _value_str = value ? JStringToCefString(env, value) : nullptr;
     s->set_header_by_name(s, _name_str, _value_str, static_cast<bool>(overwrite));
@@ -144,13 +140,10 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024Na
 extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequest_00024NativePeer_N_1Set(JNIEnv* env, jobject obj, jlong self, jstring url, jstring method, jobject postData, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!url) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "url must not be null"); return;}
-    if (!method) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "method must not be null"); return;}
-    if (!postData) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "postdata must not be null"); return;}
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headermap must not be null"); return;}
+    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
     auto _url_str = JStringToCefString(env, url);
     auto _method_str = JStringToCefString(env, method);
-    cef_post_data_t* _postData_ptr = reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J")));
+    cef_post_data_t* _postData_ptr = postData ? reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J"))) : nullptr;
     if (_postData_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b);}
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set(s, _url_str, _method_str, _postData_ptr, _headerMap_csmm);

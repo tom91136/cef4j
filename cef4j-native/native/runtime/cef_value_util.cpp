@@ -7,10 +7,8 @@
 #include "jni_util.h"
 #include <cstring>
 
-// ---------------------------------------------------------------------------
 // Cached JNI class/method IDs - initialized on first use.
 // These are safe to cache because they use global refs.
-// ---------------------------------------------------------------------------
 struct JniClassCache {
     jclass booleanClass = nullptr;
     jmethodID booleanValueOf = nullptr;
@@ -68,15 +66,13 @@ struct JniClassCache {
     }
 };
 
-static JniClassCache g_cache;
+static JniClassCache classCache;
 
-// ---------------------------------------------------------------------------
 // CefValue -> Java Object
-// ---------------------------------------------------------------------------
 
 jobject CefValueToJObject(JNIEnv* env, cef_value_t* value) {
     if (!value) return nullptr;
-    g_cache.init(env);
+    classCache.init(env);
 
     cef_value_type_t type = value->get_type(value);
     switch (type) {
@@ -86,20 +82,20 @@ jobject CefValueToJObject(JNIEnv* env, cef_value_t* value) {
 
         case VTYPE_BOOL: {
             int b = value->get_bool(value);
-            return env->CallStaticObjectMethod(g_cache.booleanClass,
-                g_cache.booleanValueOf, static_cast<jboolean>(b));
+            return env->CallStaticObjectMethod(classCache.booleanClass,
+                classCache.booleanValueOf, static_cast<jboolean>(b));
         }
 
         case VTYPE_INT: {
             int i = value->get_int(value);
-            return env->CallStaticObjectMethod(g_cache.integerClass,
-                g_cache.integerValueOf, static_cast<jint>(i));
+            return env->CallStaticObjectMethod(classCache.integerClass,
+                classCache.integerValueOf, static_cast<jint>(i));
         }
 
         case VTYPE_DOUBLE: {
             double d = value->get_double(value);
-            return env->CallStaticObjectMethod(g_cache.doubleClass,
-                g_cache.doubleValueOf, static_cast<jdouble>(d));
+            return env->CallStaticObjectMethod(classCache.doubleClass,
+                classCache.doubleValueOf, static_cast<jdouble>(d));
         }
 
         case VTYPE_STRING: {
@@ -144,13 +140,11 @@ jobject CefValueToJObject(JNIEnv* env, cef_value_t* value) {
     }
 }
 
-// ---------------------------------------------------------------------------
 // CefDictionaryValue -> HashMap<String, Object>
-// ---------------------------------------------------------------------------
 
 jobject CefDictValueToJMap(JNIEnv* env, cef_dictionary_value_t* dict) {
     if (!dict) return nullptr;
-    g_cache.init(env);
+    classCache.init(env);
 
     cef_string_list_t keys = cef_string_list_alloc();
     int ok = dict->get_keys(dict, keys);
@@ -160,7 +154,7 @@ jobject CefDictValueToJMap(JNIEnv* env, cef_dictionary_value_t* dict) {
     }
 
     size_t count = cef_string_list_size(keys);
-    jobject map = env->NewObject(g_cache.hashMapClass, g_cache.hashMapInit,
+    jobject map = env->NewObject(classCache.hashMapClass, classCache.hashMapInit,
                                  static_cast<jint>(count));
 
     for (size_t i = 0; i < count; i++) {
@@ -172,7 +166,7 @@ jobject CefDictValueToJMap(JNIEnv* env, cef_dictionary_value_t* dict) {
         jobject jVal = CefValueToJObject(env, val);
         if (val) val->base.release(&val->base);
 
-        env->CallObjectMethod(map, g_cache.hashMapPut, jKey, jVal);
+        env->CallObjectMethod(map, classCache.hashMapPut, jKey, jVal);
 
         env->DeleteLocalRef(jKey);
         if (jVal) env->DeleteLocalRef(jVal);
@@ -183,17 +177,15 @@ jobject CefDictValueToJMap(JNIEnv* env, cef_dictionary_value_t* dict) {
     return map;
 }
 
-// ---------------------------------------------------------------------------
 // CefListValue -> ArrayList<Object>
-// ---------------------------------------------------------------------------
 
 jobject CefListValueToJList(JNIEnv* env, cef_list_value_t* list) {
     if (!list) return nullptr;
-    g_cache.init(env);
+    classCache.init(env);
 
     size_t count = list->get_size(list);
-    jobject arrayList = env->NewObject(g_cache.arrayListClass,
-                                       g_cache.arrayListInit,
+    jobject arrayList = env->NewObject(classCache.arrayListClass,
+                                       classCache.arrayListInit,
                                        static_cast<jint>(count));
 
     for (size_t i = 0; i < count; i++) {
@@ -201,7 +193,7 @@ jobject CefListValueToJList(JNIEnv* env, cef_list_value_t* list) {
         jobject jVal = CefValueToJObject(env, val);
         if (val) val->base.release(&val->base);
 
-        env->CallBooleanMethod(arrayList, g_cache.arrayListAdd, jVal);
+        env->CallBooleanMethod(arrayList, classCache.arrayListAdd, jVal);
 
         if (jVal) env->DeleteLocalRef(jVal);
     }

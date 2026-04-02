@@ -38,6 +38,7 @@ public interface CefBeforeDownloadCallback extends CefLibraryObject {
     final class NativePeer implements CefBeforeDownloadCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -46,7 +47,17 @@ public interface CefBeforeDownloadCallback extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefBeforeDownloadCallback has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefBeforeDownloadCallback.class);
@@ -69,6 +80,7 @@ public interface CefBeforeDownloadCallback extends CefLibraryObject {
 
         @Override
         public void cont(@Nullable String downloadPath, int showDialog) {
+            checkNotClosed();
             N_Cont(nativePtr, downloadPath, showDialog);
         }
 

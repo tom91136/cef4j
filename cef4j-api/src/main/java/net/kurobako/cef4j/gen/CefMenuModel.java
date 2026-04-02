@@ -75,7 +75,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
      */
-    boolean addItem(int commandId, @Nonnull String label);
+    boolean addItem(int commandId, @Nullable String label);
 
     /**
      * Add a check item to the menu. Returns {@code true} on success.
@@ -88,7 +88,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
      */
-    boolean addCheckItem(int commandId, @Nonnull String label);
+    boolean addCheckItem(int commandId, @Nullable String label);
 
     /**
      * Add a radio item to the menu. Only a single item with the specified {@code group_id} can be checked at a time.
@@ -102,7 +102,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
      */
-    boolean addRadioItem(int commandId, @Nonnull String label, int groupId);
+    boolean addRadioItem(int commandId, @Nullable String label, int groupId);
 
     /**
      * Add a sub-menu to the menu. The new sub-menu is returned.
@@ -115,7 +115,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
      */
-    Optional<CefMenuModel> addSubMenu(int commandId, @Nonnull String label);
+    Optional<CefMenuModel> addSubMenu(int commandId, @Nullable String label);
 
     /**
      * Insert a separator in the menu at the specified {@code index}. Returns {@code true} on success.
@@ -139,7 +139,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
      */
-    boolean insertItemAt(long index, int commandId, @Nonnull String label);
+    boolean insertItemAt(long index, int commandId, @Nullable String label);
 
     /**
      * Insert a check item in the menu at the specified {@code index}. Returns {@code true} on success.
@@ -152,7 +152,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
      */
-    boolean insertCheckItemAt(long index, int commandId, @Nonnull String label);
+    boolean insertCheckItemAt(long index, int commandId, @Nullable String label);
 
     /**
      * Insert a radio item in the menu at the specified {@code index}. Only a single item with the specified
@@ -166,7 +166,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
      */
-    boolean insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId);
+    boolean insertRadioItemAt(long index, int commandId, @Nullable String label, int groupId);
 
     /**
      * Insert a sub-menu in the menu at the specified {@code index}. The new sub-menu is returned.
@@ -179,7 +179,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
      */
-    Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label);
+    Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nullable String label);
 
     /**
      * Removes the item with the specified {@code command_id}. Returns {@code true} on success.
@@ -259,7 +259,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
      */
-    boolean setLabel(int commandId, @Nonnull String label);
+    boolean setLabel(int commandId, @Nullable String label);
 
     /**
      * Set the label at the specified {@code index}. Returns {@code true} on success.
@@ -271,7 +271,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
      */
-    boolean setLabelAt(long index, @Nonnull String label);
+    boolean setLabelAt(long index, @Nullable String label);
 
     /**
      * Returns the item type for the specified {@code command_id}.
@@ -643,7 +643,7 @@ public interface CefMenuModel extends CefLibraryObject {
 
     /**
      * Sets the font list for the specified {@code command_id}. If {@code font_list} is empty the system font will be
-     * used. Returns {@code true} on success. The format is "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where:
+     * used. Returns {@code true} on success. The format is "&lt;FONT_FAMILY_LIST&gt;,[STYLES] &lt;SIZE&gt;", where:
      *
      * <ul>
      *   <li>FONT_FAMILY_LIST is a comma-separated list of font family names,
@@ -677,7 +677,7 @@ public interface CefMenuModel extends CefLibraryObject {
     /**
      * Sets the font list for the specified {@code index}. Specify an {@code index} value of -1 to set the default font.
      * If {@code font_list} is empty the system font will be used. Returns {@code true} on success. The format is
-     * "<FONT_FAMILY_LIST>,[STYLES] <SIZE>", where:
+     * "&lt;FONT_FAMILY_LIST&gt;,[STYLES] &lt;SIZE&gt;", where:
      *
      * <ul>
      *   <li>FONT_FAMILY_LIST is a comma-separated list of font family names,
@@ -718,13 +718,14 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
-    static Optional<CefMenuModel> create(@Nonnull CefMenuModelDelegate delegate) {
+    static Optional<CefMenuModel> create(@Nullable CefMenuModelDelegate delegate) {
         return Optional.ofNullable(NativePeer.N_Create(delegate));
     }
 
     final class NativePeer implements CefMenuModel, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -733,7 +734,17 @@ public interface CefMenuModel extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefMenuModel has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefMenuModel.class);
@@ -756,275 +767,329 @@ public interface CefMenuModel extends CefLibraryObject {
 
         @Override
         public boolean isSubMenu() {
+            checkNotClosed();
             return N_IsSubMenu(nativePtr);
         }
 
         @Override
         public boolean clear() {
+            checkNotClosed();
             return N_Clear(nativePtr);
         }
 
         @Override
         public long getCount() {
+            checkNotClosed();
             return N_GetCount(nativePtr);
         }
 
         @Override
         public boolean addSeparator() {
+            checkNotClosed();
             return N_AddSeparator(nativePtr);
         }
 
         @Override
-        public boolean addItem(int commandId, @Nonnull String label) {
+        public boolean addItem(int commandId, @Nullable String label) {
+            checkNotClosed();
             return N_AddItem(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean addCheckItem(int commandId, @Nonnull String label) {
+        public boolean addCheckItem(int commandId, @Nullable String label) {
+            checkNotClosed();
             return N_AddCheckItem(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean addRadioItem(int commandId, @Nonnull String label, int groupId) {
+        public boolean addRadioItem(int commandId, @Nullable String label, int groupId) {
+            checkNotClosed();
             return N_AddRadioItem(nativePtr, commandId, label, groupId);
         }
 
         @Override
-        public Optional<CefMenuModel> addSubMenu(int commandId, @Nonnull String label) {
+        public Optional<CefMenuModel> addSubMenu(int commandId, @Nullable String label) {
+            checkNotClosed();
             return Optional.ofNullable(N_AddSubMenu(nativePtr, commandId, label));
         }
 
         @Override
         public boolean insertSeparatorAt(long index) {
+            checkNotClosed();
             return N_InsertSeparatorAt(nativePtr, index);
         }
 
         @Override
-        public boolean insertItemAt(long index, int commandId, @Nonnull String label) {
+        public boolean insertItemAt(long index, int commandId, @Nullable String label) {
+            checkNotClosed();
             return N_InsertItemAt(nativePtr, index, commandId, label);
         }
 
         @Override
-        public boolean insertCheckItemAt(long index, int commandId, @Nonnull String label) {
+        public boolean insertCheckItemAt(long index, int commandId, @Nullable String label) {
+            checkNotClosed();
             return N_InsertCheckItemAt(nativePtr, index, commandId, label);
         }
 
         @Override
-        public boolean insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId) {
+        public boolean insertRadioItemAt(long index, int commandId, @Nullable String label, int groupId) {
+            checkNotClosed();
             return N_InsertRadioItemAt(nativePtr, index, commandId, label, groupId);
         }
 
         @Override
-        public Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label) {
+        public Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nullable String label) {
+            checkNotClosed();
             return Optional.ofNullable(N_InsertSubMenuAt(nativePtr, index, commandId, label));
         }
 
         @Override
         public boolean remove(int commandId) {
+            checkNotClosed();
             return N_Remove(nativePtr, commandId);
         }
 
         @Override
         public boolean removeAt(long index) {
+            checkNotClosed();
             return N_RemoveAt(nativePtr, index);
         }
 
         @Override
         public int getIndexOf(int commandId) {
+            checkNotClosed();
             return N_GetIndexOf(nativePtr, commandId);
         }
 
         @Override
         public int getCommandIdAt(long index) {
+            checkNotClosed();
             return N_GetCommandIdAt(nativePtr, index);
         }
 
         @Override
         public boolean setCommandIdAt(long index, int commandId) {
+            checkNotClosed();
             return N_SetCommandIdAt(nativePtr, index, commandId);
         }
 
         @Override
         public Optional<String> getLabel(int commandId) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetLabel(nativePtr, commandId));
         }
 
         @Override
-        public boolean setLabel(int commandId, @Nonnull String label) {
+        public boolean setLabel(int commandId, @Nullable String label) {
+            checkNotClosed();
             return N_SetLabel(nativePtr, commandId, label);
         }
 
         @Override
-        public boolean setLabelAt(long index, @Nonnull String label) {
+        public boolean setLabelAt(long index, @Nullable String label) {
+            checkNotClosed();
             return N_SetLabelAt(nativePtr, index, label);
         }
 
         @Override
         public CefMenuItemType getType(int commandId) {
+            checkNotClosed();
             return N_GetType(nativePtr, commandId);
         }
 
         @Override
         public int getGroupId(int commandId) {
+            checkNotClosed();
             return N_GetGroupId(nativePtr, commandId);
         }
 
         @Override
         public int getGroupIdAt(long index) {
+            checkNotClosed();
             return N_GetGroupIdAt(nativePtr, index);
         }
 
         @Override
         public boolean setGroupId(int commandId, int groupId) {
+            checkNotClosed();
             return N_SetGroupId(nativePtr, commandId, groupId);
         }
 
         @Override
         public boolean setGroupIdAt(long index, int groupId) {
+            checkNotClosed();
             return N_SetGroupIdAt(nativePtr, index, groupId);
         }
 
         @Override
         public Optional<CefMenuModel> getSubMenu(int commandId) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSubMenu(nativePtr, commandId));
         }
 
         @Override
         public Optional<CefMenuModel> getSubMenuAt(long index) {
+            checkNotClosed();
             return Optional.ofNullable(N_GetSubMenuAt(nativePtr, index));
         }
 
         @Override
         public boolean isVisible(int commandId) {
+            checkNotClosed();
             return N_IsVisible(nativePtr, commandId);
         }
 
         @Override
         public boolean isVisibleAt(long index) {
+            checkNotClosed();
             return N_IsVisibleAt(nativePtr, index);
         }
 
         @Override
         public boolean setVisible(int commandId, boolean visible) {
+            checkNotClosed();
             return N_SetVisible(nativePtr, commandId, visible);
         }
 
         @Override
         public boolean setVisibleAt(long index, boolean visible) {
+            checkNotClosed();
             return N_SetVisibleAt(nativePtr, index, visible);
         }
 
         @Override
         public boolean isEnabled(int commandId) {
+            checkNotClosed();
             return N_IsEnabled(nativePtr, commandId);
         }
 
         @Override
         public boolean isEnabledAt(long index) {
+            checkNotClosed();
             return N_IsEnabledAt(nativePtr, index);
         }
 
         @Override
         public boolean setEnabled(int commandId, boolean enabled) {
+            checkNotClosed();
             return N_SetEnabled(nativePtr, commandId, enabled);
         }
 
         @Override
         public boolean setEnabledAt(long index, boolean enabled) {
+            checkNotClosed();
             return N_SetEnabledAt(nativePtr, index, enabled);
         }
 
         @Override
         public boolean isChecked(int commandId) {
+            checkNotClosed();
             return N_IsChecked(nativePtr, commandId);
         }
 
         @Override
         public boolean isCheckedAt(long index) {
+            checkNotClosed();
             return N_IsCheckedAt(nativePtr, index);
         }
 
         @Override
         public boolean setChecked(int commandId, boolean checked) {
+            checkNotClosed();
             return N_SetChecked(nativePtr, commandId, checked);
         }
 
         @Override
         public boolean setCheckedAt(long index, boolean checked) {
+            checkNotClosed();
             return N_SetCheckedAt(nativePtr, index, checked);
         }
 
         @Override
         public boolean hasAccelerator(int commandId) {
+            checkNotClosed();
             return N_HasAccelerator(nativePtr, commandId);
         }
 
         @Override
         public boolean hasAcceleratorAt(long index) {
+            checkNotClosed();
             return N_HasAcceleratorAt(nativePtr, index);
         }
 
         @Override
         public boolean setAccelerator(
                 int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed) {
+            checkNotClosed();
             return N_SetAccelerator(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean setAcceleratorAt(
                 long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed) {
+            checkNotClosed();
             return N_SetAcceleratorAt(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean removeAccelerator(int commandId) {
+            checkNotClosed();
             return N_RemoveAccelerator(nativePtr, commandId);
         }
 
         @Override
         public boolean removeAcceleratorAt(long index) {
+            checkNotClosed();
             return N_RemoveAcceleratorAt(nativePtr, index);
         }
 
         @Override
         public boolean getAccelerator(
                 int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed) {
+            checkNotClosed();
             return N_GetAccelerator(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean getAcceleratorAt(
                 long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed) {
+            checkNotClosed();
             return N_GetAcceleratorAt(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color) {
+            checkNotClosed();
             return N_SetColor(nativePtr, commandId, colorType, color);
         }
 
         @Override
         public boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color) {
+            checkNotClosed();
             return N_SetColorAt(nativePtr, index, colorType, color);
         }
 
         @Override
         public boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color) {
+            checkNotClosed();
             return N_GetColor(nativePtr, commandId, colorType, color);
         }
 
         @Override
         public boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color) {
+            checkNotClosed();
             return N_GetColorAt(nativePtr, index, colorType, color);
         }
 
         @Override
         public boolean setFontList(int commandId, @Nullable String fontList) {
+            checkNotClosed();
             return N_SetFontList(nativePtr, commandId, fontList);
         }
 
         @Override
         public boolean setFontListAt(int index, @Nullable String fontList) {
+            checkNotClosed();
             return N_SetFontListAt(nativePtr, index, fontList);
         }
 

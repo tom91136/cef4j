@@ -68,18 +68,18 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:56</a>
      */
     default boolean onBeforePopup(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
             int popupId,
             @Nullable String targetUrl,
             @Nullable String targetFrameName,
             @Nonnull CefWindowOpenDisposition targetDisposition,
             boolean userGesture,
-            @Nonnull NativePointer popupfeatures,
-            @Nonnull CefMutableWindowInfo windowinfo,
-            @Nonnull AtomicReference<CefClient> client,
-            @Nonnull CefMutableBrowserSettings settings,
-            @Nonnull AtomicReference<CefDictionaryValue> extraInfo,
+            @Nullable NativePointer popupFeatures,
+            @Nonnull CefWindowInfo.Mutable windowInfo,
+            @Nullable AtomicReference<CefClient> client,
+            @Nonnull CefBrowserSettings.Mutable settings,
+            @Nullable AtomicReference<CefDictionaryValue> extraInfo,
             int[] noJavascriptAccess) {
         return false;
     }
@@ -104,7 +104,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:116</a>
      */
-    default void onBeforePopupAborted(@Nonnull CefBrowser browser, int popupId) {}
+    default void onBeforePopupAborted(@Nullable CefBrowser browser, int popupId) {}
 
     /**
      * Called on the UI thread before a new DevTools popup browser is created. The {@code browser} value represents the
@@ -133,11 +133,11 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:135</a>
      */
     default void onBeforeDevToolsPopup(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefMutableWindowInfo windowinfo,
-            @Nonnull AtomicReference<CefClient> client,
-            @Nonnull CefMutableBrowserSettings settings,
-            @Nonnull AtomicReference<CefDictionaryValue> extraInfo,
+            @Nullable CefBrowser browser,
+            @Nonnull CefWindowInfo.Mutable windowInfo,
+            @Nullable AtomicReference<CefClient> client,
+            @Nonnull CefBrowserSettings.Mutable settings,
+            @Nullable AtomicReference<CefDictionaryValue> extraInfo,
             int[] useDefaultWindow) {}
 
     /**
@@ -154,7 +154,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:162</a>
      */
-    default void onAfterCreated(@Nonnull CefBrowser browser) {}
+    default void onAfterCreated(@Nullable CefBrowser browser) {}
 
     /**
      * Called when an Alloy style browser is ready to be closed, meaning that the close has already been initiated and
@@ -228,7 +228,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
      */
-    default boolean doClose(@Nonnull CefBrowser browser) {
+    default boolean doClose(@Nullable CefBrowser browser) {
         return false;
     }
 
@@ -250,5 +250,5 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:279</a>
      */
-    default void onBeforeClose(@Nonnull CefBrowser browser) {}
+    default void onBeforeClose(@Nullable CefBrowser browser) {}
 }

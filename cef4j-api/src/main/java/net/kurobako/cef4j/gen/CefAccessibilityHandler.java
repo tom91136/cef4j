@@ -1,7 +1,7 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to receive accessibility notification when accessibility events have been registered. The
@@ -31,7 +31,7 @@ public interface CefAccessibilityHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:51</a>
      */
-    default void onAccessibilityTreeChange(@Nonnull CefValue value) {}
+    default void onAccessibilityTreeChange(@Nullable CefValue value) {}
 
     /**
      * Called after renderer process sends accessibility location changes to the browser process.
@@ -45,5 +45,5 @@ public interface CefAccessibilityHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:58</a>
      */
-    default void onAccessibilityLocationChange(@Nonnull CefValue value) {}
+    default void onAccessibilityLocationChange(@Nullable CefValue value) {}
 }

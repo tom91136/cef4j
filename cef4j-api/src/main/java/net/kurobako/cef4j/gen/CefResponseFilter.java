@@ -60,13 +60,22 @@ public interface CefResponseFilter extends CefClientHandler {
      *
      * <p>Do not keep a reference to the buffers passed to this method.
      *
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
+     * {@code dataInSize}, {@code dataOutSize} parameter is derived from the buffer's capacity.</b>
+     *
      * <p>Definition generated from cef_response_filter_capi.h
      *
      * <pre>
      * cef_response_filter_status_t (CEF_CALLBACK* filter)(struct _cef_response_filter_t* self, void* data_in, size_t data_in_size, size_t* data_in_read, void* data_out, size_t data_out_size, size_t* data_out_written);
      * </pre>
      *
-     * @param dataIn may be null
+     * @param dataIn may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer
+     *     is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a
+     *     reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native
+     *     crashes.</b>
+     * @param dataOut <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
+     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
+     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @return the result, or {@code RESPONSE_FILTER_ERROR} for default handling
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:59</a>

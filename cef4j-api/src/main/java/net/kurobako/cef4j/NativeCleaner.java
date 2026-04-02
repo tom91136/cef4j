@@ -17,9 +17,12 @@ public enum NativeCleaner {
 
     public Cleaner.Cleanable register(Object obj, Runnable action) {
         if (log.isTraceEnabled()) {
+            Class<?> enclosing = obj.getClass().getEnclosingClass();
             log.trace(
                     "alloc   {} 0x{}",
-                    obj.getClass().getEnclosingClass().getSimpleName(),
+                    enclosing != null
+                            ? enclosing.getSimpleName()
+                            : obj.getClass().getSimpleName(),
                     Long.toHexString(ptrOf(obj)));
         }
         Cleaner.Cleanable c = cleaner.register(obj, action);

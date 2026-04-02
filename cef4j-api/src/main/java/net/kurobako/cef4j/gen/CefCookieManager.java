@@ -31,7 +31,7 @@ public interface CefCookieManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:69</a>
      */
-    boolean visitAllCookies(@Nonnull CefCookieVisitor visitor);
+    boolean visitAllCookies(@Nullable CefCookieVisitor visitor);
 
     /**
      * Visit a subset of cookies on the UI thread. The results are filtered by the given url scheme, host, domain and
@@ -47,7 +47,7 @@ public interface CefCookieManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:77</a>
      */
-    boolean visitUrlCookies(@Nonnull String url, boolean includehttponly, @Nonnull CefCookieVisitor visitor);
+    boolean visitUrlCookies(@Nullable String url, boolean includeHttpOnly, @Nullable CefCookieVisitor visitor);
 
     /**
      * Sets a cookie given a valid URL and explicit user-provided cookie attributes. This function expects each
@@ -65,7 +65,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * @param callback may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:89</a>
      */
-    boolean setCookie(@Nonnull String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
+    boolean setCookie(@Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
 
     /**
      * Delete all cookies that match the specified parameters. If both {@code url} and {@code cookie_name} values are
@@ -124,6 +124,7 @@ public interface CefCookieManager extends CefLibraryObject {
     final class NativePeer implements CefCookieManager, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
+        private volatile boolean closed;
 
         NativePeer(long ptr) {
             this.nativePtr = ptr;
@@ -132,7 +133,17 @@ public interface CefCookieManager extends CefLibraryObject {
 
         @Override
         public void close() {
+            closed = true;
             cleanable.clean();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        private void checkNotClosed() {
+            if (closed) throw new IllegalStateException("CefCookieManager has been closed");
         }
 
         private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefCookieManager.class);
@@ -154,37 +165,42 @@ public interface CefCookieManager extends CefLibraryObject {
         private static native void N_Release(long ptr);
 
         @Override
-        public boolean visitAllCookies(@Nonnull CefCookieVisitor visitor) {
+        public boolean visitAllCookies(@Nullable CefCookieVisitor visitor) {
+            checkNotClosed();
             return N_VisitAllCookies(nativePtr, visitor);
         }
 
         @Override
         public boolean visitUrlCookies(
-                @Nonnull String url, boolean includehttponly, @Nonnull CefCookieVisitor visitor) {
-            return N_VisitUrlCookies(nativePtr, url, includehttponly, visitor);
+                @Nullable String url, boolean includeHttpOnly, @Nullable CefCookieVisitor visitor) {
+            checkNotClosed();
+            return N_VisitUrlCookies(nativePtr, url, includeHttpOnly, visitor);
         }
 
         @Override
         public boolean setCookie(
-                @Nonnull String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback) {
+                @Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback) {
+            checkNotClosed();
             return N_SetCookie(nativePtr, url, cookie, callback);
         }
 
         @Override
         public boolean deleteCookies(
                 @Nullable String url, @Nullable String cookieName, @Nullable CefDeleteCookiesCallback callback) {
+            checkNotClosed();
             return N_DeleteCookies(nativePtr, url, cookieName, callback);
         }
 
         @Override
         public boolean flushStore(@Nullable CefCompletionCallback callback) {
+            checkNotClosed();
             return N_FlushStore(nativePtr, callback);
         }
 
         private static native boolean N_VisitAllCookies(long self, CefCookieVisitor visitor);
 
         private static native boolean N_VisitUrlCookies(
-                long self, String url, boolean includehttponly, CefCookieVisitor visitor);
+                long self, String url, boolean includeHttpOnly, CefCookieVisitor visitor);
 
         private static native boolean N_SetCookie(
                 long self, String url, CefCookie cookie, CefSetCookieCallback callback);

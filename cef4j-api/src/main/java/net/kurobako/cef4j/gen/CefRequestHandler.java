@@ -41,9 +41,9 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
      */
     default boolean onBeforeBrowse(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull CefRequest request,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefRequest request,
             boolean userGesture,
             boolean isRedirect) {
         return false;
@@ -71,22 +71,22 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
      */
     default boolean onOpenUrlFromTab(
-            @Nonnull CefBrowser browser,
-            @Nonnull CefFrame frame,
-            @Nonnull String targetUrl,
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable String targetUrl,
             @Nonnull CefWindowOpenDisposition targetDisposition,
             boolean userGesture) {
         return false;
     }
 
     /**
-     * Called on the IO thread when the browser needs credentials from the user. {@code isProxy} indicates whether the
-     * host is a proxy server. {@code host} contains the hostname and {@code port} contains the port number. Return
-     * {@code true} to continue the request and call CefAuthCallback.continue() when the authentication information is
-     * available. If the request has an associated browser/frame then returning {@code false} will result in a call to
-     * GetAuthCredentials on the CefRequestHandler associated with that browser, if any. Otherwise, returning
-     * {@code false} will cancel the request immediately. This method will only be called for requests initiated from
-     * the browser process.
+     * Called on the IO thread when the browser needs credentials from the user. {@code origin_url} is the origin making
+     * this authentication request. {@code isProxy} indicates whether the host is a proxy server. {@code host} contains
+     * the hostname and {@code port} contains the port number. {@code realm} is the realm of the challenge and may be
+     * empty. {@code scheme} is the authentication scheme used, such as "basic" or "digest", and will be empty if the
+     * source of the request is an FTP server. Return {@code true} to continue the request and call
+     * CefAuthCallback.continue() either in this method or at a later time when the authentication information is
+     * available. Return {@code false} to cancel the request immediately.
      *
      * <p>Definition generated from cef_request_handler_capi.h
      *
@@ -95,17 +95,19 @@ public interface CefRequestHandler extends CefClientHandler {
      * </pre>
      *
      * @param realm may be null
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
+     * @param scheme may be null
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
      */
     default boolean getAuthCredentials(
-            @Nonnull CefBrowser browser,
-            @Nonnull String originUrl,
-            boolean isproxy,
-            @Nonnull String host,
+            @Nullable CefBrowser browser,
+            @Nullable String originUrl,
+            boolean isProxy,
+            @Nullable String host,
             int port,
             @Nullable String realm,
-            @Nonnull String scheme,
-            @Nonnull CefAuthCallback callback) {
+            @Nullable String scheme,
+            @Nullable CefAuthCallback callback) {
         return false;
     }
 
@@ -125,11 +127,11 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
      */
     default boolean onCertificateError(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefErrorCode certError,
-            @Nonnull String requestUrl,
-            @Nonnull CefSslInfo sslInfo,
-            @Nonnull CefCallback callback) {
+            @Nullable String requestUrl,
+            @Nullable CefSslInfo sslInfo,
+            @Nullable CefCallback callback) {
         return false;
     }
 
@@ -155,13 +157,13 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:193</a>
      */
     default boolean onSelectClientCertificate(
-            @Nonnull CefBrowser browser,
-            boolean isproxy,
-            @Nonnull String host,
+            @Nullable CefBrowser browser,
+            boolean isProxy,
+            @Nullable String host,
             int port,
-            long certificatescount,
-            @Nonnull CefX509Certificate[] certificates,
-            @Nonnull CefSelectClientCertificateCallback callback) {
+            long certificatesCount,
+            @Nullable CefX509Certificate[] certificates,
+            @Nullable CefSelectClientCertificateCallback callback) {
         return false;
     }
 
@@ -178,7 +180,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:220</a>
      */
-    default void onRenderViewReady(@Nonnull CefBrowser browser) {}
+    default void onRenderViewReady(@Nullable CefBrowser browser) {}
 
     /**
      * Called on the browser process UI thread when the render process is unresponsive as indicated by a lack of input
@@ -203,7 +205,7 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
      */
     default boolean onRenderProcessUnresponsive(
-            @Nonnull CefBrowser browser, @Nonnull CefUnresponsiveProcessCallback callback) {
+            @Nullable CefBrowser browser, @Nullable CefUnresponsiveProcessCallback callback) {
         return false;
     }
 
@@ -220,7 +222,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:253</a>
      */
-    default void onRenderProcessResponsive(@Nonnull CefBrowser browser) {}
+    default void onRenderProcessResponsive(@Nullable CefBrowser browser) {}
 
     /**
      * Called on the browser process UI thread when the render process terminates unexpectedly. {@code status} indicates
@@ -238,10 +240,10 @@ public interface CefRequestHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
      */
     default void onRenderProcessTerminated(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nonnull CefTerminationStatus status,
             int errorCode,
-            @Nonnull String errorString) {}
+            @Nullable String errorString) {}
 
     /**
      * Called on the browser process UI thread when the window.document object of the main frame has been created.
@@ -255,5 +257,5 @@ public interface CefRequestHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:275</a>
      */
-    default void onDocumentAvailableInMainFrame(@Nonnull CefBrowser browser) {}
+    default void onDocumentAvailableInMainFrame(@Nullable CefBrowser browser) {}
 }

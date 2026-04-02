@@ -14,13 +14,13 @@ object JavaCodeGen {
       cPrototype: String = "",
       cppSource: String = "",
       classDocSuffix: String = ""
-  ): String =
+  )(using Naming.Context, DocComments.Context): String =
     if (classDoc.nonEmpty || classDocSuffix.nonEmpty) {
       val converted =
         if (classDoc.nonEmpty) DocComments.convertCefDoc(classDoc, capiSource, cPrototype, cppSource) else ""
       val (docText, sourceRefTags) = DocComments.extractSourceTags(converted)
       val contentLines             = docText.linesIterator.filter(_.nonEmpty).map(line => s" * $line").toList
-      // Suffix is inserted raw (not through convertCefDoc) — between content and source refs
+      // Insert the suffix as-is between converted content and source references.
       val suffixLines =
         if (classDocSuffix.nonEmpty) classDocSuffix.linesIterator.filter(_.nonEmpty).map(l => s" * $l").toList else Nil
       val seeTags    = sourceRefTags.map(tag => s" * @see $tag")
@@ -42,10 +42,10 @@ ${allLines.mkString("\n")}
       cPrototype: String = "",
       cppSource: String = "",
       classDocSuffix: String = ""
-  ): String = {
+  )(using Naming.Context, DocComments.Context): String = {
     val importBlock = if (imports.nonEmpty) s"\n${imports.mkString("\n")}\n" else ""
     s"""$GeneratedBanner
-package net.kurobako.cef4j.gen;
+package ${Naming.javaPackage};
 $importBlock
 ${renderClassDoc(classDoc, capiSource, cPrototype, cppSource, classDocSuffix)}$declaration {
 
@@ -73,6 +73,18 @@ $body
         CType.OpaquePtr | CType.PixelBuffer | CType.Buffer(_) |
         CType.StringList | CType.StringMap | CType.StringMultimap |
         CType.CountFuncArray(_, _, _, _) => true
+    case _ => false
+  }
+
+  // Types where null is almost certainly a programming error on the Java side.
+  // JString, ObjectPtr, OpaquePtr, and Handler types are excluded because CEF
+  // frequently accepts NULL for these (e.g. NULL browser/frame in service worker
+  // contexts, NULL strings for defaults) but upstream metacomments only annotate
+  // ~10% of nullable parameters.
+  def isStrictNullCheck(ct: CType): Boolean = ct match {
+    case CType.Enum(_) | CType.ByValueIn(_) | CType.ByValueOut(_) | CType.ByValueArray(_) |
+        CType.Buffer(_) | CType.PixelBuffer |
+        CType.StringList | CType.StringMap | CType.StringMultimap => true
     case _ => false
   }
 }

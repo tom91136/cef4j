@@ -45,12 +45,12 @@ public interface CefJsDialogHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:68</a>
      */
     default boolean onJsDialog(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nullable String originUrl,
             @Nonnull CefJsDialogType dialogType,
             @Nullable String messageText,
             @Nullable String defaultPromptText,
-            @Nonnull CefJsDialogCallback callback,
+            @Nullable CefJsDialogCallback callback,
             int[] suppressMessage) {
         return false;
     }
@@ -72,10 +72,10 @@ public interface CefJsDialogHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
      */
     default boolean onBeforeUnloadDialog(
-            @Nonnull CefBrowser browser,
+            @Nullable CefBrowser browser,
             @Nullable String messageText,
             boolean isReload,
-            @Nonnull CefJsDialogCallback callback) {
+            @Nullable CefJsDialogCallback callback) {
         return false;
     }
 
@@ -92,7 +92,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:112</a>
      */
-    default void onResetDialogState(@Nonnull CefBrowser browser) {}
+    default void onResetDialogState(@Nullable CefBrowser browser) {}
 
     /**
      * Called when the dialog is closed.
@@ -105,5 +105,5 @@ public interface CefJsDialogHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:120</a>
      */
-    default void onDialogClosed(@Nonnull CefBrowser browser) {}
+    default void onDialogClosed(@Nullable CefBrowser browser) {}
 }

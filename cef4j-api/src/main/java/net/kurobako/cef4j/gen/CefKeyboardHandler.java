@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implement this interface to handle events related to keyboard input. The methods of this class will be called on the
@@ -35,7 +36,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:51</a>
      */
     default boolean onPreKeyEvent(
-            @Nonnull CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
+            @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
         return false;
     }
 
@@ -53,7 +54,7 @@ public interface CefKeyboardHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
-    default boolean onKeyEvent(@Nonnull CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+    default boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
         return false;
     }
 }

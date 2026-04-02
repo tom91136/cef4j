@@ -14,7 +14,6 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManag
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManager_00024NativePeer_N_1HasPreference(JNIEnv* env, jobject obj, jlong self, jstring name) {
     auto* s = reinterpret_cast<cef_preference_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return JNI_FALSE;}
     auto _name_str = JStringToCefString(env, name);
     auto _r = s->has_preference(s, _name_str);
     if (_name_str) cef_string_userfree_free(_name_str);
@@ -24,7 +23,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceM
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManager_00024NativePeer_N_1GetPreference(JNIEnv* env, jobject obj, jlong self, jstring name) {
     auto* s = reinterpret_cast<cef_preference_manager_t*>(self);
     if (!s) return nullptr;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return nullptr;}
     auto _name_str = JStringToCefString(env, name);
     auto _r = s->get_preference(s, _name_str);
     if (_name_str) cef_string_userfree_free(_name_str);
@@ -47,7 +45,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceMa
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManager_00024NativePeer_N_1CanSetPreference(JNIEnv* env, jobject obj, jlong self, jstring name) {
     auto* s = reinterpret_cast<cef_preference_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return JNI_FALSE;}
     auto _name_str = JStringToCefString(env, name);
     auto _r = s->can_set_preference(s, _name_str);
     if (_name_str) cef_string_userfree_free(_name_str);
@@ -57,8 +54,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceM
 extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManager_00024NativePeer_N_1SetPreference(JNIEnv* env, jobject obj, jlong self, jstring name, jobject value, jstring error) {
     auto* s = reinterpret_cast<cef_preference_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return JNI_FALSE;}
-    if (!error) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "error must not be null"); return JNI_FALSE;}
     auto _name_str = JStringToCefString(env, name);
     cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
@@ -72,9 +67,8 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceM
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceManager_00024NativePeer_N_1AddPreferenceObserver(JNIEnv* env, jobject obj, jlong self, jstring name, jobject observer) {
     auto* s = reinterpret_cast<cef_preference_manager_t*>(self);
     if (!s) return nullptr;
-    if (!observer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "observer must not be null"); return nullptr;}
     auto _name_str = name ? JStringToCefString(env, name) : nullptr;
-    cef_preference_observer_t* _observer_ptr = Create_JniCefPreferenceObserver(env, observer);
+    cef_preference_observer_t* _observer_ptr = observer ? Create_JniCefPreferenceObserver(env, observer) : nullptr;
     auto _r = s->add_preference_observer(s, _name_str, _observer_ptr);
     if (_name_str) cef_string_userfree_free(_name_str);
     if (!_r) return nullptr;

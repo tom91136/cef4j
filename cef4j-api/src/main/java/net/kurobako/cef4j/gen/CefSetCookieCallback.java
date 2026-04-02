@@ -17,13 +17,14 @@ package net.kurobako.cef4j.gen;
 public interface CefSetCookieCallback extends CefClientHandler {
 
     /**
-     * Method that will be called upon completion. {@code num_deleted} will be the number of cookies that were deleted.
+     * Method that will be called upon completion. {@code success} will be {@code true} if the cookie was set
+     * successfully.
      *
      * <p>Definition generated from cef_cookie_capi.h
      *
      * <pre>void (CEF_CALLBACK* on_complete)(struct _cef_set_cookie_callback_t* self, int success);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:157</a>
      */
     default void onComplete(int success) {}
 }

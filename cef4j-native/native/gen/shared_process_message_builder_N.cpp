@@ -42,7 +42,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSharedProces
 }
 
 extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSharedProcessMessageBuilder_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring name, jlong byte_size) {
-    if (!name) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "name must not be null"); return nullptr;}
     auto _name_str = JStringToCefString(env, name);
     auto _r = cef_shared_process_message_builder_create(_name_str, byte_size);
     if (_name_str) cef_string_userfree_free(_name_str);
