@@ -12,8 +12,14 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
@@ -36,9 +42,12 @@ import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefContextMenuHandler;
+import net.kurobako.cef4j.gen.CefContextMenuParams;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDictionaryValue;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
+import net.kurobako.cef4j.gen.CefEventFlags;
 import net.kurobako.cef4j.gen.CefFocusHandler;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefJsDialogCallback;
@@ -48,13 +57,19 @@ import net.kurobako.cef4j.gen.CefKeyEvent;
 import net.kurobako.cef4j.gen.CefKeyEventType;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
+import net.kurobako.cef4j.gen.CefMenuItemType;
+import net.kurobako.cef4j.gen.CefMenuModel;
 import net.kurobako.cef4j.gen.CefMouseButtonType;
 import net.kurobako.cef4j.gen.CefMouseEvent;
 import net.kurobako.cef4j.gen.CefNavigationEntry;
 import net.kurobako.cef4j.gen.CefNavigationEntryVisitor;
 import net.kurobako.cef4j.gen.CefPaintElementType;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.CefRunContextMenuCallback;
+import net.kurobako.cef4j.gen.CefRunQuickMenuCallback;
 import net.kurobako.cef4j.gen.CefScreenInfo;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefSize;
@@ -80,7 +95,6 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("this-escape")
 public class CefWebView extends Region {
     private static final Logger log = LoggerFactory.getLogger(CefWebView.class);
-    private static final boolean debug = Boolean.getBoolean("cef4j.jfx.debug");
     private static final Object SETUP_LOCK = new Object();
 
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
@@ -110,6 +124,13 @@ public class CefWebView extends Region {
         onWindowChanged(newWindow);
     };
     private final ChangeListener<Number> windowBoundsListener = (obs, oldValue, newValue) -> requestViewRefresh(true);
+    private final ChangeListener<Boolean> windowFocusedListener = (obs, wasFocused, isFocused) -> {
+        if (!isFocused) {
+            hideOsrPopup();
+            CefBrowserHost h = host();
+            if (h != null) h.setFocus(false);
+        }
+    };
     private final DoubleProperty zoom = new SimpleDoubleProperty(this, "zoom", 1.0) {
         @Override
         protected void invalidated() {
@@ -117,11 +138,20 @@ public class CefWebView extends Region {
         }
     };
     private volatile BrowserHandle browser;
+    private ContextMenu activeContextMenu;
     private IntBuffer pixelBuf;
     private PixelBuffer<IntBuffer> pixelBuffer;
     private WritableImage writableImage;
     private int bufWidth;
     private int bufHeight;
+    // OSR popup widget (e.g. <select> dropdown) - shown in a Popup window with event forwarding
+    private javafx.stage.Popup osrPopup;
+    private ImageView osrPopupImageView;
+    private IntBuffer osrPopupPixelBuf;
+    private PixelBuffer<IntBuffer> osrPopupPixelBuffer;
+    private int osrPopupW;
+    private int osrPopupH;
+    private volatile CefRect popupRect;
     private volatile boolean browserCreationPosted;
     private volatile boolean browserCreated;
 
@@ -154,8 +184,13 @@ public class CefWebView extends Region {
         setOnKeyTyped(this::handleKeyTyped);
 
         focusedProperty().addListener((obs, was, is) -> {
-            CefBrowserHost h = host();
-            if (h != null) h.setFocus(is);
+            // Only forward focus gain - calling setFocus(false) on focus loss causes
+            // CEF to dismiss compositor popup widgets (e.g. <select> dropdowns)
+            // when the JavaFX osrPopup briefly steals focus.
+            if (is) {
+                CefBrowserHost h = host();
+                if (h != null) h.setFocus(true);
+            }
         });
         widthProperty().addListener((obs, oldV, newV) -> onResize());
         heightProperty().addListener((obs, oldV, newV) -> onResize());
@@ -303,6 +338,7 @@ public class CefWebView extends Region {
     }
 
     public void dispose() {
+        hideOsrPopup();
         BrowserHandle current = browser;
         browser = null;
         browserCreated = false;
@@ -341,7 +377,6 @@ public class CefWebView extends Region {
                 rect.y = (int) Math.round(bounds.getMinY());
                 rect.width = Math.max(1, (int) Math.round(bounds.getWidth()));
                 rect.height = Math.max(1, (int) Math.round(bounds.getHeight()));
-                debug("getRootScreenRect dip={}x{} at {},{}", rect.width, rect.height, rect.x, rect.y);
                 return true;
             }
 
@@ -351,7 +386,6 @@ public class CefWebView extends Region {
                 rect.y = 0;
                 rect.width = Math.max(1, (int) getWidth());
                 rect.height = Math.max(1, (int) getHeight());
-                debug("getViewRect dip={}x{}", rect.width, rect.height);
             }
 
             @Override
@@ -373,17 +407,6 @@ public class CefWebView extends Region {
                         (int) Math.round(available.getMinY() * scale),
                         Math.max(1, (int) Math.round(available.getWidth() * scale)),
                         Math.max(1, (int) Math.round(available.getHeight() * scale)));
-                debug(
-                        "getScreenInfo scale={} screenBounds={}x{} visualBounds={}x{} screenRect={}x{} availableRect={}x{}",
-                        scale,
-                        bounds.getWidth(),
-                        bounds.getHeight(),
-                        available.getWidth(),
-                        available.getHeight(),
-                        screenInfo.rect.width,
-                        screenInfo.rect.height,
-                        screenInfo.availableRect.width,
-                        screenInfo.availableRect.height);
                 return true;
             }
 
@@ -402,6 +425,22 @@ public class CefWebView extends Region {
             }
 
             @Override
+            public void onPopupShow(@Nullable CefBrowser browser, boolean show) {
+                Platform.runLater(() -> {
+                    if (show) {
+                        showOsrPopup();
+                    } else {
+                        hideOsrPopup();
+                    }
+                });
+            }
+
+            @Override
+            public void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {
+                popupRect = new CefRect(rect.x, rect.y, rect.width, rect.height);
+            }
+
+            @Override
             public void onPaint(
                     CefBrowser b,
                     @Nonnull CefPaintElementType type,
@@ -410,8 +449,18 @@ public class CefWebView extends Region {
                     @Nonnull ByteBuffer buffer,
                     int width,
                     int height) {
-                if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
-                    Platform.runLater(() -> blitFrame(width, height));
+                boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
+                if (isPopup) {
+                    int pixelCount = width * height;
+                    int[] px = new int[pixelCount];
+                    java.nio.IntBuffer src =
+                            buffer.order(java.nio.ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+                    src.get(px, 0, pixelCount);
+                    Platform.runLater(() -> blitOsrPopup(px, width, height));
+                } else {
+                    if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
+                        Platform.runLater(() -> blitFrame(width, height));
+                    }
                 }
             }
         };
@@ -438,16 +487,15 @@ public class CefWebView extends Region {
 
     private void maybeCreateBrowser(boolean failIfUnavailable) {
         if (!canCreateBrowserNow()) {
-            debug(
-                    "skip create failIfUnavailable={} scenePresent={} windowPresent={} windowShowing={} size={}x{}",
-                    failIfUnavailable,
-                    getScene() != null,
-                    getScene() != null && getScene().getWindow() != null,
-                    getScene() != null
-                            && getScene().getWindow() != null
-                            && getScene().getWindow().isShowing(),
-                    getWidth(),
-                    getHeight());
+            getScene();
+            if (getScene() != null) {
+                getScene().getWindow();
+            }
+            if (getScene() != null && getScene().getWindow() != null) {
+                getScene().getWindow().isShowing();
+            }
+            getWidth();
+            getHeight();
             if (failIfUnavailable) {
                 throw new IllegalStateException(
                         "CefWebView must be attached to a showing window before browser creation");
@@ -456,7 +504,7 @@ public class CefWebView extends Region {
         }
         if (browser != null || browserCreationPosted || browserCreated) return;
         browserCreationPosted = true;
-        debug("creating browser location={}", engine.getLocation());
+        engine.getLocation();
         try {
             ensureConfigured();
             CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
@@ -484,7 +532,6 @@ public class CefWebView extends Region {
         if (pixelBuffer != null && bufWidth == w && bufHeight == h) return;
         bufWidth = w;
         bufHeight = h;
-        debug("ensureBuffer {}x{}", w, h);
         pixelBuf = IntBuffer.allocate(w * h);
         pixelBuffer = new PixelBuffer<>(w, h, pixelBuf, PixelFormat.getIntArgbPreInstance());
         writableImage = new WritableImage(pixelBuffer);
@@ -498,11 +545,121 @@ public class CefWebView extends Region {
         ensureBuffer(width, height);
         System.arraycopy(pixels, 0, pixelBuf.array(), 0, width * height);
         pixelBuffer.updateBuffer(pb -> null);
+
+        float scale = currentScaleFactor(currentScreen());
+        int expectedW = Math.max(1, Math.round((float) getWidth() * scale));
+        int expectedH = Math.max(1, Math.round((float) getHeight() * scale));
+        if (width != expectedW || height != expectedH) {
+            requestViewRefresh(true);
+        }
+    }
+
+    private void showOsrPopup() {
+        hideOsrPopup();
+        osrPopupImageView = new ImageView();
+        osrPopupImageView.setPreserveRatio(false);
+        osrPopupImageView.setSmooth(false);
+        osrPopupImageView.setOnMousePressed(e -> forwardPopupMouse(e, false));
+        osrPopupImageView.setOnMouseReleased(e -> forwardPopupMouse(e, true));
+        osrPopupImageView.setOnMouseMoved(this::forwardPopupMouseMove);
+        osrPopupImageView.setOnMouseDragged(this::forwardPopupMouseMove);
+        osrPopupImageView.setOnScroll(e -> {
+            CefRect rect = popupRect;
+            if (rect == null) return;
+            runWhenBrowserReady(false, current -> {
+                CefBrowserHost h = current.getHost();
+                if (h != null) {
+                    h.sendMouseWheelEvent(
+                            new CefMouseEvent(
+                                    (int) e.getX() + rect.x,
+                                    (int) e.getY() + rect.y,
+                                    baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown())),
+                            0,
+                            (int) e.getDeltaY());
+                }
+            });
+        });
+        osrPopup = new javafx.stage.Popup();
+        osrPopup.getContent().add(osrPopupImageView);
+        osrPopup.setAutoFix(false);
+        osrPopup.setAutoHide(false);
+    }
+
+    private void forwardPopupMouse(MouseEvent e, boolean mouseUp) {
+        CefRect rect = popupRect;
+        if (rect == null) return;
+        int viewX = (int) e.getX() + rect.x;
+        int viewY = (int) e.getY() + rect.y;
+        runWhenBrowserReady(false, current -> {
+            CefBrowserHost h = current.getHost();
+            if (h != null) {
+                h.sendMouseClickEvent(
+                        new CefMouseEvent(viewX, viewY, mouseModifiers(e)),
+                        CefMouseButtonType.of(cefButton(e)),
+                        mouseUp,
+                        e.getClickCount());
+            }
+        });
+    }
+
+    private void forwardPopupMouseMove(MouseEvent e) {
+        CefRect rect = popupRect;
+        if (rect == null) return;
+        int viewX = (int) e.getX() + rect.x;
+        int viewY = (int) e.getY() + rect.y;
+        runWhenBrowserReady(false, current -> {
+            CefBrowserHost h = current.getHost();
+            if (h != null) {
+                h.sendMouseMoveEvent(new CefMouseEvent(viewX, viewY, mouseModifiers(e)), false);
+            }
+        });
+    }
+
+    private void hideOsrPopup() {
+        if (osrPopup != null) {
+            osrPopup.hide();
+            osrPopup = null;
+        }
+        osrPopupImageView = null;
+        osrPopupPixelBuf = null;
+        osrPopupPixelBuffer = null;
+        osrPopupW = 0;
+        osrPopupH = 0;
+    }
+
+    private void blitOsrPopup(int[] pixels, int width, int height) {
+        if (osrPopup == null || osrPopupImageView == null) return;
+        CefRect rect = popupRect;
+        if (rect == null) return;
+        if (osrPopupPixelBuffer == null || osrPopupW != width || osrPopupH != height) {
+            osrPopupW = width;
+            osrPopupH = height;
+            osrPopupPixelBuf = IntBuffer.allocate(width * height);
+            osrPopupPixelBuffer =
+                    new PixelBuffer<>(width, height, osrPopupPixelBuf, PixelFormat.getIntArgbPreInstance());
+            osrPopupImageView.setImage(new WritableImage(osrPopupPixelBuffer));
+        }
+        System.arraycopy(pixels, 0, osrPopupPixelBuf.array(), 0, width * height);
+        osrPopupPixelBuffer.updateBuffer(pb -> null);
+        float scale = currentScaleFactor(currentScreen());
+        osrPopupImageView.setFitWidth(width / scale);
+        osrPopupImageView.setFitHeight(height / scale);
+        Point2D screen = localToScreen(rect.x, rect.y);
+        if (screen != null && getScene() != null && getScene().getWindow() != null) {
+            if (!osrPopup.isShowing()) {
+                osrPopup.show(getScene().getWindow(), screen.getX(), screen.getY());
+            } else {
+                osrPopup.setAnchorX(screen.getX());
+                osrPopup.setAnchorY(screen.getY());
+            }
+        }
     }
 
     private void onResize() {
         frameBuffer.resetBackPressure();
-        debug("onResize logical={}x{} scale={}", getWidth(), getHeight(), currentScaleFactor(currentScreen()));
+        getWidth();
+        getHeight();
+        currentScaleFactor(currentScreen());
         Platform.runLater(() -> engine.fireResized(new Rectangle2D(0, 0, getWidth(), getHeight())));
         requestViewRefresh(true);
     }
@@ -510,15 +667,13 @@ public class CefWebView extends Region {
     private void onWindowChanged(Window window) {
         if (window != null) {
             attachWindowListeners(window);
-            debug(
-                    "windowChanged showing={} outputScale={}x{} renderScale={}x{} size={}x{}",
-                    window.isShowing(),
-                    window.getOutputScaleX(),
-                    window.getOutputScaleY(),
-                    window.getRenderScaleX(),
-                    window.getRenderScaleY(),
-                    window.getWidth(),
-                    window.getHeight());
+            window.isShowing();
+            window.getOutputScaleX();
+            window.getOutputScaleY();
+            window.getRenderScaleX();
+            window.getRenderScaleY();
+            window.getWidth();
+            window.getHeight();
             if (window.isShowing()) {
                 maybeCreateBrowser(false);
                 requestViewRefresh(true);
@@ -529,6 +684,8 @@ public class CefWebView extends Region {
     private void attachWindowListeners(Window window) {
         window.showingProperty().removeListener(windowShowingListener);
         window.showingProperty().addListener(windowShowingListener);
+        window.focusedProperty().removeListener(windowFocusedListener);
+        window.focusedProperty().addListener(windowFocusedListener);
         window.xProperty().removeListener(windowBoundsListener);
         window.yProperty().removeListener(windowBoundsListener);
         window.widthProperty().removeListener(windowBoundsListener);
@@ -541,6 +698,7 @@ public class CefWebView extends Region {
 
     private void detachWindowListeners(Window window) {
         window.showingProperty().removeListener(windowShowingListener);
+        window.focusedProperty().removeListener(windowFocusedListener);
         window.xProperty().removeListener(windowBoundsListener);
         window.yProperty().removeListener(windowBoundsListener);
         window.widthProperty().removeListener(windowBoundsListener);
@@ -559,7 +717,6 @@ public class CefWebView extends Region {
             CefBrowserHost h = current.getHost();
             if (h != null) {
                 double effectiveZoom = Math.max(zoomFactor, 0.01);
-                debug("applyZoom requested={} effective={}", zoomFactor, effectiveZoom);
                 h.setZoomLevel(Math.log(effectiveZoom) / Math.log(1.2));
                 h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
             }
@@ -568,16 +725,13 @@ public class CefWebView extends Region {
 
     private void requestViewRefresh(boolean screenInfoChanged) {
         frameBuffer.resetBackPressure();
-        debug("requestViewRefresh screenInfoChanged={}", screenInfoChanged);
         runWhenBrowserReady(false, current -> {
             CefBrowserHost h = current.getHost();
             if (h != null) {
                 if (screenInfoChanged) {
-                    debug("notifyScreenInfoChanged + wasResized");
                     h.notifyScreenInfoChanged();
                     h.wasResized();
                 }
-                debug("invalidate view");
                 h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
             }
         });
@@ -652,17 +806,14 @@ public class CefWebView extends Region {
         if (window != null) {
             double outputScale = Math.max(window.getOutputScaleX(), window.getOutputScaleY());
             if (outputScale > 0.0) {
-                debug("scale from window outputScale={}", outputScale);
                 return (float) outputScale;
             }
             double renderScale = Math.max(window.getRenderScaleX(), window.getRenderScaleY());
             if (renderScale > 0.0) {
-                debug("scale from window renderScale={}", renderScale);
                 return (float) renderScale;
             }
         }
         float scale = getDeviceScaleFactor(screen);
-        debug("scale from screen outputScale={}", scale);
         return scale;
     }
 
@@ -671,12 +822,6 @@ public class CefWebView extends Region {
             return (float) Math.max(screen.getOutputScaleX(), screen.getOutputScaleY());
         } catch (Exception e) {
             return 1.0f;
-        }
-    }
-
-    private static void debug(String message, Object... args) {
-        if (debug) {
-            log.info("[cef4j-jfx] " + message, args);
         }
     }
 
@@ -696,11 +841,11 @@ public class CefWebView extends Region {
     }
 
     private void handleMousePressed(MouseEvent e) {
+        hideContextMenu();
         requestFocus();
         runWhenBrowserReady(false, current -> {
             CefBrowserHost h = current.getHost();
             if (h != null) {
-                h.setFocus(true);
                 h.sendMouseClickEvent(
                         new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
                         CefMouseButtonType.of(cefButton(e)),
@@ -733,6 +878,12 @@ public class CefWebView extends Region {
     }
 
     private void handleScroll(ScrollEvent e) {
+        if (e.isControlDown()) {
+            double delta = e.getDeltaY() > 0 ? 0.1 : -0.1;
+            setZoom(Math.max(0.25, Math.min(5.0, getZoom() + delta)));
+            e.consume();
+            return;
+        }
         runWhenBrowserReady(false, current -> {
             CefBrowserHost h = current.getHost();
             if (h != null) {
@@ -748,6 +899,21 @@ public class CefWebView extends Region {
     }
 
     private void handleKeyPressed(KeyEvent e) {
+        if (e.isControlDown() || e.isMetaDown()) {
+            if (e.getCode() == KeyCode.EQUALS || e.getCode() == KeyCode.PLUS || e.getCode() == KeyCode.ADD) {
+                setZoom(Math.min(5.0, getZoom() + 0.1));
+                e.consume();
+                return;
+            } else if (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.SUBTRACT) {
+                setZoom(Math.max(0.25, getZoom() - 0.1));
+                e.consume();
+                return;
+            } else if (e.getCode() == KeyCode.DIGIT0 || e.getCode() == KeyCode.NUMPAD0) {
+                setZoom(1.0);
+                e.consume();
+                return;
+            }
+        }
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = mapKeyCode(e.getCode());
         runWhenBrowserReady(false, current -> {
@@ -837,6 +1003,64 @@ public class CefWebView extends Region {
 
     private static int mapKeyCode(KeyCode code) {
         return code.getCode();
+    }
+
+    private void hideContextMenu() {
+        if (activeContextMenu != null) {
+            activeContextMenu.hide();
+            activeContextMenu = null;
+        }
+    }
+
+    private List<MenuItem> buildMenuItems(
+            CefMenuModel model,
+            CefRunContextMenuCallback callback,
+            java.util.concurrent.atomic.AtomicBoolean dispatched) {
+        List<MenuItem> items = new ArrayList<>();
+        long count = model.getCount();
+        for (long i = 0; i < count; i++) {
+            int commandId = model.getCommandIdAt(i);
+            CefMenuItemType type = model.getType(commandId);
+            CefMenuItemType.Kind kind = type.kind().orElse(CefMenuItemType.Kind.NONE);
+            switch (kind) {
+                case SEPARATOR:
+                    items.add(new SeparatorMenuItem());
+                    break;
+                case SUBMENU:
+                    model.getSubMenuAt(i).ifPresent(sub -> {
+                        String subLabel = model.getLabel(commandId).orElse("").replace("&", "");
+                        Menu menu = new Menu(subLabel);
+                        menu.getItems().addAll(buildMenuItems(sub, callback, dispatched));
+                        items.add(menu);
+                    });
+                    break;
+                case CHECK: {
+                    String label = model.getLabel(commandId).orElse("").replace("&", "");
+                    CheckMenuItem ci = new CheckMenuItem(label);
+                    ci.setSelected(model.isChecked(commandId));
+                    ci.setDisable(!model.isEnabled(commandId));
+                    ci.setOnAction(e -> {
+                        if (dispatched.compareAndSet(false, true))
+                            callback.cont(commandId, CefEventFlags.of(CefEventFlags.Kind.NONE));
+                    });
+                    items.add(ci);
+                    break;
+                }
+                default: {
+                    String label = model.getLabel(commandId).orElse("").replace("&", "");
+                    if (label.isEmpty() && kind == CefMenuItemType.Kind.NONE) break;
+                    MenuItem mi = new MenuItem(label);
+                    mi.setDisable(!model.isEnabled(commandId));
+                    mi.setOnAction(e -> {
+                        if (dispatched.compareAndSet(false, true))
+                            callback.cont(commandId, CefEventFlags.of(CefEventFlags.Kind.NONE));
+                    });
+                    items.add(mi);
+                    break;
+                }
+            }
+        }
+        return items;
     }
 
     private final class DefaultClient implements CefClient {
@@ -985,6 +1209,60 @@ public class CefWebView extends Region {
                         CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
                     Cursor jfxCursor = mapCursor(type);
                     Platform.runLater(() -> setCursor(jfxCursor));
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        public java.util.Optional<CefContextMenuHandler> getContextMenuHandler() {
+            return java.util.Optional.of(new CefContextMenuHandler() {
+                @Override
+                public boolean runContextMenu(
+                        @Nullable CefBrowser browser,
+                        @Nullable CefFrame frame,
+                        @Nullable CefContextMenuParams params,
+                        @Nullable CefMenuModel model,
+                        @Nullable CefRunContextMenuCallback callback) {
+                    if (model == null || callback == null) return false;
+                    // Extract menu data on CEF thread - model/params are invalid after return
+                    java.util.concurrent.atomic.AtomicBoolean dispatched =
+                            new java.util.concurrent.atomic.AtomicBoolean();
+                    List<MenuItem> items = buildMenuItems(model, callback, dispatched);
+                    int menuX = params != null ? params.getXCoord() : 0;
+                    int menuY = params != null ? params.getYCoord() : 0;
+                    if (items.isEmpty()) {
+                        callback.cancel();
+                        return true;
+                    }
+                    Platform.runLater(() -> {
+                        hideContextMenu();
+                        ContextMenu menu = new ContextMenu(items.toArray(new MenuItem[0]));
+                        menu.setOnHidden(e -> {
+                            if (dispatched.compareAndSet(false, true)) callback.cancel();
+                            if (activeContextMenu == menu) activeContextMenu = null;
+                        });
+                        activeContextMenu = menu;
+                        double screenX = 0, screenY = 0;
+                        Point2D pt = localToScreen(menuX, menuY);
+                        if (pt != null) {
+                            screenX = pt.getX();
+                            screenY = pt.getY();
+                        }
+                        menu.show(CefWebView.this, screenX, screenY);
+                    });
+                    return true;
+                }
+
+                @Override
+                public boolean runQuickMenu(
+                        @Nullable CefBrowser browser,
+                        @Nullable CefFrame frame,
+                        @Nonnull CefPoint location,
+                        @Nonnull CefSize touchHandleSize,
+                        @Nonnull CefQuickMenuEditStateFlags editStateFlags,
+                        @Nullable CefRunQuickMenuCallback callback) {
+                    if (callback != null) callback.cancel();
                     return true;
                 }
             });
@@ -1143,14 +1421,14 @@ public class CefWebView extends Region {
             CefSettings.Mutable settings = (requestedSettings != null ? requestedSettings : new CefSettings.Mutable())
                     .toImmutable()
                     .toMutable();
-            settings.noSandbox = 1;
+            //            settings.noSandbox = 1;
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
             List<String> args = new ArrayList<>();
             if (OS.isLinux()) {
                 args.add("--ozone-platform=x11");
-                args.add("--no-zygote");
+                //                args.add("--no-zygote");
             }
             if (requestedExtraArgs != null) {
                 for (String requestedExtraArg : requestedExtraArgs) {

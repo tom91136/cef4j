@@ -48,13 +48,14 @@ public final class SwingBrowserApp {
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.noSandbox = 1;
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 0;
         settings.multiThreadedMessageLoop = 1;
         List<String> extraArgs = new ArrayList<>();
         if (OS.isLinux()) {
             extraArgs.add("--ozone-platform=x11");
-            //            extraArgs.add("--no-zygote");
+            extraArgs.add("--no-zygote");
         }
         Cef.INSTANCE.initialise(settings, extraArgs);
 
@@ -67,7 +68,8 @@ public final class SwingBrowserApp {
         window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         window.setSize(1280, 800);
 
-        JTextField urlBar = new JTextField("https://www.example.com");
+        JTextField urlBar =
+                new JTextField("file:///home/tom/cef4j/cef4j-sample/src/main/resources/test-bare-select.html");
         urlBar.addActionListener(e -> {
             CefBrowser current = browser;
             if (current != null) {

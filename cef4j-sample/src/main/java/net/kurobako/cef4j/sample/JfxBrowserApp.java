@@ -15,6 +15,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,7 +39,8 @@ public final class JfxBrowserApp {
     }
 
     public static class JfxApp extends Application {
-        private static final String DEFAULT_URL = "https://3dtransforms.desandro.com/";
+        private static final String DEFAULT_URL =
+                "https://microsoft.github.io/monaco-editor/";
 
         @Override
         public void start(Stage stage) throws IOException {
@@ -47,19 +49,25 @@ public final class JfxBrowserApp {
             stage.setHeight(800);
 
             TabPane tabPane = new TabPane();
-            Button newTabBtn = new Button("+");
-            newTabBtn.setOnAction(e -> select(tabPane, createTab(tabPane, stage, DEFAULT_URL)));
+
+            // "+" tab trick - an empty non-closable tab that creates a new tab when selected
+            Tab newTabTab = new Tab("+");
+            newTabTab.setClosable(false);
+            tabPane.getTabs().add(newTabTab);
 
             BorderPane root = new BorderPane();
             root.setCenter(tabPane);
-            root.setTop(new HBox(4, newTabBtn));
 
             tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-                BrowserTab browserTab = newTab instanceof BrowserTab ? (BrowserTab) newTab : null;
-                if (browserTab == null) {
-                    stage.setTitle("cef4j Browser (JavaFX)");
+                if (newTab == newTabTab) {
+                    BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
+                    tabPane.getSelectionModel().select(created);
+                    return;
+                }
+                if (newTab instanceof BrowserTab) {
+                    ((BrowserTab) newTab).updateStageTitle();
                 } else {
-                    browserTab.updateStageTitle();
+                    stage.setTitle("cef4j Browser (JavaFX)");
                 }
             });
             tabPane.getTabs().addListener((ListChangeListener<? super Tab>) change -> {
@@ -72,8 +80,17 @@ public final class JfxBrowserApp {
                         }
                     }
                 }
-                if (tabPane.getTabs().isEmpty()) {
+                // Only the "+" tab remains - exit
+                if (tabPane.getTabs().size() <= 1) {
                     Platform.exit();
+                    return;
+                }
+                // Ensure "+" tab is always last
+                int plusIdx = tabPane.getTabs().indexOf(newTabTab);
+                int lastIdx = tabPane.getTabs().size() - 1;
+                if (plusIdx >= 0 && plusIdx != lastIdx) {
+                    tabPane.getTabs().remove(newTabTab);
+                    tabPane.getTabs().add(newTabTab);
                 }
             });
 
@@ -87,13 +104,36 @@ public final class JfxBrowserApp {
                 }
                 Platform.exit();
             });
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            // Scene-level shortcuts so they work regardless of focus
+            scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
+                if (!e.isShortcutDown()) return;
+                switch (e.getCode()) {
+                    case T:
+                        BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
+                        tabPane.getSelectionModel().select(created);
+                        e.consume();
+                        break;
+                    case W:
+                        Tab current = tabPane.getSelectionModel().getSelectedItem();
+                        if (current instanceof BrowserTab) {
+                            tabPane.getTabs().remove(current);
+                        }
+                        e.consume();
+                        break;
+                    default:
+                        break;
+                }
+            });
+            stage.setScene(scene);
             stage.show();
         }
 
         private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {
             BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);
-            tabPane.getTabs().add(tab);
+            // Insert before the "+" tab (always last)
+            int insertAt = Math.max(0, tabPane.getTabs().size() - 1);
+            tabPane.getTabs().add(insertAt, tab);
             return tab;
         }
 
@@ -128,13 +168,15 @@ public final class JfxBrowserApp {
             Button zoomOutBtn = new Button("-");
             Button zoomResetBtn = new Button("100%");
             Button zoomInBtn = new Button("+");
+            Button devToolsBtn = new Button("\u2699");
 
-            HBox navBar = new HBox(4, backBtn, fwdBtn, reloadBtn, zoomOutBtn, zoomResetBtn, zoomInBtn, urlBar);
+            HBox navBar =
+                    new HBox(4, backBtn, fwdBtn, reloadBtn, urlBar, zoomOutBtn, zoomResetBtn, zoomInBtn, devToolsBtn);
             HBox.setHgrow(urlBar, Priority.ALWAYS);
             navBar.setStyle("-fx-padding: 4;");
 
             BorderPane statusBar = new BorderPane();
-            statusBar.setCenter(statusLabel);
+            statusBar.setLeft(statusLabel);
             statusBar.setRight(progressBar);
             statusBar.setStyle("-fx-padding: 2 6;");
 
@@ -162,17 +204,80 @@ public final class JfxBrowserApp {
             zoomOutBtn.setOnAction(e -> view.setZoom(clampZoom(view.getZoom() / 1.2)));
             zoomResetBtn.setOnAction(e -> view.setZoom(1.0));
             zoomInBtn.setOnAction(e -> view.setZoom(clampZoom(view.getZoom() * 1.2)));
+            devToolsBtn.setOnAction(e -> toggleDevTools());
             urlBar.setOnAction(e -> view.getEngine().load(urlBar.getText().trim()));
             view.zoomProperty()
                     .addListener((obs, oldZoom, newZoom) ->
                             zoomResetBtn.setText(Math.round(newZoom.doubleValue() * 100) + "%"));
 
+            // Mouse back/forward buttons
+            view.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, e -> {
+                if (e.getButton() == MouseButton.BACK) {
+                    view.goBack();
+                    e.consume();
+                } else if (e.getButton() == MouseButton.FORWARD) {
+                    view.goForward();
+                    e.consume();
+                }
+            });
+            // Browser keyboard shortcuts
+            view.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
+                boolean shortcut = e.isShortcutDown();
+                switch (e.getCode()) {
+                    case F12:
+                        toggleDevTools();
+                        e.consume();
+                        break;
+                    case F5:
+                        view.getEngine().reload();
+                        e.consume();
+                        break;
+                    case ESCAPE:
+                        view.getEngine().stop();
+                        e.consume();
+                        break;
+                    case LEFT:
+                        if (e.isAltDown()) {
+                            view.goBack();
+                            e.consume();
+                        }
+                        break;
+                    case RIGHT:
+                        if (e.isAltDown()) {
+                            view.goForward();
+                            e.consume();
+                        }
+                        break;
+                    case R:
+                        if (shortcut) {
+                            view.getEngine().reload();
+                            e.consume();
+                        }
+                        break;
+                    case L:
+                    case D:
+                        if (shortcut) {
+                            urlBar.requestFocus();
+                            urlBar.selectAll();
+                            e.consume();
+                        }
+                        break;
+                    // Ctrl+T and Ctrl+W handled at scene level
+                    default:
+                        break;
+                }
+            });
+
             view.getEngine().setCreatePopupHandler(features -> {
-                BrowserTab popupTab = new BrowserTab(owner, stage, JfxApp.DEFAULT_URL);
+                BrowserTab popupTab = new BrowserTab(owner, stage, "about:blank");
                 owner.getTabs().add(popupTab);
                 Platform.runLater(() -> owner.getSelectionModel().select(popupTab));
                 return popupTab.view.getEngine();
             });
+            // JS alert/confirm/prompt - custom handlers override the built-in JavaFX dialogs
+            view.getEngine()
+                    .setOnAlert(
+                            event -> statusLabel.setText("Alert: " + (event.getData() != null ? event.getData() : "")));
             view.getEngine().titleProperty().addListener((obs, oldTitle, newTitle) -> {
                 updateTabTitle(newTitle);
                 if (isSelected()) {
@@ -246,6 +351,17 @@ public final class JfxBrowserApp {
         private void updateTabTitle(String value) {
             if (value == null || value.isEmpty()) return;
             setText(value.length() > 24 ? value.substring(0, 24) + "\u2026" : value);
+        }
+
+        private void toggleDevTools() {
+            net.kurobako.cef4j.gen.CefBrowserHost host = view.getBrowserHost();
+            if (host == null) return;
+            if (host.hasDevTools()) {
+                host.closeDevTools();
+            } else {
+                // DevTools is always Chrome-style windowed - pass defaults to let CEF create a native window
+                host.showDevTools(null, null, null, new net.kurobako.cef4j.gen.CefPoint(0, 0));
+            }
         }
 
         private void dispose() {
