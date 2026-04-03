@@ -87,13 +87,13 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), getRepresentationInfo0)(JNIEnv*
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     float _actual_scale_factor_val = 0;
-    if (actual_scale_factor) {jfloat _jv; env->GetFloatArrayRegion(actual_scale_factor, 0, 1, &_jv); _actual_scale_factor_val = _jv;}
+    if (actual_scale_factor) {jfloat _jv; env->GetFloatArrayRegion(actual_scale_factor, 0, 1, &_jv); _actual_scale_factor_val = static_cast<float>(_jv);}
     int _pixel_width_val = 0;
     if (pixel_width) {jint _jv; env->GetIntArrayRegion(pixel_width, 0, 1, &_jv); _pixel_width_val = _jv;}
     int _pixel_height_val = 0;
     if (pixel_height) {jint _jv; env->GetIntArrayRegion(pixel_height, 0, 1, &_jv); _pixel_height_val = _jv;}
     auto _r = s->get_representation_info(s, scale_factor, &_actual_scale_factor_val, &_pixel_width_val, &_pixel_height_val);
-    if (actual_scale_factor) {jfloat _jv = _actual_scale_factor_val; env->SetFloatArrayRegion(actual_scale_factor, 0, 1, &_jv);}
+    if (actual_scale_factor) {jfloat _jv = static_cast<jfloat>(_actual_scale_factor_val); env->SetFloatArrayRegion(actual_scale_factor, 0, 1, &_jv);}
     if (pixel_width) {jint _jv = _pixel_width_val; env->SetIntArrayRegion(pixel_width, 0, 1, &_jv);}
     if (pixel_height) {jint _jv = _pixel_height_val; env->SetIntArrayRegion(pixel_height, 0, 1, &_jv);}
     return static_cast<jboolean>(_r);

@@ -5,14 +5,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import scala.jdk.StreamConverters._
 
-/** Integration tests that run against real CEF headers downloaded from the Spotify CDN.
-  *
-  * These are run via maven-failsafe-plugin (phase: integration-test) and require:
-  *   - cef.root system property pointing to the CEF distribution root
-  *   - cef.compiler system property (gcc, clang, or msvc)
-  *
-  * Run with: mvn -pl cef4j-codegen verify
-  */
 class CoverageIntegrationSpec extends munit.FunSuite {
 
   private val cefRoot: Path = {

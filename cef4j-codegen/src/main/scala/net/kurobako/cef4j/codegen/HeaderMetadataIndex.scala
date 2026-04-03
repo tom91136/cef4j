@@ -268,20 +268,20 @@ object HeaderMetadataIndex {
     // Pre-compute the enclosing C++ class name at each line by scanning brace depth and class declarations.
     // This avoids brace-counting drift when the main loop jumps over lines during comment collection.
     val classAtLine: Vector[String] = {
-      var depth        = 0
-      var currentClass = ""
-      var classDepth   = 0
-      lines.map { raw =>
-        val line = raw.trim
-        CppClassDeclRe.findFirstMatchIn(line).foreach { m =>
-          currentClass = m.group(1)
-          classDepth = depth // class opens at this depth
+      case class State(depth: Int, cls: String, clsDepth: Int)
+      lines
+        .scanLeft(State(0, "", 0)) { (s, raw) =>
+          val line      = raw.trim
+          val (cls, cd) = CppClassDeclRe.findFirstMatchIn(line) match {
+            case Some(m) => (m.group(1), s.depth)
+            case None    => (s.cls, s.clsDepth)
+          }
+          val newDepth = s.depth + line.count(_ == '{') - line.count(_ == '}')
+          val finalCls = if (newDepth <= cd && cls.nonEmpty && !line.contains("{")) "" else cls
+          State(newDepth, finalCls, cd)
         }
-        depth += line.count(_ == '{')
-        depth -= line.count(_ == '}')
-        if (depth <= classDepth && currentClass.nonEmpty && !line.contains("{")) currentClass = ""
-        currentClass
-      }
+        .tail
+        .map(_.cls)
     }
 
     // Emit both a qualified key ("CefBrowser::IsValid") and an unqualified key ("IsValid").
