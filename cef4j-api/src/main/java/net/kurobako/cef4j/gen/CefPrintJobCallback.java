@@ -20,16 +20,14 @@ import javax.annotation.processing.Generated;
 public interface CefPrintJobCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Indicate completion of the print job.
      *
      * <p>Definition generated from cef_print_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_print_job_callback_t* self);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:70</a>
      */
     void cont();
 
@@ -44,13 +42,13 @@ public interface CefPrintJobCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

@@ -89,13 +89,13 @@ public interface CefStreamReader extends CefLibraryObject {
      */
     boolean mayBlock();
     /**
-     * Create a new CefStreamWriter object for a file.
+     * Create a new CefStreamReader object from a file.
      *
      * <p>Definition generated from cef_stream_capi.h
      *
      * <pre>CEF_EXPORT cef_stream_reader_t* cef_stream_reader_create_for_file(const cef_string_t* fileName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:91</a>
      */
     static Optional<CefStreamReader> createForFile(@Nullable String fileName) {
         return Optional.ofNullable(NativePeer.createForFile0(fileName));
@@ -115,13 +115,13 @@ public interface CefStreamReader extends CefLibraryObject {
     }
 
     /**
-     * Create a new CefStreamWriter object for a custom handler.
+     * Create a new CefStreamReader object from a custom handler.
      *
      * <p>Definition generated from cef_stream_capi.h
      *
      * <pre>CEF_EXPORT cef_stream_reader_t* cef_stream_reader_create_for_handler(cef_read_handler_t* handler);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:103</a>
      */
     static Optional<CefStreamReader> createForHandler(@Nullable CefReadHandler handler) {
         return Optional.ofNullable(NativePeer.createForHandler0(handler));
@@ -138,13 +138,13 @@ public interface CefStreamReader extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

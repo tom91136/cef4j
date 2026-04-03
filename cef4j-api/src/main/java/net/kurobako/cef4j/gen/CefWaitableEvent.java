@@ -90,16 +90,18 @@ public interface CefWaitableEvent extends CefLibraryObject {
      */
     boolean timedWait(long maxMs);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new waitable event. If {@code automatic_reset} is {@code true} then the event state is automatically
+     * reset to un-signaled after a single waiting thread has been released; otherwise, the state remains signaled until
+     * Reset() is called manually. If {@code initially_signaled} is {@code true} then the event will start in the
+     * signaled state.
      *
      * <p>Definition generated from cef_waitable_event_capi.h
      *
      * <pre>CEF_EXPORT cef_waitable_event_t* cef_waitable_event_create(int automatic_reset, int initially_signaled);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:57</a>
      */
     static Optional<CefWaitableEvent> create(int automaticReset, int initiallySignaled) {
         return Optional.ofNullable(NativePeer.create0(automaticReset, initiallySignaled));
@@ -116,13 +118,13 @@ public interface CefWaitableEvent extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

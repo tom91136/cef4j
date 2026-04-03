@@ -39,8 +39,7 @@ public final class JfxBrowserApp {
     }
 
     public static class JfxApp extends Application {
-        private static final String DEFAULT_URL =
-                "https://microsoft.github.io/monaco-editor/";
+        private static final String DEFAULT_URL = "https://microsoft.github.io/monaco-editor/";
 
         @Override
         public void start(Stage stage) throws IOException {

@@ -21,16 +21,17 @@ import javax.annotation.processing.Generated;
 public interface CefMediaAccessCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Call to allow or deny media access. If this callback was initiated in response to a getUserMedia (indicated by
+     * {@link CefMediaAccessPermissionTypes.Kind#DEVICE_AUDIO_CAPTURE} and/or
+     * {@link CefMediaAccessPermissionTypes.Kind#DEVICE_VIDEO_CAPTURE} being set) then {@code allowed_permissions} must
+     * match {@code required_permissions} passed to OnRequestMediaAccessPermission.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_media_access_callback_t* self, uint32_t allowed_permissions);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:51</a>
      */
     void cont(int allowedPermissions);
 
@@ -57,13 +58,13 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

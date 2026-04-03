@@ -6,10 +6,10 @@ import java.util.Optional;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure representing a V8 stack trace handle. V8 handles can only be accessed from the thread on which they are
+ * Class representing a V8 stack trace handle. V8 handles can only be accessed from the thread on which they are
  * created. Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and
  * WebWorker threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * {@link CefV8Context#getTaskRunner()} function. NOTE: This struct is allocated DLL-side.
+ * {@link CefV8Context#getTaskRunner()} method.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -18,21 +18,20 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_stack_trace_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:966</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1032</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8StackTrace extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call
+     * any other methods if this method returns {@code false}.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_stack_trace_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1049</a>
      */
     boolean isValid();
 
@@ -71,13 +70,13 @@ public interface CefV8StackTrace extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

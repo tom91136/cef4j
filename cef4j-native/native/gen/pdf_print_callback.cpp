@@ -13,7 +13,7 @@ struct JniCefPdfPrintCallback: public cef_pdf_print_callback_t {
 
     JniCefPdfPrintCallback(JavaVM *vm, jobject handler) : cef_pdf_print_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefPdfPrintCallback, cef_pdf_print_callback_t> (&base);
+        InitRefCount<JniCefPdfPrintCallback, cef_pdf_print_callback_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_pdf_print_callback_t*>(this)));
         on_pdf_print_finished = &_on_pdf_print_finished;
     }
 

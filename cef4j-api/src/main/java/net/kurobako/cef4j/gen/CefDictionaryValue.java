@@ -96,7 +96,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:357</a>
      */
-    Optional<CefDictionaryValue> copy(int excludeEmptyChildren);
+    Optional<CefDictionaryValue> copy(boolean excludeEmptyChildren);
 
     /**
      * Returns the number of values.
@@ -161,7 +161,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <pre>cef_value_type_t (CEF_CALLBACK* get_type)(struct _cef_dictionary_value_t* self, const cef_string_t* key);
      * </pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code VTYPE_INVALID} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:395</a>
      */
     CefValueType getType(@Nullable String key);
@@ -389,15 +389,13 @@ public interface CefDictionaryValue extends CefLibraryObject {
      */
     boolean setList(@Nullable String key, @Nullable CefListValue value);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Creates a new object that is not owned by any other object.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>CEF_EXPORT cef_dictionary_value_t* cef_dictionary_value_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:314</a>
      */
     static Optional<CefDictionaryValue> create() {
         return Optional.ofNullable(NativePeer.create0());
@@ -414,13 +412,13 @@ public interface CefDictionaryValue extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -479,7 +477,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
         }
 
         @Override
-        public Optional<CefDictionaryValue> copy(int excludeEmptyChildren) {
+        public Optional<CefDictionaryValue> copy(boolean excludeEmptyChildren) {
             checkNotClosed();
             return Optional.ofNullable(copy0(nativePtr, excludeEmptyChildren));
         }
@@ -636,7 +634,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
 
         private static native boolean isEqual0(long self, CefDictionaryValue that);
 
-        private static native CefDictionaryValue copy0(long self, int excludeEmptyChildren);
+        private static native CefDictionaryValue copy0(long self, boolean excludeEmptyChildren);
 
         private static native long getSize0(long self);
 

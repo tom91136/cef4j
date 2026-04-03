@@ -13,7 +13,7 @@ struct JniCefTask: public cef_task_t {
 
     JniCefTask(JavaVM *vm, jobject handler) : cef_task_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefTask, cef_task_t> (&base);
+        InitRefCount<JniCefTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_task_t*>(this)));
         execute = &_execute;
     }
 

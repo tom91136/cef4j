@@ -14,7 +14,8 @@ struct JniCefAccessibilityHandler: public cef_accessibility_handler_t {
 
     JniCefAccessibilityHandler(JavaVM *vm, jobject handler) : cef_accessibility_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefAccessibilityHandler, cef_accessibility_handler_t> (&base);
+        InitRefCount<JniCefAccessibilityHandler, cef_accessibility_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_accessibility_handler_t*>(this)));
         on_accessibility_tree_change = &_on_accessibility_tree_change;
         on_accessibility_location_change = &_on_accessibility_location_change;
     }

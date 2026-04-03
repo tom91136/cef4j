@@ -26,9 +26,10 @@ class CoverageIntegrationSpec extends munit.FunSuite {
   private lazy val capiHeaders: List[Path] = {
     val capiDir = cefInclude.resolve("capi")
     assume(Files.isDirectory(capiDir), s"capi directory does not exist: $capiDir")
-    Files.list(capiDir)
-      .toScala(List)
-      .filter(_.toString.endsWith("_capi.h"))
+    List(capiDir, capiDir.resolve("views")).filter(Files.isDirectory(_))
+      .flatMap(dir =>
+        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
+      )
       .sorted
   }
 

@@ -14,7 +14,7 @@ struct JniCefJsDialogHandler: public cef_jsdialog_handler_t {
 
     JniCefJsDialogHandler(JavaVM *vm, jobject handler) : cef_jsdialog_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefJsDialogHandler, cef_jsdialog_handler_t> (&base);
+        InitRefCount<JniCefJsDialogHandler, cef_jsdialog_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_jsdialog_handler_t*>(this)));
         on_jsdialog = &_on_jsdialog;
         on_before_unload_dialog = &_on_before_unload_dialog;
         on_reset_dialog_state = &_on_reset_dialog_state;

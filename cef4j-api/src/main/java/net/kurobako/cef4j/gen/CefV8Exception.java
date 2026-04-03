@@ -6,8 +6,7 @@ import java.util.Optional;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure representing a V8 exception. The functions of this structure may be called on any render process thread.
- * NOTE: This struct is allocated DLL-side.
+ * Class representing a V8 exception. The methods of this class may be called on any render process thread.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -16,7 +15,7 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_exception_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:310</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:352</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Exception extends CefLibraryObject {
@@ -55,13 +54,13 @@ public interface CefV8Exception extends CefLibraryObject {
     Optional<String> getScriptResourceName();
 
     /**
-     * Returns the 1-based line number for the function call or 0 if unknown.
+     * Returns the 1-based number of the line where the error occurred or 0 if the line number is unknown.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:378</a>
      */
     int getLineNumber();
 
@@ -120,13 +119,13 @@ public interface CefV8Exception extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

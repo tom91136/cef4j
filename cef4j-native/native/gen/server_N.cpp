@@ -57,7 +57,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefServer), isValidConnection0)(JNIEnv* en
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp200response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp200Response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
@@ -68,13 +68,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp200response0)(JNIEnv* env,
     if (_content_type_str) cef_string_userfree_free(_content_type_str);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp404response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp404Response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     s->send_http404_response(s, connection_id);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp500response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring error_message) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp500Response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring error_message) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     auto _error_message_str = JStringToCefString(env, error_message);

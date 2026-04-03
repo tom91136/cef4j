@@ -16,7 +16,7 @@ struct JniCefResourceHandler: public cef_resource_handler_t {
 
     JniCefResourceHandler(JavaVM *vm, jobject handler) : cef_resource_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefResourceHandler, cef_resource_handler_t> (&base);
+        InitRefCount<JniCefResourceHandler, cef_resource_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_resource_handler_t*>(this)));
         open = &_open;
         process_request = &_process_request;
         get_response_headers = &_get_response_headers;
@@ -120,7 +120,7 @@ struct JniCefResourceHandler: public cef_resource_handler_t {
     static int CEF_CALLBACK _read(cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_resource_read_callback_t* callback) {
         auto* h = reinterpret_cast<JniCefResourceHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(12) < 0) {return 0;}
+        if (env->PushLocalFrame(12) < 0) {return false;}
         auto j_data_out_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
         auto j_data_out_ctor = env->GetMethodID(j_data_out_cls, "<init>", "(J)V");
         auto j_data_out = env->NewObject(j_data_out_cls, j_data_out_ctor, reinterpret_cast<jlong>(data_out));
@@ -132,14 +132,13 @@ struct JniCefResourceHandler: public cef_resource_handler_t {
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "read", "(Lnet/kurobako/cef4j/gen/NativePointer;I[ILnet/kurobako/cef4j/gen/CefResourceReadCallback;)I");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
-        auto jResult = env->CallIntMethod(h->javaHandler, mid, j_data_out, static_cast<jint>(bytes_to_read), j_bytes_read, j_callback);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        auto mid = env->GetMethodID(cls, "read", "(Lnet/kurobako/cef4j/gen/NativePointer;I[ILnet/kurobako/cef4j/gen/CefResourceReadCallback;)Z");
+        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_data_out, static_cast<jint>(bytes_to_read), j_bytes_read, j_callback);
+        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
         if (bytes_read) {jint _v; env->GetIntArrayRegion(j_bytes_read, 0, 1, &_v); *bytes_read = _v;}
-        int nativeResult = static_cast<int>(jResult);
         env->PopLocalFrame(nullptr);
-        return nativeResult;
+        return jResult;
     }
 
     static int CEF_CALLBACK _read_response(cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_callback_t* callback) {

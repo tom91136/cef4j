@@ -47,10 +47,10 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isEqual0)(JNIEnv* env
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), copy0)(JNIEnv* env, jobject obj, jlong self, jint exclude_empty_children) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), copy0)(JNIEnv* env, jobject obj, jlong self, jboolean exclude_empty_children) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
-    auto _r = s->copy(s, exclude_empty_children);
+    auto _r = s->copy(s, static_cast<bool>(exclude_empty_children));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");

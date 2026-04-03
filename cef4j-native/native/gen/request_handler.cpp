@@ -21,7 +21,7 @@ struct JniCefRequestHandler: public cef_request_handler_t {
 
     JniCefRequestHandler(JavaVM *vm, jobject handler) : cef_request_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefRequestHandler, cef_request_handler_t> (&base);
+        InitRefCount<JniCefRequestHandler, cef_request_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_request_handler_t*>(this)));
         on_before_browse = &_on_before_browse;
         on_open_urlfrom_tab = &_on_open_urlfrom_tab;
         get_auth_credentials = &_get_auth_credentials;

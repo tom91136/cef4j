@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 /**
  * Structure representing the audio parameters for setting up the audio handler.
  *
- * <p>Definition generated from cef_types.h
+ * <p>Definition generated from internal/cef_types.h
  *
  * <pre>typedef struct _cef_audio_parameters_t {
  *   size_t size;
@@ -16,7 +16,7 @@ import javax.annotation.processing.Generated;
  *   int frames_per_buffer;
  * } cef_audio_parameters_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:3522</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:3522</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefAudioParameters {
@@ -69,9 +69,9 @@ public final class CefAudioParameters {
      * Mutable variant of {@link CefAudioParameters}. Structure representing the audio parameters for setting up the
      * audio handler.
      *
-     * <p>Definition generated from cef_types.h
+     * <p>Definition generated from internal/cef_types.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:3522</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:3522</a>
      */
     public static final class Mutable {
 

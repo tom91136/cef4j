@@ -15,7 +15,8 @@ struct JniCefPermissionHandler: public cef_permission_handler_t {
 
     JniCefPermissionHandler(JavaVM *vm, jobject handler) : cef_permission_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefPermissionHandler, cef_permission_handler_t> (&base);
+        InitRefCount<JniCefPermissionHandler, cef_permission_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_permission_handler_t*>(this)));
         on_request_media_access_permission = &_on_request_media_access_permission;
         on_show_permission_prompt = &_on_show_permission_prompt;
         on_dismiss_permission_prompt = &_on_dismiss_permission_prompt;

@@ -9,13 +9,13 @@ import javax.annotation.processing.Generated;
  * large amounts of skew. Time is stored internally as microseconds since the Windows epoch (1601). This is equivalent
  * of Chromium `base::Time` (see base/time/time.h).
  *
- * <p>Definition generated from cef_time.h
+ * <p>Definition generated from internal/cef_time.h
  *
  * <pre>typedef struct _cef_basetime_t {
  *   int64_t val;
  * } cef_basetime_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">cef_time.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">internal/cef_time.h:46</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefBasetime {

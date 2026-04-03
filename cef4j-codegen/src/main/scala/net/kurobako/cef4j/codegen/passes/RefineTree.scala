@@ -11,6 +11,7 @@ import net.kurobako.cef4j.codegen.ParseState
 import net.kurobako.cef4j.codegen.ParsedTree
 import net.kurobako.cef4j.codegen.RefinedTree
 import net.kurobako.cef4j.codegen.mapFns
+import net.kurobako.cef4j.codegen.namedStruct
 
 object RefineTree {
 
@@ -25,7 +26,8 @@ object RefineTree {
     val refinedDecls = promoteCountFuncArrays(
       parsed.structDecls.map(enrichDecl(_, parseState.docs, parseState.cppTypeInfo, parseState.enumDocs))
     )
-    val refinedFreeFunctions = enrichFreeFunctions(parsed.freeFunctions, parseState.docs, parseState.cppTypeInfo)
+    val refinedFreeFunctions =
+      promoteCountFuncFreeFunctions(enrichFreeFunctions(parsed.freeFunctions, parseState.docs, parseState.cppTypeInfo))
     val declsWithMutableData = markMutableDataStructs(refinedDecls, refinedFreeFunctions)
 
     RefinedTree(
@@ -54,11 +56,17 @@ object RefineTree {
   private def recoverCppTypes(
       decl: CefDecl,
       cppTypeInfo: Map[String, CppMethodTypeInfo]
-  )(using Naming.Context): CefDecl = {
+  )(using ctx: Naming.Context): CefDecl = {
+    // Resolve the C++ class name for this struct (e.g., "cef_menu_model_t" -> "CefMenuModel")
+    val cppClassName = decl.namedStruct.flatMap(ctx.cppClassNames.get)
+
     def recover(fn: FnPtr): FnPtr = {
-      val pascal     = Naming.toPascalCase(fn.name)
-      val capiName   = fn.metaAttrs.collectFirst { case ("capi_name", n) => n }
-      val matchedKey = cppTypeInfo.get(pascal).map(_ => pascal)
+      val pascal   = Naming.toPascalCase(fn.name)
+      val capiName = fn.metaAttrs.collectFirst { case ("capi_name", n) => n }
+      // Prefer class-qualified lookup (e.g., "CefMenuModel::SetVisible") over unqualified
+      val qualifiedKey = cppClassName.map(cls => s"$cls::$pascal")
+      val matchedKey   = qualifiedKey.filter(cppTypeInfo.contains)
+        .orElse(cppTypeInfo.get(pascal).map(_ => pascal))
         .orElse(cppTypeInfo.get(fn.name).map(_ => fn.name))
         .orElse(capiName.filter(cppTypeInfo.contains))
         .orElse(cppTypeInfo.keys.find(_.equalsIgnoreCase(pascal)))
@@ -75,7 +83,14 @@ object RefineTree {
               case None          => p
             }
           }
-          fn.copy(ret = recoveredRet, params = recoveredParams, cppName = matchedKey)
+          // Store unqualified C++ method name (strip "ClassName::" prefix if present)
+          val unqualifiedName = matchedKey.map(k =>
+            k.lastIndexOf("::") match {
+              case -1  => k
+              case idx => k.substring(idx + 2)
+            }
+          )
+          fn.copy(ret = recoveredRet, params = recoveredParams, cppName = unqualifiedName)
         case None => fn
       }
     }
@@ -95,8 +110,7 @@ object RefineTree {
   )(using Naming.Context): CefDecl = {
     def enrich(fn: FnPtr): FnPtr = {
       val pascal  = Naming.toPascalCase(fn.name)
-      val docText = fn.cppName.flatMap(docs.get)
-        .orElse(docs.get(Naming.toCamelCase(fn.name))).orElse(docs.get(pascal)).orElse(docs.get(fn.name))
+      val docText = DocComments.resolveMethodDoc(fn, docs, decl.namedStruct.getOrElse(""))
         .orElse(cppMethodNames.find(_.equalsIgnoreCase(pascal)).flatMap(docs.get))
       docText match {
         case Some(text) => fn.copy(metaAttrs = DocComments.extractAttrsList(text))
@@ -112,7 +126,7 @@ object RefineTree {
       cppTypeInfo: Map[String, CppMethodTypeInfo]
   )(using Naming.Context): List[CefDecl.FreeFunction] = freeFunctions.map { ff =>
     val pascal  = Naming.toPascalCase(ff.javaMethodName)
-    val docText = docs.get(ff.javaMethodName).orElse(docs.get(pascal)).orElse(docs.get(ff.cName))
+    val docText = DocComments.resolveFreeFunctionDoc(ff, docs)
     val attrs   = docText.map(DocComments.extractAttrsList).getOrElse(Nil)
     val info    = cppTypeInfo.get(pascal).orElse(cppTypeInfo.get(ff.javaMethodName))
 
@@ -155,53 +169,69 @@ object RefineTree {
     }
   }
 
-  private def promoteCountFuncArrays(decls: List[CefDecl]): List[CefDecl] = {
+  private def toSnakeCase(pascal: String): String =
+    pascal.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase
 
-    def toSnakeCase(pascal: String): String =
-      pascal.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase
+  private def countFuncElementType(ct: CType): Option[CType] = ct match {
+    case CType.ObjectPtrArray(name)   => Some(CType.ObjectPtr(name))
+    case CType.OutObjectPtr(name)     => Some(CType.ObjectPtr(name))
+    case CType.ObjectPtr(name)        => Some(CType.ObjectPtr(name))
+    case CType.ByValueOut(name)       => Some(CType.ByValueIn(name))
+    case CType.ByValueArray(name)     => Some(CType.ByValueIn(name))
+    case CType.OutPrimitivePtr(inner) => Some(inner)
+    case CType.OpaquePtr              => None
+    case _                            => None
+  }
 
-    def elementType(ct: CType): Option[CType] = ct match {
-      case CType.ObjectPtrArray(name)   => Some(CType.ObjectPtr(name))
-      case CType.OutObjectPtr(name)     => Some(CType.ObjectPtr(name))
-      case CType.ObjectPtr(name)        => Some(CType.ObjectPtr(name))
-      case CType.ByValueOut(name)       => Some(CType.ByValueIn(name))
-      case CType.ByValueArray(name)     => Some(CType.ByValueIn(name))
-      case CType.OutPrimitivePtr(inner) => Some(inner)
-      case CType.OpaquePtr              => None
-      case _                            => None
-    }
-
-    def promoteFn(fn: FnPtr): FnPtr =
-      fn.metaAttrs.collectFirst { case ("count_func", spec) => spec }
-        .flatMap(parseCountFunc) match {
-        case None                                   => fn
-        case Some((arrayParamName, countMethodCpp)) =>
-          val countParamName = s"${arrayParamName}Count"
-          val countParam     = fn.params.find(_.name == countParamName)
-          val arrayParam     = fn.params.find(_.name == arrayParamName)
-
-          (countParam, arrayParam) match {
-            case (Some(_), Some(ap)) =>
-              elementType(ap.typ) match {
-                case Some(elemTy) =>
-                  val countFuncC = toSnakeCase(countMethodCpp)
-                  val cfaType    = CType.CountFuncArray(elemTy, countFuncC, countParamName, arrayParamName)
-                  val newParams  = fn.params.filterNot(p => p.name == countParamName || p.name == arrayParamName)
-                  fn.copy(ret = cfaType, params = newParams)
-                case None =>
-                  System.err.println(
-                    s"  WARN: count_func on ${fn.name}: cannot determine element type for ${ap.name} (${ap.typ})"
-                  )
-                  fn
-              }
-            case _ =>
-              System.err.println(
-                s"  WARN: count_func on ${fn.name}: expected params $countParamName + $arrayParamName but not found"
-              )
-              fn
-          }
+  /** Shared logic for promoting count_func params into a CountFuncArray return type. */
+  private def promoteCountFunc(
+      metaAttrs: List[(String, String)],
+      params: List[Param],
+      debugName: String
+  ): Option[(CType, List[Param])] =
+    metaAttrs.collectFirst { case ("count_func", spec) => spec }
+      .flatMap(parseCountFunc)
+      .flatMap { case (arrayParamName, countMethodCpp) =>
+        val countParamName = s"${arrayParamName}Count"
+        val countParam     = params.find(_.name == countParamName)
+        val arrayParam     = params.find(_.name == arrayParamName)
+        (countParam, arrayParam) match {
+          case (Some(_), Some(ap)) =>
+            countFuncElementType(ap.typ) match {
+              case Some(elemTy) =>
+                val countFuncC = toSnakeCase(countMethodCpp)
+                val cfaType    = CType.CountFuncArray(elemTy, countFuncC, countParamName, arrayParamName)
+                val newParams  = params.filterNot(p => p.name == countParamName || p.name == arrayParamName)
+                Some((cfaType, newParams))
+              case None =>
+                System.err.println(
+                  s"  WARN: count_func on $debugName: cannot determine element type for ${ap.name} (${ap.typ})"
+                )
+                None
+            }
+          case _ =>
+            System.err.println(
+              s"  WARN: count_func on $debugName: expected params $countParamName + $arrayParamName but not found"
+            )
+            None
+        }
       }
 
-    decls.map(_.mapFns(promoteFn))
-  }
+  private def promoteCountFuncArrays(decls: List[CefDecl]): List[CefDecl] =
+    decls.map(_.mapFns { fn =>
+      promoteCountFunc(fn.metaAttrs, fn.params, fn.name) match {
+        case Some((cfaType, newParams)) => fn.copy(ret = cfaType, params = newParams)
+        case None                       => fn
+      }
+    })
+
+  private def promoteCountFuncFreeFunctions(
+      freeFunctions: List[CefDecl.FreeFunction]
+  ): List[CefDecl.FreeFunction] =
+    freeFunctions.map { ff =>
+      promoteCountFunc(ff.metaAttrs, ff.params, ff.javaMethodName) match {
+        case Some((cfaType, newParams)) => ff.copy(ret = cfaType, params = newParams)
+        case None                       => ff
+      }
+    }
 }

@@ -286,7 +286,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:214</a>
      */
-    Optional<CefV8Context> getV8context();
+    Optional<CefV8Context> getV8Context();
 
     /**
      * Visit the DOM document. This method can only be called from the render process.
@@ -356,13 +356,13 @@ public interface CefFrame extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -522,9 +522,9 @@ public interface CefFrame extends CefLibraryObject {
         }
 
         @Override
-        public Optional<CefV8Context> getV8context() {
+        public Optional<CefV8Context> getV8Context() {
             checkNotClosed();
-            return Optional.ofNullable(getV8context0(nativePtr));
+            return Optional.ofNullable(getV8Context0(nativePtr));
         }
 
         @Override
@@ -592,7 +592,7 @@ public interface CefFrame extends CefLibraryObject {
 
         private static native CefBrowser getBrowser0(long self);
 
-        private static native CefV8Context getV8context0(long self);
+        private static native CefV8Context getV8Context0(long self);
 
         private static native void visitDom0(long self, CefDomVisitor visitor);
 

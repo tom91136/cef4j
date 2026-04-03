@@ -8,7 +8,7 @@ import java.util.Optional;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure representing a X.509 certificate. NOTE: This struct is allocated DLL-side.
+ * Class representing a X.509 certificate.
  *
  * <p>Definition generated from cef_x509_certificate_capi.h
  *
@@ -18,7 +18,7 @@ import javax.annotation.processing.Generated;
  * } cef_x509_certificate_t;</pre>
  *
  * @see <a
- *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate__capi_8h.html">cef_x509_certificate_capi.h:117</a>
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:97</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefX509Certificate extends CefLibraryObject {
@@ -169,13 +169,13 @@ public interface CefX509Certificate extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

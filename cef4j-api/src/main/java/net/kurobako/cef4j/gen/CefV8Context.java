@@ -8,10 +8,10 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure representing a V8 context handle. V8 handles can only be accessed from the thread on which they are
- * created. Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and
- * WebWorker threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * {@link CefV8Context#getTaskRunner()} function. NOTE: This struct is allocated DLL-side.
+ * Class representing a V8 context handle. V8 handles can only be accessed from the thread on which they are created.
+ * Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and WebWorker
+ * threads. A task runner for posting tasks on the associated thread can be retrieved via the
+ * {@link CefV8Context#getTaskRunner()} method.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -20,33 +20,32 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_context_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:64</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:119</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Context extends CefLibraryObject {
 
     /**
-     * Returns the CefTaskRunner that will execute code on this thread's message loop. This method is safe to call from
-     * any thread.
+     * Returns the task runner associated with this context. V8 handles can only be accessed from the thread on which
+     * they are created. This method can be called on any render process thread.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:147</a>
      */
     Optional<CefTaskRunner> getTaskRunner();
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call
+     * any other methods if this method returns {@code false}.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:155</a>
      */
     boolean isValid();
 
@@ -62,13 +61,13 @@ public interface CefV8Context extends CefLibraryObject {
     Optional<CefBrowser> getBrowser();
 
     /**
-     * Returns the stack frame at the specified 0-based index.
+     * Returns the frame for this context. This method will return an empty reference for WebWorker contexts.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>cef_frame_t* (CEF_CALLBACK* get_frame)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1063</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:170</a>
      */
     Optional<CefFrame> getFrame();
 
@@ -116,7 +115,7 @@ public interface CefV8Context extends CefLibraryObject {
      *
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_v8_context_t* self, struct _cef_v8_context_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:201</a>
      */
     boolean isSame(@Nullable CefV8Context that);
 
@@ -192,13 +191,13 @@ public interface CefV8Context extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

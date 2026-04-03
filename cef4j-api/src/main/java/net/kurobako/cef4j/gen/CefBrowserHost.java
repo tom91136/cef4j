@@ -40,9 +40,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Request that the browser close. Closing a browser is a multi-stage process that may complete either synchronously
      * or asynchronously, and involves callbacks such as {@link CefLifeSpanHandler#doClose(CefBrowser)} (Alloy style
      * only), {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)}, and a top-level window close handler such as
-     * CefWindowDelegate.canClose() (or platform-specific equivalent). In some cases a close request may be delayed or
-     * canceled by the user. Using TryCloseBrowser() instead of CloseBrowser() is recommended for most use cases. See
-     * {@link CefLifeSpanHandler#doClose(CefBrowser)} documentation for detailed usage and examples.
+     * {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent). In some cases a close request
+     * may be delayed or canceled by the user. Using TryCloseBrowser() instead of CloseBrowser() is recommended for most
+     * use cases. See {@link CefLifeSpanHandler#doClose(CefBrowser)} documentation for detailed usage and examples.
      *
      * <p>If {@code force_close} is {@code false} then JavaScript unload handlers, if any, may be fired and the close
      * may be delayed or canceled by the user. If {@code force_close} is {@code true} then the user will not be prompted
@@ -63,11 +63,11 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Helper for closing a browser. This is similar in behavior to CLoseBrowser({@code false}) but returns a boolean to
      * reflect the immediate close status. Call this method from a top-level window close handler such as
-     * CefWindowDelegate.canClose() (or platform-specific equivalent) to request that the browser close, and return the
-     * result to indicate if the window close should proceed. Returns {@code false} if the close will be delayed
-     * (JavaScript unload handlers triggered but still pending) or {@code true} if the close will proceed immediately
-     * (possibly asynchronously). See CloseBrowser() documentation for additional usage information. This method must be
-     * called on the browser process UI thread.
+     * {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent) to request that the browser
+     * close, and return the result to indicate if the window close should proceed. Returns {@code false} if the close
+     * will be delayed (JavaScript unload handlers triggered but still pending) or {@code true} if the close will
+     * proceed immediately (possibly asynchronously). See CloseBrowser() documentation for additional usage information.
+     * This method must be called on the browser process UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -80,13 +80,13 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Returns {@code true} if the browser is ready to be closed, meaning that the close has already been initiated and
      * that JavaScript unload handlers have already executed or should be ignored. This can be used from a top-level
-     * window close handler such as CefWindowDelegate.canClose() (or platform-specific equivalent) to distringuish
-     * between potentially cancelable browser close events (like the user clicking the top-level window close button
-     * before browser close has started) and mandatory browser close events (like JavaScript `window.close()` or after
-     * browser close has started in response to [Try]CloseBrowser()). Not completing the browser close for mandatory
-     * close events (when this method returns {@code true}) will leave the browser in a partially closed state that
-     * interferes with proper functioning. See CloseBrowser() documentation for additional usage information. This
-     * method must be called on the browser process UI thread.
+     * window close handler such as {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent) to
+     * distringuish between potentially cancelable browser close events (like the user clicking the top-level window
+     * close button before browser close has started) and mandatory browser close events (like JavaScript
+     * `window.close()` or after browser close has started in response to [Try]CloseBrowser()). Not completing the
+     * browser close for mandatory close events (when this method returns {@code true}) will leave the browser in a
+     * partially closed state that interferes with proper functioning. See CloseBrowser() documentation for additional
+     * usage information. This method must be called on the browser process UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -991,10 +991,11 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Requests the renderer to exit browser fullscreen. In most cases exiting window fullscreen should also exit
      * browser fullscreen. With Alloy style this method should be called in response to a user action such as clicking
-     * the green traffic light button on MacOS (CefWindowDelegate.onWindowFullscreenTransition() callback) or pressing
-     * the "ESC" key ({@link CefKeyboardHandler#onPreKeyEvent(CefBrowser, CefKeyEvent, long, int[])} callback). With
-     * Chrome style these standard exit actions are handled internally but new/additional user actions can use this
-     * method. Set {@code will_cause_resize} to {@code true} if exiting browser fullscreen will cause a view resize.
+     * the green traffic light button on MacOS ({@link CefWindowDelegate#onWindowFullscreenTransition(CefWindow,
+     * boolean)} callback) or pressing the "ESC" key ({@link CefKeyboardHandler#onPreKeyEvent(CefBrowser, CefKeyEvent,
+     * long, int[])} callback). With Chrome style these standard exit actions are handled internally but new/additional
+     * user actions can use this method. Set {@code will_cause_resize} to {@code true} if exiting browser fullscreen
+     * will cause a view resize.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -1153,13 +1154,13 @@ public interface CefBrowserHost extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

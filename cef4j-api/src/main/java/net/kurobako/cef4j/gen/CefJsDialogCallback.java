@@ -22,9 +22,8 @@ import javax.annotation.processing.Generated;
 public interface CefJsDialogCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Continue the JS dialog request. Set {@code success} to {@code true} if the OK button was pressed. The
+     * {@code user_input} value should be specified for prompt dialogs.
      *
      * <p>Definition generated from cef_jsdialog_handler_capi.h
      *
@@ -32,8 +31,9 @@ public interface CefJsDialogCallback extends CefLibraryObject {
      * void (CEF_CALLBACK* cont)(struct _cef_jsdialog_callback_t* self, int success, const cef_string_t* user_input);
      * </pre>
      *
+     * @param userInput may be null
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:51</a>
      */
     void cont(int success, @Nullable String userInput);
 
@@ -48,13 +48,13 @@ public interface CefJsDialogCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

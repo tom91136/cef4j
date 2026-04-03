@@ -711,15 +711,13 @@ public interface CefMenuModel extends CefLibraryObject {
      */
     boolean setFontListAt(int index, @Nullable String fontList);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new MenuModel with the specified {@code delegate}.
      *
      * <p>Definition generated from cef_menu_model_capi.h
      *
      * <pre>CEF_EXPORT cef_menu_model_t* cef_menu_model_create(struct _cef_menu_model_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:55</a>
      */
     static Optional<CefMenuModel> create(@Nullable CefMenuModelDelegate delegate) {
         return Optional.ofNullable(NativePeer.create0(delegate));
@@ -736,13 +734,13 @@ public interface CefMenuModel extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

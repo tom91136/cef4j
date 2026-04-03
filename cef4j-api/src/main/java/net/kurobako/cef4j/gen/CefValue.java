@@ -102,7 +102,7 @@ public interface CefValue extends CefLibraryObject {
      *
      * <pre>cef_value_type_t (CEF_CALLBACK* get_type)(struct _cef_value_t* self);</pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code VTYPE_INVALID} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:110</a>
      */
     CefValueType getType();
@@ -284,20 +284,6 @@ public interface CefValue extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:224</a>
      */
     boolean setList(@Nullable CefListValue value);
-    /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
-     *
-     * <p>Definition generated from cef_values_capi.h
-     *
-     * <pre>CEF_EXPORT cef_value_t* cef_value_create(void);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
-     */
-    static Optional<CefValue> create() {
-        return Optional.ofNullable(NativePeer.create0());
-    }
 
     static Optional<CefValue> parseJson(@Nullable String jsonString, @Nonnull CefJsonParserOptions options) {
         return Optional.ofNullable(NativePeer.parseJson0(jsonString, options));
@@ -324,6 +310,19 @@ public interface CefValue extends CefLibraryObject {
         return Optional.ofNullable(NativePeer.parseJsonandReturnError0(jsonString, options, errorMsgOut));
     }
 
+    /**
+     * Creates a new object.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>CEF_EXPORT cef_value_t* cef_value_create(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:59</a>
+     */
+    static Optional<CefValue> create() {
+        return Optional.ofNullable(NativePeer.create0());
+    }
+
     final class NativePeer implements CefValue, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -335,13 +334,13 @@ public interface CefValue extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -548,14 +547,14 @@ public interface CefValue extends CefLibraryObject {
 
         private static native boolean setList0(long self, CefListValue value);
 
-        static native CefValue create0();
-
         static native CefValue parseJson0(String jsonString, CefJsonParserOptions options);
 
         static native CefValue parseJsonBuffer0(ByteBuffer json, CefJsonParserOptions options);
 
         static native CefValue parseJsonandReturnError0(
                 String jsonString, CefJsonParserOptions options, String errorMsgOut);
+
+        static native CefValue create0();
 
         @Override
         public boolean equals(Object obj) {

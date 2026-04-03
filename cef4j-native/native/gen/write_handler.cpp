@@ -13,7 +13,7 @@ struct JniCefWriteHandler: public cef_write_handler_t {
 
     JniCefWriteHandler(JavaVM *vm, jobject handler) : cef_write_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefWriteHandler, cef_write_handler_t> (&base);
+        InitRefCount<JniCefWriteHandler, cef_write_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_write_handler_t*>(this)));
         write = &_write;
         seek = &_seek;
         tell = &_tell;

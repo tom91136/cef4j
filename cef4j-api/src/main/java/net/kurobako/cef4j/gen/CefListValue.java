@@ -143,7 +143,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * <pre>cef_value_type_t (CEF_CALLBACK* get_type)(struct _cef_list_value_t* self, size_t index);</pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code VTYPE_INVALID} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:617</a>
      */
     CefValueType getType(long index);
@@ -325,15 +325,13 @@ public interface CefListValue extends CefLibraryObject {
      */
     boolean setList(long index, @Nullable CefListValue value);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Creates a new object that is not owned by any other object.
      *
      * <p>Definition generated from cef_values_capi.h
      *
      * <pre>CEF_EXPORT cef_list_value_t* cef_list_value_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:543</a>
      */
     static Optional<CefListValue> create() {
         return Optional.ofNullable(NativePeer.create0());
@@ -350,13 +348,13 @@ public interface CefListValue extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

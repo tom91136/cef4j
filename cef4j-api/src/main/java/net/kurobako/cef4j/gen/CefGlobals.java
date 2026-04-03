@@ -14,496 +14,6 @@ public final class CefGlobals {
 
     private CefGlobals() {}
 
-    public static int isRtl() {
-        return isRtl0();
-    }
-
-    /**
-     * Start tracing events on all processes. Tracing is initialized asynchronously and {@code callback} will be
-     * executed on the UI thread after initialization is complete.
-     *
-     * <p>If CefBeginTracing was called previously, or if a CefEndTracingAsync call is pending, CefBeginTracing will
-     * fail and return {@code false}.
-     *
-     * <p>{@code categories} is a comma-delimited list of category wildcards. A category can have an optional '-' prefix
-     * to make it an excluded category. Having both included and excluded categories in the same list is not supported.
-     *
-     * <p>Examples:
-     *
-     * <ul>
-     *   <li>"test_MyTest*"
-     *   <li>"test_MyTest*,test_OtherStuff"
-     *   <li>"-excluded_category1,-excluded_category2"
-     * </ul>
-     *
-     * <p>This function must be called on the browser process UI thread.
-     *
-     * <p>Definition generated from cef_trace_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT int cef_begin_tracing(const cef_string_t* categories, struct _cef_completion_callback_t* callback);
-     * </pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:63</a>
-     */
-    public static int beginTracing(@Nullable String categories, @Nullable CefCompletionCallback callback) {
-        return beginTracing0(categories, callback);
-    }
-
-    /**
-     * Stop tracing events on all processes.
-     *
-     * <p>This function will fail and return {@code false} if a previous call to CefEndTracingAsync is already pending
-     * or if CefBeginTracing was not called.
-     *
-     * <p>{@code tracing_file} is the path at which tracing data will be written and {@code callback} is the callback
-     * that will be executed once all processes have sent their trace data. If {@code tracing_file} is empty a new
-     * temporary file path will be used. If {@code callback} is empty no trace data will be written.
-     *
-     * <p>This function must be called on the browser process UI thread.
-     *
-     * <p>Definition generated from cef_trace_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_end_tracing(const cef_string_t* tracing_file, cef_end_tracing_callback_t* callback);
-     * </pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:86</a>
-     */
-    public static int endTracing(@Nullable String tracingFile, @Nullable CefEndTracingCallback callback) {
-        return endTracing0(tracingFile, callback);
-    }
-
-    /**
-     * Returns the current system trace time or, if none is defined, the current high-res time. Can be used by clients
-     * to synchronize with the time information in trace events.
-     *
-     * <p>Definition generated from cef_trace_capi.h
-     *
-     * <pre>CEF_EXPORT int64_t cef_now_from_system_trace_time(void);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:103</a>
-     */
-    public static long nowFromSystemTraceTime() {
-        return nowFromSystemTraceTime0();
-    }
-
-    public static int resolveUrl(@Nullable String baseUrl, @Nullable String relativeUrl, @Nullable String resolvedUrl) {
-        return resolveUrl0(baseUrl, relativeUrl, resolvedUrl);
-    }
-
-    public static int parseUrl(@Nullable String url, @Nullable NativePointer parts) {
-        return parseUrl0(url, parts);
-    }
-
-    public static int createUrl(@Nullable NativePointer parts, @Nullable String url) {
-        return createUrl0(parts, url);
-    }
-
-    /**
-     * This is a convenience function for formatting a URL in a concise and human-friendly way to help users make
-     * security-related decisions (or in other circumstances when people need to distinguish sites, origins, or
-     * otherwise-simplified URLs from each other). Internationalized domain names (IDN) may be presented in Unicode if
-     * the conversion is considered safe. The returned value will (a) omit the path for standard schemes, excepting file
-     * and filesystem, and (b) omit the port if it is the default for the scheme. Do not use this for URLs which will be
-     * parsed or sent to other applications.
-     *
-     * <p>Definition generated from cef_parser_capi.h
-     *
-     * <pre>CEF_EXPORT cef_string_userfree_t cef_format_url_for_security_display(const cef_string_t* origin_url);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:70</a>
-     */
-    public static Optional<String> formatUrlForSecurityDisplay(@Nullable String originUrl) {
-        return Optional.ofNullable(formatUrlForSecurityDisplay0(originUrl));
-    }
-
-    /**
-     * Returns the mime type for the specified file extension or an empty string if unknown.
-     *
-     * <p>Definition generated from cef_parser_capi.h
-     *
-     * <pre>CEF_EXPORT cef_string_userfree_t cef_get_mime_type(const cef_string_t* extension);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:83</a>
-     */
-    public static Optional<String> getMimeType(@Nullable String extension) {
-        return Optional.ofNullable(getMimeType0(extension));
-    }
-
-    /**
-     * Get the extensions associated with the given mime type. This should be passed in lower case. There could be
-     * multiple extensions for a given mime type, like "html,htm" for "text/html", or "txt,text,html,..." for "text/*".
-     * Any existing elements in the provided vector will not be erased.
-     *
-     * <p>Definition generated from cef_parser_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT void cef_get_extensions_for_mime_type(const cef_string_t* mime_type, cef_string_list_t extensions);
-     * </pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:90</a>
-     */
-    public static void getExtensionsForMimeType(@Nullable String mimeType, @Nonnull List<String> extensions) {
-        getExtensionsForMimeType0(mimeType, extensions);
-    }
-
-    /**
-     * Encodes {@code data} as a base64 string.
-     *
-     * <p>Definition generated from cef_parser_capi.h
-     *
-     * <pre>CEF_EXPORT cef_string_userfree_t cef_base64_encode(const void* data, size_t data_size);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:100</a>
-     */
-    public static Optional<String> base64Encode(@Nonnull ByteBuffer data) {
-        return Optional.ofNullable(base64Encode0(data));
-    }
-
-    public static Optional<String> uriencode(@Nullable String text, int usePlus) {
-        return Optional.ofNullable(uriencode0(text, usePlus));
-    }
-
-    public static Optional<String> uridecode(
-            @Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule) {
-        return Optional.ofNullable(uridecode0(text, convertToUtf8, unescapeRule));
-    }
-
-    public static Optional<String> writeJson(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options) {
-        return Optional.ofNullable(writeJson0(node, options));
-    }
-
-    /**
-     * Crash reporting is configured using an INI-style config file named "crash_reporter.cfg". On Windows and Linux
-     * this file must be placed next to the main application executable. On macOS this file must be placed in the
-     * top-level app bundle Resources directory (e.g. "&lt;appname&gt;.app/Contents/Resources"). File contents are as
-     * follows:
-     *
-     * <pre>
-     * # Comments start with a hash character and must be on their own line.
-     * [Config] ProductName=&lt;Value of the "prod" crash key; defaults to "cef"&gt; ProductVersion=&lt;Value of the "ver" crash key; defaults to the CEF version&gt; AppName=&lt;Windows only; App-specific folder name component for storing crash information; default to "CEF"&gt; ExternalHandler=&lt;Windows only; Name of the external handler exe to use instead of re-launching the main exe; default to empty&gt; BrowserCrashForwardingEnabled=&lt;macOS only; True if browser process crashes should be forwarded to the system crash reporter; default to false&gt; ServerURL=&lt;crash server URL; default to empty&gt; RateLimitEnabled=&lt;True if uploads should be rate limited; default to true&gt; MaxUploadsPerDay=&lt;Max uploads per 24 hours, used if rate limit is enabled; default to 5&gt; MaxDatabaseSizeInMb=&lt;Total crash report disk usage greater than this value will cause older reports to be deleted; default to 20&gt; MaxDatabaseAgeInDays=&lt;Crash reports older than this value will be deleted; default to 5&gt;
-     * [CrashKeys] my_key1=&lt;small|medium|large&gt; my_key2=&lt;small|medium|large&gt;
-     * </pre>
-     *
-     * <p>&lt;b&gt;Config section:&lt;/b&gt;
-     *
-     * <p>If "ProductName" and/or "ProductVersion" are set then the specified values will be included in the crash dump
-     * metadata. On macOS if these values are set to empty then they will be retrieved from the Info.plist file using
-     * the "CFBundleName" and "CFBundleShortVersionString" keys respectively.
-     *
-     * <p>If "AppName" is set on Windows then crash report information (metrics, database and dumps) will be stored
-     * locally on disk under the "C:\Users\[CurrentUser]\AppData\Local\[AppName]\User Data" folder. On other platforms
-     * the cef_settings_t.root_cache_path value will be used.
-     *
-     * <p>If "ExternalHandler" is set on Windows then the specified exe will be launched as the crashpad-handler instead
-     * of re-launching the main process exe. The value can be an absolute path or a path relative to the main exe
-     * directory. On Linux the cef_settings_t.browser_subprocess_path value will be used. On macOS the existing
-     * subprocess app bundle will be used.
-     *
-     * <p>If "BrowserCrashForwardingEnabled" is set to {@code true} on macOS then browser process crashes will be
-     * forwarded to the system crash reporter. This results in the crash UI dialog being displayed to the user and crash
-     * reports being logged under "~/Library/Logs/DiagnosticReports". Forwarding of crash reports from non-browser
-     * processes and Debug builds is always disabled.
-     *
-     * <p>If "ServerURL" is set then crashes will be uploaded as a multi-part POST request to the specified URL.
-     * Otherwise, reports will only be stored locally on disk.
-     *
-     * <p>If "RateLimitEnabled" is set to {@code true} then crash report uploads will be rate limited as follows: 1. If
-     * "MaxUploadsPerDay" is set to a positive value then at most the specified number of crashes will be uploaded in
-     * each 24 hour period. 2. If crash upload fails due to a network or server error then an incremental backoff delay
-     * up to a maximum of 24 hours will be applied for retries. 3. If a backoff delay is applied and "MaxUploadsPerDay"
-     * is > 1 then the "MaxUploadsPerDay" value will be reduced to 1 until the client is restarted. This helps to avoid
-     * an upload flood when the network or server error is resolved. Rate limiting is not supported on Linux.
-     *
-     * <p>If "MaxDatabaseSizeInMb" is set to a positive value then crash report storage on disk will be limited to that
-     * size in megabytes. For example, on Windows each dump is about 600KB so a "MaxDatabaseSizeInMb" value of 20
-     * equates to about 34 crash reports stored on disk. Not supported on Linux.
-     *
-     * <p>If "MaxDatabaseAgeInDays" is set to a positive value then crash reports older than the specified age in days
-     * will be deleted. Not supported on Linux.
-     *
-     * <p>&lt;b&gt;CrashKeys section:&lt;/b&gt;
-     *
-     * <p>A maximum of 26 crash keys of each size can be specified for use by the application. Crash key values will be
-     * truncated based on the specified size (small = 64 bytes, medium = 256 bytes, large = 1024 bytes). The value of
-     * crash keys can be set from any thread or process using the CefSetCrashKeyValue function. These key/value pairs
-     * will be sent to the crash server along with the crash dump file.
-     *
-     * <p>Definition generated from cef_crash_util_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_crash_reporting_enabled(void);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:41</a>
-     */
-    public static int crashReportingEnabled() {
-        return crashReportingEnabled0();
-    }
-
-    /**
-     * Sets or clears a specific key-value pair from the crash metadata.
-     *
-     * <p>Definition generated from cef_crash_util_capi.h
-     *
-     * <pre>CEF_EXPORT void cef_set_crash_key_value(const cef_string_t* key, const cef_string_t* value);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:139</a>
-     */
-    public static void setCrashKeyValue(@Nullable String key, @Nullable String value) {
-        setCrashKeyValue0(key, value);
-    }
-
-    /**
-     * Returns {@code true} if called on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->BelongsToCurrentThread().
-     *
-     * <p>Definition generated from cef_task_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_currently_on(cef_thread_id_t threadId);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:124</a>
-     */
-    public static int currentlyOn(@Nonnull CefThreadId threadId) {
-        return currentlyOn0(threadId);
-    }
-
-    /**
-     * Post a task for execution on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->PostTask(task).
-     *
-     * <p>Definition generated from cef_task_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_post_task(cef_thread_id_t threadId, cef_task_t* task);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:131</a>
-     */
-    public static boolean postTask(@Nonnull CefThreadId threadId, @Nullable CefTask task) {
-        return postTask0(threadId, task);
-    }
-
-    /**
-     * Post a task for delayed execution on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->PostDelayedTask(task, delay_ms).
-     *
-     * <p>Definition generated from cef_task_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_post_delayed_task(cef_thread_id_t threadId, cef_task_t* task, int64_t delay_ms);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:138</a>
-     */
-    public static boolean postDelayedTask(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs) {
-        return postDelayedTask0(threadId, task, delayMs);
-    }
-
-    /**
-     * Add an entry to the cross-origin access whitelist.
-     *
-     * <p>The same-origin policy restricts how scripts hosted from different origins (scheme + domain + port) can
-     * communicate. By default, scripts can only access resources with the same origin. Scripts hosted on the HTTP and
-     * HTTPS schemes (but no other schemes) can use the "Access-Control-Allow-Origin" header to allow cross-origin
-     * requests. For example, <a href="https://source.example.com">https://source.example.com</a> can make
-     * XMLHttpRequest requests on <a href="http://target.example.com">http://target.example.com</a> if the <a
-     * href="http://target.example.com">http://target.example.com</a> request returns an "Access-Control-Allow-Origin:
-     * <a href="https://source.example.com">https://source.example.com</a>" response header.
-     *
-     * <p>Scripts in separate frames or iframes and hosted from the same protocol and domain suffix can execute
-     * cross-origin JavaScript if both pages set the document.domain value to the same domain suffix. For example,
-     * scheme://foo.example.com and scheme://bar.example.com can communicate using JavaScript if both domains set
-     * document.domain="example.com".
-     *
-     * <p>This method is used to allow access to origins that would otherwise violate the same-origin policy. Scripts
-     * hosted underneath the fully qualified {@code source_origin} URL (like <a
-     * href="http://www.example.com">http://www.example.com</a>) will be allowed access to all resources hosted on the
-     * specified {@code target_protocol} and {@code target_domain}. If {@code target_domain} is non-empty and
-     * {@code allow_target_subdomains} is {@code false} only exact domain matches will be allowed. If
-     * {@code target_domain} contains a top-level domain component (like "example.com") and
-     * {@code allow_target_subdomains} is {@code true} sub-domain matches will be allowed. If {@code target_domain} is
-     * empty and {@code allow_target_subdomains} if {@code true} all domains and IP addresses will be allowed.
-     *
-     * <p>This method cannot be used to bypass the restrictions on local or display isolated schemes. See the comments
-     * on CefRegisterCustomScheme for more information.
-     *
-     * <p>This function may be called on any thread. Returns {@code false} if {@code source_origin} is invalid or the
-     * whitelist cannot be accessed.
-     *
-     * <p>Definition generated from cef_origin_whitelist_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT int cef_add_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);
-     * </pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:43</a>
-     */
-    public static int addCrossOriginWhitelistEntry(
-            @Nullable String sourceOrigin,
-            @Nullable String targetProtocol,
-            @Nullable String targetDomain,
-            int allowTargetSubdomains) {
-        return addCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
-    }
-
-    /**
-     * Remove an entry from the cross-origin access whitelist. Returns {@code false} if {@code source_origin} is invalid
-     * or the whitelist cannot be accessed.
-     *
-     * <p>Definition generated from cef_origin_whitelist_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT int cef_remove_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);
-     * </pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:86</a>
-     */
-    public static int removeCrossOriginWhitelistEntry(
-            @Nullable String sourceOrigin,
-            @Nullable String targetProtocol,
-            @Nullable String targetDomain,
-            int allowTargetSubdomains) {
-        return removeCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
-    }
-
-    /**
-     * Remove all entries from the cross-origin access whitelist. Returns {@code false} if the whitelist cannot be
-     * accessed.
-     *
-     * <p>Definition generated from cef_origin_whitelist_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_clear_cross_origin_whitelist(void);</pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:96</a>
-     */
-    public static int clearCrossOriginWhitelist() {
-        return clearCrossOriginWhitelist0();
-    }
-
-    /**
-     * Returns {@code true} if the certificate status represents an error.
-     *
-     * <p>Definition generated from cef_ssl_info_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_is_cert_status_error(cef_cert_status_t status);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
-     */
-    public static int isCertStatusError(@Nonnull CefCertStatus status) {
-        return isCertStatusError0(status);
-    }
-
-    /**
-     * Register a scheme handler factory with the global request context. An empty {@code domain_name} value for a
-     * standard scheme will cause the factory to match all domain names. The {@code domain_name} value will be ignored
-     * for non-standard schemes. If {@code scheme_name} is a built-in scheme and no handler is returned by
-     * {@code factory} then the built-in scheme handler factory will be called. If {@code scheme_name} is a custom
-     * scheme then you must also implement the {@link CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all
-     * processes. This function may be called multiple times to change or remove the factory that matches the specified
-     * {@code scheme_name} and optional {@code domain_name}. Returns {@code false} if an error occurs. This function may
-     * be called on any thread in the browser process. Using this function is equivalent to calling
-     * CefRequestContext.getGlobalContext()->RegisterSchemeHandlerFactory().
-     *
-     * <p>Definition generated from cef_scheme_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT int cef_register_scheme_handler_factory(const cef_string_t* scheme_name, const cef_string_t* domain_name, cef_scheme_handler_factory_t* factory);
-     * </pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:50</a>
-     */
-    public static boolean registerSchemeHandlerFactory(
-            @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
-        return registerSchemeHandlerFactory0(schemeName, domainName, factory);
-    }
-
-    /**
-     * Clear all scheme handler factories registered with the global request context. Returns {@code false} on error.
-     * This function may be called on any thread in the browser process. Using this function is equivalent to calling
-     * CefRequestContext.getGlobalContext()->ClearSchemeHandlerFactories().
-     *
-     * <p>Definition generated from cef_scheme_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_clear_scheme_handler_factories(void);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:70</a>
-     */
-    public static boolean clearSchemeHandlerFactories() {
-        return clearSchemeHandlerFactories0();
-    }
-
-    /**
-     * Register a new V8 extension with the specified JavaScript extension code and handler. Functions implemented by
-     * the handler are prototyped using the keyword 'native'. The calling of a native function is restricted to the
-     * scope in which the prototype of the native function is defined. This function may only be called on the render
-     * process main thread.
-     *
-     * <p>Example JavaScript extension code:
-     *
-     * <pre>
-     * // create the 'example' global object if it doesn't already exist. if (!example) example = {}; // create the 'example.test' global object if it doesn't already exist. if (!example.test) example.test = {}; (function() { // Define the function 'example.test.myfunction'. example.test.myfunction = function() { // Call CefV8Handler::Execute() with the function name 'MyFunction' // and no arguments. native function MyFunction(); return MyFunction(); }; // Define the getter function for parameter 'example.test.myparam'. example.test.__defineGetter__('myparam', function() { // Call CefV8Handler::Execute() with the function name 'GetMyParam' // and no arguments. native function GetMyParam(); return GetMyParam(); }); // Define the setter function for parameter 'example.test.myparam'. example.test.__defineSetter__('myparam', function(b) { // Call CefV8Handler::Execute() with the function name 'SetMyParam' // and a single argument. native function SetMyParam(); if(b) SetMyParam(b); });
-     * // Extension definitions can also contain normal JavaScript variables // and functions. var myint = 0; example.test.increment = function() { myint += 1; return myint; }; })();
-     * </pre>
-     *
-     * <p>Example usage in the page:
-     *
-     * <pre>
-     * // Call the function. example.test.myfunction(); // Set the parameter. example.test.myparam = value; // Get the parameter. value = example.test.myparam; // Call another function. example.test.increment();
-     * </pre>
-     *
-     * <p>Definition generated from cef_v8_capi.h
-     *
-     * <pre>
-     * CEF_EXPORT int cef_register_extension(const cef_string_t* extension_name, const cef_string_t* javascript_code, cef_v8_handler_t* handler);
-     * </pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:54</a>
-     */
-    public static int registerExtension(
-            @Nullable String extensionName, @Nullable String javascriptCode, @Nullable CefV8Handler handler) {
-        return registerExtension0(extensionName, javascriptCode, handler);
-    }
-
-    /**
-     * Launches the process specified via {@code command_line}. Returns {@code true} upon success. Must be called on the
-     * browser process {@code TID_PROCESS_LAUNCHER} thread.
-     *
-     * <p>Unix-specific notes:
-     *
-     * <ul>
-     *   <li>All file descriptors open in the parent process will be closed in the
-     * </ul>
-     *
-     * child process except for stdin, stdout, and stderr.
-     *
-     * <ul>
-     *   <li>If the first argument on the command line does not contain a slash,
-     * </ul>
-     *
-     * PATH will be searched. (See man execvp.)
-     *
-     * <p>Definition generated from cef_process_util_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_launch_process(struct _cef_command_line_t* command_line);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__util_8h.html">cef_process_util.h:44</a>
-     */
-    public static int launchProcess(@Nullable CefCommandLine commandLine) {
-        return launchProcess0(commandLine);
-    }
-
-    /**
-     * Retrieve the path associated with the specified {@code key}. Returns {@code true} on success. Can be called on
-     * any thread in the browser process.
-     *
-     * <p>Definition generated from cef_path_util_capi.h
-     *
-     * <pre>CEF_EXPORT int cef_get_path(cef_path_key_t key, cef_string_t* path);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__path__util_8h.html">cef_path_util.h:45</a>
-     */
-    public static int getPath(@Nonnull CefPathKey key, @Nullable String path) {
-        return getPath0(key, path);
-    }
-
     /**
      * This function should be called from the application entry point function to execute a secondary process. It can
      * be used to run secondary processes from the browser client executable (default behavior) or from a separate
@@ -678,6 +188,85 @@ public final class CefGlobals {
     }
 
     /**
+     * Crash reporting is configured using an INI-style config file named "crash_reporter.cfg". On Windows and Linux
+     * this file must be placed next to the main application executable. On macOS this file must be placed in the
+     * top-level app bundle Resources directory (e.g. "&lt;appname&gt;.app/Contents/Resources"). File contents are as
+     * follows:
+     *
+     * <pre>
+     * # Comments start with a hash character and must be on their own line.
+     * [Config] ProductName=&lt;Value of the "prod" crash key; defaults to "cef"&gt; ProductVersion=&lt;Value of the "ver" crash key; defaults to the CEF version&gt; AppName=&lt;Windows only; App-specific folder name component for storing crash information; default to "CEF"&gt; ExternalHandler=&lt;Windows only; Name of the external handler exe to use instead of re-launching the main exe; default to empty&gt; BrowserCrashForwardingEnabled=&lt;macOS only; True if browser process crashes should be forwarded to the system crash reporter; default to false&gt; ServerURL=&lt;crash server URL; default to empty&gt; RateLimitEnabled=&lt;True if uploads should be rate limited; default to true&gt; MaxUploadsPerDay=&lt;Max uploads per 24 hours, used if rate limit is enabled; default to 5&gt; MaxDatabaseSizeInMb=&lt;Total crash report disk usage greater than this value will cause older reports to be deleted; default to 20&gt; MaxDatabaseAgeInDays=&lt;Crash reports older than this value will be deleted; default to 5&gt;
+     * [CrashKeys] my_key1=&lt;small|medium|large&gt; my_key2=&lt;small|medium|large&gt;
+     * </pre>
+     *
+     * <p>&lt;b&gt;Config section:&lt;/b&gt;
+     *
+     * <p>If "ProductName" and/or "ProductVersion" are set then the specified values will be included in the crash dump
+     * metadata. On macOS if these values are set to empty then they will be retrieved from the Info.plist file using
+     * the "CFBundleName" and "CFBundleShortVersionString" keys respectively.
+     *
+     * <p>If "AppName" is set on Windows then crash report information (metrics, database and dumps) will be stored
+     * locally on disk under the "C:\Users\[CurrentUser]\AppData\Local\[AppName]\User Data" folder. On other platforms
+     * the cef_settings_t.root_cache_path value will be used.
+     *
+     * <p>If "ExternalHandler" is set on Windows then the specified exe will be launched as the crashpad-handler instead
+     * of re-launching the main process exe. The value can be an absolute path or a path relative to the main exe
+     * directory. On Linux the cef_settings_t.browser_subprocess_path value will be used. On macOS the existing
+     * subprocess app bundle will be used.
+     *
+     * <p>If "BrowserCrashForwardingEnabled" is set to {@code true} on macOS then browser process crashes will be
+     * forwarded to the system crash reporter. This results in the crash UI dialog being displayed to the user and crash
+     * reports being logged under "~/Library/Logs/DiagnosticReports". Forwarding of crash reports from non-browser
+     * processes and Debug builds is always disabled.
+     *
+     * <p>If "ServerURL" is set then crashes will be uploaded as a multi-part POST request to the specified URL.
+     * Otherwise, reports will only be stored locally on disk.
+     *
+     * <p>If "RateLimitEnabled" is set to {@code true} then crash report uploads will be rate limited as follows: 1. If
+     * "MaxUploadsPerDay" is set to a positive value then at most the specified number of crashes will be uploaded in
+     * each 24 hour period. 2. If crash upload fails due to a network or server error then an incremental backoff delay
+     * up to a maximum of 24 hours will be applied for retries. 3. If a backoff delay is applied and "MaxUploadsPerDay"
+     * is > 1 then the "MaxUploadsPerDay" value will be reduced to 1 until the client is restarted. This helps to avoid
+     * an upload flood when the network or server error is resolved. Rate limiting is not supported on Linux.
+     *
+     * <p>If "MaxDatabaseSizeInMb" is set to a positive value then crash report storage on disk will be limited to that
+     * size in megabytes. For example, on Windows each dump is about 600KB so a "MaxDatabaseSizeInMb" value of 20
+     * equates to about 34 crash reports stored on disk. Not supported on Linux.
+     *
+     * <p>If "MaxDatabaseAgeInDays" is set to a positive value then crash reports older than the specified age in days
+     * will be deleted. Not supported on Linux.
+     *
+     * <p>&lt;b&gt;CrashKeys section:&lt;/b&gt;
+     *
+     * <p>A maximum of 26 crash keys of each size can be specified for use by the application. Crash key values will be
+     * truncated based on the specified size (small = 64 bytes, medium = 256 bytes, large = 1024 bytes). The value of
+     * crash keys can be set from any thread or process using the CefSetCrashKeyValue function. These key/value pairs
+     * will be sent to the crash server along with the crash dump file.
+     *
+     * <p>Definition generated from cef_crash_util_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_crash_reporting_enabled(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:41</a>
+     */
+    public static int crashReportingEnabled() {
+        return crashReportingEnabled0();
+    }
+
+    /**
+     * Sets or clears a specific key-value pair from the crash metadata.
+     *
+     * <p>Definition generated from cef_crash_util_capi.h
+     *
+     * <pre>CEF_EXPORT void cef_set_crash_key_value(const cef_string_t* key, const cef_string_t* value);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:139</a>
+     */
+    public static void setCrashKeyValue(@Nullable String key, @Nullable String value) {
+        setCrashKeyValue0(key, value);
+    }
+
+    /**
      * Creates a directory and all parent directories if they don't already exist. Returns {@code true} on successful
      * creation or if the directory already exists. The directory is only readable by the current user. Calling this
      * function on the browser process UI or IO threads is not allowed.
@@ -796,13 +385,463 @@ public final class CefGlobals {
         loadCrlsetsFile0(path);
     }
 
+    public static int isRtl() {
+        return isRtl0();
+    }
+
+    /**
+     * Add an entry to the cross-origin access whitelist.
+     *
+     * <p>The same-origin policy restricts how scripts hosted from different origins (scheme + domain + port) can
+     * communicate. By default, scripts can only access resources with the same origin. Scripts hosted on the HTTP and
+     * HTTPS schemes (but no other schemes) can use the "Access-Control-Allow-Origin" header to allow cross-origin
+     * requests. For example, <a href="https://source.example.com">https://source.example.com</a> can make
+     * XMLHttpRequest requests on <a href="http://target.example.com">http://target.example.com</a> if the <a
+     * href="http://target.example.com">http://target.example.com</a> request returns an "Access-Control-Allow-Origin:
+     * <a href="https://source.example.com">https://source.example.com</a>" response header.
+     *
+     * <p>Scripts in separate frames or iframes and hosted from the same protocol and domain suffix can execute
+     * cross-origin JavaScript if both pages set the document.domain value to the same domain suffix. For example,
+     * scheme://foo.example.com and scheme://bar.example.com can communicate using JavaScript if both domains set
+     * document.domain="example.com".
+     *
+     * <p>This method is used to allow access to origins that would otherwise violate the same-origin policy. Scripts
+     * hosted underneath the fully qualified {@code source_origin} URL (like <a
+     * href="http://www.example.com">http://www.example.com</a>) will be allowed access to all resources hosted on the
+     * specified {@code target_protocol} and {@code target_domain}. If {@code target_domain} is non-empty and
+     * {@code allow_target_subdomains} is {@code false} only exact domain matches will be allowed. If
+     * {@code target_domain} contains a top-level domain component (like "example.com") and
+     * {@code allow_target_subdomains} is {@code true} sub-domain matches will be allowed. If {@code target_domain} is
+     * empty and {@code allow_target_subdomains} if {@code true} all domains and IP addresses will be allowed.
+     *
+     * <p>This method cannot be used to bypass the restrictions on local or display isolated schemes. See the comments
+     * on CefRegisterCustomScheme for more information.
+     *
+     * <p>This function may be called on any thread. Returns {@code false} if {@code source_origin} is invalid or the
+     * whitelist cannot be accessed.
+     *
+     * <p>Definition generated from cef_origin_whitelist_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT int cef_add_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:43</a>
+     */
+    public static int addCrossOriginWhitelistEntry(
+            @Nullable String sourceOrigin,
+            @Nullable String targetProtocol,
+            @Nullable String targetDomain,
+            int allowTargetSubdomains) {
+        return addCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+    }
+
+    /**
+     * Remove an entry from the cross-origin access whitelist. Returns {@code false} if {@code source_origin} is invalid
+     * or the whitelist cannot be accessed.
+     *
+     * <p>Definition generated from cef_origin_whitelist_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT int cef_remove_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:86</a>
+     */
+    public static int removeCrossOriginWhitelistEntry(
+            @Nullable String sourceOrigin,
+            @Nullable String targetProtocol,
+            @Nullable String targetDomain,
+            int allowTargetSubdomains) {
+        return removeCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+    }
+
+    /**
+     * Remove all entries from the cross-origin access whitelist. Returns {@code false} if the whitelist cannot be
+     * accessed.
+     *
+     * <p>Definition generated from cef_origin_whitelist_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_clear_cross_origin_whitelist(void);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:96</a>
+     */
+    public static int clearCrossOriginWhitelist() {
+        return clearCrossOriginWhitelist0();
+    }
+
+    public static int resolveUrl(@Nullable String baseUrl, @Nullable String relativeUrl, @Nullable String resolvedUrl) {
+        return resolveUrl0(baseUrl, relativeUrl, resolvedUrl);
+    }
+
+    public static int parseUrl(@Nullable String url, @Nullable NativePointer parts) {
+        return parseUrl0(url, parts);
+    }
+
+    public static int createUrl(@Nullable NativePointer parts, @Nullable String url) {
+        return createUrl0(parts, url);
+    }
+
+    /**
+     * This is a convenience function for formatting a URL in a concise and human-friendly way to help users make
+     * security-related decisions (or in other circumstances when people need to distinguish sites, origins, or
+     * otherwise-simplified URLs from each other). Internationalized domain names (IDN) may be presented in Unicode if
+     * the conversion is considered safe. The returned value will (a) omit the path for standard schemes, excepting file
+     * and filesystem, and (b) omit the port if it is the default for the scheme. Do not use this for URLs which will be
+     * parsed or sent to other applications.
+     *
+     * <p>Definition generated from cef_parser_capi.h
+     *
+     * <pre>CEF_EXPORT cef_string_userfree_t cef_format_url_for_security_display(const cef_string_t* origin_url);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:70</a>
+     */
+    public static Optional<String> formatUrlForSecurityDisplay(@Nullable String originUrl) {
+        return Optional.ofNullable(formatUrlForSecurityDisplay0(originUrl));
+    }
+
+    /**
+     * Returns the mime type for the specified file extension or an empty string if unknown.
+     *
+     * <p>Definition generated from cef_parser_capi.h
+     *
+     * <pre>CEF_EXPORT cef_string_userfree_t cef_get_mime_type(const cef_string_t* extension);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:83</a>
+     */
+    public static Optional<String> getMimeType(@Nullable String extension) {
+        return Optional.ofNullable(getMimeType0(extension));
+    }
+
+    /**
+     * Get the extensions associated with the given mime type. This should be passed in lower case. There could be
+     * multiple extensions for a given mime type, like "html,htm" for "text/html", or "txt,text,html,..." for "text/*".
+     * Any existing elements in the provided vector will not be erased.
+     *
+     * <p>Definition generated from cef_parser_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT void cef_get_extensions_for_mime_type(const cef_string_t* mime_type, cef_string_list_t extensions);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:90</a>
+     */
+    public static void getExtensionsForMimeType(@Nullable String mimeType, @Nonnull List<String> extensions) {
+        getExtensionsForMimeType0(mimeType, extensions);
+    }
+
+    /**
+     * Encodes {@code data} as a base64 string.
+     *
+     * <p>Definition generated from cef_parser_capi.h
+     *
+     * <pre>CEF_EXPORT cef_string_userfree_t cef_base64_encode(const void* data, size_t data_size);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:100</a>
+     */
+    public static Optional<String> base64Encode(@Nonnull ByteBuffer data) {
+        return Optional.ofNullable(base64Encode0(data));
+    }
+
+    public static Optional<String> uriencode(@Nullable String text, int usePlus) {
+        return Optional.ofNullable(uriencode0(text, usePlus));
+    }
+
+    public static Optional<String> uridecode(
+            @Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule) {
+        return Optional.ofNullable(uridecode0(text, convertToUtf8, unescapeRule));
+    }
+
+    public static Optional<String> writeJson(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options) {
+        return Optional.ofNullable(writeJson0(node, options));
+    }
+
+    /**
+     * Retrieve the path associated with the specified {@code key}. Returns {@code true} on success. Can be called on
+     * any thread in the browser process.
+     *
+     * <p>Definition generated from cef_path_util_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_get_path(cef_path_key_t key, cef_string_t* path);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__path__util_8h.html">cef_path_util.h:45</a>
+     */
+    public static int getPath(@Nonnull CefPathKey key, @Nullable String path) {
+        return getPath0(key, path);
+    }
+
+    /**
+     * Launches the process specified via {@code command_line}. Returns {@code true} upon success. Must be called on the
+     * browser process {@code TID_PROCESS_LAUNCHER} thread.
+     *
+     * <p>Unix-specific notes:
+     *
+     * <ul>
+     *   <li>All file descriptors open in the parent process will be closed in the
+     * </ul>
+     *
+     * child process except for stdin, stdout, and stderr.
+     *
+     * <ul>
+     *   <li>If the first argument on the command line does not contain a slash,
+     * </ul>
+     *
+     * PATH will be searched. (See man execvp.)
+     *
+     * <p>Definition generated from cef_process_util_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_launch_process(struct _cef_command_line_t* command_line);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__util_8h.html">cef_process_util.h:44</a>
+     */
+    public static int launchProcess(@Nullable CefCommandLine commandLine) {
+        return launchProcess0(commandLine);
+    }
+
+    /**
+     * Register a scheme handler factory with the global request context. An empty {@code domain_name} value for a
+     * standard scheme will cause the factory to match all domain names. The {@code domain_name} value will be ignored
+     * for non-standard schemes. If {@code scheme_name} is a built-in scheme and no handler is returned by
+     * {@code factory} then the built-in scheme handler factory will be called. If {@code scheme_name} is a custom
+     * scheme then you must also implement the {@link CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all
+     * processes. This function may be called multiple times to change or remove the factory that matches the specified
+     * {@code scheme_name} and optional {@code domain_name}. Returns {@code false} if an error occurs. This function may
+     * be called on any thread in the browser process. Using this function is equivalent to calling
+     * CefRequestContext.getGlobalContext()->RegisterSchemeHandlerFactory().
+     *
+     * <p>Definition generated from cef_scheme_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT int cef_register_scheme_handler_factory(const cef_string_t* scheme_name, const cef_string_t* domain_name, cef_scheme_handler_factory_t* factory);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:50</a>
+     */
+    public static boolean registerSchemeHandlerFactory(
+            @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
+        return registerSchemeHandlerFactory0(schemeName, domainName, factory);
+    }
+
+    /**
+     * Clear all scheme handler factories registered with the global request context. Returns {@code false} on error.
+     * This function may be called on any thread in the browser process. Using this function is equivalent to calling
+     * CefRequestContext.getGlobalContext()->ClearSchemeHandlerFactories().
+     *
+     * <p>Definition generated from cef_scheme_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_clear_scheme_handler_factories(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:70</a>
+     */
+    public static boolean clearSchemeHandlerFactories() {
+        return clearSchemeHandlerFactories0();
+    }
+
+    /**
+     * Returns {@code true} if the certificate status represents an error.
+     *
+     * <p>Definition generated from cef_ssl_info_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_is_cert_status_error(cef_cert_status_t status);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
+     */
+    public static int isCertStatusError(@Nonnull CefCertStatus status) {
+        return isCertStatusError0(status);
+    }
+
+    /**
+     * Returns {@code true} if called on the specified thread. Equivalent to using
+     * CefTaskRunner.getForThread()(threadId)->BelongsToCurrentThread().
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_currently_on(cef_thread_id_t threadId);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:124</a>
+     */
+    public static int currentlyOn(@Nonnull CefThreadId threadId) {
+        return currentlyOn0(threadId);
+    }
+
+    /**
+     * Post a task for execution on the specified thread. Equivalent to using
+     * CefTaskRunner.getForThread()(threadId)->PostTask(task).
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_post_task(cef_thread_id_t threadId, cef_task_t* task);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:131</a>
+     */
+    public static boolean postTask(@Nonnull CefThreadId threadId, @Nullable CefTask task) {
+        return postTask0(threadId, task);
+    }
+
+    /**
+     * Post a task for delayed execution on the specified thread. Equivalent to using
+     * CefTaskRunner.getForThread()(threadId)->PostDelayedTask(task, delay_ms).
+     *
+     * <p>Definition generated from cef_task_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_post_delayed_task(cef_thread_id_t threadId, cef_task_t* task, int64_t delay_ms);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:138</a>
+     */
+    public static boolean postDelayedTask(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs) {
+        return postDelayedTask0(threadId, task, delayMs);
+    }
+
+    /**
+     * Start tracing events on all processes. Tracing is initialized asynchronously and {@code callback} will be
+     * executed on the UI thread after initialization is complete.
+     *
+     * <p>If CefBeginTracing was called previously, or if a CefEndTracingAsync call is pending, CefBeginTracing will
+     * fail and return {@code false}.
+     *
+     * <p>{@code categories} is a comma-delimited list of category wildcards. A category can have an optional '-' prefix
+     * to make it an excluded category. Having both included and excluded categories in the same list is not supported.
+     *
+     * <p>Examples:
+     *
+     * <ul>
+     *   <li>"test_MyTest*"
+     *   <li>"test_MyTest*,test_OtherStuff"
+     *   <li>"-excluded_category1,-excluded_category2"
+     * </ul>
+     *
+     * <p>This function must be called on the browser process UI thread.
+     *
+     * <p>Definition generated from cef_trace_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT int cef_begin_tracing(const cef_string_t* categories, struct _cef_completion_callback_t* callback);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:63</a>
+     */
+    public static int beginTracing(@Nullable String categories, @Nullable CefCompletionCallback callback) {
+        return beginTracing0(categories, callback);
+    }
+
+    /**
+     * Stop tracing events on all processes.
+     *
+     * <p>This function will fail and return {@code false} if a previous call to CefEndTracingAsync is already pending
+     * or if CefBeginTracing was not called.
+     *
+     * <p>{@code tracing_file} is the path at which tracing data will be written and {@code callback} is the callback
+     * that will be executed once all processes have sent their trace data. If {@code tracing_file} is empty a new
+     * temporary file path will be used. If {@code callback} is empty no trace data will be written.
+     *
+     * <p>This function must be called on the browser process UI thread.
+     *
+     * <p>Definition generated from cef_trace_capi.h
+     *
+     * <pre>CEF_EXPORT int cef_end_tracing(const cef_string_t* tracing_file, cef_end_tracing_callback_t* callback);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:86</a>
+     */
+    public static int endTracing(@Nullable String tracingFile, @Nullable CefEndTracingCallback callback) {
+        return endTracing0(tracingFile, callback);
+    }
+
+    /**
+     * Returns the current system trace time or, if none is defined, the current high-res time. Can be used by clients
+     * to synchronize with the time information in trace events.
+     *
+     * <p>Definition generated from cef_trace_capi.h
+     *
+     * <pre>CEF_EXPORT int64_t cef_now_from_system_trace_time(void);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:103</a>
+     */
+    public static long nowFromSystemTraceTime() {
+        return nowFromSystemTraceTime0();
+    }
+
+    /**
+     * Register a new V8 extension with the specified JavaScript extension code and handler. Functions implemented by
+     * the handler are prototyped using the keyword 'native'. The calling of a native function is restricted to the
+     * scope in which the prototype of the native function is defined. This function may only be called on the render
+     * process main thread.
+     *
+     * <p>Example JavaScript extension code:
+     *
+     * <pre>
+     * // create the 'example' global object if it doesn't already exist. if (!example) example = {}; // create the 'example.test' global object if it doesn't already exist. if (!example.test) example.test = {}; (function() { // Define the function 'example.test.myfunction'. example.test.myfunction = function() { // Call CefV8Handler::Execute() with the function name 'MyFunction' // and no arguments. native function MyFunction(); return MyFunction(); }; // Define the getter function for parameter 'example.test.myparam'. example.test.__defineGetter__('myparam', function() { // Call CefV8Handler::Execute() with the function name 'GetMyParam' // and no arguments. native function GetMyParam(); return GetMyParam(); }); // Define the setter function for parameter 'example.test.myparam'. example.test.__defineSetter__('myparam', function(b) { // Call CefV8Handler::Execute() with the function name 'SetMyParam' // and a single argument. native function SetMyParam(); if(b) SetMyParam(b); });
+     * // Extension definitions can also contain normal JavaScript variables // and functions. var myint = 0; example.test.increment = function() { myint += 1; return myint; }; })();
+     * </pre>
+     *
+     * <p>Example usage in the page:
+     *
+     * <pre>
+     * // Call the function. example.test.myfunction(); // Set the parameter. example.test.myparam = value; // Get the parameter. value = example.test.myparam; // Call another function. example.test.increment();
+     * </pre>
+     *
+     * <p>Definition generated from cef_v8_capi.h
+     *
+     * <pre>
+     * CEF_EXPORT int cef_register_extension(const cef_string_t* extension_name, const cef_string_t* javascript_code, cef_v8_handler_t* handler);
+     * </pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:54</a>
+     */
+    public static int registerExtension(
+            @Nullable String extensionName, @Nullable String javascriptCode, @Nullable CefV8Handler handler) {
+        return registerExtension0(extensionName, javascriptCode, handler);
+    }
+
+    private static native int executeProcess0(NativePointer args, CefApp application, NativePointer windowsSandboxInfo);
+
+    private static native int initialize0(
+            NativePointer args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
+
+    private static native int getExitCode0();
+
+    private static native void shutdown0();
+
+    private static native void doMessageLoopWork0();
+
+    private static native void runMessageLoop0();
+
+    private static native void quitMessageLoop0();
+
+    private static native void setNestableTasksAllowed0(int allowed);
+
+    private static native int crashReportingEnabled0();
+
+    private static native void setCrashKeyValue0(String key, String value);
+
+    private static native int createDirectory0(String fullPath);
+
+    private static native int getTempDirectory0(String tempDir);
+
+    private static native int createNewTempDirectory0(String prefix, String newTempPath);
+
+    private static native int createTempDirectoryInDirectory0(String baseDir, String prefix, String newDir);
+
+    private static native int directoryExists0(String path);
+
+    private static native int deleteFile0(String path, int recursive);
+
+    private static native int zipDirectory0(String srcDir, String destFile, int includeHiddenFiles);
+
+    private static native void loadCrlsetsFile0(String path);
+
     private static native int isRtl0();
 
-    private static native int beginTracing0(String categories, CefCompletionCallback callback);
+    private static native int addCrossOriginWhitelistEntry0(
+            String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
 
-    private static native int endTracing0(String tracingFile, CefEndTracingCallback callback);
+    private static native int removeCrossOriginWhitelistEntry0(
+            String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
 
-    private static native long nowFromSystemTraceTime0();
+    private static native int clearCrossOriginWhitelist0();
 
     private static native int resolveUrl0(String baseUrl, String relativeUrl, String resolvedUrl);
 
@@ -824,9 +863,16 @@ public final class CefGlobals {
 
     private static native String writeJson0(CefValue node, CefJsonWriterOptions options);
 
-    private static native int crashReportingEnabled0();
+    private static native int getPath0(CefPathKey key, String path);
 
-    private static native void setCrashKeyValue0(String key, String value);
+    private static native int launchProcess0(CefCommandLine commandLine);
+
+    private static native boolean registerSchemeHandlerFactory0(
+            String schemeName, String domainName, CefSchemeHandlerFactory factory);
+
+    private static native boolean clearSchemeHandlerFactories0();
+
+    private static native int isCertStatusError0(CefCertStatus status);
 
     private static native int currentlyOn0(CefThreadId threadId);
 
@@ -834,57 +880,11 @@ public final class CefGlobals {
 
     private static native boolean postDelayedTask0(CefThreadId threadId, CefTask task, long delayMs);
 
-    private static native int addCrossOriginWhitelistEntry0(
-            String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
+    private static native int beginTracing0(String categories, CefCompletionCallback callback);
 
-    private static native int removeCrossOriginWhitelistEntry0(
-            String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
+    private static native int endTracing0(String tracingFile, CefEndTracingCallback callback);
 
-    private static native int clearCrossOriginWhitelist0();
-
-    private static native int isCertStatusError0(CefCertStatus status);
-
-    private static native boolean registerSchemeHandlerFactory0(
-            String schemeName, String domainName, CefSchemeHandlerFactory factory);
-
-    private static native boolean clearSchemeHandlerFactories0();
+    private static native long nowFromSystemTraceTime0();
 
     private static native int registerExtension0(String extensionName, String javascriptCode, CefV8Handler handler);
-
-    private static native int launchProcess0(CefCommandLine commandLine);
-
-    private static native int getPath0(CefPathKey key, String path);
-
-    private static native int executeProcess0(NativePointer args, CefApp application, NativePointer windowsSandboxInfo);
-
-    private static native int initialize0(
-            NativePointer args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
-
-    private static native int getExitCode0();
-
-    private static native void shutdown0();
-
-    private static native void doMessageLoopWork0();
-
-    private static native void runMessageLoop0();
-
-    private static native void quitMessageLoop0();
-
-    private static native void setNestableTasksAllowed0(int allowed);
-
-    private static native int createDirectory0(String fullPath);
-
-    private static native int getTempDirectory0(String tempDir);
-
-    private static native int createNewTempDirectory0(String prefix, String newTempPath);
-
-    private static native int createTempDirectoryInDirectory0(String baseDir, String prefix, String newDir);
-
-    private static native int directoryExists0(String path);
-
-    private static native int deleteFile0(String path, int recursive);
-
-    private static native int zipDirectory0(String srcDir, String destFile, int includeHiddenFiles);
-
-    private static native void loadCrlsetsFile0(String path);
 }

@@ -75,21 +75,21 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBinaryValue), getData0)(JNIEnv* env, jobje
     return static_cast<jlong>(s->get_data(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)), data_offset));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), create0)(JNIEnv* env, jclass clz, jobject data) {
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
-    const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
-    auto _r = cef_binary_value_create(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), base64Decode0)(JNIEnv* env, jclass clz, jstring data) {
+    auto _data_str = JStringToCefString(env, data);
+    auto _r = cef_base64_decode(_data_str);
+    if (_data_str) cef_string_userfree_free(_data_str);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), base64Decode0)(JNIEnv* env, jclass clz, jstring data) {
-    auto _data_str = JStringToCefString(env, data);
-    auto _r = cef_base64_decode(_data_str);
-    if (_data_str) cef_string_userfree_free(_data_str);
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), create0)(JNIEnv* env, jclass clz, jobject data) {
+    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
+    const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
+    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    auto _r = cef_binary_value_create(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");

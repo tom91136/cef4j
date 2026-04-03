@@ -14,7 +14,7 @@ struct JniCefCommandHandler: public cef_command_handler_t {
 
     JniCefCommandHandler(JavaVM *vm, jobject handler) : cef_command_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefCommandHandler, cef_command_handler_t> (&base);
+        InitRefCount<JniCefCommandHandler, cef_command_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_command_handler_t*>(this)));
         on_chrome_command = &_on_chrome_command;
         is_chrome_app_menu_item_visible = &_is_chrome_app_menu_item_visible;
         is_chrome_app_menu_item_enabled = &_is_chrome_app_menu_item_enabled;

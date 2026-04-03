@@ -13,7 +13,7 @@ struct JniCefSettingObserver: public cef_setting_observer_t {
 
     JniCefSettingObserver(JavaVM *vm, jobject handler) : cef_setting_observer_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefSettingObserver, cef_setting_observer_t> (&base);
+        InitRefCount<JniCefSettingObserver, cef_setting_observer_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_setting_observer_t*>(this)));
         on_setting_changed = &_on_setting_changed;
     }
 

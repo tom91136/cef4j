@@ -14,7 +14,8 @@ struct JniCefDownloadImageCallback: public cef_download_image_callback_t {
 
     JniCefDownloadImageCallback(JavaVM *vm, jobject handler) : cef_download_image_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDownloadImageCallback, cef_download_image_callback_t> (&base);
+        InitRefCount<JniCefDownloadImageCallback, cef_download_image_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_download_image_callback_t*>(this)));
         on_download_image_finished = &_on_download_image_finished;
     }
 

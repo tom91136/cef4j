@@ -13,6 +13,21 @@ object DocComments {
   }
 
   private val CefMetaPattern = """--cef\(([^)]*)\)--""".r
+
+  /** Find a doc entry qualified by C++ class where capi_name matches the given alias. */
+  private def findByCapiAlias(
+      cppClassName: Option[String],
+      docs: Map[String, String],
+      alias: String
+  ): Option[String] =
+    cppClassName.flatMap { cls =>
+      docs.collectFirst {
+        case (key, text)
+            if key.startsWith(s"$cls::") &&
+              extractAttrsList(text).exists { case (k, v) => k == "capi_name" && v == alias } =>
+          text
+      }
+    }
   // Matches any HTML-like tag: <tag>, </tag>, <tag/>, <tag attr=val>
   private val AnyTagLiteralRe = """<(/?[A-Za-z][A-Za-z0-9:_-]*(?:/|\s[^>]*)?)>""".r
 
@@ -25,10 +40,14 @@ object DocComments {
       .replace("<", "&lt;")
       .replace(">", "&gt;")
 
-  // Convert a C++ header filename to its Doxygen URL. Doxygen replaces _ with __ and . with _8.
+  // Convert a C++ header filename to its Doxygen URL. Doxygen uses only the filename
+  // (no directory) and replaces _ with __ and . with _8.
   private def doxygenUrl(headerFile: String)(using context: Context): String = {
     if (context.docsBaseUrl.isEmpty) return ""
-    val doxyName = headerFile.replace("_", "__").replace(".", "_8") + ".html"
+    val baseName = headerFile.replace("\\", "/").split("/").last
+    val doxyName = baseName
+      .replace("_", "__")
+      .replace(".", "_8") + ".html"
     s"${context.docsBaseUrl}/$doxyName"
   }
 
@@ -96,6 +115,78 @@ object DocComments {
   private val BoolNullRe      = """\b(true|false|NULL|nullptr)\b""".r
 
   private val CefSrcMarkerRe = """@_cefsrc:([^:]+):(\d+)""".r
+
+  def resolveMethodDoc(
+      fn: FnPtr,
+      docs: Map[String, String],
+      cefStructName: String = ""
+  )(using naming: Naming.Context): Option[String] = {
+    val camelName    = Naming.javaMethodName(fn)
+    val pascalName   = Naming.cppPascalName(fn)
+    val cppClassName = naming.cppClassNames.get(cefStructName)
+
+    def qualified(name: String): Option[String] =
+      cppClassName.flatMap(cls => docs.get(s"$cls::$name"))
+
+    qualified(fn.cppName.getOrElse(""))
+      .orElse(qualified(pascalName))
+      .orElse(findByCapiAlias(cppClassName, docs, fn.name))
+      .orElse(fn.cppName.flatMap(docs.get))
+      .orElse(docs.get(pascalName))
+      .orElse(docs.keys.find(_.equalsIgnoreCase(pascalName)).flatMap(docs.get))
+      .orElse(docs.get(camelName))
+      .orElse(docs.get(fn.name))
+  }
+
+  def resolveFreeFunctionDoc(
+      ff: CefDecl.FreeFunction,
+      docs: Map[String, String]
+  )(using naming: Naming.Context): Option[String] = {
+    val pascalName  = Naming.toPascalCase(ff.javaMethodName)
+    val ownerCpp    = naming.cppClassNames.get(ff.ownerStruct)
+    val ownerSuffix = ownerCpp.map(_.stripPrefix("Cef")).filter(_.nonEmpty)
+    val countParams = ff.params.collect {
+      case Param(name, _, _, _) if ff.params.exists(_.name == s"${name}Count") => name
+    }.toSet
+
+    def qualified(name: String): Option[String] =
+      ownerCpp.flatMap(cls => docs.get(s"$cls::$name"))
+
+    def qualifiedByOwnerSuffixNormalization: Option[String] =
+      ownerCpp.flatMap { cls =>
+        docs.collectFirst {
+          case (key, text)
+              if key.startsWith(s"$cls::") &&
+                ownerSuffix.exists { suffix =>
+                  val methodName = key.stripPrefix(s"$cls::")
+                  methodName != pascalName && methodName.endsWith(suffix) && methodName.stripSuffix(
+                    suffix
+                  ) == pascalName
+                } =>
+            text
+        }
+      }
+
+    def qualifiedByCountFunc: Option[String] =
+      ownerCpp.flatMap { cls =>
+        docs.collectFirst {
+          case (key, text)
+              if key.startsWith(s"$cls::") &&
+                countParams.exists(name => text.contains(s"count_func=$name:")) =>
+            text
+        }
+      }
+
+    qualified(pascalName)
+      .orElse(qualifiedByOwnerSuffixNormalization)
+      .orElse(findByCapiAlias(ownerCpp, docs, ff.javaMethodName))
+      .orElse(findByCapiAlias(ownerCpp, docs, ff.cName))
+      .orElse(docs.get(s"Cef$pascalName"))
+      .orElse(docs.get(pascalName))
+      .orElse(docs.get(ff.javaMethodName))
+      .orElse(docs.get(ff.cName))
+      .orElse(qualifiedByCountFunc)
+  }
 
   private def isStructuralDocLine(line: String): Boolean = {
     val trimmed = line.trim
@@ -392,21 +483,7 @@ object DocComments {
       cPrototype: String = "",
       cefStructName: String = ""
   )(using naming: Naming.Context, dc: Context): String = {
-    val camelName  = Naming.javaMethodName(fn)
-    val pascalName = Naming.cppPascalName(fn)
-
-    // Try class-qualified lookup first (e.g. "CefBrowser::IsValid") to avoid collisions
-    // between identically-named methods on different classes.
-    val cppClassName                            = naming.cppClassNames.get(cefStructName)
-    def qualified(name: String): Option[String] = cppClassName.flatMap(cls => docs.get(s"$cls::$name"))
-
-    val comment = qualified(fn.cppName.getOrElse(""))
-      .orElse(qualified(pascalName))
-      .orElse(fn.cppName.flatMap(docs.get))
-      .orElse(docs.get(camelName))
-      .orElse(docs.get(pascalName))
-      .orElse(docs.get(fn.name))
-      .orElse(docs.keys.find(_.equalsIgnoreCase(pascalName)).flatMap(docs.get))
+    val comment = resolveMethodDoc(fn, docs, cefStructName)
 
     comment match {
       case Some(text) =>

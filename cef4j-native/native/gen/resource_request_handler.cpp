@@ -24,7 +24,8 @@ struct JniCefResourceRequestHandler: public cef_resource_request_handler_t {
 
     JniCefResourceRequestHandler(JavaVM *vm, jobject handler) : cef_resource_request_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefResourceRequestHandler, cef_resource_request_handler_t> (&base);
+        InitRefCount<JniCefResourceRequestHandler, cef_resource_request_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_resource_request_handler_t*>(this)));
         get_cookie_access_filter = &_get_cookie_access_filter;
         on_before_resource_load = &_on_before_resource_load;
         get_resource_handler = &_get_resource_handler;

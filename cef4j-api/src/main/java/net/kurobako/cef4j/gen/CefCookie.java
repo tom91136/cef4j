@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 /**
  * Cookie information.
  *
- * <p>Definition generated from cef_types.h
+ * <p>Definition generated from internal/cef_types.h
  *
  * <pre>typedef struct _cef_cookie_t {
  *   size_t size;
@@ -25,7 +25,7 @@ import javax.annotation.processing.Generated;
  *   cef_cookie_priority_t priority;
  * } cef_cookie_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:846</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:846</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefCookie {
@@ -154,9 +154,9 @@ public final class CefCookie {
     /**
      * Mutable variant of {@link CefCookie}. Cookie information.
      *
-     * <p>Definition generated from cef_types.h
+     * <p>Definition generated from internal/cef_types.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:846</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:846</a>
      */
     public static final class Mutable {
 

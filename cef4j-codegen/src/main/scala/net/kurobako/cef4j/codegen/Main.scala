@@ -24,7 +24,7 @@ object Main {
     val headerInputs      = DiscoverHeaders(cfg)
     val preprocessed      = PreprocessHeaders(headerInputs, cfg)
     val parseState        = LoadParseState(cfg, headerInputs)
-    val parsedTree        = ParseTree(preprocessed, headerInputs, parseState)
+    val parsedTree        = ParseTree(preprocessed, headerInputs, cfg, parseState)
     val refinedTree       = RefineTree(parsedTree, parseState)
     val untypedPtrWarning = ValidateTypedPointers(refinedTree, parseState.handlerNames)
 
@@ -70,9 +70,16 @@ object Main {
           cfg.copy(javaPackage = value)
         case s"--compiler=$id" =>
           cfg.copy(compilerId = id)
+        case s"--extra-cpp-dirs=$dirs" =>
+          cfg.copy(extraCppDirs = parseDirList(dirs))
+        case s"--extra-capi-dirs=$dirs" =>
+          cfg.copy(extraCapiDirs = parseDirList(dirs))
         case other =>
           System.err.println(s"Unknown argument: $other")
           cfg
       }
     }
+
+  private def parseDirList(value: String): List[String] =
+    value.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
 }

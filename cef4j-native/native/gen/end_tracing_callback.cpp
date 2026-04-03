@@ -13,7 +13,8 @@ struct JniCefEndTracingCallback: public cef_end_tracing_callback_t {
 
     JniCefEndTracingCallback(JavaVM *vm, jobject handler) : cef_end_tracing_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefEndTracingCallback, cef_end_tracing_callback_t> (&base);
+        InitRefCount<JniCefEndTracingCallback, cef_end_tracing_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_end_tracing_callback_t*>(this)));
         on_end_tracing_complete = &_on_end_tracing_complete;
     }
 

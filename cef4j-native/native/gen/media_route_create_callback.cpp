@@ -13,7 +13,8 @@ struct JniCefMediaRouteCreateCallback: public cef_media_route_create_callback_t 
 
     JniCefMediaRouteCreateCallback(JavaVM *vm, jobject handler) : cef_media_route_create_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefMediaRouteCreateCallback, cef_media_route_create_callback_t> (&base);
+        InitRefCount<JniCefMediaRouteCreateCallback, cef_media_route_create_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_media_route_create_callback_t*>(this)));
         on_media_route_create_finished = &_on_media_route_create_finished;
     }
 

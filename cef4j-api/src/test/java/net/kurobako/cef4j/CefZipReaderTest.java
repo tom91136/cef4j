@@ -161,11 +161,11 @@ class CefZipReaderTest {
             assertThat(zr.openFile(null)).isTrue();
 
             assertThat(zr.tell()).isEqualTo(0L);
-            assertThat(zr.eof()).isZero();
+            assertThat(zr.eof()).isFalse();
 
             readEntryFully(zr);
 
-            assertThat(zr.eof()).isNotZero();
+            assertThat(zr.eof()).isTrue();
             assertThat(zr.tell()).isEqualTo(10L);
 
             assertThat(zr.closeFile()).isTrue();

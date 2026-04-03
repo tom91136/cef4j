@@ -13,7 +13,8 @@ struct JniCefSetCookieCallback: public cef_set_cookie_callback_t {
 
     JniCefSetCookieCallback(JavaVM *vm, jobject handler) : cef_set_cookie_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefSetCookieCallback, cef_set_cookie_callback_t> (&base);
+        InitRefCount<JniCefSetCookieCallback, cef_set_cookie_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_set_cookie_callback_t*>(this)));
         on_complete = &_on_complete;
     }
 
@@ -22,9 +23,9 @@ struct JniCefSetCookieCallback: public cef_set_cookie_callback_t {
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(5) < 0) {return;}
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onComplete", "(I)V");
+        auto mid = env->GetMethodID(cls, "onComplete", "(Z)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
-        env->CallVoidMethod(h->javaHandler, mid, static_cast<jint>(success));
+        env->CallVoidMethod(h->javaHandler, mid, static_cast<jboolean>(success));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
         env->PopLocalFrame(nullptr);
     }

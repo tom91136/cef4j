@@ -7,14 +7,15 @@ import javax.annotation.processing.Generated;
 /**
  * Structure representing CefExecuteProcess arguments.
  *
- * <p>Definition generated from cef_types_linux.h
+ * <p>Definition generated from internal/cef_types_linux.h
  *
  * <pre>typedef struct _cef_main_args_t {
  *   int argc;
  *   char** argv;
  * } cef_main_args_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:77</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:77</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefMainArgs {

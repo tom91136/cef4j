@@ -24,14 +24,13 @@ import javax.annotation.processing.Generated;
 public interface CefComponent extends CefLibraryObject {
 
     /**
-     * Returns the unique identifier for this download.
+     * Returns the ID (media source URN or URL) for this source.
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_component_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     Optional<String> getId();
 
@@ -86,13 +85,13 @@ public interface CefComponent extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

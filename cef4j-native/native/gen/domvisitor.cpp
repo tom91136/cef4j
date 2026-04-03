@@ -13,7 +13,7 @@ struct JniCefDomVisitor: public cef_domvisitor_t {
 
     JniCefDomVisitor(JavaVM *vm, jobject handler) : cef_domvisitor_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDomVisitor, cef_domvisitor_t> (&base);
+        InitRefCount<JniCefDomVisitor, cef_domvisitor_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_domvisitor_t*>(this)));
         visit = &_visit;
     }
 

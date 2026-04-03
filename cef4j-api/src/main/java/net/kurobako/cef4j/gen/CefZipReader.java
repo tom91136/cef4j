@@ -167,17 +167,16 @@ public interface CefZipReader extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
      */
-    int eof();
+    boolean eof();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefZipReader object. The returned object's methods can only be called from the thread that created
+     * the object.
      *
      * <p>Definition generated from cef_zip_reader_capi.h
      *
      * <pre>CEF_EXPORT cef_zip_reader_t* cef_zip_reader_create(struct _cef_stream_reader_t* stream);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:51</a>
      */
     static Optional<CefZipReader> create(@Nullable CefStreamReader stream) {
         return Optional.ofNullable(NativePeer.create0(stream));
@@ -194,13 +193,13 @@ public interface CefZipReader extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -293,7 +292,7 @@ public interface CefZipReader extends CefLibraryObject {
         }
 
         @Override
-        public int eof() {
+        public boolean eof() {
             checkNotClosed();
             return eof0(nativePtr);
         }
@@ -320,7 +319,7 @@ public interface CefZipReader extends CefLibraryObject {
 
         private static native long tell0(long self);
 
-        private static native int eof0(long self);
+        private static native boolean eof0(long self);
 
         static native CefZipReader create0(CefStreamReader stream);
 

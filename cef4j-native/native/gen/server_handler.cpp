@@ -15,7 +15,7 @@ struct JniCefServerHandler: public cef_server_handler_t {
 
     JniCefServerHandler(JavaVM *vm, jobject handler) : cef_server_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefServerHandler, cef_server_handler_t> (&base);
+        InitRefCount<JniCefServerHandler, cef_server_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_server_handler_t*>(this)));
         on_server_created = &_on_server_created;
         on_server_destroyed = &_on_server_destroyed;
         on_client_connected = &_on_client_connected;

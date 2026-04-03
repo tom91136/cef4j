@@ -105,9 +105,28 @@ public interface CefUrlRequest extends CefLibraryObject {
      */
     void cancel();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new URL request that is not associated with a specific browser or frame. Use
+     * {@link CefFrame#createUrlRequest(CefRequest, CefUrlRequestClient)} instead if you want the request to have this
+     * association, in which case it may be handled differently (see documentation on that method). A request created
+     * with this method may only originate from the browser process, and will behave as follows:
+     *
+     * <ul>
+     *   <li>It may be intercepted by the client via CefResourceRequestHandler or
+     * </ul>
+     *
+     * CefSchemeHandlerFactory.
+     *
+     * <ul>
+     *   <li>POST data may only contain only a single element of type PDE_TYPE_FILE
+     * </ul>
+     *
+     * or PDE_TYPE_BYTES.
+     *
+     * <ul>
+     *   <li>If {@code request_context} is empty the global request context will be used.
+     * </ul>
+     *
+     * <p>The {@code request} object will be marked as read-only after calling this method.
      *
      * <p>Definition generated from cef_urlrequest_capi.h
      *
@@ -115,7 +134,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * CEF_EXPORT cef_urlrequest_t* cef_urlrequest_create(struct _cef_request_t* request, struct _cef_urlrequest_client_t* client, struct _cef_request_context_t* request_context);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:62</a>
      */
     static Optional<CefUrlRequest> create(
             @Nullable CefRequest request,
@@ -135,13 +154,13 @@ public interface CefUrlRequest extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

@@ -13,7 +13,8 @@ struct JniCefPreferenceObserver: public cef_preference_observer_t {
 
     JniCefPreferenceObserver(JavaVM *vm, jobject handler) : cef_preference_observer_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefPreferenceObserver, cef_preference_observer_t> (&base);
+        InitRefCount<JniCefPreferenceObserver, cef_preference_observer_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_preference_observer_t*>(this)));
         on_preference_changed = &_on_preference_changed;
     }
 

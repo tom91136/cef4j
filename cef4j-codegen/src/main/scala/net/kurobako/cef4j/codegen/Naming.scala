@@ -48,7 +48,7 @@ object Naming {
       if (c.isUpper && buf.nonEmpty) {
         val prev          = s(i - 1)
         val nextIsLower   = i + 1 < s.length && s(i + 1).isLower
-        val startsNewWord = prev.isLower || (prev.isUpper && nextIsLower)
+        val startsNewWord = prev.isLower || prev.isDigit || (prev.isUpper && nextIsLower)
         if (startsNewWord) {
           result += buf.toString
           buf.clear()

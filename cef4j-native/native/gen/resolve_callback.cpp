@@ -13,7 +13,7 @@ struct JniCefResolveCallback: public cef_resolve_callback_t {
 
     JniCefResolveCallback(JavaVM *vm, jobject handler) : cef_resolve_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefResolveCallback, cef_resolve_callback_t> (&base);
+        InitRefCount<JniCefResolveCallback, cef_resolve_callback_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_resolve_callback_t*>(this)));
         on_resolve_completed = &_on_resolve_completed;
     }
 

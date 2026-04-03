@@ -14,7 +14,7 @@ struct JniCefFindHandler: public cef_find_handler_t {
 
     JniCefFindHandler(JavaVM *vm, jobject handler) : cef_find_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefFindHandler, cef_find_handler_t> (&base);
+        InitRefCount<JniCefFindHandler, cef_find_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_find_handler_t*>(this)));
         on_find_result = &_on_find_result;
     }
 

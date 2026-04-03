@@ -14,7 +14,8 @@ struct JniCefDevToolsMessageObserver: public cef_dev_tools_message_observer_t {
 
     JniCefDevToolsMessageObserver(JavaVM *vm, jobject handler) : cef_dev_tools_message_observer_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDevToolsMessageObserver, cef_dev_tools_message_observer_t> (&base);
+        InitRefCount<JniCefDevToolsMessageObserver, cef_dev_tools_message_observer_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_dev_tools_message_observer_t*>(this)));
         on_dev_tools_message = &_on_dev_tools_message;
         on_dev_tools_method_result = &_on_dev_tools_method_result;
         on_dev_tools_event = &_on_dev_tools_event;

@@ -165,7 +165,7 @@ struct Jni$javaName : public ${decl.name} {
 
     Jni$javaName(JavaVM* vm, jobject handler) : ${decl.name}{}, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<Jni$javaName, ${decl.name}>(&base);$initAssignments
+        InitRefCount<Jni$javaName, ${decl.name}>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<${decl.name}*>(this)));$initAssignments
     }
 """
 
@@ -617,6 +617,8 @@ $convertAndReturn"""
     val body = ff.ret match {
       case CType.Void =>
         s"""$npeBlock$preBlock    $fnCall;$postBlock"""
+      case cfa @ CType.CountFuncArray(_, _, _, _) =>
+        renderCountFuncArrayFreeFunctionBody(ff, cfa, npeBlock, preBlock, postBlock)
       case _ =>
         renderReturnDispatch(ff.ret, retJni, fnCall, npeBlock, preBlock, postBlock)
     }
@@ -626,6 +628,78 @@ $convertAndReturn"""
     s"""$exportSig($jniParams) {
 $cleanBody
 }"""
+  }
+
+  private def renderCountFuncArrayFreeFunctionBody(
+      ff: CefDecl.FreeFunction,
+      cfa: CType.CountFuncArray,
+      npeBlock: String,
+      preBlock: String,
+      postBlock: String
+  ): String = {
+    val CType.CountFuncArray(elemType, countFuncC, _, _) = cfa
+    val ownerPrefix                                      = ff.ownerStruct.stripSuffix("_t")
+    val ownerStem                                        = ownerPrefix.stripPrefix("cef_")
+    val freeCountFunc                                    =
+      if (ownerPrefix.nonEmpty) {
+        val normalized =
+          if (countFuncC.startsWith(s"get_${ownerStem}_")) s"get_${countFuncC.stripPrefix(s"get_${ownerStem}_")}"
+          else countFuncC
+        s"${ownerPrefix}_$normalized"
+      } else countFuncC
+    val countCall = s"    size_t _count = $freeCountFunc();"
+
+    val (allocAndCall, convertAndReturn) = elemType match {
+      case CType.ObjectPtr(cefName) =>
+        val javaFqn = jniName(cefName)
+        val alloc   = s"    $cefName** _arr = _count > 0 ? new $cefName*[_count]() : nullptr;"
+        val call    = s"    ${ff.cName}(&_count, _arr);"
+        val convert =
+          s"""    auto _result = env->NewObjectArray(static_cast<jsize>(_count), env->FindClass("${javaFqn}$$NativePeer"), nullptr);
+    auto _peerCls = env->FindClass("${javaFqn}$$NativePeer");
+    auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");
+    for (size_t _i = 0; _i < _count; _i++) {
+        auto _elem = _arr[_i] ? env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>(_arr[_i])) : nullptr;
+        env->SetObjectArrayElement(_result, static_cast<jsize>(_i), _elem);
+    }
+    delete[] _arr;
+    return _result;"""
+        (s"$alloc\n$call", convert)
+
+      case CType.Long | CType.SizeT =>
+        val alloc   = s"    size_t* _arr = _count > 0 ? new size_t[_count]() : nullptr;"
+        val call    = s"    ${ff.cName}(&_count, _arr);"
+        val convert =
+          s"""    jlongArray _result = env->NewLongArray(static_cast<jsize>(_count));
+    if (_count > 0) {
+        auto* _tmp = new jlong[_count];
+        for (size_t _i = 0; _i < _count; _i++) _tmp[_i] = static_cast<jlong>(_arr[_i]);
+        env->SetLongArrayRegion(_result, 0, static_cast<jsize>(_count), _tmp);
+        delete[] _tmp;
+    }
+    delete[] _arr;
+    return _result;"""
+        (s"$alloc\n$call", convert)
+
+      case CType.Int | CType.UInt =>
+        val alloc   = s"    int* _arr = _count > 0 ? new int[_count]() : nullptr;"
+        val call    = s"    ${ff.cName}(&_count, _arr);"
+        val convert =
+          s"""    jintArray _result = env->NewIntArray(static_cast<jsize>(_count));
+    if (_count > 0) {
+        env->SetIntArrayRegion(_result, 0, static_cast<jsize>(_count), reinterpret_cast<jint*>(_arr));
+    }
+    delete[] _arr;
+    return _result;"""
+        (s"$alloc\n$call", convert)
+
+      case other =>
+        throw new RuntimeException(s"CountFuncArray: unsupported element type $other in ${ff.cName}")
+    }
+
+    s"""$npeBlock$preBlock$countCall
+$allocAndCall$postBlock
+$convertAndReturn"""
   }
 
   // Shared param conversion (JNI-to-native) used by both object functions and free functions.

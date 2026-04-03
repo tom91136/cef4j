@@ -16,7 +16,8 @@ struct JniCefContextMenuHandler: public cef_context_menu_handler_t {
 
     JniCefContextMenuHandler(JavaVM *vm, jobject handler) : cef_context_menu_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefContextMenuHandler, cef_context_menu_handler_t> (&base);
+        InitRefCount<JniCefContextMenuHandler, cef_context_menu_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_context_menu_handler_t*>(this)));
         on_before_context_menu = &_on_before_context_menu;
         run_context_menu = &_run_context_menu;
         on_context_menu_command = &_on_context_menu_command;

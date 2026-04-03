@@ -30,5 +30,5 @@ public interface CefSetCookieCallback extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:157</a>
      */
-    default void onComplete(int success) {}
+    default void onComplete(boolean success) {}
 }

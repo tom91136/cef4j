@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
  * Structure containing shared texture common metadata. For documentation on each field, please refer to
  * src/media/base/video_frame_metadata.h for actual details.
  *
- * <p>Definition generated from cef_types_osr.h
+ * <p>Definition generated from internal/cef_types_osr.h
  *
  * <pre>typedef struct _cef_accelerated_paint_info_common_t {
  *   size_t size;
@@ -26,7 +26,7 @@ import javax.annotation.processing.Generated;
  *   int has_capture_counter;
  * } cef_accelerated_paint_info_common_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__osr_8h.html">cef_types_osr.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__osr_8h.html">internal/cef_types_osr.h:43</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefAcceleratedPaintInfoCommon {

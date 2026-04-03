@@ -13,7 +13,7 @@ struct JniCefReadHandler: public cef_read_handler_t {
 
     JniCefReadHandler(JavaVM *vm, jobject handler) : cef_read_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefReadHandler, cef_read_handler_t> (&base);
+        InitRefCount<JniCefReadHandler, cef_read_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_read_handler_t*>(this)));
         read = &_read;
         seek = &_seek;
         tell = &_tell;

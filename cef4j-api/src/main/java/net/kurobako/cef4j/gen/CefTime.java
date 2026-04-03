@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 /**
  * Time information. Values should always be in UTC.
  *
- * <p>Definition generated from cef_time.h
+ * <p>Definition generated from internal/cef_time.h
  *
  * <pre>typedef struct _cef_time_t {
  *   int year;
@@ -20,7 +20,7 @@ import javax.annotation.processing.Generated;
  *   int millisecond;
  * } cef_time_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">cef_time.h:57</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">internal/cef_time.h:57</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefTime {

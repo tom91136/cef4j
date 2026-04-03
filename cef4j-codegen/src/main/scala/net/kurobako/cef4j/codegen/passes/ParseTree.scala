@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import net.kurobako.cef4j.codegen.CHeaderParser
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.Config
 import net.kurobako.cef4j.codegen.HeaderInputs
 import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.ParseState
@@ -15,6 +16,7 @@ object ParseTree {
   def apply(
       preprocessed: List[(Path, String)],
       headerInputs: HeaderInputs,
+      cfg: Config,
       parseState: ParseState
   ): ParsedTree = {
     given Naming.Context = parseState.namingContext
@@ -25,7 +27,8 @@ object ParseTree {
 
     val knownStructNames = rawDecls.flatMap(_.namedStruct).toSet
     val dataStructNames  = rawDecls.collect { case d: CefDecl.DataStruct => d.name }.toSet
-    val rawFreeFunctions = CHeaderParser.parseFreeExports(headerInputs.capiDir, knownStructNames, dataStructNames)
+    val rawFreeFunctions =
+      CHeaderParser.parseFreeExports(headerInputs.capiDir, knownStructNames, dataStructNames, cfg.extraCapiDirs)
 
     val decls = CHeaderParser.promoteBufferParams(
       CHeaderParser.promoteArrayParams(

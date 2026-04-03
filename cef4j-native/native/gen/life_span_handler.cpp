@@ -19,7 +19,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
 
     JniCefLifeSpanHandler(JavaVM *vm, jobject handler) : cef_life_span_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefLifeSpanHandler, cef_life_span_handler_t> (&base);
+        InitRefCount<JniCefLifeSpanHandler, cef_life_span_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_life_span_handler_t*>(this)));
         on_before_popup = &_on_before_popup;
         on_before_popup_aborted = &_on_before_popup_aborted;
         on_before_dev_tools_popup = &_on_before_dev_tools_popup;

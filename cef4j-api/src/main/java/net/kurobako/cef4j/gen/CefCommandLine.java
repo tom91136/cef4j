@@ -275,28 +275,26 @@ public interface CefCommandLine extends CefLibraryObject {
      */
     void removeSwitch(@Nullable String name);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefCommandLine instance.
      *
      * <p>Definition generated from cef_command_line_capi.h
      *
      * <pre>CEF_EXPORT cef_command_line_t* cef_command_line_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:63</a>
      */
     static Optional<CefCommandLine> create() {
         return Optional.ofNullable(NativePeer.create0());
     }
 
     /**
-     * Returns the global object for this context. The context must be entered before calling this method.
+     * Returns the singleton global CefCommandLine object. The returned object will be read-only.
      *
      * <p>Definition generated from cef_command_line_capi.h
      *
      * <pre>CEF_EXPORT cef_command_line_t* cef_command_line_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:69</a>
      */
     static Optional<CefCommandLine> getGlobal() {
         return Optional.ofNullable(NativePeer.getGlobal0());
@@ -313,13 +311,13 @@ public interface CefCommandLine extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

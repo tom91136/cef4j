@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure that should be implemented to handle V8 interceptor calls. The functions of this structure will be called
- * on the thread associated with the V8 interceptor. Interceptor's named property handlers (with first argument of type
+ * Interface that should be implemented to handle V8 interceptor calls. The methods of this class will be called on the
+ * thread associated with the V8 interceptor. Interceptor's named property handlers (with first argument of type
  * CefString) are called when object is indexed by string. Indexed property handlers (with first argument of type int)
- * are called when object is indexed by integer. NOTE: This struct is allocated client-side.
+ * are called when object is indexed by integer.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -19,10 +19,10 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_interceptor_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:237</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:284</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
-public interface CefV8Interceptor extends CefLibraryObject {
+public interface CefV8Interceptor extends CefClientHandler {
 
     /**
      * Handle retrieval of the interceptor value identified by {@code name}. {@code object} is the receiver ('this'
@@ -39,11 +39,13 @@ public interface CefV8Interceptor extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:295</a>
      */
-    int getByname(
+    default int getByname(
             @Nullable String name,
             @Nullable CefV8Value object,
             @Nullable AtomicReference<CefV8Value> retval,
-            @Nullable String exception);
+            @Nullable String exception) {
+        return 0;
+    }
 
     /**
      * Handle retrieval of the interceptor value identified by {@code index}. {@code object} is the receiver ('this'
@@ -61,11 +63,13 @@ public interface CefV8Interceptor extends CefLibraryObject {
      * @param index zero-based index
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
      */
-    int getByindex(
+    default int getByindex(
             int index,
             @Nullable CefV8Value object,
             @Nullable AtomicReference<CefV8Value> retval,
-            @Nullable String exception);
+            @Nullable String exception) {
+        return 0;
+    }
 
     /**
      * Handle assignment of the interceptor value identified by {@code name}. {@code object} is the receiver ('this'
@@ -82,8 +86,13 @@ public interface CefV8Interceptor extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:324</a>
      */
-    int setByname(
-            @Nullable String name, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception);
+    default int setByname(
+            @Nullable String name,
+            @Nullable CefV8Value object,
+            @Nullable CefV8Value value,
+            @Nullable String exception) {
+        return 0;
+    }
 
     /**
      * Handle assignment of the interceptor value identified by {@code index}. {@code object} is the receiver ('this'
@@ -100,121 +109,8 @@ public interface CefV8Interceptor extends CefLibraryObject {
      * @param index zero-based index
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:338</a>
      */
-    int setByindex(int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception);
-
-    final class NativePeer implements CefV8Interceptor, AutoCloseable {
-        private final long nativePtr;
-        private final java.lang.ref.Cleaner.Cleanable cleanable;
-        private volatile boolean closed;
-
-        NativePeer(long ptr) {
-            this.nativePtr = ptr;
-            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
-        }
-
-        @Override
-        public void close() {
-            closed = true;
-            cleanable.clean();
-        }
-
-        @Override
-        public boolean isClosed() {
-            return closed;
-        }
-
-        private void checkNotClosed() {
-            if (closed) throw new IllegalStateException("CefV8Interceptor has been closed");
-        }
-
-        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Interceptor.class);
-
-        private static class Release implements Runnable {
-            private final long ptr;
-
-            Release(long ptr) {
-                this.ptr = ptr;
-            }
-
-            @Override
-            public void run() {
-                if (_log.isTraceEnabled()) _log.trace("release CefV8Interceptor 0x{}", Long.toHexString(ptr));
-                release0(ptr);
-            }
-        }
-
-        private static native void release0(long ptr);
-
-        @Override
-        public int getByname(
-                @Nullable String name,
-                @Nullable CefV8Value object,
-                @Nullable AtomicReference<CefV8Value> retval,
-                @Nullable String exception) {
-            checkNotClosed();
-            CefLibraryObject.requireOpen(object, "CefV8Value");
-            return getByname0(nativePtr, name, object, retval, exception);
-        }
-
-        @Override
-        public int getByindex(
-                int index,
-                @Nullable CefV8Value object,
-                @Nullable AtomicReference<CefV8Value> retval,
-                @Nullable String exception) {
-            checkNotClosed();
-            CefLibraryObject.requireOpen(object, "CefV8Value");
-            return getByindex0(nativePtr, index, object, retval, exception);
-        }
-
-        @Override
-        public int setByname(
-                @Nullable String name,
-                @Nullable CefV8Value object,
-                @Nullable CefV8Value value,
-                @Nullable String exception) {
-            checkNotClosed();
-            CefLibraryObject.requireOpen(object, "CefV8Value");
-            CefLibraryObject.requireOpen(value, "CefV8Value");
-            return setByname0(nativePtr, name, object, value, exception);
-        }
-
-        @Override
-        public int setByindex(
-                int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
-            checkNotClosed();
-            CefLibraryObject.requireOpen(object, "CefV8Value");
-            CefLibraryObject.requireOpen(value, "CefV8Value");
-            return setByindex0(nativePtr, index, object, value, exception);
-        }
-
-        private static native int getByname0(
-                long self, String name, CefV8Value object, AtomicReference<CefV8Value> retval, String exception);
-
-        private static native int getByindex0(
-                long self, int index, CefV8Value object, AtomicReference<CefV8Value> retval, String exception);
-
-        private static native int setByname0(
-                long self, String name, CefV8Value object, CefV8Value value, String exception);
-
-        private static native int setByindex0(
-                long self, int index, CefV8Value object, CefV8Value value, String exception);
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof NativePeer)) return false;
-            return this.nativePtr == ((NativePeer) obj).nativePtr;
-        }
-
-        @Override
-        public int hashCode() {
-            return Long.hashCode(nativePtr);
-        }
-
-        @Override
-        public String toString() {
-            return "CefV8Interceptor{0x" + Long.toHexString(nativePtr) + "}";
-        }
+    default int setByindex(
+            int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
+        return 0;
     }
 }

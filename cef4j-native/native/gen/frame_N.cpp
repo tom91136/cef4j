@@ -183,7 +183,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getBrowser0)(JNIEnv* env, jobjec
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getV8context0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getV8Context0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_v8_context(s);

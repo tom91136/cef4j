@@ -76,7 +76,7 @@ public interface CefSslStatus extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
      */
-    Optional<CefX509Certificate> getX509certificate();
+    Optional<CefX509Certificate> getX509Certificate();
 
     final class NativePeer implements CefSslStatus, AutoCloseable {
         private final long nativePtr;
@@ -89,13 +89,13 @@ public interface CefSslStatus extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -146,9 +146,9 @@ public interface CefSslStatus extends CefLibraryObject {
         }
 
         @Override
-        public Optional<CefX509Certificate> getX509certificate() {
+        public Optional<CefX509Certificate> getX509Certificate() {
             checkNotClosed();
-            return Optional.ofNullable(getX509certificate0(nativePtr));
+            return Optional.ofNullable(getX509Certificate0(nativePtr));
         }
 
         private static native boolean isSecureConnection0(long self);
@@ -159,7 +159,7 @@ public interface CefSslStatus extends CefLibraryObject {
 
         private static native CefSslContentStatus getContentStatus0(long self);
 
-        private static native CefX509Certificate getX509certificate0(long self);
+        private static native CefX509Certificate getX509Certificate0(long self);
 
         @Override
         public boolean equals(Object obj) {

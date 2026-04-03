@@ -14,7 +14,7 @@ struct JniCefDialogHandler: public cef_dialog_handler_t {
 
     JniCefDialogHandler(JavaVM *vm, jobject handler) : cef_dialog_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDialogHandler, cef_dialog_handler_t> (&base);
+        InitRefCount<JniCefDialogHandler, cef_dialog_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_dialog_handler_t*>(this)));
         on_file_dialog = &_on_file_dialog;
     }
 

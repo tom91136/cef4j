@@ -157,13 +157,13 @@ public interface CefPreferenceManager extends CefLibraryObject {
     }
 
     /**
-     * Returns the global object for this context. The context must be entered before calling this method.
+     * Returns the global preference manager object.
      *
      * <p>Definition generated from cef_preference_capi.h
      *
      * <pre>CEF_EXPORT cef_preference_manager_t* cef_preference_manager_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:125</a>
      */
     static Optional<CefPreferenceManager> getGlobal() {
         return Optional.ofNullable(NativePeer.getGlobal0());
@@ -180,13 +180,13 @@ public interface CefPreferenceManager extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

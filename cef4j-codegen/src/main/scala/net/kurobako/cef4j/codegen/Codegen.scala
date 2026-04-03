@@ -7,7 +7,9 @@ case class Config(
     outCpp: Path,
     outJava: Path,
     javaPackage: String,
-    compilerId: String
+    compilerId: String,
+    extraCppDirs: List[String] = Nil,
+    extraCapiDirs: List[String] = Nil
 ) {
   val outJavaPackageDir: Path = outJava.resolve(javaPackage.replace('.', '/'))
 }

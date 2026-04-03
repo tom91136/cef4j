@@ -15,7 +15,7 @@ struct JniCefDisplayHandler: public cef_display_handler_t {
 
     JniCefDisplayHandler(JavaVM *vm, jobject handler) : cef_display_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDisplayHandler, cef_display_handler_t> (&base);
+        InitRefCount<JniCefDisplayHandler, cef_display_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_display_handler_t*>(this)));
         on_address_change = &_on_address_change;
         on_title_change = &_on_title_change;
         on_favicon_urlchange = &_on_favicon_urlchange;

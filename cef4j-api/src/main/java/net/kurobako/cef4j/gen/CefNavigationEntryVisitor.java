@@ -35,7 +35,7 @@ public interface CefNavigationEntryVisitor extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:226</a>
      */
-    default int visit(@Nullable CefNavigationEntry entry, int current, int index, int total) {
-        return 0;
+    default boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
+        return false;
     }
 }

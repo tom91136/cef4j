@@ -13,14 +13,14 @@ struct JniCefCookieVisitor: public cef_cookie_visitor_t {
 
     JniCefCookieVisitor(JavaVM *vm, jobject handler) : cef_cookie_visitor_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefCookieVisitor, cef_cookie_visitor_t> (&base);
+        InitRefCount<JniCefCookieVisitor, cef_cookie_visitor_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_cookie_visitor_t*>(this)));
         visit = &_visit;
     }
 
     static int CEF_CALLBACK _visit(cef_cookie_visitor_t* self, const struct _cef_cookie_t* cookie, int count, int total, int* deleteCookie) {
         auto* h = reinterpret_cast<JniCefCookieVisitor*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(28) < 0) {return 0;}
+        if (env->PushLocalFrame(28) < 0) {return false;}
         auto _bv_cookie_name = CefStringToJString(env, &cookie->name);
         auto _bv_cookie_value = CefStringToJString(env, &cookie->value);
         auto _bv_cookie_domain = CefStringToJString(env, &cookie->domain);
@@ -61,14 +61,13 @@ struct JniCefCookieVisitor: public cef_cookie_visitor_t {
         jintArray j_deleteCookie = env->NewIntArray(1);
         if (deleteCookie) {jint _v = *deleteCookie; env->SetIntArrayRegion(j_deleteCookie, 0, 1, &_v);}
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "visit", "(Lnet/kurobako/cef4j/gen/CefCookie;II[I)I");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
-        auto jResult = env->CallIntMethod(h->javaHandler, mid, j_cookie, static_cast<jint>(count), static_cast<jint>(total), j_deleteCookie);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        auto mid = env->GetMethodID(cls, "visit", "(Lnet/kurobako/cef4j/gen/CefCookie;II[I)Z");
+        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_cookie, static_cast<jint>(count), static_cast<jint>(total), j_deleteCookie);
+        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
         if (deleteCookie) {jint _v; env->GetIntArrayRegion(j_deleteCookie, 0, 1, &_v); *deleteCookie = _v;}
-        int nativeResult = static_cast<int>(jResult);
         env->PopLocalFrame(nullptr);
-        return nativeResult;
+        return jResult;
     }
 };
 

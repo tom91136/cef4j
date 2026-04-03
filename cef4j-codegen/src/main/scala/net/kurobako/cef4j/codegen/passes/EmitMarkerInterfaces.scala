@@ -32,12 +32,14 @@ $importLine
  */
 $annotation
 public interface CefLibraryObject extends AutoCloseable {
-    @Override void close();
+    @Override default void close() { peerClose(); }
 
-    default boolean isClosed() { return false; }
+    void peerClose();
+
+    default boolean peerIsClosed() { return false; }
 
     static void requireOpen(CefLibraryObject obj, String name) {
-        if (obj != null && obj.isClosed()) {
+        if (obj != null && obj.peerIsClosed()) {
             throw new IllegalStateException(name + " argument has been closed");
         }
     }

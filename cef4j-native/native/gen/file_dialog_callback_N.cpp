@@ -11,7 +11,6 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFileDialogCallback), release0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFileDialogCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jobject file_paths) {
     auto* s = reinterpret_cast<cef_file_dialog_callback_t*>(self);
     if (!s) return;
-    if (!file_paths) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "filePaths must not be null"); return;}
     auto _file_paths_csl = JavaListToCefStringList(env, file_paths);
     s->cont(s, _file_paths_csl);
     cef_string_list_free(_file_paths_csl);

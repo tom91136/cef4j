@@ -20,16 +20,13 @@ import javax.annotation.processing.Generated;
 public interface CefCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Continue processing.
      *
      * <p>Definition generated from cef_callback_capi.h
      *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_callback_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:49</a>
      */
     void cont();
 
@@ -55,13 +52,13 @@ public interface CefCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

@@ -127,12 +127,12 @@ public interface CefResourceHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
      */
-    default int read(
+    default boolean read(
             @Nullable NativePointer dataOut,
             int bytesToRead,
             int[] bytesRead,
             @Nullable CefResourceReadCallback callback) {
-        return 0;
+        return false;
     }
 
     /**

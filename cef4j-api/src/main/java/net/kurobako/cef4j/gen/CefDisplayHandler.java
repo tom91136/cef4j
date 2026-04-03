@@ -72,10 +72,10 @@ public interface CefDisplayHandler extends CefClientHandler {
      * Called when web content in the page has toggled fullscreen mode. If {@code fullscreen} is {@code true} the
      * content will automatically be sized to fill the browser content area. If {@code fullscreen} is {@code false} the
      * content will automatically return to its original size and position. With Alloy style the client is responsible
-     * for triggering the fullscreen transition (for example, by calling CefWindow.setFullscreen() when using Views).
-     * With Chrome style the fullscreen transition will be triggered automatically. The
-     * CefWindowDelegate.onWindowFullscreenTransition() method will be called during the fullscreen transition for
-     * notification purposes.
+     * for triggering the fullscreen transition (for example, by calling {@link CefWindow#setFullscreen(boolean)} when
+     * using Views). With Chrome style the fullscreen transition will be triggered automatically. The
+     * {@link CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)} method will be called during the
+     * fullscreen transition for notification purposes.
      *
      * <p>Definition generated from cef_display_handler_capi.h
      *

@@ -231,15 +231,14 @@ public interface CefImage extends CefLibraryObject {
      */
     Optional<CefBinaryValue> getAsJpeg(float scaleFactor, int quality, int[] pixelWidth, int[] pixelHeight);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefImage. It will initially be empty. Use the Add*() methods to add representations at different
+     * scale factors.
      *
      * <p>Definition generated from cef_image_capi.h
      *
      * <pre>CEF_EXPORT cef_image_t* cef_image_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:55</a>
      */
     static Optional<CefImage> create() {
         return Optional.ofNullable(NativePeer.create0());
@@ -256,13 +255,13 @@ public interface CefImage extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

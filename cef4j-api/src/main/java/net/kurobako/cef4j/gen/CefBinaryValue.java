@@ -114,21 +114,6 @@ public interface CefBinaryValue extends CefLibraryObject {
      */
     long getData(@Nonnull ByteBuffer buffer, long dataOffset);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
-     *
-     * <p>Definition generated from cef_values_capi.h
-     *
-     * <pre>CEF_EXPORT cef_binary_value_t* cef_binary_value_create(const void* data, size_t data_size);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
-     */
-    static Optional<CefBinaryValue> create(@Nonnull ByteBuffer data) {
-        return Optional.ofNullable(NativePeer.create0(data));
-    }
-
-    /**
      * Decodes the base64 encoded string {@code data}. The returned value will be {@code null} if the decoding fails.
      *
      * <p>Definition generated from cef_parser_capi.h
@@ -139,6 +124,19 @@ public interface CefBinaryValue extends CefLibraryObject {
      */
     static Optional<CefBinaryValue> base64Decode(@Nullable String data) {
         return Optional.ofNullable(NativePeer.base64Decode0(data));
+    }
+
+    /**
+     * Creates a new object that is not owned by any other object. The specified {@code data} will be copied.
+     *
+     * <p>Definition generated from cef_values_capi.h
+     *
+     * <pre>CEF_EXPORT cef_binary_value_t* cef_binary_value_create(const void* data, size_t data_size);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:239</a>
+     */
+    static Optional<CefBinaryValue> create(@Nonnull ByteBuffer data) {
+        return Optional.ofNullable(NativePeer.create0(data));
     }
 
     final class NativePeer implements CefBinaryValue, AutoCloseable {
@@ -152,13 +150,13 @@ public interface CefBinaryValue extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -250,9 +248,9 @@ public interface CefBinaryValue extends CefLibraryObject {
 
         private static native long getData0(long self, ByteBuffer buffer, long dataOffset);
 
-        static native CefBinaryValue create0(ByteBuffer data);
-
         static native CefBinaryValue base64Decode0(String data);
+
+        static native CefBinaryValue create0(ByteBuffer data);
 
         @Override
         public boolean equals(Object obj) {

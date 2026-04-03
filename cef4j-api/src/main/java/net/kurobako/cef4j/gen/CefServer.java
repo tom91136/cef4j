@@ -118,7 +118,7 @@ public interface CefServer extends CefLibraryObject {
      *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:125</a>
      */
-    void sendHttp200response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
+    void sendHttp200Response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
 
     /**
      * Send an HTTP 404 "Not Found" response to the connection identified by {@code connection_id}. The connection will
@@ -130,7 +130,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:138</a>
      */
-    void sendHttp404response(int connectionId);
+    void sendHttp404Response(int connectionId);
 
     /**
      * Send an HTTP 500 "Internal Server Error" response to the connection identified by {@code connection_id}.
@@ -145,7 +145,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:146</a>
      */
-    void sendHttp500response(int connectionId, @Nullable String errorMessage);
+    void sendHttp500Response(int connectionId, @Nullable String errorMessage);
 
     /**
      * Send a custom HTTP response to the connection identified by {@code connection_id}. {@code response_code} is the
@@ -228,9 +228,14 @@ public interface CefServer extends CefLibraryObject {
      */
     void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new server that binds to {@code address} and {@code port}. {@code address} must be a valid IPv4 or IPv6
+     * address (e.g. 127.0.0.1 or ::1) and {@code port} must be a port number outside of the reserved range (e.g.
+     * between 1025 and 65535 on most platforms). {@code backlog} is the maximum number of pending connections. A new
+     * thread will be created for each CreateServer call (the "dedicated server thread"). It is therefore recommended to
+     * use a different CefServerHandler instance for each CreateServer call to avoid thread safety issues in the
+     * CefServerHandler implementation. The {@link CefServerHandler#onServerCreated(CefServer)} method will be called on
+     * the dedicated server thread to report success or failure. See {@link CefServerHandler#onServerCreated(CefServer)}
+     * documentation for a description of server lifespan.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -238,7 +243,7 @@ public interface CefServer extends CefLibraryObject {
      * CEF_EXPORT void cef_server_create(const cef_string_t* address, uint16_t port, int backlog, struct _cef_server_handler_t* handler);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:62</a>
      */
     static void create(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler) {
         NativePeer.create0(address, port, backlog, handler);
@@ -255,13 +260,13 @@ public interface CefServer extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -324,21 +329,21 @@ public interface CefServer extends CefLibraryObject {
         }
 
         @Override
-        public void sendHttp200response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data) {
+        public void sendHttp200Response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data) {
             checkNotClosed();
-            sendHttp200response0(nativePtr, connectionId, contentType, data);
+            sendHttp200Response0(nativePtr, connectionId, contentType, data);
         }
 
         @Override
-        public void sendHttp404response(int connectionId) {
+        public void sendHttp404Response(int connectionId) {
             checkNotClosed();
-            sendHttp404response0(nativePtr, connectionId);
+            sendHttp404Response0(nativePtr, connectionId);
         }
 
         @Override
-        public void sendHttp500response(int connectionId, @Nullable String errorMessage) {
+        public void sendHttp500Response(int connectionId, @Nullable String errorMessage) {
             checkNotClosed();
-            sendHttp500response0(nativePtr, connectionId, errorMessage);
+            sendHttp500Response0(nativePtr, connectionId, errorMessage);
         }
 
         @Override
@@ -382,12 +387,12 @@ public interface CefServer extends CefLibraryObject {
 
         private static native boolean isValidConnection0(long self, int connectionId);
 
-        private static native void sendHttp200response0(
+        private static native void sendHttp200Response0(
                 long self, int connectionId, String contentType, ByteBuffer data);
 
-        private static native void sendHttp404response0(long self, int connectionId);
+        private static native void sendHttp404Response0(long self, int connectionId);
 
-        private static native void sendHttp500response0(long self, int connectionId, String errorMessage);
+        private static native void sendHttp500Response0(long self, int connectionId, String errorMessage);
 
         private static native void sendHttpResponse0(
                 long self,

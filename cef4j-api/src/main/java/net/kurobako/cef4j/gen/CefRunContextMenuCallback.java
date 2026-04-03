@@ -22,9 +22,7 @@ import javax.annotation.processing.Generated;
 public interface CefRunContextMenuCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Complete context menu display by selecting the specified {@code command_id} and {@code event_flags}.
      *
      * <p>Definition generated from cef_context_menu_handler_capi.h
      *
@@ -33,7 +31,7 @@ public interface CefRunContextMenuCallback extends CefLibraryObject {
      * </pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:54</a>
      */
     void cont(int commandId, @Nonnull CefEventFlags eventFlags);
 
@@ -60,13 +58,13 @@ public interface CefRunContextMenuCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

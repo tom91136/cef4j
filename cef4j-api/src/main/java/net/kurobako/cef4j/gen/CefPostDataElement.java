@@ -82,7 +82,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *
      * <pre>cef_postdataelement_type_t (CEF_CALLBACK* get_type)(struct _cef_post_data_element_t* self);</pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code PDE_TYPE_EMPTY} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:329</a>
      */
     CefPostdataelementType getType();
@@ -126,15 +126,13 @@ public interface CefPostDataElement extends CefLibraryObject {
      */
     long getBytes(@Nonnull ByteBuffer bytes);
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefPostDataElement object.
      *
      * <p>Definition generated from cef_request_capi.h
      *
      * <pre>CEF_EXPORT cef_post_data_element_t* cef_post_data_element_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:298</a>
      */
     static Optional<CefPostDataElement> create() {
         return Optional.ofNullable(NativePeer.create0());
@@ -151,13 +149,13 @@ public interface CefPostDataElement extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

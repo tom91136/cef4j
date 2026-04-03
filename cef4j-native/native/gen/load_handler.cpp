@@ -15,7 +15,7 @@ struct JniCefLoadHandler: public cef_load_handler_t {
 
     JniCefLoadHandler(JavaVM *vm, jobject handler) : cef_load_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefLoadHandler, cef_load_handler_t> (&base);
+        InitRefCount<JniCefLoadHandler, cef_load_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_load_handler_t*>(this)));
         on_loading_state_change = &_on_loading_state_change;
         on_load_start = &_on_load_start;
         on_load_end = &_on_load_end;

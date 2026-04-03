@@ -17,7 +17,8 @@ struct JniCefCookieAccessFilter: public cef_cookie_access_filter_t {
 
     JniCefCookieAccessFilter(JavaVM *vm, jobject handler) : cef_cookie_access_filter_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefCookieAccessFilter, cef_cookie_access_filter_t> (&base);
+        InitRefCount<JniCefCookieAccessFilter, cef_cookie_access_filter_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_cookie_access_filter_t*>(this)));
         can_send_cookie = &_can_send_cookie;
         can_save_cookie = &_can_save_cookie;
     }

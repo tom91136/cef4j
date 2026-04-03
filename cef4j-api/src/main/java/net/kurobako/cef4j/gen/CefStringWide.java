@@ -10,14 +10,15 @@ import javax.annotation.processing.Generated;
  * sure to call {@code dtor} for the old value before assigning new {@code str} and {@code dtor} values. Static strings
  * will have a {@code null} {@code dtor} value. Using the below functions if you want this managed for you.
  *
- * <p>Definition generated from cef_string_types.h
+ * <p>Definition generated from internal/cef_string_types.h
  *
  * <pre>typedef struct _cef_string_wide_t {
  *   void* str;
  *   size_t length;
  * } cef_string_wide_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__string__types_8h.html">cef_string_types.h:62</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__string__types_8h.html">internal/cef_string_types.h:62</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefStringWide {

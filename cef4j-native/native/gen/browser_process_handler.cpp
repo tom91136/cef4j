@@ -18,7 +18,8 @@ struct JniCefBrowserProcessHandler: public cef_browser_process_handler_t {
 
     JniCefBrowserProcessHandler(JavaVM *vm, jobject handler) : cef_browser_process_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefBrowserProcessHandler, cef_browser_process_handler_t> (&base);
+        InitRefCount<JniCefBrowserProcessHandler, cef_browser_process_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_browser_process_handler_t*>(this)));
         on_register_custom_preferences = &_on_register_custom_preferences;
         on_context_initialized = &_on_context_initialized;
         on_before_child_process_launch = &_on_before_child_process_launch;

@@ -48,8 +48,8 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      *
      * <p>A default popup window is created if this method returns {@code false} without setting a parent window handle
      * via CefWindowInfo (for native-hosted popups), or without implementing
-     * CefBrowserViewDelegate.onPopupBrowserViewCreated() (for Views-hosted popups). The default popup window type
-     * depends on the parent browser configuration:
+     * {@link CefBrowserViewDelegate#onPopupBrowserViewCreated(CefBrowserView, CefBrowserView, boolean)} (for
+     * Views-hosted popups). The default popup window type depends on the parent browser configuration:
      *
      * <ul>
      *   <li>Views-hosted parent: Creates a Views-hosted popup window.
@@ -175,7 +175,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>When windowed rendering is enabled CEF will create an internal child window/view to host the browser. In that
      * case returning {@code false} from DoClose() will send the standard close notification to the browser's top-level
      * parent window (e.g. WM_CLOSE on Windows, performClose: on OS X, "delete_event" on Linux or
-     * CefWindowDelegate.canClose() callback from Views).
+     * {@link CefWindowDelegate#canClose(CefWindow)} callback from Views).
      *
      * <p>When windowed rendering is disabled there is no internal window/view and returning {@code false} from
      * DoClose() will cause the browser object to be destroyed immediately.

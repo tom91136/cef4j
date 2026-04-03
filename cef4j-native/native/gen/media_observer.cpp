@@ -13,7 +13,7 @@ struct JniCefMediaObserver: public cef_media_observer_t {
 
     JniCefMediaObserver(JavaVM *vm, jobject handler) : cef_media_observer_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefMediaObserver, cef_media_observer_t> (&base);
+        InitRefCount<JniCefMediaObserver, cef_media_observer_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_media_observer_t*>(this)));
         on_sinks = &_on_sinks;
         on_routes = &_on_routes;
         on_route_state_changed = &_on_route_state_changed;

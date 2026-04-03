@@ -18,14 +18,18 @@ import javax.annotation.processing.Generated;
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefLibraryObject extends AutoCloseable {
     @Override
-    void close();
+    default void close() {
+        peerClose();
+    }
 
-    default boolean isClosed() {
+    void peerClose();
+
+    default boolean peerIsClosed() {
         return false;
     }
 
     static void requireOpen(CefLibraryObject obj, String name) {
-        if (obj != null && obj.isClosed()) {
+        if (obj != null && obj.peerIsClosed()) {
             throw new IllegalStateException(name + " argument has been closed");
         }
     }

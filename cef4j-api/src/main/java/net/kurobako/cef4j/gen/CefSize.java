@@ -7,14 +7,15 @@ import javax.annotation.processing.Generated;
 /**
  * Structure representing a size.
  *
- * <p>Definition generated from cef_types_geometry.h
+ * <p>Definition generated from internal/cef_types_geometry.h
  *
  * <pre>typedef struct _cef_size_t {
  *   int width;
  *   int height;
  * } cef_size_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:56</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefSize {
@@ -53,10 +54,10 @@ public final class CefSize {
     /**
      * Mutable variant of {@link CefSize}. Structure representing a size.
      *
-     * <p>Definition generated from cef_types_geometry.h
+     * <p>Definition generated from internal/cef_types_geometry.h
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">cef_types_geometry.h:56</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:56</a>
      */
     public static final class Mutable {
 

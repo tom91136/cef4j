@@ -5,5 +5,5 @@ import net.kurobako.cef4j.codegen.HeaderMetadataIndex
 
 object IndexHeaderMetadata {
   def apply(cfg: Config): HeaderMetadataIndex =
-    HeaderMetadataIndex(cfg.cefInclude)
+    HeaderMetadataIndex(cfg.cefInclude, cfg.extraCppDirs, cfg.extraCapiDirs)
 }

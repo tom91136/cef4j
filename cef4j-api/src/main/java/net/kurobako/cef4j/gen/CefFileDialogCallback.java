@@ -3,7 +3,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
@@ -22,18 +22,18 @@ import javax.annotation.processing.Generated;
 public interface CefFileDialogCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Continue the file selection. {@code file_paths} should be a single value or a list of values depending on the
+     * dialog mode. An empty {@code file_paths} value is treated the same as calling Cancel().
      *
      * <p>Definition generated from cef_dialog_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_file_dialog_callback_t* self, cef_string_list_t file_paths);</pre>
      *
+     * @param filePaths may be null
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:50</a>
      */
-    void cont(@Nonnull List<String> filePaths);
+    void cont(@Nullable List<String> filePaths);
 
     /**
      * Cancel the file selection.
@@ -58,13 +58,13 @@ public interface CefFileDialogCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 
@@ -91,7 +91,7 @@ public interface CefFileDialogCallback extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void cont(@Nonnull List<String> filePaths) {
+        public void cont(@Nullable List<String> filePaths) {
             checkNotClosed();
             cont0(nativePtr, filePaths);
         }

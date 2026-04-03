@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
  * Structure containing shared texture information for the OnAcceleratedPaint callback. Resources will be released to
  * the underlying pool for reuse when the callback returns from client code.
  *
- * <p>Definition generated from cef_types_linux.h
+ * <p>Definition generated from internal/cef_types_linux.h
  *
  * <pre>typedef struct _cef_accelerated_paint_info_t {
  *   size_t size;
@@ -18,7 +18,8 @@ import javax.annotation.processing.Generated;
  *   cef_accelerated_paint_info_common_t* extra;
  * } cef_accelerated_paint_info_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:176</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:176</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefAcceleratedPaintInfo {

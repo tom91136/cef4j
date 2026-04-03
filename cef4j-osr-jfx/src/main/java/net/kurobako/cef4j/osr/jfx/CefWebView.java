@@ -184,12 +184,14 @@ public class CefWebView extends Region {
         setOnKeyTyped(this::handleKeyTyped);
 
         focusedProperty().addListener((obs, was, is) -> {
-            // Only forward focus gain - calling setFocus(false) on focus loss causes
-            // CEF to dismiss compositor popup widgets (e.g. <select> dropdowns)
-            // when the JavaFX osrPopup briefly steals focus.
             if (is) {
                 CefBrowserHost h = host();
                 if (h != null) h.setFocus(true);
+            } else {
+                // Don't call setFocus(false) here - it causes CEF to dismiss compositor
+                // popup widgets (e.g. <select> dropdowns). Window-level focus loss is
+                // handled by windowFocusedListener instead. Just dismiss the overlay.
+                hideOsrPopup();
             }
         });
         widthProperty().addListener((obs, oldV, newV) -> onResize());
@@ -1331,16 +1333,16 @@ public class CefWebView extends Region {
             host.getNavigationEntries(
                     new CefNavigationEntryVisitor() {
                         @Override
-                        public int visit(CefNavigationEntry entry, int current, int index, int total) {
+                        public boolean visit(CefNavigationEntry entry, boolean current, int index, int total) {
                             snapshots.add(new CefWebHistory.EntrySnapshot(
                                     entry != null ? entry.getUrl().orElse("") : "",
                                     entry != null ? entry.getTitle().orElse("") : "",
                                     new Date()));
-                            if (current != 0) currentIndex[0] = index;
+                            if (current) currentIndex[0] = index;
                             if (index + 1 == total) {
                                 Platform.runLater(() -> engine.refreshHistory(snapshots, currentIndex[0]));
                             }
-                            return 1;
+                            return true;
                         }
                     },
                     false);

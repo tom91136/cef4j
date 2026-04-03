@@ -13,7 +13,7 @@ struct JniCefResponseFilter: public cef_response_filter_t {
 
     JniCefResponseFilter(JavaVM *vm, jobject handler) : cef_response_filter_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefResponseFilter, cef_response_filter_t> (&base);
+        InitRefCount<JniCefResponseFilter, cef_response_filter_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_response_filter_t*>(this)));
         init_filter = &_init_filter;
         filter = &_filter;
     }

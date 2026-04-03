@@ -15,7 +15,7 @@ struct JniCefApp: public cef_app_t {
 
     JniCefApp(JavaVM *vm, jobject handler) : cef_app_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefApp, cef_app_t> (&base);
+        InitRefCount<JniCefApp, cef_app_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_app_t*>(this)));
         on_before_command_line_processing = &_on_before_command_line_processing;
         on_register_custom_schemes = &_on_register_custom_schemes;
     }

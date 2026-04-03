@@ -19,7 +19,8 @@ struct JniCefSchemeHandlerFactory: public cef_scheme_handler_factory_t {
 
     JniCefSchemeHandlerFactory(JavaVM *vm, jobject handler) : cef_scheme_handler_factory_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefSchemeHandlerFactory, cef_scheme_handler_factory_t> (&base);
+        InitRefCount<JniCefSchemeHandlerFactory, cef_scheme_handler_factory_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_scheme_handler_factory_t*>(this)));
         create = &_create;
     }
 

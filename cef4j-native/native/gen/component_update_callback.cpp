@@ -13,7 +13,8 @@ struct JniCefComponentUpdateCallback: public cef_component_update_callback_t {
 
     JniCefComponentUpdateCallback(JavaVM *vm, jobject handler) : cef_component_update_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefComponentUpdateCallback, cef_component_update_callback_t> (&base);
+        InitRefCount<JniCefComponentUpdateCallback, cef_component_update_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_component_update_callback_t*>(this)));
         on_complete = &_on_complete;
     }
 

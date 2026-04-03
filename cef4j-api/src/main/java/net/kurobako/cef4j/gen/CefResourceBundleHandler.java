@@ -38,8 +38,8 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
      */
-    default int getLocalizedString(int stringId, @Nullable String string) {
-        return 0;
+    default boolean getLocalizedString(int stringId, @Nullable String string) {
+        return false;
     }
 
     /**
@@ -58,8 +58,8 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
      */
-    default int getDataResource(int resourceId, @Nullable NativePointer data, long[] dataSize) {
-        return 0;
+    default boolean getDataResource(int resourceId, @Nullable NativePointer data, long[] dataSize) {
+        return false;
     }
 
     /**
@@ -78,8 +78,8 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
      */
-    default int getDataResourceForScale(
+    default boolean getDataResourceForScale(
             int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nullable NativePointer data, long[] dataSize) {
-        return 0;
+        return false;
     }
 }

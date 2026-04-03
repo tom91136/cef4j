@@ -6,12 +6,11 @@ import java.util.Optional;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure representing a V8 ArrayBuffer backing store. The backing store holds the memory that backs an ArrayBuffer.
- * It must be created on a thread with a valid V8 isolate (renderer main thread or WebWorker thread). Once created, the
- * data() pointer can be safely read/written from any thread. This allows expensive operations like memcpy to be
+ * Class representing a V8 ArrayBuffer backing store. The backing store holds the memory that backs an ArrayBuffer. It
+ * must be created on a thread with a valid V8 isolate (renderer main thread or WebWorker thread). Once created, the
+ * Data() pointer can be safely read/written from any thread. This allows expensive operations like memcpy to be
  * performed on a background thread before creating the ArrayBuffer on the V8 thread. The backing store is consumed when
- * passed to CefV8Value.cefV8ValueCreateArrayBufferFromBackingStore(), after which is_valid() returns {@code false} (0).
- * NOTE: This struct is allocated DLL-side.
+ * passed to CefV8Value.createArrayBufferFromBackingStore(), after which IsValid() returns {@code false}.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -20,7 +19,7 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_backing_store_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:398</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:430</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8BackingStore extends CefLibraryObject {
@@ -39,15 +38,13 @@ public interface CefV8BackingStore extends CefLibraryObject {
     long byteLength();
 
     /**
-     * Returns {@code true} if this object is valid. Do not call any other methods if this function returns
-     * {@code false}.
+     * Returns {@code true} if this backing store has not yet been consumed by CreateArrayBufferFromBackingStore().
      *
      * <p>Definition generated from cef_v8_capi.h
      *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_backing_store_t* self);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:473</a>
      */
     boolean isValid();
     /**
@@ -76,13 +73,13 @@ public interface CefV8BackingStore extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

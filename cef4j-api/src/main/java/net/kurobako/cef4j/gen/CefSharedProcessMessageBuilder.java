@@ -62,9 +62,8 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      */
     Optional<CefProcessMessage> build();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Creates a new CefSharedProcessMessageBuilder with the specified {@code name} and shared memory region of
+     * specified {@code byte_size}.
      *
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      *
@@ -72,7 +71,8 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * CEF_EXPORT cef_shared_process_message_builder_t* cef_shared_process_message_builder_create(const cef_string_t* name, size_t byte_size);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:51</a>
      */
     static Optional<CefSharedProcessMessageBuilder> create(@Nullable String name, long byteSize) {
         return Optional.ofNullable(NativePeer.create0(name, byteSize));
@@ -89,13 +89,13 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

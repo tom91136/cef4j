@@ -76,9 +76,8 @@ public interface CefThread extends CefLibraryObject {
      */
     boolean isRunning();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create and start a new thread with default/recommended values. {@code display_name} is the name that will be used
+     * to identify the thread.
      *
      * <p>Definition generated from cef_thread_capi.h
      *
@@ -86,7 +85,7 @@ public interface CefThread extends CefLibraryObject {
      * CEF_EXPORT cef_thread_t* cef_thread_create(const cef_string_t* display_name, cef_thread_priority_t priority, cef_message_loop_type_t message_loop_type, int stoppable, cef_com_init_mode_t com_init_mode);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:78</a>
      */
     static Optional<CefThread> create(
             @Nullable String displayName,
@@ -108,13 +107,13 @@ public interface CefThread extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

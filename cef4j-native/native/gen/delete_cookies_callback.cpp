@@ -13,7 +13,8 @@ struct JniCefDeleteCookiesCallback: public cef_delete_cookies_callback_t {
 
     JniCefDeleteCookiesCallback(JavaVM *vm, jobject handler) : cef_delete_cookies_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDeleteCookiesCallback, cef_delete_cookies_callback_t> (&base);
+        InitRefCount<JniCefDeleteCookiesCallback, cef_delete_cookies_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_delete_cookies_callback_t*>(this)));
         on_complete = &_on_complete;
     }
 

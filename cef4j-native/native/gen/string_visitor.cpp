@@ -13,7 +13,7 @@ struct JniCefStringVisitor: public cef_string_visitor_t {
 
     JniCefStringVisitor(JavaVM *vm, jobject handler) : cef_string_visitor_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefStringVisitor, cef_string_visitor_t> (&base);
+        InitRefCount<JniCefStringVisitor, cef_string_visitor_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_string_visitor_t*>(this)));
         visit = &_visit;
     }
 

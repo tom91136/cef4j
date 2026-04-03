@@ -15,7 +15,7 @@ struct JniCefPrintHandler: public cef_print_handler_t {
 
     JniCefPrintHandler(JavaVM *vm, jobject handler) : cef_print_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefPrintHandler, cef_print_handler_t> (&base);
+        InitRefCount<JniCefPrintHandler, cef_print_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_print_handler_t*>(this)));
         on_print_start = &_on_print_start;
         on_print_settings = &_on_print_settings;
         on_print_dialog = &_on_print_dialog;

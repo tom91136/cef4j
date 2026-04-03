@@ -11,7 +11,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefJsDialogCallback), release0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefJsDialogCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jint success, jstring user_input) {
     auto* s = reinterpret_cast<cef_jsdialog_callback_t*>(self);
     if (!s) return;
-    auto _user_input_str = JStringToCefString(env, user_input);
+    auto _user_input_str = user_input ? JStringToCefString(env, user_input) : nullptr;
     s->cont(s, success, _user_input_str);
     if (_user_input_str) cef_string_userfree_free(_user_input_str);
 }

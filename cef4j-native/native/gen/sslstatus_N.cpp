@@ -43,7 +43,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getContentStatus0)(JNIEnv* e
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getX509certificate0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getX509Certificate0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_x509_certificate(s);

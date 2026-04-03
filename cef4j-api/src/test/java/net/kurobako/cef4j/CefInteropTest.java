@@ -770,7 +770,7 @@ class CefInteropTest {
         original.setString("a", "1");
         original.setInt("b", 2);
 
-        CefDictionaryValue copy = original.copy(0).orElseThrow();
+        CefDictionaryValue copy = original.copy(false).orElseThrow();
         assertThat(copy.isValid()).isTrue();
 
         // Copy is equal but not same

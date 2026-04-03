@@ -13,7 +13,8 @@ struct JniCefMediaSinkDeviceInfoCallback: public cef_media_sink_device_info_call
 
     JniCefMediaSinkDeviceInfoCallback(JavaVM *vm, jobject handler) : cef_media_sink_device_info_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefMediaSinkDeviceInfoCallback, cef_media_sink_device_info_callback_t> (&base);
+        InitRefCount<JniCefMediaSinkDeviceInfoCallback, cef_media_sink_device_info_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_media_sink_device_info_callback_t*>(this)));
         on_media_sink_device_info = &_on_media_sink_device_info;
     }
 

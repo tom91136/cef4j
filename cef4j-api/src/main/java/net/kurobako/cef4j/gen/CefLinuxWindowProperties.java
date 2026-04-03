@@ -9,7 +9,7 @@ import javax.annotation.processing.Generated;
  * client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the
  * application's information (e.g., icons).
  *
- * <p>Definition generated from cef_types.h
+ * <p>Definition generated from internal/cef_types.h
  *
  * <pre>typedef struct _cef_linux_window_properties_t {
  *   size_t size;
@@ -19,7 +19,7 @@ import javax.annotation.processing.Generated;
  *   cef_string_t* wm_role_name;
  * } cef_linux_window_properties_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:1964</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:1964</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefLinuxWindowProperties {

@@ -15,7 +15,7 @@ struct JniCefFrameHandler: public cef_frame_handler_t {
 
     JniCefFrameHandler(JavaVM *vm, jobject handler) : cef_frame_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefFrameHandler, cef_frame_handler_t> (&base);
+        InitRefCount<JniCefFrameHandler, cef_frame_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_frame_handler_t*>(this)));
         on_frame_created = &_on_frame_created;
         on_frame_destroyed = &_on_frame_destroyed;
         on_frame_attached = &_on_frame_attached;

@@ -96,10 +96,11 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefZipReader), tell0)(JNIEnv* env, jobject ob
     return static_cast<jlong>(s->tell(s));
 }
 
-CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefZipReader), eof0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), eof0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
-    if (!s) return 0;
-    return static_cast<jint>(s->eof(s));
+    if (!s) return JNI_FALSE;
+    auto _r = s->eof(s);
+    return static_cast<jboolean>(_r);
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), create0)(JNIEnv* env, jclass clz, jobject stream) {

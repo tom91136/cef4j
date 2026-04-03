@@ -21,9 +21,7 @@ import javax.annotation.processing.Generated;
 public interface CefAuthCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Continue the authentication request.
      *
      * <p>Definition generated from cef_auth_callback_capi.h
      *
@@ -31,8 +29,10 @@ public interface CefAuthCallback extends CefLibraryObject {
      * void (CEF_CALLBACK* cont)(struct _cef_auth_callback_t* self, const cef_string_t* username, const cef_string_t* password);
      * </pre>
      *
+     * @param username may be null
+     * @param password may be null
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__auth__callback_8h.html">cef_auth_callback.h:50</a>
      */
     void cont(@Nullable String username, @Nullable String password);
 
@@ -59,13 +59,13 @@ public interface CefAuthCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

@@ -16,7 +16,7 @@ struct JniCefDragHandler: public cef_drag_handler_t {
 
     JniCefDragHandler(JavaVM *vm, jobject handler) : cef_drag_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefDragHandler, cef_drag_handler_t> (&base);
+        InitRefCount<JniCefDragHandler, cef_drag_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_drag_handler_t*>(this)));
         on_drag_enter = &_on_drag_enter;
         on_draggable_regions_changed = &_on_draggable_regions_changed;
     }

@@ -53,7 +53,7 @@ struct JniCefClient: public cef_client_t {
 
     JniCefClient(JavaVM *vm, jobject handler) : cef_client_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefClient, cef_client_t> (&base);
+        InitRefCount<JniCefClient, cef_client_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_client_t*>(this)));
         get_audio_handler = &_get_audio_handler;
         get_command_handler = &_get_command_handler;
         get_context_menu_handler = &_get_context_menu_handler;

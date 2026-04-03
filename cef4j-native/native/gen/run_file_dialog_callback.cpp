@@ -13,7 +13,8 @@ struct JniCefRunFileDialogCallback: public cef_run_file_dialog_callback_t {
 
     JniCefRunFileDialogCallback(JavaVM *vm, jobject handler) : cef_run_file_dialog_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefRunFileDialogCallback, cef_run_file_dialog_callback_t> (&base);
+        InitRefCount<JniCefRunFileDialogCallback, cef_run_file_dialog_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_run_file_dialog_callback_t*>(this)));
         on_file_dialog_dismissed = &_on_file_dialog_dismissed;
     }
 

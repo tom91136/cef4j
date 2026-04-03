@@ -14,7 +14,8 @@ struct JniCefMenuModelDelegate: public cef_menu_model_delegate_t {
 
     JniCefMenuModelDelegate(JavaVM *vm, jobject handler) : cef_menu_model_delegate_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefMenuModelDelegate, cef_menu_model_delegate_t> (&base);
+        InitRefCount<JniCefMenuModelDelegate, cef_menu_model_delegate_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_menu_model_delegate_t*>(this)));
         execute_command = &_execute_command;
         mouse_outside_menu = &_mouse_outside_menu;
         unhandled_open_submenu = &_unhandled_open_submenu;

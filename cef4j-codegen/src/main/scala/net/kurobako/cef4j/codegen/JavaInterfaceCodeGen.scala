@@ -242,11 +242,7 @@ ${allLines.mkString("\n")}
       val callTarget = if (isClass) nativeName else s"NativePeer.$nativeName"
       val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
 
-      val pascal  = Naming.toPascalCase(ff.javaMethodName)
-      val javadoc = docs.get(s"Cef$pascal") // C++ free functions use CefXxx naming
-        .orElse(docs.get(pascal))
-        .orElse(docs.get(ff.javaMethodName))
-        .orElse(docs.get(ff.cName))
+      val javadoc = DocComments.resolveFreeFunctionDoc(ff, docs)
         .map(t => renderSimpleJavadoc(t, ff.sourceHeader, DocComments.cPrototypeForFreeFunction(ff)))
         .getOrElse("")
 

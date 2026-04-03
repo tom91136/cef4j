@@ -14,7 +14,7 @@ struct JniCefFocusHandler: public cef_focus_handler_t {
 
     JniCefFocusHandler(JavaVM *vm, jobject handler) : cef_focus_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefFocusHandler, cef_focus_handler_t> (&base);
+        InitRefCount<JniCefFocusHandler, cef_focus_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_focus_handler_t*>(this)));
         on_take_focus = &_on_take_focus;
         on_set_focus = &_on_set_focus;
         on_got_focus = &_on_got_focus;

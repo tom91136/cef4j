@@ -34,7 +34,7 @@ public interface CefCookieVisitor extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:136</a>
      */
-    default int visit(@Nonnull CefCookie cookie, int count, int total, int[] deleteCookie) {
-        return 0;
+    default boolean visit(@Nonnull CefCookie cookie, int count, int total, int[] deleteCookie) {
+        return false;
     }
 }

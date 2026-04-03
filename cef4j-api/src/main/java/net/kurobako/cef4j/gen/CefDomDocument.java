@@ -29,7 +29,7 @@ public interface CefDomDocument extends CefLibraryObject {
      *
      * <pre>cef_dom_document_type_t (CEF_CALLBACK* get_type)(struct _cef_domdocument_t* self);</pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code DOM_DOCUMENT_TYPE_UNKNOWN} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:75</a>
      */
     CefDomDocumentType getType();
@@ -191,13 +191,13 @@ public interface CefDomDocument extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

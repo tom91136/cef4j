@@ -93,14 +93,16 @@ public interface CefMediaRouter extends CefLibraryObject {
      */
     void notifyCurrentRoutes();
     /**
-     * Returns the global object for this context. The context must be entered before calling this method.
+     * Returns the MediaRouter object associated with the global request context. If {@code callback} is
+     * non-{@code null} it will be executed asnychronously on the UI thread after the manager's storage has been
+     * initialized. Equivalent to calling CefRequestContext.getGlobalContext()->GetMediaRouter().
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
      * <pre>CEF_EXPORT cef_media_router_t* cef_media_router_get_global(struct _cef_completion_callback_t* callback);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:62</a>
      */
     static Optional<CefMediaRouter> getGlobal(@Nullable CefCompletionCallback callback) {
         return Optional.ofNullable(NativePeer.getGlobal0(callback));
@@ -117,13 +119,13 @@ public interface CefMediaRouter extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

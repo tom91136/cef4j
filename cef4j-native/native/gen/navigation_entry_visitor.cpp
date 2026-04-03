@@ -14,27 +14,27 @@ struct JniCefNavigationEntryVisitor: public cef_navigation_entry_visitor_t {
 
     JniCefNavigationEntryVisitor(JavaVM *vm, jobject handler) : cef_navigation_entry_visitor_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefNavigationEntryVisitor, cef_navigation_entry_visitor_t> (&base);
+        InitRefCount<JniCefNavigationEntryVisitor, cef_navigation_entry_visitor_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_navigation_entry_visitor_t*>(this)));
         visit = &_visit;
     }
 
     static int CEF_CALLBACK _visit(cef_navigation_entry_visitor_t* self, struct _cef_navigation_entry_t* entry, int current, int index, int total) {
         auto* h = reinterpret_cast<JniCefNavigationEntryVisitor*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(8) < 0) {return 0;}
+        if (env->PushLocalFrame(8) < 0) {return false;}
         cef_navigation_entry_t* _p_entry = entry;
         if (_p_entry) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_entry); _b->add_ref(_b);}
         auto j_entry_cls = env->FindClass("net/kurobako/cef4j/gen/CefNavigationEntry$NativePeer");
         auto j_entry_ctor = env->GetMethodID(j_entry_cls, "<init>", "(J)V");
         auto j_entry = _p_entry ? env->NewObject(j_entry_cls, j_entry_ctor, reinterpret_cast<jlong>(_p_entry)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "visit", "(Lnet/kurobako/cef4j/gen/CefNavigationEntry;III)I");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
-        auto jResult = env->CallIntMethod(h->javaHandler, mid, j_entry, static_cast<jint>(current), static_cast<jint>(index), static_cast<jint>(total));
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
-        int nativeResult = static_cast<int>(jResult);
+        auto mid = env->GetMethodID(cls, "visit", "(Lnet/kurobako/cef4j/gen/CefNavigationEntry;ZII)Z");
+        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_entry, static_cast<jboolean>(current), static_cast<jint>(index), static_cast<jint>(total));
+        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
         env->PopLocalFrame(nullptr);
-        return nativeResult;
+        return jResult;
     }
 };
 

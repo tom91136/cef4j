@@ -14,7 +14,7 @@ struct JniCefKeyboardHandler: public cef_keyboard_handler_t {
 
     JniCefKeyboardHandler(JavaVM *vm, jobject handler) : cef_keyboard_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefKeyboardHandler, cef_keyboard_handler_t> (&base);
+        InitRefCount<JniCefKeyboardHandler, cef_keyboard_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_keyboard_handler_t*>(this)));
         on_pre_key_event = &_on_pre_key_event;
         on_key_event = &_on_key_event;
     }

@@ -3,6 +3,10 @@
 #include "include/capi/cef_v8_capi.h"
 #include "jni_util.h"
 
+extern "C" cef_v8_accessor_t* Create_JniCefV8Accessor(JNIEnv *env, jobject handler);
+extern "C" cef_v8_interceptor_t* Create_JniCefV8Interceptor(JNIEnv *env, jobject handler);
+extern "C" cef_v8_array_buffer_release_callback_t* Create_JniCefV8ArrayBufferReleaseCallback(JNIEnv *env, jobject handler);
+extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv *env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefV8Value), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -489,10 +493,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createString0)(JNIEnv* env, jc
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createObject0)(JNIEnv* env, jclass clz, jobject accessor, jobject interceptor) {
-    cef_v8_accessor_t* _accessor_ptr = accessor ? reinterpret_cast<cef_v8_accessor_t*>(env->GetLongField(accessor, env->GetFieldID(env->GetObjectClass(accessor), "nativePtr", "J"))) : nullptr;
-    if (_accessor_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_accessor_ptr); _b->add_ref(_b);}
-    cef_v8_interceptor_t* _interceptor_ptr = interceptor ? reinterpret_cast<cef_v8_interceptor_t*>(env->GetLongField(interceptor, env->GetFieldID(env->GetObjectClass(interceptor), "nativePtr", "J"))) : nullptr;
-    if (_interceptor_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_interceptor_ptr); _b->add_ref(_b);}
+    cef_v8_accessor_t* _accessor_ptr = accessor ? Create_JniCefV8Accessor(env, accessor) : nullptr;
+    cef_v8_interceptor_t* _interceptor_ptr = interceptor ? Create_JniCefV8Interceptor(env, interceptor) : nullptr;
     auto _r = cef_v8_value_create_object(_accessor_ptr, _interceptor_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
@@ -509,8 +511,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArray0)(JNIEnv* env, jcl
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBuffer0)(JNIEnv* env, jclass clz, jobject buffer, jlong length, jobject release_callback) {
-    cef_v8_array_buffer_release_callback_t* _release_callback_ptr = release_callback ? reinterpret_cast<cef_v8_array_buffer_release_callback_t*>(env->GetLongField(release_callback, env->GetFieldID(env->GetObjectClass(release_callback), "nativePtr", "J"))) : nullptr;
-    if (_release_callback_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_release_callback_ptr); _b->add_ref(_b);}
+    cef_v8_array_buffer_release_callback_t* _release_callback_ptr = release_callback ? Create_JniCefV8ArrayBufferReleaseCallback(env, release_callback) : nullptr;
     auto _r = cef_v8_value_create_array_buffer(reinterpret_cast<void*>(buffer ? env->GetLongField(buffer, env->GetFieldID(env->GetObjectClass(buffer), "address", "J")) : 0), length, _release_callback_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
@@ -538,8 +539,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBufferFromBackingSt
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createFunction0)(JNIEnv* env, jclass clz, jstring name, jobject handler) {
     auto _name_str = JStringToCefString(env, name);
-    cef_v8_handler_t* _handler_ptr = handler ? reinterpret_cast<cef_v8_handler_t*>(env->GetLongField(handler, env->GetFieldID(env->GetObjectClass(handler), "nativePtr", "J"))) : nullptr;
-    if (_handler_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_handler_ptr); _b->add_ref(_b);}
+    cef_v8_handler_t* _handler_ptr = handler ? Create_JniCefV8Handler(env, handler) : nullptr;
     auto _r = cef_v8_value_create_function(_name_str, _handler_ptr);
     if (_name_str) cef_string_userfree_free(_name_str);
     if (!_r) return nullptr;

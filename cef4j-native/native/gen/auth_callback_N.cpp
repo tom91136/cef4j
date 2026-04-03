@@ -11,8 +11,8 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefAuthCallback), release0)(JNIEnv* env, jclas
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefAuthCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jstring username, jstring password) {
     auto* s = reinterpret_cast<cef_auth_callback_t*>(self);
     if (!s) return;
-    auto _username_str = JStringToCefString(env, username);
-    auto _password_str = JStringToCefString(env, password);
+    auto _username_str = username ? JStringToCefString(env, username) : nullptr;
+    auto _password_str = password ? JStringToCefString(env, password) : nullptr;
     s->cont(s, _username_str, _password_str);
     if (_username_str) cef_string_userfree_free(_username_str);
     if (_password_str) cef_string_userfree_free(_password_str);

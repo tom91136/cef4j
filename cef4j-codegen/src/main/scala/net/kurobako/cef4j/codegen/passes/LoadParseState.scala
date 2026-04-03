@@ -18,7 +18,7 @@ object LoadParseState {
       cppTypeInfo = metadata.cppTypeInfo,
       enumDocs = metadata.enumDocs,
       classDocs = metadata.classDocs,
-      structHeaderMap = IndexStructHeaders(headerInputs.capiDir),
+      structHeaderMap = IndexStructHeaders(headerInputs.capiDir, cfg.extraCapiDirs),
       structFieldDocs = metadata.structFieldDocs
     )
   }

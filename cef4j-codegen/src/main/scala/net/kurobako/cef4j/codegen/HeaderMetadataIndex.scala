@@ -23,17 +23,22 @@ object HeaderMetadataIndex {
   private val CppMethodRe         = """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r
   private val NonVirtualMethodRe  = """[\w:<>]+\s+(\w+)\s*\(""".r
   private val CamelCaseSplitRe    = """([a-z])([A-Z])""".r
+  private val DigitUpperSplitRe   = """([0-9])([A-Z])""".r
   private val StructTypedefNameRe = """typedef\s+struct\s+_(\w+)\s*\{""".r
 
-  def apply(cefIncludeDir: Path): HeaderMetadataIndex = {
-    val cppClassNames = parseCppClassNames(cefIncludeDir)
+  def apply(
+      cefIncludeDir: Path,
+      extraCppDirs: List[String] = Nil,
+      extraCapiDirs: List[String] = Nil
+  ): HeaderMetadataIndex = {
+    val cppClassNames = parseCppClassNames(cefIncludeDir, extraCppDirs)
     HeaderMetadataIndex(
-      handlerNames = parseHandlerAnnotations(cefIncludeDir),
-      docs = parseDocComments(cefIncludeDir),
-      cppTypeInfo = parseCppTypeInfo(cefIncludeDir),
+      handlerNames = parseHandlerAnnotations(cefIncludeDir, extraCppDirs),
+      docs = parseDocComments(cefIncludeDir, extraCppDirs),
+      cppTypeInfo = parseCppTypeInfo(cefIncludeDir, extraCppDirs),
       cppClassNames = cppClassNames,
       enumDocs = parseEnumDocs(cefIncludeDir),
-      classDocs = parseClassDocs(cefIncludeDir),
+      classDocs = parseClassDocs(cefIncludeDir, extraCppDirs, extraCapiDirs),
       structFieldDocs = parseStructFieldDocs(cefIncludeDir)
     )
   }
@@ -46,7 +51,7 @@ object HeaderMetadataIndex {
     }
 
     val typedefAliasRe = """typedef\s+(cef_\w+_t)\s+(\w+)\s*;""".r
-    val fromTypedefs   = (cppHeaders(cefIncludeDir) :+ cefIncludeDir.resolve("internal/cef_types_wrappers.h"))
+    val fromTypedefs   = (cppHeaders(cefIncludeDir, Nil) :+ cefIncludeDir.resolve("internal/cef_types_wrappers.h"))
       .filter(Files.exists(_))
       .flatMap { header =>
         val content = Files.readString(header)
@@ -62,12 +67,32 @@ object HeaderMetadataIndex {
     (fromClasses ++ fromTypedefs).toMap
   }
 
-  private def cppHeaders(dir: Path): List[Path] =
-    Files.list(dir).toScala(List)
-      .filter(p => p.toString.endsWith(".h") && !p.toString.contains("capi") && !p.toString.contains("internal"))
+  private def cppHeaders(dir: Path, extraCppDirs: List[String]): List[Path] =
+    publicHeaderDirs(dir, extraCppDirs)
+      .flatMap(headerDir =>
+        Files.list(headerDir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+      )
+      .sorted
 
-  private def parseHandlerAnnotations(cefIncludeDir: Path): Set[String] =
-    cppHeaders(cefIncludeDir).flatMap { header =>
+  private def capiHeaders(dir: Path, extraCapiDirs: List[String]): List[Path] =
+    publicCapiHeaderDirs(dir, extraCapiDirs)
+      .flatMap(headerDir =>
+        Files.list(headerDir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+      )
+      .sorted
+
+  private def publicHeaderDirs(cefIncludeDir: Path, extraCppDirs: List[String]): List[Path] =
+    (cefIncludeDir :: extraCppDirs.map(cefIncludeDir.resolve)).filter(Files.isDirectory(_))
+
+  private def publicCapiHeaderDirs(cefIncludeDir: Path, extraCapiDirs: List[String]): List[Path] =
+    (cefIncludeDir.resolve("capi") :: extraCapiDirs.map(subdir => cefIncludeDir.resolve("capi").resolve(subdir)))
+      .filter(Files.isDirectory(_))
+
+  private def relativeHeaderPath(baseDir: Path, header: Path): String =
+    baseDir.relativize(header).toString.replace('\\', '/')
+
+  private def parseHandlerAnnotations(cefIncludeDir: Path, extraCppDirs: List[String]): Set[String] =
+    cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val lines = Files.readString(header).linesIterator.toVector
       lines.zipWithIndex.collect {
         case (line, j) if line.contains("source=client") =>
@@ -79,9 +104,9 @@ object HeaderMetadataIndex {
       }.flatten
     }.toSet
 
-  private def parseDocComments(cefIncludeDir: Path): Map[String, String] = {
-    val entries = cppHeaders(cefIncludeDir).flatMap { header =>
-      val fileName = header.getFileName.toString
+  private def parseDocComments(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, String] = {
+    val entries = cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
+      val fileName = relativeHeaderPath(cefIncludeDir, header)
       val lines    = Files.readString(header).linesIterator.toVector
       extractDocComments(lines, fileName)
     }
@@ -94,11 +119,16 @@ object HeaderMetadataIndex {
     (entries ++ capiAliases).toMap
   }
 
-  private def parseClassDocs(cefIncludeDir: Path): Map[String, String] = {
+  private def parseClassDocs(
+      cefIncludeDir: Path,
+      extraCppDirs: List[String],
+      extraCapiDirs: List[String]
+  ): Map[String, String] = {
     val allHeaders = {
-      val topLevel = Files.list(cefIncludeDir).toScala(List).filter(_.toString.endsWith(".h"))
-      val capiDir  = cefIncludeDir.resolve("capi")
-      val capi = if (Files.exists(capiDir)) Files.list(capiDir).toScala(List).filter(_.toString.endsWith(".h")) else Nil
+      val topLevel = publicHeaderDirs(cefIncludeDir, extraCppDirs).flatMap(dir =>
+        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+      )
+      val capi        = capiHeaders(cefIncludeDir, extraCapiDirs)
       val internalDir = cefIncludeDir.resolve("internal")
       val internal    =
         if (Files.exists(internalDir)) Files.list(internalDir).toScala(List).filter(_.toString.endsWith(".h")) else Nil
@@ -107,24 +137,46 @@ object HeaderMetadataIndex {
 
     val cppDocs = allHeaders
       .filter(p => !p.toString.contains("capi") && !p.toString.contains("internal"))
-      .flatMap(h => extractClassDocs(Files.readString(h).linesIterator.toVector, h.getFileName.toString))
+      .flatMap(h => extractClassDocs(Files.readString(h).linesIterator.toVector, relativeHeaderPath(cefIncludeDir, h)))
 
     val structDocs = allHeaders
       .filter(p => p.toString.contains("capi") || p.toString.contains("internal"))
-      .flatMap(h => extractStructDocs(Files.readString(h).linesIterator.toVector, h.getFileName.toString))
+      .flatMap(h => extractStructDocs(Files.readString(h).linesIterator.toVector, relativeHeaderPath(cefIncludeDir, h)))
 
     (structDocs ++ cppDocs).toMap
   }
 
-  private def parseCppTypeInfo(cefIncludeDir: Path): Map[String, CppMethodTypeInfo] = {
+  private def parseCppTypeInfo(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, CppMethodTypeInfo] = {
     val cppMethodWithParamsRe = """virtual\s+([\w:<>]+)\s+(\w+)\s*\(([^)]*)\)""".r
 
-    cppHeaders(cefIncludeDir).flatMap { header =>
+    cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val content = Files.readString(header)
+      val lines   = content.linesIterator.toVector
+
+      // Track enclosing class by scanning brace depth
+      case class ClassState(depth: Int, cls: String, clsDepth: Int)
+      val classAtLine = lines
+        .scanLeft(ClassState(0, "", 0)) { (s, raw) =>
+          val line      = raw.trim
+          val (cls, cd) = CppClassDeclRe.findFirstMatchIn(line) match {
+            case Some(m) => (m.group(1), s.depth)
+            case None    => (s.cls, s.clsDepth)
+          }
+          val newDepth = s.depth + line.count(_ == '{') - line.count(_ == '}')
+          val finalCls = if (newDepth <= cd && cls.nonEmpty && !line.contains("{")) "" else cls
+          ClassState(newDepth, finalCls, cd)
+        }
+        .tail
+        .map(_.cls)
+
       cppMethodWithParamsRe.findAllMatchIn(content).flatMap { m =>
         val retType = m.group(1).trim
         val name    = m.group(2).trim
         val params  = m.group(3).trim
+
+        // Find line index of this match to determine enclosing class
+        val matchLine = content.substring(0, m.start).count(_ == '\n')
+        val cls       = if (matchLine < classAtLine.length) classAtLine(matchLine) else ""
 
         val paramTypes =
           if (params.isEmpty || params == "void") Map.empty[String, String]
@@ -138,7 +190,9 @@ object HeaderMetadataIndex {
             } else None
           }.toMap
 
-        Some(name -> CppMethodTypeInfo(retType, paramTypes))
+        val info = CppMethodTypeInfo(retType, paramTypes)
+        if (cls.nonEmpty) List(s"$cls::$name" -> info, name -> info)
+        else List(name                        -> info)
       }
     }.toMap
   }
@@ -235,8 +289,8 @@ object HeaderMetadataIndex {
     loop(startIdx, Map.empty, "", "")
   }
 
-  private def parseCppClassNames(cefIncludeDir: Path): Map[String, String] = {
-    val fromClasses = cppHeaders(cefIncludeDir).flatMap { header =>
+  private def parseCppClassNames(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, String] = {
+    val fromClasses = cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val content = Files.readString(header)
       CppClassDeclRe.findAllMatchIn(content).map { m =>
         val cppName  = m.group(1)
@@ -510,7 +564,7 @@ object HeaderMetadataIndex {
   }
 
   private def cppNameToCapiName(cppName: String): String =
-    s"${CamelCaseSplitRe.replaceAllIn(cppName, "$1_$2").toLowerCase}_t"
+    s"${DigitUpperSplitRe.replaceAllIn(CamelCaseSplitRe.replaceAllIn(cppName, "$1_$2"), "$1_$2").toLowerCase}_t"
 
   private def alignCompoundSegments(
       capiWords: List[String],

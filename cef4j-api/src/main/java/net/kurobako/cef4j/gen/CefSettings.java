@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
  * Initialization settings. Specify {@code null} or 0 to get the recommended default values. Many of these and other
  * settings can also configured using command-line switches.
  *
- * <p>Definition generated from cef_types.h
+ * <p>Definition generated from internal/cef_types.h
  *
  * <pre>typedef struct _cef_settings_t {
  *   size_t size;
@@ -44,7 +44,7 @@ import javax.annotation.processing.Generated;
  *   int use_views_default_popup;
  * } cef_settings_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:199</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:199</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefSettings {
@@ -462,9 +462,9 @@ public final class CefSettings {
      * Mutable variant of {@link CefSettings}. Initialization settings. Specify {@code null} or 0 to get the recommended
      * default values. Many of these and other settings can also configured using command-line switches.
      *
-     * <p>Definition generated from cef_types.h
+     * <p>Definition generated from internal/cef_types.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:199</a>
      */
     public static final class Mutable {
 

@@ -14,7 +14,8 @@ struct JniCefRequestContextHandler: public cef_request_context_handler_t {
 
     JniCefRequestContextHandler(JavaVM *vm, jobject handler) : cef_request_context_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefRequestContextHandler, cef_request_context_handler_t> (&base);
+        InitRefCount<JniCefRequestContextHandler, cef_request_context_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_request_context_handler_t*>(this)));
         on_request_context_initialized = &_on_request_context_initialized;
     }
 

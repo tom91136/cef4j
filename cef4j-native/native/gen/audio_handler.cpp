@@ -14,7 +14,7 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
 
     JniCefAudioHandler(JavaVM *vm, jobject handler) : cef_audio_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefAudioHandler, cef_audio_handler_t> (&base);
+        InitRefCount<JniCefAudioHandler, cef_audio_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_audio_handler_t*>(this)));
         get_audio_parameters = &_get_audio_parameters;
         on_audio_stream_started = &_on_audio_stream_started;
         on_audio_stream_packet = &_on_audio_stream_packet;

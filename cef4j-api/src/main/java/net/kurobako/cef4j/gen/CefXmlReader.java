@@ -75,7 +75,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * <pre>cef_xml_node_type_t (CEF_CALLBACK* get_type)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
+     * @return the result, or {@code XML_NODE_UNSUPPORTED} for default handling
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
      */
     CefXmlNodeType getType();
@@ -370,9 +370,8 @@ public interface CefXmlReader extends CefLibraryObject {
      */
     boolean moveToCarryingElement();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefXmlReader object. The returned object's methods can only be called from the thread that created
+     * the object.
      *
      * <p>Definition generated from cef_xml_reader_capi.h
      *
@@ -380,7 +379,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * CEF_EXPORT cef_xml_reader_t* cef_xml_reader_create(struct _cef_stream_reader_t* stream, cef_xml_encoding_type_t encodingType, const cef_string_t* URI);
      * </pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:55</a>
      */
     static Optional<CefXmlReader> create(
             @Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI) {
@@ -398,13 +397,13 @@ public interface CefXmlReader extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

@@ -22,7 +22,8 @@ struct JniCefRenderProcessHandler: public cef_render_process_handler_t {
 
     JniCefRenderProcessHandler(JavaVM *vm, jobject handler) : cef_render_process_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefRenderProcessHandler, cef_render_process_handler_t> (&base);
+        InitRefCount<JniCefRenderProcessHandler, cef_render_process_handler_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_render_process_handler_t*>(this)));
         on_web_kit_initialized = &_on_web_kit_initialized;
         on_browser_created = &_on_browser_created;
         on_browser_destroyed = &_on_browser_destroyed;

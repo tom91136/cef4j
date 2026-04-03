@@ -422,13 +422,17 @@ object CHeaderParser {
   def parseFreeExports(
       capiDir: Path,
       knownStructNames: Set[String],
-      dataStructNames: Set[String]
+      dataStructNames: Set[String],
+      extraCapiDirs: List[String] = Nil
   )(using Naming.Context): List[CefDecl.FreeFunction] = {
-    val capiHeaders = Files.list(capiDir).toScala(List)
-      .filter(p => p.toString.endsWith("_capi.h") && !p.toString.contains("test/"))
+    val capiHeaders = (capiDir :: extraCapiDirs.map(capiDir.resolve)).filter(Files.isDirectory(_))
+      .flatMap(dir =>
+        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
+      )
+      .sorted
 
     capiHeaders.flatMap { header =>
-      val headerName = header.getFileName.toString
+      val headerName = capiDir.relativize(header).toString.replace('\\', '/')
       val lines      = Files.readString(header).linesIterator.toVector
       parseFreeExportsFromFile(lines, headerName, knownStructNames, dataStructNames)
     }

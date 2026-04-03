@@ -74,13 +74,14 @@ public interface CefResourceBundle extends CefLibraryObject {
      */
     Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor);
     /**
-     * Returns the global object for this context. The context must be entered before calling this method.
+     * Returns the global resource bundle instance.
      *
      * <p>Definition generated from cef_resource_bundle_capi.h
      *
      * <pre>CEF_EXPORT cef_resource_bundle_t* cef_resource_bundle_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:56</a>
      */
     static Optional<CefResourceBundle> getGlobal() {
         return Optional.ofNullable(NativePeer.getGlobal0());
@@ -97,13 +98,13 @@ public interface CefResourceBundle extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

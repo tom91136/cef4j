@@ -14,7 +14,7 @@ struct JniCefUrlRequestClient: public cef_urlrequest_client_t {
 
     JniCefUrlRequestClient(JavaVM *vm, jobject handler) : cef_urlrequest_client_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefUrlRequestClient, cef_urlrequest_client_t> (&base);
+        InitRefCount<JniCefUrlRequestClient, cef_urlrequest_client_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_urlrequest_client_t*>(this)));
         on_request_complete = &_on_request_complete;
         on_upload_progress = &_on_upload_progress;
         on_download_progress = &_on_download_progress;

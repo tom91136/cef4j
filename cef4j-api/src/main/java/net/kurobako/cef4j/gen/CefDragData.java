@@ -337,15 +337,13 @@ public interface CefDragData extends CefLibraryObject {
      */
     boolean hasImage();
     /**
-     * Create a new backing store with allocated memory of {@code byte_length} bytes. The memory is uninitialized. This
-     * method must be called on a thread with a valid V8 isolate. The returned object can safely be passed to other
-     * threads. Returns {@code null} on failure.
+     * Create a new CefDragData object.
      *
      * <p>Definition generated from cef_drag_data_capi.h
      *
      * <pre>CEF_EXPORT cef_drag_data_t* cef_drag_data_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:54</a>
      */
     static Optional<CefDragData> create() {
         return Optional.ofNullable(NativePeer.create0());
@@ -362,13 +360,13 @@ public interface CefDragData extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

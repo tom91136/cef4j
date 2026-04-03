@@ -43,7 +43,9 @@ class CodeGenOutputSpec extends munit.FunSuite {
     val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct("cef_render_handler_t", Nil)
     val cpp                         = codegen.emitHandlerToString(decl)
     assert(
-      cpp.contains("InitRefCount<JniCefRenderHandler, cef_render_handler_t>(&base)"),
+      cpp.contains(
+        "InitRefCount<JniCefRenderHandler, cef_render_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_render_handler_t*>(this)))"
+      ),
       s"Expected InitRefCount call not found in:\n$cpp"
     )
     assert(
@@ -79,6 +81,10 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assertEquals(Naming.toCamelCase("is_valid"), "isValid")
     assertEquals(Naming.toCamelCase("go_back"), "goBack")
     assertEquals(Naming.toCamelCase("get_url"), "getUrl")
+  }
+
+  test("Pascal word splitting preserves V8 as a compound segment") {
+    assertEquals(Naming.splitPascalWords("CefV8BackingStore"), List("Cef", "V8", "Backing", "Store"))
   }
 
   test("Java NativePeer class delegates to native methods with self pointer") {
@@ -180,6 +186,24 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
   }
 
+  test("Doxygen URL for subdirectory header strips directory prefix") {
+    given DocComments.Context = DocComments.baseContext(146, 0)
+
+    val result = JavaCodeGen.renderClassDoc(
+      classDoc = "A scroll view.\n@_cefsrc:views/cef_scroll_view.h:10"
+    )
+
+    // Doxygen URLs use only the filename, not the directory path
+    assert(
+      result.contains("cef__scroll__view_8h.html"),
+      s"Expected filename-only Doxygen URL in:\n$result"
+    )
+    assert(
+      !result.contains("views_2"),
+      s"Doxygen URL should not contain directory prefix:\n$result"
+    )
+  }
+
   test("method doc cross references keep Javadoc links") {
     given namingContext: Naming.Context   = Naming.Context.empty
     given docContext: DocComments.Context = DocComments.Context(
@@ -204,6 +228,137 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(
       result.contains("{@link CefLifeSpanHandler#onBeforeClose(CefBrowser)}"),
       s"Expected method cross-reference link in:\n$result"
+    )
+  }
+
+  test("method doc lookup prefers owner-qualified capi_name matches over unqualified aliases") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map("cef_before_download_callback_t" -> "CefBeforeDownloadCallback"),
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen"
+    )
+    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+
+    val fn = FnPtr(
+      name = "cont",
+      ret = CType.Void,
+      params = List(Param("download_path", CType.JString), Param("show_dialog", CType.Int))
+    )
+    val docs = Map(
+      "CefBeforeDownloadCallback::Continue" ->
+        "Call to continue the download.\n/*--cef(capi_name=cont,optional_param=download_path)--*/\n@_cefsrc:cef_download_handler.h:51",
+      "CefCallback::Continue" ->
+        "Callback for asynchronous continuation of Read().\n/*--cef(capi_name=cont)--*/\n@_cefsrc:cef_resource_handler.h:70",
+      "cont" ->
+        "Callback for asynchronous continuation of Read().\n/*--cef(capi_name=cont)--*/\n@_cefsrc:cef_resource_handler.h:70"
+    )
+
+    val result = DocComments.forMethod(
+      fn = fn,
+      docs = docs,
+      capiSource = "cef_download_handler_capi.h",
+      cPrototype =
+        "void (CEF_CALLBACK* cont)(struct _cef_before_download_callback_t* self, const cef_string_t* download_path, int show_dialog);",
+      cefStructName = "cef_before_download_callback_t"
+    )
+
+    assert(result.contains("Call to continue the download."), s"Expected owner-qualified download doc in:\n$result")
+    assert(
+      result.contains("cef_download_handler.h:51"),
+      s"Expected owner-qualified source reference in:\n$result"
+    )
+    assert(!result.contains("continuation of Read()"), s"Unexpected collided cont() doc in:\n$result")
+  }
+
+  test("static free function docs prefer owner-qualified create over unrelated create") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map("cef_shared_process_message_builder_t" -> "CefSharedProcessMessageBuilder"),
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen"
+    )
+    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+
+    val tmpDir: java.nio.file.Path              = java.nio.file.Files.createTempDirectory("cef4j-doc-test")
+    val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_shared_process_message_builder_t", Nil)
+    val freeMethods: List[CefDecl.FreeFunction] = List(
+      CefDecl.FreeFunction(
+        cName = "cef_shared_process_message_builder_create",
+        ret = CType.ObjectPtr("cef_shared_process_message_builder_t"),
+        params = List(Param("name", CType.JString), Param("byte_size", CType.SizeT)),
+        ownerStruct = "cef_shared_process_message_builder_t",
+        javaMethodName = "create",
+        sourceHeader = "cef_shared_process_message_builder_capi.h"
+      )
+    )
+    val docs = Map(
+      "CefSharedProcessMessageBuilder::Create" ->
+        "Creates a new CefSharedProcessMessageBuilder with the specified |name|.\n@_cefsrc:cef_shared_process_message_builder.h:51",
+      "CefZipReader::Create" ->
+        "Create a new CefZipReader object.\n@_cefsrc:cef_zip_reader.h:51",
+      "Create" ->
+        "Create a new CefZipReader object.\n@_cefsrc:cef_zip_reader.h:51"
+    )
+
+    JavaInterfaceCodeGen.emitObject(objectDecl, tmpDir, docs = docs, freeFunctions = freeMethods)
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefSharedProcessMessageBuilder.java"))
+
+    assert(
+      javaCode.contains("Creates a new CefSharedProcessMessageBuilder"),
+      s"Expected owner-qualified create() doc in:\n$javaCode"
+    )
+    assert(
+      javaCode.contains("cef_shared_process_message_builder.h:51"),
+      s"Expected correct create() source reference in:\n$javaCode"
+    )
+    assert(
+      !javaCode.contains("Create a new CefZipReader object."),
+      s"Unexpected collided create() doc in:\n$javaCode"
+    )
+  }
+
+  test("free function docs prefer owner-qualified create variants over generic create docs") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map("cef_scroll_view_t" -> "CefScrollView"),
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen"
+    )
+    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+
+    val tmpDir: java.nio.file.Path              = java.nio.file.Files.createTempDirectory("cef4j-doc-test")
+    val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_scroll_view_t", Nil)
+    val freeMethods: List[CefDecl.FreeFunction] = List(
+      CefDecl.FreeFunction(
+        cName = "cef_scroll_view_create",
+        ret = CType.ObjectPtr("cef_scroll_view_t"),
+        params = List(Param("delegate", CType.ObjectPtr("cef_view_delegate_t"))),
+        ownerStruct = "cef_scroll_view_t",
+        javaMethodName = "create",
+        sourceHeader = "views/cef_scroll_view_capi.h"
+      )
+    )
+    val docs = Map(
+      "CefScrollView::CreateScrollView" ->
+        "Create a new ScrollView.\n/*--cef(optional_param=delegate)--*/\n@_cefsrc:views/cef_scroll_view.h:49",
+      "CefZipReader::Create" ->
+        "Create a new CefZipReader object.\n@_cefsrc:cef_zip_reader.h:51",
+      "Create" ->
+        "Create a new CefZipReader object.\n@_cefsrc:cef_zip_reader.h:51"
+    )
+
+    JavaInterfaceCodeGen.emitObject(objectDecl, tmpDir, docs = docs, freeFunctions = freeMethods)
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefScrollView.java"))
+
+    assert(
+      javaCode.contains("Create a new ScrollView."),
+      s"Expected owner-qualified ScrollView create() doc in:\n$javaCode"
+    )
+    assert(
+      javaCode.contains("views/cef_scroll_view.h:49"),
+      s"Expected correct ScrollView create() source reference in:\n$javaCode"
+    )
+    assert(
+      !javaCode.contains("Create a new CefZipReader object."),
+      s"Unexpected collided create() doc in:\n$javaCode"
     )
   }
 
@@ -400,6 +555,159 @@ class CodeGenOutputSpec extends munit.FunSuite {
     val cpp                         = codegen.emitHandlerToString(decl)
     assert(cpp.contains("Create_JniCefClient"), s"Missing C-linkage factory in:\n$cpp")
     assert(cpp.contains("cef_client_t* Create_JniCefClient"), s"Missing return type in:\n$cpp")
+  }
+
+  test("C int return recovered to bool produces boolean Java method and correct JNI marshalling") {
+    // Simulate a handler where C API uses int but C++ uses bool (e.g. getLocalizedString)
+    val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_resource_bundle_handler_t",
+      List(
+        FnPtr(
+          "get_localized_string",
+          CType.Bool, // recovered from CType.Int via CppMethodTypeInfo
+          List(
+            Param("string_id", CType.Int),
+            Param("string", CType.JString)
+          )
+        )
+      )
+    )
+
+    // Verify Java interface emits boolean return type
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+    val tmpDir                            = java.nio.file.Files.createTempDirectory("codegen-test")
+    JavaInterfaceCodeGen.emitHandler(handlerDecl, tmpDir)
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceBundleHandler.java"))
+    assert(
+      javaCode.contains("default boolean getLocalizedString("),
+      s"Expected boolean return type in Java interface:\n$javaCode"
+    )
+
+    // Verify handler trampoline calls CallBooleanMethod and uses Z signature
+    val cpp = codegen.emitHandlerToString(handlerDecl)
+    assert(cpp.contains("CallBooleanMethod"), s"Expected CallBooleanMethod in trampoline:\n$cpp")
+    assert(
+      cpp.contains("\"Z\"") || cpp.contains("Z)") || cpp.contains(")Z\""),
+      s"Expected Z (boolean) in JNI signature:\n$cpp"
+    )
+    // The C callback returns int, jboolean implicitly promotes
+    assert(cpp.contains("return jResult;"), s"Expected direct return of jboolean result:\n$cpp")
+
+    // Also verify an ObjectStruct with Bool return works on the NativePeer JNI side
+    val objectDecl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_window_t",
+      List(FnPtr("is_closed", CType.Bool, Nil))
+    )
+    val nativeCpp = codegen.emitToString(objectDecl)
+    assert(
+      nativeCpp.contains("static_cast<jboolean>"),
+      s"Expected static_cast<jboolean> in NativePeer for Bool return:\n$nativeCpp"
+    )
+  }
+
+  test("type recovery promotes C int to Bool when C++ header says bool") {
+    val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_resource_bundle_handler_t",
+      List(
+        FnPtr(
+          "get_localized_string",
+          CType.Int, // C API type - should be recovered to Bool
+          List(Param("string_id", CType.Int), Param("string", CType.JString))
+        )
+      )
+    )
+    val cppTypeInfo = Map(
+      "CefResourceBundleHandler::GetLocalizedString" -> CppMethodTypeInfo(
+        "bool",
+        Map("string_id" -> "int", "string" -> "CefString&")
+      ),
+      "GetLocalizedString" -> CppMethodTypeInfo("bool", Map("string_id" -> "int", "string" -> "CefString&"))
+    )
+    val parsed = ParsedTree(
+      decls = List(handlerDecl),
+      structDecls = List(handlerDecl),
+      freeFunctions = Nil,
+      knownStructNames = Set("cef_resource_bundle_handler_t")
+    )
+    val namingCtx = Naming.Context.fromCppClassNames(
+      Map("cef_resource_bundle_handler_t" -> "CefResourceBundleHandler"),
+      Map.empty,
+      "net.kurobako.cef4j.gen"
+    )
+    val parseState = ParseState(
+      namingContext = namingCtx,
+      docContext = DocComments.Context.empty,
+      handlerNames = Set.empty,
+      docs = Map.empty,
+      cppTypeInfo = cppTypeInfo,
+      enumDocs = Map.empty,
+      classDocs = Map.empty,
+      structHeaderMap = Map.empty,
+      structFieldDocs = Map.empty
+    )
+    val refined     = passes.RefineTree(parsed, parseState)
+    val recoveredFn = refined.decls.head match {
+      case h: CefDecl.HandlerStruct => h.fns.head
+      case _                        => fail("Expected HandlerStruct")
+    }
+    assertEquals(recoveredFn.ret, CType.Bool, "Return type should be recovered from Int to Bool")
+  }
+
+  test("type recovery uses class-qualified lookup to avoid cross-class collisions") {
+    // Two classes have SetVisible with different return types
+    val menuModelDecl = CefDecl.ObjectStruct(
+      "cef_menu_model_t",
+      List(FnPtr("set_visible", CType.Int, List(Param("command_id", CType.Int), Param("visible", CType.Int))))
+    )
+    val viewDecl = CefDecl.ObjectStruct(
+      "cef_view_t",
+      List(FnPtr("set_visible", CType.Int, List(Param("visible", CType.Int))))
+    )
+    // CefMenuModel::SetVisible returns bool, CefView::SetVisible returns void
+    // Without qualified lookup, last-writer-wins would make one of them wrong
+    val cppTypeInfo = Map(
+      "CefMenuModel::SetVisible" -> CppMethodTypeInfo("bool", Map("command_id" -> "int", "visible" -> "bool")),
+      "CefView::SetVisible"      -> CppMethodTypeInfo("void", Map("visible" -> "bool")),
+      "SetVisible"               -> CppMethodTypeInfo("void", Map("visible" -> "bool")) // last-writer-wins = void
+    )
+    val parsed = ParsedTree(
+      decls = List(menuModelDecl, viewDecl),
+      structDecls = List(menuModelDecl, viewDecl),
+      freeFunctions = Nil,
+      knownStructNames = Set("cef_menu_model_t", "cef_view_t")
+    )
+    val namingCtx = Naming.Context.fromCppClassNames(
+      Map("cef_menu_model_t" -> "CefMenuModel", "cef_view_t" -> "CefView"),
+      Map.empty,
+      "net.kurobako.cef4j.gen"
+    )
+    val parseState = ParseState(
+      namingContext = namingCtx,
+      docContext = DocComments.Context.empty,
+      handlerNames = Set.empty,
+      docs = Map.empty,
+      cppTypeInfo = cppTypeInfo,
+      enumDocs = Map.empty,
+      classDocs = Map.empty,
+      structHeaderMap = Map.empty,
+      structFieldDocs = Map.empty
+    )
+    val refined = passes.RefineTree(parsed, parseState)
+
+    // CefMenuModel::setVisible should be Bool (from qualified lookup), not Int (from unqualified void)
+    val menuModelFn = refined.decls.head match {
+      case o: CefDecl.ObjectStruct => o.fns.head
+      case _                       => fail("Expected ObjectStruct for menu model")
+    }
+    assertEquals(menuModelFn.ret, CType.Bool, "CefMenuModel.setVisible should recover to Bool via qualified lookup")
+
+    // CefView::setVisible should stay Int (void doesn't promote)
+    val viewFn = refined.decls(1) match {
+      case o: CefDecl.ObjectStruct => o.fns.head
+      case _                       => fail("Expected ObjectStruct for view")
+    }
+    assertEquals(viewFn.ret, CType.Int, "CefView.setVisible should stay Int (C++ returns void, no promotion)")
   }
 
   test("NativePeer emits @Nullable on non-optional String params (not strict-null-check)") {

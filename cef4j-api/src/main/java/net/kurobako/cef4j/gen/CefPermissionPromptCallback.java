@@ -22,9 +22,7 @@ import javax.annotation.processing.Generated;
 public interface CefPermissionPromptCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Complete the permissions request with the specified {@code result}.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *
@@ -33,7 +31,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
      * </pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
      */
     void cont(@Nonnull CefPermissionRequestResult result);
 
@@ -48,13 +46,13 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

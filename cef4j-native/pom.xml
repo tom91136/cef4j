@@ -86,6 +86,8 @@
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
                             </arguments>
                         </configuration>
                     </execution>

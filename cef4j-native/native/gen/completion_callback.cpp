@@ -13,7 +13,8 @@ struct JniCefCompletionCallback: public cef_completion_callback_t {
 
     JniCefCompletionCallback(JavaVM *vm, jobject handler) : cef_completion_callback_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefCompletionCallback, cef_completion_callback_t> (&base);
+        InitRefCount<JniCefCompletionCallback, cef_completion_callback_t>(
+                reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_completion_callback_t*>(this)));
         on_complete = &_on_complete;
     }
 

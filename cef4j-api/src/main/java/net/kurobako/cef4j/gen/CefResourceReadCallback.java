@@ -22,16 +22,17 @@ import javax.annotation.processing.Generated;
 public interface CefResourceReadCallback extends CefLibraryObject {
 
     /**
-     * Call to continue the download. Set {@code download_path} to the full file path for the download including the
-     * file name or leave blank to use the suggested name and the default temp directory. Set {@code show_dialog} to
-     * {@code true} if you do wish to show the default "Save As" dialog.
+     * Callback for asynchronous continuation of Read(). If {@code bytes_read} == 0 the response will be considered
+     * complete. If {@code bytes_read} > 0 then Read() will be called again until the request is complete (based on
+     * either the result or the expected content length). If {@code bytes_read} &lt; 0 then the request will fail and
+     * the {@code bytes_read} value will be treated as the error code.
      *
      * <p>Definition generated from cef_resource_handler_capi.h
      *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_resource_read_callback_t* self, int bytes_read);</pre>
      *
      * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:70</a>
      */
     void cont(int bytesRead);
 
@@ -46,13 +47,13 @@ public interface CefResourceReadCallback extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

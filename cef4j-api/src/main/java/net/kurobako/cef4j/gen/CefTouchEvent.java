@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 /**
  * Structure representing touch event information.
  *
- * <p>Definition generated from cef_types.h
+ * <p>Definition generated from internal/cef_types.h
  *
  * <pre>typedef struct _cef_touch_event_t {
  *   int id;
@@ -22,7 +22,7 @@ import javax.annotation.processing.Generated;
  *   cef_pointer_type_t pointer_type;
  * } cef_touch_event_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:2096</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:2096</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefTouchEvent {
@@ -126,9 +126,9 @@ public final class CefTouchEvent {
     /**
      * Mutable variant of {@link CefTouchEvent}. Structure representing touch event information.
      *
-     * <p>Definition generated from cef_types.h
+     * <p>Definition generated from internal/cef_types.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h:2096</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:2096</a>
      */
     public static final class Mutable {
 

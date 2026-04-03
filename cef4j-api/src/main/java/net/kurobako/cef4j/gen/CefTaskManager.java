@@ -93,17 +93,13 @@ public interface CefTaskManager extends CefLibraryObject {
      */
     long getTaskIdForBrowserId(int browserId);
     /**
-     * Handle retrieval of the interceptor value identified by {@code index}. {@code object} is the receiver ('this'
-     * object) of the interceptor. If retrieval succeeds, set {@code retval} to the return value. If the requested value
-     * does not exist, don't set either {@code retval} or {@code exception}. If retrieval fails, set {@code exception}
-     * to the exception that will be thrown. Return {@code true} if interceptor retrieval was handled, {@code false}
-     * otherwise.
+     * Returns the global task manager object. Returns {@code null} if the method was called from the incorrect thread.
      *
      * <p>Definition generated from cef_task_manager_capi.h
      *
      * <pre>CEF_EXPORT cef_task_manager_t* cef_task_manager_get(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:55</a>
      */
     static Optional<CefTaskManager> get() {
         return Optional.ofNullable(NativePeer.get0());
@@ -120,13 +116,13 @@ public interface CefTaskManager extends CefLibraryObject {
         }
 
         @Override
-        public void close() {
+        public void peerClose() {
             closed = true;
             cleanable.clean();
         }
 
         @Override
-        public boolean isClosed() {
+        public boolean peerIsClosed() {
             return closed;
         }
 

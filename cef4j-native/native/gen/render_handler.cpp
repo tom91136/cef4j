@@ -19,7 +19,7 @@ struct JniCefRenderHandler: public cef_render_handler_t {
 
     JniCefRenderHandler(JavaVM *vm, jobject handler) : cef_render_handler_t { }, jvm(vm) {
         javaHandler = handler;
-        InitRefCount<JniCefRenderHandler, cef_render_handler_t> (&base);
+        InitRefCount<JniCefRenderHandler, cef_render_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_render_handler_t*>(this)));
         get_accessibility_handler = &_get_accessibility_handler;
         get_root_screen_rect = &_get_root_screen_rect;
         get_view_rect = &_get_view_rect;

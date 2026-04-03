@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 /**
  * Class representing window information.
  *
- * <p>Definition generated from cef_types_linux.h
+ * <p>Definition generated from internal/cef_types_linux.h
  *
  * <pre>typedef struct _cef_window_info_t {
  *   size_t size;
@@ -21,7 +21,8 @@ import javax.annotation.processing.Generated;
  *   cef_runtime_style_t runtime_style;
  * } cef_window_info_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:85</a>
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:85</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefWindowInfo {
@@ -141,9 +142,10 @@ public final class CefWindowInfo {
     /**
      * Mutable variant of {@link CefWindowInfo}. Class representing window information.
      *
-     * <p>Definition generated from cef_types_linux.h
+     * <p>Definition generated from internal/cef_types_linux.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:85</a>
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:85</a>
      */
     public static final class Mutable {
 

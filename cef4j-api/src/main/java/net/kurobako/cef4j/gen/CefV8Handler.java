@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Structure that should be implemented to handle V8 function calls. The functions of this structure will be called on
- * the thread associated with the V8 function. NOTE: This struct is allocated client-side.
+ * Interface that should be implemented to handle V8 function calls. The methods of this class will be called on the
+ * thread associated with the V8 function.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -17,10 +17,10 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_v8_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:167</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:226</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
-public interface CefV8Handler extends CefLibraryObject {
+public interface CefV8Handler extends CefClientHandler {
 
     /**
      * Handle execution of the function identified by {@code name}. {@code object} is the receiver ('this' object) of
@@ -36,94 +36,13 @@ public interface CefV8Handler extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:234</a>
      */
-    boolean execute(
+    default boolean execute(
             @Nullable String name,
             @Nullable CefV8Value object,
             long argumentsCount,
             @Nullable CefV8Value[] arguments,
             @Nullable AtomicReference<CefV8Value> retval,
-            @Nullable String exception);
-
-    final class NativePeer implements CefV8Handler, AutoCloseable {
-        private final long nativePtr;
-        private final java.lang.ref.Cleaner.Cleanable cleanable;
-        private volatile boolean closed;
-
-        NativePeer(long ptr) {
-            this.nativePtr = ptr;
-            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
-        }
-
-        @Override
-        public void close() {
-            closed = true;
-            cleanable.clean();
-        }
-
-        @Override
-        public boolean isClosed() {
-            return closed;
-        }
-
-        private void checkNotClosed() {
-            if (closed) throw new IllegalStateException("CefV8Handler has been closed");
-        }
-
-        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger(CefV8Handler.class);
-
-        private static class Release implements Runnable {
-            private final long ptr;
-
-            Release(long ptr) {
-                this.ptr = ptr;
-            }
-
-            @Override
-            public void run() {
-                if (_log.isTraceEnabled()) _log.trace("release CefV8Handler 0x{}", Long.toHexString(ptr));
-                release0(ptr);
-            }
-        }
-
-        private static native void release0(long ptr);
-
-        @Override
-        public boolean execute(
-                @Nullable String name,
-                @Nullable CefV8Value object,
-                long argumentsCount,
-                @Nullable CefV8Value[] arguments,
-                @Nullable AtomicReference<CefV8Value> retval,
-                @Nullable String exception) {
-            checkNotClosed();
-            CefLibraryObject.requireOpen(object, "CefV8Value");
-            return execute0(nativePtr, name, object, argumentsCount, arguments, retval, exception);
-        }
-
-        private static native boolean execute0(
-                long self,
-                String name,
-                CefV8Value object,
-                long argumentsCount,
-                CefV8Value[] arguments,
-                AtomicReference<CefV8Value> retval,
-                String exception);
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof NativePeer)) return false;
-            return this.nativePtr == ((NativePeer) obj).nativePtr;
-        }
-
-        @Override
-        public int hashCode() {
-            return Long.hashCode(nativePtr);
-        }
-
-        @Override
-        public String toString() {
-            return "CefV8Handler{0x" + Long.toHexString(nativePtr) + "}";
-        }
+            @Nullable String exception) {
+        return false;
     }
 }
