@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  * <ol>
  *   <li>Try {@code System.loadLibrary("cef4j")} (honors {@code java.library.path} and {@code LD_LIBRARY_PATH})
- *   <li>If that fails, extract {@code libcef4j.so} and {@code cef4j_helper} from classpath resources to a temporary
+ *   <li>If that fails, extract {@code libcef4j.so} and {@code cef4j_launcher} from classpath resources to a temporary
  *       directory, symlink CEF shared libraries from {@code LIBCEF_DIR} into it, and load from there
  * </ol>
  *
@@ -136,21 +136,21 @@ public final class SystemBootstrap {
     }
 
     /**
-     * Returns the path to the cef4j_helper executable. Prefers the extraction directory, falls back to LIBCEF_DIR, then
-     * null.
+     * Returns the path to the cef4j_launcher executable. Prefers the extraction directory, falls back to LIBCEF_DIR,
+     * then null.
      */
     public static String getHelperPath() {
         if (extractionDir != null) {
-            Path helper = extractionDir.resolve("cef4j_helper");
-            if (Files.isExecutable(helper)) {
-                return helper.toAbsolutePath().toString();
+            Path launcher = extractionDir.resolve("cef4j_launcher");
+            if (Files.isExecutable(launcher)) {
+                return launcher.toAbsolutePath().toString();
             }
         }
         Path libcefDir = getLibcefDir();
         if (libcefDir != null) {
-            Path helper = libcefDir.resolve("cef4j_helper");
-            if (Files.isExecutable(helper)) {
-                return helper.toAbsolutePath().toString();
+            Path launcher = libcefDir.resolve("cef4j_launcher");
+            if (Files.isExecutable(launcher)) {
+                return launcher.toAbsolutePath().toString();
             }
         }
         return null;
@@ -167,11 +167,11 @@ public final class SystemBootstrap {
         log.debug("Extraction cache dir: {}", cacheDir);
         Files.createDirectories(cacheDir);
 
-        // Extract libcef4j.so and cef4j_helper from cef4j-java jar resources
+        // Extract libcef4j.so and cef4j_launcher from cef4j-java jar resources
         extractResource(resourceBase + libName, cacheDir.resolve(libName));
-        Path helper = cacheDir.resolve(OS.isWindows() ? "cef4j_helper.exe" : "cef4j_helper");
-        extractResource(resourceBase + helper.getFileName().toString(), helper);
-        helper.toFile().setExecutable(true);
+        Path launcher = cacheDir.resolve(OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher");
+        extractResource(resourceBase + launcher.getFileName().toString(), launcher);
+        launcher.toFile().setExecutable(true);
 
         if (isPlatformJarAvailable()) {
             log.debug("CEF runtime found in platform jar, extracting");
@@ -247,7 +247,7 @@ public final class SystemBootstrap {
             symlinkIfNeeded(libcefDir.resolve(lib), cacheDir.resolve(lib));
         }
 
-        // Also symlink resources into cache dir for subprocess helper (cef4j_helper)
+        // Also symlink resources into cache dir for subprocess launcher (cef4j_launcher)
         for (String res : new String[] {
             "icudtl.dat",
             "resources.pak",

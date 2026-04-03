@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Supports discovery of and communication with media devices on the local network via the Cast and DIAL protocols. The
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:54</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMediaRouter extends CefLibraryObject {
 
     /**
@@ -100,7 +103,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     static Optional<CefMediaRouter> getGlobal(@Nullable CefCompletionCallback callback) {
-        return Optional.ofNullable(NativePeer.N_GetGlobal(callback));
+        return Optional.ofNullable(NativePeer.getGlobal0(callback));
     }
 
     final class NativePeer implements CefMediaRouter, AutoCloseable {
@@ -140,28 +143,28 @@ public interface CefMediaRouter extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMediaRouter 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefRegistration> addObserver(@Nullable CefMediaObserver observer) {
             checkNotClosed();
-            return Optional.ofNullable(N_AddObserver(nativePtr, observer));
+            return Optional.ofNullable(addObserver0(nativePtr, observer));
         }
 
         @Override
         public Optional<CefMediaSource> getSource(@Nullable String urn) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSource(nativePtr, urn));
+            return Optional.ofNullable(getSource0(nativePtr, urn));
         }
 
         @Override
         public void notifyCurrentSinks() {
             checkNotClosed();
-            N_NotifyCurrentSinks(nativePtr);
+            notifyCurrentSinks0(nativePtr);
         }
 
         @Override
@@ -172,27 +175,27 @@ public interface CefMediaRouter extends CefLibraryObject {
             checkNotClosed();
             CefLibraryObject.requireOpen(source, "CefMediaSource");
             CefLibraryObject.requireOpen(sink, "CefMediaSink");
-            N_CreateRoute(nativePtr, source, sink, callback);
+            createRoute0(nativePtr, source, sink, callback);
         }
 
         @Override
         public void notifyCurrentRoutes() {
             checkNotClosed();
-            N_NotifyCurrentRoutes(nativePtr);
+            notifyCurrentRoutes0(nativePtr);
         }
 
-        private static native CefRegistration N_AddObserver(long self, CefMediaObserver observer);
+        private static native CefRegistration addObserver0(long self, CefMediaObserver observer);
 
-        private static native CefMediaSource N_GetSource(long self, String urn);
+        private static native CefMediaSource getSource0(long self, String urn);
 
-        private static native void N_NotifyCurrentSinks(long self);
+        private static native void notifyCurrentSinks0(long self);
 
-        private static native void N_CreateRoute(
+        private static native void createRoute0(
                 long self, CefMediaSource source, CefMediaSink sink, CefMediaRouteCreateCallback callback);
 
-        private static native void N_NotifyCurrentRoutes(long self);
+        private static native void notifyCurrentRoutes0(long self);
 
-        static native CefMediaRouter N_GetGlobal(CefCompletionCallback callback);
+        static native CefMediaRouter getGlobal0(CefCompletionCallback callback);
 
         @Override
         public boolean equals(Object obj) {

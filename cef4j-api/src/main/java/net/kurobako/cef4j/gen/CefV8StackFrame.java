@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 stack frame handle. V8 handles can only be accessed from the thread on which they are
@@ -18,6 +20,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:1008</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8StackFrame extends CefLibraryObject {
 
     /**
@@ -149,75 +152,75 @@ public interface CefV8StackFrame extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8StackFrame 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public Optional<String> getScriptName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetScriptName(nativePtr));
+            return Optional.ofNullable(getScriptName0(nativePtr));
         }
 
         @Override
         public Optional<String> getScriptNameOrSourceUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetScriptNameOrSourceUrl(nativePtr));
+            return Optional.ofNullable(getScriptNameOrSourceUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getFunctionName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFunctionName(nativePtr));
+            return Optional.ofNullable(getFunctionName0(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
             checkNotClosed();
-            return N_GetLineNumber(nativePtr);
+            return getLineNumber0(nativePtr);
         }
 
         @Override
         public int getColumn() {
             checkNotClosed();
-            return N_GetColumn(nativePtr);
+            return getColumn0(nativePtr);
         }
 
         @Override
         public boolean isEval() {
             checkNotClosed();
-            return N_IsEval(nativePtr);
+            return isEval0(nativePtr);
         }
 
         @Override
         public boolean isConstructor() {
             checkNotClosed();
-            return N_IsConstructor(nativePtr);
+            return isConstructor0(nativePtr);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native String N_GetScriptName(long self);
+        private static native String getScriptName0(long self);
 
-        private static native String N_GetScriptNameOrSourceUrl(long self);
+        private static native String getScriptNameOrSourceUrl0(long self);
 
-        private static native String N_GetFunctionName(long self);
+        private static native String getFunctionName0(long self);
 
-        private static native int N_GetLineNumber(long self);
+        private static native int getLineNumber0(long self);
 
-        private static native int N_GetColumn(long self);
+        private static native int getColumn0(long self);
 
-        private static native boolean N_IsEval(long self);
+        private static native boolean isEval0(long self);
 
-        private static native boolean N_IsConstructor(long self);
+        private static native boolean isConstructor0(long self);
 
         @Override
         public boolean equals(Object obj) {

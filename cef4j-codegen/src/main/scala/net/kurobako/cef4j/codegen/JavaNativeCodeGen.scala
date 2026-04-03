@@ -20,7 +20,7 @@ object JavaNativeCodeGen {
   )(using Naming.Context): String = {
     val overrides = fns.map { fn =>
       val methodName = Naming.javaMethodName(fn)
-      val nativeName = s"N_${Naming.javaPascalName(fn)}"
+      val nativeName = Naming.nativeMethodName(fn)
       val shape      = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs)
       val allArgs    = if (shape.argsExpr.isEmpty) "nativePtr" else s"nativePtr, ${shape.argsExpr}"
       val body       = JavaMethods.renderCallBody(s"$nativeName($allArgs)", shape)
@@ -41,7 +41,7 @@ $argChecksBlock            $body
     }.mkString("\n\n")
 
     val nativeDecls = fns.map { fn =>
-      val nativeName   = s"N_${Naming.javaPascalName(fn)}"
+      val nativeName   = Naming.nativeMethodName(fn)
       val shape        = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs)
       val nativeParams = ("long self" :: Option.when(shape.nativeParamsDecl.nonEmpty)(shape.nativeParamsDecl).toList)
         .mkString(", ")
@@ -85,11 +85,11 @@ $argChecksBlock            $body
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release $javaName 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
 $overrides
 

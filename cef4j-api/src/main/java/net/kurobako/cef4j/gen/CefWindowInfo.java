@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing window information.
@@ -20,6 +23,7 @@ package net.kurobako.cef4j.gen;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">cef_types_linux.h:85</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefWindowInfo {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.

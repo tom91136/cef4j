@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that manages custom scheme registrations.
@@ -15,6 +17,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:79</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefSchemeRegistrar extends CefLibraryObject {
 
     /**
@@ -73,19 +76,19 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefSchemeRegistrar 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean addCustomScheme(@Nullable String schemeName, int options) {
             checkNotClosed();
-            return N_AddCustomScheme(nativePtr, schemeName, options);
+            return addCustomScheme0(nativePtr, schemeName, options);
         }
 
-        private static native boolean N_AddCustomScheme(long self, String schemeName, int options);
+        private static native boolean addCustomScheme0(long self, String schemeName, int options);
 
         @Override
         public boolean equals(Object obj) {

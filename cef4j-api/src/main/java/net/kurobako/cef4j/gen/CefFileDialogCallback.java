@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Callback interface for asynchronous continuation of file dialog requests.
@@ -16,6 +18,7 @@ import javax.annotation.Nonnull;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefFileDialogCallback extends CefLibraryObject {
 
     /**
@@ -81,27 +84,27 @@ public interface CefFileDialogCallback extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefFileDialogCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void cont(@Nonnull List<String> filePaths) {
             checkNotClosed();
-            N_Cont(nativePtr, filePaths);
+            cont0(nativePtr, filePaths);
         }
 
         @Override
         public void cancel() {
             checkNotClosed();
-            N_Cancel(nativePtr);
+            cancel0(nativePtr);
         }
 
-        private static native void N_Cont(long self, List<String> filePaths);
+        private static native void cont0(long self, List<String> filePaths);
 
-        private static native void N_Cancel(long self);
+        private static native void cancel0(long self);
 
         @Override
         public boolean equals(Object obj) {

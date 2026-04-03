@@ -1,29 +1,29 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_values_capi.h"
 #include "include/capi/cef_parser_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBinaryValue), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1IsOwned(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isOwned0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_owned(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _that_ptr = that ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -32,7 +32,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1IsEqual(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isEqual0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _that_ptr = that ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -41,7 +41,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1Copy(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), copy0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return nullptr;
     auto _r = s->copy(s);
@@ -51,7 +51,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1GetRawData(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), getRawData0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_raw_data(s);
@@ -60,13 +60,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1GetSize(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBinaryValue), getSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_size(s));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1GetData(JNIEnv* env, jobject obj, jlong self, jobject buffer, jlong data_offset) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBinaryValue), getData0)(JNIEnv* env, jobject obj, jlong self, jobject buffer, jlong data_offset) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return 0;
     if (!buffer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0;}
@@ -75,7 +75,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00
     return static_cast<jlong>(s->get_data(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)), data_offset));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jobject data) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), create0)(JNIEnv* env, jclass clz, jobject data) {
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
     if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
@@ -86,7 +86,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefBinaryValue_00024NativePeer_N_1Base64Decode(JNIEnv* env, jclass clz, jstring data) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), base64Decode0)(JNIEnv* env, jclass clz, jstring data) {
     auto _data_str = JStringToCefString(env, data);
     auto _r = cef_base64_decode(_data_str);
     if (_data_str) cef_string_userfree_free(_data_str);

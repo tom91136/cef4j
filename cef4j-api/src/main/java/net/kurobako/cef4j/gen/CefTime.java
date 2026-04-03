@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Time information. Values should always be in UTC.
@@ -19,6 +22,7 @@ package net.kurobako.cef4j.gen;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">cef_time.h:57</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefTime {
 
     /** Four or five digit year "2007" (1601 to 30827 on Windows, 1970 to 2038 on 32-bit POSIX) */

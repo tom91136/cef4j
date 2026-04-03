@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_v8_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefV8Interceptor), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_00024NativePeer_N_1GetByname(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject retval, jstring exception) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Interceptor), getByname0)(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject retval, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_interceptor_t*>(self);
     if (!s) return 0;
     auto _name_str = JStringToCefString(env, name);
@@ -24,7 +24,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_0
     return static_cast<jint>(s->get_byname(s, _name_str, _object_ptr, &_retval_ptr, _exception_str));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_00024NativePeer_N_1GetByindex(JNIEnv* env, jobject obj, jlong self, jint index, jobject object, jobject retval, jstring exception) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Interceptor), getByindex0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject object, jobject retval, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_interceptor_t*>(self);
     if (!s) return 0;
     cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;
@@ -39,7 +39,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_0
     return static_cast<jint>(s->get_byindex(s, index, _object_ptr, &_retval_ptr, _exception_str));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_00024NativePeer_N_1SetByname(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject value, jstring exception) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Interceptor), setByname0)(JNIEnv* env, jobject obj, jlong self, jstring name, jobject object, jobject value, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_interceptor_t*>(self);
     if (!s) return 0;
     auto _name_str = JStringToCefString(env, name);
@@ -51,7 +51,7 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_0
     return static_cast<jint>(s->set_byname(s, _name_str, _object_ptr, _value_ptr, _exception_str));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefV8Interceptor_00024NativePeer_N_1SetByindex(JNIEnv* env, jobject obj, jlong self, jint index, jobject object, jobject value, jstring exception) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Interceptor), setByindex0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject object, jobject value, jstring exception) {
     auto* s = reinterpret_cast<cef_v8_interceptor_t*>(self);
     if (!s) return 0;
     cef_v8_value_t* _object_ptr = object ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(object, env->GetFieldID(env->GetObjectClass(object), "nativePtr", "J"))) : nullptr;

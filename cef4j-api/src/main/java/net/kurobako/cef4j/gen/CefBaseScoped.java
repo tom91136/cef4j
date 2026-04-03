@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * All scoped framework structures must include this structure first.
@@ -12,6 +15,7 @@ package net.kurobako.cef4j.gen;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__base__capi_8h.html">cef_base_capi.h</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefBaseScoped {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.

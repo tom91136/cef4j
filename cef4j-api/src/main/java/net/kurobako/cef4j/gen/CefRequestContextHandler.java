@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Implement this interface to provide handler implementations. The handler instance will not be released until all
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context__handler_8h.html">cef_request_context_handler.h:48</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefRequestContextHandler extends CefClientHandler {
 
     /**

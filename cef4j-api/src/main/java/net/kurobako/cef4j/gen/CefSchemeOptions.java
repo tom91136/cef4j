@@ -1,10 +1,14 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Possible values: {@link Kind#NONE}, {@link Kind#STANDARD}, {@link Kind#LOCAL}, {@link Kind#DISPLAY_ISOLATED},
  * {@link Kind#SECURE}, {@link Kind#CORS_ENABLED}, {@link Kind#CSP_BYPASSING}, {@link Kind#FETCH_ENABLED}
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefSchemeOptions implements CefEnum<CefSchemeOptions> {
 
     /** Known constants for {@link CefSchemeOptions}. */

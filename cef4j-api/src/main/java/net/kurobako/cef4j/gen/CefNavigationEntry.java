@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent an entry in navigation history.
@@ -16,6 +18,7 @@ import java.util.Optional;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefNavigationEntry extends CefLibraryObject {
 
     /**
@@ -180,91 +183,91 @@ public interface CefNavigationEntry extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefNavigationEntry 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUrl(nativePtr));
+            return Optional.ofNullable(getUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getDisplayUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDisplayUrl(nativePtr));
+            return Optional.ofNullable(getDisplayUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getOriginalUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetOriginalUrl(nativePtr));
+            return Optional.ofNullable(getOriginalUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getTitle() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTitle(nativePtr));
+            return Optional.ofNullable(getTitle0(nativePtr));
         }
 
         @Override
         public CefTransitionType getTransitionType() {
             checkNotClosed();
-            return N_GetTransitionType(nativePtr);
+            return getTransitionType0(nativePtr);
         }
 
         @Override
         public boolean hasPostData() {
             checkNotClosed();
-            return N_HasPostData(nativePtr);
+            return hasPostData0(nativePtr);
         }
 
         @Override
         public CefBasetime getCompletionTime() {
             checkNotClosed();
-            return N_GetCompletionTime(nativePtr);
+            return getCompletionTime0(nativePtr);
         }
 
         @Override
         public int getHttpStatusCode() {
             checkNotClosed();
-            return N_GetHttpStatusCode(nativePtr);
+            return getHttpStatusCode0(nativePtr);
         }
 
         @Override
         public Optional<CefSslStatus> getSslStatus() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSslStatus(nativePtr));
+            return Optional.ofNullable(getSslStatus0(nativePtr));
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native String N_GetUrl(long self);
+        private static native String getUrl0(long self);
 
-        private static native String N_GetDisplayUrl(long self);
+        private static native String getDisplayUrl0(long self);
 
-        private static native String N_GetOriginalUrl(long self);
+        private static native String getOriginalUrl0(long self);
 
-        private static native String N_GetTitle(long self);
+        private static native String getTitle0(long self);
 
-        private static native CefTransitionType N_GetTransitionType(long self);
+        private static native CefTransitionType getTransitionType0(long self);
 
-        private static native boolean N_HasPostData(long self);
+        private static native boolean hasPostData0(long self);
 
-        private static native CefBasetime N_GetCompletionTime(long self);
+        private static native CefBasetime getCompletionTime0(long self);
 
-        private static native int N_GetHttpStatusCode(long self);
+        private static native int getHttpStatusCode0(long self);
 
-        private static native CefSslStatus N_GetSslStatus(long self);
+        private static native CefSslStatus getSslStatus0(long self);
 
         @Override
         public boolean equals(Object obj) {

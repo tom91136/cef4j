@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_v8_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingStore_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefV8BackingStore), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingStore_00024NativePeer_N_1Data(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8BackingStore), data0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_v8_backing_store_t*>(self);
     if (!s) return nullptr;
     auto _r = s->data(s);
@@ -17,20 +17,20 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingSto
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingStore_00024NativePeer_N_1ByteLength(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefV8BackingStore), byteLength0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_v8_backing_store_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->byte_length(s));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingStore_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8BackingStore), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_v8_backing_store_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefV8BackingStore_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jlong byte_length) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8BackingStore), create0)(JNIEnv* env, jclass clz, jlong byte_length) {
     auto _r = cef_v8_backing_store_create(byte_length);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8BackingStore$NativePeer");

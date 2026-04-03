@@ -1,22 +1,22 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_navigation_entry_capi.h"
 #include "include/capi/cef_ssl_status_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefNavigationEntry), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefNavigationEntry), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefNavigationEntry), getUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_url(s);
@@ -26,7 +26,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetDisplayUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefNavigationEntry), getDisplayUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_display_url(s);
@@ -36,7 +36,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetOriginalUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefNavigationEntry), getOriginalUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_original_url(s);
@@ -46,7 +46,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetTitle(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefNavigationEntry), getTitle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_title(s);
@@ -56,7 +56,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetTransitionType(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getTransitionType0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return 0;
     auto _r = s->get_transition_type(s);
@@ -65,14 +65,14 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1HasPostData(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefNavigationEntry), hasPostData0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_post_data(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetCompletionTime(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getCompletionTime0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_completion_time(s);
@@ -82,13 +82,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEn
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetHttpStatusCode(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefNavigationEntry), getHttpStatusCode0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_http_status_code(s));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefNavigationEntry_00024NativePeer_N_1GetSslStatus(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getSslStatus0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_sslstatus(s);

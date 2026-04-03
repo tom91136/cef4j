@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Interface the client can implement to provide a custom stream reader. The methods of this class may be called on any
@@ -17,6 +19,7 @@ import javax.annotation.Nonnull;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:42</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefReadHandler extends CefClientHandler {
 
     /**

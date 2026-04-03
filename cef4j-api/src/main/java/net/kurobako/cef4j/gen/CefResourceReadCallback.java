@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Callback for asynchronous continuation of {@link CefResourceHandler#read(NativePointer, int, int[],
@@ -15,6 +18,7 @@ package net.kurobako.cef4j.gen;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:64</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefResourceReadCallback extends CefLibraryObject {
 
     /**
@@ -68,19 +72,19 @@ public interface CefResourceReadCallback extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefResourceReadCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void cont(int bytesRead) {
             checkNotClosed();
-            N_Cont(nativePtr, bytesRead);
+            cont0(nativePtr, bytesRead);
         }
 
-        private static native void N_Cont(long self, int bytesRead);
+        private static native void cont0(long self, int bytesRead);
 
         @Override
         public boolean equals(Object obj) {

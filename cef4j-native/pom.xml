@@ -187,8 +187,8 @@
                                         <include>libcef4j.so</include>
                                         <include>cef4j.dll</include>
                                         <include>libcef4j.dylib</include>
-                                        <include>cef4j_helper</include>
-                                        <include>cef4j_helper.exe</include>
+                                        <include>cef4j_launcher</include>
+                                        <include>cef4j_launcher.exe</include>
                                     </includes>
                                 </resource>
                             </resources>

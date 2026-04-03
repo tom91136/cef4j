@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_download_handler_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBeforeDownloadCallback_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBeforeDownloadCallback), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefBeforeDownloadCallback_00024NativePeer_N_1Cont(JNIEnv* env, jobject obj, jlong self, jstring download_path, jint show_dialog) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBeforeDownloadCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jstring download_path, jint show_dialog) {
     auto* s = reinterpret_cast<cef_before_download_callback_t*>(self);
     if (!s) return;
     auto _download_path_str = download_path ? JStringToCefString(env, download_path) : nullptr;

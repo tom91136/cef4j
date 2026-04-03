@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a web response. The methods of this class may be called on any thread.
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefResponse extends CefLibraryObject {
 
     /**
@@ -230,7 +233,7 @@ public interface CefResponse extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefResponse> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefResponse, AutoCloseable {
@@ -270,149 +273,149 @@ public interface CefResponse extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefResponse 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public CefErrorCode getError() {
             checkNotClosed();
-            return N_GetError(nativePtr);
+            return getError0(nativePtr);
         }
 
         @Override
         public void setError(@Nonnull CefErrorCode error) {
             checkNotClosed();
-            N_SetError(nativePtr, error);
+            setError0(nativePtr, error);
         }
 
         @Override
         public int getStatus() {
             checkNotClosed();
-            return N_GetStatus(nativePtr);
+            return getStatus0(nativePtr);
         }
 
         @Override
         public void setStatus(int status) {
             checkNotClosed();
-            N_SetStatus(nativePtr, status);
+            setStatus0(nativePtr, status);
         }
 
         @Override
         public Optional<String> getStatusText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetStatusText(nativePtr));
+            return Optional.ofNullable(getStatusText0(nativePtr));
         }
 
         @Override
         public void setStatusText(@Nullable String statusText) {
             checkNotClosed();
-            N_SetStatusText(nativePtr, statusText);
+            setStatusText0(nativePtr, statusText);
         }
 
         @Override
         public Optional<String> getMimeType() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMimeType(nativePtr));
+            return Optional.ofNullable(getMimeType0(nativePtr));
         }
 
         @Override
         public void setMimeType(@Nullable String mimeType) {
             checkNotClosed();
-            N_SetMimeType(nativePtr, mimeType);
+            setMimeType0(nativePtr, mimeType);
         }
 
         @Override
         public Optional<String> getCharset() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetCharset(nativePtr));
+            return Optional.ofNullable(getCharset0(nativePtr));
         }
 
         @Override
         public void setCharset(@Nullable String charset) {
             checkNotClosed();
-            N_SetCharset(nativePtr, charset);
+            setCharset0(nativePtr, charset);
         }
 
         @Override
         public Optional<String> getHeaderByName(@Nullable String name) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetHeaderByName(nativePtr, name));
+            return Optional.ofNullable(getHeaderByName0(nativePtr, name));
         }
 
         @Override
         public void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite) {
             checkNotClosed();
-            N_SetHeaderByName(nativePtr, name, value, overwrite);
+            setHeaderByName0(nativePtr, name, value, overwrite);
         }
 
         @Override
         public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
             checkNotClosed();
-            N_GetHeaderMap(nativePtr, headerMap);
+            getHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
         public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
             checkNotClosed();
-            N_SetHeaderMap(nativePtr, headerMap);
+            setHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
         public Optional<String> getUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUrl(nativePtr));
+            return Optional.ofNullable(getUrl0(nativePtr));
         }
 
         @Override
         public void setUrl(@Nullable String url) {
             checkNotClosed();
-            N_SetUrl(nativePtr, url);
+            setUrl0(nativePtr, url);
         }
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native CefErrorCode N_GetError(long self);
+        private static native CefErrorCode getError0(long self);
 
-        private static native void N_SetError(long self, CefErrorCode error);
+        private static native void setError0(long self, CefErrorCode error);
 
-        private static native int N_GetStatus(long self);
+        private static native int getStatus0(long self);
 
-        private static native void N_SetStatus(long self, int status);
+        private static native void setStatus0(long self, int status);
 
-        private static native String N_GetStatusText(long self);
+        private static native String getStatusText0(long self);
 
-        private static native void N_SetStatusText(long self, String statusText);
+        private static native void setStatusText0(long self, String statusText);
 
-        private static native String N_GetMimeType(long self);
+        private static native String getMimeType0(long self);
 
-        private static native void N_SetMimeType(long self, String mimeType);
+        private static native void setMimeType0(long self, String mimeType);
 
-        private static native String N_GetCharset(long self);
+        private static native String getCharset0(long self);
 
-        private static native void N_SetCharset(long self, String charset);
+        private static native void setCharset0(long self, String charset);
 
-        private static native String N_GetHeaderByName(long self, String name);
+        private static native String getHeaderByName0(long self, String name);
 
-        private static native void N_SetHeaderByName(long self, String name, String value, boolean overwrite);
+        private static native void setHeaderByName0(long self, String name, String value, boolean overwrite);
 
-        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headerMap);
+        private static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headerMap);
+        private static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        private static native String N_GetUrl(long self);
+        private static native String getUrl0(long self);
 
-        private static native void N_SetUrl(long self, String url);
+        private static native void setUrl0(long self, String url);
 
-        static native CefResponse N_Create();
+        static native CefResponse create0();
 
         @Override
         public boolean equals(Object obj) {

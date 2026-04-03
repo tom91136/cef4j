@@ -1,256 +1,267 @@
 package net.kurobako.cef4j.sample;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
+import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import net.kurobako.cef4j.CefApp;
-import net.kurobako.cef4j.CefBrowserOsr;
-import net.kurobako.cef4j.SystemBootstrap;
-import net.kurobako.cef4j.gen.CefBrowser;
-import net.kurobako.cef4j.gen.CefClient;
-import net.kurobako.cef4j.gen.CefCursorType;
-import net.kurobako.cef4j.gen.CefDisplayHandler;
-import net.kurobako.cef4j.gen.CefFrame;
-import net.kurobako.cef4j.gen.CefLifeSpanHandler;
-import net.kurobako.cef4j.gen.CefLoadHandler;
-import net.kurobako.cef4j.gen.CefRenderHandler;
-import net.kurobako.cef4j.gen.NativePointer;
-import net.kurobako.cef4j.osr.jfx.CefPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.osr.jfx.CefWebView;
 
-/** Sample JavaFX browser using {@link CefPane}. */
 public final class JfxBrowserApp {
-
-    private static final Logger log = LoggerFactory.getLogger(JfxBrowserApp.class);
-
-    static final AtomicReference<CefBrowserOsr> browserRef = new AtomicReference<>();
-    static volatile boolean shutdownRequested;
-    static final CountDownLatch uiReady = new CountDownLatch(1);
-
-    public static void main(String[] args) throws Exception {
-        log.info("cef4j JavaFX Browser starting");
-
-        SystemBootstrap.load();
-
-        Path cacheDir = Files.createTempDirectory("cef4j-jfx-");
-        cacheDir.toFile().deleteOnExit();
-
-        CefApp.INSTANCE
-                .cachePath(cacheDir.toAbsolutePath().toString())
-                .extraArgs("--ozone-platform=x11")
-                .initialize();
-
-        // Launch JavaFX on a daemon thread - main thread stays as CEF UI thread.
-        Thread jfxThread = new Thread(() -> Application.launch(JfxApp.class, args));
-        jfxThread.setDaemon(true);
-        jfxThread.start();
-
-        // Wait for the UI to create the browser
-        uiReady.await();
-
-        CefBrowserOsr browser = browserRef.get();
-        if (browser != null) {
-            browser.createImmediately();
-            var host = browser.getHost();
-            if (host != null) host.setFocus(true);
-        }
-
-        Thread mainThread = Thread.currentThread();
+    public static void main(String[] args) throws IOException {
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.cachePath = createCacheDir().toAbsolutePath().toString();
+        CefWebView.setup(settings);
         SigintHelper.install(() -> {
-            shutdownRequested = true;
-            mainThread.interrupt();
-        });
-
-        // Auto-exit for headless testing: -Dcef4j.exit.after=<millis>
-        String exitAfter = System.getProperty("cef4j.exit.after");
-        if (exitAfter != null) {
-            long delay = Long.parseLong(exitAfter);
-            log.info("Auto-exit scheduled in {}ms", delay);
-            Executors.newSingleThreadScheduledExecutor(r -> {
-                        Thread t = new Thread(r, "cef4j-exit-timer");
-                        t.setDaemon(true);
-                        return t;
-                    })
-                    .schedule(() -> shutdownRequested = true, delay, TimeUnit.MILLISECONDS);
-        }
-
-        try {
-            while (!shutdownRequested && CefApp.INSTANCE.getState() == CefApp.State.INITIALIZED) {
-                CefApp.INSTANCE.doMessageLoopWork();
-                Thread.sleep(8);
+            if (Platform.isFxApplicationThread()) {
+                Platform.exit();
+            } else {
+                Platform.runLater(Platform::exit);
             }
-        } catch (InterruptedException ignored) {
-        }
-
-        log.info("Shutting down");
-        if (browser != null) browser.close(true);
-        CefApp.INSTANCE.dispose();
-        log.info("Exiting");
-        System.exit(0);
+        });
+        Application.launch(JfxApp.class, args);
     }
 
-    /** Separate Application subclass so the main class doesn't extend Application (avoids JavaFX module check). */
     public static class JfxApp extends Application {
+        private static final String DEFAULT_URL = "https://3dtransforms.desandro.com/";
+
         @Override
-        public void start(Stage stage) {
+        public void start(Stage stage) throws IOException {
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);
             stage.setHeight(800);
 
-            TextField urlBar = new TextField("https://3dtransforms.desandro.com/");
-            urlBar.setOnAction(e -> {
-                CefBrowserOsr b = browserRef.get();
-                if (b != null) b.loadURL(urlBar.getText().trim());
+            TabPane tabPane = new TabPane();
+            Button newTabBtn = new Button("+");
+            newTabBtn.setOnAction(e -> select(tabPane, createTab(tabPane, stage, DEFAULT_URL)));
+
+            BorderPane root = new BorderPane();
+            root.setCenter(tabPane);
+            root.setTop(new HBox(4, newTabBtn));
+
+            tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+                BrowserTab browserTab = newTab instanceof BrowserTab ? (BrowserTab) newTab : null;
+                if (browserTab == null) {
+                    stage.setTitle("cef4j Browser (JavaFX)");
+                } else {
+                    browserTab.updateStageTitle();
+                }
             });
+            tabPane.getTabs().addListener((ListChangeListener<? super Tab>) change -> {
+                while (change.next()) {
+                    if (change.wasRemoved()) {
+                        for (Tab removed : change.getRemoved()) {
+                            if (removed instanceof BrowserTab) {
+                                ((BrowserTab) removed).dispose();
+                            }
+                        }
+                    }
+                }
+                if (tabPane.getTabs().isEmpty()) {
+                    Platform.exit();
+                }
+            });
+
+            select(tabPane, createTab(tabPane, stage, DEFAULT_URL));
+
+            stage.setOnCloseRequest(e -> {
+                for (Tab tab : tabPane.getTabs()) {
+                    if (tab instanceof BrowserTab) {
+                        ((BrowserTab) tab).dispose();
+                    }
+                }
+                Platform.exit();
+            });
+            stage.setScene(new Scene(root));
+            stage.show();
+        }
+
+        private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {
+            BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);
+            tabPane.getTabs().add(tab);
+            return tab;
+        }
+
+        private static void select(TabPane tabPane, BrowserTab tab) {
+            tabPane.getSelectionModel().select(tab);
+        }
+    }
+
+    private static final class BrowserTab extends Tab {
+        private final TabPane owner;
+        private final Stage stage;
+        private final CefWebView view;
+        private final TextField urlBar = new TextField();
+        private final Label statusLabel = new Label(" ");
+        private final ProgressBar progressBar = new ProgressBar(0);
+        private boolean disposed;
+
+        private BrowserTab(TabPane owner, Stage stage, String initialUrl) {
+            this.owner = owner;
+            this.stage = stage;
+            this.view = new CefWebView();
+            this.view.setZoom(1.0);
+
+            setText("New Tab");
+            setClosable(true);
+            setContent(createContent());
+            setOnClosed(e -> dispose());
 
             Button backBtn = new Button("\u25C0");
             Button fwdBtn = new Button("\u25B6");
             Button reloadBtn = new Button("\u21BB");
-            backBtn.setOnAction(e -> {
-                CefBrowserOsr osr = browserRef.get();
-                var b = osr != null ? osr.getBrowser() : null;
-                if (b != null) b.goBack();
-            });
-            fwdBtn.setOnAction(e -> {
-                CefBrowserOsr osr = browserRef.get();
-                var b = osr != null ? osr.getBrowser() : null;
-                if (b != null) b.goForward();
-            });
-            reloadBtn.setOnAction(e -> {
-                CefBrowserOsr osr = browserRef.get();
-                var b = osr != null ? osr.getBrowser() : null;
-                if (b != null) b.reload();
-            });
+            Button zoomOutBtn = new Button("-");
+            Button zoomResetBtn = new Button("100%");
+            Button zoomInBtn = new Button("+");
 
-            HBox navBar = new HBox(4, backBtn, fwdBtn, reloadBtn, urlBar);
+            HBox navBar = new HBox(4, backBtn, fwdBtn, reloadBtn, zoomOutBtn, zoomResetBtn, zoomInBtn, urlBar);
             HBox.setHgrow(urlBar, Priority.ALWAYS);
             navBar.setStyle("-fx-padding: 4;");
 
-            Label statusLabel = new Label(" ");
-            ProgressBar progressBar = new ProgressBar(0);
-            progressBar.setPrefWidth(120);
-            progressBar.setVisible(false);
             BorderPane statusBar = new BorderPane();
             statusBar.setCenter(statusLabel);
             statusBar.setRight(progressBar);
             statusBar.setStyle("-fx-padding: 2 6;");
 
-            CefPane surface = new CefPane();
-
-            BorderPane root = new BorderPane();
+            BorderPane root = (BorderPane) getContent();
             root.setTop(navBar);
-            root.setCenter(surface);
             root.setBottom(statusBar);
 
-            stage.setScene(new Scene(root));
-            stage.setOnCloseRequest(e -> shutdownRequested = true);
-            stage.show();
+            progressBar.setPrefWidth(120);
+            progressBar.setVisible(false);
+            urlBar.setText(initialUrl);
 
-            CefRenderHandler renderHandler = surface.createRenderHandler();
-            CefLoadHandler scrollbarHandler = surface.createScrollbarLoadHandler();
-
-            CefClient client = new CefClient() {
-                @Override
-                public Optional<CefRenderHandler> getRenderHandler() {
-                    return Optional.of(renderHandler);
+            backBtn.setOnAction(e -> {
+                if (view.getEngine().getHistory().getCurrentIndex() > 0) {
+                    view.getEngine().getHistory().go(-1);
                 }
-
-                @Override
-                public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
-                    return Optional.of(new CefLifeSpanHandler() {
-                        @Override
-                        public void onAfterCreated(CefBrowser b) {
-                            Platform.runLater(() -> surface.requestFocus());
-                        }
-                    });
+            });
+            fwdBtn.setOnAction(e -> {
+                int current = view.getEngine().getHistory().getCurrentIndex();
+                int last = view.getEngine().getHistory().getEntries().size() - 1;
+                if (current >= 0 && current < last) {
+                    view.getEngine().getHistory().go(1);
                 }
+            });
+            reloadBtn.setOnAction(e -> view.getEngine().reload());
+            zoomOutBtn.setOnAction(e -> view.setZoom(clampZoom(view.getZoom() / 1.2)));
+            zoomResetBtn.setOnAction(e -> view.setZoom(1.0));
+            zoomInBtn.setOnAction(e -> view.setZoom(clampZoom(view.getZoom() * 1.2)));
+            urlBar.setOnAction(e -> view.getEngine().load(urlBar.getText().trim()));
+            view.zoomProperty()
+                    .addListener((obs, oldZoom, newZoom) ->
+                            zoomResetBtn.setText(Math.round(newZoom.doubleValue() * 100) + "%"));
 
-                @Override
-                public Optional<CefLoadHandler> getLoadHandler() {
-                    return Optional.of(new CefLoadHandler() {
-                        @Override
-                        public void onLoadingStateChange(
-                                CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
-                            Platform.runLater(() -> {
-                                backBtn.setDisable(!canGoBack);
-                                fwdBtn.setDisable(!canGoForward);
-                                if (!isLoading) {
-                                    progressBar.setVisible(false);
-                                    progressBar.setProgress(0);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-                            scrollbarHandler.onLoadEnd(browser, frame, httpStatusCode);
-                        }
-                    });
+            view.getEngine().setCreatePopupHandler(features -> {
+                BrowserTab popupTab = new BrowserTab(owner, stage, JfxApp.DEFAULT_URL);
+                owner.getTabs().add(popupTab);
+                Platform.runLater(() -> owner.getSelectionModel().select(popupTab));
+                return popupTab.view.getEngine();
+            });
+            view.getEngine().titleProperty().addListener((obs, oldTitle, newTitle) -> {
+                updateTabTitle(newTitle);
+                if (isSelected()) {
+                    updateStageTitle();
                 }
-
-                @Override
-                public Optional<CefDisplayHandler> getDisplayHandler() {
-                    return Optional.of(new CefDisplayHandler() {
-                        @Override
-                        public void onTitleChange(CefBrowser b, String title) {
-                            Platform.runLater(() -> stage.setTitle(title + " - cef4j (JavaFX)"));
-                        }
-
-                        @Override
-                        public void onAddressChange(CefBrowser b, CefFrame f, String url) {
-                            Platform.runLater(() -> urlBar.setText(url));
-                        }
-
-                        @Override
-                        public void onStatusMessage(CefBrowser b, String value) {
-                            Platform.runLater(
-                                    () -> statusLabel.setText(value != null && !value.isEmpty() ? value : " "));
-                        }
-
-                        @Override
-                        public void onLoadingProgressChange(CefBrowser b, double progress) {
-                            Platform.runLater(() -> {
-                                if (progress >= 0 && progress < 1.0) {
-                                    progressBar.setVisible(true);
-                                    progressBar.setProgress(progress);
-                                } else {
-                                    progressBar.setVisible(false);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public boolean onCursorChange(
-                                CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
-                            javafx.scene.Cursor jfxCursor = surface.mapCursor(type);
-                            Platform.runLater(() -> surface.setCursor(jfxCursor));
-                            return true;
-                        }
-                    });
+            });
+            view.getEngine().locationProperty().addListener((obs, oldLocation, newLocation) -> {
+                if (newLocation != null && !newLocation.isEmpty()) {
+                    urlBar.setText(newLocation);
                 }
+                if ((getText() == null || getText().isEmpty() || "New Tab".equals(getText()))
+                        && newLocation != null
+                        && !newLocation.isEmpty()) {
+                    updateTabTitle(newLocation);
+                }
+                if (isSelected()) {
+                    updateStageTitle();
+                }
+            });
+
+            ChangeListener<Object> historyStateListener = (obs, oldValue, newValue) -> {
+                int current = view.getEngine().getHistory().getCurrentIndex();
+                int size = view.getEngine().getHistory().getEntries().size();
+                backBtn.setDisable(current <= 0);
+                fwdBtn.setDisable(current < 0 || current >= size - 1);
             };
+            view.getEngine().getHistory().currentIndexProperty().addListener(historyStateListener);
+            view.getEngine().getHistory().getEntries().addListener((ListChangeListener<? super Object>)
+                    change -> historyStateListener.changed(null, null, null));
+            historyStateListener.changed(null, null, null);
 
-            CefBrowserOsr b =
-                    CefApp.INSTANCE.createBrowser(client, urlBar.getText().trim(), 60);
-            surface.setBrowser(b);
-            browserRef.set(b);
-            uiReady.countDown();
+            view.getEngine().getLoadWorker().progressProperty().addListener((obs, oldProgress, newProgress) -> {
+                double progress = newProgress != null ? newProgress.doubleValue() : -1;
+                if (progress >= 0 && progress < 1.0) {
+                    progressBar.setVisible(true);
+                    progressBar.setProgress(progress);
+                } else {
+                    progressBar.setVisible(false);
+                    progressBar.setProgress(0);
+                }
+            });
+            view.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                if (newState == Worker.State.FAILED) {
+                    Throwable error = view.getEngine().getLoadWorker().getException();
+                    statusLabel.setText(
+                            error != null && error.getMessage() != null ? error.getMessage() : "Load failed");
+                } else if (newState == Worker.State.SUCCEEDED || newState == Worker.State.READY) {
+                    statusLabel.setText(" ");
+                }
+            });
+            view.getEngine().setOnStatusChanged(event -> {
+                String value = event.getData();
+                statusLabel.setText(value != null && !value.isEmpty() ? value : " ");
+            });
+
+            view.getEngine().load(initialUrl);
         }
+
+        private BorderPane createContent() {
+            BorderPane root = new BorderPane();
+            root.setCenter(view);
+            return root;
+        }
+
+        private void updateStageTitle() {
+            String title = view.getEngine().getTitle();
+            String location = view.getEngine().getLocation();
+            stage.setTitle(((title == null || title.isEmpty()) ? location : title) + " - cef4j (JavaFX)");
+        }
+
+        private void updateTabTitle(String value) {
+            if (value == null || value.isEmpty()) return;
+            setText(value.length() > 24 ? value.substring(0, 24) + "\u2026" : value);
+        }
+
+        private void dispose() {
+            if (disposed) return;
+            disposed = true;
+            view.dispose();
+        }
+
+        private static double clampZoom(double value) {
+            return Math.max(0.25, Math.min(5.0, value));
+        }
+    }
+
+    private static Path createCacheDir() throws IOException {
+        Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
+        cacheDir.toFile().deleteOnExit();
+        return cacheDir;
     }
 }

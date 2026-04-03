@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to make a URL request. URL requests are not associated with a browser instance so no CefClient callbacks
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:49</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefUrlRequest extends CefLibraryObject {
 
     /**
@@ -118,7 +121,7 @@ public interface CefUrlRequest extends CefLibraryObject {
             @Nullable CefRequest request,
             @Nullable CefUrlRequestClient client,
             @Nullable CefRequestContext requestContext) {
-        return Optional.ofNullable(NativePeer.N_Create(request, client, requestContext));
+        return Optional.ofNullable(NativePeer.create0(request, client, requestContext));
     }
 
     final class NativePeer implements CefUrlRequest, AutoCloseable {
@@ -158,69 +161,69 @@ public interface CefUrlRequest extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefUrlRequest 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefRequest> getRequest() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetRequest(nativePtr));
+            return Optional.ofNullable(getRequest0(nativePtr));
         }
 
         @Override
         public Optional<CefUrlRequestClient> getClient() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetClient(nativePtr));
+            return Optional.ofNullable(getClient0(nativePtr));
         }
 
         @Override
         public CefUrlRequestStatus getRequestStatus() {
             checkNotClosed();
-            return N_GetRequestStatus(nativePtr);
+            return getRequestStatus0(nativePtr);
         }
 
         @Override
         public CefErrorCode getRequestError() {
             checkNotClosed();
-            return N_GetRequestError(nativePtr);
+            return getRequestError0(nativePtr);
         }
 
         @Override
         public Optional<CefResponse> getResponse() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetResponse(nativePtr));
+            return Optional.ofNullable(getResponse0(nativePtr));
         }
 
         @Override
         public boolean responseWasCached() {
             checkNotClosed();
-            return N_ResponseWasCached(nativePtr);
+            return responseWasCached0(nativePtr);
         }
 
         @Override
         public void cancel() {
             checkNotClosed();
-            N_Cancel(nativePtr);
+            cancel0(nativePtr);
         }
 
-        private static native CefRequest N_GetRequest(long self);
+        private static native CefRequest getRequest0(long self);
 
-        private static native CefUrlRequestClient N_GetClient(long self);
+        private static native CefUrlRequestClient getClient0(long self);
 
-        private static native CefUrlRequestStatus N_GetRequestStatus(long self);
+        private static native CefUrlRequestStatus getRequestStatus0(long self);
 
-        private static native CefErrorCode N_GetRequestError(long self);
+        private static native CefErrorCode getRequestError0(long self);
 
-        private static native CefResponse N_GetResponse(long self);
+        private static native CefResponse getResponse0(long self);
 
-        private static native boolean N_ResponseWasCached(long self);
+        private static native boolean responseWasCached0(long self);
 
-        private static native void N_Cancel(long self);
+        private static native void cancel0(long self);
 
-        static native CefUrlRequest N_Create(
+        static native CefUrlRequest create0(
                 CefRequest request, CefUrlRequestClient client, CefRequestContext requestContext);
 
         @Override

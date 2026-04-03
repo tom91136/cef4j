@@ -393,7 +393,7 @@ object DocComments {
       cefStructName: String = ""
   )(using naming: Naming.Context, dc: Context): String = {
     val camelName  = Naming.javaMethodName(fn)
-    val pascalName = Naming.javaPascalName(fn)
+    val pascalName = Naming.cppPascalName(fn)
 
     // Try class-qualified lookup first (e.g. "CefBrowser::IsValid") to avoid collisions
     // between identically-named methods on different classes.

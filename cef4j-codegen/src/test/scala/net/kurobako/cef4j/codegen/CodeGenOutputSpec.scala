@@ -15,15 +15,15 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
   )
 
-  test("Java native codegen produces correct JNI symbol mangling") {
+  test("Java native codegen produces correct JNI export macro") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
       "cef_browser_t",
       List(FnPtr("go_back", CType.Void, Nil))
     )
     val cpp = codegen.emitToString(decl)
     assert(
-      cpp.contains("Java_net_kurobako_cef4j_gen_CefBrowser_00024NativePeer_N_1GoBack"),
-      s"Expected JNI symbol not found in:\n$cpp"
+      cpp.contains("CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), goBack0)"),
+      s"Expected CEF4J_JNI_EXPORT macro not found in:\n$cpp"
     )
   }
 
@@ -88,8 +88,8 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     val java = JavaNativeCodeGen.renderInnerClass(decl)
     assert(java.contains("final class NativePeer"), s"Missing NativePeer class in:\n$java")
-    assert(java.contains("N_IsValid(nativePtr)"), s"Missing delegation in:\n$java")
-    assert(java.contains("private static native boolean N_IsValid(long self)"), s"Missing native decl in:\n$java")
+    assert(java.contains("isValid0(nativePtr)"), s"Missing delegation in:\n$java")
+    assert(java.contains("private static native boolean isValid0(long self)"), s"Missing native decl in:\n$java")
   }
 
   test("Java enum codegen produces final class with prefix stripping and expressions") {
@@ -278,7 +278,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
   test("JNI symbol for multi-word function name is correct") {
     val fn  = FnPtr("send_mouse_click_event", CType.Void, Nil)
     val sym = Naming.jniSymbol("cef_browser_host_t", fn)
-    assertEquals(sym, "Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_N_1SendMouseClickEvent")
+    assertEquals(sym, "Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_sendMouseClickEvent0")
   }
 
   test("generated Java package is configurable through Naming context") {
@@ -299,7 +299,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     val fn  = FnPtr("go_back", CType.Void, Nil)
     val sym = Naming.jniSymbol("cef_browser_t", fn)
 
-    assertEquals(sym, "Java_com_example_cef_gen_CefBrowser_00024NativePeer_N_1GoBack")
+    assertEquals(sym, "Java_com_example_cef_gen_CefBrowser_00024NativePeer_goBack0")
     assertEquals(Naming.nativePointerInternalName, "com/example/cef/gen/NativePointer")
   }
 

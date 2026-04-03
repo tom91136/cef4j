@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing a snapshot of a component's state at the time of retrieval. To get updated information, retrieve a
@@ -18,6 +20,7 @@ import java.util.Optional;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:65</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefComponent extends CefLibraryObject {
 
     /**
@@ -109,43 +112,43 @@ public interface CefComponent extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefComponent 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getId() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetId(nativePtr));
+            return Optional.ofNullable(getId0(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetName(nativePtr));
+            return Optional.ofNullable(getName0(nativePtr));
         }
 
         @Override
         public Optional<String> getVersion() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetVersion(nativePtr));
+            return Optional.ofNullable(getVersion0(nativePtr));
         }
 
         @Override
         public CefComponentState getState() {
             checkNotClosed();
-            return N_GetState(nativePtr);
+            return getState0(nativePtr);
         }
 
-        private static native String N_GetId(long self);
+        private static native String getId0(long self);
 
-        private static native String N_GetName(long self);
+        private static native String getName0(long self);
 
-        private static native String N_GetVersion(long self);
+        private static native String getVersion0(long self);
 
-        private static native CefComponentState N_GetState(long self);
+        private static native CefComponentState getState0(long self);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a single element in the request post data. The methods of this class may be called on any
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:286</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefPostDataElement extends CefLibraryObject {
 
     /**
@@ -134,7 +137,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefPostDataElement> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefPostDataElement, AutoCloseable {
@@ -174,77 +177,77 @@ public interface CefPostDataElement extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefPostDataElement 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public void setToEmpty() {
             checkNotClosed();
-            N_SetToEmpty(nativePtr);
+            setToEmpty0(nativePtr);
         }
 
         @Override
         public void setToFile(@Nullable String fileName) {
             checkNotClosed();
-            N_SetToFile(nativePtr, fileName);
+            setToFile0(nativePtr, fileName);
         }
 
         @Override
         public void setToBytes(@Nonnull ByteBuffer bytes) {
             checkNotClosed();
-            N_SetToBytes(nativePtr, bytes);
+            setToBytes0(nativePtr, bytes);
         }
 
         @Override
         public CefPostdataelementType getType() {
             checkNotClosed();
-            return N_GetType(nativePtr);
+            return getType0(nativePtr);
         }
 
         @Override
         public Optional<String> getFile() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFile(nativePtr));
+            return Optional.ofNullable(getFile0(nativePtr));
         }
 
         @Override
         public long getBytesCount() {
             checkNotClosed();
-            return N_GetBytesCount(nativePtr);
+            return getBytesCount0(nativePtr);
         }
 
         @Override
         public long getBytes(@Nonnull ByteBuffer bytes) {
             checkNotClosed();
-            return N_GetBytes(nativePtr, bytes);
+            return getBytes0(nativePtr, bytes);
         }
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native void N_SetToEmpty(long self);
+        private static native void setToEmpty0(long self);
 
-        private static native void N_SetToFile(long self, String fileName);
+        private static native void setToFile0(long self, String fileName);
 
-        private static native void N_SetToBytes(long self, ByteBuffer bytes);
+        private static native void setToBytes0(long self, ByteBuffer bytes);
 
-        private static native CefPostdataelementType N_GetType(long self);
+        private static native CefPostdataelementType getType0(long self);
 
-        private static native String N_GetFile(long self);
+        private static native String getFile0(long self);
 
-        private static native long N_GetBytesCount(long self);
+        private static native long getBytesCount0(long self);
 
-        private static native long N_GetBytes(long self, ByteBuffer bytes);
+        private static native long getBytes0(long self, ByteBuffer bytes);
 
-        static native CefPostDataElement N_Create();
+        static native CefPostDataElement create0();
 
         @Override
         public boolean equals(Object obj) {

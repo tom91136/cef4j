@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
@@ -6,13 +7,15 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefGlobals {
 
     private CefGlobals() {}
 
     public static int isRtl() {
-        return N_IsRtl();
+        return isRtl0();
     }
 
     /**
@@ -44,7 +47,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:63</a>
      */
     public static int beginTracing(@Nullable String categories, @Nullable CefCompletionCallback callback) {
-        return N_BeginTracing(categories, callback);
+        return beginTracing0(categories, callback);
     }
 
     /**
@@ -67,7 +70,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:86</a>
      */
     public static int endTracing(@Nullable String tracingFile, @Nullable CefEndTracingCallback callback) {
-        return N_EndTracing(tracingFile, callback);
+        return endTracing0(tracingFile, callback);
     }
 
     /**
@@ -81,19 +84,19 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:103</a>
      */
     public static long nowFromSystemTraceTime() {
-        return N_NowFromSystemTraceTime();
+        return nowFromSystemTraceTime0();
     }
 
     public static int resolveUrl(@Nullable String baseUrl, @Nullable String relativeUrl, @Nullable String resolvedUrl) {
-        return N_ResolveUrl(baseUrl, relativeUrl, resolvedUrl);
+        return resolveUrl0(baseUrl, relativeUrl, resolvedUrl);
     }
 
     public static int parseUrl(@Nullable String url, @Nullable NativePointer parts) {
-        return N_ParseUrl(url, parts);
+        return parseUrl0(url, parts);
     }
 
     public static int createUrl(@Nullable NativePointer parts, @Nullable String url) {
-        return N_CreateUrl(parts, url);
+        return createUrl0(parts, url);
     }
 
     /**
@@ -111,7 +114,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:70</a>
      */
     public static Optional<String> formatUrlForSecurityDisplay(@Nullable String originUrl) {
-        return Optional.ofNullable(N_FormatUrlForSecurityDisplay(originUrl));
+        return Optional.ofNullable(formatUrlForSecurityDisplay0(originUrl));
     }
 
     /**
@@ -124,7 +127,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:83</a>
      */
     public static Optional<String> getMimeType(@Nullable String extension) {
-        return Optional.ofNullable(N_GetMimeType(extension));
+        return Optional.ofNullable(getMimeType0(extension));
     }
 
     /**
@@ -141,7 +144,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:90</a>
      */
     public static void getExtensionsForMimeType(@Nullable String mimeType, @Nonnull List<String> extensions) {
-        N_GetExtensionsForMimeType(mimeType, extensions);
+        getExtensionsForMimeType0(mimeType, extensions);
     }
 
     /**
@@ -154,20 +157,20 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:100</a>
      */
     public static Optional<String> base64Encode(@Nonnull ByteBuffer data) {
-        return Optional.ofNullable(N_Base64Encode(data));
+        return Optional.ofNullable(base64Encode0(data));
     }
 
     public static Optional<String> uriencode(@Nullable String text, int usePlus) {
-        return Optional.ofNullable(N_Uriencode(text, usePlus));
+        return Optional.ofNullable(uriencode0(text, usePlus));
     }
 
     public static Optional<String> uridecode(
             @Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule) {
-        return Optional.ofNullable(N_Uridecode(text, convertToUtf8, unescapeRule));
+        return Optional.ofNullable(uridecode0(text, convertToUtf8, unescapeRule));
     }
 
     public static Optional<String> writeJson(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options) {
-        return Optional.ofNullable(N_WriteJson(node, options));
+        return Optional.ofNullable(writeJson0(node, options));
     }
 
     /**
@@ -233,7 +236,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:41</a>
      */
     public static int crashReportingEnabled() {
-        return N_CrashReportingEnabled();
+        return crashReportingEnabled0();
     }
 
     /**
@@ -246,7 +249,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:139</a>
      */
     public static void setCrashKeyValue(@Nullable String key, @Nullable String value) {
-        N_SetCrashKeyValue(key, value);
+        setCrashKeyValue0(key, value);
     }
 
     /**
@@ -260,7 +263,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:124</a>
      */
     public static int currentlyOn(@Nonnull CefThreadId threadId) {
-        return N_CurrentlyOn(threadId);
+        return currentlyOn0(threadId);
     }
 
     /**
@@ -274,7 +277,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:131</a>
      */
     public static boolean postTask(@Nonnull CefThreadId threadId, @Nullable CefTask task) {
-        return N_PostTask(threadId, task);
+        return postTask0(threadId, task);
     }
 
     /**
@@ -288,7 +291,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:138</a>
      */
     public static boolean postDelayedTask(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs) {
-        return N_PostDelayedTask(threadId, task, delayMs);
+        return postDelayedTask0(threadId, task, delayMs);
     }
 
     /**
@@ -336,7 +339,7 @@ public final class CefGlobals {
             @Nullable String targetProtocol,
             @Nullable String targetDomain,
             int allowTargetSubdomains) {
-        return N_AddCrossOriginWhitelistEntry(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        return addCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
     }
 
     /**
@@ -357,7 +360,7 @@ public final class CefGlobals {
             @Nullable String targetProtocol,
             @Nullable String targetDomain,
             int allowTargetSubdomains) {
-        return N_RemoveCrossOriginWhitelistEntry(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        return removeCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
     }
 
     /**
@@ -372,7 +375,7 @@ public final class CefGlobals {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:96</a>
      */
     public static int clearCrossOriginWhitelist() {
-        return N_ClearCrossOriginWhitelist();
+        return clearCrossOriginWhitelist0();
     }
 
     /**
@@ -385,7 +388,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
      */
     public static int isCertStatusError(@Nonnull CefCertStatus status) {
-        return N_IsCertStatusError(status);
+        return isCertStatusError0(status);
     }
 
     /**
@@ -409,7 +412,7 @@ public final class CefGlobals {
      */
     public static boolean registerSchemeHandlerFactory(
             @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
-        return N_RegisterSchemeHandlerFactory(schemeName, domainName, factory);
+        return registerSchemeHandlerFactory0(schemeName, domainName, factory);
     }
 
     /**
@@ -424,7 +427,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:70</a>
      */
     public static boolean clearSchemeHandlerFactories() {
-        return N_ClearSchemeHandlerFactories();
+        return clearSchemeHandlerFactories0();
     }
 
     /**
@@ -456,7 +459,7 @@ public final class CefGlobals {
      */
     public static int registerExtension(
             @Nullable String extensionName, @Nullable String javascriptCode, @Nullable CefV8Handler handler) {
-        return N_RegisterExtension(extensionName, javascriptCode, handler);
+        return registerExtension0(extensionName, javascriptCode, handler);
     }
 
     /**
@@ -484,7 +487,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__util_8h.html">cef_process_util.h:44</a>
      */
     public static int launchProcess(@Nullable CefCommandLine commandLine) {
-        return N_LaunchProcess(commandLine);
+        return launchProcess0(commandLine);
     }
 
     /**
@@ -498,7 +501,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__path__util_8h.html">cef_path_util.h:45</a>
      */
     public static int getPath(@Nonnull CefPathKey key, @Nullable String path) {
-        return N_GetPath(key, path);
+        return getPath0(key, path);
     }
 
     /**
@@ -520,7 +523,7 @@ public final class CefGlobals {
      */
     public static int executeProcess(
             @Nullable NativePointer args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
-        return N_ExecuteProcess(args, application, windowsSandboxInfo);
+        return executeProcess0(args, application, windowsSandboxInfo);
     }
 
     /**
@@ -544,7 +547,7 @@ public final class CefGlobals {
             @Nonnull CefSettings settings,
             @Nullable CefApp application,
             @Nullable NativePointer windowsSandboxInfo) {
-        return N_Initialize(args, settings, application, windowsSandboxInfo);
+        return initialize0(args, settings, application, windowsSandboxInfo);
     }
 
     /**
@@ -561,7 +564,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:85</a>
      */
     public static int getExitCode() {
-        return N_GetExitCode();
+        return getExitCode0();
     }
 
     /**
@@ -575,7 +578,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:97</a>
      */
     public static void shutdown() {
-        N_Shutdown();
+        shutdown0();
     }
 
     /**
@@ -596,7 +599,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:105</a>
      */
     public static void doMessageLoopWork() {
-        N_DoMessageLoopWork();
+        doMessageLoopWork0();
     }
 
     /**
@@ -612,7 +615,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:123</a>
      */
     public static void runMessageLoop() {
-        N_RunMessageLoop();
+        runMessageLoop0();
     }
 
     /**
@@ -626,7 +629,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:134</a>
      */
     public static void quitMessageLoop() {
-        N_QuitMessageLoop();
+        quitMessageLoop0();
     }
 
     /**
@@ -671,7 +674,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:143</a>
      */
     public static void setNestableTasksAllowed(int allowed) {
-        N_SetNestableTasksAllowed(allowed);
+        setNestableTasksAllowed0(allowed);
     }
 
     /**
@@ -686,7 +689,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:44</a>
      */
     public static int createDirectory(@Nullable String fullPath) {
-        return N_CreateDirectory(fullPath);
+        return createDirectory0(fullPath);
     }
 
     /**
@@ -703,7 +706,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:53</a>
      */
     public static int getTempDirectory(@Nullable String tempDir) {
-        return N_GetTempDirectory(tempDir);
+        return getTempDirectory0(tempDir);
     }
 
     /**
@@ -719,7 +722,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:64</a>
      */
     public static int createNewTempDirectory(@Nullable String prefix, @Nullable String newTempPath) {
-        return N_CreateNewTempDirectory(prefix, newTempPath);
+        return createNewTempDirectory0(prefix, newTempPath);
     }
 
     /**
@@ -738,7 +741,7 @@ public final class CefGlobals {
      */
     public static int createTempDirectoryInDirectory(
             @Nullable String baseDir, @Nullable String prefix, @Nullable String newDir) {
-        return N_CreateTempDirectoryInDirectory(baseDir, prefix, newDir);
+        return createTempDirectoryInDirectory0(baseDir, prefix, newDir);
     }
 
     /**
@@ -752,7 +755,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:88</a>
      */
     public static int directoryExists(@Nullable String path) {
-        return N_DirectoryExists(path);
+        return directoryExists0(path);
     }
 
     /**
@@ -769,7 +772,7 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:95</a>
      */
     public static int deleteFile(@Nullable String path, int recursive) {
-        return N_DeleteFile(path, recursive);
+        return deleteFile0(path, recursive);
     }
 
     /**
@@ -786,103 +789,102 @@ public final class CefGlobals {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:107</a>
      */
     public static int zipDirectory(@Nullable String srcDir, @Nullable String destFile, int includeHiddenFiles) {
-        return N_ZipDirectory(srcDir, destFile, includeHiddenFiles);
+        return zipDirectory0(srcDir, destFile, includeHiddenFiles);
     }
 
     public static void loadCrlsetsFile(@Nullable String path) {
-        N_LoadCrlsetsFile(path);
+        loadCrlsetsFile0(path);
     }
 
-    private static native int N_IsRtl();
+    private static native int isRtl0();
 
-    private static native int N_BeginTracing(String categories, CefCompletionCallback callback);
+    private static native int beginTracing0(String categories, CefCompletionCallback callback);
 
-    private static native int N_EndTracing(String tracingFile, CefEndTracingCallback callback);
+    private static native int endTracing0(String tracingFile, CefEndTracingCallback callback);
 
-    private static native long N_NowFromSystemTraceTime();
+    private static native long nowFromSystemTraceTime0();
 
-    private static native int N_ResolveUrl(String baseUrl, String relativeUrl, String resolvedUrl);
+    private static native int resolveUrl0(String baseUrl, String relativeUrl, String resolvedUrl);
 
-    private static native int N_ParseUrl(String url, NativePointer parts);
+    private static native int parseUrl0(String url, NativePointer parts);
 
-    private static native int N_CreateUrl(NativePointer parts, String url);
+    private static native int createUrl0(NativePointer parts, String url);
 
-    private static native String N_FormatUrlForSecurityDisplay(String originUrl);
+    private static native String formatUrlForSecurityDisplay0(String originUrl);
 
-    private static native String N_GetMimeType(String extension);
+    private static native String getMimeType0(String extension);
 
-    private static native void N_GetExtensionsForMimeType(String mimeType, List<String> extensions);
+    private static native void getExtensionsForMimeType0(String mimeType, List<String> extensions);
 
-    private static native String N_Base64Encode(ByteBuffer data);
+    private static native String base64Encode0(ByteBuffer data);
 
-    private static native String N_Uriencode(String text, int usePlus);
+    private static native String uriencode0(String text, int usePlus);
 
-    private static native String N_Uridecode(String text, int convertToUtf8, CefUriUnescapeRule unescapeRule);
+    private static native String uridecode0(String text, int convertToUtf8, CefUriUnescapeRule unescapeRule);
 
-    private static native String N_WriteJson(CefValue node, CefJsonWriterOptions options);
+    private static native String writeJson0(CefValue node, CefJsonWriterOptions options);
 
-    private static native int N_CrashReportingEnabled();
+    private static native int crashReportingEnabled0();
 
-    private static native void N_SetCrashKeyValue(String key, String value);
+    private static native void setCrashKeyValue0(String key, String value);
 
-    private static native int N_CurrentlyOn(CefThreadId threadId);
+    private static native int currentlyOn0(CefThreadId threadId);
 
-    private static native boolean N_PostTask(CefThreadId threadId, CefTask task);
+    private static native boolean postTask0(CefThreadId threadId, CefTask task);
 
-    private static native boolean N_PostDelayedTask(CefThreadId threadId, CefTask task, long delayMs);
+    private static native boolean postDelayedTask0(CefThreadId threadId, CefTask task, long delayMs);
 
-    private static native int N_AddCrossOriginWhitelistEntry(
+    private static native int addCrossOriginWhitelistEntry0(
             String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
 
-    private static native int N_RemoveCrossOriginWhitelistEntry(
+    private static native int removeCrossOriginWhitelistEntry0(
             String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
 
-    private static native int N_ClearCrossOriginWhitelist();
+    private static native int clearCrossOriginWhitelist0();
 
-    private static native int N_IsCertStatusError(CefCertStatus status);
+    private static native int isCertStatusError0(CefCertStatus status);
 
-    private static native boolean N_RegisterSchemeHandlerFactory(
+    private static native boolean registerSchemeHandlerFactory0(
             String schemeName, String domainName, CefSchemeHandlerFactory factory);
 
-    private static native boolean N_ClearSchemeHandlerFactories();
+    private static native boolean clearSchemeHandlerFactories0();
 
-    private static native int N_RegisterExtension(String extensionName, String javascriptCode, CefV8Handler handler);
+    private static native int registerExtension0(String extensionName, String javascriptCode, CefV8Handler handler);
 
-    private static native int N_LaunchProcess(CefCommandLine commandLine);
+    private static native int launchProcess0(CefCommandLine commandLine);
 
-    private static native int N_GetPath(CefPathKey key, String path);
+    private static native int getPath0(CefPathKey key, String path);
 
-    private static native int N_ExecuteProcess(
-            NativePointer args, CefApp application, NativePointer windowsSandboxInfo);
+    private static native int executeProcess0(NativePointer args, CefApp application, NativePointer windowsSandboxInfo);
 
-    private static native int N_Initialize(
+    private static native int initialize0(
             NativePointer args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
 
-    private static native int N_GetExitCode();
+    private static native int getExitCode0();
 
-    private static native void N_Shutdown();
+    private static native void shutdown0();
 
-    private static native void N_DoMessageLoopWork();
+    private static native void doMessageLoopWork0();
 
-    private static native void N_RunMessageLoop();
+    private static native void runMessageLoop0();
 
-    private static native void N_QuitMessageLoop();
+    private static native void quitMessageLoop0();
 
-    private static native void N_SetNestableTasksAllowed(int allowed);
+    private static native void setNestableTasksAllowed0(int allowed);
 
-    private static native int N_CreateDirectory(String fullPath);
+    private static native int createDirectory0(String fullPath);
 
-    private static native int N_GetTempDirectory(String tempDir);
+    private static native int getTempDirectory0(String tempDir);
 
-    private static native int N_CreateNewTempDirectory(String prefix, String newTempPath);
+    private static native int createNewTempDirectory0(String prefix, String newTempPath);
 
-    private static native int N_CreateTempDirectoryInDirectory(String baseDir, String prefix, String newDir);
+    private static native int createTempDirectoryInDirectory0(String baseDir, String prefix, String newDir);
 
-    private static native int N_DirectoryExists(String path);
+    private static native int directoryExists0(String path);
 
-    private static native int N_DeleteFile(String path, int recursive);
+    private static native int deleteFile0(String path, int recursive);
 
-    private static native int N_ZipDirectory(String srcDir, String destFile, int includeHiddenFiles);
+    private static native int zipDirectory0(String srcDir, String destFile, int includeHiddenFiles);
 
-    private static native void N_LoadCrlsetsFile(String path);
+    private static native void loadCrlsetsFile0(String path);
 }

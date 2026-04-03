@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_preference_capi.h"
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceRegistrar_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceRegistrar), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     // Scoped struct - no ref-counting, release is a no-op.
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefPreferenceRegistrar_00024NativePeer_N_1AddPreference(JNIEnv* env, jobject obj, jlong self, jstring name, jobject default_value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPreferenceRegistrar), addPreference0)(JNIEnv* env, jobject obj, jlong self, jstring name, jobject default_value) {
     auto* s = reinterpret_cast<cef_preference_registrar_t*>(self);
     if (!s) return JNI_FALSE;
     auto _name_str = JStringToCefString(env, name);

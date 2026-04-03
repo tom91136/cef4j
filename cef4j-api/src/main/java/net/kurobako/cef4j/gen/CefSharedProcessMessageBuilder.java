@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that builds a CefProcessMessage containing a shared memory region. This class is not thread-safe but may be
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:43</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
     /**
@@ -72,7 +75,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefSharedProcessMessageBuilder> create(@Nullable String name, long byteSize) {
-        return Optional.ofNullable(NativePeer.N_Create(name, byteSize));
+        return Optional.ofNullable(NativePeer.create0(name, byteSize));
     }
 
     final class NativePeer implements CefSharedProcessMessageBuilder, AutoCloseable {
@@ -114,45 +117,45 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
             public void run() {
                 if (_log.isTraceEnabled())
                     _log.trace("release CefSharedProcessMessageBuilder 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public long size() {
             checkNotClosed();
-            return N_Size(nativePtr);
+            return size0(nativePtr);
         }
 
         @Override
         public NativePointer memory() {
             checkNotClosed();
-            return N_Memory(nativePtr);
+            return memory0(nativePtr);
         }
 
         @Override
         public Optional<CefProcessMessage> build() {
             checkNotClosed();
-            return Optional.ofNullable(N_Build(nativePtr));
+            return Optional.ofNullable(build0(nativePtr));
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native long N_Size(long self);
+        private static native long size0(long self);
 
-        private static native NativePointer N_Memory(long self);
+        private static native NativePointer memory0(long self);
 
-        private static native CefProcessMessage N_Build(long self);
+        private static native CefProcessMessage build0(long self);
 
-        static native CefSharedProcessMessageBuilder N_Create(String name, long byteSize);
+        static native CefSharedProcessMessageBuilder create0(String name, long byteSize);
 
         @Override
         public boolean equals(Object obj) {

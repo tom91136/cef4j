@@ -26,7 +26,7 @@ public final class OS {
         return OS_ARCH.equals("aarch64") || OS_ARCH.equals("arm64");
     }
 
-    public static boolean isX86_64() {
+    public static boolean isAmd64() {
         return OS_ARCH.equals("amd64") || OS_ARCH.equals("x86_64");
     }
 
@@ -39,10 +39,10 @@ public final class OS {
     public static String getPlatform() {
         if (isLinux()) {
             if (isArm64()) return "linuxarm64";
-            if (isX86_64()) return "linux64";
+            if (isAmd64()) return "linux64";
         } else if (isMacOS()) {
             if (isArm64()) return "macosarm64";
-            if (isX86_64()) return "macosx64";
+            if (isAmd64()) return "macosx64";
         } else if (isWindows()) {
             return "windows64";
         }

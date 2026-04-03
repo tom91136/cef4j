@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that manages custom preference registrations.
@@ -15,6 +17,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:47</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefPreferenceRegistrar extends CefLibraryObject {
 
     /**
@@ -74,20 +77,20 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefPreferenceRegistrar 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue) {
             checkNotClosed();
             CefLibraryObject.requireOpen(defaultValue, "CefValue");
-            return N_AddPreference(nativePtr, name, defaultValue);
+            return addPreference0(nativePtr, name, defaultValue);
         }
 
-        private static native boolean N_AddPreference(long self, String name, CefValue defaultValue);
+        private static native boolean addPreference0(long self, String name, CefValue defaultValue);
 
         @Override
         public boolean equals(Object obj) {

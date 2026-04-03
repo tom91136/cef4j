@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_life_span_handler_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -9,6 +9,8 @@
 
 #include <atomic>
 #include "jni_util.h"
+
+extern "C" cef_client_t* Create_JniCefClient(JNIEnv *env, jobject handler);
 
 struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
     JavaVM *jvm;
@@ -29,7 +31,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
     static int CEF_CALLBACK _on_before_popup(cef_life_span_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, int popup_id, const cef_string_t* target_url, const cef_string_t* target_frame_name, cef_window_open_disposition_t target_disposition, int user_gesture, const cef_popup_features_t* popupFeatures, struct _cef_window_info_t* windowInfo, struct _cef_client_t** client, struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t** extra_info, int* no_javascript_access) {
         auto* h = reinterpret_cast<JniCefLifeSpanHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(97) < 0) {return false;}
+        if (env->PushLocalFrame(141) < 0) {return false;}
         cef_browser_t* _p_browser = browser;
         if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -57,17 +59,21 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
         auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
-        auto j_windowInfo = windowInfo ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor, _bv_windowInfo_window_name, _bv_windowInfo_bounds, static_cast<jlong>(windowInfo->parent_window), static_cast<jint>(windowInfo->windowless_rendering_enabled), static_cast<jint>(windowInfo->shared_texture_enabled), static_cast<jint>(windowInfo->external_begin_frame_enabled), static_cast<jlong>(windowInfo->window), _bv_windowInfo_runtime_style) : nullptr;
+        auto j_windowInfo = windowInfo
+        ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
+                _bv_windowInfo_window_name,
+                _bv_windowInfo_bounds,
+                static_cast<jlong>(windowInfo->parent_window),
+                static_cast<jint>(windowInfo->windowless_rendering_enabled),
+                static_cast<jint>(windowInfo->shared_texture_enabled),
+                static_cast<jint>(windowInfo->external_begin_frame_enabled),
+                static_cast<jlong>(windowInfo->window),
+                _bv_windowInfo_runtime_style)
+        : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
         auto j_client_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
         auto j_client_ar_ctor = env->GetMethodID(j_client_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_client_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefClient$NativePeer");
-        auto j_client_peer_ctor = env->GetMethodID(j_client_peer_cls, "<init>", "(J)V");
         jobject j_client_init = nullptr;
-        if (client && *client) {
-            {   auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(*client); _b->add_ref(_b);}
-            j_client_init = env->NewObject(j_client_peer_cls, j_client_peer_ctor, reinterpret_cast<jlong>(*client));
-        }
         auto j_client = env->NewObject(j_client_ar_cls, j_client_ar_ctor, j_client_init);
         auto _bv_settings_standard_font_family = CefStringToJString(env, &settings->standard_font_family);
         auto _bv_settings_fixed_font_family = CefStringToJString(env, &settings->fixed_font_family);
@@ -123,7 +129,37 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
         auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
-        auto j_settings = settings ? env->NewObject(j_settings_cls, j_settings_ctor, static_cast<jint>(settings->windowless_frame_rate), _bv_settings_standard_font_family, _bv_settings_fixed_font_family, _bv_settings_serif_font_family, _bv_settings_sans_serif_font_family, _bv_settings_cursive_font_family, _bv_settings_fantasy_font_family, static_cast<jint>(settings->default_font_size), static_cast<jint>(settings->default_fixed_font_size), static_cast<jint>(settings->minimum_font_size), static_cast<jint>(settings->minimum_logical_font_size), _bv_settings_default_encoding, _bv_settings_remote_fonts, _bv_settings_javascript, _bv_settings_javascript_close_windows, _bv_settings_javascript_access_clipboard, _bv_settings_javascript_dom_paste, _bv_settings_image_loading, _bv_settings_image_shrink_standalone_to_fit, _bv_settings_text_area_resize, _bv_settings_tab_to_links, _bv_settings_local_storage, _bv_settings_databases_deprecated, _bv_settings_webgl, static_cast<jint>(settings->background_color), _bv_settings_chrome_status_bubble, _bv_settings_chrome_zoom_bubble, _bv_settings_ax_viewport_collapse) : nullptr;
+        auto j_settings = settings
+        ? env->NewObject(j_settings_cls, j_settings_ctor,
+                static_cast<jint>(settings->windowless_frame_rate),
+                _bv_settings_standard_font_family,
+                _bv_settings_fixed_font_family,
+                _bv_settings_serif_font_family,
+                _bv_settings_sans_serif_font_family,
+                _bv_settings_cursive_font_family,
+                _bv_settings_fantasy_font_family,
+                static_cast<jint>(settings->default_font_size),
+                static_cast<jint>(settings->default_fixed_font_size),
+                static_cast<jint>(settings->minimum_font_size),
+                static_cast<jint>(settings->minimum_logical_font_size),
+                _bv_settings_default_encoding,
+                _bv_settings_remote_fonts,
+                _bv_settings_javascript,
+                _bv_settings_javascript_close_windows,
+                _bv_settings_javascript_access_clipboard,
+                _bv_settings_javascript_dom_paste,
+                _bv_settings_image_loading,
+                _bv_settings_image_shrink_standalone_to_fit,
+                _bv_settings_text_area_resize,
+                _bv_settings_tab_to_links,
+                _bv_settings_local_storage,
+                _bv_settings_databases_deprecated,
+                _bv_settings_webgl,
+                static_cast<jint>(settings->background_color),
+                _bv_settings_chrome_status_bubble,
+                _bv_settings_chrome_zoom_bubble,
+                _bv_settings_ax_viewport_collapse)
+        : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
         auto j_extra_info_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
         auto j_extra_info_ar_ctor = env->GetMethodID(j_extra_info_ar_cls, "<init>", "(Ljava/lang/Object;)V");
@@ -142,19 +178,158 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_frame, static_cast<jint>(popup_id), j_target_url, j_target_frame_name, j_target_disposition, static_cast<jboolean>(user_gesture), j_popupFeatures, j_windowInfo, j_client, j_settings, j_extra_info, j_no_javascript_access);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
-        if (windowInfo && j_windowInfo) {jstring _wb_window_name = (jstring)env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowName", "Ljava/lang/String;")); if (_wb_window_name) {const jchar* _wb_window_name_chars = env->GetStringChars(_wb_window_name, nullptr); jsize _wb_window_name_len = env->GetStringLength(_wb_window_name); cef_string_set(reinterpret_cast<const char16_t*>(_wb_window_name_chars), _wb_window_name_len, &windowInfo->window_name, 1); env->ReleaseStringChars(_wb_window_name, _wb_window_name_chars);}auto _wb_bounds = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_wb_bounds) {auto _wb_boundsc = env->GetObjectClass(_wb_bounds); windowInfo->bounds.x = static_cast<decltype(windowInfo->bounds.x)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "x", "I"))); windowInfo->bounds.y = static_cast<decltype(windowInfo->bounds.y)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "y", "I"))); windowInfo->bounds.width = static_cast<decltype(windowInfo->bounds.width)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "width", "I"))); windowInfo->bounds.height = static_cast<decltype(windowInfo->bounds.height)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "height", "I")));}windowInfo->parent_window = static_cast<decltype(windowInfo->parent_window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J")))); windowInfo->windowless_rendering_enabled = static_cast<decltype(windowInfo->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I"))); windowInfo->shared_texture_enabled = static_cast<decltype(windowInfo->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I"))); windowInfo->external_begin_frame_enabled = static_cast<decltype(windowInfo->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I"))); windowInfo->window = static_cast<decltype(windowInfo->window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "window", "J")))); auto _wb_runtime_style = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;")); if (_wb_runtime_style) {windowInfo->runtime_style = static_cast<decltype(windowInfo->runtime_style)>(env->GetLongField(_wb_runtime_style, env->GetFieldID(env->GetObjectClass(_wb_runtime_style), "value", "J")));}}
+        if (windowInfo && j_windowInfo) {
+            jstring _wb_window_name = (jstring)env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowName", "Ljava/lang/String;"));
+            if (_wb_window_name) {
+                const jchar* _wb_window_name_chars = env->GetStringChars(_wb_window_name, nullptr);
+                jsize _wb_window_name_len = env->GetStringLength(_wb_window_name);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_window_name_chars), _wb_window_name_len, &windowInfo->window_name, 1);
+                env->ReleaseStringChars(_wb_window_name, _wb_window_name_chars);
+            }
+            auto _wb_bounds = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;"));
+            if (_wb_bounds) {
+                auto _wb_boundsc = env->GetObjectClass(_wb_bounds);
+                windowInfo->bounds.x = static_cast<decltype(windowInfo->bounds.x)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "x", "I")));
+                windowInfo->bounds.y = static_cast<decltype(windowInfo->bounds.y)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "y", "I")));
+                windowInfo->bounds.width = static_cast<decltype(windowInfo->bounds.width)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "width", "I")));
+                windowInfo->bounds.height = static_cast<decltype(windowInfo->bounds.height)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "height", "I")));
+            }
+            windowInfo->parent_window = static_cast<decltype(windowInfo->parent_window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J"))));
+            windowInfo->windowless_rendering_enabled = static_cast<decltype(windowInfo->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I")));
+            windowInfo->shared_texture_enabled = static_cast<decltype(windowInfo->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I")));
+            windowInfo->external_begin_frame_enabled = static_cast<decltype(windowInfo->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I")));
+            windowInfo->window = static_cast<decltype(windowInfo->window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "window", "J"))));
+            auto _wb_runtime_style = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;"));
+            if (_wb_runtime_style) {
+                windowInfo->runtime_style = static_cast<decltype(windowInfo->runtime_style)>(env->GetLongField(_wb_runtime_style, env->GetFieldID(env->GetObjectClass(_wb_runtime_style), "value", "J")));
+            }
+        }
         if (client) {
             auto j_client_get = env->GetMethodID(j_client_ar_cls, "get", "()Ljava/lang/Object;");
             auto j_client_new = env->CallObjectMethod(j_client, j_client_get);
-            if (j_client_new && j_client_new != j_client_init) {
-                auto j_client_fid = env->GetFieldID(j_client_peer_cls, "nativePtr", "J");
-                jlong j_client_ptr = env->GetLongField(j_client_new, j_client_fid);
-                *client = reinterpret_cast<cef_client_t*>(j_client_ptr);
-            } else if (!j_client_new) {
+            if (j_client_new) {
+                *client = Create_JniCefClient(env, j_client_new);
+            } else if (!j_client_new && j_client_new != j_client_init) {
                 *client = nullptr;
             }
         }
-        if (settings && j_settings) {settings->windowless_frame_rate = static_cast<decltype(settings->windowless_frame_rate)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "windowlessFrameRate", "I"))); jstring _wb_standard_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "standardFontFamily", "Ljava/lang/String;")); if (_wb_standard_font_family) {const jchar* _wb_standard_font_family_chars = env->GetStringChars(_wb_standard_font_family, nullptr); jsize _wb_standard_font_family_len = env->GetStringLength(_wb_standard_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_standard_font_family_chars), _wb_standard_font_family_len, &settings->standard_font_family, 1); env->ReleaseStringChars(_wb_standard_font_family, _wb_standard_font_family_chars);}jstring _wb_fixed_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fixedFontFamily", "Ljava/lang/String;")); if (_wb_fixed_font_family) {const jchar* _wb_fixed_font_family_chars = env->GetStringChars(_wb_fixed_font_family, nullptr); jsize _wb_fixed_font_family_len = env->GetStringLength(_wb_fixed_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_fixed_font_family_chars), _wb_fixed_font_family_len, &settings->fixed_font_family, 1); env->ReleaseStringChars(_wb_fixed_font_family, _wb_fixed_font_family_chars);}jstring _wb_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "serifFontFamily", "Ljava/lang/String;")); if (_wb_serif_font_family) {const jchar* _wb_serif_font_family_chars = env->GetStringChars(_wb_serif_font_family, nullptr); jsize _wb_serif_font_family_len = env->GetStringLength(_wb_serif_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_serif_font_family_chars), _wb_serif_font_family_len, &settings->serif_font_family, 1); env->ReleaseStringChars(_wb_serif_font_family, _wb_serif_font_family_chars);}jstring _wb_sans_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "sansSerifFontFamily", "Ljava/lang/String;")); if (_wb_sans_serif_font_family) {const jchar* _wb_sans_serif_font_family_chars = env->GetStringChars(_wb_sans_serif_font_family, nullptr); jsize _wb_sans_serif_font_family_len = env->GetStringLength(_wb_sans_serif_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_sans_serif_font_family_chars), _wb_sans_serif_font_family_len, &settings->sans_serif_font_family, 1); env->ReleaseStringChars(_wb_sans_serif_font_family, _wb_sans_serif_font_family_chars);}jstring _wb_cursive_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "cursiveFontFamily", "Ljava/lang/String;")); if (_wb_cursive_font_family) {const jchar* _wb_cursive_font_family_chars = env->GetStringChars(_wb_cursive_font_family, nullptr); jsize _wb_cursive_font_family_len = env->GetStringLength(_wb_cursive_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_cursive_font_family_chars), _wb_cursive_font_family_len, &settings->cursive_font_family, 1); env->ReleaseStringChars(_wb_cursive_font_family, _wb_cursive_font_family_chars);}jstring _wb_fantasy_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fantasyFontFamily", "Ljava/lang/String;")); if (_wb_fantasy_font_family) {const jchar* _wb_fantasy_font_family_chars = env->GetStringChars(_wb_fantasy_font_family, nullptr); jsize _wb_fantasy_font_family_len = env->GetStringLength(_wb_fantasy_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_fantasy_font_family_chars), _wb_fantasy_font_family_len, &settings->fantasy_font_family, 1); env->ReleaseStringChars(_wb_fantasy_font_family, _wb_fantasy_font_family_chars);}settings->default_font_size = static_cast<decltype(settings->default_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFontSize", "I"))); settings->default_fixed_font_size = static_cast<decltype(settings->default_fixed_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFixedFontSize", "I"))); settings->minimum_font_size = static_cast<decltype(settings->minimum_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumFontSize", "I"))); settings->minimum_logical_font_size = static_cast<decltype(settings->minimum_logical_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumLogicalFontSize", "I"))); jstring _wb_default_encoding = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "defaultEncoding", "Ljava/lang/String;")); if (_wb_default_encoding) {const jchar* _wb_default_encoding_chars = env->GetStringChars(_wb_default_encoding, nullptr); jsize _wb_default_encoding_len = env->GetStringLength(_wb_default_encoding); cef_string_set(reinterpret_cast<const char16_t*>(_wb_default_encoding_chars), _wb_default_encoding_len, &settings->default_encoding, 1); env->ReleaseStringChars(_wb_default_encoding, _wb_default_encoding_chars);}auto _wb_remote_fonts = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "remoteFonts", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_remote_fonts) {settings->remote_fonts = static_cast<decltype(settings->remote_fonts)>(env->GetLongField(_wb_remote_fonts, env->GetFieldID(env->GetObjectClass(_wb_remote_fonts), "value", "J")));}auto _wb_javascript = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascript", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript) {settings->javascript = static_cast<decltype(settings->javascript)>(env->GetLongField(_wb_javascript, env->GetFieldID(env->GetObjectClass(_wb_javascript), "value", "J")));}auto _wb_javascript_close_windows = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptCloseWindows", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_close_windows) {settings->javascript_close_windows = static_cast<decltype(settings->javascript_close_windows)>(env->GetLongField(_wb_javascript_close_windows, env->GetFieldID(env->GetObjectClass(_wb_javascript_close_windows), "value", "J")));}auto _wb_javascript_access_clipboard = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptAccessClipboard", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_access_clipboard) {settings->javascript_access_clipboard = static_cast<decltype(settings->javascript_access_clipboard)>(env->GetLongField(_wb_javascript_access_clipboard, env->GetFieldID(env->GetObjectClass(_wb_javascript_access_clipboard), "value", "J")));}auto _wb_javascript_dom_paste = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptDomPaste", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_dom_paste) {settings->javascript_dom_paste = static_cast<decltype(settings->javascript_dom_paste)>(env->GetLongField(_wb_javascript_dom_paste, env->GetFieldID(env->GetObjectClass(_wb_javascript_dom_paste), "value", "J")));}auto _wb_image_loading = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageLoading", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_image_loading) {settings->image_loading = static_cast<decltype(settings->image_loading)>(env->GetLongField(_wb_image_loading, env->GetFieldID(env->GetObjectClass(_wb_image_loading), "value", "J")));}auto _wb_image_shrink_standalone_to_fit = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageShrinkStandaloneToFit", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_image_shrink_standalone_to_fit) {settings->image_shrink_standalone_to_fit = static_cast<decltype(settings->image_shrink_standalone_to_fit)>(env->GetLongField(_wb_image_shrink_standalone_to_fit, env->GetFieldID(env->GetObjectClass(_wb_image_shrink_standalone_to_fit), "value", "J")));}auto _wb_text_area_resize = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "textAreaResize", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_text_area_resize) {settings->text_area_resize = static_cast<decltype(settings->text_area_resize)>(env->GetLongField(_wb_text_area_resize, env->GetFieldID(env->GetObjectClass(_wb_text_area_resize), "value", "J")));}auto _wb_tab_to_links = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "tabToLinks", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_tab_to_links) {settings->tab_to_links = static_cast<decltype(settings->tab_to_links)>(env->GetLongField(_wb_tab_to_links, env->GetFieldID(env->GetObjectClass(_wb_tab_to_links), "value", "J")));}auto _wb_local_storage = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "localStorage", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_local_storage) {settings->local_storage = static_cast<decltype(settings->local_storage)>(env->GetLongField(_wb_local_storage, env->GetFieldID(env->GetObjectClass(_wb_local_storage), "value", "J")));}auto _wb_databases_deprecated = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "databasesDeprecated", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_databases_deprecated) {settings->databases_deprecated = static_cast<decltype(settings->databases_deprecated)>(env->GetLongField(_wb_databases_deprecated, env->GetFieldID(env->GetObjectClass(_wb_databases_deprecated), "value", "J")));}auto _wb_webgl = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "webgl", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_webgl) {settings->webgl = static_cast<decltype(settings->webgl)>(env->GetLongField(_wb_webgl, env->GetFieldID(env->GetObjectClass(_wb_webgl), "value", "J")));}settings->background_color = static_cast<decltype(settings->background_color)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "backgroundColor", "I"))); auto _wb_chrome_status_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeStatusBubble", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_chrome_status_bubble) {settings->chrome_status_bubble = static_cast<decltype(settings->chrome_status_bubble)>(env->GetLongField(_wb_chrome_status_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_status_bubble), "value", "J")));}auto _wb_chrome_zoom_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeZoomBubble", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_chrome_zoom_bubble) {settings->chrome_zoom_bubble = static_cast<decltype(settings->chrome_zoom_bubble)>(env->GetLongField(_wb_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_zoom_bubble), "value", "J")));}auto _wb_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_ax_viewport_collapse) {settings->ax_viewport_collapse = static_cast<decltype(settings->ax_viewport_collapse)>(env->GetLongField(_wb_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wb_ax_viewport_collapse), "value", "J")));}}
+        if (settings && j_settings) {
+            settings->windowless_frame_rate = static_cast<decltype(settings->windowless_frame_rate)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "windowlessFrameRate", "I")));
+            jstring _wb_standard_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "standardFontFamily", "Ljava/lang/String;"));
+            if (_wb_standard_font_family) {
+                const jchar* _wb_standard_font_family_chars = env->GetStringChars(_wb_standard_font_family, nullptr);
+                jsize _wb_standard_font_family_len = env->GetStringLength(_wb_standard_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_standard_font_family_chars), _wb_standard_font_family_len, &settings->standard_font_family, 1);
+                env->ReleaseStringChars(_wb_standard_font_family, _wb_standard_font_family_chars);
+            }
+            jstring _wb_fixed_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fixedFontFamily", "Ljava/lang/String;"));
+            if (_wb_fixed_font_family) {
+                const jchar* _wb_fixed_font_family_chars = env->GetStringChars(_wb_fixed_font_family, nullptr);
+                jsize _wb_fixed_font_family_len = env->GetStringLength(_wb_fixed_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_fixed_font_family_chars), _wb_fixed_font_family_len, &settings->fixed_font_family, 1);
+                env->ReleaseStringChars(_wb_fixed_font_family, _wb_fixed_font_family_chars);
+            }
+            jstring _wb_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "serifFontFamily", "Ljava/lang/String;"));
+            if (_wb_serif_font_family) {
+                const jchar* _wb_serif_font_family_chars = env->GetStringChars(_wb_serif_font_family, nullptr);
+                jsize _wb_serif_font_family_len = env->GetStringLength(_wb_serif_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_serif_font_family_chars), _wb_serif_font_family_len, &settings->serif_font_family, 1);
+                env->ReleaseStringChars(_wb_serif_font_family, _wb_serif_font_family_chars);
+            }
+            jstring _wb_sans_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "sansSerifFontFamily", "Ljava/lang/String;"));
+            if (_wb_sans_serif_font_family) {
+                const jchar* _wb_sans_serif_font_family_chars = env->GetStringChars(_wb_sans_serif_font_family, nullptr);
+                jsize _wb_sans_serif_font_family_len = env->GetStringLength(_wb_sans_serif_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_sans_serif_font_family_chars), _wb_sans_serif_font_family_len, &settings->sans_serif_font_family, 1);
+                env->ReleaseStringChars(_wb_sans_serif_font_family, _wb_sans_serif_font_family_chars);
+            }
+            jstring _wb_cursive_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "cursiveFontFamily", "Ljava/lang/String;"));
+            if (_wb_cursive_font_family) {
+                const jchar* _wb_cursive_font_family_chars = env->GetStringChars(_wb_cursive_font_family, nullptr);
+                jsize _wb_cursive_font_family_len = env->GetStringLength(_wb_cursive_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_cursive_font_family_chars), _wb_cursive_font_family_len, &settings->cursive_font_family, 1);
+                env->ReleaseStringChars(_wb_cursive_font_family, _wb_cursive_font_family_chars);
+            }
+            jstring _wb_fantasy_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fantasyFontFamily", "Ljava/lang/String;"));
+            if (_wb_fantasy_font_family) {
+                const jchar* _wb_fantasy_font_family_chars = env->GetStringChars(_wb_fantasy_font_family, nullptr);
+                jsize _wb_fantasy_font_family_len = env->GetStringLength(_wb_fantasy_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_fantasy_font_family_chars), _wb_fantasy_font_family_len, &settings->fantasy_font_family, 1);
+                env->ReleaseStringChars(_wb_fantasy_font_family, _wb_fantasy_font_family_chars);
+            }
+            settings->default_font_size = static_cast<decltype(settings->default_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFontSize", "I")));
+            settings->default_fixed_font_size = static_cast<decltype(settings->default_fixed_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFixedFontSize", "I")));
+            settings->minimum_font_size = static_cast<decltype(settings->minimum_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumFontSize", "I")));
+            settings->minimum_logical_font_size = static_cast<decltype(settings->minimum_logical_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumLogicalFontSize", "I")));
+            jstring _wb_default_encoding = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "defaultEncoding", "Ljava/lang/String;"));
+            if (_wb_default_encoding) {
+                const jchar* _wb_default_encoding_chars = env->GetStringChars(_wb_default_encoding, nullptr);
+                jsize _wb_default_encoding_len = env->GetStringLength(_wb_default_encoding);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_default_encoding_chars), _wb_default_encoding_len, &settings->default_encoding, 1);
+                env->ReleaseStringChars(_wb_default_encoding, _wb_default_encoding_chars);
+            }
+            auto _wb_remote_fonts = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "remoteFonts", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_remote_fonts) {
+                settings->remote_fonts = static_cast<decltype(settings->remote_fonts)>(env->GetLongField(_wb_remote_fonts, env->GetFieldID(env->GetObjectClass(_wb_remote_fonts), "value", "J")));
+            }
+            auto _wb_javascript = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascript", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript) {
+                settings->javascript = static_cast<decltype(settings->javascript)>(env->GetLongField(_wb_javascript, env->GetFieldID(env->GetObjectClass(_wb_javascript), "value", "J")));
+            }
+            auto _wb_javascript_close_windows = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptCloseWindows", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_close_windows) {
+                settings->javascript_close_windows = static_cast<decltype(settings->javascript_close_windows)>(env->GetLongField(_wb_javascript_close_windows, env->GetFieldID(env->GetObjectClass(_wb_javascript_close_windows), "value", "J")));
+            }
+            auto _wb_javascript_access_clipboard = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptAccessClipboard", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_access_clipboard) {
+                settings->javascript_access_clipboard = static_cast<decltype(settings->javascript_access_clipboard)>(env->GetLongField(_wb_javascript_access_clipboard, env->GetFieldID(env->GetObjectClass(_wb_javascript_access_clipboard), "value", "J")));
+            }
+            auto _wb_javascript_dom_paste = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptDomPaste", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_dom_paste) {
+                settings->javascript_dom_paste = static_cast<decltype(settings->javascript_dom_paste)>(env->GetLongField(_wb_javascript_dom_paste, env->GetFieldID(env->GetObjectClass(_wb_javascript_dom_paste), "value", "J")));
+            }
+            auto _wb_image_loading = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageLoading", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_image_loading) {
+                settings->image_loading = static_cast<decltype(settings->image_loading)>(env->GetLongField(_wb_image_loading, env->GetFieldID(env->GetObjectClass(_wb_image_loading), "value", "J")));
+            }
+            auto _wb_image_shrink_standalone_to_fit = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageShrinkStandaloneToFit", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_image_shrink_standalone_to_fit) {
+                settings->image_shrink_standalone_to_fit = static_cast<decltype(settings->image_shrink_standalone_to_fit)>(env->GetLongField(_wb_image_shrink_standalone_to_fit, env->GetFieldID(env->GetObjectClass(_wb_image_shrink_standalone_to_fit), "value", "J")));
+            }
+            auto _wb_text_area_resize = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "textAreaResize", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_text_area_resize) {
+                settings->text_area_resize = static_cast<decltype(settings->text_area_resize)>(env->GetLongField(_wb_text_area_resize, env->GetFieldID(env->GetObjectClass(_wb_text_area_resize), "value", "J")));
+            }
+            auto _wb_tab_to_links = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "tabToLinks", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_tab_to_links) {
+                settings->tab_to_links = static_cast<decltype(settings->tab_to_links)>(env->GetLongField(_wb_tab_to_links, env->GetFieldID(env->GetObjectClass(_wb_tab_to_links), "value", "J")));
+            }
+            auto _wb_local_storage = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "localStorage", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_local_storage) {
+                settings->local_storage = static_cast<decltype(settings->local_storage)>(env->GetLongField(_wb_local_storage, env->GetFieldID(env->GetObjectClass(_wb_local_storage), "value", "J")));
+            }
+            auto _wb_databases_deprecated = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "databasesDeprecated", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_databases_deprecated) {
+                settings->databases_deprecated = static_cast<decltype(settings->databases_deprecated)>(env->GetLongField(_wb_databases_deprecated, env->GetFieldID(env->GetObjectClass(_wb_databases_deprecated), "value", "J")));
+            }
+            auto _wb_webgl = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "webgl", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_webgl) {
+                settings->webgl = static_cast<decltype(settings->webgl)>(env->GetLongField(_wb_webgl, env->GetFieldID(env->GetObjectClass(_wb_webgl), "value", "J")));
+            }
+            settings->background_color = static_cast<decltype(settings->background_color)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "backgroundColor", "I")));
+            auto _wb_chrome_status_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeStatusBubble", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_chrome_status_bubble) {
+                settings->chrome_status_bubble = static_cast<decltype(settings->chrome_status_bubble)>(env->GetLongField(_wb_chrome_status_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_status_bubble), "value", "J")));
+            }
+            auto _wb_chrome_zoom_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeZoomBubble", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_chrome_zoom_bubble) {
+                settings->chrome_zoom_bubble = static_cast<decltype(settings->chrome_zoom_bubble)>(env->GetLongField(_wb_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_zoom_bubble), "value", "J")));
+            }
+            auto _wb_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_ax_viewport_collapse) {
+                settings->ax_viewport_collapse = static_cast<decltype(settings->ax_viewport_collapse)>(env->GetLongField(_wb_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wb_ax_viewport_collapse), "value", "J")));
+            }
+        }
         if (extra_info) {
             auto j_extra_info_get = env->GetMethodID(j_extra_info_ar_cls, "get", "()Ljava/lang/Object;");
             auto j_extra_info_new = env->CallObjectMethod(j_extra_info, j_extra_info_get);
@@ -191,7 +366,7 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
     static void CEF_CALLBACK _on_before_dev_tools_popup(cef_life_span_handler_t* self, struct _cef_browser_t* browser, struct _cef_window_info_t* windowInfo, struct _cef_client_t** client, struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t** extra_info, int* use_default_window) {
         auto* h = reinterpret_cast<JniCefLifeSpanHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(86) < 0) {return;}
+        if (env->PushLocalFrame(130) < 0) {return;}
         cef_browser_t* _p_browser = browser;
         if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -206,17 +381,21 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
         auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
-        auto j_windowInfo = windowInfo ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor, _bv_windowInfo_window_name, _bv_windowInfo_bounds, static_cast<jlong>(windowInfo->parent_window), static_cast<jint>(windowInfo->windowless_rendering_enabled), static_cast<jint>(windowInfo->shared_texture_enabled), static_cast<jint>(windowInfo->external_begin_frame_enabled), static_cast<jlong>(windowInfo->window), _bv_windowInfo_runtime_style) : nullptr;
+        auto j_windowInfo = windowInfo
+        ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
+                _bv_windowInfo_window_name,
+                _bv_windowInfo_bounds,
+                static_cast<jlong>(windowInfo->parent_window),
+                static_cast<jint>(windowInfo->windowless_rendering_enabled),
+                static_cast<jint>(windowInfo->shared_texture_enabled),
+                static_cast<jint>(windowInfo->external_begin_frame_enabled),
+                static_cast<jlong>(windowInfo->window),
+                _bv_windowInfo_runtime_style)
+        : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
         auto j_client_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
         auto j_client_ar_ctor = env->GetMethodID(j_client_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_client_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefClient$NativePeer");
-        auto j_client_peer_ctor = env->GetMethodID(j_client_peer_cls, "<init>", "(J)V");
         jobject j_client_init = nullptr;
-        if (client && *client) {
-            {   auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(*client); _b->add_ref(_b);}
-            j_client_init = env->NewObject(j_client_peer_cls, j_client_peer_ctor, reinterpret_cast<jlong>(*client));
-        }
         auto j_client = env->NewObject(j_client_ar_cls, j_client_ar_ctor, j_client_init);
         auto _bv_settings_standard_font_family = CefStringToJString(env, &settings->standard_font_family);
         auto _bv_settings_fixed_font_family = CefStringToJString(env, &settings->fixed_font_family);
@@ -272,7 +451,37 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
         auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
-        auto j_settings = settings ? env->NewObject(j_settings_cls, j_settings_ctor, static_cast<jint>(settings->windowless_frame_rate), _bv_settings_standard_font_family, _bv_settings_fixed_font_family, _bv_settings_serif_font_family, _bv_settings_sans_serif_font_family, _bv_settings_cursive_font_family, _bv_settings_fantasy_font_family, static_cast<jint>(settings->default_font_size), static_cast<jint>(settings->default_fixed_font_size), static_cast<jint>(settings->minimum_font_size), static_cast<jint>(settings->minimum_logical_font_size), _bv_settings_default_encoding, _bv_settings_remote_fonts, _bv_settings_javascript, _bv_settings_javascript_close_windows, _bv_settings_javascript_access_clipboard, _bv_settings_javascript_dom_paste, _bv_settings_image_loading, _bv_settings_image_shrink_standalone_to_fit, _bv_settings_text_area_resize, _bv_settings_tab_to_links, _bv_settings_local_storage, _bv_settings_databases_deprecated, _bv_settings_webgl, static_cast<jint>(settings->background_color), _bv_settings_chrome_status_bubble, _bv_settings_chrome_zoom_bubble, _bv_settings_ax_viewport_collapse) : nullptr;
+        auto j_settings = settings
+        ? env->NewObject(j_settings_cls, j_settings_ctor,
+                static_cast<jint>(settings->windowless_frame_rate),
+                _bv_settings_standard_font_family,
+                _bv_settings_fixed_font_family,
+                _bv_settings_serif_font_family,
+                _bv_settings_sans_serif_font_family,
+                _bv_settings_cursive_font_family,
+                _bv_settings_fantasy_font_family,
+                static_cast<jint>(settings->default_font_size),
+                static_cast<jint>(settings->default_fixed_font_size),
+                static_cast<jint>(settings->minimum_font_size),
+                static_cast<jint>(settings->minimum_logical_font_size),
+                _bv_settings_default_encoding,
+                _bv_settings_remote_fonts,
+                _bv_settings_javascript,
+                _bv_settings_javascript_close_windows,
+                _bv_settings_javascript_access_clipboard,
+                _bv_settings_javascript_dom_paste,
+                _bv_settings_image_loading,
+                _bv_settings_image_shrink_standalone_to_fit,
+                _bv_settings_text_area_resize,
+                _bv_settings_tab_to_links,
+                _bv_settings_local_storage,
+                _bv_settings_databases_deprecated,
+                _bv_settings_webgl,
+                static_cast<jint>(settings->background_color),
+                _bv_settings_chrome_status_bubble,
+                _bv_settings_chrome_zoom_bubble,
+                _bv_settings_ax_viewport_collapse)
+        : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
         auto j_extra_info_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
         auto j_extra_info_ar_ctor = env->GetMethodID(j_extra_info_ar_cls, "<init>", "(Ljava/lang/Object;)V");
@@ -291,19 +500,158 @@ struct JniCefLifeSpanHandler: public cef_life_span_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_windowInfo, j_client, j_settings, j_extra_info, j_use_default_window);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
-        if (windowInfo && j_windowInfo) {jstring _wb_window_name = (jstring)env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowName", "Ljava/lang/String;")); if (_wb_window_name) {const jchar* _wb_window_name_chars = env->GetStringChars(_wb_window_name, nullptr); jsize _wb_window_name_len = env->GetStringLength(_wb_window_name); cef_string_set(reinterpret_cast<const char16_t*>(_wb_window_name_chars), _wb_window_name_len, &windowInfo->window_name, 1); env->ReleaseStringChars(_wb_window_name, _wb_window_name_chars);}auto _wb_bounds = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_wb_bounds) {auto _wb_boundsc = env->GetObjectClass(_wb_bounds); windowInfo->bounds.x = static_cast<decltype(windowInfo->bounds.x)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "x", "I"))); windowInfo->bounds.y = static_cast<decltype(windowInfo->bounds.y)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "y", "I"))); windowInfo->bounds.width = static_cast<decltype(windowInfo->bounds.width)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "width", "I"))); windowInfo->bounds.height = static_cast<decltype(windowInfo->bounds.height)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "height", "I")));}windowInfo->parent_window = static_cast<decltype(windowInfo->parent_window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J")))); windowInfo->windowless_rendering_enabled = static_cast<decltype(windowInfo->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I"))); windowInfo->shared_texture_enabled = static_cast<decltype(windowInfo->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I"))); windowInfo->external_begin_frame_enabled = static_cast<decltype(windowInfo->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I"))); windowInfo->window = static_cast<decltype(windowInfo->window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "window", "J")))); auto _wb_runtime_style = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;")); if (_wb_runtime_style) {windowInfo->runtime_style = static_cast<decltype(windowInfo->runtime_style)>(env->GetLongField(_wb_runtime_style, env->GetFieldID(env->GetObjectClass(_wb_runtime_style), "value", "J")));}}
+        if (windowInfo && j_windowInfo) {
+            jstring _wb_window_name = (jstring)env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowName", "Ljava/lang/String;"));
+            if (_wb_window_name) {
+                const jchar* _wb_window_name_chars = env->GetStringChars(_wb_window_name, nullptr);
+                jsize _wb_window_name_len = env->GetStringLength(_wb_window_name);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_window_name_chars), _wb_window_name_len, &windowInfo->window_name, 1);
+                env->ReleaseStringChars(_wb_window_name, _wb_window_name_chars);
+            }
+            auto _wb_bounds = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;"));
+            if (_wb_bounds) {
+                auto _wb_boundsc = env->GetObjectClass(_wb_bounds);
+                windowInfo->bounds.x = static_cast<decltype(windowInfo->bounds.x)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "x", "I")));
+                windowInfo->bounds.y = static_cast<decltype(windowInfo->bounds.y)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "y", "I")));
+                windowInfo->bounds.width = static_cast<decltype(windowInfo->bounds.width)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "width", "I")));
+                windowInfo->bounds.height = static_cast<decltype(windowInfo->bounds.height)>(env->GetIntField(_wb_bounds, env->GetFieldID(_wb_boundsc, "height", "I")));
+            }
+            windowInfo->parent_window = static_cast<decltype(windowInfo->parent_window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J"))));
+            windowInfo->windowless_rendering_enabled = static_cast<decltype(windowInfo->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I")));
+            windowInfo->shared_texture_enabled = static_cast<decltype(windowInfo->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I")));
+            windowInfo->external_begin_frame_enabled = static_cast<decltype(windowInfo->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I")));
+            windowInfo->window = static_cast<decltype(windowInfo->window)>(static_cast<size_t>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "window", "J"))));
+            auto _wb_runtime_style = env->GetObjectField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "runtimeStyle", "Lnet/kurobako/cef4j/gen/CefRuntimeStyle;"));
+            if (_wb_runtime_style) {
+                windowInfo->runtime_style = static_cast<decltype(windowInfo->runtime_style)>(env->GetLongField(_wb_runtime_style, env->GetFieldID(env->GetObjectClass(_wb_runtime_style), "value", "J")));
+            }
+        }
         if (client) {
             auto j_client_get = env->GetMethodID(j_client_ar_cls, "get", "()Ljava/lang/Object;");
             auto j_client_new = env->CallObjectMethod(j_client, j_client_get);
-            if (j_client_new && j_client_new != j_client_init) {
-                auto j_client_fid = env->GetFieldID(j_client_peer_cls, "nativePtr", "J");
-                jlong j_client_ptr = env->GetLongField(j_client_new, j_client_fid);
-                *client = reinterpret_cast<cef_client_t*>(j_client_ptr);
-            } else if (!j_client_new) {
+            if (j_client_new) {
+                *client = Create_JniCefClient(env, j_client_new);
+            } else if (!j_client_new && j_client_new != j_client_init) {
                 *client = nullptr;
             }
         }
-        if (settings && j_settings) {settings->windowless_frame_rate = static_cast<decltype(settings->windowless_frame_rate)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "windowlessFrameRate", "I"))); jstring _wb_standard_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "standardFontFamily", "Ljava/lang/String;")); if (_wb_standard_font_family) {const jchar* _wb_standard_font_family_chars = env->GetStringChars(_wb_standard_font_family, nullptr); jsize _wb_standard_font_family_len = env->GetStringLength(_wb_standard_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_standard_font_family_chars), _wb_standard_font_family_len, &settings->standard_font_family, 1); env->ReleaseStringChars(_wb_standard_font_family, _wb_standard_font_family_chars);}jstring _wb_fixed_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fixedFontFamily", "Ljava/lang/String;")); if (_wb_fixed_font_family) {const jchar* _wb_fixed_font_family_chars = env->GetStringChars(_wb_fixed_font_family, nullptr); jsize _wb_fixed_font_family_len = env->GetStringLength(_wb_fixed_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_fixed_font_family_chars), _wb_fixed_font_family_len, &settings->fixed_font_family, 1); env->ReleaseStringChars(_wb_fixed_font_family, _wb_fixed_font_family_chars);}jstring _wb_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "serifFontFamily", "Ljava/lang/String;")); if (_wb_serif_font_family) {const jchar* _wb_serif_font_family_chars = env->GetStringChars(_wb_serif_font_family, nullptr); jsize _wb_serif_font_family_len = env->GetStringLength(_wb_serif_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_serif_font_family_chars), _wb_serif_font_family_len, &settings->serif_font_family, 1); env->ReleaseStringChars(_wb_serif_font_family, _wb_serif_font_family_chars);}jstring _wb_sans_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "sansSerifFontFamily", "Ljava/lang/String;")); if (_wb_sans_serif_font_family) {const jchar* _wb_sans_serif_font_family_chars = env->GetStringChars(_wb_sans_serif_font_family, nullptr); jsize _wb_sans_serif_font_family_len = env->GetStringLength(_wb_sans_serif_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_sans_serif_font_family_chars), _wb_sans_serif_font_family_len, &settings->sans_serif_font_family, 1); env->ReleaseStringChars(_wb_sans_serif_font_family, _wb_sans_serif_font_family_chars);}jstring _wb_cursive_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "cursiveFontFamily", "Ljava/lang/String;")); if (_wb_cursive_font_family) {const jchar* _wb_cursive_font_family_chars = env->GetStringChars(_wb_cursive_font_family, nullptr); jsize _wb_cursive_font_family_len = env->GetStringLength(_wb_cursive_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_cursive_font_family_chars), _wb_cursive_font_family_len, &settings->cursive_font_family, 1); env->ReleaseStringChars(_wb_cursive_font_family, _wb_cursive_font_family_chars);}jstring _wb_fantasy_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fantasyFontFamily", "Ljava/lang/String;")); if (_wb_fantasy_font_family) {const jchar* _wb_fantasy_font_family_chars = env->GetStringChars(_wb_fantasy_font_family, nullptr); jsize _wb_fantasy_font_family_len = env->GetStringLength(_wb_fantasy_font_family); cef_string_set(reinterpret_cast<const char16_t*>(_wb_fantasy_font_family_chars), _wb_fantasy_font_family_len, &settings->fantasy_font_family, 1); env->ReleaseStringChars(_wb_fantasy_font_family, _wb_fantasy_font_family_chars);}settings->default_font_size = static_cast<decltype(settings->default_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFontSize", "I"))); settings->default_fixed_font_size = static_cast<decltype(settings->default_fixed_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFixedFontSize", "I"))); settings->minimum_font_size = static_cast<decltype(settings->minimum_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumFontSize", "I"))); settings->minimum_logical_font_size = static_cast<decltype(settings->minimum_logical_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumLogicalFontSize", "I"))); jstring _wb_default_encoding = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "defaultEncoding", "Ljava/lang/String;")); if (_wb_default_encoding) {const jchar* _wb_default_encoding_chars = env->GetStringChars(_wb_default_encoding, nullptr); jsize _wb_default_encoding_len = env->GetStringLength(_wb_default_encoding); cef_string_set(reinterpret_cast<const char16_t*>(_wb_default_encoding_chars), _wb_default_encoding_len, &settings->default_encoding, 1); env->ReleaseStringChars(_wb_default_encoding, _wb_default_encoding_chars);}auto _wb_remote_fonts = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "remoteFonts", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_remote_fonts) {settings->remote_fonts = static_cast<decltype(settings->remote_fonts)>(env->GetLongField(_wb_remote_fonts, env->GetFieldID(env->GetObjectClass(_wb_remote_fonts), "value", "J")));}auto _wb_javascript = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascript", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript) {settings->javascript = static_cast<decltype(settings->javascript)>(env->GetLongField(_wb_javascript, env->GetFieldID(env->GetObjectClass(_wb_javascript), "value", "J")));}auto _wb_javascript_close_windows = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptCloseWindows", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_close_windows) {settings->javascript_close_windows = static_cast<decltype(settings->javascript_close_windows)>(env->GetLongField(_wb_javascript_close_windows, env->GetFieldID(env->GetObjectClass(_wb_javascript_close_windows), "value", "J")));}auto _wb_javascript_access_clipboard = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptAccessClipboard", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_access_clipboard) {settings->javascript_access_clipboard = static_cast<decltype(settings->javascript_access_clipboard)>(env->GetLongField(_wb_javascript_access_clipboard, env->GetFieldID(env->GetObjectClass(_wb_javascript_access_clipboard), "value", "J")));}auto _wb_javascript_dom_paste = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptDomPaste", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_javascript_dom_paste) {settings->javascript_dom_paste = static_cast<decltype(settings->javascript_dom_paste)>(env->GetLongField(_wb_javascript_dom_paste, env->GetFieldID(env->GetObjectClass(_wb_javascript_dom_paste), "value", "J")));}auto _wb_image_loading = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageLoading", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_image_loading) {settings->image_loading = static_cast<decltype(settings->image_loading)>(env->GetLongField(_wb_image_loading, env->GetFieldID(env->GetObjectClass(_wb_image_loading), "value", "J")));}auto _wb_image_shrink_standalone_to_fit = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageShrinkStandaloneToFit", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_image_shrink_standalone_to_fit) {settings->image_shrink_standalone_to_fit = static_cast<decltype(settings->image_shrink_standalone_to_fit)>(env->GetLongField(_wb_image_shrink_standalone_to_fit, env->GetFieldID(env->GetObjectClass(_wb_image_shrink_standalone_to_fit), "value", "J")));}auto _wb_text_area_resize = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "textAreaResize", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_text_area_resize) {settings->text_area_resize = static_cast<decltype(settings->text_area_resize)>(env->GetLongField(_wb_text_area_resize, env->GetFieldID(env->GetObjectClass(_wb_text_area_resize), "value", "J")));}auto _wb_tab_to_links = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "tabToLinks", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_tab_to_links) {settings->tab_to_links = static_cast<decltype(settings->tab_to_links)>(env->GetLongField(_wb_tab_to_links, env->GetFieldID(env->GetObjectClass(_wb_tab_to_links), "value", "J")));}auto _wb_local_storage = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "localStorage", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_local_storage) {settings->local_storage = static_cast<decltype(settings->local_storage)>(env->GetLongField(_wb_local_storage, env->GetFieldID(env->GetObjectClass(_wb_local_storage), "value", "J")));}auto _wb_databases_deprecated = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "databasesDeprecated", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_databases_deprecated) {settings->databases_deprecated = static_cast<decltype(settings->databases_deprecated)>(env->GetLongField(_wb_databases_deprecated, env->GetFieldID(env->GetObjectClass(_wb_databases_deprecated), "value", "J")));}auto _wb_webgl = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "webgl", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_webgl) {settings->webgl = static_cast<decltype(settings->webgl)>(env->GetLongField(_wb_webgl, env->GetFieldID(env->GetObjectClass(_wb_webgl), "value", "J")));}settings->background_color = static_cast<decltype(settings->background_color)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "backgroundColor", "I"))); auto _wb_chrome_status_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeStatusBubble", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_chrome_status_bubble) {settings->chrome_status_bubble = static_cast<decltype(settings->chrome_status_bubble)>(env->GetLongField(_wb_chrome_status_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_status_bubble), "value", "J")));}auto _wb_chrome_zoom_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeZoomBubble", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_chrome_zoom_bubble) {settings->chrome_zoom_bubble = static_cast<decltype(settings->chrome_zoom_bubble)>(env->GetLongField(_wb_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_zoom_bubble), "value", "J")));}auto _wb_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;")); if (_wb_ax_viewport_collapse) {settings->ax_viewport_collapse = static_cast<decltype(settings->ax_viewport_collapse)>(env->GetLongField(_wb_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wb_ax_viewport_collapse), "value", "J")));}}
+        if (settings && j_settings) {
+            settings->windowless_frame_rate = static_cast<decltype(settings->windowless_frame_rate)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "windowlessFrameRate", "I")));
+            jstring _wb_standard_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "standardFontFamily", "Ljava/lang/String;"));
+            if (_wb_standard_font_family) {
+                const jchar* _wb_standard_font_family_chars = env->GetStringChars(_wb_standard_font_family, nullptr);
+                jsize _wb_standard_font_family_len = env->GetStringLength(_wb_standard_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_standard_font_family_chars), _wb_standard_font_family_len, &settings->standard_font_family, 1);
+                env->ReleaseStringChars(_wb_standard_font_family, _wb_standard_font_family_chars);
+            }
+            jstring _wb_fixed_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fixedFontFamily", "Ljava/lang/String;"));
+            if (_wb_fixed_font_family) {
+                const jchar* _wb_fixed_font_family_chars = env->GetStringChars(_wb_fixed_font_family, nullptr);
+                jsize _wb_fixed_font_family_len = env->GetStringLength(_wb_fixed_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_fixed_font_family_chars), _wb_fixed_font_family_len, &settings->fixed_font_family, 1);
+                env->ReleaseStringChars(_wb_fixed_font_family, _wb_fixed_font_family_chars);
+            }
+            jstring _wb_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "serifFontFamily", "Ljava/lang/String;"));
+            if (_wb_serif_font_family) {
+                const jchar* _wb_serif_font_family_chars = env->GetStringChars(_wb_serif_font_family, nullptr);
+                jsize _wb_serif_font_family_len = env->GetStringLength(_wb_serif_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_serif_font_family_chars), _wb_serif_font_family_len, &settings->serif_font_family, 1);
+                env->ReleaseStringChars(_wb_serif_font_family, _wb_serif_font_family_chars);
+            }
+            jstring _wb_sans_serif_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "sansSerifFontFamily", "Ljava/lang/String;"));
+            if (_wb_sans_serif_font_family) {
+                const jchar* _wb_sans_serif_font_family_chars = env->GetStringChars(_wb_sans_serif_font_family, nullptr);
+                jsize _wb_sans_serif_font_family_len = env->GetStringLength(_wb_sans_serif_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_sans_serif_font_family_chars), _wb_sans_serif_font_family_len, &settings->sans_serif_font_family, 1);
+                env->ReleaseStringChars(_wb_sans_serif_font_family, _wb_sans_serif_font_family_chars);
+            }
+            jstring _wb_cursive_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "cursiveFontFamily", "Ljava/lang/String;"));
+            if (_wb_cursive_font_family) {
+                const jchar* _wb_cursive_font_family_chars = env->GetStringChars(_wb_cursive_font_family, nullptr);
+                jsize _wb_cursive_font_family_len = env->GetStringLength(_wb_cursive_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_cursive_font_family_chars), _wb_cursive_font_family_len, &settings->cursive_font_family, 1);
+                env->ReleaseStringChars(_wb_cursive_font_family, _wb_cursive_font_family_chars);
+            }
+            jstring _wb_fantasy_font_family = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "fantasyFontFamily", "Ljava/lang/String;"));
+            if (_wb_fantasy_font_family) {
+                const jchar* _wb_fantasy_font_family_chars = env->GetStringChars(_wb_fantasy_font_family, nullptr);
+                jsize _wb_fantasy_font_family_len = env->GetStringLength(_wb_fantasy_font_family);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_fantasy_font_family_chars), _wb_fantasy_font_family_len, &settings->fantasy_font_family, 1);
+                env->ReleaseStringChars(_wb_fantasy_font_family, _wb_fantasy_font_family_chars);
+            }
+            settings->default_font_size = static_cast<decltype(settings->default_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFontSize", "I")));
+            settings->default_fixed_font_size = static_cast<decltype(settings->default_fixed_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "defaultFixedFontSize", "I")));
+            settings->minimum_font_size = static_cast<decltype(settings->minimum_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumFontSize", "I")));
+            settings->minimum_logical_font_size = static_cast<decltype(settings->minimum_logical_font_size)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "minimumLogicalFontSize", "I")));
+            jstring _wb_default_encoding = (jstring)env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "defaultEncoding", "Ljava/lang/String;"));
+            if (_wb_default_encoding) {
+                const jchar* _wb_default_encoding_chars = env->GetStringChars(_wb_default_encoding, nullptr);
+                jsize _wb_default_encoding_len = env->GetStringLength(_wb_default_encoding);
+                cef_string_set(reinterpret_cast<const char16_t*>(_wb_default_encoding_chars), _wb_default_encoding_len, &settings->default_encoding, 1);
+                env->ReleaseStringChars(_wb_default_encoding, _wb_default_encoding_chars);
+            }
+            auto _wb_remote_fonts = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "remoteFonts", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_remote_fonts) {
+                settings->remote_fonts = static_cast<decltype(settings->remote_fonts)>(env->GetLongField(_wb_remote_fonts, env->GetFieldID(env->GetObjectClass(_wb_remote_fonts), "value", "J")));
+            }
+            auto _wb_javascript = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascript", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript) {
+                settings->javascript = static_cast<decltype(settings->javascript)>(env->GetLongField(_wb_javascript, env->GetFieldID(env->GetObjectClass(_wb_javascript), "value", "J")));
+            }
+            auto _wb_javascript_close_windows = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptCloseWindows", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_close_windows) {
+                settings->javascript_close_windows = static_cast<decltype(settings->javascript_close_windows)>(env->GetLongField(_wb_javascript_close_windows, env->GetFieldID(env->GetObjectClass(_wb_javascript_close_windows), "value", "J")));
+            }
+            auto _wb_javascript_access_clipboard = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptAccessClipboard", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_access_clipboard) {
+                settings->javascript_access_clipboard = static_cast<decltype(settings->javascript_access_clipboard)>(env->GetLongField(_wb_javascript_access_clipboard, env->GetFieldID(env->GetObjectClass(_wb_javascript_access_clipboard), "value", "J")));
+            }
+            auto _wb_javascript_dom_paste = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "javascriptDomPaste", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_javascript_dom_paste) {
+                settings->javascript_dom_paste = static_cast<decltype(settings->javascript_dom_paste)>(env->GetLongField(_wb_javascript_dom_paste, env->GetFieldID(env->GetObjectClass(_wb_javascript_dom_paste), "value", "J")));
+            }
+            auto _wb_image_loading = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageLoading", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_image_loading) {
+                settings->image_loading = static_cast<decltype(settings->image_loading)>(env->GetLongField(_wb_image_loading, env->GetFieldID(env->GetObjectClass(_wb_image_loading), "value", "J")));
+            }
+            auto _wb_image_shrink_standalone_to_fit = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "imageShrinkStandaloneToFit", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_image_shrink_standalone_to_fit) {
+                settings->image_shrink_standalone_to_fit = static_cast<decltype(settings->image_shrink_standalone_to_fit)>(env->GetLongField(_wb_image_shrink_standalone_to_fit, env->GetFieldID(env->GetObjectClass(_wb_image_shrink_standalone_to_fit), "value", "J")));
+            }
+            auto _wb_text_area_resize = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "textAreaResize", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_text_area_resize) {
+                settings->text_area_resize = static_cast<decltype(settings->text_area_resize)>(env->GetLongField(_wb_text_area_resize, env->GetFieldID(env->GetObjectClass(_wb_text_area_resize), "value", "J")));
+            }
+            auto _wb_tab_to_links = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "tabToLinks", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_tab_to_links) {
+                settings->tab_to_links = static_cast<decltype(settings->tab_to_links)>(env->GetLongField(_wb_tab_to_links, env->GetFieldID(env->GetObjectClass(_wb_tab_to_links), "value", "J")));
+            }
+            auto _wb_local_storage = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "localStorage", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_local_storage) {
+                settings->local_storage = static_cast<decltype(settings->local_storage)>(env->GetLongField(_wb_local_storage, env->GetFieldID(env->GetObjectClass(_wb_local_storage), "value", "J")));
+            }
+            auto _wb_databases_deprecated = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "databasesDeprecated", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_databases_deprecated) {
+                settings->databases_deprecated = static_cast<decltype(settings->databases_deprecated)>(env->GetLongField(_wb_databases_deprecated, env->GetFieldID(env->GetObjectClass(_wb_databases_deprecated), "value", "J")));
+            }
+            auto _wb_webgl = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "webgl", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_webgl) {
+                settings->webgl = static_cast<decltype(settings->webgl)>(env->GetLongField(_wb_webgl, env->GetFieldID(env->GetObjectClass(_wb_webgl), "value", "J")));
+            }
+            settings->background_color = static_cast<decltype(settings->background_color)>(env->GetIntField(j_settings, env->GetFieldID(j_settings_cls, "backgroundColor", "I")));
+            auto _wb_chrome_status_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeStatusBubble", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_chrome_status_bubble) {
+                settings->chrome_status_bubble = static_cast<decltype(settings->chrome_status_bubble)>(env->GetLongField(_wb_chrome_status_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_status_bubble), "value", "J")));
+            }
+            auto _wb_chrome_zoom_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeZoomBubble", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_chrome_zoom_bubble) {
+                settings->chrome_zoom_bubble = static_cast<decltype(settings->chrome_zoom_bubble)>(env->GetLongField(_wb_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wb_chrome_zoom_bubble), "value", "J")));
+            }
+            auto _wb_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;"));
+            if (_wb_ax_viewport_collapse) {
+                settings->ax_viewport_collapse = static_cast<decltype(settings->ax_viewport_collapse)>(env->GetLongField(_wb_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wb_ax_viewport_collapse), "value", "J")));
+            }
+        }
         if (extra_info) {
             auto j_extra_info_get = env->GetMethodID(j_extra_info_ar_cls, "get", "()Ljava/lang/Object;");
             auto j_extra_info_new = env->CallObjectMethod(j_extra_info, j_extra_info_get);
@@ -377,8 +725,4 @@ extern "C" cef_life_span_handler_t* Create_JniCefLifeSpanHandler(JNIEnv *env, jo
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_life_span_handler_t*>(new JniCefLifeSpanHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefLifeSpanHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefLifeSpanHandler(env, obj));
 }

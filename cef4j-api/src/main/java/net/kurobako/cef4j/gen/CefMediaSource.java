@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Represents a source from which media can be routed. Instances of this object are retrieved via
@@ -17,6 +19,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:291</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMediaSource extends CefLibraryObject {
 
     /**
@@ -89,35 +92,35 @@ public interface CefMediaSource extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMediaSource 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getId() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetId(nativePtr));
+            return Optional.ofNullable(getId0(nativePtr));
         }
 
         @Override
         public boolean isCastSource() {
             checkNotClosed();
-            return N_IsCastSource(nativePtr);
+            return isCastSource0(nativePtr);
         }
 
         @Override
         public boolean isDialSource() {
             checkNotClosed();
-            return N_IsDialSource(nativePtr);
+            return isDialSource0(nativePtr);
         }
 
-        private static native String N_GetId(long self);
+        private static native String getId0(long self);
 
-        private static native boolean N_IsCastSource(long self);
+        private static native boolean isCastSource0(long self);
 
-        private static native boolean N_IsDialSource(long self);
+        private static native boolean isDialSource0(long self);
 
         @Override
         public boolean equals(Object obj) {

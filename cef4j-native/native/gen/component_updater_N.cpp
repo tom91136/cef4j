@@ -1,21 +1,21 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_component_updater_capi.h"
 #include "jni_util.h"
 
 extern "C" cef_component_update_callback_t* Create_JniCefComponentUpdateCallback(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1GetComponentCount(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefComponentUpdater), getComponentCount0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_component_count(s));
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1GetComponents(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(CefComponentUpdater), getComponents0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return nullptr;
     size_t _count = s->get_component_count(s);
@@ -34,7 +34,7 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefCompone
     return _result;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1GetComponentById(JNIEnv* env, jobject obj, jlong self, jstring component_id) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), getComponentById0)(JNIEnv* env, jobject obj, jlong self, jstring component_id) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return nullptr;
     auto _component_id_str = JStringToCefString(env, component_id);
@@ -46,7 +46,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpd
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1Update(JNIEnv* env, jobject obj, jlong self, jstring component_id, jobject priority, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), update0)(JNIEnv* env, jobject obj, jlong self, jstring component_id, jobject priority, jobject callback) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return;
     if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return;}
@@ -56,7 +56,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdate
     if (_component_id_str) cef_string_userfree_free(_component_id_str);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefComponentUpdater_00024NativePeer_N_1Get(JNIEnv* env, jclass clz) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), get0)(JNIEnv* env, jclass clz) {
     auto _r = cef_component_updater_get();
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefComponentUpdater$NativePeer");

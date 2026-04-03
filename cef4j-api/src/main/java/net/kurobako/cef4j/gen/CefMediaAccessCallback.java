@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Callback interface used for asynchronous continuation of media access permission requests.
@@ -14,6 +17,7 @@ package net.kurobako.cef4j.gen;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMediaAccessCallback extends CefLibraryObject {
 
     /**
@@ -79,27 +83,27 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMediaAccessCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void cont(int allowedPermissions) {
             checkNotClosed();
-            N_Cont(nativePtr, allowedPermissions);
+            cont0(nativePtr, allowedPermissions);
         }
 
         @Override
         public void cancel() {
             checkNotClosed();
-            N_Cancel(nativePtr);
+            cancel0(nativePtr);
         }
 
-        private static native void N_Cont(long self, int allowedPermissions);
+        private static native void cont0(long self, int allowedPermissions);
 
-        private static native void N_Cancel(long self);
+        private static native void cancel0(long self);
 
         @Override
         public boolean equals(Object obj) {

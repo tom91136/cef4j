@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure that should be implemented to handle V8 function calls. The functions of this structure will be called on
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:167</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Handler extends CefLibraryObject {
 
     /**
@@ -78,11 +81,11 @@ public interface CefV8Handler extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Handler 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean execute(
@@ -94,10 +97,10 @@ public interface CefV8Handler extends CefLibraryObject {
                 @Nullable String exception) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
-            return N_Execute(nativePtr, name, object, argumentsCount, arguments, retval, exception);
+            return execute0(nativePtr, name, object, argumentsCount, arguments, retval, exception);
         }
 
-        private static native boolean N_Execute(
+        private static native boolean execute0(
                 long self,
                 String name,
                 CefV8Value object,

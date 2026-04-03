@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that supports the reading of zip archives via the zlib unzip API. The methods of this class should only be
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:43</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefZipReader extends CefLibraryObject {
 
     /**
@@ -177,7 +180,7 @@ public interface CefZipReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefZipReader> create(@Nullable CefStreamReader stream) {
-        return Optional.ofNullable(NativePeer.N_Create(stream));
+        return Optional.ofNullable(NativePeer.create0(stream));
     }
 
     final class NativePeer implements CefZipReader, AutoCloseable {
@@ -217,109 +220,109 @@ public interface CefZipReader extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefZipReader 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean moveToFirstFile() {
             checkNotClosed();
-            return N_MoveToFirstFile(nativePtr);
+            return moveToFirstFile0(nativePtr);
         }
 
         @Override
         public boolean moveToNextFile() {
             checkNotClosed();
-            return N_MoveToNextFile(nativePtr);
+            return moveToNextFile0(nativePtr);
         }
 
         @Override
         public boolean moveToFile(@Nullable String fileName, boolean caseSensitive) {
             checkNotClosed();
-            return N_MoveToFile(nativePtr, fileName, caseSensitive);
+            return moveToFile0(nativePtr, fileName, caseSensitive);
         }
 
         @Override
         public boolean cefClose() {
             checkNotClosed();
-            return N_Close(nativePtr);
+            return cefClose0(nativePtr);
         }
 
         @Override
         public Optional<String> getFileName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFileName(nativePtr));
+            return Optional.ofNullable(getFileName0(nativePtr));
         }
 
         @Override
         public long getFileSize() {
             checkNotClosed();
-            return N_GetFileSize(nativePtr);
+            return getFileSize0(nativePtr);
         }
 
         @Override
         public CefBasetime getFileLastModified() {
             checkNotClosed();
-            return N_GetFileLastModified(nativePtr);
+            return getFileLastModified0(nativePtr);
         }
 
         @Override
         public boolean openFile(@Nullable String password) {
             checkNotClosed();
-            return N_OpenFile(nativePtr, password);
+            return openFile0(nativePtr, password);
         }
 
         @Override
         public boolean closeFile() {
             checkNotClosed();
-            return N_CloseFile(nativePtr);
+            return closeFile0(nativePtr);
         }
 
         @Override
         public int readFile(@Nonnull ByteBuffer buffer) {
             checkNotClosed();
-            return N_ReadFile(nativePtr, buffer);
+            return readFile0(nativePtr, buffer);
         }
 
         @Override
         public long tell() {
             checkNotClosed();
-            return N_Tell(nativePtr);
+            return tell0(nativePtr);
         }
 
         @Override
         public int eof() {
             checkNotClosed();
-            return N_Eof(nativePtr);
+            return eof0(nativePtr);
         }
 
-        private static native boolean N_MoveToFirstFile(long self);
+        private static native boolean moveToFirstFile0(long self);
 
-        private static native boolean N_MoveToNextFile(long self);
+        private static native boolean moveToNextFile0(long self);
 
-        private static native boolean N_MoveToFile(long self, String fileName, boolean caseSensitive);
+        private static native boolean moveToFile0(long self, String fileName, boolean caseSensitive);
 
-        private static native boolean N_Close(long self);
+        private static native boolean cefClose0(long self);
 
-        private static native String N_GetFileName(long self);
+        private static native String getFileName0(long self);
 
-        private static native long N_GetFileSize(long self);
+        private static native long getFileSize0(long self);
 
-        private static native CefBasetime N_GetFileLastModified(long self);
+        private static native CefBasetime getFileLastModified0(long self);
 
-        private static native boolean N_OpenFile(long self, String password);
+        private static native boolean openFile0(long self, String password);
 
-        private static native boolean N_CloseFile(long self);
+        private static native boolean closeFile0(long self);
 
-        private static native int N_ReadFile(long self, ByteBuffer buffer);
+        private static native int readFile0(long self, ByteBuffer buffer);
 
-        private static native long N_Tell(long self);
+        private static native long tell0(long self);
 
-        private static native int N_Eof(long self);
+        private static native int eof0(long self);
 
-        static native CefZipReader N_Create(CefStreamReader stream);
+        static native CefZipReader create0(CefStreamReader stream);
 
         @Override
         public boolean equals(Object obj) {

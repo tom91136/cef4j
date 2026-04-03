@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_menu_model_delegate_capi.h"
 #include "include/capi/cef_menu_model_capi.h"
@@ -157,8 +157,4 @@ extern "C" cef_menu_model_delegate_t* Create_JniCefMenuModelDelegate(JNIEnv *env
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_menu_model_delegate_t*>(new JniCefMenuModelDelegate(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefMenuModelDelegate_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefMenuModelDelegate(env, obj));
 }

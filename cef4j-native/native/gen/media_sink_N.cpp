@@ -1,15 +1,15 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_media_router_capi.h"
 #include "jni_util.h"
 
 extern "C" cef_media_sink_device_info_callback_t* Create_JniCefMediaSinkDeviceInfoCallback(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaSink), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1GetId(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefMediaSink), getId0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_id(s);
@@ -19,7 +19,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1GetName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefMediaSink), getName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_name(s);
@@ -29,7 +29,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1GetIconType(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaSink), getIconType0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return 0;
     auto _r = s->get_icon_type(s);
@@ -38,28 +38,28 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1GetDeviceInfo(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaSink), getDeviceInfo0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return;
     cef_media_sink_device_info_callback_t* _callback_ptr = callback ? Create_JniCefMediaSinkDeviceInfoCallback(env, callback) : nullptr;
     s->get_device_info(s, _callback_ptr);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1IsCastSink(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMediaSink), isCastSink0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_cast_sink(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1IsDialSink(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMediaSink), isDialSink0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_dial_sink(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMediaSink_00024NativePeer_N_1IsCompatibleWith(JNIEnv* env, jobject obj, jlong self, jobject source) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMediaSink), isCompatibleWith0)(JNIEnv* env, jobject obj, jlong self, jobject source) {
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return JNI_FALSE;
     cef_media_source_t* _source_ptr = source ? reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J"))) : nullptr;

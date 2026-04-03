@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Callback interface used to select a client certificate for authentication.
@@ -16,6 +18,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:54</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefSelectClientCertificateCallback extends CefLibraryObject {
 
     /**
@@ -73,20 +76,20 @@ public interface CefSelectClientCertificateCallback extends CefLibraryObject {
             public void run() {
                 if (_log.isTraceEnabled())
                     _log.trace("release CefSelectClientCertificateCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void select(@Nullable CefX509Certificate cert) {
             checkNotClosed();
             CefLibraryObject.requireOpen(cert, "CefX509Certificate");
-            N_Select(nativePtr, cert);
+            select0(nativePtr, cert);
         }
 
-        private static native void N_Select(long self, CefX509Certificate cert);
+        private static native void select0(long self, CefX509Certificate cert);
 
         @Override
         public boolean equals(Object obj) {

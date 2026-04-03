@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a X.509 certificate. NOTE: This struct is allocated DLL-side.
@@ -18,6 +20,7 @@ import java.util.Optional;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate__capi_8h.html">cef_x509_certificate_capi.h:117</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefX509Certificate extends CefLibraryObject {
 
     /**
@@ -192,91 +195,91 @@ public interface CefX509Certificate extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefX509Certificate 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefX509CertPrincipal> getSubject() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSubject(nativePtr));
+            return Optional.ofNullable(getSubject0(nativePtr));
         }
 
         @Override
         public Optional<CefX509CertPrincipal> getIssuer() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetIssuer(nativePtr));
+            return Optional.ofNullable(getIssuer0(nativePtr));
         }
 
         @Override
         public Optional<CefBinaryValue> getSerialNumber() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSerialNumber(nativePtr));
+            return Optional.ofNullable(getSerialNumber0(nativePtr));
         }
 
         @Override
         public CefBasetime getValidStart() {
             checkNotClosed();
-            return N_GetValidStart(nativePtr);
+            return getValidStart0(nativePtr);
         }
 
         @Override
         public CefBasetime getValidExpiry() {
             checkNotClosed();
-            return N_GetValidExpiry(nativePtr);
+            return getValidExpiry0(nativePtr);
         }
 
         @Override
         public Optional<CefBinaryValue> getDerEncoded() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDerEncoded(nativePtr));
+            return Optional.ofNullable(getDerEncoded0(nativePtr));
         }
 
         @Override
         public Optional<CefBinaryValue> getPemEncoded() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPemEncoded(nativePtr));
+            return Optional.ofNullable(getPemEncoded0(nativePtr));
         }
 
         @Override
         public long getIssuerChainSize() {
             checkNotClosed();
-            return N_GetIssuerChainSize(nativePtr);
+            return getIssuerChainSize0(nativePtr);
         }
 
         @Override
         public List<CefBinaryValue> getDerEncodedIssuerChain() {
             checkNotClosed();
-            return Arrays.asList(N_GetDerEncodedIssuerChain(nativePtr));
+            return Arrays.asList(getDerEncodedIssuerChain0(nativePtr));
         }
 
         @Override
         public List<CefBinaryValue> getPemEncodedIssuerChain() {
             checkNotClosed();
-            return Arrays.asList(N_GetPemEncodedIssuerChain(nativePtr));
+            return Arrays.asList(getPemEncodedIssuerChain0(nativePtr));
         }
 
-        private static native CefX509CertPrincipal N_GetSubject(long self);
+        private static native CefX509CertPrincipal getSubject0(long self);
 
-        private static native CefX509CertPrincipal N_GetIssuer(long self);
+        private static native CefX509CertPrincipal getIssuer0(long self);
 
-        private static native CefBinaryValue N_GetSerialNumber(long self);
+        private static native CefBinaryValue getSerialNumber0(long self);
 
-        private static native CefBasetime N_GetValidStart(long self);
+        private static native CefBasetime getValidStart0(long self);
 
-        private static native CefBasetime N_GetValidExpiry(long self);
+        private static native CefBasetime getValidExpiry0(long self);
 
-        private static native CefBinaryValue N_GetDerEncoded(long self);
+        private static native CefBinaryValue getDerEncoded0(long self);
 
-        private static native CefBinaryValue N_GetPemEncoded(long self);
+        private static native CefBinaryValue getPemEncoded0(long self);
 
-        private static native long N_GetIssuerChainSize(long self);
+        private static native long getIssuerChainSize0(long self);
 
-        private static native CefBinaryValue[] N_GetDerEncodedIssuerChain(long self);
+        private static native CefBinaryValue[] getDerEncodedIssuerChain0(long self);
 
-        private static native CefBinaryValue[] N_GetPemEncodedIssuerChain(long self);
+        private static native CefBinaryValue[] getPemEncodedIssuerChain0(long self);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,11 +1,25 @@
 package net.kurobako.cef4j.osr.swing;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.DisplayMode;
+import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import javax.swing.*;
-import net.kurobako.cef4j.CefBrowserOsr;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
@@ -18,17 +32,8 @@ import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 
-/**
- * A Swing {@link JPanel} that displays a CEF off-screen rendered browser.
- *
- * <p>Handles the full OSR pipeline: pixel buffer management, render handler, mouse/keyboard forwarding, cursor mapping,
- * and resize notification. Use {@link #createRenderHandler()} to obtain a render handler for the panel, then attach the
- * browser via {@link #setBrowser(CefBrowserOsr)}.
- */
 @SuppressWarnings({"this-escape"})
-public class CefPanel extends JPanel {
-
-    // CEF event flags (cef_event_flags_t)
+public class CefBrowserView extends JPanel {
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
     private static final int EVENTFLAG_CONTROL_DOWN = 1 << 2;
     private static final int EVENTFLAG_ALT_DOWN = 1 << 3;
@@ -40,9 +45,9 @@ public class CefPanel extends JPanel {
     private static final int EVENTFLAG_IS_RIGHT = 1 << 11;
 
     private final transient CefFrameBuffer<BufferedImage> frameBuffer;
-    private transient volatile CefBrowserOsr browser;
+    private transient volatile CefBrowser browser;
 
-    public CefPanel() {
+    public CefBrowserView() {
         int maxW = 1, maxH = 1;
         for (GraphicsDevice dev :
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
@@ -177,14 +182,10 @@ public class CefPanel extends JPanel {
     }
 
     private CefBrowserHost host() {
-        CefBrowserOsr b = browser;
-        return b != null ? b.getHost() : null;
+        CefBrowser current = browser;
+        return current != null ? current.getHost().orElse(null) : null;
     }
 
-    /**
-     * Create a render handler that paints into this panel's frame buffer. Use this when building a
-     * {@link net.kurobako.cef4j.gen.CefClient} implementation for this panel.
-     */
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
@@ -211,16 +212,11 @@ public class CefPanel extends JPanel {
         };
     }
 
-    /**
-     * Attach a browser to this panel. Call this after creating a browser via
-     * {@link net.kurobako.cef4j.CefApp#createBrowser(net.kurobako.cef4j.gen.CefClient, String)}.
-     */
-    public void setBrowser(CefBrowserOsr browser) {
+    public void setBrowser(CefBrowser browser) {
         this.browser = browser;
     }
 
-    /** Returns the browser instance, or {@code null} if not yet attached. */
-    public CefBrowserOsr getBrowser() {
+    public CefBrowser getBrowser() {
         return browser;
     }
 
@@ -233,9 +229,8 @@ public class CefPanel extends JPanel {
         }
     }
 
-    /** Maps a CEF cursor type to a Swing {@link Cursor}. Override to customise. */
     public Cursor mapCursor(CefCursorType type) {
-        return type.kind().map(CefPanel::cursorForKind).orElse(Cursor.getDefaultCursor());
+        return type.kind().map(CefBrowserView::cursorForKind).orElse(Cursor.getDefaultCursor());
     }
 
     private static Cursor cursorForKind(CefCursorType.Kind k) {

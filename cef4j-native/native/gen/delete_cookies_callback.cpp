@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_cookie_capi.h"
 #include "jni_util.h"
@@ -35,8 +35,4 @@ extern "C" cef_delete_cookies_callback_t* Create_JniCefDeleteCookiesCallback(JNI
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_delete_cookies_callback_t*>(new JniCefDeleteCookiesCallback(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDeleteCookiesCallback_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefDeleteCookiesCallback(env, obj));
 }

@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
@@ -6,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent the browser process aspects of a browser. The methods of this class can only be called in the
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:275</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefBrowserHost extends CefLibraryObject {
 
     /**
@@ -1097,7 +1100,7 @@ public interface CefBrowserHost extends CefLibraryObject {
             @Nonnull CefBrowserSettings settings,
             @Nullable CefDictionaryValue extraInfo,
             @Nullable CefRequestContext requestContext) {
-        return NativePeer.N_CreateBrowser(windowInfo, client, url, settings, extraInfo, requestContext);
+        return NativePeer.createBrowser0(windowInfo, client, url, settings, extraInfo, requestContext);
     }
 
     /**
@@ -1123,7 +1126,7 @@ public interface CefBrowserHost extends CefLibraryObject {
             @Nullable CefDictionaryValue extraInfo,
             @Nullable CefRequestContext requestContext) {
         return Optional.ofNullable(
-                NativePeer.N_CreateBrowserSync(windowInfo, client, url, settings, extraInfo, requestContext));
+                NativePeer.createBrowserSync0(windowInfo, client, url, settings, extraInfo, requestContext));
     }
 
     /**
@@ -1136,7 +1139,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:327</a>
      */
     static Optional<CefBrowser> getBrowserByIdentifier(int browserId) {
-        return Optional.ofNullable(NativePeer.N_GetBrowserByIdentifier(browserId));
+        return Optional.ofNullable(NativePeer.getBrowserByIdentifier0(browserId));
     }
 
     final class NativePeer implements CefBrowserHost, AutoCloseable {
@@ -1176,106 +1179,106 @@ public interface CefBrowserHost extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefBrowserHost 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefBrowser> getBrowser() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBrowser(nativePtr));
+            return Optional.ofNullable(getBrowser0(nativePtr));
         }
 
         @Override
         public void closeBrowser(boolean forceClose) {
             checkNotClosed();
-            N_CloseBrowser(nativePtr, forceClose);
+            closeBrowser0(nativePtr, forceClose);
         }
 
         @Override
         public boolean tryCloseBrowser() {
             checkNotClosed();
-            return N_TryCloseBrowser(nativePtr);
+            return tryCloseBrowser0(nativePtr);
         }
 
         @Override
         public boolean isReadyToBeClosed() {
             checkNotClosed();
-            return N_IsReadyToBeClosed(nativePtr);
+            return isReadyToBeClosed0(nativePtr);
         }
 
         @Override
         public void setFocus(boolean focus) {
             checkNotClosed();
-            N_SetFocus(nativePtr, focus);
+            setFocus0(nativePtr, focus);
         }
 
         @Override
         public long getWindowHandle() {
             checkNotClosed();
-            return N_GetWindowHandle(nativePtr);
+            return getWindowHandle0(nativePtr);
         }
 
         @Override
         public long getOpenerWindowHandle() {
             checkNotClosed();
-            return N_GetOpenerWindowHandle(nativePtr);
+            return getOpenerWindowHandle0(nativePtr);
         }
 
         @Override
         public int getOpenerIdentifier() {
             checkNotClosed();
-            return N_GetOpenerIdentifier(nativePtr);
+            return getOpenerIdentifier0(nativePtr);
         }
 
         @Override
         public boolean hasView() {
             checkNotClosed();
-            return N_HasView(nativePtr);
+            return hasView0(nativePtr);
         }
 
         @Override
         public Optional<CefClient> getClient() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetClient(nativePtr));
+            return Optional.ofNullable(getClient0(nativePtr));
         }
 
         @Override
         public Optional<CefRequestContext> getRequestContext() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetRequestContext(nativePtr));
+            return Optional.ofNullable(getRequestContext0(nativePtr));
         }
 
         @Override
         public boolean canZoom(@Nonnull CefZoomCommand command) {
             checkNotClosed();
-            return N_CanZoom(nativePtr, command);
+            return canZoom0(nativePtr, command);
         }
 
         @Override
         public void zoom(@Nonnull CefZoomCommand command) {
             checkNotClosed();
-            N_Zoom(nativePtr, command);
+            zoom0(nativePtr, command);
         }
 
         @Override
         public double getDefaultZoomLevel() {
             checkNotClosed();
-            return N_GetDefaultZoomLevel(nativePtr);
+            return getDefaultZoomLevel0(nativePtr);
         }
 
         @Override
         public double getZoomLevel() {
             checkNotClosed();
-            return N_GetZoomLevel(nativePtr);
+            return getZoomLevel0(nativePtr);
         }
 
         @Override
         public void setZoomLevel(double zoomLevel) {
             checkNotClosed();
-            N_SetZoomLevel(nativePtr, zoomLevel);
+            setZoomLevel0(nativePtr, zoomLevel);
         }
 
         @Override
@@ -1286,13 +1289,13 @@ public interface CefBrowserHost extends CefLibraryObject {
                 @Nullable List<String> acceptFilters,
                 @Nullable CefRunFileDialogCallback callback) {
             checkNotClosed();
-            N_RunFileDialog(nativePtr, mode, title, defaultFilePath, acceptFilters, callback);
+            runFileDialog0(nativePtr, mode, title, defaultFilePath, acceptFilters, callback);
         }
 
         @Override
         public void startDownload(@Nullable String url) {
             checkNotClosed();
-            N_StartDownload(nativePtr, url);
+            startDownload0(nativePtr, url);
         }
 
         @Override
@@ -1303,32 +1306,32 @@ public interface CefBrowserHost extends CefLibraryObject {
                 boolean bypassCache,
                 @Nullable CefDownloadImageCallback callback) {
             checkNotClosed();
-            N_DownloadImage(nativePtr, imageUrl, isFavicon, maxImageSize, bypassCache, callback);
+            downloadImage0(nativePtr, imageUrl, isFavicon, maxImageSize, bypassCache, callback);
         }
 
         @Override
         public void print() {
             checkNotClosed();
-            N_Print(nativePtr);
+            print0(nativePtr);
         }
 
         @Override
         public void printToPdf(
                 @Nullable String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback) {
             checkNotClosed();
-            N_PrintToPdf(nativePtr, path, settings, callback);
+            printToPdf0(nativePtr, path, settings, callback);
         }
 
         @Override
         public void find(@Nullable String searchText, boolean forward, boolean matchCase, boolean findNext) {
             checkNotClosed();
-            N_Find(nativePtr, searchText, forward, matchCase, findNext);
+            find0(nativePtr, searchText, forward, matchCase, findNext);
         }
 
         @Override
         public void stopFinding(boolean clearSelection) {
             checkNotClosed();
-            N_StopFinding(nativePtr, clearSelection);
+            stopFinding0(nativePtr, clearSelection);
         }
 
         @Override
@@ -1338,147 +1341,147 @@ public interface CefBrowserHost extends CefLibraryObject {
                 @Nullable CefBrowserSettings settings,
                 @Nullable CefPoint inspectElementAt) {
             checkNotClosed();
-            N_ShowDevTools(nativePtr, windowInfo, client, settings, inspectElementAt);
+            showDevTools0(nativePtr, windowInfo, client, settings, inspectElementAt);
         }
 
         @Override
         public void closeDevTools() {
             checkNotClosed();
-            N_CloseDevTools(nativePtr);
+            closeDevTools0(nativePtr);
         }
 
         @Override
         public boolean hasDevTools() {
             checkNotClosed();
-            return N_HasDevTools(nativePtr);
+            return hasDevTools0(nativePtr);
         }
 
         @Override
         public boolean sendDevToolsMessage(@Nonnull ByteBuffer message) {
             checkNotClosed();
-            return N_SendDevToolsMessage(nativePtr, message);
+            return sendDevToolsMessage0(nativePtr, message);
         }
 
         @Override
         public int executeDevToolsMethod(int messageId, @Nullable String method, @Nullable CefDictionaryValue params) {
             checkNotClosed();
             CefLibraryObject.requireOpen(params, "CefDictionaryValue");
-            return N_ExecuteDevToolsMethod(nativePtr, messageId, method, params);
+            return executeDevToolsMethod0(nativePtr, messageId, method, params);
         }
 
         @Override
         public Optional<CefRegistration> addDevToolsMessageObserver(@Nullable CefDevToolsMessageObserver observer) {
             checkNotClosed();
-            return Optional.ofNullable(N_AddDevToolsMessageObserver(nativePtr, observer));
+            return Optional.ofNullable(addDevToolsMessageObserver0(nativePtr, observer));
         }
 
         @Override
         public void getNavigationEntries(@Nullable CefNavigationEntryVisitor visitor, boolean currentOnly) {
             checkNotClosed();
-            N_GetNavigationEntries(nativePtr, visitor, currentOnly);
+            getNavigationEntries0(nativePtr, visitor, currentOnly);
         }
 
         @Override
         public void replaceMisspelling(@Nullable String word) {
             checkNotClosed();
-            N_ReplaceMisspelling(nativePtr, word);
+            replaceMisspelling0(nativePtr, word);
         }
 
         @Override
         public void addWordToDictionary(@Nullable String word) {
             checkNotClosed();
-            N_AddWordToDictionary(nativePtr, word);
+            addWordToDictionary0(nativePtr, word);
         }
 
         @Override
         public boolean isWindowRenderingDisabled() {
             checkNotClosed();
-            return N_IsWindowRenderingDisabled(nativePtr);
+            return isWindowRenderingDisabled0(nativePtr);
         }
 
         @Override
         public void wasResized() {
             checkNotClosed();
-            N_WasResized(nativePtr);
+            wasResized0(nativePtr);
         }
 
         @Override
         public void wasHidden(boolean hidden) {
             checkNotClosed();
-            N_WasHidden(nativePtr, hidden);
+            wasHidden0(nativePtr, hidden);
         }
 
         @Override
         public void notifyScreenInfoChanged() {
             checkNotClosed();
-            N_NotifyScreenInfoChanged(nativePtr);
+            notifyScreenInfoChanged0(nativePtr);
         }
 
         @Override
         public void invalidate(@Nonnull CefPaintElementType type) {
             checkNotClosed();
-            N_Invalidate(nativePtr, type);
+            invalidate0(nativePtr, type);
         }
 
         @Override
         public void sendExternalBeginFrame() {
             checkNotClosed();
-            N_SendExternalBeginFrame(nativePtr);
+            sendExternalBeginFrame0(nativePtr);
         }
 
         @Override
         public void sendKeyEvent(@Nonnull CefKeyEvent event) {
             checkNotClosed();
-            N_SendKeyEvent(nativePtr, event);
+            sendKeyEvent0(nativePtr, event);
         }
 
         @Override
         public void sendMouseClickEvent(
                 @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseUp, int clickCount) {
             checkNotClosed();
-            N_SendMouseClickEvent(nativePtr, event, type, mouseUp, clickCount);
+            sendMouseClickEvent0(nativePtr, event, type, mouseUp, clickCount);
         }
 
         @Override
         public void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseLeave) {
             checkNotClosed();
-            N_SendMouseMoveEvent(nativePtr, event, mouseLeave);
+            sendMouseMoveEvent0(nativePtr, event, mouseLeave);
         }
 
         @Override
         public void sendMouseWheelEvent(@Nonnull CefMouseEvent event, int deltaX, int deltaY) {
             checkNotClosed();
-            N_SendMouseWheelEvent(nativePtr, event, deltaX, deltaY);
+            sendMouseWheelEvent0(nativePtr, event, deltaX, deltaY);
         }
 
         @Override
         public void sendTouchEvent(@Nonnull CefTouchEvent event) {
             checkNotClosed();
-            N_SendTouchEvent(nativePtr, event);
+            sendTouchEvent0(nativePtr, event);
         }
 
         @Override
         public void sendCaptureLostEvent() {
             checkNotClosed();
-            N_SendCaptureLostEvent(nativePtr);
+            sendCaptureLostEvent0(nativePtr);
         }
 
         @Override
         public void notifyMoveOrResizeStarted() {
             checkNotClosed();
-            N_NotifyMoveOrResizeStarted(nativePtr);
+            notifyMoveOrResizeStarted0(nativePtr);
         }
 
         @Override
         public int getWindowlessFrameRate() {
             checkNotClosed();
-            return N_GetWindowlessFrameRate(nativePtr);
+            return getWindowlessFrameRate0(nativePtr);
         }
 
         @Override
         public void setWindowlessFrameRate(int frameRate) {
             checkNotClosed();
-            N_SetWindowlessFrameRate(nativePtr, frameRate);
+            setWindowlessFrameRate0(nativePtr, frameRate);
         }
 
         @Override
@@ -1489,25 +1492,25 @@ public interface CefBrowserHost extends CefLibraryObject {
                 @Nonnull CefRange replacementRange,
                 @Nonnull CefRange selectionRange) {
             checkNotClosed();
-            N_ImeSetComposition(nativePtr, text, underlinesCount, underlines, replacementRange, selectionRange);
+            imeSetComposition0(nativePtr, text, underlinesCount, underlines, replacementRange, selectionRange);
         }
 
         @Override
         public void imeCommitText(@Nullable String text, @Nonnull CefRange replacementRange, int relativeCursorPos) {
             checkNotClosed();
-            N_ImeCommitText(nativePtr, text, replacementRange, relativeCursorPos);
+            imeCommitText0(nativePtr, text, replacementRange, relativeCursorPos);
         }
 
         @Override
         public void imeFinishComposingText(boolean keepSelection) {
             checkNotClosed();
-            N_ImeFinishComposingText(nativePtr, keepSelection);
+            imeFinishComposingText0(nativePtr, keepSelection);
         }
 
         @Override
         public void imeCancelComposition() {
             checkNotClosed();
-            N_ImeCancelComposition(nativePtr);
+            imeCancelComposition0(nativePtr);
         }
 
         @Override
@@ -1517,144 +1520,144 @@ public interface CefBrowserHost extends CefLibraryObject {
                 @Nonnull CefDragOperationsMask allowedOps) {
             checkNotClosed();
             CefLibraryObject.requireOpen(dragData, "CefDragData");
-            N_DragTargetDragEnter(nativePtr, dragData, event, allowedOps);
+            dragTargetDragEnter0(nativePtr, dragData, event, allowedOps);
         }
 
         @Override
         public void dragTargetDragOver(@Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps) {
             checkNotClosed();
-            N_DragTargetDragOver(nativePtr, event, allowedOps);
+            dragTargetDragOver0(nativePtr, event, allowedOps);
         }
 
         @Override
         public void dragTargetDragLeave() {
             checkNotClosed();
-            N_DragTargetDragLeave(nativePtr);
+            dragTargetDragLeave0(nativePtr);
         }
 
         @Override
         public void dragTargetDrop(@Nonnull CefMouseEvent event) {
             checkNotClosed();
-            N_DragTargetDrop(nativePtr, event);
+            dragTargetDrop0(nativePtr, event);
         }
 
         @Override
         public void dragSourceEndedAt(int x, int y, @Nonnull CefDragOperationsMask op) {
             checkNotClosed();
-            N_DragSourceEndedAt(nativePtr, x, y, op);
+            dragSourceEndedAt0(nativePtr, x, y, op);
         }
 
         @Override
         public void dragSourceSystemDragEnded() {
             checkNotClosed();
-            N_DragSourceSystemDragEnded(nativePtr);
+            dragSourceSystemDragEnded0(nativePtr);
         }
 
         @Override
         public Optional<CefNavigationEntry> getVisibleNavigationEntry() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetVisibleNavigationEntry(nativePtr));
+            return Optional.ofNullable(getVisibleNavigationEntry0(nativePtr));
         }
 
         @Override
         public void setAccessibilityState(@Nonnull CefState accessibilityState) {
             checkNotClosed();
-            N_SetAccessibilityState(nativePtr, accessibilityState);
+            setAccessibilityState0(nativePtr, accessibilityState);
         }
 
         @Override
         public void setAutoResizeEnabled(boolean enabled, @Nonnull CefSize minSize, @Nonnull CefSize maxSize) {
             checkNotClosed();
-            N_SetAutoResizeEnabled(nativePtr, enabled, minSize, maxSize);
+            setAutoResizeEnabled0(nativePtr, enabled, minSize, maxSize);
         }
 
         @Override
         public void setAudioMuted(boolean mute) {
             checkNotClosed();
-            N_SetAudioMuted(nativePtr, mute);
+            setAudioMuted0(nativePtr, mute);
         }
 
         @Override
         public boolean isAudioMuted() {
             checkNotClosed();
-            return N_IsAudioMuted(nativePtr);
+            return isAudioMuted0(nativePtr);
         }
 
         @Override
         public boolean isFullscreen() {
             checkNotClosed();
-            return N_IsFullscreen(nativePtr);
+            return isFullscreen0(nativePtr);
         }
 
         @Override
         public void exitFullscreen(boolean willCauseResize) {
             checkNotClosed();
-            N_ExitFullscreen(nativePtr, willCauseResize);
+            exitFullscreen0(nativePtr, willCauseResize);
         }
 
         @Override
         public boolean canExecuteChromeCommand(int commandId) {
             checkNotClosed();
-            return N_CanExecuteChromeCommand(nativePtr, commandId);
+            return canExecuteChromeCommand0(nativePtr, commandId);
         }
 
         @Override
         public void executeChromeCommand(int commandId, @Nonnull CefWindowOpenDisposition disposition) {
             checkNotClosed();
-            N_ExecuteChromeCommand(nativePtr, commandId, disposition);
+            executeChromeCommand0(nativePtr, commandId, disposition);
         }
 
         @Override
         public boolean isRenderProcessUnresponsive() {
             checkNotClosed();
-            return N_IsRenderProcessUnresponsive(nativePtr);
+            return isRenderProcessUnresponsive0(nativePtr);
         }
 
         @Override
         public CefRuntimeStyle getRuntimeStyle() {
             checkNotClosed();
-            return N_GetRuntimeStyle(nativePtr);
+            return getRuntimeStyle0(nativePtr);
         }
 
         @Override
         public void setAxViewportCollapse(boolean enabled) {
             checkNotClosed();
-            N_SetAxViewportCollapse(nativePtr, enabled);
+            setAxViewportCollapse0(nativePtr, enabled);
         }
 
-        private static native CefBrowser N_GetBrowser(long self);
+        private static native CefBrowser getBrowser0(long self);
 
-        private static native void N_CloseBrowser(long self, boolean forceClose);
+        private static native void closeBrowser0(long self, boolean forceClose);
 
-        private static native boolean N_TryCloseBrowser(long self);
+        private static native boolean tryCloseBrowser0(long self);
 
-        private static native boolean N_IsReadyToBeClosed(long self);
+        private static native boolean isReadyToBeClosed0(long self);
 
-        private static native void N_SetFocus(long self, boolean focus);
+        private static native void setFocus0(long self, boolean focus);
 
-        private static native long N_GetWindowHandle(long self);
+        private static native long getWindowHandle0(long self);
 
-        private static native long N_GetOpenerWindowHandle(long self);
+        private static native long getOpenerWindowHandle0(long self);
 
-        private static native int N_GetOpenerIdentifier(long self);
+        private static native int getOpenerIdentifier0(long self);
 
-        private static native boolean N_HasView(long self);
+        private static native boolean hasView0(long self);
 
-        private static native CefClient N_GetClient(long self);
+        private static native CefClient getClient0(long self);
 
-        private static native CefRequestContext N_GetRequestContext(long self);
+        private static native CefRequestContext getRequestContext0(long self);
 
-        private static native boolean N_CanZoom(long self, CefZoomCommand command);
+        private static native boolean canZoom0(long self, CefZoomCommand command);
 
-        private static native void N_Zoom(long self, CefZoomCommand command);
+        private static native void zoom0(long self, CefZoomCommand command);
 
-        private static native double N_GetDefaultZoomLevel(long self);
+        private static native double getDefaultZoomLevel0(long self);
 
-        private static native double N_GetZoomLevel(long self);
+        private static native double getZoomLevel0(long self);
 
-        private static native void N_SetZoomLevel(long self, double zoomLevel);
+        private static native void setZoomLevel0(long self, double zoomLevel);
 
-        private static native void N_RunFileDialog(
+        private static native void runFileDialog0(
                 long self,
                 CefFileDialogMode mode,
                 String title,
@@ -1662,9 +1665,9 @@ public interface CefBrowserHost extends CefLibraryObject {
                 List<String> acceptFilters,
                 CefRunFileDialogCallback callback);
 
-        private static native void N_StartDownload(long self, String url);
+        private static native void startDownload0(long self, String url);
 
-        private static native void N_DownloadImage(
+        private static native void downloadImage0(
                 long self,
                 String imageUrl,
                 boolean isFavicon,
@@ -1672,74 +1675,74 @@ public interface CefBrowserHost extends CefLibraryObject {
                 boolean bypassCache,
                 CefDownloadImageCallback callback);
 
-        private static native void N_Print(long self);
+        private static native void print0(long self);
 
-        private static native void N_PrintToPdf(
+        private static native void printToPdf0(
                 long self, String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
 
-        private static native void N_Find(
+        private static native void find0(
                 long self, String searchText, boolean forward, boolean matchCase, boolean findNext);
 
-        private static native void N_StopFinding(long self, boolean clearSelection);
+        private static native void stopFinding0(long self, boolean clearSelection);
 
-        private static native void N_ShowDevTools(
+        private static native void showDevTools0(
                 long self,
                 CefWindowInfo windowInfo,
                 CefClient client,
                 CefBrowserSettings settings,
                 CefPoint inspectElementAt);
 
-        private static native void N_CloseDevTools(long self);
+        private static native void closeDevTools0(long self);
 
-        private static native boolean N_HasDevTools(long self);
+        private static native boolean hasDevTools0(long self);
 
-        private static native boolean N_SendDevToolsMessage(long self, ByteBuffer message);
+        private static native boolean sendDevToolsMessage0(long self, ByteBuffer message);
 
-        private static native int N_ExecuteDevToolsMethod(
+        private static native int executeDevToolsMethod0(
                 long self, int messageId, String method, CefDictionaryValue params);
 
-        private static native CefRegistration N_AddDevToolsMessageObserver(
+        private static native CefRegistration addDevToolsMessageObserver0(
                 long self, CefDevToolsMessageObserver observer);
 
-        private static native void N_GetNavigationEntries(
+        private static native void getNavigationEntries0(
                 long self, CefNavigationEntryVisitor visitor, boolean currentOnly);
 
-        private static native void N_ReplaceMisspelling(long self, String word);
+        private static native void replaceMisspelling0(long self, String word);
 
-        private static native void N_AddWordToDictionary(long self, String word);
+        private static native void addWordToDictionary0(long self, String word);
 
-        private static native boolean N_IsWindowRenderingDisabled(long self);
+        private static native boolean isWindowRenderingDisabled0(long self);
 
-        private static native void N_WasResized(long self);
+        private static native void wasResized0(long self);
 
-        private static native void N_WasHidden(long self, boolean hidden);
+        private static native void wasHidden0(long self, boolean hidden);
 
-        private static native void N_NotifyScreenInfoChanged(long self);
+        private static native void notifyScreenInfoChanged0(long self);
 
-        private static native void N_Invalidate(long self, CefPaintElementType type);
+        private static native void invalidate0(long self, CefPaintElementType type);
 
-        private static native void N_SendExternalBeginFrame(long self);
+        private static native void sendExternalBeginFrame0(long self);
 
-        private static native void N_SendKeyEvent(long self, CefKeyEvent event);
+        private static native void sendKeyEvent0(long self, CefKeyEvent event);
 
-        private static native void N_SendMouseClickEvent(
+        private static native void sendMouseClickEvent0(
                 long self, CefMouseEvent event, CefMouseButtonType type, boolean mouseUp, int clickCount);
 
-        private static native void N_SendMouseMoveEvent(long self, CefMouseEvent event, boolean mouseLeave);
+        private static native void sendMouseMoveEvent0(long self, CefMouseEvent event, boolean mouseLeave);
 
-        private static native void N_SendMouseWheelEvent(long self, CefMouseEvent event, int deltaX, int deltaY);
+        private static native void sendMouseWheelEvent0(long self, CefMouseEvent event, int deltaX, int deltaY);
 
-        private static native void N_SendTouchEvent(long self, CefTouchEvent event);
+        private static native void sendTouchEvent0(long self, CefTouchEvent event);
 
-        private static native void N_SendCaptureLostEvent(long self);
+        private static native void sendCaptureLostEvent0(long self);
 
-        private static native void N_NotifyMoveOrResizeStarted(long self);
+        private static native void notifyMoveOrResizeStarted0(long self);
 
-        private static native int N_GetWindowlessFrameRate(long self);
+        private static native int getWindowlessFrameRate0(long self);
 
-        private static native void N_SetWindowlessFrameRate(long self, int frameRate);
+        private static native void setWindowlessFrameRate0(long self, int frameRate);
 
-        private static native void N_ImeSetComposition(
+        private static native void imeSetComposition0(
                 long self,
                 String text,
                 long underlinesCount,
@@ -1747,53 +1750,53 @@ public interface CefBrowserHost extends CefLibraryObject {
                 CefRange replacementRange,
                 CefRange selectionRange);
 
-        private static native void N_ImeCommitText(
+        private static native void imeCommitText0(
                 long self, String text, CefRange replacementRange, int relativeCursorPos);
 
-        private static native void N_ImeFinishComposingText(long self, boolean keepSelection);
+        private static native void imeFinishComposingText0(long self, boolean keepSelection);
 
-        private static native void N_ImeCancelComposition(long self);
+        private static native void imeCancelComposition0(long self);
 
-        private static native void N_DragTargetDragEnter(
+        private static native void dragTargetDragEnter0(
                 long self, CefDragData dragData, CefMouseEvent event, CefDragOperationsMask allowedOps);
 
-        private static native void N_DragTargetDragOver(
+        private static native void dragTargetDragOver0(
                 long self, CefMouseEvent event, CefDragOperationsMask allowedOps);
 
-        private static native void N_DragTargetDragLeave(long self);
+        private static native void dragTargetDragLeave0(long self);
 
-        private static native void N_DragTargetDrop(long self, CefMouseEvent event);
+        private static native void dragTargetDrop0(long self, CefMouseEvent event);
 
-        private static native void N_DragSourceEndedAt(long self, int x, int y, CefDragOperationsMask op);
+        private static native void dragSourceEndedAt0(long self, int x, int y, CefDragOperationsMask op);
 
-        private static native void N_DragSourceSystemDragEnded(long self);
+        private static native void dragSourceSystemDragEnded0(long self);
 
-        private static native CefNavigationEntry N_GetVisibleNavigationEntry(long self);
+        private static native CefNavigationEntry getVisibleNavigationEntry0(long self);
 
-        private static native void N_SetAccessibilityState(long self, CefState accessibilityState);
+        private static native void setAccessibilityState0(long self, CefState accessibilityState);
 
-        private static native void N_SetAutoResizeEnabled(long self, boolean enabled, CefSize minSize, CefSize maxSize);
+        private static native void setAutoResizeEnabled0(long self, boolean enabled, CefSize minSize, CefSize maxSize);
 
-        private static native void N_SetAudioMuted(long self, boolean mute);
+        private static native void setAudioMuted0(long self, boolean mute);
 
-        private static native boolean N_IsAudioMuted(long self);
+        private static native boolean isAudioMuted0(long self);
 
-        private static native boolean N_IsFullscreen(long self);
+        private static native boolean isFullscreen0(long self);
 
-        private static native void N_ExitFullscreen(long self, boolean willCauseResize);
+        private static native void exitFullscreen0(long self, boolean willCauseResize);
 
-        private static native boolean N_CanExecuteChromeCommand(long self, int commandId);
+        private static native boolean canExecuteChromeCommand0(long self, int commandId);
 
-        private static native void N_ExecuteChromeCommand(
+        private static native void executeChromeCommand0(
                 long self, int commandId, CefWindowOpenDisposition disposition);
 
-        private static native boolean N_IsRenderProcessUnresponsive(long self);
+        private static native boolean isRenderProcessUnresponsive0(long self);
 
-        private static native CefRuntimeStyle N_GetRuntimeStyle(long self);
+        private static native CefRuntimeStyle getRuntimeStyle0(long self);
 
-        private static native void N_SetAxViewportCollapse(long self, boolean enabled);
+        private static native void setAxViewportCollapse0(long self, boolean enabled);
 
-        static native int N_CreateBrowser(
+        static native int createBrowser0(
                 CefWindowInfo windowInfo,
                 CefClient client,
                 String url,
@@ -1801,7 +1804,7 @@ public interface CefBrowserHost extends CefLibraryObject {
                 CefDictionaryValue extraInfo,
                 CefRequestContext requestContext);
 
-        static native CefBrowser N_CreateBrowserSync(
+        static native CefBrowser createBrowserSync0(
                 CefWindowInfo windowInfo,
                 CefClient client,
                 String url,
@@ -1809,7 +1812,7 @@ public interface CefBrowserHost extends CefLibraryObject {
                 CefDictionaryValue extraInfo,
                 CefRequestContext requestContext);
 
-        static native CefBrowser N_GetBrowserByIdentifier(int browserId);
+        static native CefBrowser getBrowserByIdentifier0(int browserId);
 
         @Override
         public boolean equals(Object obj) {

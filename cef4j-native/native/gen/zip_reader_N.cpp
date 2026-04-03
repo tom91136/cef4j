@@ -1,29 +1,29 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_zip_reader_capi.h"
 #include "include/capi/cef_stream_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefZipReader), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1MoveToFirstFile(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), moveToFirstFile0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->move_to_first_file(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1MoveToNextFile(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), moveToNextFile0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->move_to_next_file(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1MoveToFile(JNIEnv* env, jobject obj, jlong self, jstring fileName, jboolean caseSensitive) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), moveToFile0)(JNIEnv* env, jobject obj, jlong self, jstring fileName, jboolean caseSensitive) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _fileName_str = JStringToCefString(env, fileName);
@@ -32,14 +32,14 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Close(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), cefClose0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->close(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1GetFileName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefZipReader), getFileName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_file_name(s);
@@ -49,13 +49,13 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00
     return jstr;
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1GetFileSize(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefZipReader), getFileSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_file_size(s));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1GetFileLastModified(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), getFileLastModified0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_file_last_modified(s);
@@ -65,7 +65,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1OpenFile(JNIEnv* env, jobject obj, jlong self, jstring password) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), openFile0)(JNIEnv* env, jobject obj, jlong self, jstring password) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _password_str = password ? JStringToCefString(env, password) : nullptr;
@@ -74,14 +74,14 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1CloseFile(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), closeFile0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->close_file(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1ReadFile(JNIEnv* env, jobject obj, jlong self, jobject buffer) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefZipReader), readFile0)(JNIEnv* env, jobject obj, jlong self, jobject buffer) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
     if (!buffer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0;}
@@ -90,19 +90,19 @@ extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024
     return static_cast<jint>(s->read_file(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer))));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Tell(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefZipReader), tell0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->tell(s));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Eof(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefZipReader), eof0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->eof(s));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefZipReader_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jobject stream) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), create0)(JNIEnv* env, jclass clz, jobject stream) {
     cef_stream_reader_t* _stream_ptr = stream ? reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J"))) : nullptr;
     if (_stream_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b);}
     auto _r = cef_zip_reader_create(_stream_ptr);

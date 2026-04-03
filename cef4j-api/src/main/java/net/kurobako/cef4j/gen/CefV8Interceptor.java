@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure that should be implemented to handle V8 interceptor calls. The functions of this structure will be called
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:237</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Interceptor extends CefLibraryObject {
 
     /**
@@ -136,11 +139,11 @@ public interface CefV8Interceptor extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Interceptor 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public int getByname(
@@ -150,7 +153,7 @@ public interface CefV8Interceptor extends CefLibraryObject {
                 @Nullable String exception) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
-            return N_GetByname(nativePtr, name, object, retval, exception);
+            return getByname0(nativePtr, name, object, retval, exception);
         }
 
         @Override
@@ -161,7 +164,7 @@ public interface CefV8Interceptor extends CefLibraryObject {
                 @Nullable String exception) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
-            return N_GetByindex(nativePtr, index, object, retval, exception);
+            return getByindex0(nativePtr, index, object, retval, exception);
         }
 
         @Override
@@ -173,7 +176,7 @@ public interface CefV8Interceptor extends CefLibraryObject {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
             CefLibraryObject.requireOpen(value, "CefV8Value");
-            return N_SetByname(nativePtr, name, object, value, exception);
+            return setByname0(nativePtr, name, object, value, exception);
         }
 
         @Override
@@ -182,19 +185,19 @@ public interface CefV8Interceptor extends CefLibraryObject {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
             CefLibraryObject.requireOpen(value, "CefV8Value");
-            return N_SetByindex(nativePtr, index, object, value, exception);
+            return setByindex0(nativePtr, index, object, value, exception);
         }
 
-        private static native int N_GetByname(
+        private static native int getByname0(
                 long self, String name, CefV8Value object, AtomicReference<CefV8Value> retval, String exception);
 
-        private static native int N_GetByindex(
+        private static native int getByindex0(
                 long self, int index, CefV8Value object, AtomicReference<CefV8Value> retval, String exception);
 
-        private static native int N_SetByname(
+        private static native int setByname0(
                 long self, String name, CefV8Value object, CefV8Value value, String exception);
 
-        private static native int N_SetByindex(
+        private static native int setByindex0(
                 long self, int index, CefV8Value object, CefV8Value value, String exception);
 
         @Override

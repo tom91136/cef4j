@@ -1,16 +1,16 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_server_capi.h"
 #include "include/capi/cef_task_capi.h"
 #include "jni_util.h"
 
 extern "C" cef_server_handler_t* Create_JniCefServerHandler(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1GetTaskRunner(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefServer), getTaskRunner0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_task_runner(s);
@@ -20,20 +20,20 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1Shutdown(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), shutdown0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     s->shutdown(s);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1IsRunning(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefServer), isRunning0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_running(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1GetAddress(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefServer), getAddress0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_address(s);
@@ -43,21 +43,21 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1HasConnection(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefServer), hasConnection0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_connection(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1IsValidConnection(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefServer), isValidConnection0)(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid_connection(s, connection_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttp200response(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp200response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
@@ -68,13 +68,13 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     if (_content_type_str) cef_string_userfree_free(_content_type_str);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttp404response(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp404response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     s->send_http404_response(s, connection_id);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttp500response(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring error_message) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp500response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring error_message) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     auto _error_message_str = JStringToCefString(env, error_message);
@@ -82,7 +82,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     if (_error_message_str) cef_string_userfree_free(_error_message_str);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendHttpResponse(JNIEnv* env, jobject obj, jlong self, jint connection_id, jint response_code, jstring content_type, jlong content_length, jobject extra_headers) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttpResponse0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jint response_code, jstring content_type, jlong content_length, jobject extra_headers) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     auto _content_type_str = JStringToCefString(env, content_type);
@@ -92,7 +92,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     cef_string_multimap_free(_extra_headers_csmm);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendRawData(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendRawData0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
@@ -101,13 +101,13 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     s->send_raw_data(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1CloseConnection(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), closeConnection0)(JNIEnv* env, jobject obj, jlong self, jint connection_id) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     s->close_connection(s, connection_id);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1SendWebSocketMessage(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendWebSocketMessage0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
     if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
@@ -116,7 +116,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024Nat
     s->send_web_socket_message(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefServer_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring address, jint port, jint backlog, jobject handler) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), create0)(JNIEnv* env, jclass clz, jstring address, jint port, jint backlog, jobject handler) {
     auto _address_str = JStringToCefString(env, address);
     cef_server_handler_t* _handler_ptr = handler ? Create_JniCefServerHandler(env, handler) : nullptr;
     cef_server_create(_address_str, port, backlog, _handler_ptr);

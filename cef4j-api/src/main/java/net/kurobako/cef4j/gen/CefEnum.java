@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Common interface for generated wrappers around CEF enum values.
@@ -12,6 +15,7 @@ package net.kurobako.cef4j.gen;
  *
  * @param <T> the concrete generated enum wrapper type
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefEnum<T extends CefEnum<T>> {
 
     /** The underlying C enum numeric value. */

@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to create and/or parse command line arguments. Arguments with "--", "-" and, on Windows, "/" prefixes are
@@ -24,6 +26,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:46</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefCommandLine extends CefLibraryObject {
 
     /**
@@ -283,7 +286,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefCommandLine> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     /**
@@ -296,7 +299,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     static Optional<CefCommandLine> getGlobal() {
-        return Optional.ofNullable(NativePeer.N_GetGlobal());
+        return Optional.ofNullable(NativePeer.getGlobal0());
     }
 
     final class NativePeer implements CefCommandLine, AutoCloseable {
@@ -336,183 +339,183 @@ public interface CefCommandLine extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefCommandLine 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public Optional<CefCommandLine> copy() {
             checkNotClosed();
-            return Optional.ofNullable(N_Copy(nativePtr));
+            return Optional.ofNullable(copy0(nativePtr));
         }
 
         @Override
         public void initFromArgv(int argc, @Nullable NativePointer argv) {
             checkNotClosed();
-            N_InitFromArgv(nativePtr, argc, argv);
+            initFromArgv0(nativePtr, argc, argv);
         }
 
         @Override
         public void initFromString(@Nullable String commandLine) {
             checkNotClosed();
-            N_InitFromString(nativePtr, commandLine);
+            initFromString0(nativePtr, commandLine);
         }
 
         @Override
         public void reset() {
             checkNotClosed();
-            N_Reset(nativePtr);
+            reset0(nativePtr);
         }
 
         @Override
         public void getArgv(@Nonnull List<String> argv) {
             checkNotClosed();
-            N_GetArgv(nativePtr, argv);
+            getArgv0(nativePtr, argv);
         }
 
         @Override
         public Optional<String> getCommandLineString() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetCommandLineString(nativePtr));
+            return Optional.ofNullable(getCommandLineString0(nativePtr));
         }
 
         @Override
         public Optional<String> getProgram() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetProgram(nativePtr));
+            return Optional.ofNullable(getProgram0(nativePtr));
         }
 
         @Override
         public void setProgram(@Nullable String program) {
             checkNotClosed();
-            N_SetProgram(nativePtr, program);
+            setProgram0(nativePtr, program);
         }
 
         @Override
         public boolean hasSwitches() {
             checkNotClosed();
-            return N_HasSwitches(nativePtr);
+            return hasSwitches0(nativePtr);
         }
 
         @Override
         public boolean hasSwitch(@Nullable String name) {
             checkNotClosed();
-            return N_HasSwitch(nativePtr, name);
+            return hasSwitch0(nativePtr, name);
         }
 
         @Override
         public Optional<String> getSwitchValue(@Nullable String name) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSwitchValue(nativePtr, name));
+            return Optional.ofNullable(getSwitchValue0(nativePtr, name));
         }
 
         @Override
         public void getSwitches(@Nonnull Map<String, String> switches) {
             checkNotClosed();
-            N_GetSwitches(nativePtr, switches);
+            getSwitches0(nativePtr, switches);
         }
 
         @Override
         public void appendSwitch(@Nullable String name) {
             checkNotClosed();
-            N_AppendSwitch(nativePtr, name);
+            appendSwitch0(nativePtr, name);
         }
 
         @Override
         public void appendSwitchWithValue(@Nullable String name, @Nullable String value) {
             checkNotClosed();
-            N_AppendSwitchWithValue(nativePtr, name, value);
+            appendSwitchWithValue0(nativePtr, name, value);
         }
 
         @Override
         public boolean hasArguments() {
             checkNotClosed();
-            return N_HasArguments(nativePtr);
+            return hasArguments0(nativePtr);
         }
 
         @Override
         public void getArguments(@Nonnull List<String> arguments) {
             checkNotClosed();
-            N_GetArguments(nativePtr, arguments);
+            getArguments0(nativePtr, arguments);
         }
 
         @Override
         public void appendArgument(@Nullable String argument) {
             checkNotClosed();
-            N_AppendArgument(nativePtr, argument);
+            appendArgument0(nativePtr, argument);
         }
 
         @Override
         public void prependWrapper(@Nullable String wrapper) {
             checkNotClosed();
-            N_PrependWrapper(nativePtr, wrapper);
+            prependWrapper0(nativePtr, wrapper);
         }
 
         @Override
         public void removeSwitch(@Nullable String name) {
             checkNotClosed();
-            N_RemoveSwitch(nativePtr, name);
+            removeSwitch0(nativePtr, name);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native CefCommandLine N_Copy(long self);
+        private static native CefCommandLine copy0(long self);
 
-        private static native void N_InitFromArgv(long self, int argc, NativePointer argv);
+        private static native void initFromArgv0(long self, int argc, NativePointer argv);
 
-        private static native void N_InitFromString(long self, String commandLine);
+        private static native void initFromString0(long self, String commandLine);
 
-        private static native void N_Reset(long self);
+        private static native void reset0(long self);
 
-        private static native void N_GetArgv(long self, List<String> argv);
+        private static native void getArgv0(long self, List<String> argv);
 
-        private static native String N_GetCommandLineString(long self);
+        private static native String getCommandLineString0(long self);
 
-        private static native String N_GetProgram(long self);
+        private static native String getProgram0(long self);
 
-        private static native void N_SetProgram(long self, String program);
+        private static native void setProgram0(long self, String program);
 
-        private static native boolean N_HasSwitches(long self);
+        private static native boolean hasSwitches0(long self);
 
-        private static native boolean N_HasSwitch(long self, String name);
+        private static native boolean hasSwitch0(long self, String name);
 
-        private static native String N_GetSwitchValue(long self, String name);
+        private static native String getSwitchValue0(long self, String name);
 
-        private static native void N_GetSwitches(long self, Map<String, String> switches);
+        private static native void getSwitches0(long self, Map<String, String> switches);
 
-        private static native void N_AppendSwitch(long self, String name);
+        private static native void appendSwitch0(long self, String name);
 
-        private static native void N_AppendSwitchWithValue(long self, String name, String value);
+        private static native void appendSwitchWithValue0(long self, String name, String value);
 
-        private static native boolean N_HasArguments(long self);
+        private static native boolean hasArguments0(long self);
 
-        private static native void N_GetArguments(long self, List<String> arguments);
+        private static native void getArguments0(long self, List<String> arguments);
 
-        private static native void N_AppendArgument(long self, String argument);
+        private static native void appendArgument0(long self, String argument);
 
-        private static native void N_PrependWrapper(long self, String wrapper);
+        private static native void prependWrapper0(long self, String wrapper);
 
-        private static native void N_RemoveSwitch(long self, String name);
+        private static native void removeSwitch0(long self, String name);
 
-        static native CefCommandLine N_Create();
+        static native CefCommandLine create0();
 
-        static native CefCommandLine N_GetGlobal();
+        static native CefCommandLine getGlobal0();
 
         @Override
         public boolean equals(Object obj) {

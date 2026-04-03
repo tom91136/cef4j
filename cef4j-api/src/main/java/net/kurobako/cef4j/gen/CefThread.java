@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * A simple thread abstraction that establishes a message loop on a new thread. The consumer uses CefTaskRunner to
@@ -22,6 +24,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefThread extends CefLibraryObject {
 
     /**
@@ -91,7 +94,7 @@ public interface CefThread extends CefLibraryObject {
             @Nonnull CefMessageLoopType messageLoopType,
             int stoppable,
             @Nonnull CefComInitMode comInitMode) {
-        return Optional.ofNullable(NativePeer.N_Create(displayName, priority, messageLoopType, stoppable, comInitMode));
+        return Optional.ofNullable(NativePeer.create0(displayName, priority, messageLoopType, stoppable, comInitMode));
     }
 
     final class NativePeer implements CefThread, AutoCloseable {
@@ -131,45 +134,45 @@ public interface CefThread extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefThread 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTaskRunner(nativePtr));
+            return Optional.ofNullable(getTaskRunner0(nativePtr));
         }
 
         @Override
         public long getPlatformThreadId() {
             checkNotClosed();
-            return N_GetPlatformThreadId(nativePtr);
+            return getPlatformThreadId0(nativePtr);
         }
 
         @Override
         public void stop() {
             checkNotClosed();
-            N_Stop(nativePtr);
+            stop0(nativePtr);
         }
 
         @Override
         public boolean isRunning() {
             checkNotClosed();
-            return N_IsRunning(nativePtr);
+            return isRunning0(nativePtr);
         }
 
-        private static native CefTaskRunner N_GetTaskRunner(long self);
+        private static native CefTaskRunner getTaskRunner0(long self);
 
-        private static native long N_GetPlatformThreadId(long self);
+        private static native long getPlatformThreadId0(long self);
 
-        private static native void N_Stop(long self);
+        private static native void stop0(long self);
 
-        private static native boolean N_IsRunning(long self);
+        private static native boolean isRunning0(long self);
 
-        static native CefThread N_Create(
+        static native CefThread create0(
                 String displayName,
                 CefThreadPriority priority,
                 CefMessageLoopType messageLoopType,

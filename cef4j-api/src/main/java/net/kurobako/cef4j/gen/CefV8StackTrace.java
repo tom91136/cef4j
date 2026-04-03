@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 stack trace handle. V8 handles can only be accessed from the thread on which they are
@@ -18,6 +20,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:966</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8StackTrace extends CefLibraryObject {
 
     /**
@@ -54,7 +57,7 @@ public interface CefV8StackTrace extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1042</a>
      */
     static Optional<CefV8StackTrace> getCurrent(int frameLimit) {
-        return Optional.ofNullable(NativePeer.N_GetCurrent(frameLimit));
+        return Optional.ofNullable(NativePeer.getCurrent0(frameLimit));
     }
 
     final class NativePeer implements CefV8StackTrace, AutoCloseable {
@@ -94,29 +97,29 @@ public interface CefV8StackTrace extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8StackTrace 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public int getFrameCount() {
             checkNotClosed();
-            return N_GetFrameCount(nativePtr);
+            return getFrameCount0(nativePtr);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native int N_GetFrameCount(long self);
+        private static native int getFrameCount0(long self);
 
-        static native CefV8StackTrace N_GetCurrent(int frameLimit);
+        static native CefV8StackTrace getCurrent0(int frameLimit);
 
         @Override
         public boolean equals(Object obj) {

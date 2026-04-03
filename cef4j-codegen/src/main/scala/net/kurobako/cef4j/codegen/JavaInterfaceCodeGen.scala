@@ -202,7 +202,7 @@ object JavaInterfaceCodeGen {
       Naming.Context
   ): List[String] =
     freeFunctions.map { ff =>
-      val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
+      val nativeName = Naming.nativeMethodName(ff.javaMethodName)
       val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
       s"        static native ${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
     }
@@ -237,7 +237,7 @@ ${allLines.mkString("\n")}
     // For classes (isClass=true), native methods are private static on the class itself.
     val methods = freeFunctions.map { ff =>
       val methodName = ff.javaMethodName
-      val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
+      val nativeName = Naming.nativeMethodName(ff.javaMethodName)
       val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
       val callTarget = if (isClass) nativeName else s"NativePeer.$nativeName"
       val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
@@ -265,7 +265,7 @@ ${allLines.mkString("\n")}
     if (isClass) {
       // For classes, emit native methods as private static native directly
       val nativeDecls = freeFunctions.map { ff =>
-        val nativeName = s"N_${Naming.capitalise(ff.javaMethodName)}"
+        val nativeName = Naming.nativeMethodName(ff.javaMethodName)
         val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
         s"    private static native ${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
       }.mkString("\n\n")

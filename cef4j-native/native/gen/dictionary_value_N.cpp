@@ -1,35 +1,35 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDictionaryValue), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsOwned(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isOwned0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_owned(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsReadOnly(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isReadOnly0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_read_only(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -38,7 +38,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1IsEqual(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isEqual0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -47,7 +47,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Copy(JNIEnv* env, jobject obj, jlong self, jint exclude_empty_children) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), copy0)(JNIEnv* env, jobject obj, jlong self, jint exclude_empty_children) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _r = s->copy(s, exclude_empty_children);
@@ -57,20 +57,20 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetSize(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDictionaryValue), getSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_size(s));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Clear(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), clear0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->clear(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1HasKey(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), hasKey0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -79,7 +79,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetKeys(JNIEnv* env, jobject obj, jlong self, jobject keys) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), getKeys0)(JNIEnv* env, jobject obj, jlong self, jobject keys) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     if (!keys) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE;}
@@ -89,7 +89,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Remove(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), remove0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -98,7 +98,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetType(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getType0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
     auto _key_str = JStringToCefString(env, key);
@@ -109,7 +109,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetValue(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getValue0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _key_str = JStringToCefString(env, key);
@@ -121,7 +121,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetBool(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), getBool0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -130,21 +130,21 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetInt(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefDictionaryValue), getInt0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
     auto _key_str = JStringToCefString(env, key);
     return static_cast<jint>(s->get_int(s, _key_str));
 }
 
-extern "C" JNIEXPORT jdouble JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetDouble(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jdouble, CEF4J_PEER(CefDictionaryValue), getDouble0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return 0;
     auto _key_str = JStringToCefString(env, key);
     return static_cast<jdouble>(s->get_double(s, _key_str));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetString(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDictionaryValue), getString0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _key_str = JStringToCefString(env, key);
@@ -156,7 +156,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetBinary(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getBinary0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _key_str = JStringToCefString(env, key);
@@ -168,7 +168,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetDictionary(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getDictionary0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _key_str = JStringToCefString(env, key);
@@ -180,7 +180,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1GetList(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getList0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return nullptr;
     auto _key_str = JStringToCefString(env, key);
@@ -192,7 +192,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryVa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetValue(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setValue0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -203,7 +203,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetNull(JNIEnv* env, jobject obj, jlong self, jstring key) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setNull0)(JNIEnv* env, jobject obj, jlong self, jstring key) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -212,7 +212,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetBool(JNIEnv* env, jobject obj, jlong self, jstring key, jboolean value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setBool0)(JNIEnv* env, jobject obj, jlong self, jstring key, jboolean value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -221,7 +221,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetInt(JNIEnv* env, jobject obj, jlong self, jstring key, jint value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setInt0)(JNIEnv* env, jobject obj, jlong self, jstring key, jint value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -230,7 +230,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetDouble(JNIEnv* env, jobject obj, jlong self, jstring key, jdouble value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setDouble0)(JNIEnv* env, jobject obj, jlong self, jstring key, jdouble value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -239,7 +239,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetString(JNIEnv* env, jobject obj, jlong self, jstring key, jstring value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setString0)(JNIEnv* env, jobject obj, jlong self, jstring key, jstring value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -250,7 +250,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetBinary(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setBinary0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -261,7 +261,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetDictionary(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setDictionary0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -272,7 +272,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1SetList(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setList0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
@@ -283,7 +283,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryV
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDictionaryValue_00024NativePeer_N_1Create(JNIEnv* env, jclass clz) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_dictionary_value_create();
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");

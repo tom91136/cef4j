@@ -36,6 +36,22 @@
             <artifactId>javafx-graphics</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -50,6 +66,87 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <version>2.1.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-cef-compat-tests</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source><![CDATA[
+import java.nio.charset.StandardCharsets
+
+File sourceDir = new File(project.basedir, "src/test/java/net/kurobako/cef4j/osr/jfx/compat/javafx")
+File targetDir = new File(project.build.directory, "generated-test-sources/cef-compat")
+if (!sourceDir.isDirectory()) {
+    return
+}
+targetDir.mkdirs()
+sourceDir.eachFileRecurse { File sourceFile ->
+    if (!sourceFile.name.endsWith(".java")) {
+        return
+    }
+    String text = sourceFile.getText("UTF-8")
+    text = text.replace("package net.kurobako.cef4j.osr.jfx.compat.javafx;",
+            "package net.kurobako.cef4j.osr.jfx.compat.cef;")
+    text = text.replace("import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;",
+            "import static net.kurobako.cef4j.osr.jfx.compat.cef.FxWebViewRuntimeTestSupport.*;")
+    text = text.replace("import javafx.scene.web.WebView;",
+            "import net.kurobako.cef4j.osr.jfx.CefWebView;")
+    text = text.replace("import javafx.scene.web.WebEngine;",
+            "import net.kurobako.cef4j.osr.jfx.CefWebEngine;")
+    text = text.replace("import javafx.scene.web.WebHistory;",
+            "import net.kurobako.cef4j.osr.jfx.CefWebHistory;")
+    text = text.replace("import javafx.scene.web.PopupFeatures;",
+            "import net.kurobako.cef4j.osr.jfx.CefPopupFeatures;")
+    text = text.replace("import javafx.scene.web.PromptData;",
+            "import net.kurobako.cef4j.osr.jfx.CefPromptData;")
+    text = text.replace("import javafx.scene.web.WebErrorEvent;",
+            "import net.kurobako.cef4j.osr.jfx.CefWebErrorEvent;")
+    text = text.replace("import javafx.scene.web.WebEvent;",
+            "import net.kurobako.cef4j.osr.jfx.CefWebEvent;")
+    text = text.replaceAll("\\bWebView\\b", "CefWebView")
+    text = text.replaceAll("\\bWebEngine\\b", "CefWebEngine")
+    text = text.replaceAll("\\bWebHistory\\b", "CefWebHistory")
+    text = text.replaceAll("\\bPopupFeatures\\b", "CefPopupFeatures")
+    text = text.replaceAll("\\bPromptData\\b", "CefPromptData")
+    text = text.replaceAll("\\bWebErrorEvent\\b", "CefWebErrorEvent")
+    text = text.replaceAll("\\bWebEvent\\b", "CefWebEvent")
+
+    String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
+    File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)
+    outFile.parentFile.mkdirs()
+    outFile.write(text, "UTF-8")
+}
+                            ]]></source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-cef-compat-tests</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-test-sources/cef-compat</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

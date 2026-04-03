@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a download item.
@@ -15,6 +17,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:43</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefDownloadItem extends CefLibraryObject {
 
     /**
@@ -299,171 +302,171 @@ public interface CefDownloadItem extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefDownloadItem 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isInProgress() {
             checkNotClosed();
-            return N_IsInProgress(nativePtr);
+            return isInProgress0(nativePtr);
         }
 
         @Override
         public boolean isComplete() {
             checkNotClosed();
-            return N_IsComplete(nativePtr);
+            return isComplete0(nativePtr);
         }
 
         @Override
         public boolean isCanceled() {
             checkNotClosed();
-            return N_IsCanceled(nativePtr);
+            return isCanceled0(nativePtr);
         }
 
         @Override
         public boolean isInterrupted() {
             checkNotClosed();
-            return N_IsInterrupted(nativePtr);
+            return isInterrupted0(nativePtr);
         }
 
         @Override
         public CefDownloadInterruptReason getInterruptReason() {
             checkNotClosed();
-            return N_GetInterruptReason(nativePtr);
+            return getInterruptReason0(nativePtr);
         }
 
         @Override
         public long getCurrentSpeed() {
             checkNotClosed();
-            return N_GetCurrentSpeed(nativePtr);
+            return getCurrentSpeed0(nativePtr);
         }
 
         @Override
         public int getPercentComplete() {
             checkNotClosed();
-            return N_GetPercentComplete(nativePtr);
+            return getPercentComplete0(nativePtr);
         }
 
         @Override
         public long getTotalBytes() {
             checkNotClosed();
-            return N_GetTotalBytes(nativePtr);
+            return getTotalBytes0(nativePtr);
         }
 
         @Override
         public long getReceivedBytes() {
             checkNotClosed();
-            return N_GetReceivedBytes(nativePtr);
+            return getReceivedBytes0(nativePtr);
         }
 
         @Override
         public CefBasetime getStartTime() {
             checkNotClosed();
-            return N_GetStartTime(nativePtr);
+            return getStartTime0(nativePtr);
         }
 
         @Override
         public CefBasetime getEndTime() {
             checkNotClosed();
-            return N_GetEndTime(nativePtr);
+            return getEndTime0(nativePtr);
         }
 
         @Override
         public Optional<String> getFullPath() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFullPath(nativePtr));
+            return Optional.ofNullable(getFullPath0(nativePtr));
         }
 
         @Override
         public int getId() {
             checkNotClosed();
-            return N_GetId(nativePtr);
+            return getId0(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUrl(nativePtr));
+            return Optional.ofNullable(getUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getOriginalUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetOriginalUrl(nativePtr));
+            return Optional.ofNullable(getOriginalUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getSuggestedFileName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSuggestedFileName(nativePtr));
+            return Optional.ofNullable(getSuggestedFileName0(nativePtr));
         }
 
         @Override
         public Optional<String> getContentDisposition() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetContentDisposition(nativePtr));
+            return Optional.ofNullable(getContentDisposition0(nativePtr));
         }
 
         @Override
         public Optional<String> getMimeType() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMimeType(nativePtr));
+            return Optional.ofNullable(getMimeType0(nativePtr));
         }
 
         @Override
         public boolean isPaused() {
             checkNotClosed();
-            return N_IsPaused(nativePtr);
+            return isPaused0(nativePtr);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsInProgress(long self);
+        private static native boolean isInProgress0(long self);
 
-        private static native boolean N_IsComplete(long self);
+        private static native boolean isComplete0(long self);
 
-        private static native boolean N_IsCanceled(long self);
+        private static native boolean isCanceled0(long self);
 
-        private static native boolean N_IsInterrupted(long self);
+        private static native boolean isInterrupted0(long self);
 
-        private static native CefDownloadInterruptReason N_GetInterruptReason(long self);
+        private static native CefDownloadInterruptReason getInterruptReason0(long self);
 
-        private static native long N_GetCurrentSpeed(long self);
+        private static native long getCurrentSpeed0(long self);
 
-        private static native int N_GetPercentComplete(long self);
+        private static native int getPercentComplete0(long self);
 
-        private static native long N_GetTotalBytes(long self);
+        private static native long getTotalBytes0(long self);
 
-        private static native long N_GetReceivedBytes(long self);
+        private static native long getReceivedBytes0(long self);
 
-        private static native CefBasetime N_GetStartTime(long self);
+        private static native CefBasetime getStartTime0(long self);
 
-        private static native CefBasetime N_GetEndTime(long self);
+        private static native CefBasetime getEndTime0(long self);
 
-        private static native String N_GetFullPath(long self);
+        private static native String getFullPath0(long self);
 
-        private static native int N_GetId(long self);
+        private static native int getId0(long self);
 
-        private static native String N_GetUrl(long self);
+        private static native String getUrl0(long self);
 
-        private static native String N_GetOriginalUrl(long self);
+        private static native String getOriginalUrl0(long self);
 
-        private static native String N_GetSuggestedFileName(long self);
+        private static native String getSuggestedFileName0(long self);
 
-        private static native String N_GetContentDisposition(long self);
+        private static native String getContentDisposition0(long self);
 
-        private static native String N_GetMimeType(long self);
+        private static native String getMimeType0(long self);
 
-        private static native boolean N_IsPaused(long self);
+        private static native boolean isPaused0(long self);
 
         @Override
         public boolean equals(Object obj) {

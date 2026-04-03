@@ -1,30 +1,30 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_process_message_capi.h"
 #include "include/capi/cef_shared_memory_region_capi.h"
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefProcessMessage), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefProcessMessage), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1IsReadOnly(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefProcessMessage), isReadOnly0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_read_only(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1Copy(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), copy0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return nullptr;
     auto _r = s->copy(s);
@@ -34,7 +34,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1GetName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefProcessMessage), getName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_name(s);
@@ -44,7 +44,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessa
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1GetArgumentList(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), getArgumentList0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_argument_list(s);
@@ -54,7 +54,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1GetSharedMemoryRegion(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), getSharedMemoryRegion0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_process_message_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_shared_memory_region(s);
@@ -64,7 +64,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessa
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefProcessMessage_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring name) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), create0)(JNIEnv* env, jclass clz, jstring name) {
     auto _name_str = JStringToCefString(env, name);
     auto _r = cef_process_message_create(_name_str);
     if (_name_str) cef_string_userfree_free(_name_str);

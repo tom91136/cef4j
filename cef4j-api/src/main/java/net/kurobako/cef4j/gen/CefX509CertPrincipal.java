@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing the issuer or subject field of an X.509 certificate. NOTE: This struct is allocated DLL-side.
@@ -18,6 +20,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate__capi_8h.html">cef_x509_certificate_capi.h:54</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefX509CertPrincipal extends CefLibraryObject {
 
     /**
@@ -147,67 +150,67 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefX509CertPrincipal 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getDisplayName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDisplayName(nativePtr));
+            return Optional.ofNullable(getDisplayName0(nativePtr));
         }
 
         @Override
         public Optional<String> getCommonName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetCommonName(nativePtr));
+            return Optional.ofNullable(getCommonName0(nativePtr));
         }
 
         @Override
         public Optional<String> getLocalityName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLocalityName(nativePtr));
+            return Optional.ofNullable(getLocalityName0(nativePtr));
         }
 
         @Override
         public Optional<String> getStateOrProvinceName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetStateOrProvinceName(nativePtr));
+            return Optional.ofNullable(getStateOrProvinceName0(nativePtr));
         }
 
         @Override
         public Optional<String> getCountryName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetCountryName(nativePtr));
+            return Optional.ofNullable(getCountryName0(nativePtr));
         }
 
         @Override
         public void getOrganizationNames(@Nonnull List<String> names) {
             checkNotClosed();
-            N_GetOrganizationNames(nativePtr, names);
+            getOrganizationNames0(nativePtr, names);
         }
 
         @Override
         public void getOrganizationUnitNames(@Nonnull List<String> names) {
             checkNotClosed();
-            N_GetOrganizationUnitNames(nativePtr, names);
+            getOrganizationUnitNames0(nativePtr, names);
         }
 
-        private static native String N_GetDisplayName(long self);
+        private static native String getDisplayName0(long self);
 
-        private static native String N_GetCommonName(long self);
+        private static native String getCommonName0(long self);
 
-        private static native String N_GetLocalityName(long self);
+        private static native String getLocalityName0(long self);
 
-        private static native String N_GetStateOrProvinceName(long self);
+        private static native String getStateOrProvinceName0(long self);
 
-        private static native String N_GetCountryName(long self);
+        private static native String getCountryName0(long self);
 
-        private static native void N_GetOrganizationNames(long self, List<String> names);
+        private static native void getOrganizationNames0(long self, List<String> names);
 
-        private static native void N_GetOrganizationUnitNames(long self, List<String> names);
+        private static native void getOrganizationUnitNames0(long self, List<String> names);
 
         @Override
         public boolean equals(Object obj) {

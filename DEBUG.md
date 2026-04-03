@@ -79,13 +79,13 @@ public class CrashTest {
 
         Path dataDir = Files.createTempDirectory("cef4j-test-");
         dataDir.toFile().deleteOnExit();
-        net.kurobako.cef4j.CefApp.INSTANCE
+        net.kurobako.cef4j.Cef.INSTANCE
             .cachePath(dataDir.toAbsolutePath().toString())
             .initialize();
 
         // ... reproduce the crash here ...
 
-        net.kurobako.cef4j.CefApp.INSTANCE.dispose();
+        net.kurobako.cef4j.Cef.INSTANCE.dispose();
         System.err.println("=== done");
     }
 }

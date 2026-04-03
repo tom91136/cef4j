@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_browser_capi.h"
 #include "include/capi/cef_image_capi.h"
@@ -42,8 +42,4 @@ extern "C" cef_download_image_callback_t* Create_JniCefDownloadImageCallback(JNI
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_download_image_callback_t*>(new JniCefDownloadImageCallback(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDownloadImageCallback_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefDownloadImageCallback(env, obj));
 }

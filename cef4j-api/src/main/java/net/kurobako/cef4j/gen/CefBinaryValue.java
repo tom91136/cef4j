@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing a binary value. Can be used on any process and thread.
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:233</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefBinaryValue extends CefLibraryObject {
 
     /**
@@ -122,7 +125,7 @@ public interface CefBinaryValue extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefBinaryValue> create(@Nonnull ByteBuffer data) {
-        return Optional.ofNullable(NativePeer.N_Create(data));
+        return Optional.ofNullable(NativePeer.create0(data));
     }
 
     /**
@@ -135,7 +138,7 @@ public interface CefBinaryValue extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:106</a>
      */
     static Optional<CefBinaryValue> base64Decode(@Nullable String data) {
-        return Optional.ofNullable(NativePeer.N_Base64Decode(data));
+        return Optional.ofNullable(NativePeer.base64Decode0(data));
     }
 
     final class NativePeer implements CefBinaryValue, AutoCloseable {
@@ -175,81 +178,81 @@ public interface CefBinaryValue extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefBinaryValue 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isOwned() {
             checkNotClosed();
-            return N_IsOwned(nativePtr);
+            return isOwned0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefBinaryValue that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefBinaryValue");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public boolean isEqual(@Nullable CefBinaryValue that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefBinaryValue");
-            return N_IsEqual(nativePtr, that);
+            return isEqual0(nativePtr, that);
         }
 
         @Override
         public Optional<CefBinaryValue> copy() {
             checkNotClosed();
-            return Optional.ofNullable(N_Copy(nativePtr));
+            return Optional.ofNullable(copy0(nativePtr));
         }
 
         @Override
         public NativePointer getRawData() {
             checkNotClosed();
-            return N_GetRawData(nativePtr);
+            return getRawData0(nativePtr);
         }
 
         @Override
         public long getSize() {
             checkNotClosed();
-            return N_GetSize(nativePtr);
+            return getSize0(nativePtr);
         }
 
         @Override
         public long getData(@Nonnull ByteBuffer buffer, long dataOffset) {
             checkNotClosed();
-            return N_GetData(nativePtr, buffer, dataOffset);
+            return getData0(nativePtr, buffer, dataOffset);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsOwned(long self);
+        private static native boolean isOwned0(long self);
 
-        private static native boolean N_IsSame(long self, CefBinaryValue that);
+        private static native boolean isSame0(long self, CefBinaryValue that);
 
-        private static native boolean N_IsEqual(long self, CefBinaryValue that);
+        private static native boolean isEqual0(long self, CefBinaryValue that);
 
-        private static native CefBinaryValue N_Copy(long self);
+        private static native CefBinaryValue copy0(long self);
 
-        private static native NativePointer N_GetRawData(long self);
+        private static native NativePointer getRawData0(long self);
 
-        private static native long N_GetSize(long self);
+        private static native long getSize0(long self);
 
-        private static native long N_GetData(long self, ByteBuffer buffer, long dataOffset);
+        private static native long getData0(long self, ByteBuffer buffer, long dataOffset);
 
-        static native CefBinaryValue N_Create(ByteBuffer data);
+        static native CefBinaryValue create0(ByteBuffer data);
 
-        static native CefBinaryValue N_Base64Decode(String data);
+        static native CefBinaryValue base64Decode0(String data);
 
         @Override
         public boolean equals(Object obj) {

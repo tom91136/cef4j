@@ -1,22 +1,22 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_image_capi.h"
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefImage), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1IsEmpty(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), isEmpty0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_empty(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     cef_image_t* _that_ptr = that ? reinterpret_cast<cef_image_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -25,7 +25,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1AddBitmap(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jint pixel_width, jint pixel_height, jobject color_type, jobject alpha_type, jobject pixel_data) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), addBitmap0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jint pixel_width, jint pixel_height, jobject color_type, jobject alpha_type, jobject pixel_data) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
@@ -37,7 +37,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1AddPng(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject png_data) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), addPng0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject png_data) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     if (!png_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "pngData must not be null"); return JNI_FALSE;}
@@ -47,7 +47,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1AddJpeg(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject jpeg_data) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), addJpeg0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject jpeg_data) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     if (!jpeg_data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "jpegData must not be null"); return JNI_FALSE;}
@@ -57,33 +57,33 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetWidth(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefImage), getWidth0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_width(s));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetHeight(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefImage), getHeight0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_height(s));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1HasRepresentation(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), hasRepresentation0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_representation(s, scale_factor);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1RemoveRepresentation(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), removeRepresentation0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->remove_representation(s, scale_factor);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetRepresentationInfo(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jfloatArray actual_scale_factor, jintArray pixel_width, jintArray pixel_height) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefImage), getRepresentationInfo0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jfloatArray actual_scale_factor, jintArray pixel_width, jintArray pixel_height) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return JNI_FALSE;
     float _actual_scale_factor_val = 0;
@@ -99,7 +99,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetAsBitmap(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject color_type, jobject alpha_type, jintArray pixel_width, jintArray pixel_height) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefImage), getAsBitmap0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jobject color_type, jobject alpha_type, jintArray pixel_width, jintArray pixel_height) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return nullptr;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return nullptr;}
@@ -117,7 +117,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetAsPng(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jboolean with_transparency, jintArray pixel_width, jintArray pixel_height) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefImage), getAsPng0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jboolean with_transparency, jintArray pixel_width, jintArray pixel_height) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return nullptr;
     int _pixel_width_val = 0;
@@ -133,7 +133,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1GetAsJpeg(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jint quality, jintArray pixel_width, jintArray pixel_height) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefImage), getAsJpeg0)(JNIEnv* env, jobject obj, jlong self, jfloat scale_factor, jint quality, jintArray pixel_width, jintArray pixel_height) {
     auto* s = reinterpret_cast<cef_image_t*>(self);
     if (!s) return nullptr;
     int _pixel_width_val = 0;
@@ -149,7 +149,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefImage_00024NativePeer_N_1Create(JNIEnv* env, jclass clz) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefImage), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_image_create();
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefImage$NativePeer");

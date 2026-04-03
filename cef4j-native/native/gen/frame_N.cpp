@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_frame_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -13,87 +13,87 @@
 extern "C" cef_string_visitor_t* Create_JniCefStringVisitor(JNIEnv *env, jobject handler);
 extern "C" cef_domvisitor_t* Create_JniCefDomVisitor(JNIEnv *env, jobject handler);
 extern "C" cef_urlrequest_client_t* Create_JniCefUrlRequestClient(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefFrame), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Undo(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), undo0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->undo(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Redo(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), redo0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->redo(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Cut(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), cut0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->cut(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Copy(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), copy0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->copy(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Paste(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), paste0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->paste(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1PasteAndMatchStyle(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), pasteAndMatchStyle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->paste_and_match_style(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1Del(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), del0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->del(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1SelectAll(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), selectAll0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->select_all(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1ViewSource(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), viewSource0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     s->view_source(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetSource(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), getSource0)(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     cef_string_visitor_t* _visitor_ptr = visitor ? Create_JniCefStringVisitor(env, visitor) : nullptr;
     s->get_source(s, _visitor_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetText(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), getText0)(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     cef_string_visitor_t* _visitor_ptr = visitor ? Create_JniCefStringVisitor(env, visitor) : nullptr;
     s->get_text(s, _visitor_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1LoadRequest(JNIEnv* env, jobject obj, jlong self, jobject request) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), loadRequest0)(JNIEnv* env, jobject obj, jlong self, jobject request) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     cef_request_t* _request_ptr = request ? reinterpret_cast<cef_request_t*>(env->GetLongField(request, env->GetFieldID(env->GetObjectClass(request), "nativePtr", "J"))) : nullptr;
@@ -101,7 +101,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024Nati
     s->load_request(s, _request_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1LoadUrl(JNIEnv* env, jobject obj, jlong self, jstring url) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), loadUrl0)(JNIEnv* env, jobject obj, jlong self, jstring url) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     auto _url_str = JStringToCefString(env, url);
@@ -109,7 +109,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024Nati
     if (_url_str) cef_string_userfree_free(_url_str);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1ExecuteJavaScript(JNIEnv* env, jobject obj, jlong self, jstring code, jstring script_url, jint start_line) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), executeJavaScript0)(JNIEnv* env, jobject obj, jlong self, jstring code, jstring script_url, jint start_line) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     auto _code_str = JStringToCefString(env, code);
@@ -119,21 +119,21 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024Nati
     if (_script_url_str) cef_string_userfree_free(_script_url_str);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1IsMain(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefFrame), isMain0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_main(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1IsFocused(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefFrame), isFocused0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_focused(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefFrame), getName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_name(s);
@@ -143,7 +143,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetIdentifier(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefFrame), getIdentifier0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_identifier(s);
@@ -153,7 +153,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetParent(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getParent0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_parent(s);
@@ -163,7 +163,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefFrame), getUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_url(s);
@@ -173,7 +173,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetBrowser(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getBrowser0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_browser(s);
@@ -183,7 +183,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1GetV8context(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), getV8context0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_v8_context(s);
@@ -193,14 +193,14 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1VisitDom(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), visitDom0)(JNIEnv* env, jobject obj, jlong self, jobject visitor) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     cef_domvisitor_t* _visitor_ptr = visitor ? Create_JniCefDomVisitor(env, visitor) : nullptr;
     s->visit_dom(s, _visitor_ptr);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1CreateUrlRequest(JNIEnv* env, jobject obj, jlong self, jobject request, jobject client) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), createUrlRequest0)(JNIEnv* env, jobject obj, jlong self, jobject request, jobject client) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     cef_request_t* _request_ptr = request ? reinterpret_cast<cef_request_t*>(env->GetLongField(request, env->GetFieldID(env->GetObjectClass(request), "nativePtr", "J"))) : nullptr;
@@ -213,7 +213,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024N
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefFrame_00024NativePeer_N_1SendProcessMessage(JNIEnv* env, jobject obj, jlong self, jobject target_process, jobject message) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), sendProcessMessage0)(JNIEnv* env, jobject obj, jlong self, jobject target_process, jobject message) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     if (!target_process) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetProcess must not be null"); return;}

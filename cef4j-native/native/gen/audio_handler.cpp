@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_audio_handler_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -25,7 +25,7 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
     static int CEF_CALLBACK _get_audio_parameters(cef_audio_handler_t* self, struct _cef_browser_t* browser, cef_audio_parameters_t* params) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(14) < 0) {return false;}
+        if (env->PushLocalFrame(16) < 0) {return false;}
         cef_browser_t* _p_browser = browser;
         if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -43,7 +43,14 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_params);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
-        if (params && j_params) {auto _wb_channel_layout = env->GetObjectField(j_params, env->GetFieldID(j_params_cls, "channelLayout", "Lnet/kurobako/cef4j/gen/CefChannelLayout;")); if (_wb_channel_layout) {params->channel_layout = static_cast<decltype(params->channel_layout)>(env->GetLongField(_wb_channel_layout, env->GetFieldID(env->GetObjectClass(_wb_channel_layout), "value", "J")));}params->sample_rate = static_cast<decltype(params->sample_rate)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "sampleRate", "I"))); params->frames_per_buffer = static_cast<decltype(params->frames_per_buffer)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "framesPerBuffer", "I")));}
+        if (params && j_params) {
+            auto _wb_channel_layout = env->GetObjectField(j_params, env->GetFieldID(j_params_cls, "channelLayout", "Lnet/kurobako/cef4j/gen/CefChannelLayout;"));
+            if (_wb_channel_layout) {
+                params->channel_layout = static_cast<decltype(params->channel_layout)>(env->GetLongField(_wb_channel_layout, env->GetFieldID(env->GetObjectClass(_wb_channel_layout), "value", "J")));
+            }
+            params->sample_rate = static_cast<decltype(params->sample_rate)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "sampleRate", "I")));
+            params->frames_per_buffer = static_cast<decltype(params->frames_per_buffer)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "framesPerBuffer", "I")));
+        }
         env->PopLocalFrame(nullptr);
         return jResult;
     }
@@ -133,8 +140,4 @@ extern "C" cef_audio_handler_t* Create_JniCefAudioHandler(JNIEnv *env, jobject h
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_audio_handler_t*>(new JniCefAudioHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefAudioHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefAudioHandler(env, obj));
 }

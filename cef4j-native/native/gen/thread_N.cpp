@@ -1,15 +1,15 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_thread_capi.h"
 #include "include/capi/cef_task_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefThread), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1GetTaskRunner(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefThread), getTaskRunner0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_thread_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_task_runner(s);
@@ -19,26 +19,26 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1GetPlatformThreadId(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefThread), getPlatformThreadId0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_thread_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_platform_thread_id(s));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1Stop(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefThread), stop0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_thread_t*>(self);
     if (!s) return;
     s->stop(s);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1IsRunning(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefThread), isRunning0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_thread_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_running(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefThread_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jstring display_name, jobject priority, jobject message_loop_type, jint stoppable, jobject com_init_mode) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefThread), create0)(JNIEnv* env, jclass clz, jstring display_name, jobject priority, jobject message_loop_type, jint stoppable, jobject com_init_mode) {
     if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return nullptr;}
     if (!message_loop_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "messageLoopType must not be null"); return nullptr;}
     if (!com_init_mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "comInitMode must not be null"); return nullptr;}

@@ -1,5 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Supported error code values. For the complete list of error values see "include/base/internal/cef_net_error_list.h".
@@ -114,6 +117,7 @@ package net.kurobako.cef4j.gen;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefErrorCode implements CefEnum<CefErrorCode> {
 
     /** Known constants for {@link CefErrorCode}. */

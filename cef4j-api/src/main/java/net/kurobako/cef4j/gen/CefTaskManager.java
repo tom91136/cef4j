@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that facilitates managing the browser-related tasks. The methods of this class may only be called on the UI
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefTaskManager extends CefLibraryObject {
 
     /**
@@ -103,7 +106,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
      */
     static Optional<CefTaskManager> get() {
-        return Optional.ofNullable(NativePeer.N_Get());
+        return Optional.ofNullable(NativePeer.get0());
     }
 
     final class NativePeer implements CefTaskManager, AutoCloseable {
@@ -143,53 +146,53 @@ public interface CefTaskManager extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefTaskManager 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public long getTasksCount() {
             checkNotClosed();
-            return N_GetTasksCount(nativePtr);
+            return getTasksCount0(nativePtr);
         }
 
         @Override
         public long[] getTaskIdsList() {
             checkNotClosed();
-            return N_GetTaskIdsList(nativePtr);
+            return getTaskIdsList0(nativePtr);
         }
 
         @Override
         public boolean getTaskInfo(long taskId, @Nullable NativePointer info) {
             checkNotClosed();
-            return N_GetTaskInfo(nativePtr, taskId, info);
+            return getTaskInfo0(nativePtr, taskId, info);
         }
 
         @Override
         public boolean killTask(long taskId) {
             checkNotClosed();
-            return N_KillTask(nativePtr, taskId);
+            return killTask0(nativePtr, taskId);
         }
 
         @Override
         public long getTaskIdForBrowserId(int browserId) {
             checkNotClosed();
-            return N_GetTaskIdForBrowserId(nativePtr, browserId);
+            return getTaskIdForBrowserId0(nativePtr, browserId);
         }
 
-        private static native long N_GetTasksCount(long self);
+        private static native long getTasksCount0(long self);
 
-        private static native long[] N_GetTaskIdsList(long self);
+        private static native long[] getTaskIdsList0(long self);
 
-        private static native boolean N_GetTaskInfo(long self, long taskId, NativePointer info);
+        private static native boolean getTaskInfo0(long self, long taskId, NativePointer info);
 
-        private static native boolean N_KillTask(long self, long taskId);
+        private static native boolean killTask0(long self, long taskId);
 
-        private static native long N_GetTaskIdForBrowserId(long self, int browserId);
+        private static native long getTaskIdForBrowserId0(long self, int browserId);
 
-        static native CefTaskManager N_Get();
+        static native CefTaskManager get0();
 
         @Override
         public boolean equals(Object obj) {

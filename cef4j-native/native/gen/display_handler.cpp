@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_display_handler_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -284,7 +284,12 @@ struct JniCefDisplayHandler: public cef_display_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_rect);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
-        if (rect && j_rect) {rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I"))); rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I"))); rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I"))); rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));}
+        if (rect && j_rect) {
+            rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I")));
+            rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I")));
+            rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I")));
+            rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));
+        }
         env->PopLocalFrame(nullptr);
         return jResult;
     }
@@ -295,8 +300,4 @@ extern "C" cef_display_handler_t* Create_JniCefDisplayHandler(JNIEnv *env, jobje
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_display_handler_t*>(new JniCefDisplayHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDisplayHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefDisplayHandler(env, obj));
 }

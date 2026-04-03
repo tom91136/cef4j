@@ -81,11 +81,17 @@ object Naming {
     case None      => toCamelCase(fn.name)
   }
 
-  // Derive the PascalCase native method suffix used by N_ methods and JNI symbols.
-  def javaPascalName(fn: FnPtr)(using Context): String = fn.cppName match {
+  // PascalCase name matching the C++ method name, used for doc comment lookup.
+  def cppPascalName(fn: FnPtr)(using Context): String = fn.cppName match {
     case Some(cpp) => normalizePascal(cpp)
     case None      => toPascalCase(fn.name)
   }
+
+  // Derive the camelCase0 native method name (JDK convention).
+  def nativeMethodName(fn: FnPtr)(using Context): String = javaMethodName(fn) + "0"
+
+  // Derive camelCase0 from a plain Java method name (for release, statics, etc.).
+  def nativeMethodName(javaName: String): String = javaName + "0"
 
   // Compound segments derived from C++ class names.
   private def compoundSegments(using context: Context): Map[String, List[String]] = context.compoundSegments
@@ -154,26 +160,29 @@ object Naming {
 
   def nativePointerInternalName(using Context): String = javaInternalName(nativePointerFqcn)
 
-  // N_GoBack -> N_1GoBack
-  private def jniMethodMangle(methodName: String): String = methodName.replace("_", "_1")
-
   def jniSymbol(cefStructName: String, fn: FnPtr)(using Context): String = {
-    val outerClass   = structToJavaName(cefStructName)
-    val nativeMethod = "N_" + javaPascalName(fn)
-    s"Java_${jniPackagePrefix}_${outerClass}_00024NativePeer_${jniMethodMangle(nativeMethod)}"
+    val outerClass = structToJavaName(cefStructName)
+    s"Java_${jniPackagePrefix}_${outerClass}_00024NativePeer_${nativeMethodName(fn)}"
   }
 
-  // JNI symbol for a static native method directly on a Java class, for example, CefGlobals.
-  def jniSymbolStatic(javaClass: String, javaMethodName: String): String = {
-    val nativeMethod = "N_" + capitalise(javaMethodName)
-    s"Java_${jniPackagePrefix}_${javaClass}_${jniMethodMangle(nativeMethod)}"
-  }
+  // Macro-based JNI export signatures (emit CEF4J_JNI_EXPORT instead of raw extern "C").
 
-  // JNI symbol for a static native method in the NativePeer inner class of a Java interface.
-  def jniSymbolStaticInner(javaClass: String, javaMethodName: String): String = {
-    val nativeMethod = "N_" + capitalise(javaMethodName)
-    s"Java_${jniPackagePrefix}_${javaClass}_00024NativePeer_${jniMethodMangle(nativeMethod)}"
-  }
+  private def jniExport(retJni: String, clsExpr: String, methodName: String): String =
+    s"CEF4J_JNI_EXPORT($retJni, $clsExpr, $methodName)"
+
+  private def peerExpr(javaClass: String): String = s"CEF4J_PEER($javaClass)"
+
+  // Method on NativePeer inner class: CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefBrowser), isValid0)
+  def jniExportPeer(cefStructName: String, fn: FnPtr, retJni: String)(using Context): String =
+    jniExport(retJni, peerExpr(structToJavaName(cefStructName)), nativeMethodName(fn))
+
+  // Static method on NativePeer inner class (by name): CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefX), release0)
+  def jniExportPeerStatic(javaClass: String, javaMethodName: String, retJni: String): String =
+    jniExport(retJni, peerExpr(javaClass), nativeMethodName(javaMethodName))
+
+  // Static method on a top-level class: CEF4J_JNI_EXPORT($ret, CefGlobals, initialize0)
+  def jniExportStatic(javaClass: String, javaMethodName: String, retJni: String): String =
+    jniExport(retJni, javaClass, nativeMethodName(javaMethodName))
 
   def javaType(ct: CType, javadoc: Boolean = false)(using Context): String = ct match {
     case CType.Void               => "void"

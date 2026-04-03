@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * WaitableEvent is a thread synchronization tool that allows one thread to wait for another thread to finish some work.
@@ -20,6 +22,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:43</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefWaitableEvent extends CefLibraryObject {
 
     /**
@@ -99,7 +102,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefWaitableEvent> create(int automaticReset, int initiallySignaled) {
-        return Optional.ofNullable(NativePeer.N_Create(automaticReset, initiallySignaled));
+        return Optional.ofNullable(NativePeer.create0(automaticReset, initiallySignaled));
     }
 
     final class NativePeer implements CefWaitableEvent, AutoCloseable {
@@ -139,53 +142,53 @@ public interface CefWaitableEvent extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefWaitableEvent 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void reset() {
             checkNotClosed();
-            N_Reset(nativePtr);
+            reset0(nativePtr);
         }
 
         @Override
         public void signal() {
             checkNotClosed();
-            N_Signal(nativePtr);
+            signal0(nativePtr);
         }
 
         @Override
         public boolean isSignaled() {
             checkNotClosed();
-            return N_IsSignaled(nativePtr);
+            return isSignaled0(nativePtr);
         }
 
         @Override
         public void cefWait() {
             checkNotClosed();
-            N_Wait(nativePtr);
+            cefWait0(nativePtr);
         }
 
         @Override
         public boolean timedWait(long maxMs) {
             checkNotClosed();
-            return N_TimedWait(nativePtr, maxMs);
+            return timedWait0(nativePtr, maxMs);
         }
 
-        private static native void N_Reset(long self);
+        private static native void reset0(long self);
 
-        private static native void N_Signal(long self);
+        private static native void signal0(long self);
 
-        private static native boolean N_IsSignaled(long self);
+        private static native boolean isSignaled0(long self);
 
-        private static native void N_Wait(long self);
+        private static native void cefWait0(long self);
 
-        private static native boolean N_TimedWait(long self, long maxMs);
+        private static native boolean timedWait0(long self, long maxMs);
 
-        static native CefWaitableEvent N_Create(int automaticReset, int initiallySignaled);
+        static native CefWaitableEvent create0(int automaticReset, int initiallySignaled);
 
         @Override
         public boolean equals(Object obj) {

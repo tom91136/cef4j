@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Arrays;
@@ -6,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing print settings.
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefPrintSettings extends CefLibraryObject {
 
     /**
@@ -312,7 +315,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefPrintSettings> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefPrintSettings, AutoCloseable {
@@ -352,34 +355,34 @@ public interface CefPrintSettings extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefPrintSettings 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public void setOrientation(boolean landscape) {
             checkNotClosed();
-            N_SetOrientation(nativePtr, landscape);
+            setOrientation0(nativePtr, landscape);
         }
 
         @Override
         public boolean isLandscape() {
             checkNotClosed();
-            return N_IsLandscape(nativePtr);
+            return isLandscape0(nativePtr);
         }
 
         @Override
@@ -388,160 +391,160 @@ public interface CefPrintSettings extends CefLibraryObject {
                 @Nonnull CefRect printableAreaDeviceUnits,
                 boolean landscapeNeedsFlip) {
             checkNotClosed();
-            N_SetPrinterPrintableArea(nativePtr, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip);
+            setPrinterPrintableArea0(nativePtr, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip);
         }
 
         @Override
         public void setDeviceName(@Nullable String name) {
             checkNotClosed();
-            N_SetDeviceName(nativePtr, name);
+            setDeviceName0(nativePtr, name);
         }
 
         @Override
         public Optional<String> getDeviceName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDeviceName(nativePtr));
+            return Optional.ofNullable(getDeviceName0(nativePtr));
         }
 
         @Override
         public void setDpi(int dpi) {
             checkNotClosed();
-            N_SetDpi(nativePtr, dpi);
+            setDpi0(nativePtr, dpi);
         }
 
         @Override
         public int getDpi() {
             checkNotClosed();
-            return N_GetDpi(nativePtr);
+            return getDpi0(nativePtr);
         }
 
         @Override
         public void setPageRanges(long rangesCount, @Nonnull CefRange[] ranges) {
             checkNotClosed();
-            N_SetPageRanges(nativePtr, rangesCount, ranges);
+            setPageRanges0(nativePtr, rangesCount, ranges);
         }
 
         @Override
         public long getPageRangesCount() {
             checkNotClosed();
-            return N_GetPageRangesCount(nativePtr);
+            return getPageRangesCount0(nativePtr);
         }
 
         @Override
         public List<CefRange> getPageRanges() {
             checkNotClosed();
-            return Arrays.asList(N_GetPageRanges(nativePtr));
+            return Arrays.asList(getPageRanges0(nativePtr));
         }
 
         @Override
         public void setSelectionOnly(boolean selectionOnly) {
             checkNotClosed();
-            N_SetSelectionOnly(nativePtr, selectionOnly);
+            setSelectionOnly0(nativePtr, selectionOnly);
         }
 
         @Override
         public boolean isSelectionOnly() {
             checkNotClosed();
-            return N_IsSelectionOnly(nativePtr);
+            return isSelectionOnly0(nativePtr);
         }
 
         @Override
         public void setCollate(boolean collate) {
             checkNotClosed();
-            N_SetCollate(nativePtr, collate);
+            setCollate0(nativePtr, collate);
         }
 
         @Override
         public boolean willCollate() {
             checkNotClosed();
-            return N_WillCollate(nativePtr);
+            return willCollate0(nativePtr);
         }
 
         @Override
         public void setColorModel(@Nonnull CefColorModel model) {
             checkNotClosed();
-            N_SetColorModel(nativePtr, model);
+            setColorModel0(nativePtr, model);
         }
 
         @Override
         public CefColorModel getColorModel() {
             checkNotClosed();
-            return N_GetColorModel(nativePtr);
+            return getColorModel0(nativePtr);
         }
 
         @Override
         public void setCopies(int copies) {
             checkNotClosed();
-            N_SetCopies(nativePtr, copies);
+            setCopies0(nativePtr, copies);
         }
 
         @Override
         public int getCopies() {
             checkNotClosed();
-            return N_GetCopies(nativePtr);
+            return getCopies0(nativePtr);
         }
 
         @Override
         public void setDuplexMode(@Nonnull CefDuplexMode mode) {
             checkNotClosed();
-            N_SetDuplexMode(nativePtr, mode);
+            setDuplexMode0(nativePtr, mode);
         }
 
         @Override
         public CefDuplexMode getDuplexMode() {
             checkNotClosed();
-            return N_GetDuplexMode(nativePtr);
+            return getDuplexMode0(nativePtr);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native void N_SetOrientation(long self, boolean landscape);
+        private static native void setOrientation0(long self, boolean landscape);
 
-        private static native boolean N_IsLandscape(long self);
+        private static native boolean isLandscape0(long self);
 
-        private static native void N_SetPrinterPrintableArea(
+        private static native void setPrinterPrintableArea0(
                 long self,
                 CefSize physicalSizeDeviceUnits,
                 CefRect printableAreaDeviceUnits,
                 boolean landscapeNeedsFlip);
 
-        private static native void N_SetDeviceName(long self, String name);
+        private static native void setDeviceName0(long self, String name);
 
-        private static native String N_GetDeviceName(long self);
+        private static native String getDeviceName0(long self);
 
-        private static native void N_SetDpi(long self, int dpi);
+        private static native void setDpi0(long self, int dpi);
 
-        private static native int N_GetDpi(long self);
+        private static native int getDpi0(long self);
 
-        private static native void N_SetPageRanges(long self, long rangesCount, CefRange[] ranges);
+        private static native void setPageRanges0(long self, long rangesCount, CefRange[] ranges);
 
-        private static native long N_GetPageRangesCount(long self);
+        private static native long getPageRangesCount0(long self);
 
-        private static native CefRange[] N_GetPageRanges(long self);
+        private static native CefRange[] getPageRanges0(long self);
 
-        private static native void N_SetSelectionOnly(long self, boolean selectionOnly);
+        private static native void setSelectionOnly0(long self, boolean selectionOnly);
 
-        private static native boolean N_IsSelectionOnly(long self);
+        private static native boolean isSelectionOnly0(long self);
 
-        private static native void N_SetCollate(long self, boolean collate);
+        private static native void setCollate0(long self, boolean collate);
 
-        private static native boolean N_WillCollate(long self);
+        private static native boolean willCollate0(long self);
 
-        private static native void N_SetColorModel(long self, CefColorModel model);
+        private static native void setColorModel0(long self, CefColorModel model);
 
-        private static native CefColorModel N_GetColorModel(long self);
+        private static native CefColorModel getColorModel0(long self);
 
-        private static native void N_SetCopies(long self, int copies);
+        private static native void setCopies0(long self, int copies);
 
-        private static native int N_GetCopies(long self);
+        private static native int getCopies0(long self);
 
-        private static native void N_SetDuplexMode(long self, CefDuplexMode mode);
+        private static native void setDuplexMode0(long self, CefDuplexMode mode);
 
-        private static native CefDuplexMode N_GetDuplexMode(long self);
+        private static native CefDuplexMode getDuplexMode0(long self);
 
-        static native CefPrintSettings N_Create();
+        static native CefPrintSettings create0();
 
         @Override
         public boolean equals(Object obj) {

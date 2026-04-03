@@ -17,6 +17,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,10 +52,33 @@ class CefInteropTest {
         Path cacheDir = Files.createTempDirectory("cef4j-test-cache-");
         cacheDir.toFile().deleteOnExit();
 
-        if (CefApp.INSTANCE.getState() == CefApp.State.UNCONFIGURED) {
-            CefApp.INSTANCE.cachePath(cacheDir.toAbsolutePath().toString());
+        if (Cef.INSTANCE.getState() == Cef.State.UNINITIALISED) {
+            CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.cachePath = cacheDir.toAbsolutePath().toString();
+            settings.windowlessRenderingEnabled = 1;
+            settings.externalMessagePump = 1;
+            settings.multiThreadedMessageLoop = 0;
+
+            List<String> extraArgs = new ArrayList<>();
+            extraArgs.add("--disable-popup-blocking");
+            if (OS.isLinux()) {
+                extraArgs.add("--no-sandbox");
+                String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
+                if (ozonePlatform != null && !ozonePlatform.isBlank()) {
+                    extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
+                }
+            }
+            String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
+            if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
+                for (String arg : extraArgsProperty.split(",")) {
+                    String trimmed = arg.trim();
+                    if (!trimmed.isEmpty()) {
+                        extraArgs.add(trimmed);
+                    }
+                }
+            }
+            Cef.INSTANCE.initialise(settings, extraArgs);
         }
-        CefApp.INSTANCE.initialize();
     }
 
     @AfterAll
@@ -76,7 +101,7 @@ class CefInteropTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@javax.annotation.Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nonnull CefBrowser browser) {
                         browserRef.set(browser);
                         createdLatch.countDown();
                     }
@@ -87,10 +112,7 @@ class CefInteropTest {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefFrame frame,
-                            int httpstatuscode) {
+                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
                         httpStatus.set(httpstatuscode);
                         loadEndLatch.countDown();
                     }
@@ -103,8 +125,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(createdLatch, 10_000))
                 .as("onAfterCreated should fire within 10s")
@@ -118,7 +139,7 @@ class CefInteropTest {
         // about:blank loads with status 0 (no HTTP involved) or 200
         assertThat(httpStatus.get()).as("HTTP status for about:blank").isIn(0, 200);
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -139,9 +160,7 @@ class CefInteropTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -151,11 +170,11 @@ class CefInteropTest {
 
                     @Override
                     public void onPaint(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefPaintElementType type,
+                            @Nonnull CefBrowser browser,
+                            @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
-                            @javax.annotation.Nonnull CefRect[] dirtyRects,
-                            @javax.annotation.Nonnull ByteBuffer buffer,
+                            @Nonnull CefRect[] dirtyRects,
+                            @Nonnull ByteBuffer buffer,
                             int width,
                             int height) {
                         if (paintLatch.getCount() > 0) {
@@ -171,8 +190,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(paintLatch, 15_000))
                 .as("onPaint should fire within 15s")
@@ -186,7 +204,7 @@ class CefInteropTest {
         assertThat(buf).as("pixel buffer").isNotNull();
         assertThat(buf.length).as("pixel buffer size (BGRA)").isEqualTo(viewWidth * viewHeight * 4);
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -201,7 +219,7 @@ class CefInteropTest {
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(@javax.annotation.Nonnull CefBrowser browser, String title) {
+                    public void onTitleChange(@Nonnull CefBrowser browser, String title) {
                         if (title != null && !title.isEmpty()) {
                             receivedTitle.set(title);
                             titleLatch.countDown();
@@ -219,15 +237,14 @@ class CefInteropTest {
         String html = "<html><head><title>cef4j-test-title</title></head><body></body></html>";
         String dataUrl = "data:text/html;charset=utf-8," + html.replace(" ", "%20");
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, dataUrl);
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, dataUrl);
 
         assertThat(pumpUntil(titleLatch, 10_000))
                 .as("onTitleChange should fire within 10s")
                 .isTrue();
         assertThat(receivedTitle.get()).as("title from HTML").isEqualTo("cef4j-test-title");
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -243,10 +260,7 @@ class CefInteropTest {
                 return Optional.of(new CefLoadHandler() {
                     @Override
                     public void onLoadingStateChange(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            boolean isloading,
-                            boolean cangoback,
-                            boolean cangoforward) {
+                            @Nonnull CefBrowser browser, boolean isloading, boolean cangoback, boolean cangoforward) {
                         events.add("stateChange:isLoading=" + isloading);
                         if (!isloading) {
                             doneLatch.countDown();
@@ -255,17 +269,14 @@ class CefInteropTest {
 
                     @Override
                     public void onLoadStart(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefFrame frame,
-                            @javax.annotation.Nonnull CefTransitionType transitionType) {
+                            @Nonnull CefBrowser browser,
+                            @Nonnull CefFrame frame,
+                            @Nonnull CefTransitionType transitionType) {
                         events.add("loadStart");
                     }
 
                     @Override
-                    public void onLoadEnd(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefFrame frame,
-                            int httpstatuscode) {
+                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
                         events.add("loadEnd:" + httpstatuscode);
                     }
                 });
@@ -277,8 +288,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(doneLatch, 10_000))
                 .as("loading should complete within 10s")
@@ -288,7 +298,7 @@ class CefInteropTest {
                 .as("load event sequence")
                 .contains("stateChange:isLoading=true", "stateChange:isLoading=false");
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -303,7 +313,7 @@ class CefInteropTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@javax.annotation.Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nonnull CefBrowser browser) {
                         browsers.add(browser);
                         createdLatch.countDown();
                     }
@@ -316,10 +326,8 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser1 = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        CefBrowserOsr browser2 = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser1.createImmediately();
-        browser2.createImmediately();
+        CefBrowser browser1 = createWindowlessBrowser(client, "about:blank");
+        CefBrowser browser2 = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(createdLatch, 10_000))
                 .as("both browsers should be created")
@@ -330,8 +338,8 @@ class CefInteropTest {
                 .as("browsers have different native pointers")
                 .isNotEqualTo(browsers.get(1));
 
-        browser1.close(true);
-        browser2.close(true);
+        closeBrowser(browser1);
+        closeBrowser(browser2);
     }
 
     @Test
@@ -348,10 +356,7 @@ class CefInteropTest {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefFrame frame,
-                            int httpstatuscode) {
+                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
                         loadLatch.countDown();
                     }
                 });
@@ -362,8 +367,8 @@ class CefInteropTest {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
                     public boolean onConsoleMessage(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefLogSeverity level,
+                            @Nonnull CefBrowser browser,
+                            @Nonnull CefLogSeverity level,
                             String message,
                             String source,
                             int line) {
@@ -381,12 +386,11 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(loadLatch, 10_000)).isTrue();
 
-        browser.executeJavaScript("console.log('cef4j-interop-test')", "test.js", 1);
+        browser.getMainFrame().orElseThrow().executeJavaScript("console.log('cef4j-interop-test')", "test.js", 1);
 
         assertThat(pumpUntil(consoleLatch, 10_000))
                 .as("console message callback should fire")
@@ -394,7 +398,7 @@ class CefInteropTest {
         assertThat(consoleMsg.get()).as("console message text").isEqualTo("cef4j-interop-test");
         assertThat(consoleSeverity.get()).as("console log severity").isNotNull();
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -410,15 +414,13 @@ class CefInteropTest {
             public Optional<CefFrameHandler> getFrameHandler() {
                 return Optional.of(new CefFrameHandler() {
                     @Override
-                    public void onFrameCreated(
-                            @javax.annotation.Nonnull CefBrowser browser, @javax.annotation.Nonnull CefFrame frame) {
+                    public void onFrameCreated(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {
                         frameCreatedCalled.set(true);
                         frameCreatedLatch.countDown();
                     }
 
                     @Override
-                    public void onMainFrameChanged(
-                            @javax.annotation.Nonnull CefBrowser browser, CefFrame oldFrame, CefFrame newFrame) {
+                    public void onMainFrameChanged(@Nonnull CefBrowser browser, CefFrame oldFrame, CefFrame newFrame) {
                         mainFrameLatch.countDown();
                     }
                 });
@@ -430,8 +432,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(frameCreatedLatch, 10_000))
                 .as("onFrameCreated should fire")
@@ -441,7 +442,7 @@ class CefInteropTest {
                 .isTrue();
         assertThat(frameCreatedCalled.get()).isTrue();
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -455,7 +456,7 @@ class CefInteropTest {
             public Optional<CefRequestHandler> getRequestHandler() {
                 return Optional.of(new CefRequestHandler() {
                     @Override
-                    public void onRenderViewReady(@javax.annotation.Nonnull CefBrowser browser) {
+                    public void onRenderViewReady(@Nonnull CefBrowser browser) {
                         readyLatch.countDown();
                     }
                 });
@@ -467,14 +468,13 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(readyLatch, 10_000))
                 .as("onRenderViewReady should fire")
                 .isTrue();
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -831,7 +831,7 @@ class CefInteropTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@javax.annotation.Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nonnull CefBrowser browser) {
                         createdLatch.countDown();
                     }
                 });
@@ -841,10 +841,7 @@ class CefInteropTest {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefFrame frame,
-                            int httpstatuscode) {
+                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
                         loadLatch.countDown();
                     }
                 });
@@ -854,10 +851,7 @@ class CefInteropTest {
             public Optional<CefKeyboardHandler> getKeyboardHandler() {
                 return Optional.of(new CefKeyboardHandler() {
                     @Override
-                    public boolean onKeyEvent(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefKeyEvent event,
-                            long osEvent) {
+                    public boolean onKeyEvent(@Nonnull CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
                         capturedEvent.set(event);
                         keyLatch.countDown();
                         return false;
@@ -871,15 +865,13 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(createdLatch, 10_000)).as("browser created").isTrue();
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
 
         // Leaving CEF: send a key event and capture it back via keyboard handler
-        var host = browser.getHost();
-        assertThat(host).as("browser host").isNotNull();
+        var host = browser.getHost().orElseThrow();
         host.setFocus(true);
         host.sendKeyEvent(new net.kurobako.cef4j.gen.CefKeyEvent(
                 net.kurobako.cef4j.gen.CefKeyEventType.of(net.kurobako.cef4j.gen.CefKeyEventType.Kind.KEYUP),
@@ -899,7 +891,7 @@ class CefInteropTest {
                 .doesNotContain("size=pending")
                 .matches(".*size=\\d+.*");
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
@@ -991,9 +983,7 @@ class CefInteropTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = 200;
@@ -1002,8 +992,7 @@ class CefInteropTest {
 
                     @Override
                     public boolean getScreenInfo(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefScreenInfo.Mutable screenInfo) {
+                            @Nonnull CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
                         screenInfo.deviceScaleFactor = 2.0f;
                         screenInfo.depth = 32;
                         screenInfo.depthPerComponent = 8;
@@ -1016,11 +1005,11 @@ class CefInteropTest {
 
                     @Override
                     public void onPaint(
-                            @javax.annotation.Nonnull CefBrowser browser,
-                            @javax.annotation.Nonnull CefPaintElementType type,
+                            @Nonnull CefBrowser browser,
+                            @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
-                            @javax.annotation.Nonnull CefRect[] dirtyRects,
-                            @javax.annotation.Nonnull ByteBuffer buffer,
+                            @Nonnull CefRect[] dirtyRects,
+                            @Nonnull ByteBuffer buffer,
                             int width,
                             int height) {
                         paintLatch.countDown();
@@ -1029,8 +1018,7 @@ class CefInteropTest {
             }
         };
 
-        CefBrowserOsr browser = CefApp.INSTANCE.createBrowser(client, "about:blank");
-        browser.createImmediately();
+        CefBrowser browser = createWindowlessBrowser(client, "about:blank");
 
         assertThat(pumpUntil(paintLatch, 15_000)).as("onPaint should fire").isTrue();
         assertThat(screenInfoCalled.get()).as("getScreenInfo was called").isTrue();
@@ -1044,11 +1032,11 @@ class CefInteropTest {
         assertThat(info.rect.width).isEqualTo(200);
         assertThat(info.rect.height).isEqualTo(150);
 
-        browser.close(true);
+        closeBrowser(browser);
     }
 
     @Test
-    @Order(28)
+    @Order(29)
     void nativePeer_doubleCloseIsSafe() {
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         dict.setString("k", "v");
@@ -1062,7 +1050,7 @@ class CefInteropTest {
     }
 
     @Test
-    @Order(29)
+    @Order(30)
     void closedPeerAsArgument_shouldThrow() {
         ByteBuffer buf1 = ByteBuffer.allocateDirect(4);
         buf1.put(new byte[] {1, 2, 3, 4});
@@ -1077,7 +1065,7 @@ class CefInteropTest {
     }
 
     @Test
-    @Order(30)
+    @Order(31)
     void heapByteBuffer_throwsIllegalArgument() {
         ByteBuffer heap = ByteBuffer.allocate(10);
         heap.put("test".getBytes(StandardCharsets.UTF_8));
@@ -1088,7 +1076,105 @@ class CefInteropTest {
     }
 
     @Test
-    @Order(31)
+    @Order(33)
+    void onBeforePopup_firesWithoutCrash() throws Exception {
+        // Regression test for JNI local reference overflow in _on_before_popup.
+        // The generated C++ code creates ~100+ local JNI refs but PushLocalFrame(97)
+        // is too small, causing FindClass to return null and SIGSEGV on GetMethodID.
+        CountDownLatch loadLatch = new CountDownLatch(1);
+        CountDownLatch paintLatch = new CountDownLatch(1);
+        CountDownLatch popupLatch = new CountDownLatch(1);
+        AtomicBoolean popupFired = new AtomicBoolean(false);
+
+        CefClient client = new CefClient() {
+            @Override
+            public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
+                return Optional.of(new CefLifeSpanHandler() {
+                    @Override
+                    public boolean onBeforePopup(
+                            @Nullable CefBrowser browser,
+                            @Nullable CefFrame frame,
+                            int popupId,
+                            @Nullable String targetUrl,
+                            @Nullable String targetFrameName,
+                            @Nonnull CefWindowOpenDisposition targetDisposition,
+                            boolean userGesture,
+                            @Nullable NativePointer popupFeatures,
+                            @Nonnull CefWindowInfo.Mutable windowInfo,
+                            @Nullable java.util.concurrent.atomic.AtomicReference<CefClient> client,
+                            @Nonnull CefBrowserSettings.Mutable settings,
+                            @Nullable java.util.concurrent.atomic.AtomicReference<CefDictionaryValue> extraInfo,
+                            int[] noJavascriptAccess) {
+                        popupFired.set(true);
+                        popupLatch.countDown();
+                        return true; // cancel the popup
+                    }
+                });
+            }
+
+            @Override
+            public Optional<CefLoadHandler> getLoadHandler() {
+                return Optional.of(new CefLoadHandler() {
+                    @Override
+                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpStatusCode) {
+                        loadLatch.countDown();
+                    }
+                });
+            }
+
+            @Override
+            public Optional<CefRenderHandler> getRenderHandler() {
+                return Optional.of(new CefRenderHandler() {
+                    @Override
+                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                        rect.x = 0;
+                        rect.y = 0;
+                        rect.width = 200;
+                        rect.height = 200;
+                    }
+
+                    @Override
+                    public void onPaint(
+                            @Nullable CefBrowser browser,
+                            @Nonnull CefPaintElementType type,
+                            long dirtyRectsCount,
+                            @Nonnull CefRect[] dirtyRects,
+                            @Nonnull java.nio.ByteBuffer buffer,
+                            int width,
+                            int height) {
+                        paintLatch.countDown();
+                    }
+                });
+            }
+        };
+
+        // Load a page with a link that opens a popup via target=_blank.
+        // Use sendMouseClickEvent for a real user gesture so CEF doesn't block the popup.
+        String html = "<html><body style='margin:0'><a id='link' href='about:blank' target='_blank'"
+                + " style='display:block;width:200px;height:200px;background:blue;'>open</a></body></html>";
+        String dataUrl = "data:text/html;base64,"
+                + java.util.Base64.getEncoder().encodeToString(html.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        CefBrowser browser = createWindowlessBrowser(client, dataUrl);
+        assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
+        assertThat(pumpUntil(paintLatch, 10_000)).as("first paint").isTrue();
+
+        // Click the link at (50, 25) - inside the 200x200 anchor element
+        CefBrowserHost host = browser.getHost().orElseThrow();
+        CefMouseEvent mouseEvent = new CefMouseEvent(50, 25, 0);
+        CefMouseButtonType left = CefMouseButtonType.of(CefMouseButtonType.Kind.LEFT);
+        host.sendMouseClickEvent(mouseEvent, left, false, 1);
+        host.sendMouseClickEvent(mouseEvent, left, true, 1);
+
+        assertThat(pumpUntil(popupLatch, 10_000))
+                .as("onBeforePopup should fire without SIGSEGV")
+                .isTrue();
+        assertThat(popupFired.get()).isTrue();
+
+        closeBrowser(browser);
+    }
+
+    @Test
+    @Order(32)
     void closedPeerAsNestedArgument_shouldThrow() {
         CefDictionaryValue outer = CefDictionaryValue.create().orElseThrow();
         CefDictionaryValue inner = CefDictionaryValue.create().orElseThrow();
@@ -1104,7 +1190,7 @@ class CefInteropTest {
     private static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-            CefApp.INSTANCE.doMessageLoopWork();
+            Cef.INSTANCE.doMessageLoopWork();
             Thread.sleep(16); // ~60Hz
         }
         return latch.getCount() == 0;
@@ -1124,12 +1210,26 @@ class CefInteropTest {
         }
 
         @Override
-        public void getViewRect(
-                @javax.annotation.Nonnull CefBrowser browser, @javax.annotation.Nonnull CefRect.Mutable rect) {
+        public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
             rect.x = 0;
             rect.y = 0;
             rect.width = width;
             rect.height = height;
+        }
+    }
+
+    private static CefBrowser createWindowlessBrowser(CefClient client, String url) {
+        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
+        windowInfo.bounds = new CefRect(0, 0, 800, 600);
+        windowInfo.windowlessRenderingEnabled = 1;
+        CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
+        browserSettings.windowlessFrameRate = 60;
+        return Cef.INSTANCE.createBrowser(client, url, windowInfo.toImmutable(), browserSettings.toImmutable());
+    }
+
+    private static void closeBrowser(CefBrowser browser) {
+        if (browser != null) {
+            browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
     }
 }

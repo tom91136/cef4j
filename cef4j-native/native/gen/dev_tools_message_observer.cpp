@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_devtools_message_observer_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -118,8 +118,4 @@ extern "C" cef_dev_tools_message_observer_t* Create_JniCefDevToolsMessageObserve
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_dev_tools_message_observer_t*>(new JniCefDevToolsMessageObserver(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDevToolsMessageObserver_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefDevToolsMessageObserver(env, obj));
 }

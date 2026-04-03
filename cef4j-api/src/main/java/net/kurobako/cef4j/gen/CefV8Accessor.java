@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure that should be implemented to handle V8 accessor calls. Accessor identifiers are registered by calling
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:196</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Accessor extends CefLibraryObject {
 
     /**
@@ -95,11 +98,11 @@ public interface CefV8Accessor extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Accessor 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean get(
@@ -109,7 +112,7 @@ public interface CefV8Accessor extends CefLibraryObject {
                 @Nullable String exception) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
-            return N_Get(nativePtr, name, object, retval, exception);
+            return get0(nativePtr, name, object, retval, exception);
         }
 
         @Override
@@ -121,13 +124,13 @@ public interface CefV8Accessor extends CefLibraryObject {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
             CefLibraryObject.requireOpen(value, "CefV8Value");
-            return N_Set(nativePtr, name, object, value, exception);
+            return set0(nativePtr, name, object, value, exception);
         }
 
-        private static native boolean N_Get(
+        private static native boolean get0(
                 long self, String name, CefV8Value object, AtomicReference<CefV8Value> retval, String exception);
 
-        private static native boolean N_Set(
+        private static native boolean set0(
                 long self, String name, CefV8Value object, CefV8Value value, String exception);
 
         @Override

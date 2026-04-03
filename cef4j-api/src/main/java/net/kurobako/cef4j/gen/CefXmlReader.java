@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that supports the reading of XML data via the libxml streaming API. The methods of this class should only be
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefXmlReader extends CefLibraryObject {
 
     /**
@@ -381,7 +384,7 @@ public interface CefXmlReader extends CefLibraryObject {
      */
     static Optional<CefXmlReader> create(
             @Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI) {
-        return Optional.ofNullable(NativePeer.N_Create(stream, encodingType, uRI));
+        return Optional.ofNullable(NativePeer.create0(stream, encodingType, uRI));
     }
 
     final class NativePeer implements CefXmlReader, AutoCloseable {
@@ -421,245 +424,245 @@ public interface CefXmlReader extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefXmlReader 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean moveToNextNode() {
             checkNotClosed();
-            return N_MoveToNextNode(nativePtr);
+            return moveToNextNode0(nativePtr);
         }
 
         @Override
         public boolean cefClose() {
             checkNotClosed();
-            return N_Close(nativePtr);
+            return cefClose0(nativePtr);
         }
 
         @Override
         public boolean hasError() {
             checkNotClosed();
-            return N_HasError(nativePtr);
+            return hasError0(nativePtr);
         }
 
         @Override
         public Optional<String> getError() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetError(nativePtr));
+            return Optional.ofNullable(getError0(nativePtr));
         }
 
         @Override
         public CefXmlNodeType getType() {
             checkNotClosed();
-            return N_GetType(nativePtr);
+            return getType0(nativePtr);
         }
 
         @Override
         public int getDepth() {
             checkNotClosed();
-            return N_GetDepth(nativePtr);
+            return getDepth0(nativePtr);
         }
 
         @Override
         public Optional<String> getLocalName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLocalName(nativePtr));
+            return Optional.ofNullable(getLocalName0(nativePtr));
         }
 
         @Override
         public Optional<String> getPrefix() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPrefix(nativePtr));
+            return Optional.ofNullable(getPrefix0(nativePtr));
         }
 
         @Override
         public Optional<String> getQualifiedName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetQualifiedName(nativePtr));
+            return Optional.ofNullable(getQualifiedName0(nativePtr));
         }
 
         @Override
         public Optional<String> getNamespaceUri() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetNamespaceUri(nativePtr));
+            return Optional.ofNullable(getNamespaceUri0(nativePtr));
         }
 
         @Override
         public Optional<String> getBaseUri() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBaseUri(nativePtr));
+            return Optional.ofNullable(getBaseUri0(nativePtr));
         }
 
         @Override
         public Optional<String> getXmlLang() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetXmlLang(nativePtr));
+            return Optional.ofNullable(getXmlLang0(nativePtr));
         }
 
         @Override
         public boolean isEmptyElement() {
             checkNotClosed();
-            return N_IsEmptyElement(nativePtr);
+            return isEmptyElement0(nativePtr);
         }
 
         @Override
         public boolean hasValue() {
             checkNotClosed();
-            return N_HasValue(nativePtr);
+            return hasValue0(nativePtr);
         }
 
         @Override
         public Optional<String> getValue() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetValue(nativePtr));
+            return Optional.ofNullable(getValue0(nativePtr));
         }
 
         @Override
         public boolean hasAttributes() {
             checkNotClosed();
-            return N_HasAttributes(nativePtr);
+            return hasAttributes0(nativePtr);
         }
 
         @Override
         public long getAttributeCount() {
             checkNotClosed();
-            return N_GetAttributeCount(nativePtr);
+            return getAttributeCount0(nativePtr);
         }
 
         @Override
         public Optional<String> getAttributeByindex(int index) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAttributeByindex(nativePtr, index));
+            return Optional.ofNullable(getAttributeByindex0(nativePtr, index));
         }
 
         @Override
         public Optional<String> getAttributeByqname(@Nullable String qualifiedName) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAttributeByqname(nativePtr, qualifiedName));
+            return Optional.ofNullable(getAttributeByqname0(nativePtr, qualifiedName));
         }
 
         @Override
         public Optional<String> getAttributeBylname(@Nullable String localName, @Nullable String namespaceURI) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAttributeBylname(nativePtr, localName, namespaceURI));
+            return Optional.ofNullable(getAttributeBylname0(nativePtr, localName, namespaceURI));
         }
 
         @Override
         public Optional<String> getInnerXml() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetInnerXml(nativePtr));
+            return Optional.ofNullable(getInnerXml0(nativePtr));
         }
 
         @Override
         public Optional<String> getOuterXml() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetOuterXml(nativePtr));
+            return Optional.ofNullable(getOuterXml0(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
             checkNotClosed();
-            return N_GetLineNumber(nativePtr);
+            return getLineNumber0(nativePtr);
         }
 
         @Override
         public int moveToAttributeByindex(int index) {
             checkNotClosed();
-            return N_MoveToAttributeByindex(nativePtr, index);
+            return moveToAttributeByindex0(nativePtr, index);
         }
 
         @Override
         public int moveToAttributeByqname(@Nullable String qualifiedName) {
             checkNotClosed();
-            return N_MoveToAttributeByqname(nativePtr, qualifiedName);
+            return moveToAttributeByqname0(nativePtr, qualifiedName);
         }
 
         @Override
         public int moveToAttributeBylname(@Nullable String localName, @Nullable String namespaceURI) {
             checkNotClosed();
-            return N_MoveToAttributeBylname(nativePtr, localName, namespaceURI);
+            return moveToAttributeBylname0(nativePtr, localName, namespaceURI);
         }
 
         @Override
         public boolean moveToFirstAttribute() {
             checkNotClosed();
-            return N_MoveToFirstAttribute(nativePtr);
+            return moveToFirstAttribute0(nativePtr);
         }
 
         @Override
         public boolean moveToNextAttribute() {
             checkNotClosed();
-            return N_MoveToNextAttribute(nativePtr);
+            return moveToNextAttribute0(nativePtr);
         }
 
         @Override
         public boolean moveToCarryingElement() {
             checkNotClosed();
-            return N_MoveToCarryingElement(nativePtr);
+            return moveToCarryingElement0(nativePtr);
         }
 
-        private static native boolean N_MoveToNextNode(long self);
+        private static native boolean moveToNextNode0(long self);
 
-        private static native boolean N_Close(long self);
+        private static native boolean cefClose0(long self);
 
-        private static native boolean N_HasError(long self);
+        private static native boolean hasError0(long self);
 
-        private static native String N_GetError(long self);
+        private static native String getError0(long self);
 
-        private static native CefXmlNodeType N_GetType(long self);
+        private static native CefXmlNodeType getType0(long self);
 
-        private static native int N_GetDepth(long self);
+        private static native int getDepth0(long self);
 
-        private static native String N_GetLocalName(long self);
+        private static native String getLocalName0(long self);
 
-        private static native String N_GetPrefix(long self);
+        private static native String getPrefix0(long self);
 
-        private static native String N_GetQualifiedName(long self);
+        private static native String getQualifiedName0(long self);
 
-        private static native String N_GetNamespaceUri(long self);
+        private static native String getNamespaceUri0(long self);
 
-        private static native String N_GetBaseUri(long self);
+        private static native String getBaseUri0(long self);
 
-        private static native String N_GetXmlLang(long self);
+        private static native String getXmlLang0(long self);
 
-        private static native boolean N_IsEmptyElement(long self);
+        private static native boolean isEmptyElement0(long self);
 
-        private static native boolean N_HasValue(long self);
+        private static native boolean hasValue0(long self);
 
-        private static native String N_GetValue(long self);
+        private static native String getValue0(long self);
 
-        private static native boolean N_HasAttributes(long self);
+        private static native boolean hasAttributes0(long self);
 
-        private static native long N_GetAttributeCount(long self);
+        private static native long getAttributeCount0(long self);
 
-        private static native String N_GetAttributeByindex(long self, int index);
+        private static native String getAttributeByindex0(long self, int index);
 
-        private static native String N_GetAttributeByqname(long self, String qualifiedName);
+        private static native String getAttributeByqname0(long self, String qualifiedName);
 
-        private static native String N_GetAttributeBylname(long self, String localName, String namespaceURI);
+        private static native String getAttributeBylname0(long self, String localName, String namespaceURI);
 
-        private static native String N_GetInnerXml(long self);
+        private static native String getInnerXml0(long self);
 
-        private static native String N_GetOuterXml(long self);
+        private static native String getOuterXml0(long self);
 
-        private static native int N_GetLineNumber(long self);
+        private static native int getLineNumber0(long self);
 
-        private static native int N_MoveToAttributeByindex(long self, int index);
+        private static native int moveToAttributeByindex0(long self, int index);
 
-        private static native int N_MoveToAttributeByqname(long self, String qualifiedName);
+        private static native int moveToAttributeByqname0(long self, String qualifiedName);
 
-        private static native int N_MoveToAttributeBylname(long self, String localName, String namespaceURI);
+        private static native int moveToAttributeBylname0(long self, String localName, String namespaceURI);
 
-        private static native boolean N_MoveToFirstAttribute(long self);
+        private static native boolean moveToFirstAttribute0(long self);
 
-        private static native boolean N_MoveToNextAttribute(long self);
+        private static native boolean moveToNextAttribute0(long self);
 
-        private static native boolean N_MoveToCarryingElement(long self);
+        private static native boolean moveToCarryingElement0(long self);
 
-        static native CefXmlReader N_Create(CefStreamReader stream, CefXmlEncodingType encodingType, String uRI);
+        static native CefXmlReader create0(CefStreamReader stream, CefXmlEncodingType encodingType, String uRI);
 
         @Override
         public boolean equals(Object obj) {

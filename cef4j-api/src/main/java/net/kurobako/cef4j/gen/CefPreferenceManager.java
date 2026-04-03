@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Manage access to preferences. Many built-in preferences are registered by Chromium. Custom preferences can be
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:87</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefPreferenceManager extends CefLibraryObject {
 
     /**
@@ -131,7 +134,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:96</a>
      */
     static void getChromeVariationsAsSwitches(@Nonnull List<String> switches) {
-        NativePeer.N_GetChromeVariationsAsSwitches(switches);
+        NativePeer.getChromeVariationsAsSwitches0(switches);
     }
 
     /**
@@ -150,7 +153,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:110</a>
      */
     static void getChromeVariationsAsStrings(@Nonnull List<String> strings) {
-        NativePeer.N_GetChromeVariationsAsStrings(strings);
+        NativePeer.getChromeVariationsAsStrings0(strings);
     }
 
     /**
@@ -163,7 +166,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     static Optional<CefPreferenceManager> getGlobal() {
-        return Optional.ofNullable(NativePeer.N_GetGlobal());
+        return Optional.ofNullable(NativePeer.getGlobal0());
     }
 
     final class NativePeer implements CefPreferenceManager, AutoCloseable {
@@ -203,68 +206,68 @@ public interface CefPreferenceManager extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefPreferenceManager 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean hasPreference(@Nullable String name) {
             checkNotClosed();
-            return N_HasPreference(nativePtr, name);
+            return hasPreference0(nativePtr, name);
         }
 
         @Override
         public Optional<CefValue> getPreference(@Nullable String name) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPreference(nativePtr, name));
+            return Optional.ofNullable(getPreference0(nativePtr, name));
         }
 
         @Override
         public Optional<CefDictionaryValue> getAllPreferences(boolean includeDefaults) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAllPreferences(nativePtr, includeDefaults));
+            return Optional.ofNullable(getAllPreferences0(nativePtr, includeDefaults));
         }
 
         @Override
         public boolean canSetPreference(@Nullable String name) {
             checkNotClosed();
-            return N_CanSetPreference(nativePtr, name);
+            return canSetPreference0(nativePtr, name);
         }
 
         @Override
         public boolean setPreference(@Nullable String name, @Nullable CefValue value, @Nullable String error) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefValue");
-            return N_SetPreference(nativePtr, name, value, error);
+            return setPreference0(nativePtr, name, value, error);
         }
 
         @Override
         public Optional<CefRegistration> addPreferenceObserver(
                 @Nullable String name, @Nullable CefPreferenceObserver observer) {
             checkNotClosed();
-            return Optional.ofNullable(N_AddPreferenceObserver(nativePtr, name, observer));
+            return Optional.ofNullable(addPreferenceObserver0(nativePtr, name, observer));
         }
 
-        private static native boolean N_HasPreference(long self, String name);
+        private static native boolean hasPreference0(long self, String name);
 
-        private static native CefValue N_GetPreference(long self, String name);
+        private static native CefValue getPreference0(long self, String name);
 
-        private static native CefDictionaryValue N_GetAllPreferences(long self, boolean includeDefaults);
+        private static native CefDictionaryValue getAllPreferences0(long self, boolean includeDefaults);
 
-        private static native boolean N_CanSetPreference(long self, String name);
+        private static native boolean canSetPreference0(long self, String name);
 
-        private static native boolean N_SetPreference(long self, String name, CefValue value, String error);
+        private static native boolean setPreference0(long self, String name, CefValue value, String error);
 
-        private static native CefRegistration N_AddPreferenceObserver(
+        private static native CefRegistration addPreferenceObserver0(
                 long self, String name, CefPreferenceObserver observer);
 
-        static native void N_GetChromeVariationsAsSwitches(List<String> switches);
+        static native void getChromeVariationsAsSwitches0(List<String> switches);
 
-        static native void N_GetChromeVariationsAsStrings(List<String> strings);
+        static native void getChromeVariationsAsStrings0(List<String> strings);
 
-        static native CefPreferenceManager N_GetGlobal();
+        static native CefPreferenceManager getGlobal0();
 
         @Override
         public boolean equals(Object obj) {

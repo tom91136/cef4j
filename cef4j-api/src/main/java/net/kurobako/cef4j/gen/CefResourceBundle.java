@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used for retrieving resources from the resource bundle (*.pak) files loaded by CEF during startup or via the
@@ -19,6 +21,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefResourceBundle extends CefLibraryObject {
 
     /**
@@ -80,7 +83,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     static Optional<CefResourceBundle> getGlobal() {
-        return Optional.ofNullable(NativePeer.N_GetGlobal());
+        return Optional.ofNullable(NativePeer.getGlobal0());
     }
 
     final class NativePeer implements CefResourceBundle, AutoCloseable {
@@ -120,38 +123,38 @@ public interface CefResourceBundle extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefResourceBundle 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getLocalizedString(int stringId) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLocalizedString(nativePtr, stringId));
+            return Optional.ofNullable(getLocalizedString0(nativePtr, stringId));
         }
 
         @Override
         public Optional<CefBinaryValue> getDataResource(int resourceId) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDataResource(nativePtr, resourceId));
+            return Optional.ofNullable(getDataResource0(nativePtr, resourceId));
         }
 
         @Override
         public Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDataResourceForScale(nativePtr, resourceId, scaleFactor));
+            return Optional.ofNullable(getDataResourceForScale0(nativePtr, resourceId, scaleFactor));
         }
 
-        private static native String N_GetLocalizedString(long self, int stringId);
+        private static native String getLocalizedString0(long self, int stringId);
 
-        private static native CefBinaryValue N_GetDataResource(long self, int resourceId);
+        private static native CefBinaryValue getDataResource0(long self, int resourceId);
 
-        private static native CefBinaryValue N_GetDataResourceForScale(
+        private static native CefBinaryValue getDataResourceForScale0(
                 long self, int resourceId, CefScaleFactor scaleFactor);
 
-        static native CefResourceBundle N_GetGlobal();
+        static native CefResourceBundle getGlobal0();
 
         @Override
         public boolean equals(Object obj) {

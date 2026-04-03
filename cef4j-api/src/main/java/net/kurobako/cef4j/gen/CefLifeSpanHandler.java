@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Implement this interface to handle events related to browser life span. The methods of this class will be called on
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:46</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefLifeSpanHandler extends CefClientHandler {
 
     /**

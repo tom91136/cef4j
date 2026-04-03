@@ -1,14 +1,15 @@
 // Hand-written JNI helper for constructing platform-correct cef_main_args_t.
 //
 // Linux/macOS: cef_main_args_t = { int argc; char** argv; }
-//   - Allocates argc/argv from Java String[], prepends --no-zygote.
+//   - Allocates argc/argv from Java String[].
 //   - CEF copies what it needs during cef_initialize; caller frees after.
 //
 // Windows: cef_main_args_t = { HINSTANCE instance; }
 //   - Uses GetModuleHandle(NULL). Extra args must go through
 //     CefApp::OnBeforeCommandLineProcessing instead.
 
-#include <jni.h>
+#include "jni_util.h"
+#include "runtime_stubs.gen.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -20,14 +21,13 @@
 #endif
 
 // JNI class: net.kurobako.cef4j.CefApp
-// Method: private static native long nCreateMainArgs(String[] extraArgs)
+// Method: private static native long createMainArgs0(String[] args)
 //
-// Linux/macOS: builds argc/argv with --no-zygote + any extra args.
-// Windows: sets HINSTANCE only (extraArgs ignored - Java routes them through
+// Linux/macOS: builds argc/argv from the Java String[].
+// Windows: sets HINSTANCE only (args ignored - Java routes them through
 //          CefApp::OnBeforeCommandLineProcessing instead).
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_net_kurobako_cef4j_CefApp_nCreateMainArgs(JNIEnv* env, jclass clz, jobjectArray extraArgs) {
+CEF4J_JNI_EXPORT_RT(jlong, Cef, createMainArgs0)(JNIEnv* env, jclass /*clz*/, jobjectArray jArgs) {
 
 #ifdef _WIN32
     auto* args = static_cast<cef_main_args_t*>(std::malloc(sizeof(cef_main_args_t)));
@@ -38,9 +38,9 @@ Java_net_kurobako_cef4j_CefApp_nCreateMainArgs(JNIEnv* env, jclass clz, jobjectA
     args->instance = GetModuleHandle(NULL);
 
 #else
-    // Linux/macOS: argv = { "cef4j", "--no-zygote", ...extraArgs, NULL }
-    int extraCount = extraArgs ? env->GetArrayLength(extraArgs) : 0;
-    int argc = 2 + extraCount;
+    // Linux/macOS: argv = { "cef4j", ...jArgs, NULL }
+    int argCount = jArgs ? env->GetArrayLength(jArgs) : 0;
+    int argc = 1 + argCount;
     auto** argv = static_cast<char**>(std::malloc(sizeof(char*) * (argc + 1)));
     if (!argv) {
         env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"), "Failed to allocate argv");
@@ -53,25 +53,24 @@ Java_net_kurobako_cef4j_CefApp_nCreateMainArgs(JNIEnv* env, jclass clz, jobjectA
     };
 
     argv[0] = strdup("cef4j");
-    argv[1] = strdup("--no-zygote");
-    if (!argv[0] || !argv[1]) {
-        freeArgv(2);
+    if (!argv[0]) {
+        freeArgv(0);
         env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"), "Failed to allocate argv strings");
         return 0;
     }
 
-    for (int i = 0; i < extraCount; i++) {
-        auto jStr = static_cast<jstring>(env->GetObjectArrayElement(extraArgs, i));
+    for (int i = 0; i < argCount; i++) {
+        auto jStr = static_cast<jstring>(env->GetObjectArrayElement(jArgs, i));
         if (jStr) {
             const char* utf = env->GetStringUTFChars(jStr, nullptr);
-            if (!utf) { freeArgv(2 + i); return 0; }
-            argv[2 + i] = strdup(utf);
+            if (!utf) { freeArgv(1 + i); return 0; }
+            argv[1 + i] = strdup(utf);
             env->ReleaseStringUTFChars(jStr, utf);
         } else {
-            argv[2 + i] = strdup("");
+            argv[1 + i] = strdup("");
         }
-        if (!argv[2 + i]) {
-            freeArgv(2 + i);
+        if (!argv[1 + i]) {
+            freeArgv(1 + i);
             env->ThrowNew(env->FindClass("java/lang/OutOfMemoryError"), "Failed to allocate argv string");
             return 0;
         }
@@ -92,10 +91,9 @@ Java_net_kurobako_cef4j_CefApp_nCreateMainArgs(JNIEnv* env, jclass clz, jobjectA
 }
 
 // JNI class: net.kurobako.cef4j.CefApp
-// Method: private static native void nFreeMainArgs(long address)
+// Method: private static native void freeMainArgs0(long address)
 
-extern "C" JNIEXPORT void JNICALL
-Java_net_kurobako_cef4j_CefApp_nFreeMainArgs(JNIEnv* env, jclass clz, jlong address) {
+CEF4J_JNI_EXPORT_RT(void, Cef, freeMainArgs0)(JNIEnv* /*env*/, jclass /*clz*/, jlong address) {
     if (address == 0) return;
 
     auto* args = reinterpret_cast<cef_main_args_t*>(address);

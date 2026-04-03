@@ -10,6 +10,10 @@ import javafx.scene.paint.Color;
  * to WebKit scrollbar pseudo-elements.
  */
 final class ScrollbarTheme {
+    private static final String STYLE_ELEMENT_ID = "_cef4j_scrollbar";
+    private static final int SCROLLBAR_SIZE = 14;
+    private static final int THUMB_RADIUS = 7;
+    private static final Color DEFAULT_BASE = Color.web("#ececec");
 
     private ScrollbarTheme() {}
 
@@ -20,59 +24,36 @@ final class ScrollbarTheme {
      * no scene is available.
      */
     static String generateCss(javafx.scene.Scene scene) {
-        // Modena defaults
-        Color base = Color.web("#ececec");
-
-        // Try to resolve -fx-base from the scene root, which reflects the active theme
-        if (scene != null && scene.getRoot() != null) {
-            try {
-                scene.getRoot().applyCss();
-                // -fx-base is exposed as a background fill on the root
-                javafx.scene.layout.Background bg = null;
-                if (scene.getRoot() instanceof javafx.scene.layout.Region) {
-                    bg = ((javafx.scene.layout.Region) scene.getRoot()).getBackground();
-                }
-                if (bg != null && !bg.getFills().isEmpty()) {
-                    javafx.scene.paint.Paint p = bg.getFills().get(0).getFill();
-                    if (p instanceof Color) {
-                        base = (Color) p;
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-
-        Color track = base.deriveColor(0, 1, 0.97, 1); // slightly lighter than base
-        Color thumb = base.deriveColor(0, 1, 0.78, 1); // darker for contrast
-        Color thumbHover = base.deriveColor(0, 1, 0.68, 1);
-        Color thumbActive = base.deriveColor(0, 1, 0.58, 1);
-
-        int width = 14;
-        int radius = 7;
+        ScrollbarPalette palette = ScrollbarPalette.from(resolveBase(scene));
 
         return String.join(
                 "\n",
+                ":root {",
+                "  color-scheme: " + (palette.dark ? "dark" : "light") + ";",
+                "}",
                 "::-webkit-scrollbar {",
-                "  width: " + width + "px;",
-                "  height: " + width + "px;",
-                "  background: " + toCssColor(track) + ";",
+                "  width: " + SCROLLBAR_SIZE + "px;",
+                "  height: " + SCROLLBAR_SIZE + "px;",
+                "  background: " + toCssColor(palette.track) + ";",
                 "}",
                 "::-webkit-scrollbar-track {",
-                "  background: " + toCssColor(track) + ";",
+                "  background: " + toCssColor(palette.track) + ";",
                 "}",
                 "::-webkit-scrollbar-thumb {",
-                "  background: " + toCssColor(thumb) + ";",
-                "  border-radius: " + radius + "px;",
-                "  border: 2px solid " + toCssColor(track) + ";",
+                "  background: " + toCssColor(palette.thumb) + ";",
+                "  min-height: 24px;",
+                "  border-radius: " + THUMB_RADIUS + "px;",
+                "  border: 2px solid " + toCssColor(palette.track) + ";",
+                "  background-clip: padding-box;",
                 "}",
                 "::-webkit-scrollbar-thumb:hover {",
-                "  background: " + toCssColor(thumbHover) + ";",
+                "  background: " + toCssColor(palette.thumbHover) + ";",
                 "}",
                 "::-webkit-scrollbar-thumb:active {",
-                "  background: " + toCssColor(thumbActive) + ";",
+                "  background: " + toCssColor(palette.thumbActive) + ";",
                 "}",
                 "::-webkit-scrollbar-corner {",
-                "  background: " + toCssColor(track) + ";",
+                "  background: " + toCssColor(palette.track) + ";",
                 "}");
     }
 
@@ -80,12 +61,40 @@ final class ScrollbarTheme {
     static String injectScript(String css) {
         String escaped = css.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n");
         return "(function(){"
-                + "if(document.getElementById('_cef4j_scrollbar'))return;"
-                + "var s=document.createElement('style');"
-                + "s.id='_cef4j_scrollbar';"
+                + "function apply(doc){"
+                + "if(!doc)return;"
+                + "var root=doc.head||doc.documentElement;"
+                + "if(!root)return;"
+                + "var s=doc.getElementById('" + STYLE_ELEMENT_ID + "');"
+                + "if(!s){s=doc.createElement('style');s.id='" + STYLE_ELEMENT_ID + "';root.appendChild(s);}"
                 + "s.textContent='" + escaped + "';"
-                + "(document.head||document.documentElement).appendChild(s);"
+                + "var frames=doc.querySelectorAll('iframe,frame');"
+                + "for(var i=0;i<frames.length;i++){"
+                + "try{apply(frames[i].contentDocument);}catch(e){}"
+                + "}"
+                + "}"
+                + "apply(document);"
                 + "})();";
+    }
+
+    private static Color resolveBase(javafx.scene.Scene scene) {
+        if (scene != null && scene.getRoot() != null) {
+            try {
+                scene.getRoot().applyCss();
+                javafx.scene.layout.Background bg = null;
+                if (scene.getRoot() instanceof javafx.scene.layout.Region) {
+                    bg = ((javafx.scene.layout.Region) scene.getRoot()).getBackground();
+                }
+                if (bg != null && !bg.getFills().isEmpty()) {
+                    javafx.scene.paint.Paint fill = bg.getFills().get(0).getFill();
+                    if (fill instanceof Color) {
+                        return (Color) fill;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return DEFAULT_BASE;
     }
 
     private static String toCssColor(Color c) {
@@ -95,5 +104,44 @@ final class ScrollbarTheme {
                 Math.round(c.getGreen() * 255),
                 Math.round(c.getBlue() * 255),
                 c.getOpacity());
+    }
+
+    private static final class ScrollbarPalette {
+        private final boolean dark;
+        private final Color track;
+        private final Color thumb;
+        private final Color thumbHover;
+        private final Color thumbActive;
+
+        private ScrollbarPalette(boolean dark, Color track, Color thumb, Color thumbHover, Color thumbActive) {
+            this.dark = dark;
+            this.track = track;
+            this.thumb = thumb;
+            this.thumbHover = thumbHover;
+            this.thumbActive = thumbActive;
+        }
+
+        private static ScrollbarPalette from(Color base) {
+            boolean dark = luminance(base) < 0.5;
+            Color track = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.08 : 0.05);
+            Color thumb = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.32 : 0.22);
+            Color thumbHover = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.42 : 0.32);
+            Color thumbActive = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.52 : 0.42);
+            return new ScrollbarPalette(dark, track, thumb, thumbHover, thumbActive);
+        }
+    }
+
+    private static double luminance(Color color) {
+        return 0.2126 * color.getRed() + 0.7152 * color.getGreen() + 0.0722 * color.getBlue();
+    }
+
+    private static Color mix(Color a, Color b, double ratio) {
+        double clamped = Math.max(0.0, Math.min(1.0, ratio));
+        double inv = 1.0 - clamped;
+        return new Color(
+                a.getRed() * inv + b.getRed() * clamped,
+                a.getGreen() * inv + b.getGreen() * clamped,
+                a.getBlue() * inv + b.getBlue() * clamped,
+                a.getOpacity() * inv + b.getOpacity() * clamped);
     }
 }

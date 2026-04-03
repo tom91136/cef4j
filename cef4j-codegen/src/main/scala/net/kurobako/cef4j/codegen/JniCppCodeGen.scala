@@ -13,7 +13,7 @@ class JniCppCodeGen(
     structHeaderMap: Map[String, String] = Map.empty
 )(using Naming.Context) {
 
-  private val GeneratedBanner = "// GENERATED - do not edit."
+  private val GeneratedBanner = Banners.cpp
 
   private def joinIndentedLines(lines: List[String], indent: String): String =
     lines match {
@@ -102,13 +102,13 @@ class JniCppCodeGen(
 
   // Generate the N_Release JNI function used by NativeCleaner cleanup.
   private def renderRelease(structName: String, scoped: Boolean): String = {
-    val javaName   = Naming.structToJavaName(structName)
-    val releaseSym = Naming.jniSymbolStaticInner(javaName, "release")
-    val body       = if (scoped) "    // Scoped struct - no ref-counting, release is a no-op."
+    val javaName  = Naming.structToJavaName(structName)
+    val exportSig = Naming.jniExportPeerStatic(javaName, "release", "void")
+    val body      = if (scoped) "    // Scoped struct - no ref-counting, release is a no-op."
     else
       s"""    auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);"""
-    s"""extern "C" JNIEXPORT void JNICALL $releaseSym(JNIEnv* env, jclass clz, jlong ptr) {
+    s"""$exportSig(JNIEnv* env, jclass clz, jlong ptr) {
 $body
 }"""
   }
@@ -142,15 +142,21 @@ struct Jni$javaName : public ${decl.name} {
     })
     val vectorInclude = if (hasByValueArray) "\n#include <vector>" else ""
 
-    // Forward-declare factory functions for handler types returned by trampolines
-    val handlerPtrReturns = decl.fns.collect {
-      case fn if isHandlerPtr(fn.ret) =>
+    // Forward-declare factory functions for handler types returned by or used as out-params in trampolines
+    val handlerPtrReturns = decl.fns.flatMap { fn =>
+      val fromRet = if (isHandlerPtr(fn.ret)) {
         val cefName = fn.ret match {
           case CType.ObjectPtr(name) => name
           case CType.Ptr(inner)      => inner.stripPrefix("_")
           case _                     => ""
         }
-        (cefName, Naming.structToJavaName(cefName))
+        List((cefName, Naming.structToJavaName(cefName)))
+      } else Nil
+      val fromOutParams = fn.params.collect {
+        case Param(_, CType.OutObjectPtr(cefName), _, _) if handlerNames.contains(cefName) =>
+          (cefName, Naming.structToJavaName(cefName))
+      }
+      fromRet ++ fromOutParams
     }.distinctBy(_._1)
     val forwardDecls = handlerPtrReturns.map { case (cefName, javaName) =>
       s"""extern "C" $cefName* Create_Jni$javaName(JNIEnv* env, jobject handler);"""
@@ -214,8 +220,8 @@ $headerIncludes
 
   private def renderObjectFunction(structName: String, fn: FnPtr): String = {
     val javaName  = Naming.structToJavaName(structName)
-    val jniSym    = Naming.jniSymbol(structName, fn)
     val retJni    = Naming.jniType(fn.ret)
+    val exportSig = Naming.jniExportPeer(structName, fn, retJni)
     val jniParams =
       ("JNIEnv* env" :: "jobject obj" :: "jlong self" :: fn.visibleParams.map {
         p =>
@@ -271,13 +277,11 @@ $headerIncludes
           val javaFqn = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
           val pre     = List(
             s"    $cefName $tmp = {};",
-            s"""    if (${p.name}) { auto _c = env->FindClass("$javaFqn"); ${bvReadFromJavaObject(
-                cefName,
-                tmp,
-                p.name,
-                "_c"
-              )} }"""
-          )
+            s"""    if (${p.name}) {""",
+            s"""        auto _c = env->FindClass("$javaFqn");"""
+          ) ++
+            bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++
+            List("    }")
           (pre, s"&$tmp", Nil)
         case CType.ByValueOut(cefName) =>
           // Mutable out-param (Cef*.Mutable object on Java side): extract fields from object into C struct
@@ -285,13 +289,11 @@ $headerIncludes
           val mutableFqn = Naming.fullyQualifiedMutableName(cefName).replace('.', '/')
           val pre        = List(
             s"    $cefName $tmp = {};",
-            s"""    if (${p.name}) { auto _c = env->FindClass("$mutableFqn"); ${bvReadFromJavaObject(
-                cefName,
-                tmp,
-                p.name,
-                "_c"
-              )} }"""
-          )
+            s"""    if (${p.name}) {""",
+            s"""        auto _c = env->FindClass("$mutableFqn");"""
+          ) ++
+            bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++
+            List("    }")
           (pre, s"&$tmp", Nil)
         case CType.ByValueArray(cefName) =>
           // Input array of by-value structs: extract from Java array into C array
@@ -307,9 +309,13 @@ $headerIncludes
             s"""    { auto _bvac = env->FindClass("$javaFqn");""",
             s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
             s"        auto _elem = env->GetObjectArrayElement(${p.name}, _i);",
-            s"        if (_elem) { ${bvReadFromJavaObject(cefName, s"$arrVar[_i]", "_elem", "_bvac")} }",
-            s"    } }"
-          )
+            s"        if (_elem) {"
+          ) ++
+            bvReadFromJavaLines(cefName, s"$arrVar[_i]", "_elem", "_bvac").map(l => s"            $l") ++
+            List(
+              "        }",
+              s"    } }"
+            )
           val post = List(s"    delete[] $arrVar;")
           (pre, arrVar, post)
         case CType.ObjectPtr(cefName) if handlerNames.contains(cefName) =>
@@ -513,14 +519,19 @@ $headerIncludes
       s"s->${fn.name}(s, $callArgs)"
     }
 
-    // count_func: pre-call to size arrays (e.g., count_func=identifiers:GetFrameCount)
-    val countFuncSetup = fn.metaAttrs.collectFirst { case ("count_func", spec) => spec }
-      .flatMap(RefineTree.parseCountFunc)
-      .map { case (param, func) =>
-        val snakeFunc = func.replaceAll("([a-z])([A-Z])|([A-Z]+)([A-Z][a-z])", "$1$3_$2$4").toLowerCase
-        s"    size_t ${param}_count = s->$snakeFunc(s);"
-      }
-      .getOrElse("")
+    // count_func: pre-call to size arrays, only when a CountFuncArray param consumes it
+    val hasCountFuncArray = fn.params.exists(_.typ match {
+      case CType.CountFuncArray(_, _, _, _) => true; case _ => false
+    })
+    val countFuncSetup = if (!hasCountFuncArray) ""
+    else
+      fn.metaAttrs.collectFirst { case ("count_func", spec) => spec }
+        .flatMap(RefineTree.parseCountFunc)
+        .map { case (param, func) =>
+          val snakeFunc = func.replaceAll("([a-z])([A-Z])|([A-Z]+)([A-Z][a-z])", "$1$3_$2$4").toLowerCase
+          s"    size_t ${param}_count = s->$snakeFunc(s);"
+        }
+        .getOrElse("")
 
     val preBlock  = if (preCallLines.nonEmpty) preCallLines.mkString("\n") + "\n" else ""
     val postBlock = if (postCallLines.nonEmpty) "\n" + postCallLines.mkString("\n") else ""
@@ -569,18 +580,19 @@ $npeBlock$preBlock    auto _r = $fnCall;$postBlock
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));"""
       case CType.DataStruct(cefName) =>
         // By-value struct return: construct Java object via JNI
-        val javaFqn                         = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
-        val (ctorSig, ctorArgs, ctorPreOps) = dataStructCtorInfo(cefName)
+        val javaFqn                             = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
+        val (ctorSig, ctorArgsList, ctorPreOps) = dataStructCtorInfo(cefName)
         val preOpsBlock = if (ctorPreOps.nonEmpty) "\n" + ctorPreOps.map(l => s"    $l").mkString("\n") else ""
         val sizeSetLine = if (hasNativeSizeField(cefName))
           "\n    env->SetLongField(_dsResult, env->GetFieldID(cls, \"size\", \"J\"), static_cast<jlong>(result.size));"
         else ""
+        val newObjExpr = fmtNewObject("cls", "ctor", ctorArgsList)
         s"""$castSelf
 $nullGuard
 $npeBlock$preBlock    $cefName result = $fnCall;$postBlock$preOpsBlock
     auto cls = env->FindClass("$javaFqn");
     auto ctor = env->GetMethodID(cls, "<init>", "$ctorSig");
-    auto _dsResult = env->NewObject(cls, ctor, $ctorArgs);$sizeSetLine
+    auto _dsResult = $newObjExpr;$sizeSetLine
     return _dsResult;"""
       case CType.Enum(name) =>
         val javaFqn = Naming.fullyQualifiedJavaName(name).replace('.', '/')
@@ -601,7 +613,7 @@ $npeBlock$preBlock    return static_cast<$retJni>($fnCall);"""
     // Clean up empty lines from optional countFuncSetup
     val cleanBody = body.linesIterator.filter(_.trim.nonEmpty).mkString("\n")
 
-    s"""extern "C" JNIEXPORT $retJni JNICALL $jniSym($jniParams) {
+    s"""$exportSig($jniParams) {
 $cleanBody
 }"""
   }
@@ -852,6 +864,30 @@ $callAndReturn$popAndReturn
           s"""auto $jName = _p_${p.name} ? env->NewObject(${jName}_cls, ${jName}_ctor, reinterpret_cast<jlong>(_p_${p.name})) : nullptr;"""
         )
         (pre, jName, Nil)
+      case CType.OutObjectPtr(cefName) if handlerNames.contains(cefName) =>
+        // Handler struct out-param: Java user can set a new handler implementation.
+        // We pass AtomicReference(null) since the initial native handler can't be unwrapped to a Java object.
+        // On write-back, if a new Java handler is set, wrap it via the Create_JniXxx factory.
+        val javaName    = Naming.structToJavaName(cefName)
+        val factoryName = s"Create_Jni$javaName"
+        val pre         = List(
+          s"""auto ${jName}_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");""",
+          s"""auto ${jName}_ar_ctor = env->GetMethodID(${jName}_ar_cls, "<init>", "(Ljava/lang/Object;)V");""",
+          s"jobject ${jName}_init = nullptr;",
+          s"""auto $jName = env->NewObject(${jName}_ar_cls, ${jName}_ar_ctor, ${jName}_init);"""
+        )
+        val post = List(
+          s"if (${p.name}) {",
+          s"""    auto ${jName}_get = env->GetMethodID(${jName}_ar_cls, "get", "()Ljava/lang/Object;");""",
+          s"    auto ${jName}_new = env->CallObjectMethod($jName, ${jName}_get);",
+          s"    if (${jName}_new) {",
+          s"        *${p.name} = $factoryName(env, ${jName}_new);",
+          s"    } else if (!${jName}_new && ${jName}_new != ${jName}_init) {",
+          s"        *${p.name} = nullptr;",
+          s"    }",
+          s"}"
+        )
+        (pre, jName, post)
       case CType.OutObjectPtr(cefName) =>
         val javaFqn = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
         val pre     = List(
@@ -1020,28 +1056,28 @@ $callAndReturn$popAndReturn
         (Nil, s"reinterpret_cast<jlong>(${p.name})", Nil)
       case CType.ByValueIn(cefName) =>
         // Const geometry struct pointer -> construct Java object
-        val javaFqn                        = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
-        val (ctorSig, ctorArgs, nestedPre) = byValueCtorFromPtr(cefName, p.name)
-        val sizeSet                        = bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
-        val pre                            = nestedPre ++ List(
+        val javaFqn                            = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
+        val (ctorSig, ctorArgsList, nestedPre) = byValueCtorFromPtr(cefName, p.name)
+        val sizeSet                            = bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
+        val pre                                = nestedPre ++ List(
           s"""auto ${jName}_cls = env->FindClass("$javaFqn");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
-          s"""auto $jName = ${p.name} ? env->NewObject(${jName}_cls, ${jName}_ctor, $ctorArgs) : nullptr;"""
+          s"""auto $jName = ${fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList, p.name)};"""
         ) ++ (if (sizeSet.nonEmpty) List(sizeSet) else Nil)
         (pre, jName, Nil)
       case CType.ByValueOut(cefName) =>
         // Non-const by-value struct pointer (out-param) -> Cef*.Mutable object, with write-back
-        val mutableFqn                     = Naming.fullyQualifiedMutableName(cefName).replace('.', '/')
-        val (ctorSig, ctorArgs, nestedPre) = byValueCtorFromPtr(cefName, p.name)
-        val sizeSet                        = bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
-        val pre                            = nestedPre ++ List(
+        val mutableFqn                         = Naming.fullyQualifiedMutableName(cefName).replace('.', '/')
+        val (ctorSig, ctorArgsList, nestedPre) = byValueCtorFromPtr(cefName, p.name)
+        val sizeSet                            = bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
+        val pre                                = nestedPre ++ List(
           s"""auto ${jName}_cls = env->FindClass("$mutableFqn");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
-          s"""auto $jName = ${p.name} ? env->NewObject(${jName}_cls, ${jName}_ctor, $ctorArgs) : nullptr;"""
+          s"""auto $jName = ${fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList, p.name)};"""
         ) ++ (if (sizeSet.nonEmpty) List(sizeSet) else Nil)
-        val post = List(
-          s"if (${p.name} && $jName) { ${bvWriteBack(cefName, p.name, jName, s"${jName}_cls")} }"
-        )
+        val post = List(s"if (${p.name} && $jName) {") ++
+          bvWriteBackLines(cefName, p.name, jName, s"${jName}_cls").map(l => s"    $l") ++
+          List("}")
         (pre, jName, post)
       case CType.ByValueArray(cefName) =>
         // Array of const geometry structs preceded by a count param
@@ -1110,10 +1146,11 @@ $callAndReturn$popAndReturn
     val paramRefs = fn.params.zipWithIndex.map { case (p, idx) =>
       p.typ match {
         case CType.ObjectPtr(_)    => 3 // FindClass, GetMethodID(->0), NewObject
-        case CType.OutObjectPtr(_) => 6 // 2xFindClass, 2xGetMethodID(->0), 2xNewObject + init
-        case CType.OpaquePtr       => 3 // FindClass, GetMethodID(->0), NewObject
-        case CType.Enum(_)         => 3 // FindClass, GetStaticMethodID(->0), CallStaticObjectMethod
-        case CType.JString         => 1 // CefStringToJString
+        case CType.OutObjectPtr(_) =>
+          6 + 1 // pre: 2xFindClass, 2xGetMethodID(->0), 2xNewObject + init; post: CallObjectMethod
+        case CType.OpaquePtr => 3 // FindClass, GetMethodID(->0), NewObject
+        case CType.Enum(_)   => 3 // FindClass, GetStaticMethodID(->0), CallStaticObjectMethod
+        case CType.JString   => 1 // CefStringToJString
         case CType.StringList | CType.StringMap | CType.StringMultimap => 1
         case CType.Buffer(_)                                           => 1 // NewDirectByteBuffer
         case CType.PixelBuffer                                         => 1 // NewDirectByteBuffer
@@ -1125,7 +1162,7 @@ $callAndReturn$popAndReturn
           val countParam = if (idx > 0) Some(fn.params(idx - 1)) else None
           3 + 16 // fixed overhead + headroom for elements
         case CType.ByValueIn(cefName)    => byValueLocalRefs(cefName) + 3 // nested + FindClass, ctor, NewObject
-        case CType.ByValueOut(cefName)   => byValueLocalRefs(cefName) + 3
+        case CType.ByValueOut(cefName)   => byValueLocalRefs(cefName) + 3 + byValueWriteBackRefs(cefName)
         case CType.ByValueArray(cefName) =>
           // FindClass + NewObjectArray + Nx(NewObject+DeleteLocalRef); elements are deleted, so fixed overhead
           byValueLocalRefs(cefName) + 3 + 8 // headroom for array elements
@@ -1158,6 +1195,22 @@ $callAndReturn$popAndReturn
       case None => 0
     }
 
+  // Count local refs created by the write-back phase of a ByValueOut param (bvCopyJavaToCStruct).
+  private def byValueWriteBackRefs(cefName: String): Int =
+    dataStructs.get(cefName) match {
+      case Some(ds) =>
+        ds.fields.filterNot(isSizeField).map { f =>
+          f.typ match {
+            case CType.DataStruct(nested) if CHeaderParser.isByValueStruct(nested) =>
+              2 // GetObjectField + GetObjectClass; nested primitive reads create no refs
+            case CType.JString => 1 // GetObjectField returns jstring local ref
+            case CType.Enum(_) => 2 // GetObjectField + GetObjectClass
+            case _             => 0 // primitive reads via GetIntField/GetLongField create no local refs
+          }
+        }.sum
+      case None => 0
+    }
+
   // Convert JNI return value back to native C type.
   private def convertJniReturnToNative(ct: CType, jniVar: String): String = ct match {
     case CType.Void       => "" // should not be called for void
@@ -1179,13 +1232,14 @@ $callAndReturn$popAndReturn
       s"""reinterpret_cast<void*>($jniVar ? env->GetLongField($jniVar, env->GetFieldID(env->GetObjectClass($jniVar), "address", "J")) : 0)"""
     case CType.JString          => jniVar
     case CType.DataStruct(name) =>
-      val javaFqn = Naming.javaInternalName(Naming.fullyQualifiedJavaName(name))
-      s"""([&]() { $name _result = {}; if ($jniVar) { auto _c = env->FindClass("$javaFqn"); ${bvReadFromJavaObject(
-          name,
-          "_result",
-          jniVar,
-          "_c"
-        )} } return _result; })()"""
+      val javaFqn   = Naming.javaInternalName(Naming.fullyQualifiedJavaName(name))
+      val bodyLines = bvReadFromJavaLines(name, "_result", jniVar, "_c")
+      val inner     = (List(
+        s"$name _result = {};",
+        s"""if ($jniVar) {""",
+        s"""    auto _c = env->FindClass("$javaFqn");"""
+      ) ++ bodyLines.map(l => s"    $l") ++ List("}", "return _result;")).mkString("\n        ")
+      s"([&]() {\n        $inner\n    })()"
     case _ => jniVar
   }
 
@@ -1219,20 +1273,14 @@ $callAndReturn$popAndReturn
     }
   }
 
-  private def renderHandlerFactory(structName: String, javaName: String): String = {
-    val factorySym = s"Java_${Naming.javaPackage.replace('.', '_')}_${javaName}_1N_N_1Create"
+  private def renderHandlerFactory(structName: String, javaName: String): String =
     // C-linkage factory for use from other native code (e.g., browser creation)
     s"""extern "C" $structName* Create_Jni$javaName(JNIEnv* env, jobject handler) {
     JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<$structName*>(new Jni$javaName(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_Jni$javaName(env, obj));
 }"""
-  }
 
   private def convertJniToNative(p: Param, isOptional: Boolean = false): String =
     p.typ match {
@@ -1342,8 +1390,22 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
     case _ => throw new RuntimeException(s"bvGetAndCast called on $t - use bvCopyJavaToCStruct for strings/nested")
   }
 
-  // Return the ctor signature, ctor args, and any pre-creation lines for nested JNI objects.
-  private def byValueCtorFromPtr(cefName: String, ptrName: String): (String, String, List[String]) = {
+  // Format a NewObject call, breaking args across lines when there are many.
+  private def fmtNewObject(clsVar: String, ctorVar: String, args: List[String], guard: String = ""): String =
+    if (args.length <= 4) {
+      val argsStr = args.mkString(", ")
+      if (guard.nonEmpty) s"$guard ? env->NewObject($clsVar, $ctorVar, $argsStr) : nullptr"
+      else s"env->NewObject($clsVar, $ctorVar, $argsStr)"
+    } else {
+      val indent    = "        "
+      val argsBlock = args.map(a => s"$indent$a").mkString(",\n")
+      if (guard.nonEmpty)
+        s"$guard\n    ? env->NewObject($clsVar, $ctorVar,\n$argsBlock)\n    : nullptr"
+      else s"env->NewObject($clsVar, $ctorVar,\n$argsBlock)"
+    }
+
+  // Return the ctor signature, ctor args list, and any pre-creation lines for nested JNI objects.
+  private def byValueCtorFromPtr(cefName: String, ptrName: String): (String, List[String], List[String]) = {
     val fields = byValueFields(cefName)
     // Pre-create nested struct objects and strings (both are jobject args)
     val objectCreation = fields.collect {
@@ -1381,15 +1443,16 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
     val objectVars = objectCreation.map(t => (t._1, t._2)).toMap
     val objectPre  = objectCreation.flatMap(_._3)
 
-    val sig  = s"(${fields.map(f => bvJniSig(f.typ)).mkString})V"
-    val expr = fields.map {
+    val sig      = s"(${fields.map(f => bvJniSig(f.typ)).mkString})V"
+    val argsList = fields.map {
       case BvField(cName, _, BvNestedStruct(_) | BvString | BvEnum(_)) => objectVars(cName)
       case BvField(cName, _, typ)                                      => bvCastToJni(typ, s"$ptrName->$cName")
-    }.mkString(", ")
-    (sig, expr, objectPre)
+    }
+    (sig, argsList, objectPre)
   }
 
   // Copy fields from a Java object into a C struct via pointer or by-value access.
+  // Returns a list of C++ statements (one per line, no trailing newlines).
   private def bvCopyJavaToCStruct(
       cefName: String,
       dest: String,
@@ -1397,7 +1460,7 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
       javaObj: String,
       clsVar: String,
       prefix: String
-  ): String = {
+  ): List[String] = {
     val fields = byValueFields(cefName)
     fields.flatMap {
       case BvField(cName, javaName, BvNestedStruct(nestedCef)) =>
@@ -1405,32 +1468,36 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
         val sig          = bvJniSig(BvNestedStruct(nestedCef))
         val v            = s"_${prefix}_$cName"
         List(
-          s"""auto $v = env->GetObjectField($javaObj, env->GetFieldID($clsVar, "$javaName", "$sig")); """ +
-            s"if ($v) { auto ${v}c = env->GetObjectClass($v); " +
-            nestedFields.map(nf =>
-              s"""$dest$accessor$cName.${nf.cName} = static_cast<decltype($dest$accessor$cName.${nf.cName})>(${bvGetAndCast(
-                  nf.typ,
-                  v,
-                  s"${v}c",
-                  nf.javaName
-                )});"""
-            ).mkString(" ") +
-            " }"
-        )
+          s"""auto $v = env->GetObjectField($javaObj, env->GetFieldID($clsVar, "$javaName", "$sig"));""",
+          s"if ($v) {",
+          s"    auto ${v}c = env->GetObjectClass($v);"
+        ) ++ nestedFields.map(nf =>
+          s"""    $dest$accessor$cName.${nf.cName} = static_cast<decltype($dest$accessor$cName.${nf.cName})>(${bvGetAndCast(
+              nf.typ,
+              v,
+              s"${v}c",
+              nf.javaName
+            )});"""
+        ) ++ List("}")
       case BvField(cName, javaName, BvString) =>
         val v = s"_${prefix}_$cName"
         List(
           s"""jstring $v = (jstring)env->GetObjectField($javaObj, env->GetFieldID($clsVar, "$javaName", "Ljava/lang/String;"));""",
-          s"""if ($v) { const jchar* ${v}_chars = env->GetStringChars($v, nullptr); jsize ${v}_len = env->GetStringLength($v);""" +
-            s""" cef_string_set(reinterpret_cast<const char16_t*>(${v}_chars), ${v}_len, &$dest$accessor$cName, 1);""" +
-            s""" env->ReleaseStringChars($v, ${v}_chars); }"""
+          s"if ($v) {",
+          s"""    const jchar* ${v}_chars = env->GetStringChars($v, nullptr);""",
+          s"""    jsize ${v}_len = env->GetStringLength($v);""",
+          s"""    cef_string_set(reinterpret_cast<const char16_t*>(${v}_chars), ${v}_len, &$dest$accessor$cName, 1);""",
+          s"""    env->ReleaseStringChars($v, ${v}_chars);""",
+          "}"
         )
       case BvField(cName, javaName, BvEnum(enumCefName)) =>
         val sig = bvJniSig(BvEnum(enumCefName))
         val v   = s"_${prefix}_$cName"
         List(
           s"""auto $v = env->GetObjectField($javaObj, env->GetFieldID($clsVar, "$javaName", "$sig"));""",
-          s"""if ($v) { $dest$accessor$cName = static_cast<decltype($dest$accessor$cName)>(env->GetLongField($v, env->GetFieldID(env->GetObjectClass($v), "value", "J"))); }"""
+          s"if ($v) {",
+          s"""    $dest$accessor$cName = static_cast<decltype($dest$accessor$cName)>(env->GetLongField($v, env->GetFieldID(env->GetObjectClass($v), "value", "J")));""",
+          "}"
         )
       case BvField(cName, javaName, typ) =>
         List(
@@ -1441,17 +1508,17 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
               javaName
             )});"""
         )
-    }.mkString(" ")
+    }
   }
 
-  private def bvWriteBack(cefName: String, ptrName: String, javaObj: String, clsVar: String): String =
+  private def bvWriteBackLines(cefName: String, ptrName: String, javaObj: String, clsVar: String): List[String] =
     bvCopyJavaToCStruct(cefName, ptrName, "->", javaObj, clsVar, "wb")
 
-  private def bvReadFromJavaObject(cefName: String, structVar: String, javaObj: String, clsVar: String): String = {
+  private def bvReadFromJavaLines(cefName: String, structVar: String, javaObj: String, clsVar: String): List[String] = {
     val base     = bvCopyJavaToCStruct(cefName, structVar, ".", javaObj, clsVar, "rd")
     val hasSize  = dataStructs.get(cefName).exists(_.fields.exists(f => f.name == "size" && f.typ == CType.SizeT))
-    val sizeInit = if (hasSize) s" $structVar.size = sizeof($cefName);" else ""
-    base + sizeInit
+    val sizeInit = if (hasSize) List(s"$structVar.size = sizeof($cefName);") else Nil
+    base ++ sizeInit
   }
 
   // Generate a field expression for array element access, for example ptr[i].field.
@@ -1469,12 +1536,12 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
   }
 
   // Return ctor metadata used to materialise by-value data structs into Java objects.
-  private def dataStructCtorInfo(cefName: String): (String, String, List[String]) =
+  private def dataStructCtorInfo(cefName: String): (String, List[String], List[String]) =
     dataStructs.get(cefName) match {
       case Some(_) =>
-        val (sig, expr, pre) = byValueCtorFromPtr(cefName, "(&result)")
-        (sig, expr, pre)
-      case None => ("()V", "", Nil)
+        val (sig, args, pre) = byValueCtorFromPtr(cefName, "(&result)")
+        (sig, args, pre)
+      case None => ("()V", Nil, Nil)
     }
 
   // Render a C++ JNI wrapper for a free function, used by globals and object-associated static helpers.
@@ -1483,9 +1550,9 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
       ff: CefDecl.FreeFunction,
       isDirectClass: Boolean = false
   ): String = {
-    val jniSym = if (isDirectClass) Naming.jniSymbolStatic(javaClassName, ff.javaMethodName)
-    else Naming.jniSymbolStaticInner(javaClassName, ff.javaMethodName)
     val retJni    = Naming.jniType(ff.ret)
+    val exportSig = if (isDirectClass) Naming.jniExportStatic(javaClassName, ff.javaMethodName, retJni)
+    else Naming.jniExportPeerStatic(javaClassName, ff.javaMethodName, retJni)
     val jniParams =
       ("JNIEnv* env" :: "jclass clz" :: ff.visibleParams.map { p =>
         s"${Naming.jniType(p.typ)} ${p.name}"
@@ -1555,7 +1622,7 @@ extern "C" JNIEXPORT jlong JNICALL $factorySym(JNIEnv* env, jobject obj) {
 
     val cleanBody = body.linesIterator.filter(_.trim.nonEmpty).mkString("\n")
 
-    s"""extern "C" JNIEXPORT $retJni JNICALL $jniSym($jniParams) {
+    s"""$exportSig($jniParams) {
 $cleanBody
 }"""
   }
@@ -1601,26 +1668,22 @@ $cleanBody
         val javaFqn = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
         val pre     = List(
           s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) { auto _c = env->FindClass("$javaFqn"); ${bvReadFromJavaObject(
-              cefName,
-              tmp,
-              p.name,
-              "_c"
-            )} }"""
-        )
+          s"""    if (${p.name}) {""",
+          s"""        auto _c = env->FindClass("$javaFqn");"""
+        ) ++
+          bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++
+          List("    }")
         (pre, s"&$tmp", Nil)
       case CType.ByValueOut(cefName) =>
         val tmp        = s"_${p.name}_val"
         val mutableFqn = Naming.fullyQualifiedMutableName(cefName).replace('.', '/')
         val pre        = List(
           s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) { auto _c = env->FindClass("$mutableFqn"); ${bvReadFromJavaObject(
-              cefName,
-              tmp,
-              p.name,
-              "_c"
-            )} }"""
-        )
+          s"""    if (${p.name}) {""",
+          s"""        auto _c = env->FindClass("$mutableFqn");"""
+        ) ++
+          bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++
+          List("    }")
         (pre, s"&$tmp", Nil)
       case CType.OutInt =>
         val tmp = s"_${p.name}_val"
@@ -1708,13 +1771,11 @@ $cleanBody
         val javaFqn = Naming.fullyQualifiedJavaName(cefName).replace('.', '/')
         val pre     = List(
           s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) { auto _c = env->FindClass("$javaFqn"); ${bvReadFromJavaObject(
-              cefName,
-              tmp,
-              p.name,
-              "_c"
-            )} }"""
-        )
+          s"""    if (${p.name}) {""",
+          s"""        auto _c = env->FindClass("$javaFqn");"""
+        ) ++
+          bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++
+          List("    }")
         (pre, tmp, Nil)
       case _ => (Nil, p.name, Nil)
     }

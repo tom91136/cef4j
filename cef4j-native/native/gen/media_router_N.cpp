@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_media_router_capi.h"
 #include "include/capi/cef_callback_capi.h"
@@ -8,12 +8,12 @@
 extern "C" cef_media_observer_t* Create_JniCefMediaObserver(JNIEnv *env, jobject handler);
 extern "C" cef_media_route_create_callback_t* Create_JniCefMediaRouteCreateCallback(JNIEnv *env, jobject handler);
 extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1AddObserver(JNIEnv* env, jobject obj, jlong self, jobject observer) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), addObserver0)(JNIEnv* env, jobject obj, jlong self, jobject observer) {
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return nullptr;
     cef_media_observer_t* _observer_ptr = observer ? Create_JniCefMediaObserver(env, observer) : nullptr;
@@ -24,7 +24,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1GetSource(JNIEnv* env, jobject obj, jlong self, jstring urn) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), getSource0)(JNIEnv* env, jobject obj, jlong self, jstring urn) {
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return nullptr;
     auto _urn_str = JStringToCefString(env, urn);
@@ -36,13 +36,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1NotifyCurrentSinks(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), notifyCurrentSinks0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return;
     s->notify_current_sinks(s);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1CreateRoute(JNIEnv* env, jobject obj, jlong self, jobject source, jobject sink, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), createRoute0)(JNIEnv* env, jobject obj, jlong self, jobject source, jobject sink, jobject callback) {
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return;
     cef_media_source_t* _source_ptr = source ? reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J"))) : nullptr;
@@ -53,13 +53,13 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_000
     s->create_route(s, _source_ptr, _sink_ptr, _callback_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1NotifyCurrentRoutes(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), notifyCurrentRoutes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return;
     s->notify_current_routes(s);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMediaRouter_00024NativePeer_N_1GetGlobal(JNIEnv* env, jclass clz, jobject callback) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), getGlobal0)(JNIEnv* env, jclass clz, jobject callback) {
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     auto _r = cef_media_router_get_global(_callback_ptr);
     if (!_r) return nullptr;

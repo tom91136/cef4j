@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 ArrayBuffer backing store. The backing store holds the memory that backs an ArrayBuffer.
@@ -20,6 +22,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:398</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8BackingStore extends CefLibraryObject {
 
     NativePointer data();
@@ -59,7 +62,7 @@ public interface CefV8BackingStore extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefV8BackingStore> create(long byteLength) {
-        return Optional.ofNullable(NativePeer.N_Create(byteLength));
+        return Optional.ofNullable(NativePeer.create0(byteLength));
     }
 
     final class NativePeer implements CefV8BackingStore, AutoCloseable {
@@ -99,37 +102,37 @@ public interface CefV8BackingStore extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8BackingStore 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public NativePointer data() {
             checkNotClosed();
-            return N_Data(nativePtr);
+            return data0(nativePtr);
         }
 
         @Override
         public long byteLength() {
             checkNotClosed();
-            return N_ByteLength(nativePtr);
+            return byteLength0(nativePtr);
         }
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
-        private static native NativePointer N_Data(long self);
+        private static native NativePointer data0(long self);
 
-        private static native long N_ByteLength(long self);
+        private static native long byteLength0(long self);
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        static native CefV8BackingStore N_Create(long byteLength);
+        static native CefV8BackingStore create0(long byteLength);
 
         @Override
         public boolean equals(Object obj) {

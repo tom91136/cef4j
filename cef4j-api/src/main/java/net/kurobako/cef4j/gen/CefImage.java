@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Container for a single image represented at different scale factors. All image representations should be the same
@@ -21,6 +23,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefImage extends CefLibraryObject {
 
     /**
@@ -239,7 +242,7 @@ public interface CefImage extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefImage> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefImage, AutoCloseable {
@@ -279,23 +282,23 @@ public interface CefImage extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefImage 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isEmpty() {
             checkNotClosed();
-            return N_IsEmpty(nativePtr);
+            return isEmpty0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefImage that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefImage");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
@@ -307,50 +310,50 @@ public interface CefImage extends CefLibraryObject {
                 @Nonnull CefAlphaType alphaType,
                 @Nonnull ByteBuffer pixelData) {
             checkNotClosed();
-            return N_AddBitmap(nativePtr, scaleFactor, pixelWidth, pixelHeight, colorType, alphaType, pixelData);
+            return addBitmap0(nativePtr, scaleFactor, pixelWidth, pixelHeight, colorType, alphaType, pixelData);
         }
 
         @Override
         public boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData) {
             checkNotClosed();
-            return N_AddPng(nativePtr, scaleFactor, pngData);
+            return addPng0(nativePtr, scaleFactor, pngData);
         }
 
         @Override
         public boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData) {
             checkNotClosed();
-            return N_AddJpeg(nativePtr, scaleFactor, jpegData);
+            return addJpeg0(nativePtr, scaleFactor, jpegData);
         }
 
         @Override
         public long getWidth() {
             checkNotClosed();
-            return N_GetWidth(nativePtr);
+            return getWidth0(nativePtr);
         }
 
         @Override
         public long getHeight() {
             checkNotClosed();
-            return N_GetHeight(nativePtr);
+            return getHeight0(nativePtr);
         }
 
         @Override
         public boolean hasRepresentation(float scaleFactor) {
             checkNotClosed();
-            return N_HasRepresentation(nativePtr, scaleFactor);
+            return hasRepresentation0(nativePtr, scaleFactor);
         }
 
         @Override
         public boolean removeRepresentation(float scaleFactor) {
             checkNotClosed();
-            return N_RemoveRepresentation(nativePtr, scaleFactor);
+            return removeRepresentation0(nativePtr, scaleFactor);
         }
 
         @Override
         public boolean getRepresentationInfo(
                 float scaleFactor, float[] actualScaleFactor, int[] pixelWidth, int[] pixelHeight) {
             checkNotClosed();
-            return N_GetRepresentationInfo(nativePtr, scaleFactor, actualScaleFactor, pixelWidth, pixelHeight);
+            return getRepresentationInfo0(nativePtr, scaleFactor, actualScaleFactor, pixelWidth, pixelHeight);
         }
 
         @Override
@@ -362,27 +365,27 @@ public interface CefImage extends CefLibraryObject {
                 int[] pixelHeight) {
             checkNotClosed();
             return Optional.ofNullable(
-                    N_GetAsBitmap(nativePtr, scaleFactor, colorType, alphaType, pixelWidth, pixelHeight));
+                    getAsBitmap0(nativePtr, scaleFactor, colorType, alphaType, pixelWidth, pixelHeight));
         }
 
         @Override
         public Optional<CefBinaryValue> getAsPng(
                 float scaleFactor, boolean withTransparency, int[] pixelWidth, int[] pixelHeight) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAsPng(nativePtr, scaleFactor, withTransparency, pixelWidth, pixelHeight));
+            return Optional.ofNullable(getAsPng0(nativePtr, scaleFactor, withTransparency, pixelWidth, pixelHeight));
         }
 
         @Override
         public Optional<CefBinaryValue> getAsJpeg(float scaleFactor, int quality, int[] pixelWidth, int[] pixelHeight) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAsJpeg(nativePtr, scaleFactor, quality, pixelWidth, pixelHeight));
+            return Optional.ofNullable(getAsJpeg0(nativePtr, scaleFactor, quality, pixelWidth, pixelHeight));
         }
 
-        private static native boolean N_IsEmpty(long self);
+        private static native boolean isEmpty0(long self);
 
-        private static native boolean N_IsSame(long self, CefImage that);
+        private static native boolean isSame0(long self, CefImage that);
 
-        private static native boolean N_AddBitmap(
+        private static native boolean addBitmap0(
                 long self,
                 float scaleFactor,
                 int pixelWidth,
@@ -391,22 +394,22 @@ public interface CefImage extends CefLibraryObject {
                 CefAlphaType alphaType,
                 ByteBuffer pixelData);
 
-        private static native boolean N_AddPng(long self, float scaleFactor, ByteBuffer pngData);
+        private static native boolean addPng0(long self, float scaleFactor, ByteBuffer pngData);
 
-        private static native boolean N_AddJpeg(long self, float scaleFactor, ByteBuffer jpegData);
+        private static native boolean addJpeg0(long self, float scaleFactor, ByteBuffer jpegData);
 
-        private static native long N_GetWidth(long self);
+        private static native long getWidth0(long self);
 
-        private static native long N_GetHeight(long self);
+        private static native long getHeight0(long self);
 
-        private static native boolean N_HasRepresentation(long self, float scaleFactor);
+        private static native boolean hasRepresentation0(long self, float scaleFactor);
 
-        private static native boolean N_RemoveRepresentation(long self, float scaleFactor);
+        private static native boolean removeRepresentation0(long self, float scaleFactor);
 
-        private static native boolean N_GetRepresentationInfo(
+        private static native boolean getRepresentationInfo0(
                 long self, float scaleFactor, float[] actualScaleFactor, int[] pixelWidth, int[] pixelHeight);
 
-        private static native CefBinaryValue N_GetAsBitmap(
+        private static native CefBinaryValue getAsBitmap0(
                 long self,
                 float scaleFactor,
                 CefColorType colorType,
@@ -414,13 +417,13 @@ public interface CefImage extends CefLibraryObject {
                 int[] pixelWidth,
                 int[] pixelHeight);
 
-        private static native CefBinaryValue N_GetAsPng(
+        private static native CefBinaryValue getAsPng0(
                 long self, float scaleFactor, boolean withTransparency, int[] pixelWidth, int[] pixelHeight);
 
-        private static native CefBinaryValue N_GetAsJpeg(
+        private static native CefBinaryValue getAsJpeg0(
                 long self, float scaleFactor, int quality, int[] pixelWidth, int[] pixelHeight);
 
-        static native CefImage N_Create();
+        static native CefImage create0();
 
         @Override
         public boolean equals(Object obj) {

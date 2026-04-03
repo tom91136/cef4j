@@ -5,9 +5,6 @@ import java.nio.file.Path
 
 object JavaCodeGen {
 
-  private val GeneratedBanner =
-    "// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native"
-
   def renderClassDoc(
       classDoc: String,
       capiSource: String = "",
@@ -43,11 +40,13 @@ ${allLines.mkString("\n")}
       cppSource: String = "",
       classDocSuffix: String = ""
   )(using Naming.Context, DocComments.Context): String = {
-    val importBlock = if (imports.nonEmpty) s"\n${imports.mkString("\n")}\n" else ""
-    s"""$GeneratedBanner
+    val allImports  = (Banners.javaAnnotationImport :: imports).distinct
+    val importBlock = s"\n${allImports.mkString("\n")}\n"
+    s"""${Banners.java}
 package ${Naming.javaPackage};
 $importBlock
-${renderClassDoc(classDoc, capiSource, cPrototype, cppSource, classDocSuffix)}$declaration {
+${renderClassDoc(classDoc, capiSource, cPrototype, cppSource, classDocSuffix)}${Banners.javaAnnotation}
+$declaration {
 
 $body
 }

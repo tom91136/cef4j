@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class that asynchronously executes tasks on the associated thread. It is safe to call the methods of this class on
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:62</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefTaskRunner extends CefLibraryObject {
 
     /**
@@ -91,7 +94,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:74</a>
      */
     static Optional<CefTaskRunner> getForCurrentThread() {
-        return Optional.ofNullable(NativePeer.N_GetForCurrentThread());
+        return Optional.ofNullable(NativePeer.getForCurrentThread0());
     }
 
     /**
@@ -104,7 +107,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:82</a>
      */
     static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadId) {
-        return Optional.ofNullable(NativePeer.N_GetForThread(threadId));
+        return Optional.ofNullable(NativePeer.getForThread0(threadId));
     }
 
     final class NativePeer implements CefTaskRunner, AutoCloseable {
@@ -144,56 +147,56 @@ public interface CefTaskRunner extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefTaskRunner 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isSame(@Nullable CefTaskRunner that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefTaskRunner");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public boolean belongsToCurrentThread() {
             checkNotClosed();
-            return N_BelongsToCurrentThread(nativePtr);
+            return belongsToCurrentThread0(nativePtr);
         }
 
         @Override
         public boolean belongsToThread(@Nonnull CefThreadId threadId) {
             checkNotClosed();
-            return N_BelongsToThread(nativePtr, threadId);
+            return belongsToThread0(nativePtr, threadId);
         }
 
         @Override
         public boolean postTask(@Nullable CefTask task) {
             checkNotClosed();
-            return N_PostTask(nativePtr, task);
+            return postTask0(nativePtr, task);
         }
 
         @Override
         public boolean postDelayedTask(@Nullable CefTask task, long delayMs) {
             checkNotClosed();
-            return N_PostDelayedTask(nativePtr, task, delayMs);
+            return postDelayedTask0(nativePtr, task, delayMs);
         }
 
-        private static native boolean N_IsSame(long self, CefTaskRunner that);
+        private static native boolean isSame0(long self, CefTaskRunner that);
 
-        private static native boolean N_BelongsToCurrentThread(long self);
+        private static native boolean belongsToCurrentThread0(long self);
 
-        private static native boolean N_BelongsToThread(long self, CefThreadId threadId);
+        private static native boolean belongsToThread0(long self, CefThreadId threadId);
 
-        private static native boolean N_PostTask(long self, CefTask task);
+        private static native boolean postTask0(long self, CefTask task);
 
-        private static native boolean N_PostDelayedTask(long self, CefTask task, long delayMs);
+        private static native boolean postDelayedTask0(long self, CefTask task, long delayMs);
 
-        static native CefTaskRunner N_GetForCurrentThread();
+        static native CefTaskRunner getForCurrentThread0();
 
-        static native CefTaskRunner N_GetForThread(CefThreadId threadId);
+        static native CefTaskRunner getForThread0(CefThreadId threadId);
 
         @Override
         public boolean equals(Object obj) {

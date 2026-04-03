@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 context handle. V8 handles can only be accessed from the thread on which they are
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:64</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Context extends CefLibraryObject {
 
     /**
@@ -149,7 +152,7 @@ public interface CefV8Context extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:129</a>
      */
     static Optional<CefV8Context> getCurrentContext() {
-        return Optional.ofNullable(NativePeer.N_GetCurrentContext());
+        return Optional.ofNullable(NativePeer.getCurrentContext0());
     }
 
     /**
@@ -162,7 +165,7 @@ public interface CefV8Context extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:135</a>
      */
     static Optional<CefV8Context> getEnteredContext() {
-        return Optional.ofNullable(NativePeer.N_GetEnteredContext());
+        return Optional.ofNullable(NativePeer.getEnteredContext0());
     }
 
     /**
@@ -175,7 +178,7 @@ public interface CefV8Context extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:141</a>
      */
     static int inContext() {
-        return NativePeer.N_InContext();
+        return NativePeer.inContext0();
     }
 
     final class NativePeer implements CefV8Context, AutoCloseable {
@@ -215,59 +218,59 @@ public interface CefV8Context extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Context 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTaskRunner(nativePtr));
+            return Optional.ofNullable(getTaskRunner0(nativePtr));
         }
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public Optional<CefBrowser> getBrowser() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBrowser(nativePtr));
+            return Optional.ofNullable(getBrowser0(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getFrame() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFrame(nativePtr));
+            return Optional.ofNullable(getFrame0(nativePtr));
         }
 
         @Override
         public Optional<CefV8Value> getGlobal() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetGlobal(nativePtr));
+            return Optional.ofNullable(getGlobal0(nativePtr));
         }
 
         @Override
         public boolean enter() {
             checkNotClosed();
-            return N_Enter(nativePtr);
+            return enter0(nativePtr);
         }
 
         @Override
         public boolean exit() {
             checkNotClosed();
-            return N_Exit(nativePtr);
+            return exit0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefV8Context that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefV8Context");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
@@ -278,26 +281,26 @@ public interface CefV8Context extends CefLibraryObject {
                 @Nullable AtomicReference<CefV8Value> retval,
                 @Nullable AtomicReference<CefV8Exception> exception) {
             checkNotClosed();
-            return N_Eval(nativePtr, code, scriptUrl, startLine, retval, exception);
+            return eval0(nativePtr, code, scriptUrl, startLine, retval, exception);
         }
 
-        private static native CefTaskRunner N_GetTaskRunner(long self);
+        private static native CefTaskRunner getTaskRunner0(long self);
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native CefBrowser N_GetBrowser(long self);
+        private static native CefBrowser getBrowser0(long self);
 
-        private static native CefFrame N_GetFrame(long self);
+        private static native CefFrame getFrame0(long self);
 
-        private static native CefV8Value N_GetGlobal(long self);
+        private static native CefV8Value getGlobal0(long self);
 
-        private static native boolean N_Enter(long self);
+        private static native boolean enter0(long self);
 
-        private static native boolean N_Exit(long self);
+        private static native boolean exit0(long self);
 
-        private static native boolean N_IsSame(long self, CefV8Context that);
+        private static native boolean isSame0(long self, CefV8Context that);
 
-        private static native boolean N_Eval(
+        private static native boolean eval0(
                 long self,
                 String code,
                 String scriptUrl,
@@ -305,11 +308,11 @@ public interface CefV8Context extends CefLibraryObject {
                 AtomicReference<CefV8Value> retval,
                 AtomicReference<CefV8Exception> exception);
 
-        static native CefV8Context N_GetCurrentContext();
+        static native CefV8Context getCurrentContext0();
 
-        static native CefV8Context N_GetEnteredContext();
+        static native CefV8Context getEnteredContext0();
 
-        static native int N_InContext();
+        static native int inContext0();
 
         @Override
         public boolean equals(Object obj) {

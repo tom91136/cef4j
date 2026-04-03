@@ -31,7 +31,7 @@ final class NativeStderr {
     static synchronized void install() {
         if (installed) return;
 
-        Object[] result = N_RedirectStderr();
+        Object[] result = redirectStderr0();
         if (result == null) {
             log.warn("Failed to redirect native stderr - CEF logs will go to stderr");
             return;
@@ -65,5 +65,5 @@ final class NativeStderr {
         installed = true;
     }
 
-    private static native Object[] N_RedirectStderr();
+    private static native Object[] redirectStderr0();
 }

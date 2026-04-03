@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Arrays;
@@ -6,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * This class provides access to Chromium's component updater service, allowing clients to discover registered
@@ -23,6 +25,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:104</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefComponentUpdater extends CefLibraryObject {
 
     /**
@@ -107,7 +110,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
      */
     static Optional<CefComponentUpdater> get() {
-        return Optional.ofNullable(NativePeer.N_Get());
+        return Optional.ofNullable(NativePeer.get0());
     }
 
     final class NativePeer implements CefComponentUpdater, AutoCloseable {
@@ -147,28 +150,28 @@ public interface CefComponentUpdater extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefComponentUpdater 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public long getComponentCount() {
             checkNotClosed();
-            return N_GetComponentCount(nativePtr);
+            return getComponentCount0(nativePtr);
         }
 
         @Override
         public List<CefComponent> getComponents() {
             checkNotClosed();
-            return Arrays.asList(N_GetComponents(nativePtr));
+            return Arrays.asList(getComponents0(nativePtr));
         }
 
         @Override
         public Optional<CefComponent> getComponentById(@Nullable String componentId) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetComponentById(nativePtr, componentId));
+            return Optional.ofNullable(getComponentById0(nativePtr, componentId));
         }
 
         @Override
@@ -177,22 +180,22 @@ public interface CefComponentUpdater extends CefLibraryObject {
                 @Nonnull CefComponentUpdatePriority priority,
                 @Nullable CefComponentUpdateCallback callback) {
             checkNotClosed();
-            N_Update(nativePtr, componentId, priority, callback);
+            update0(nativePtr, componentId, priority, callback);
         }
 
-        private static native long N_GetComponentCount(long self);
+        private static native long getComponentCount0(long self);
 
-        private static native CefComponent[] N_GetComponents(long self);
+        private static native CefComponent[] getComponents0(long self);
 
-        private static native CefComponent N_GetComponentById(long self, String componentId);
+        private static native CefComponent getComponentById0(long self, String componentId);
 
-        private static native void N_Update(
+        private static native void update0(
                 long self,
                 String componentId,
                 CefComponentUpdatePriority priority,
                 CefComponentUpdateCallback callback);
 
-        static native CefComponentUpdater N_Get();
+        static native CefComponentUpdater get0();
 
         @Override
         public boolean equals(Object obj) {

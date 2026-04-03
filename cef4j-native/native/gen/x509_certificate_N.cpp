@@ -1,15 +1,15 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_x509_certificate_capi.h"
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefX509Certificate), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetSubject(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getSubject0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_subject(s);
@@ -19,7 +19,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetIssuer(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getIssuer0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_issuer(s);
@@ -29,7 +29,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetSerialNumber(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getSerialNumber0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_serial_number(s);
@@ -39,7 +39,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetValidStart(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidStart0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_valid_start(s);
@@ -49,7 +49,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetValidExpiry(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidExpiry0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_valid_expiry(s);
@@ -59,7 +59,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetDerEncoded(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getDerEncoded0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_derencoded(s);
@@ -69,7 +69,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetPemEncoded(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getPemEncoded0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_pemencoded(s);
@@ -79,13 +79,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefX509Certific
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetIssuerChainSize(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefX509Certificate), getIssuerChainSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_issuer_chain_size(s));
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetDerEncodedIssuerChain(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(CefX509Certificate), getDerEncodedIssuerChain0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     size_t _count = s->get_issuer_chain_size(s);
@@ -104,7 +104,7 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefX509Cer
     return _result;
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL Java_net_kurobako_cef4j_gen_CefX509Certificate_00024NativePeer_N_1GetPemEncodedIssuerChain(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(CefX509Certificate), getPemEncodedIssuerChain0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_x509_certificate_t*>(self);
     if (!s) return nullptr;
     size_t _count = s->get_issuer_chain_size(s);

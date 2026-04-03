@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_dom_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDomNode), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetType(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getType0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s);
@@ -17,35 +17,35 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsText(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isText0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_text(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsElement(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isElement0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_element(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsEditable(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isEditable0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_editable(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsFormControlElement(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isFormControlElement0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_form_control_element(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetFormControlElementType(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getFormControlElementType0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return 0;
     auto _r = s->get_form_control_element_type(s);
@@ -54,7 +54,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     cef_domnode_t* _that_ptr = that ? reinterpret_cast<cef_domnode_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -63,7 +63,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_name(s);
@@ -73,7 +73,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetValue(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getValue0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_value(s);
@@ -83,7 +83,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1SetValue(JNIEnv* env, jobject obj, jlong self, jstring value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), setValue0)(JNIEnv* env, jobject obj, jlong self, jstring value) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _value_str = JStringToCefString(env, value);
@@ -92,7 +92,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetAsMarkup(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getAsMarkup0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_as_markup(s);
@@ -102,7 +102,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetDocument(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getDocument0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_document(s);
@@ -112,7 +112,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetParent(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getParent0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_parent(s);
@@ -122,7 +122,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetPreviousSibling(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getPreviousSibling0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_previous_sibling(s);
@@ -132,7 +132,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetNextSibling(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getNextSibling0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_next_sibling(s);
@@ -142,14 +142,14 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1HasChildren(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), hasChildren0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_children(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetFirstChild(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getFirstChild0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_first_child(s);
@@ -159,7 +159,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetLastChild(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getLastChild0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_last_child(s);
@@ -169,7 +169,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementTagName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementTagName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_element_tag_name(s);
@@ -179,14 +179,14 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1HasElementAttributes(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), hasElementAttributes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_element_attributes(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1HasElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), hasElementAttribute0)(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _attrName_str = JStringToCefString(env, attrName);
@@ -195,7 +195,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementAttribute0)(JNIEnv* env, jobject obj, jlong self, jstring attrName) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto _attrName_str = JStringToCefString(env, attrName);
@@ -207,7 +207,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementAttributes(JNIEnv* env, jobject obj, jlong self, jobject attrMap) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDomNode), getElementAttributes0)(JNIEnv* env, jobject obj, jlong self, jobject attrMap) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return;
     if (!attrMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrMap must not be null"); return;}
@@ -216,7 +216,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024Na
     CefStringMapWriteBack(env, _attrMap_csm, attrMap);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1SetElementAttribute(JNIEnv* env, jobject obj, jlong self, jstring attrName, jstring value) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), setElementAttribute0)(JNIEnv* env, jobject obj, jlong self, jstring attrName, jstring value) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     auto _attrName_str = JStringToCefString(env, attrName);
@@ -227,7 +227,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_000
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementInnerText(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementInnerText0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_element_inner_text(s);
@@ -237,7 +237,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_0002
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDomNode_00024NativePeer_N_1GetElementBounds(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getElementBounds0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_element_bounds(s);

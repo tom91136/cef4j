@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Provides information about the context menu state. The methods of this class can only be accessed on browser process
@@ -19,6 +21,7 @@ import javax.annotation.Nonnull;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:195</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefContextMenuParams extends CefLibraryObject {
 
     /**
@@ -316,171 +319,171 @@ public interface CefContextMenuParams extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefContextMenuParams 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public int getXCoord() {
             checkNotClosed();
-            return N_GetXCoord(nativePtr);
+            return getXCoord0(nativePtr);
         }
 
         @Override
         public int getYCoord() {
             checkNotClosed();
-            return N_GetYCoord(nativePtr);
+            return getYCoord0(nativePtr);
         }
 
         @Override
         public CefContextMenuTypeFlags getTypeFlags() {
             checkNotClosed();
-            return N_GetTypeFlags(nativePtr);
+            return getTypeFlags0(nativePtr);
         }
 
         @Override
         public Optional<String> getLinkUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLinkUrl(nativePtr));
+            return Optional.ofNullable(getLinkUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getUnfilteredLinkUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUnfilteredLinkUrl(nativePtr));
+            return Optional.ofNullable(getUnfilteredLinkUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getSourceUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSourceUrl(nativePtr));
+            return Optional.ofNullable(getSourceUrl0(nativePtr));
         }
 
         @Override
         public boolean hasImageContents() {
             checkNotClosed();
-            return N_HasImageContents(nativePtr);
+            return hasImageContents0(nativePtr);
         }
 
         @Override
         public Optional<String> getTitleText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTitleText(nativePtr));
+            return Optional.ofNullable(getTitleText0(nativePtr));
         }
 
         @Override
         public Optional<String> getPageUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPageUrl(nativePtr));
+            return Optional.ofNullable(getPageUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getFrameUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFrameUrl(nativePtr));
+            return Optional.ofNullable(getFrameUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getFrameCharset() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFrameCharset(nativePtr));
+            return Optional.ofNullable(getFrameCharset0(nativePtr));
         }
 
         @Override
         public CefContextMenuMediaType getMediaType() {
             checkNotClosed();
-            return N_GetMediaType(nativePtr);
+            return getMediaType0(nativePtr);
         }
 
         @Override
         public CefContextMenuMediaStateFlags getMediaStateFlags() {
             checkNotClosed();
-            return N_GetMediaStateFlags(nativePtr);
+            return getMediaStateFlags0(nativePtr);
         }
 
         @Override
         public Optional<String> getSelectionText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSelectionText(nativePtr));
+            return Optional.ofNullable(getSelectionText0(nativePtr));
         }
 
         @Override
         public Optional<String> getMisspelledWord() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMisspelledWord(nativePtr));
+            return Optional.ofNullable(getMisspelledWord0(nativePtr));
         }
 
         @Override
         public boolean getDictionarySuggestions(@Nonnull List<String> suggestions) {
             checkNotClosed();
-            return N_GetDictionarySuggestions(nativePtr, suggestions);
+            return getDictionarySuggestions0(nativePtr, suggestions);
         }
 
         @Override
         public boolean isEditable() {
             checkNotClosed();
-            return N_IsEditable(nativePtr);
+            return isEditable0(nativePtr);
         }
 
         @Override
         public boolean isSpellCheckEnabled() {
             checkNotClosed();
-            return N_IsSpellCheckEnabled(nativePtr);
+            return isSpellCheckEnabled0(nativePtr);
         }
 
         @Override
         public CefContextMenuEditStateFlags getEditStateFlags() {
             checkNotClosed();
-            return N_GetEditStateFlags(nativePtr);
+            return getEditStateFlags0(nativePtr);
         }
 
         @Override
         public boolean isCustomMenu() {
             checkNotClosed();
-            return N_IsCustomMenu(nativePtr);
+            return isCustomMenu0(nativePtr);
         }
 
-        private static native int N_GetXCoord(long self);
+        private static native int getXCoord0(long self);
 
-        private static native int N_GetYCoord(long self);
+        private static native int getYCoord0(long self);
 
-        private static native CefContextMenuTypeFlags N_GetTypeFlags(long self);
+        private static native CefContextMenuTypeFlags getTypeFlags0(long self);
 
-        private static native String N_GetLinkUrl(long self);
+        private static native String getLinkUrl0(long self);
 
-        private static native String N_GetUnfilteredLinkUrl(long self);
+        private static native String getUnfilteredLinkUrl0(long self);
 
-        private static native String N_GetSourceUrl(long self);
+        private static native String getSourceUrl0(long self);
 
-        private static native boolean N_HasImageContents(long self);
+        private static native boolean hasImageContents0(long self);
 
-        private static native String N_GetTitleText(long self);
+        private static native String getTitleText0(long self);
 
-        private static native String N_GetPageUrl(long self);
+        private static native String getPageUrl0(long self);
 
-        private static native String N_GetFrameUrl(long self);
+        private static native String getFrameUrl0(long self);
 
-        private static native String N_GetFrameCharset(long self);
+        private static native String getFrameCharset0(long self);
 
-        private static native CefContextMenuMediaType N_GetMediaType(long self);
+        private static native CefContextMenuMediaType getMediaType0(long self);
 
-        private static native CefContextMenuMediaStateFlags N_GetMediaStateFlags(long self);
+        private static native CefContextMenuMediaStateFlags getMediaStateFlags0(long self);
 
-        private static native String N_GetSelectionText(long self);
+        private static native String getSelectionText0(long self);
 
-        private static native String N_GetMisspelledWord(long self);
+        private static native String getMisspelledWord0(long self);
 
-        private static native boolean N_GetDictionarySuggestions(long self, List<String> suggestions);
+        private static native boolean getDictionarySuggestions0(long self, List<String> suggestions);
 
-        private static native boolean N_IsEditable(long self);
+        private static native boolean isEditable0(long self);
 
-        private static native boolean N_IsSpellCheckEnabled(long self);
+        private static native boolean isSpellCheckEnabled0(long self);
 
-        private static native CefContextMenuEditStateFlags N_GetEditStateFlags(long self);
+        private static native CefContextMenuEditStateFlags getEditStateFlags0(long self);
 
-        private static native boolean N_IsCustomMenu(long self);
+        private static native boolean isCustomMenu0(long self);
 
         @Override
         public boolean equals(Object obj) {

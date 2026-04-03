@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing a message. Can be used on any process and thread.
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:47</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefProcessMessage extends CefLibraryObject {
 
     /**
@@ -104,7 +107,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefProcessMessage> create(@Nullable String name) {
-        return Optional.ofNullable(NativePeer.N_Create(name));
+        return Optional.ofNullable(NativePeer.create0(name));
     }
 
     final class NativePeer implements CefProcessMessage, AutoCloseable {
@@ -144,61 +147,61 @@ public interface CefProcessMessage extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefProcessMessage 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public Optional<CefProcessMessage> copy() {
             checkNotClosed();
-            return Optional.ofNullable(N_Copy(nativePtr));
+            return Optional.ofNullable(copy0(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetName(nativePtr));
+            return Optional.ofNullable(getName0(nativePtr));
         }
 
         @Override
         public Optional<CefListValue> getArgumentList() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetArgumentList(nativePtr));
+            return Optional.ofNullable(getArgumentList0(nativePtr));
         }
 
         @Override
         public Optional<CefSharedMemoryRegion> getSharedMemoryRegion() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSharedMemoryRegion(nativePtr));
+            return Optional.ofNullable(getSharedMemoryRegion0(nativePtr));
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native CefProcessMessage N_Copy(long self);
+        private static native CefProcessMessage copy0(long self);
 
-        private static native String N_GetName(long self);
+        private static native String getName0(long self);
 
-        private static native CefListValue N_GetArgumentList(long self);
+        private static native CefListValue getArgumentList0(long self);
 
-        private static native CefSharedMemoryRegion N_GetSharedMemoryRegion(long self);
+        private static native CefSharedMemoryRegion getSharedMemoryRegion0(long self);
 
-        static native CefProcessMessage N_Create(String name);
+        static native CefProcessMessage create0(String name);
 
         @Override
         public boolean equals(Object obj) {

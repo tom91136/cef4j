@@ -6,6 +6,7 @@ import net.kurobako.cef4j.codegen.passes.CleanOutputDirs
 import net.kurobako.cef4j.codegen.passes.DiscoverHeaders
 import net.kurobako.cef4j.codegen.passes.EmitMarkerInterfaces
 import net.kurobako.cef4j.codegen.passes.EmitNativePointer
+import net.kurobako.cef4j.codegen.passes.EmitRuntimeStubs
 import net.kurobako.cef4j.codegen.passes.EmitTree
 import net.kurobako.cef4j.codegen.passes.InitialiseDocComments
 import net.kurobako.cef4j.codegen.passes.LoadParseState
@@ -18,6 +19,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     val startNanos = System.nanoTime()
     val cfg        = parseArgs(args.toList)
+    Banners.init(cfg.cefInclude)
 
     val headerInputs      = DiscoverHeaders(cfg)
     val preprocessed      = PreprocessHeaders(headerInputs, cfg)
@@ -34,6 +36,7 @@ object Main {
     EmitNativePointer(cfg.outJavaPackageDir, cfg.javaPackage)
     EmitMarkerInterfaces(cfg.outJavaPackageDir, cfg.javaPackage)
     EmitTree(cfg, parseState, refinedTree)
+    EmitRuntimeStubs(cfg.outJava, cfg.outJavaPackageDir, cfg.outCpp)
 
     val elapsedSeconds = (System.nanoTime() - startNanos) / 1_000_000_000.0
     println(

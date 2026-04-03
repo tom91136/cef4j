@@ -1,13 +1,13 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_scheme_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefSchemeRegistrar_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefSchemeRegistrar), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     // Scoped struct - no ref-counting, release is a no-op.
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefSchemeRegistrar_00024NativePeer_N_1AddCustomScheme(JNIEnv* env, jobject obj, jlong self, jstring scheme_name, jint options) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefSchemeRegistrar), addCustomScheme0)(JNIEnv* env, jobject obj, jlong self, jstring scheme_name, jint options) {
     auto* s = reinterpret_cast<cef_scheme_registrar_t*>(self);
     if (!s) return JNI_FALSE;
     auto _scheme_name_str = JStringToCefString(env, scheme_name);

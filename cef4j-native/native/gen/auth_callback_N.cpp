@@ -1,14 +1,14 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_auth_callback_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefAuthCallback), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00024NativePeer_N_1Cont(JNIEnv* env, jobject obj, jlong self, jstring username, jstring password) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefAuthCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jstring username, jstring password) {
     auto* s = reinterpret_cast<cef_auth_callback_t*>(self);
     if (!s) return;
     auto _username_str = JStringToCefString(env, username);
@@ -18,7 +18,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00
     if (_password_str) cef_string_userfree_free(_password_str);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefAuthCallback_00024NativePeer_N_1Cancel(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefAuthCallback), cancel0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_auth_callback_t*>(self);
     if (!s) return;
     s->cancel(s);

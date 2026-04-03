@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing the SSL information for a navigation entry.
@@ -15,6 +17,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefSslStatus extends CefLibraryObject {
 
     /**
@@ -112,51 +115,51 @@ public interface CefSslStatus extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefSslStatus 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isSecureConnection() {
             checkNotClosed();
-            return N_IsSecureConnection(nativePtr);
+            return isSecureConnection0(nativePtr);
         }
 
         @Override
         public CefCertStatus getCertStatus() {
             checkNotClosed();
-            return N_GetCertStatus(nativePtr);
+            return getCertStatus0(nativePtr);
         }
 
         @Override
         public CefSslVersion getSslVersion() {
             checkNotClosed();
-            return N_GetSslVersion(nativePtr);
+            return getSslVersion0(nativePtr);
         }
 
         @Override
         public CefSslContentStatus getContentStatus() {
             checkNotClosed();
-            return N_GetContentStatus(nativePtr);
+            return getContentStatus0(nativePtr);
         }
 
         @Override
         public Optional<CefX509Certificate> getX509certificate() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetX509certificate(nativePtr));
+            return Optional.ofNullable(getX509certificate0(nativePtr));
         }
 
-        private static native boolean N_IsSecureConnection(long self);
+        private static native boolean isSecureConnection0(long self);
 
-        private static native CefCertStatus N_GetCertStatus(long self);
+        private static native CefCertStatus getCertStatus0(long self);
 
-        private static native CefSslVersion N_GetSslVersion(long self);
+        private static native CefSslVersion getSslVersion0(long self);
 
-        private static native CefSslContentStatus N_GetContentStatus(long self);
+        private static native CefSslContentStatus getContentStatus0(long self);
 
-        private static native CefX509Certificate N_GetX509certificate(long self);
+        private static native CefX509Certificate getX509certificate0(long self);
 
         @Override
         public boolean equals(Object obj) {

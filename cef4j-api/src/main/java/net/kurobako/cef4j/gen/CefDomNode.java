@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a DOM node. The methods of this class should only be called on the render process main
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:161</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefDomNode extends CefLibraryObject {
 
     /**
@@ -352,220 +355,220 @@ public interface CefDomNode extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefDomNode 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public CefDomNodeType getType() {
             checkNotClosed();
-            return N_GetType(nativePtr);
+            return getType0(nativePtr);
         }
 
         @Override
         public boolean isText() {
             checkNotClosed();
-            return N_IsText(nativePtr);
+            return isText0(nativePtr);
         }
 
         @Override
         public boolean isElement() {
             checkNotClosed();
-            return N_IsElement(nativePtr);
+            return isElement0(nativePtr);
         }
 
         @Override
         public boolean isEditable() {
             checkNotClosed();
-            return N_IsEditable(nativePtr);
+            return isEditable0(nativePtr);
         }
 
         @Override
         public boolean isFormControlElement() {
             checkNotClosed();
-            return N_IsFormControlElement(nativePtr);
+            return isFormControlElement0(nativePtr);
         }
 
         @Override
         public CefDomFormControlType getFormControlElementType() {
             checkNotClosed();
-            return N_GetFormControlElementType(nativePtr);
+            return getFormControlElementType0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefDomNode that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefDomNode");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public Optional<String> getName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetName(nativePtr));
+            return Optional.ofNullable(getName0(nativePtr));
         }
 
         @Override
         public Optional<String> getValue() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetValue(nativePtr));
+            return Optional.ofNullable(getValue0(nativePtr));
         }
 
         @Override
         public boolean setValue(@Nullable String value) {
             checkNotClosed();
-            return N_SetValue(nativePtr, value);
+            return setValue0(nativePtr, value);
         }
 
         @Override
         public Optional<String> getAsMarkup() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAsMarkup(nativePtr));
+            return Optional.ofNullable(getAsMarkup0(nativePtr));
         }
 
         @Override
         public Optional<CefDomDocument> getDocument() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDocument(nativePtr));
+            return Optional.ofNullable(getDocument0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getParent() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetParent(nativePtr));
+            return Optional.ofNullable(getParent0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getPreviousSibling() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPreviousSibling(nativePtr));
+            return Optional.ofNullable(getPreviousSibling0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getNextSibling() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetNextSibling(nativePtr));
+            return Optional.ofNullable(getNextSibling0(nativePtr));
         }
 
         @Override
         public boolean hasChildren() {
             checkNotClosed();
-            return N_HasChildren(nativePtr);
+            return hasChildren0(nativePtr);
         }
 
         @Override
         public Optional<CefDomNode> getFirstChild() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFirstChild(nativePtr));
+            return Optional.ofNullable(getFirstChild0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getLastChild() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLastChild(nativePtr));
+            return Optional.ofNullable(getLastChild0(nativePtr));
         }
 
         @Override
         public Optional<String> getElementTagName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetElementTagName(nativePtr));
+            return Optional.ofNullable(getElementTagName0(nativePtr));
         }
 
         @Override
         public boolean hasElementAttributes() {
             checkNotClosed();
-            return N_HasElementAttributes(nativePtr);
+            return hasElementAttributes0(nativePtr);
         }
 
         @Override
         public boolean hasElementAttribute(@Nullable String attrName) {
             checkNotClosed();
-            return N_HasElementAttribute(nativePtr, attrName);
+            return hasElementAttribute0(nativePtr, attrName);
         }
 
         @Override
         public Optional<String> getElementAttribute(@Nullable String attrName) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetElementAttribute(nativePtr, attrName));
+            return Optional.ofNullable(getElementAttribute0(nativePtr, attrName));
         }
 
         @Override
         public void getElementAttributes(@Nonnull Map<String, String> attrMap) {
             checkNotClosed();
-            N_GetElementAttributes(nativePtr, attrMap);
+            getElementAttributes0(nativePtr, attrMap);
         }
 
         @Override
         public boolean setElementAttribute(@Nullable String attrName, @Nullable String value) {
             checkNotClosed();
-            return N_SetElementAttribute(nativePtr, attrName, value);
+            return setElementAttribute0(nativePtr, attrName, value);
         }
 
         @Override
         public Optional<String> getElementInnerText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetElementInnerText(nativePtr));
+            return Optional.ofNullable(getElementInnerText0(nativePtr));
         }
 
         @Override
         public CefRect getElementBounds() {
             checkNotClosed();
-            return N_GetElementBounds(nativePtr);
+            return getElementBounds0(nativePtr);
         }
 
-        private static native CefDomNodeType N_GetType(long self);
+        private static native CefDomNodeType getType0(long self);
 
-        private static native boolean N_IsText(long self);
+        private static native boolean isText0(long self);
 
-        private static native boolean N_IsElement(long self);
+        private static native boolean isElement0(long self);
 
-        private static native boolean N_IsEditable(long self);
+        private static native boolean isEditable0(long self);
 
-        private static native boolean N_IsFormControlElement(long self);
+        private static native boolean isFormControlElement0(long self);
 
-        private static native CefDomFormControlType N_GetFormControlElementType(long self);
+        private static native CefDomFormControlType getFormControlElementType0(long self);
 
-        private static native boolean N_IsSame(long self, CefDomNode that);
+        private static native boolean isSame0(long self, CefDomNode that);
 
-        private static native String N_GetName(long self);
+        private static native String getName0(long self);
 
-        private static native String N_GetValue(long self);
+        private static native String getValue0(long self);
 
-        private static native boolean N_SetValue(long self, String value);
+        private static native boolean setValue0(long self, String value);
 
-        private static native String N_GetAsMarkup(long self);
+        private static native String getAsMarkup0(long self);
 
-        private static native CefDomDocument N_GetDocument(long self);
+        private static native CefDomDocument getDocument0(long self);
 
-        private static native CefDomNode N_GetParent(long self);
+        private static native CefDomNode getParent0(long self);
 
-        private static native CefDomNode N_GetPreviousSibling(long self);
+        private static native CefDomNode getPreviousSibling0(long self);
 
-        private static native CefDomNode N_GetNextSibling(long self);
+        private static native CefDomNode getNextSibling0(long self);
 
-        private static native boolean N_HasChildren(long self);
+        private static native boolean hasChildren0(long self);
 
-        private static native CefDomNode N_GetFirstChild(long self);
+        private static native CefDomNode getFirstChild0(long self);
 
-        private static native CefDomNode N_GetLastChild(long self);
+        private static native CefDomNode getLastChild0(long self);
 
-        private static native String N_GetElementTagName(long self);
+        private static native String getElementTagName0(long self);
 
-        private static native boolean N_HasElementAttributes(long self);
+        private static native boolean hasElementAttributes0(long self);
 
-        private static native boolean N_HasElementAttribute(long self, String attrName);
+        private static native boolean hasElementAttribute0(long self, String attrName);
 
-        private static native String N_GetElementAttribute(long self, String attrName);
+        private static native String getElementAttribute0(long self, String attrName);
 
-        private static native void N_GetElementAttributes(long self, Map<String, String> attrMap);
+        private static native void getElementAttributes0(long self, Map<String, String> attrMap);
 
-        private static native boolean N_SetElementAttribute(long self, String attrName, String value);
+        private static native boolean setElementAttribute0(long self, String attrName, String value);
 
-        private static native String N_GetElementInnerText(long self);
+        private static native String getElementInnerText0(long self);
 
-        private static native CefRect N_GetElementBounds(long self);
+        private static native CefRect getElementBounds0(long self);
 
         @Override
         public boolean equals(Object obj) {

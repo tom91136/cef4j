@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a DOM document. The methods of this class should only be called on the render process main
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:66</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefDomDocument extends CefLibraryObject {
 
     /**
@@ -214,123 +217,123 @@ public interface CefDomDocument extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefDomDocument 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public CefDomDocumentType getType() {
             checkNotClosed();
-            return N_GetType(nativePtr);
+            return getType0(nativePtr);
         }
 
         @Override
         public Optional<CefDomNode> getDocument() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDocument(nativePtr));
+            return Optional.ofNullable(getDocument0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getBody() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBody(nativePtr));
+            return Optional.ofNullable(getBody0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getHead() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetHead(nativePtr));
+            return Optional.ofNullable(getHead0(nativePtr));
         }
 
         @Override
         public Optional<String> getTitle() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTitle(nativePtr));
+            return Optional.ofNullable(getTitle0(nativePtr));
         }
 
         @Override
         public Optional<CefDomNode> getElementById(@Nullable String id) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetElementById(nativePtr, id));
+            return Optional.ofNullable(getElementById0(nativePtr, id));
         }
 
         @Override
         public Optional<CefDomNode> getFocusedNode() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFocusedNode(nativePtr));
+            return Optional.ofNullable(getFocusedNode0(nativePtr));
         }
 
         @Override
         public boolean hasSelection() {
             checkNotClosed();
-            return N_HasSelection(nativePtr);
+            return hasSelection0(nativePtr);
         }
 
         @Override
         public int getSelectionStartOffset() {
             checkNotClosed();
-            return N_GetSelectionStartOffset(nativePtr);
+            return getSelectionStartOffset0(nativePtr);
         }
 
         @Override
         public int getSelectionEndOffset() {
             checkNotClosed();
-            return N_GetSelectionEndOffset(nativePtr);
+            return getSelectionEndOffset0(nativePtr);
         }
 
         @Override
         public Optional<String> getSelectionAsMarkup() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSelectionAsMarkup(nativePtr));
+            return Optional.ofNullable(getSelectionAsMarkup0(nativePtr));
         }
 
         @Override
         public Optional<String> getSelectionAsText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSelectionAsText(nativePtr));
+            return Optional.ofNullable(getSelectionAsText0(nativePtr));
         }
 
         @Override
         public Optional<String> getBaseUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBaseUrl(nativePtr));
+            return Optional.ofNullable(getBaseUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getCompleteUrl(@Nullable String partialURL) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetCompleteUrl(nativePtr, partialURL));
+            return Optional.ofNullable(getCompleteUrl0(nativePtr, partialURL));
         }
 
-        private static native CefDomDocumentType N_GetType(long self);
+        private static native CefDomDocumentType getType0(long self);
 
-        private static native CefDomNode N_GetDocument(long self);
+        private static native CefDomNode getDocument0(long self);
 
-        private static native CefDomNode N_GetBody(long self);
+        private static native CefDomNode getBody0(long self);
 
-        private static native CefDomNode N_GetHead(long self);
+        private static native CefDomNode getHead0(long self);
 
-        private static native String N_GetTitle(long self);
+        private static native String getTitle0(long self);
 
-        private static native CefDomNode N_GetElementById(long self, String id);
+        private static native CefDomNode getElementById0(long self, String id);
 
-        private static native CefDomNode N_GetFocusedNode(long self);
+        private static native CefDomNode getFocusedNode0(long self);
 
-        private static native boolean N_HasSelection(long self);
+        private static native boolean hasSelection0(long self);
 
-        private static native int N_GetSelectionStartOffset(long self);
+        private static native int getSelectionStartOffset0(long self);
 
-        private static native int N_GetSelectionEndOffset(long self);
+        private static native int getSelectionEndOffset0(long self);
 
-        private static native String N_GetSelectionAsMarkup(long self);
+        private static native String getSelectionAsMarkup0(long self);
 
-        private static native String N_GetSelectionAsText(long self);
+        private static native String getSelectionAsText0(long self);
 
-        private static native String N_GetBaseUrl(long self);
+        private static native String getBaseUrl0(long self);
 
-        private static native String N_GetCompleteUrl(long self, String partialURL);
+        private static native String getCompleteUrl0(long self, String partialURL);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_browser_process_handler_capi.h"
 #include "include/capi/cef_client_capi.h"
@@ -135,8 +135,4 @@ extern "C" cef_browser_process_handler_t* Create_JniCefBrowserProcessHandler(JNI
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_browser_process_handler_t*>(new JniCefBrowserProcessHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefBrowserProcessHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefBrowserProcessHandler(env, obj));
 }

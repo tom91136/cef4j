@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_trace_capi.h"
 #include "jni_util.h"
@@ -36,8 +36,4 @@ extern "C" cef_end_tracing_callback_t* Create_JniCefEndTracingCallback(JNIEnv *e
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_end_tracing_callback_t*>(new JniCefEndTracingCallback(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefEndTracingCallback_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefEndTracingCallback(env, obj));
 }

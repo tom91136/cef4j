@@ -1,49 +1,49 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_download_item_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDownloadItem), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsValid(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsInProgress(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isInProgress0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_in_progress(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsComplete(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isComplete0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_complete(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsCanceled(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isCanceled0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_canceled(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsInterrupted(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isInterrupted0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_interrupted(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetInterruptReason(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getInterruptReason0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     auto _r = s->get_interrupt_reason(s);
@@ -52,31 +52,31 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetCurrentSpeed(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getCurrentSpeed0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_current_speed(s));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetPercentComplete(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefDownloadItem), getPercentComplete0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_percent_complete(s));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetTotalBytes(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getTotalBytes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_total_bytes(s));
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetReceivedBytes(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getReceivedBytes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_received_bytes(s));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetStartTime(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getStartTime0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_start_time(s);
@@ -86,7 +86,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetEndTime(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getEndTime0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_end_time(s);
@@ -96,7 +96,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return _dsResult;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetFullPath(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getFullPath0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_full_path(s);
@@ -106,13 +106,13 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetId(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefDownloadItem), getId0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_id(s));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_url(s);
@@ -122,7 +122,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetOriginalUrl(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getOriginalUrl0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_original_url(s);
@@ -132,7 +132,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetSuggestedFileName(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getSuggestedFileName0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_suggested_file_name(s);
@@ -142,7 +142,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetContentDisposition(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getContentDisposition0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_content_disposition(s);
@@ -152,7 +152,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1GetMimeType(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDownloadItem), getMimeType0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_mime_type(s);
@@ -162,7 +162,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefDownloadItem_00024NativePeer_N_1IsPaused(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDownloadItem), isPaused0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_paused(s);

@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to read data from a stream. The methods of this class may be called on any thread.
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:84</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefStreamReader extends CefLibraryObject {
 
     /**
@@ -95,7 +98,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:194</a>
      */
     static Optional<CefStreamReader> createForFile(@Nullable String fileName) {
-        return Optional.ofNullable(NativePeer.N_CreateForFile(fileName));
+        return Optional.ofNullable(NativePeer.createForFile0(fileName));
     }
 
     /**
@@ -108,7 +111,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:97</a>
      */
     static Optional<CefStreamReader> createForData(@Nonnull ByteBuffer data) {
-        return Optional.ofNullable(NativePeer.N_CreateForData(data));
+        return Optional.ofNullable(NativePeer.createForData0(data));
     }
 
     /**
@@ -121,7 +124,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:199</a>
      */
     static Optional<CefStreamReader> createForHandler(@Nullable CefReadHandler handler) {
-        return Optional.ofNullable(NativePeer.N_CreateForHandler(handler));
+        return Optional.ofNullable(NativePeer.createForHandler0(handler));
     }
 
     final class NativePeer implements CefStreamReader, AutoCloseable {
@@ -161,57 +164,57 @@ public interface CefStreamReader extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefStreamReader 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public long read(@Nonnull ByteBuffer ptr, long n) {
             checkNotClosed();
-            return N_Read(nativePtr, ptr, n);
+            return read0(nativePtr, ptr, n);
         }
 
         @Override
         public int seek(long offset, int whence) {
             checkNotClosed();
-            return N_Seek(nativePtr, offset, whence);
+            return seek0(nativePtr, offset, whence);
         }
 
         @Override
         public long tell() {
             checkNotClosed();
-            return N_Tell(nativePtr);
+            return tell0(nativePtr);
         }
 
         @Override
         public int eof() {
             checkNotClosed();
-            return N_Eof(nativePtr);
+            return eof0(nativePtr);
         }
 
         @Override
         public boolean mayBlock() {
             checkNotClosed();
-            return N_MayBlock(nativePtr);
+            return mayBlock0(nativePtr);
         }
 
-        private static native long N_Read(long self, ByteBuffer ptr, long n);
+        private static native long read0(long self, ByteBuffer ptr, long n);
 
-        private static native int N_Seek(long self, long offset, int whence);
+        private static native int seek0(long self, long offset, int whence);
 
-        private static native long N_Tell(long self);
+        private static native long tell0(long self);
 
-        private static native int N_Eof(long self);
+        private static native int eof0(long self);
 
-        private static native boolean N_MayBlock(long self);
+        private static native boolean mayBlock0(long self);
 
-        static native CefStreamReader N_CreateForFile(String fileName);
+        static native CefStreamReader createForFile0(String fileName);
 
-        static native CefStreamReader N_CreateForData(ByteBuffer data);
+        static native CefStreamReader createForData0(ByteBuffer data);
 
-        static native CefStreamReader N_CreateForHandler(CefReadHandler handler);
+        static native CefStreamReader createForHandler0(CefReadHandler handler);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to write data to a stream. The methods of this class may be called on any thread.
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:187</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefStreamWriter extends CefLibraryObject {
 
     /**
@@ -96,7 +99,7 @@ public interface CefStreamWriter extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:194</a>
      */
     static Optional<CefStreamWriter> createForFile(@Nullable String fileName) {
-        return Optional.ofNullable(NativePeer.N_CreateForFile(fileName));
+        return Optional.ofNullable(NativePeer.createForFile0(fileName));
     }
 
     /**
@@ -109,7 +112,7 @@ public interface CefStreamWriter extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:199</a>
      */
     static Optional<CefStreamWriter> createForHandler(@Nullable CefWriteHandler handler) {
-        return Optional.ofNullable(NativePeer.N_CreateForHandler(handler));
+        return Optional.ofNullable(NativePeer.createForHandler0(handler));
     }
 
     final class NativePeer implements CefStreamWriter, AutoCloseable {
@@ -149,55 +152,55 @@ public interface CefStreamWriter extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefStreamWriter 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public long write(@Nonnull ByteBuffer ptr, long n) {
             checkNotClosed();
-            return N_Write(nativePtr, ptr, n);
+            return write0(nativePtr, ptr, n);
         }
 
         @Override
         public int seek(long offset, int whence) {
             checkNotClosed();
-            return N_Seek(nativePtr, offset, whence);
+            return seek0(nativePtr, offset, whence);
         }
 
         @Override
         public long tell() {
             checkNotClosed();
-            return N_Tell(nativePtr);
+            return tell0(nativePtr);
         }
 
         @Override
         public int flush() {
             checkNotClosed();
-            return N_Flush(nativePtr);
+            return flush0(nativePtr);
         }
 
         @Override
         public boolean mayBlock() {
             checkNotClosed();
-            return N_MayBlock(nativePtr);
+            return mayBlock0(nativePtr);
         }
 
-        private static native long N_Write(long self, ByteBuffer ptr, long n);
+        private static native long write0(long self, ByteBuffer ptr, long n);
 
-        private static native int N_Seek(long self, long offset, int whence);
+        private static native int seek0(long self, long offset, int whence);
 
-        private static native long N_Tell(long self);
+        private static native long tell0(long self);
 
-        private static native int N_Flush(long self);
+        private static native int flush0(long self);
 
-        private static native boolean N_MayBlock(long self);
+        private static native boolean mayBlock0(long self);
 
-        static native CefStreamWriter N_CreateForFile(String fileName);
+        static native CefStreamWriter createForFile0(String fileName);
 
-        static native CefStreamWriter N_CreateForHandler(CefWriteHandler handler);
+        static native CefStreamWriter createForHandler0(CefWriteHandler handler);
 
         @Override
         public boolean equals(Object obj) {

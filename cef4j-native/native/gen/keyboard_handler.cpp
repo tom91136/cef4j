@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_keyboard_handler_capi.h"
 #include "include/capi/cef_browser_capi.h"
@@ -33,7 +33,17 @@ struct JniCefKeyboardHandler: public cef_keyboard_handler_t {
         auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
         auto j_event_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
-        auto j_event = event ? env->NewObject(j_event_cls, j_event_ctor, _bv_event_type, static_cast<jint>(event->modifiers), static_cast<jint>(event->windows_key_code), static_cast<jint>(event->native_key_code), static_cast<jint>(event->is_system_key), static_cast<jchar>(event->character), static_cast<jchar>(event->unmodified_character), static_cast<jint>(event->focus_on_editable_field)) : nullptr;
+        auto j_event = event
+        ? env->NewObject(j_event_cls, j_event_ctor,
+                _bv_event_type,
+                static_cast<jint>(event->modifiers),
+                static_cast<jint>(event->windows_key_code),
+                static_cast<jint>(event->native_key_code),
+                static_cast<jint>(event->is_system_key),
+                static_cast<jchar>(event->character),
+                static_cast<jchar>(event->unmodified_character),
+                static_cast<jint>(event->focus_on_editable_field))
+        : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         jintArray j_is_keyboard_shortcut = env->NewIntArray(1);
         if (is_keyboard_shortcut) {jint _v = *is_keyboard_shortcut; env->SetIntArrayRegion(j_is_keyboard_shortcut, 0, 1, &_v);}
@@ -61,7 +71,17 @@ struct JniCefKeyboardHandler: public cef_keyboard_handler_t {
         auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
         auto j_event_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
-        auto j_event = event ? env->NewObject(j_event_cls, j_event_ctor, _bv_event_type, static_cast<jint>(event->modifiers), static_cast<jint>(event->windows_key_code), static_cast<jint>(event->native_key_code), static_cast<jint>(event->is_system_key), static_cast<jchar>(event->character), static_cast<jchar>(event->unmodified_character), static_cast<jint>(event->focus_on_editable_field)) : nullptr;
+        auto j_event = event
+        ? env->NewObject(j_event_cls, j_event_ctor,
+                _bv_event_type,
+                static_cast<jint>(event->modifiers),
+                static_cast<jint>(event->windows_key_code),
+                static_cast<jint>(event->native_key_code),
+                static_cast<jint>(event->is_system_key),
+                static_cast<jchar>(event->character),
+                static_cast<jchar>(event->unmodified_character),
+                static_cast<jint>(event->focus_on_editable_field))
+        : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onKeyEvent", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefKeyEvent;J)Z");
@@ -78,8 +98,4 @@ extern "C" cef_keyboard_handler_t* Create_JniCefKeyboardHandler(JNIEnv *env, job
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_keyboard_handler_t*>(new JniCefKeyboardHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefKeyboardHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefKeyboardHandler(env, obj));
 }

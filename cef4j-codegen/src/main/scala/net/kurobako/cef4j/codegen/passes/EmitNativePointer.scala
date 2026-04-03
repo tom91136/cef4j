@@ -3,16 +3,20 @@ package net.kurobako.cef4j.codegen.passes
 import java.nio.file.Files
 import java.nio.file.Path
 
+import net.kurobako.cef4j.codegen.Banners
+
 object EmitNativePointer {
   def apply(outJava: Path, javaPackage: String): Unit = {
     val content =
-      s"""// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+      s"""${Banners.java}
 package $javaPackage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
+import ${Banners.javaAnnotationClass};
 
 /** Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with caution. */
+${Banners.javaAnnotation}
 public class NativePointer {
 
     public final long address;

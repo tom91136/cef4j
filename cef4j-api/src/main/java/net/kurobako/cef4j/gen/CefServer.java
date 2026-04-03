@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing a server that supports HTTP and WebSocket requests. Server capacity is limited and is intended to
@@ -22,6 +24,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:50</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefServer extends CefLibraryObject {
 
     /**
@@ -238,7 +241,7 @@ public interface CefServer extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static void create(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler) {
-        NativePeer.N_Create(address, port, backlog, handler);
+        NativePeer.create0(address, port, backlog, handler);
     }
 
     final class NativePeer implements CefServer, AutoCloseable {
@@ -278,64 +281,64 @@ public interface CefServer extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefServer 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefTaskRunner> getTaskRunner() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetTaskRunner(nativePtr));
+            return Optional.ofNullable(getTaskRunner0(nativePtr));
         }
 
         @Override
         public void shutdown() {
             checkNotClosed();
-            N_Shutdown(nativePtr);
+            shutdown0(nativePtr);
         }
 
         @Override
         public boolean isRunning() {
             checkNotClosed();
-            return N_IsRunning(nativePtr);
+            return isRunning0(nativePtr);
         }
 
         @Override
         public Optional<String> getAddress() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetAddress(nativePtr));
+            return Optional.ofNullable(getAddress0(nativePtr));
         }
 
         @Override
         public boolean hasConnection() {
             checkNotClosed();
-            return N_HasConnection(nativePtr);
+            return hasConnection0(nativePtr);
         }
 
         @Override
         public boolean isValidConnection(int connectionId) {
             checkNotClosed();
-            return N_IsValidConnection(nativePtr, connectionId);
+            return isValidConnection0(nativePtr, connectionId);
         }
 
         @Override
         public void sendHttp200response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data) {
             checkNotClosed();
-            N_SendHttp200response(nativePtr, connectionId, contentType, data);
+            sendHttp200response0(nativePtr, connectionId, contentType, data);
         }
 
         @Override
         public void sendHttp404response(int connectionId) {
             checkNotClosed();
-            N_SendHttp404response(nativePtr, connectionId);
+            sendHttp404response0(nativePtr, connectionId);
         }
 
         @Override
         public void sendHttp500response(int connectionId, @Nullable String errorMessage) {
             checkNotClosed();
-            N_SendHttp500response(nativePtr, connectionId, errorMessage);
+            sendHttp500response0(nativePtr, connectionId, errorMessage);
         }
 
         @Override
@@ -346,47 +349,47 @@ public interface CefServer extends CefLibraryObject {
                 long contentLength,
                 @Nullable Map<String, List<String>> extraHeaders) {
             checkNotClosed();
-            N_SendHttpResponse(nativePtr, connectionId, responseCode, contentType, contentLength, extraHeaders);
+            sendHttpResponse0(nativePtr, connectionId, responseCode, contentType, contentLength, extraHeaders);
         }
 
         @Override
         public void sendRawData(int connectionId, @Nonnull ByteBuffer data) {
             checkNotClosed();
-            N_SendRawData(nativePtr, connectionId, data);
+            sendRawData0(nativePtr, connectionId, data);
         }
 
         @Override
         public void closeConnection(int connectionId) {
             checkNotClosed();
-            N_CloseConnection(nativePtr, connectionId);
+            closeConnection0(nativePtr, connectionId);
         }
 
         @Override
         public void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data) {
             checkNotClosed();
-            N_SendWebSocketMessage(nativePtr, connectionId, data);
+            sendWebSocketMessage0(nativePtr, connectionId, data);
         }
 
-        private static native CefTaskRunner N_GetTaskRunner(long self);
+        private static native CefTaskRunner getTaskRunner0(long self);
 
-        private static native void N_Shutdown(long self);
+        private static native void shutdown0(long self);
 
-        private static native boolean N_IsRunning(long self);
+        private static native boolean isRunning0(long self);
 
-        private static native String N_GetAddress(long self);
+        private static native String getAddress0(long self);
 
-        private static native boolean N_HasConnection(long self);
+        private static native boolean hasConnection0(long self);
 
-        private static native boolean N_IsValidConnection(long self, int connectionId);
+        private static native boolean isValidConnection0(long self, int connectionId);
 
-        private static native void N_SendHttp200response(
+        private static native void sendHttp200response0(
                 long self, int connectionId, String contentType, ByteBuffer data);
 
-        private static native void N_SendHttp404response(long self, int connectionId);
+        private static native void sendHttp404response0(long self, int connectionId);
 
-        private static native void N_SendHttp500response(long self, int connectionId, String errorMessage);
+        private static native void sendHttp500response0(long self, int connectionId, String errorMessage);
 
-        private static native void N_SendHttpResponse(
+        private static native void sendHttpResponse0(
                 long self,
                 int connectionId,
                 int responseCode,
@@ -394,13 +397,13 @@ public interface CefServer extends CefLibraryObject {
                 long contentLength,
                 Map<String, List<String>> extraHeaders);
 
-        private static native void N_SendRawData(long self, int connectionId, ByteBuffer data);
+        private static native void sendRawData0(long self, int connectionId, ByteBuffer data);
 
-        private static native void N_CloseConnection(long self, int connectionId);
+        private static native void closeConnection0(long self, int connectionId);
 
-        private static native void N_SendWebSocketMessage(long self, int connectionId, ByteBuffer data);
+        private static native void sendWebSocketMessage0(long self, int connectionId, ByteBuffer data);
 
-        static native void N_Create(String address, int port, int backlog, CefServerHandler handler);
+        static native void create0(String address, int port, int backlog, CefServerHandler handler);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Callback interface used for asynchronous continuation of JavaScript dialog requests.
@@ -16,6 +18,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefJsDialogCallback extends CefLibraryObject {
 
     /**
@@ -71,19 +74,19 @@ public interface CefJsDialogCallback extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefJsDialogCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void cont(int success, @Nullable String userInput) {
             checkNotClosed();
-            N_Cont(nativePtr, success, userInput);
+            cont0(nativePtr, success, userInput);
         }
 
-        private static native void N_Cont(long self, int success, String userInput);
+        private static native void cont0(long self, int success, String userInput);
 
         @Override
         public boolean equals(Object obj) {

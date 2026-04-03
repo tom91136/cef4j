@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_render_handler_capi.h"
 #include "include/capi/cef_accessibility_handler_capi.h"
@@ -79,7 +79,12 @@ struct JniCefRenderHandler: public cef_render_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_rect);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
-        if (rect && j_rect) {rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I"))); rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I"))); rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I"))); rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));}
+        if (rect && j_rect) {
+            rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I")));
+            rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I")));
+            rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I")));
+            rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));
+        }
         env->PopLocalFrame(nullptr);
         return jResult;
     }
@@ -101,7 +106,12 @@ struct JniCefRenderHandler: public cef_render_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_rect);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
-        if (rect && j_rect) {rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I"))); rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I"))); rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I"))); rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));}
+        if (rect && j_rect) {
+            rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I")));
+            rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I")));
+            rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I")));
+            rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));
+        }
         env->PopLocalFrame(nullptr);
     }
 
@@ -132,7 +142,7 @@ struct JniCefRenderHandler: public cef_render_handler_t {
     static int CEF_CALLBACK _get_screen_info(cef_render_handler_t* self, struct _cef_browser_t* browser, cef_screen_info_t* screen_info) {
         auto* h = reinterpret_cast<JniCefRenderHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(17) < 0) {return false;}
+        if (env->PushLocalFrame(21) < 0) {return false;}
         cef_browser_t* _p_browser = browser;
         if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -146,14 +156,43 @@ struct JniCefRenderHandler: public cef_render_handler_t {
         auto _bv_screen_info_available_rect = env->NewObject(_bv_screen_info_available_rect_cls, _bv_screen_info_available_rect_ctor, static_cast<jint>(screen_info->available_rect.x), static_cast<jint>(screen_info->available_rect.y), static_cast<jint>(screen_info->available_rect.width), static_cast<jint>(screen_info->available_rect.height));
         auto j_screen_info_cls = env->FindClass("net/kurobako/cef4j/gen/CefScreenInfo$Mutable");
         auto j_screen_info_ctor = env->GetMethodID(j_screen_info_cls, "<init>", "(FIIILnet/kurobako/cef4j/gen/CefRect;Lnet/kurobako/cef4j/gen/CefRect;)V");
-        auto j_screen_info = screen_info ? env->NewObject(j_screen_info_cls, j_screen_info_ctor, static_cast<jfloat>(screen_info->device_scale_factor), static_cast<jint>(screen_info->depth), static_cast<jint>(screen_info->depth_per_component), static_cast<jint>(screen_info->is_monochrome), _bv_screen_info_rect, _bv_screen_info_available_rect) : nullptr;
+        auto j_screen_info = screen_info
+        ? env->NewObject(j_screen_info_cls, j_screen_info_ctor,
+                static_cast<jfloat>(screen_info->device_scale_factor),
+                static_cast<jint>(screen_info->depth),
+                static_cast<jint>(screen_info->depth_per_component),
+                static_cast<jint>(screen_info->is_monochrome),
+                _bv_screen_info_rect,
+                _bv_screen_info_available_rect)
+        : nullptr;
         if (j_screen_info) env->SetLongField(j_screen_info, env->GetFieldID(j_screen_info_cls, "size", "J"), static_cast<jlong>(screen_info->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "getScreenInfo", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefScreenInfo$Mutable;)Z");
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_screen_info);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
-        if (screen_info && j_screen_info) {screen_info->device_scale_factor = static_cast<decltype(screen_info->device_scale_factor)>(env->GetFloatField(j_screen_info, env->GetFieldID(j_screen_info_cls, "deviceScaleFactor", "F"))); screen_info->depth = static_cast<decltype(screen_info->depth)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "depth", "I"))); screen_info->depth_per_component = static_cast<decltype(screen_info->depth_per_component)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "depthPerComponent", "I"))); screen_info->is_monochrome = static_cast<decltype(screen_info->is_monochrome)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "isMonochrome", "I"))); auto _wb_rect = env->GetObjectField(j_screen_info, env->GetFieldID(j_screen_info_cls, "rect", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_wb_rect) {auto _wb_rectc = env->GetObjectClass(_wb_rect); screen_info->rect.x = static_cast<decltype(screen_info->rect.x)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "x", "I"))); screen_info->rect.y = static_cast<decltype(screen_info->rect.y)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "y", "I"))); screen_info->rect.width = static_cast<decltype(screen_info->rect.width)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "width", "I"))); screen_info->rect.height = static_cast<decltype(screen_info->rect.height)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "height", "I")));}auto _wb_available_rect = env->GetObjectField(j_screen_info, env->GetFieldID(j_screen_info_cls, "availableRect", "Lnet/kurobako/cef4j/gen/CefRect;")); if (_wb_available_rect) {auto _wb_available_rectc = env->GetObjectClass(_wb_available_rect); screen_info->available_rect.x = static_cast<decltype(screen_info->available_rect.x)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "x", "I"))); screen_info->available_rect.y = static_cast<decltype(screen_info->available_rect.y)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "y", "I"))); screen_info->available_rect.width = static_cast<decltype(screen_info->available_rect.width)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "width", "I"))); screen_info->available_rect.height = static_cast<decltype(screen_info->available_rect.height)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "height", "I")));}}
+        if (screen_info && j_screen_info) {
+            screen_info->device_scale_factor = static_cast<decltype(screen_info->device_scale_factor)>(env->GetFloatField(j_screen_info, env->GetFieldID(j_screen_info_cls, "deviceScaleFactor", "F")));
+            screen_info->depth = static_cast<decltype(screen_info->depth)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "depth", "I")));
+            screen_info->depth_per_component = static_cast<decltype(screen_info->depth_per_component)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "depthPerComponent", "I")));
+            screen_info->is_monochrome = static_cast<decltype(screen_info->is_monochrome)>(env->GetIntField(j_screen_info, env->GetFieldID(j_screen_info_cls, "isMonochrome", "I")));
+            auto _wb_rect = env->GetObjectField(j_screen_info, env->GetFieldID(j_screen_info_cls, "rect", "Lnet/kurobako/cef4j/gen/CefRect;"));
+            if (_wb_rect) {
+                auto _wb_rectc = env->GetObjectClass(_wb_rect);
+                screen_info->rect.x = static_cast<decltype(screen_info->rect.x)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "x", "I")));
+                screen_info->rect.y = static_cast<decltype(screen_info->rect.y)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "y", "I")));
+                screen_info->rect.width = static_cast<decltype(screen_info->rect.width)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "width", "I")));
+                screen_info->rect.height = static_cast<decltype(screen_info->rect.height)>(env->GetIntField(_wb_rect, env->GetFieldID(_wb_rectc, "height", "I")));
+            }
+            auto _wb_available_rect = env->GetObjectField(j_screen_info, env->GetFieldID(j_screen_info_cls, "availableRect", "Lnet/kurobako/cef4j/gen/CefRect;"));
+            if (_wb_available_rect) {
+                auto _wb_available_rectc = env->GetObjectClass(_wb_available_rect);
+                screen_info->available_rect.x = static_cast<decltype(screen_info->available_rect.x)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "x", "I")));
+                screen_info->available_rect.y = static_cast<decltype(screen_info->available_rect.y)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "y", "I")));
+                screen_info->available_rect.width = static_cast<decltype(screen_info->available_rect.width)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "width", "I")));
+                screen_info->available_rect.height = static_cast<decltype(screen_info->available_rect.height)>(env->GetIntField(_wb_available_rect, env->GetFieldID(_wb_available_rectc, "height", "I")));
+            }
+        }
         env->PopLocalFrame(nullptr);
         return jResult;
     }
@@ -278,7 +317,10 @@ struct JniCefRenderHandler: public cef_render_handler_t {
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_orientation, j_size);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
-        if (size && j_size) {size->width = static_cast<decltype(size->width)>(env->GetIntField(j_size, env->GetFieldID(j_size_cls, "width", "I"))); size->height = static_cast<decltype(size->height)>(env->GetIntField(j_size, env->GetFieldID(j_size_cls, "height", "I")));}
+        if (size && j_size) {
+            size->width = static_cast<decltype(size->width)>(env->GetIntField(j_size, env->GetFieldID(j_size_cls, "width", "I")));
+            size->height = static_cast<decltype(size->height)>(env->GetIntField(j_size, env->GetFieldID(j_size_cls, "height", "I")));
+        }
         env->PopLocalFrame(nullptr);
     }
 
@@ -299,7 +341,17 @@ struct JniCefRenderHandler: public cef_render_handler_t {
         auto _bv_state_origin = env->NewObject(_bv_state_origin_cls, _bv_state_origin_ctor, static_cast<jint>(state->origin.x), static_cast<jint>(state->origin.y));
         auto j_state_cls = env->FindClass("net/kurobako/cef4j/gen/CefTouchHandleState");
         auto j_state_ctor = env->GetMethodID(j_state_cls, "<init>", "(IIILnet/kurobako/cef4j/gen/CefHorizontalAlignment;IILnet/kurobako/cef4j/gen/CefPoint;F)V");
-        auto j_state = state ? env->NewObject(j_state_cls, j_state_ctor, static_cast<jint>(state->touch_handle_id), static_cast<jint>(state->flags), static_cast<jint>(state->enabled), _bv_state_orientation, static_cast<jint>(state->mirror_vertical), static_cast<jint>(state->mirror_horizontal), _bv_state_origin, static_cast<jfloat>(state->alpha)) : nullptr;
+        auto j_state = state
+        ? env->NewObject(j_state_cls, j_state_ctor,
+                static_cast<jint>(state->touch_handle_id),
+                static_cast<jint>(state->flags),
+                static_cast<jint>(state->enabled),
+                _bv_state_orientation,
+                static_cast<jint>(state->mirror_vertical),
+                static_cast<jint>(state->mirror_horizontal),
+                _bv_state_origin,
+                static_cast<jfloat>(state->alpha))
+        : nullptr;
         if (j_state) env->SetLongField(j_state, env->GetFieldID(j_state_cls, "size", "J"), static_cast<jlong>(state->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onTouchHandleStateChanged", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefTouchHandleState;)V");
@@ -448,8 +500,4 @@ extern "C" cef_render_handler_t* Create_JniCefRenderHandler(JNIEnv *env, jobject
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_render_handler_t*>(new JniCefRenderHandler(jvm, globalRef));
-}
-
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefRenderHandler_1N_N_1Create(JNIEnv* env, jobject obj) {
-    return reinterpret_cast<jlong>(Create_JniCefRenderHandler(env, obj));
 }

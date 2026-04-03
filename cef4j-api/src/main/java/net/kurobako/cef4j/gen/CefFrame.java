@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a frame in the browser window. When used in the browser process the methods of this class may
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:53</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefFrame extends CefLibraryObject {
 
     /**
@@ -379,155 +382,155 @@ public interface CefFrame extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefFrame 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public void undo() {
             checkNotClosed();
-            N_Undo(nativePtr);
+            undo0(nativePtr);
         }
 
         @Override
         public void redo() {
             checkNotClosed();
-            N_Redo(nativePtr);
+            redo0(nativePtr);
         }
 
         @Override
         public void cut() {
             checkNotClosed();
-            N_Cut(nativePtr);
+            cut0(nativePtr);
         }
 
         @Override
         public void copy() {
             checkNotClosed();
-            N_Copy(nativePtr);
+            copy0(nativePtr);
         }
 
         @Override
         public void paste() {
             checkNotClosed();
-            N_Paste(nativePtr);
+            paste0(nativePtr);
         }
 
         @Override
         public void pasteAndMatchStyle() {
             checkNotClosed();
-            N_PasteAndMatchStyle(nativePtr);
+            pasteAndMatchStyle0(nativePtr);
         }
 
         @Override
         public void del() {
             checkNotClosed();
-            N_Del(nativePtr);
+            del0(nativePtr);
         }
 
         @Override
         public void selectAll() {
             checkNotClosed();
-            N_SelectAll(nativePtr);
+            selectAll0(nativePtr);
         }
 
         @Override
         public void viewSource() {
             checkNotClosed();
-            N_ViewSource(nativePtr);
+            viewSource0(nativePtr);
         }
 
         @Override
         public void getSource(@Nullable CefStringVisitor visitor) {
             checkNotClosed();
-            N_GetSource(nativePtr, visitor);
+            getSource0(nativePtr, visitor);
         }
 
         @Override
         public void getText(@Nullable CefStringVisitor visitor) {
             checkNotClosed();
-            N_GetText(nativePtr, visitor);
+            getText0(nativePtr, visitor);
         }
 
         @Override
         public void loadRequest(@Nullable CefRequest request) {
             checkNotClosed();
             CefLibraryObject.requireOpen(request, "CefRequest");
-            N_LoadRequest(nativePtr, request);
+            loadRequest0(nativePtr, request);
         }
 
         @Override
         public void loadUrl(@Nullable String url) {
             checkNotClosed();
-            N_LoadUrl(nativePtr, url);
+            loadUrl0(nativePtr, url);
         }
 
         @Override
         public void executeJavaScript(@Nullable String code, @Nullable String scriptUrl, int startLine) {
             checkNotClosed();
-            N_ExecuteJavaScript(nativePtr, code, scriptUrl, startLine);
+            executeJavaScript0(nativePtr, code, scriptUrl, startLine);
         }
 
         @Override
         public boolean isMain() {
             checkNotClosed();
-            return N_IsMain(nativePtr);
+            return isMain0(nativePtr);
         }
 
         @Override
         public boolean isFocused() {
             checkNotClosed();
-            return N_IsFocused(nativePtr);
+            return isFocused0(nativePtr);
         }
 
         @Override
         public Optional<String> getName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetName(nativePtr));
+            return Optional.ofNullable(getName0(nativePtr));
         }
 
         @Override
         public Optional<String> getIdentifier() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetIdentifier(nativePtr));
+            return Optional.ofNullable(getIdentifier0(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getParent() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetParent(nativePtr));
+            return Optional.ofNullable(getParent0(nativePtr));
         }
 
         @Override
         public Optional<String> getUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUrl(nativePtr));
+            return Optional.ofNullable(getUrl0(nativePtr));
         }
 
         @Override
         public Optional<CefBrowser> getBrowser() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetBrowser(nativePtr));
+            return Optional.ofNullable(getBrowser0(nativePtr));
         }
 
         @Override
         public Optional<CefV8Context> getV8context() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetV8context(nativePtr));
+            return Optional.ofNullable(getV8context0(nativePtr));
         }
 
         @Override
         public void visitDom(@Nullable CefDomVisitor visitor) {
             checkNotClosed();
-            N_VisitDom(nativePtr, visitor);
+            visitDom0(nativePtr, visitor);
         }
 
         @Override
@@ -535,68 +538,68 @@ public interface CefFrame extends CefLibraryObject {
                 @Nullable CefRequest request, @Nullable CefUrlRequestClient client) {
             checkNotClosed();
             CefLibraryObject.requireOpen(request, "CefRequest");
-            return Optional.ofNullable(N_CreateUrlRequest(nativePtr, request, client));
+            return Optional.ofNullable(createUrlRequest0(nativePtr, request, client));
         }
 
         @Override
         public void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message) {
             checkNotClosed();
             CefLibraryObject.requireOpen(message, "CefProcessMessage");
-            N_SendProcessMessage(nativePtr, targetProcess, message);
+            sendProcessMessage0(nativePtr, targetProcess, message);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native void N_Undo(long self);
+        private static native void undo0(long self);
 
-        private static native void N_Redo(long self);
+        private static native void redo0(long self);
 
-        private static native void N_Cut(long self);
+        private static native void cut0(long self);
 
-        private static native void N_Copy(long self);
+        private static native void copy0(long self);
 
-        private static native void N_Paste(long self);
+        private static native void paste0(long self);
 
-        private static native void N_PasteAndMatchStyle(long self);
+        private static native void pasteAndMatchStyle0(long self);
 
-        private static native void N_Del(long self);
+        private static native void del0(long self);
 
-        private static native void N_SelectAll(long self);
+        private static native void selectAll0(long self);
 
-        private static native void N_ViewSource(long self);
+        private static native void viewSource0(long self);
 
-        private static native void N_GetSource(long self, CefStringVisitor visitor);
+        private static native void getSource0(long self, CefStringVisitor visitor);
 
-        private static native void N_GetText(long self, CefStringVisitor visitor);
+        private static native void getText0(long self, CefStringVisitor visitor);
 
-        private static native void N_LoadRequest(long self, CefRequest request);
+        private static native void loadRequest0(long self, CefRequest request);
 
-        private static native void N_LoadUrl(long self, String url);
+        private static native void loadUrl0(long self, String url);
 
-        private static native void N_ExecuteJavaScript(long self, String code, String scriptUrl, int startLine);
+        private static native void executeJavaScript0(long self, String code, String scriptUrl, int startLine);
 
-        private static native boolean N_IsMain(long self);
+        private static native boolean isMain0(long self);
 
-        private static native boolean N_IsFocused(long self);
+        private static native boolean isFocused0(long self);
 
-        private static native String N_GetName(long self);
+        private static native String getName0(long self);
 
-        private static native String N_GetIdentifier(long self);
+        private static native String getIdentifier0(long self);
 
-        private static native CefFrame N_GetParent(long self);
+        private static native CefFrame getParent0(long self);
 
-        private static native String N_GetUrl(long self);
+        private static native String getUrl0(long self);
 
-        private static native CefBrowser N_GetBrowser(long self);
+        private static native CefBrowser getBrowser0(long self);
 
-        private static native CefV8Context N_GetV8context(long self);
+        private static native CefV8Context getV8context0(long self);
 
-        private static native void N_VisitDom(long self, CefDomVisitor visitor);
+        private static native void visitDom0(long self, CefDomVisitor visitor);
 
-        private static native CefUrlRequest N_CreateUrlRequest(
+        private static native CefUrlRequest createUrlRequest0(
                 long self, CefRequest request, CefUrlRequestClient client);
 
-        private static native void N_SendProcessMessage(
+        private static native void sendProcessMessage0(
                 long self, CefProcessId targetProcess, CefProcessMessage message);
 
         @Override

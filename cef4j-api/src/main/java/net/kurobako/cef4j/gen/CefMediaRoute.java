@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 /**
  * Represents the route between a media source and sink. Instances of this object are created via
@@ -20,6 +22,7 @@ import javax.annotation.Nonnull;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:158</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMediaRoute extends CefLibraryObject {
 
     /**
@@ -123,51 +126,51 @@ public interface CefMediaRoute extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMediaRoute 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getId() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetId(nativePtr));
+            return Optional.ofNullable(getId0(nativePtr));
         }
 
         @Override
         public Optional<CefMediaSource> getSource() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSource(nativePtr));
+            return Optional.ofNullable(getSource0(nativePtr));
         }
 
         @Override
         public Optional<CefMediaSink> getSink() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSink(nativePtr));
+            return Optional.ofNullable(getSink0(nativePtr));
         }
 
         @Override
         public void sendRouteMessage(@Nonnull ByteBuffer message) {
             checkNotClosed();
-            N_SendRouteMessage(nativePtr, message);
+            sendRouteMessage0(nativePtr, message);
         }
 
         @Override
         public void terminate() {
             checkNotClosed();
-            N_Terminate(nativePtr);
+            terminate0(nativePtr);
         }
 
-        private static native String N_GetId(long self);
+        private static native String getId0(long self);
 
-        private static native CefMediaSource N_GetSource(long self);
+        private static native CefMediaSource getSource0(long self);
 
-        private static native CefMediaSink N_GetSink(long self);
+        private static native CefMediaSink getSink0(long self);
 
-        private static native void N_SendRouteMessage(long self, ByteBuffer message);
+        private static native void sendRouteMessage0(long self, ByteBuffer message);
 
-        private static native void N_Terminate(long self);
+        private static native void terminate0(long self);
 
         @Override
         public boolean equals(Object obj) {

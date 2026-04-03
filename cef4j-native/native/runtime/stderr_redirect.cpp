@@ -2,11 +2,12 @@
 // for the read end. This allows Java to capture CEF's native log output (and
 // subprocess stderr, which inherits the redirected fd) and route it through SLF4J.
 //
-// N_RedirectStderr returns a two-element jobjectArray:
+// redirectStderr0 returns a two-element jobjectArray:
 //   [0] = FileInputStream for the pipe read end (CEF native stderr)
 //   [1] = FileOutputStream for the original stderr (so Java can reassign System.err)
 
-#include <jni.h>
+#include "jni_util.h"
+#include "runtime_stubs.gen.h"
 
 #if !defined(_WIN32)
 #include <signal.h>
@@ -40,8 +41,7 @@ static jobject makeFdObject(JNIEnv* env, int fd) {
     return fdObj;
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL
-Java_net_kurobako_cef4j_NativeStderr_N_1RedirectStderr(JNIEnv* env, jclass) {
+CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jclass) {
     // Save original stderr before redirect
     int savedStderr = dup(STDERR_FILENO);
     if (savedStderr < 0) return nullptr;
@@ -134,8 +134,7 @@ static jobject makeFdObject(JNIEnv* env, int fd) {
     return fdObj;
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL
-Java_net_kurobako_cef4j_NativeStderr_N_1RedirectStderr(JNIEnv* env, jclass) {
+CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jclass) {
     // Save original stderr before redirect
     int savedStderr = _dup(_fileno(stderr));
     if (savedStderr < 0) return nullptr;

@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 exception. The functions of this structure may be called on any render process thread.
@@ -16,6 +18,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:310</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Exception extends CefLibraryObject {
 
     /**
@@ -143,75 +146,75 @@ public interface CefV8Exception extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Exception 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getMessage() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMessage(nativePtr));
+            return Optional.ofNullable(getMessage0(nativePtr));
         }
 
         @Override
         public Optional<String> getSourceLine() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSourceLine(nativePtr));
+            return Optional.ofNullable(getSourceLine0(nativePtr));
         }
 
         @Override
         public Optional<String> getScriptResourceName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetScriptResourceName(nativePtr));
+            return Optional.ofNullable(getScriptResourceName0(nativePtr));
         }
 
         @Override
         public int getLineNumber() {
             checkNotClosed();
-            return N_GetLineNumber(nativePtr);
+            return getLineNumber0(nativePtr);
         }
 
         @Override
         public int getStartPosition() {
             checkNotClosed();
-            return N_GetStartPosition(nativePtr);
+            return getStartPosition0(nativePtr);
         }
 
         @Override
         public int getEndPosition() {
             checkNotClosed();
-            return N_GetEndPosition(nativePtr);
+            return getEndPosition0(nativePtr);
         }
 
         @Override
         public int getStartColumn() {
             checkNotClosed();
-            return N_GetStartColumn(nativePtr);
+            return getStartColumn0(nativePtr);
         }
 
         @Override
         public int getEndColumn() {
             checkNotClosed();
-            return N_GetEndColumn(nativePtr);
+            return getEndColumn0(nativePtr);
         }
 
-        private static native String N_GetMessage(long self);
+        private static native String getMessage0(long self);
 
-        private static native String N_GetSourceLine(long self);
+        private static native String getSourceLine0(long self);
 
-        private static native String N_GetScriptResourceName(long self);
+        private static native String getScriptResourceName0(long self);
 
-        private static native int N_GetLineNumber(long self);
+        private static native int getLineNumber0(long self);
 
-        private static native int N_GetStartPosition(long self);
+        private static native int getStartPosition0(long self);
 
-        private static native int N_GetEndPosition(long self);
+        private static native int getEndPosition0(long self);
 
-        private static native int N_GetStartColumn(long self);
+        private static native int getStartColumn0(long self);
 
-        private static native int N_GetEndColumn(long self);
+        private static native int getEndColumn0(long self);
 
         @Override
         public boolean equals(Object obj) {

@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a V8 value handle. V8 handles can only be accessed from the thread on which they are created.
@@ -21,6 +23,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:454</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8Value extends CefLibraryObject {
 
     /**
@@ -647,7 +650,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:494</a>
      */
     static Optional<CefV8Value> createUndefined() {
-        return Optional.ofNullable(NativePeer.N_CreateUndefined());
+        return Optional.ofNullable(NativePeer.createUndefined0());
     }
 
     /**
@@ -660,7 +663,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:500</a>
      */
     static Optional<CefV8Value> createNull() {
-        return Optional.ofNullable(NativePeer.N_CreateNull());
+        return Optional.ofNullable(NativePeer.createNull0());
     }
 
     /**
@@ -673,7 +676,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:506</a>
      */
     static Optional<CefV8Value> createBool(int value) {
-        return Optional.ofNullable(NativePeer.N_CreateBool(value));
+        return Optional.ofNullable(NativePeer.createBool0(value));
     }
 
     /**
@@ -686,11 +689,11 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:512</a>
      */
     static Optional<CefV8Value> createInt(int value) {
-        return Optional.ofNullable(NativePeer.N_CreateInt(value));
+        return Optional.ofNullable(NativePeer.createInt0(value));
     }
 
     static Optional<CefV8Value> createUint(int value) {
-        return Optional.ofNullable(NativePeer.N_CreateUint(value));
+        return Optional.ofNullable(NativePeer.createUint0(value));
     }
 
     /**
@@ -703,7 +706,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:524</a>
      */
     static Optional<CefV8Value> createDouble(double value) {
-        return Optional.ofNullable(NativePeer.N_CreateDouble(value));
+        return Optional.ofNullable(NativePeer.createDouble0(value));
     }
 
     /**
@@ -718,7 +721,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:530</a>
      */
     static Optional<CefV8Value> createDate(@Nullable CefBasetime date) {
-        return Optional.ofNullable(NativePeer.N_CreateDate(date));
+        return Optional.ofNullable(NativePeer.createDate0(date));
     }
 
     /**
@@ -731,7 +734,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:539</a>
      */
     static Optional<CefV8Value> createString(@Nullable String value) {
-        return Optional.ofNullable(NativePeer.N_CreateString(value));
+        return Optional.ofNullable(NativePeer.createString0(value));
     }
 
     /**
@@ -748,7 +751,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:545</a>
      */
     static Optional<CefV8Value> createObject(@Nullable CefV8Accessor accessor, @Nullable CefV8Interceptor interceptor) {
-        return Optional.ofNullable(NativePeer.N_CreateObject(accessor, interceptor));
+        return Optional.ofNullable(NativePeer.createObject0(accessor, interceptor));
     }
 
     /**
@@ -764,7 +767,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:557</a>
      */
     static Optional<CefV8Value> createArray(int length) {
-        return Optional.ofNullable(NativePeer.N_CreateArray(length));
+        return Optional.ofNullable(NativePeer.createArray0(length));
     }
 
     /**
@@ -787,7 +790,7 @@ public interface CefV8Value extends CefLibraryObject {
      */
     static Optional<CefV8Value> createArrayBuffer(
             @Nullable NativePointer buffer, long length, @Nullable CefV8ArrayBufferReleaseCallback releaseCallback) {
-        return Optional.ofNullable(NativePeer.N_CreateArrayBuffer(buffer, length, releaseCallback));
+        return Optional.ofNullable(NativePeer.createArrayBuffer0(buffer, length, releaseCallback));
     }
 
     /**
@@ -803,7 +806,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:585</a>
      */
     static Optional<CefV8Value> createArrayBufferWithCopy(@Nullable NativePointer buffer, long length) {
-        return Optional.ofNullable(NativePeer.N_CreateArrayBufferWithCopy(buffer, length));
+        return Optional.ofNullable(NativePeer.createArrayBufferWithCopy0(buffer, length));
     }
 
     /**
@@ -822,7 +825,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:598</a>
      */
     static Optional<CefV8Value> createArrayBufferFromBackingStore(@Nullable CefV8BackingStore backingStore) {
-        return Optional.ofNullable(NativePeer.N_CreateArrayBufferFromBackingStore(backingStore));
+        return Optional.ofNullable(NativePeer.createArrayBufferFromBackingStore0(backingStore));
     }
 
     /**
@@ -839,7 +842,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:613</a>
      */
     static Optional<CefV8Value> createFunction(@Nullable String name, @Nullable CefV8Handler handler) {
-        return Optional.ofNullable(NativePeer.N_CreateFunction(name, handler));
+        return Optional.ofNullable(NativePeer.createFunction0(name, handler));
     }
 
     /**
@@ -854,7 +857,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:623</a>
      */
     static Optional<CefV8Value> createPromise() {
-        return Optional.ofNullable(NativePeer.N_CreatePromise());
+        return Optional.ofNullable(NativePeer.createPromise0());
     }
 
     final class NativePeer implements CefV8Value, AutoCloseable {
@@ -894,203 +897,203 @@ public interface CefV8Value extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefV8Value 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isUndefined() {
             checkNotClosed();
-            return N_IsUndefined(nativePtr);
+            return isUndefined0(nativePtr);
         }
 
         @Override
         public boolean isNull() {
             checkNotClosed();
-            return N_IsNull(nativePtr);
+            return isNull0(nativePtr);
         }
 
         @Override
         public boolean isBool() {
             checkNotClosed();
-            return N_IsBool(nativePtr);
+            return isBool0(nativePtr);
         }
 
         @Override
         public boolean isInt() {
             checkNotClosed();
-            return N_IsInt(nativePtr);
+            return isInt0(nativePtr);
         }
 
         @Override
         public boolean isUInt() {
             checkNotClosed();
-            return N_IsUInt(nativePtr);
+            return isUInt0(nativePtr);
         }
 
         @Override
         public boolean isDouble() {
             checkNotClosed();
-            return N_IsDouble(nativePtr);
+            return isDouble0(nativePtr);
         }
 
         @Override
         public boolean isDate() {
             checkNotClosed();
-            return N_IsDate(nativePtr);
+            return isDate0(nativePtr);
         }
 
         @Override
         public boolean isString() {
             checkNotClosed();
-            return N_IsString(nativePtr);
+            return isString0(nativePtr);
         }
 
         @Override
         public boolean isObject() {
             checkNotClosed();
-            return N_IsObject(nativePtr);
+            return isObject0(nativePtr);
         }
 
         @Override
         public boolean isArray() {
             checkNotClosed();
-            return N_IsArray(nativePtr);
+            return isArray0(nativePtr);
         }
 
         @Override
         public boolean isArrayBuffer() {
             checkNotClosed();
-            return N_IsArrayBuffer(nativePtr);
+            return isArrayBuffer0(nativePtr);
         }
 
         @Override
         public boolean isFunction() {
             checkNotClosed();
-            return N_IsFunction(nativePtr);
+            return isFunction0(nativePtr);
         }
 
         @Override
         public boolean isPromise() {
             checkNotClosed();
-            return N_IsPromise(nativePtr);
+            return isPromise0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefV8Value that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefV8Value");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public boolean getBoolValue() {
             checkNotClosed();
-            return N_GetBoolValue(nativePtr);
+            return getBoolValue0(nativePtr);
         }
 
         @Override
         public int getIntValue() {
             checkNotClosed();
-            return N_GetIntValue(nativePtr);
+            return getIntValue0(nativePtr);
         }
 
         @Override
         public int getUIntValue() {
             checkNotClosed();
-            return N_GetUIntValue(nativePtr);
+            return getUIntValue0(nativePtr);
         }
 
         @Override
         public double getDoubleValue() {
             checkNotClosed();
-            return N_GetDoubleValue(nativePtr);
+            return getDoubleValue0(nativePtr);
         }
 
         @Override
         public CefBasetime getDateValue() {
             checkNotClosed();
-            return N_GetDateValue(nativePtr);
+            return getDateValue0(nativePtr);
         }
 
         @Override
         public Optional<String> getStringValue() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetStringValue(nativePtr));
+            return Optional.ofNullable(getStringValue0(nativePtr));
         }
 
         @Override
         public boolean isUserCreated() {
             checkNotClosed();
-            return N_IsUserCreated(nativePtr);
+            return isUserCreated0(nativePtr);
         }
 
         @Override
         public boolean hasException() {
             checkNotClosed();
-            return N_HasException(nativePtr);
+            return hasException0(nativePtr);
         }
 
         @Override
         public Optional<CefV8Exception> getException() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetException(nativePtr));
+            return Optional.ofNullable(getException0(nativePtr));
         }
 
         @Override
         public boolean clearException() {
             checkNotClosed();
-            return N_ClearException(nativePtr);
+            return clearException0(nativePtr);
         }
 
         @Override
         public boolean willRethrowExceptions() {
             checkNotClosed();
-            return N_WillRethrowExceptions(nativePtr);
+            return willRethrowExceptions0(nativePtr);
         }
 
         @Override
         public boolean setRethrowExceptions(boolean rethrow) {
             checkNotClosed();
-            return N_SetRethrowExceptions(nativePtr, rethrow);
+            return setRethrowExceptions0(nativePtr, rethrow);
         }
 
         @Override
         public int hasValueBykey(@Nullable String key) {
             checkNotClosed();
-            return N_HasValueBykey(nativePtr, key);
+            return hasValueBykey0(nativePtr, key);
         }
 
         @Override
         public int hasValueByindex(int index) {
             checkNotClosed();
-            return N_HasValueByindex(nativePtr, index);
+            return hasValueByindex0(nativePtr, index);
         }
 
         @Override
         public int deleteValueBykey(@Nullable String key) {
             checkNotClosed();
-            return N_DeleteValueBykey(nativePtr, key);
+            return deleteValueBykey0(nativePtr, key);
         }
 
         @Override
         public int deleteValueByindex(int index) {
             checkNotClosed();
-            return N_DeleteValueByindex(nativePtr, index);
+            return deleteValueByindex0(nativePtr, index);
         }
 
         @Override
         public Optional<CefV8Value> getValueBykey(@Nullable String key) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetValueBykey(nativePtr, key));
+            return Optional.ofNullable(getValueBykey0(nativePtr, key));
         }
 
         @Override
@@ -1098,86 +1101,86 @@ public interface CefV8Value extends CefLibraryObject {
                 @Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefV8Value");
-            return N_SetValueBykey(nativePtr, key, value, attribute);
+            return setValueBykey0(nativePtr, key, value, attribute);
         }
 
         @Override
         public int setValueByindex(int index, @Nullable CefV8Value value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefV8Value");
-            return N_SetValueByindex(nativePtr, index, value);
+            return setValueByindex0(nativePtr, index, value);
         }
 
         @Override
         public int setValueByaccessor(@Nullable String key, @Nonnull CefV8PropertyAttribute attribute) {
             checkNotClosed();
-            return N_SetValueByaccessor(nativePtr, key, attribute);
+            return setValueByaccessor0(nativePtr, key, attribute);
         }
 
         @Override
         public boolean getKeys(@Nonnull List<String> keys) {
             checkNotClosed();
-            return N_GetKeys(nativePtr, keys);
+            return getKeys0(nativePtr, keys);
         }
 
         @Override
         public boolean setUserData(@Nullable NativePointer userData) {
             checkNotClosed();
-            return N_SetUserData(nativePtr, userData);
+            return setUserData0(nativePtr, userData);
         }
 
         @Override
         public NativePointer getUserData() {
             checkNotClosed();
-            return N_GetUserData(nativePtr);
+            return getUserData0(nativePtr);
         }
 
         @Override
         public int getExternallyAllocatedMemory() {
             checkNotClosed();
-            return N_GetExternallyAllocatedMemory(nativePtr);
+            return getExternallyAllocatedMemory0(nativePtr);
         }
 
         @Override
         public int adjustExternallyAllocatedMemory(int changeInBytes) {
             checkNotClosed();
-            return N_AdjustExternallyAllocatedMemory(nativePtr, changeInBytes);
+            return adjustExternallyAllocatedMemory0(nativePtr, changeInBytes);
         }
 
         @Override
         public int getArrayLength() {
             checkNotClosed();
-            return N_GetArrayLength(nativePtr);
+            return getArrayLength0(nativePtr);
         }
 
         @Override
         public boolean neuterArrayBuffer() {
             checkNotClosed();
-            return N_NeuterArrayBuffer(nativePtr);
+            return neuterArrayBuffer0(nativePtr);
         }
 
         @Override
         public long getArrayBufferByteLength() {
             checkNotClosed();
-            return N_GetArrayBufferByteLength(nativePtr);
+            return getArrayBufferByteLength0(nativePtr);
         }
 
         @Override
         public NativePointer getArrayBufferData() {
             checkNotClosed();
-            return N_GetArrayBufferData(nativePtr);
+            return getArrayBufferData0(nativePtr);
         }
 
         @Override
         public Optional<String> getFunctionName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFunctionName(nativePtr));
+            return Optional.ofNullable(getFunctionName0(nativePtr));
         }
 
         @Override
         public Optional<CefV8Handler> getFunctionHandler() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFunctionHandler(nativePtr));
+            return Optional.ofNullable(getFunctionHandler0(nativePtr));
         }
 
         @Override
@@ -1185,7 +1188,7 @@ public interface CefV8Value extends CefLibraryObject {
                 @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments) {
             checkNotClosed();
             CefLibraryObject.requireOpen(object, "CefV8Value");
-            return Optional.ofNullable(N_ExecuteFunction(nativePtr, object, argumentsCount, arguments));
+            return Optional.ofNullable(executeFunction0(nativePtr, object, argumentsCount, arguments));
         }
 
         @Override
@@ -1198,155 +1201,155 @@ public interface CefV8Value extends CefLibraryObject {
             CefLibraryObject.requireOpen(context, "CefV8Context");
             CefLibraryObject.requireOpen(object, "CefV8Value");
             return Optional.ofNullable(
-                    N_ExecuteFunctionWithContext(nativePtr, context, object, argumentsCount, arguments));
+                    executeFunctionWithContext0(nativePtr, context, object, argumentsCount, arguments));
         }
 
         @Override
         public boolean resolvePromise(@Nullable CefV8Value arg) {
             checkNotClosed();
             CefLibraryObject.requireOpen(arg, "CefV8Value");
-            return N_ResolvePromise(nativePtr, arg);
+            return resolvePromise0(nativePtr, arg);
         }
 
         @Override
         public boolean rejectPromise(@Nullable String errorMsg) {
             checkNotClosed();
-            return N_RejectPromise(nativePtr, errorMsg);
+            return rejectPromise0(nativePtr, errorMsg);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsUndefined(long self);
+        private static native boolean isUndefined0(long self);
 
-        private static native boolean N_IsNull(long self);
+        private static native boolean isNull0(long self);
 
-        private static native boolean N_IsBool(long self);
+        private static native boolean isBool0(long self);
 
-        private static native boolean N_IsInt(long self);
+        private static native boolean isInt0(long self);
 
-        private static native boolean N_IsUInt(long self);
+        private static native boolean isUInt0(long self);
 
-        private static native boolean N_IsDouble(long self);
+        private static native boolean isDouble0(long self);
 
-        private static native boolean N_IsDate(long self);
+        private static native boolean isDate0(long self);
 
-        private static native boolean N_IsString(long self);
+        private static native boolean isString0(long self);
 
-        private static native boolean N_IsObject(long self);
+        private static native boolean isObject0(long self);
 
-        private static native boolean N_IsArray(long self);
+        private static native boolean isArray0(long self);
 
-        private static native boolean N_IsArrayBuffer(long self);
+        private static native boolean isArrayBuffer0(long self);
 
-        private static native boolean N_IsFunction(long self);
+        private static native boolean isFunction0(long self);
 
-        private static native boolean N_IsPromise(long self);
+        private static native boolean isPromise0(long self);
 
-        private static native boolean N_IsSame(long self, CefV8Value that);
+        private static native boolean isSame0(long self, CefV8Value that);
 
-        private static native boolean N_GetBoolValue(long self);
+        private static native boolean getBoolValue0(long self);
 
-        private static native int N_GetIntValue(long self);
+        private static native int getIntValue0(long self);
 
-        private static native int N_GetUIntValue(long self);
+        private static native int getUIntValue0(long self);
 
-        private static native double N_GetDoubleValue(long self);
+        private static native double getDoubleValue0(long self);
 
-        private static native CefBasetime N_GetDateValue(long self);
+        private static native CefBasetime getDateValue0(long self);
 
-        private static native String N_GetStringValue(long self);
+        private static native String getStringValue0(long self);
 
-        private static native boolean N_IsUserCreated(long self);
+        private static native boolean isUserCreated0(long self);
 
-        private static native boolean N_HasException(long self);
+        private static native boolean hasException0(long self);
 
-        private static native CefV8Exception N_GetException(long self);
+        private static native CefV8Exception getException0(long self);
 
-        private static native boolean N_ClearException(long self);
+        private static native boolean clearException0(long self);
 
-        private static native boolean N_WillRethrowExceptions(long self);
+        private static native boolean willRethrowExceptions0(long self);
 
-        private static native boolean N_SetRethrowExceptions(long self, boolean rethrow);
+        private static native boolean setRethrowExceptions0(long self, boolean rethrow);
 
-        private static native int N_HasValueBykey(long self, String key);
+        private static native int hasValueBykey0(long self, String key);
 
-        private static native int N_HasValueByindex(long self, int index);
+        private static native int hasValueByindex0(long self, int index);
 
-        private static native int N_DeleteValueBykey(long self, String key);
+        private static native int deleteValueBykey0(long self, String key);
 
-        private static native int N_DeleteValueByindex(long self, int index);
+        private static native int deleteValueByindex0(long self, int index);
 
-        private static native CefV8Value N_GetValueBykey(long self, String key);
+        private static native CefV8Value getValueBykey0(long self, String key);
 
-        private static native int N_SetValueBykey(
+        private static native int setValueBykey0(
                 long self, String key, CefV8Value value, CefV8PropertyAttribute attribute);
 
-        private static native int N_SetValueByindex(long self, int index, CefV8Value value);
+        private static native int setValueByindex0(long self, int index, CefV8Value value);
 
-        private static native int N_SetValueByaccessor(long self, String key, CefV8PropertyAttribute attribute);
+        private static native int setValueByaccessor0(long self, String key, CefV8PropertyAttribute attribute);
 
-        private static native boolean N_GetKeys(long self, List<String> keys);
+        private static native boolean getKeys0(long self, List<String> keys);
 
-        private static native boolean N_SetUserData(long self, NativePointer userData);
+        private static native boolean setUserData0(long self, NativePointer userData);
 
-        private static native NativePointer N_GetUserData(long self);
+        private static native NativePointer getUserData0(long self);
 
-        private static native int N_GetExternallyAllocatedMemory(long self);
+        private static native int getExternallyAllocatedMemory0(long self);
 
-        private static native int N_AdjustExternallyAllocatedMemory(long self, int changeInBytes);
+        private static native int adjustExternallyAllocatedMemory0(long self, int changeInBytes);
 
-        private static native int N_GetArrayLength(long self);
+        private static native int getArrayLength0(long self);
 
-        private static native boolean N_NeuterArrayBuffer(long self);
+        private static native boolean neuterArrayBuffer0(long self);
 
-        private static native long N_GetArrayBufferByteLength(long self);
+        private static native long getArrayBufferByteLength0(long self);
 
-        private static native NativePointer N_GetArrayBufferData(long self);
+        private static native NativePointer getArrayBufferData0(long self);
 
-        private static native String N_GetFunctionName(long self);
+        private static native String getFunctionName0(long self);
 
-        private static native CefV8Handler N_GetFunctionHandler(long self);
+        private static native CefV8Handler getFunctionHandler0(long self);
 
-        private static native CefV8Value N_ExecuteFunction(
+        private static native CefV8Value executeFunction0(
                 long self, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
 
-        private static native CefV8Value N_ExecuteFunctionWithContext(
+        private static native CefV8Value executeFunctionWithContext0(
                 long self, CefV8Context context, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
 
-        private static native boolean N_ResolvePromise(long self, CefV8Value arg);
+        private static native boolean resolvePromise0(long self, CefV8Value arg);
 
-        private static native boolean N_RejectPromise(long self, String errorMsg);
+        private static native boolean rejectPromise0(long self, String errorMsg);
 
-        static native CefV8Value N_CreateUndefined();
+        static native CefV8Value createUndefined0();
 
-        static native CefV8Value N_CreateNull();
+        static native CefV8Value createNull0();
 
-        static native CefV8Value N_CreateBool(int value);
+        static native CefV8Value createBool0(int value);
 
-        static native CefV8Value N_CreateInt(int value);
+        static native CefV8Value createInt0(int value);
 
-        static native CefV8Value N_CreateUint(int value);
+        static native CefV8Value createUint0(int value);
 
-        static native CefV8Value N_CreateDouble(double value);
+        static native CefV8Value createDouble0(double value);
 
-        static native CefV8Value N_CreateDate(CefBasetime date);
+        static native CefV8Value createDate0(CefBasetime date);
 
-        static native CefV8Value N_CreateString(String value);
+        static native CefV8Value createString0(String value);
 
-        static native CefV8Value N_CreateObject(CefV8Accessor accessor, CefV8Interceptor interceptor);
+        static native CefV8Value createObject0(CefV8Accessor accessor, CefV8Interceptor interceptor);
 
-        static native CefV8Value N_CreateArray(int length);
+        static native CefV8Value createArray0(int length);
 
-        static native CefV8Value N_CreateArrayBuffer(
+        static native CefV8Value createArrayBuffer0(
                 NativePointer buffer, long length, CefV8ArrayBufferReleaseCallback releaseCallback);
 
-        static native CefV8Value N_CreateArrayBufferWithCopy(NativePointer buffer, long length);
+        static native CefV8Value createArrayBufferWithCopy0(NativePointer buffer, long length);
 
-        static native CefV8Value N_CreateArrayBufferFromBackingStore(CefV8BackingStore backingStore);
+        static native CefV8Value createArrayBufferFromBackingStore0(CefV8BackingStore backingStore);
 
-        static native CefV8Value N_CreateFunction(String name, CefV8Handler handler);
+        static native CefV8Value createFunction0(String name, CefV8Handler handler);
 
-        static native CefV8Value N_CreatePromise();
+        static native CefV8Value createPromise0();
 
         @Override
         public boolean equals(Object obj) {

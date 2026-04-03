@@ -1,13 +1,16 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
+import javax.annotation.processing.Generated;
 
 /**
  * Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with
  * caution.
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public class NativePointer {
 
     public final long address;

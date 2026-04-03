@@ -40,7 +40,7 @@ class CefXmlReaderTest {
         SystemBootstrap.load();
         // Use the singleton - if CefInteropTest already initialized CEF this is a no-op.
         // We never call dispose() so CEF stays alive across test classes in the same JVM fork.
-        CefApp.INSTANCE.initialize();
+        Cef.INSTANCE.initialise(new CefSettings.Mutable(), List.of());
     }
 
     @FunctionalInterface

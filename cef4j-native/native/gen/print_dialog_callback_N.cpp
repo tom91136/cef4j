@@ -1,15 +1,15 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_print_handler_capi.h"
 #include "include/capi/cef_print_settings_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPrintDialogCallback_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintDialogCallback), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPrintDialogCallback_00024NativePeer_N_1Cont(JNIEnv* env, jobject obj, jlong self, jobject settings) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintDialogCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jobject settings) {
     auto* s = reinterpret_cast<cef_print_dialog_callback_t*>(self);
     if (!s) return;
     cef_print_settings_t* _settings_ptr = settings ? reinterpret_cast<cef_print_settings_t*>(env->GetLongField(settings, env->GetFieldID(env->GetObjectClass(settings), "nativePtr", "J"))) : nullptr;
@@ -17,7 +17,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPrintDialogCall
     s->cont(s, _settings_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefPrintDialogCallback_00024NativePeer_N_1Cancel(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintDialogCallback), cancel0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_print_dialog_callback_t*>(self);
     if (!s) return;
     s->cancel(s);

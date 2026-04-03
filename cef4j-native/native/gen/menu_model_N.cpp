@@ -1,43 +1,43 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_menu_model_capi.h"
 #include "include/capi/cef_menu_model_delegate_capi.h"
 #include "jni_util.h"
 
 extern "C" cef_menu_model_delegate_t* Create_JniCefMenuModelDelegate(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuModel), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsSubMenu(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isSubMenu0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_sub_menu(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1Clear(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), clear0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->clear(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jlong JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetCount(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefMenuModel), getCount0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_count(s));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddSeparator(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), addSeparator0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->add_separator(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), addItem0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -46,7 +46,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddCheckItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), addCheckItem0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -55,7 +55,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddRadioItem(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label, jint group_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), addRadioItem0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -64,7 +64,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1AddSubMenu(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), addSubMenu0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
     auto _label_str = JStringToCefString(env, label);
@@ -76,14 +76,14 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertSeparatorAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), insertSeparatorAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->insert_separator_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), insertItemAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -92,7 +92,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertCheckItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), insertCheckItemAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -101,7 +101,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertRadioItemAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label, jint group_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), insertRadioItemAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -110,7 +110,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1InsertSubMenuAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), insertSubMenuAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
     auto _label_str = JStringToCefString(env, label);
@@ -122,40 +122,40 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1Remove(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), remove0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->remove(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1RemoveAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), removeAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->remove_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetIndexOf(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefMenuModel), getIndexOf0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_index_of(s, command_id));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetCommandIdAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefMenuModel), getCommandIdAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_command_id_at(s, index));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetCommandIdAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setCommandIdAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_command_id_at(s, index, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetLabel(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefMenuModel), getLabel0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_label(s, command_id);
@@ -165,7 +165,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetLabel(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setLabel0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -174,7 +174,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetLabelAt(JNIEnv* env, jobject obj, jlong self, jlong index, jstring label) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setLabelAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jstring label) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _label_str = JStringToCefString(env, label);
@@ -183,7 +183,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetType(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getType0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s, command_id);
@@ -192,33 +192,33 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetGroupId(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefMenuModel), getGroupId0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_group_id(s, command_id));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetGroupIdAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefMenuModel), getGroupIdAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_group_id_at(s, index));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetGroupId(JNIEnv* env, jobject obj, jlong self, jint command_id, jint group_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setGroupId0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_group_id(s, command_id, group_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetGroupIdAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint group_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setGroupIdAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint group_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_group_id_at(s, index, group_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetSubMenu(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getSubMenu0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_sub_menu(s, command_id);
@@ -228,7 +228,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetSubMenuAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getSubMenuAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_sub_menu_at(s, index);
@@ -238,133 +238,133 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsVisible(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isVisible0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_visible(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsVisibleAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isVisibleAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_visible_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetVisible(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean visible) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setVisible0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean visible) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_visible(s, command_id, static_cast<bool>(visible));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetVisibleAt(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean visible) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setVisibleAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean visible) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_visible_at(s, index, static_cast<bool>(visible));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsEnabled(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isEnabled0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_enabled(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsEnabledAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isEnabledAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_enabled_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetEnabled(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean enabled) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setEnabled0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean enabled) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_enabled(s, command_id, static_cast<bool>(enabled));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetEnabledAt(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean enabled) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setEnabledAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean enabled) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_enabled_at(s, index, static_cast<bool>(enabled));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsChecked(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isChecked0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_checked(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1IsCheckedAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), isCheckedAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_checked_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetChecked(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean checked) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setChecked0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jboolean checked) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_checked(s, command_id, static_cast<bool>(checked));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetCheckedAt(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean checked) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setCheckedAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jboolean checked) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_checked_at(s, index, static_cast<bool>(checked));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1HasAccelerator(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), hasAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_accelerator(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1HasAcceleratorAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), hasAcceleratorAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_accelerator_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetAccelerator(JNIEnv* env, jobject obj, jlong self, jint command_id, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_accelerator(s, command_id, key_code, static_cast<bool>(shift_pressed), static_cast<bool>(ctrl_pressed), static_cast<bool>(alt_pressed));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetAcceleratorAt(JNIEnv* env, jobject obj, jlong self, jlong index, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setAcceleratorAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->set_accelerator_at(s, index, key_code, static_cast<bool>(shift_pressed), static_cast<bool>(ctrl_pressed), static_cast<bool>(alt_pressed));
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1RemoveAccelerator(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), removeAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->remove_accelerator(s, command_id);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1RemoveAcceleratorAt(JNIEnv* env, jobject obj, jlong self, jlong index) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), removeAcceleratorAt0)(JNIEnv* env, jobject obj, jlong self, jlong index) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->remove_accelerator_at(s, index);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetAccelerator(JNIEnv* env, jobject obj, jlong self, jint command_id, jintArray key_code, jintArray shift_pressed, jintArray ctrl_pressed, jintArray alt_pressed) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jintArray key_code, jintArray shift_pressed, jintArray ctrl_pressed, jintArray alt_pressed) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     int _key_code_val = 0;
@@ -383,7 +383,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetAcceleratorAt(JNIEnv* env, jobject obj, jlong self, jlong index, jintArray key_code, jintArray shift_pressed, jintArray ctrl_pressed, jintArray alt_pressed) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getAcceleratorAt0)(JNIEnv* env, jobject obj, jlong self, jlong index, jintArray key_code, jintArray shift_pressed, jintArray ctrl_pressed, jintArray alt_pressed) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     int _key_code_val = 0;
@@ -402,7 +402,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetColor(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jint color) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
@@ -410,7 +410,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetColorAt(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jint color) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
@@ -418,7 +418,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetColor(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jintArray color) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
@@ -429,7 +429,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1GetColorAt(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jintArray color) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
@@ -440,7 +440,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetFontList(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring font_list) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setFontList0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jstring font_list) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _font_list_str = font_list ? JStringToCefString(env, font_list) : nullptr;
@@ -449,7 +449,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1SetFontListAt(JNIEnv* env, jobject obj, jlong self, jint index, jstring font_list) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setFontListAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jstring font_list) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     auto _font_list_str = font_list ? JStringToCefString(env, font_list) : nullptr;
@@ -458,7 +458,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_0
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefMenuModel_00024NativePeer_N_1Create(JNIEnv* env, jclass clz, jobject delegate) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), create0)(JNIEnv* env, jclass clz, jobject delegate) {
     cef_menu_model_delegate_t* _delegate_ptr = delegate ? Create_JniCefMenuModelDelegate(env, delegate) : nullptr;
     auto _r = cef_menu_model_create(_delegate_ptr);
     if (!_r) return nullptr;

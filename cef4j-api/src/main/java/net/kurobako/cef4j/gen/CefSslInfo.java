@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing SSL information.
@@ -15,6 +17,7 @@ import java.util.Optional;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefSslInfo extends CefLibraryObject {
 
     /**
@@ -77,27 +80,27 @@ public interface CefSslInfo extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefSslInfo 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public CefCertStatus getCertStatus() {
             checkNotClosed();
-            return N_GetCertStatus(nativePtr);
+            return getCertStatus0(nativePtr);
         }
 
         @Override
         public Optional<CefX509Certificate> getX509certificate() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetX509certificate(nativePtr));
+            return Optional.ofNullable(getX509certificate0(nativePtr));
         }
 
-        private static native CefCertStatus N_GetCertStatus(long self);
+        private static native CefCertStatus getCertStatus0(long self);
 
-        private static native CefX509Certificate N_GetX509certificate(long self);
+        private static native CefX509Certificate getX509certificate0(long self);
 
         @Override
         public boolean equals(Object obj) {

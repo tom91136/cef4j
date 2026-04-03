@@ -1,4 +1,5 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a web request. The methods of this class may be called on any thread.
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:49</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefRequest extends CefLibraryObject {
 
     /**
@@ -302,7 +305,7 @@ public interface CefRequest extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefRequest> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefRequest, AutoCloseable {
@@ -342,95 +345,95 @@ public interface CefRequest extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefRequest 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public Optional<String> getUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetUrl(nativePtr));
+            return Optional.ofNullable(getUrl0(nativePtr));
         }
 
         @Override
         public void setUrl(@Nullable String url) {
             checkNotClosed();
-            N_SetUrl(nativePtr, url);
+            setUrl0(nativePtr, url);
         }
 
         @Override
         public Optional<String> getMethod() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMethod(nativePtr));
+            return Optional.ofNullable(getMethod0(nativePtr));
         }
 
         @Override
         public void setMethod(@Nullable String method) {
             checkNotClosed();
-            N_SetMethod(nativePtr, method);
+            setMethod0(nativePtr, method);
         }
 
         @Override
         public void setReferrer(@Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy) {
             checkNotClosed();
-            N_SetReferrer(nativePtr, referrerUrl, policy);
+            setReferrer0(nativePtr, referrerUrl, policy);
         }
 
         @Override
         public Optional<String> getReferrerUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetReferrerUrl(nativePtr));
+            return Optional.ofNullable(getReferrerUrl0(nativePtr));
         }
 
         @Override
         public CefReferrerPolicy getReferrerPolicy() {
             checkNotClosed();
-            return N_GetReferrerPolicy(nativePtr);
+            return getReferrerPolicy0(nativePtr);
         }
 
         @Override
         public Optional<CefPostData> getPostData() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetPostData(nativePtr));
+            return Optional.ofNullable(getPostData0(nativePtr));
         }
 
         @Override
         public void setPostData(@Nullable CefPostData postData) {
             checkNotClosed();
             CefLibraryObject.requireOpen(postData, "CefPostData");
-            N_SetPostData(nativePtr, postData);
+            setPostData0(nativePtr, postData);
         }
 
         @Override
         public void getHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
             checkNotClosed();
-            N_GetHeaderMap(nativePtr, headerMap);
+            getHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
         public void setHeaderMap(@Nonnull Map<String, List<String>> headerMap) {
             checkNotClosed();
-            N_SetHeaderMap(nativePtr, headerMap);
+            setHeaderMap0(nativePtr, headerMap);
         }
 
         @Override
         public Optional<String> getHeaderByName(@Nullable String name) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetHeaderByName(nativePtr, name));
+            return Optional.ofNullable(getHeaderByName0(nativePtr, name));
         }
 
         @Override
         public void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite) {
             checkNotClosed();
-            N_SetHeaderByName(nativePtr, name, value, overwrite);
+            setHeaderByName0(nativePtr, name, value, overwrite);
         }
 
         @Override
@@ -441,97 +444,97 @@ public interface CefRequest extends CefLibraryObject {
                 @Nonnull Map<String, List<String>> headerMap) {
             checkNotClosed();
             CefLibraryObject.requireOpen(postData, "CefPostData");
-            N_Set(nativePtr, url, method, postData, headerMap);
+            set0(nativePtr, url, method, postData, headerMap);
         }
 
         @Override
         public int getFlags() {
             checkNotClosed();
-            return N_GetFlags(nativePtr);
+            return getFlags0(nativePtr);
         }
 
         @Override
         public void setFlags(int flags) {
             checkNotClosed();
-            N_SetFlags(nativePtr, flags);
+            setFlags0(nativePtr, flags);
         }
 
         @Override
         public Optional<String> getFirstPartyForCookies() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFirstPartyForCookies(nativePtr));
+            return Optional.ofNullable(getFirstPartyForCookies0(nativePtr));
         }
 
         @Override
         public void setFirstPartyForCookies(@Nullable String url) {
             checkNotClosed();
-            N_SetFirstPartyForCookies(nativePtr, url);
+            setFirstPartyForCookies0(nativePtr, url);
         }
 
         @Override
         public CefResourceType getResourceType() {
             checkNotClosed();
-            return N_GetResourceType(nativePtr);
+            return getResourceType0(nativePtr);
         }
 
         @Override
         public CefTransitionType getTransitionType() {
             checkNotClosed();
-            return N_GetTransitionType(nativePtr);
+            return getTransitionType0(nativePtr);
         }
 
         @Override
         public long getIdentifier() {
             checkNotClosed();
-            return N_GetIdentifier(nativePtr);
+            return getIdentifier0(nativePtr);
         }
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native String N_GetUrl(long self);
+        private static native String getUrl0(long self);
 
-        private static native void N_SetUrl(long self, String url);
+        private static native void setUrl0(long self, String url);
 
-        private static native String N_GetMethod(long self);
+        private static native String getMethod0(long self);
 
-        private static native void N_SetMethod(long self, String method);
+        private static native void setMethod0(long self, String method);
 
-        private static native void N_SetReferrer(long self, String referrerUrl, CefReferrerPolicy policy);
+        private static native void setReferrer0(long self, String referrerUrl, CefReferrerPolicy policy);
 
-        private static native String N_GetReferrerUrl(long self);
+        private static native String getReferrerUrl0(long self);
 
-        private static native CefReferrerPolicy N_GetReferrerPolicy(long self);
+        private static native CefReferrerPolicy getReferrerPolicy0(long self);
 
-        private static native CefPostData N_GetPostData(long self);
+        private static native CefPostData getPostData0(long self);
 
-        private static native void N_SetPostData(long self, CefPostData postData);
+        private static native void setPostData0(long self, CefPostData postData);
 
-        private static native void N_GetHeaderMap(long self, Map<String, List<String>> headerMap);
+        private static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        private static native void N_SetHeaderMap(long self, Map<String, List<String>> headerMap);
+        private static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
 
-        private static native String N_GetHeaderByName(long self, String name);
+        private static native String getHeaderByName0(long self, String name);
 
-        private static native void N_SetHeaderByName(long self, String name, String value, boolean overwrite);
+        private static native void setHeaderByName0(long self, String name, String value, boolean overwrite);
 
-        private static native void N_Set(
+        private static native void set0(
                 long self, String url, String method, CefPostData postData, Map<String, List<String>> headerMap);
 
-        private static native int N_GetFlags(long self);
+        private static native int getFlags0(long self);
 
-        private static native void N_SetFlags(long self, int flags);
+        private static native void setFlags0(long self, int flags);
 
-        private static native String N_GetFirstPartyForCookies(long self);
+        private static native String getFirstPartyForCookies0(long self);
 
-        private static native void N_SetFirstPartyForCookies(long self, String url);
+        private static native void setFirstPartyForCookies0(long self, String url);
 
-        private static native CefResourceType N_GetResourceType(long self);
+        private static native CefResourceType getResourceType0(long self);
 
-        private static native CefTransitionType N_GetTransitionType(long self);
+        private static native CefTransitionType getTransitionType0(long self);
 
-        private static native long N_GetIdentifier(long self);
+        private static native long getIdentifier0(long self);
 
-        static native CefRequest N_Create();
+        static native CefRequest create0();
 
         @Override
         public boolean equals(Object obj) {

@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Callback interface used to asynchronously continue a download.
@@ -16,6 +18,7 @@ import javax.annotation.Nullable;
  * @see <a
  *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:45</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefBeforeDownloadCallback extends CefLibraryObject {
 
     /**
@@ -72,19 +75,19 @@ public interface CefBeforeDownloadCallback extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefBeforeDownloadCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void cont(@Nullable String downloadPath, int showDialog) {
             checkNotClosed();
-            N_Cont(nativePtr, downloadPath, showDialog);
+            cont0(nativePtr, downloadPath, showDialog);
         }
 
-        private static native void N_Cont(long self, String downloadPath, int showDialog);
+        private static native void cont0(long self, String downloadPath, int showDialog);
 
         @Override
         public boolean equals(Object obj) {

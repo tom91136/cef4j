@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class representing a list value. Can be used on any process and thread.
@@ -16,6 +18,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:537</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefListValue extends CefLibraryObject {
 
     /**
@@ -333,7 +336,7 @@ public interface CefListValue extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefListValue> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefListValue, AutoCloseable {
@@ -373,219 +376,219 @@ public interface CefListValue extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefListValue 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public boolean isOwned() {
             checkNotClosed();
-            return N_IsOwned(nativePtr);
+            return isOwned0(nativePtr);
         }
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefListValue that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefListValue");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public boolean isEqual(@Nullable CefListValue that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefListValue");
-            return N_IsEqual(nativePtr, that);
+            return isEqual0(nativePtr, that);
         }
 
         @Override
         public Optional<CefListValue> copy() {
             checkNotClosed();
-            return Optional.ofNullable(N_Copy(nativePtr));
+            return Optional.ofNullable(copy0(nativePtr));
         }
 
         @Override
         public boolean setSize(long size) {
             checkNotClosed();
-            return N_SetSize(nativePtr, size);
+            return setSize0(nativePtr, size);
         }
 
         @Override
         public long getSize() {
             checkNotClosed();
-            return N_GetSize(nativePtr);
+            return getSize0(nativePtr);
         }
 
         @Override
         public boolean clear() {
             checkNotClosed();
-            return N_Clear(nativePtr);
+            return clear0(nativePtr);
         }
 
         @Override
         public boolean remove(long index) {
             checkNotClosed();
-            return N_Remove(nativePtr, index);
+            return remove0(nativePtr, index);
         }
 
         @Override
         public CefValueType getType(long index) {
             checkNotClosed();
-            return N_GetType(nativePtr, index);
+            return getType0(nativePtr, index);
         }
 
         @Override
         public Optional<CefValue> getValue(long index) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetValue(nativePtr, index));
+            return Optional.ofNullable(getValue0(nativePtr, index));
         }
 
         @Override
         public boolean getBool(long index) {
             checkNotClosed();
-            return N_GetBool(nativePtr, index);
+            return getBool0(nativePtr, index);
         }
 
         @Override
         public int getInt(long index) {
             checkNotClosed();
-            return N_GetInt(nativePtr, index);
+            return getInt0(nativePtr, index);
         }
 
         @Override
         public double getDouble(long index) {
             checkNotClosed();
-            return N_GetDouble(nativePtr, index);
+            return getDouble0(nativePtr, index);
         }
 
         @Override
         public Optional<CefDictionaryValue> getDictionary(long index) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetDictionary(nativePtr, index));
+            return Optional.ofNullable(getDictionary0(nativePtr, index));
         }
 
         @Override
         public boolean setValue(long index, @Nullable CefValue value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefValue");
-            return N_SetValue(nativePtr, index, value);
+            return setValue0(nativePtr, index, value);
         }
 
         @Override
         public boolean setNull(long index) {
             checkNotClosed();
-            return N_SetNull(nativePtr, index);
+            return setNull0(nativePtr, index);
         }
 
         @Override
         public boolean setBool(long index, boolean value) {
             checkNotClosed();
-            return N_SetBool(nativePtr, index, value);
+            return setBool0(nativePtr, index, value);
         }
 
         @Override
         public boolean setInt(long index, int value) {
             checkNotClosed();
-            return N_SetInt(nativePtr, index, value);
+            return setInt0(nativePtr, index, value);
         }
 
         @Override
         public boolean setDouble(long index, double value) {
             checkNotClosed();
-            return N_SetDouble(nativePtr, index, value);
+            return setDouble0(nativePtr, index, value);
         }
 
         @Override
         public boolean setString(long index, @Nullable String value) {
             checkNotClosed();
-            return N_SetString(nativePtr, index, value);
+            return setString0(nativePtr, index, value);
         }
 
         @Override
         public boolean setBinary(long index, @Nullable CefBinaryValue value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefBinaryValue");
-            return N_SetBinary(nativePtr, index, value);
+            return setBinary0(nativePtr, index, value);
         }
 
         @Override
         public boolean setDictionary(long index, @Nullable CefDictionaryValue value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefDictionaryValue");
-            return N_SetDictionary(nativePtr, index, value);
+            return setDictionary0(nativePtr, index, value);
         }
 
         @Override
         public boolean setList(long index, @Nullable CefListValue value) {
             checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefListValue");
-            return N_SetList(nativePtr, index, value);
+            return setList0(nativePtr, index, value);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native boolean N_IsOwned(long self);
+        private static native boolean isOwned0(long self);
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native boolean N_IsSame(long self, CefListValue that);
+        private static native boolean isSame0(long self, CefListValue that);
 
-        private static native boolean N_IsEqual(long self, CefListValue that);
+        private static native boolean isEqual0(long self, CefListValue that);
 
-        private static native CefListValue N_Copy(long self);
+        private static native CefListValue copy0(long self);
 
-        private static native boolean N_SetSize(long self, long size);
+        private static native boolean setSize0(long self, long size);
 
-        private static native long N_GetSize(long self);
+        private static native long getSize0(long self);
 
-        private static native boolean N_Clear(long self);
+        private static native boolean clear0(long self);
 
-        private static native boolean N_Remove(long self, long index);
+        private static native boolean remove0(long self, long index);
 
-        private static native CefValueType N_GetType(long self, long index);
+        private static native CefValueType getType0(long self, long index);
 
-        private static native CefValue N_GetValue(long self, long index);
+        private static native CefValue getValue0(long self, long index);
 
-        private static native boolean N_GetBool(long self, long index);
+        private static native boolean getBool0(long self, long index);
 
-        private static native int N_GetInt(long self, long index);
+        private static native int getInt0(long self, long index);
 
-        private static native double N_GetDouble(long self, long index);
+        private static native double getDouble0(long self, long index);
 
-        private static native CefDictionaryValue N_GetDictionary(long self, long index);
+        private static native CefDictionaryValue getDictionary0(long self, long index);
 
-        private static native boolean N_SetValue(long self, long index, CefValue value);
+        private static native boolean setValue0(long self, long index, CefValue value);
 
-        private static native boolean N_SetNull(long self, long index);
+        private static native boolean setNull0(long self, long index);
 
-        private static native boolean N_SetBool(long self, long index, boolean value);
+        private static native boolean setBool0(long self, long index, boolean value);
 
-        private static native boolean N_SetInt(long self, long index, int value);
+        private static native boolean setInt0(long self, long index, int value);
 
-        private static native boolean N_SetDouble(long self, long index, double value);
+        private static native boolean setDouble0(long self, long index, double value);
 
-        private static native boolean N_SetString(long self, long index, String value);
+        private static native boolean setString0(long self, long index, String value);
 
-        private static native boolean N_SetBinary(long self, long index, CefBinaryValue value);
+        private static native boolean setBinary0(long self, long index, CefBinaryValue value);
 
-        private static native boolean N_SetDictionary(long self, long index, CefDictionaryValue value);
+        private static native boolean setDictionary0(long self, long index, CefDictionaryValue value);
 
-        private static native boolean N_SetList(long self, long index, CefListValue value);
+        private static native boolean setList0(long self, long index, CefListValue value);
 
-        static native CefListValue N_Create();
+        static native CefListValue create0();
 
         @Override
         public boolean equals(Object obj) {

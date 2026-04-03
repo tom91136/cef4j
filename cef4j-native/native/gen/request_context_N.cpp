@@ -1,4 +1,4 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_request_context_capi.h"
 #include "include/capi/cef_callback_capi.h"
@@ -15,12 +15,12 @@ extern "C" cef_scheme_handler_factory_t* Create_JniCefSchemeHandlerFactory(JNIEn
 extern "C" cef_resolve_callback_t* Create_JniCefResolveCallback(JNIEnv *env, jobject handler);
 extern "C" cef_setting_observer_t* Create_JniCefSettingObserver(JNIEnv *env, jobject handler);
 extern "C" cef_request_context_handler_t* Create_JniCefRequestContextHandler(JNIEnv *env, jobject handler);
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1IsSame(JNIEnv* env, jobject obj, jlong self, jobject other) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefRequestContext), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject other) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return JNI_FALSE;
     cef_request_context_t* _other_ptr = other ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(other, env->GetFieldID(env->GetObjectClass(other), "nativePtr", "J"))) : nullptr;
@@ -29,7 +29,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestCont
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1IsSharingWith(JNIEnv* env, jobject obj, jlong self, jobject other) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefRequestContext), isSharingWith0)(JNIEnv* env, jobject obj, jlong self, jobject other) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return JNI_FALSE;
     cef_request_context_t* _other_ptr = other ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(other, env->GetFieldID(env->GetObjectClass(other), "nativePtr", "J"))) : nullptr;
@@ -38,14 +38,14 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestCont
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1IsGlobal(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefRequestContext), isGlobal0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_global(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetHandler(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getHandler0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_handler(s);
@@ -55,7 +55,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetCachePath(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefRequestContext), getCachePath0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_cache_path(s);
@@ -65,7 +65,7 @@ extern "C" JNIEXPORT jstring JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return jstr;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetCookieManager(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getCookieManager0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
@@ -76,7 +76,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1RegisterSchemeHandlerFactory(JNIEnv* env, jobject obj, jlong self, jstring scheme_name, jstring domain_name, jobject factory) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefRequestContext), registerSchemeHandlerFactory0)(JNIEnv* env, jobject obj, jlong self, jstring scheme_name, jstring domain_name, jobject factory) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return JNI_FALSE;
     auto _scheme_name_str = JStringToCefString(env, scheme_name);
@@ -88,35 +88,35 @@ extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestCont
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1ClearSchemeHandlerFactories(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefRequestContext), clearSchemeHandlerFactories0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->clear_scheme_handler_factories(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1ClearCertificateExceptions(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), clearCertificateExceptions0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     s->clear_certificate_exceptions(s, _callback_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1ClearHttpAuthCredentials(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), clearHttpAuthCredentials0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     s->clear_http_auth_credentials(s, _callback_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1CloseAllConnections(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), closeAllConnections0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     s->close_all_connections(s, _callback_ptr);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1ResolveHost(JNIEnv* env, jobject obj, jlong self, jstring origin, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), resolveHost0)(JNIEnv* env, jobject obj, jlong self, jstring origin, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     auto _origin_str = JStringToCefString(env, origin);
@@ -125,7 +125,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_
     if (_origin_str) cef_string_userfree_free(_origin_str);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetMediaRouter(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getMediaRouter0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
@@ -136,7 +136,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetWebsiteSetting(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getWebsiteSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return nullptr;}
@@ -151,7 +151,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1SetWebsiteSetting(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setWebsiteSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return;}
@@ -164,7 +164,7 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_
     if (_top_level_url_str) cef_string_userfree_free(_top_level_url_str);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetContentSetting(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getContentSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return 0;}
@@ -178,7 +178,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1SetContentSetting(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setContentSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     if (!content_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return;}
@@ -190,14 +190,14 @@ extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_
     if (_top_level_url_str) cef_string_userfree_free(_top_level_url_str);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1SetChromeColorScheme(JNIEnv* env, jobject obj, jlong self, jobject variant, jint user_color) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setChromeColorScheme0)(JNIEnv* env, jobject obj, jlong self, jobject variant, jint user_color) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     if (!variant) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "variant must not be null"); return;}
     s->set_chrome_color_scheme(s, static_cast<cef_color_variant_t>(env->GetLongField(variant, env->GetFieldID(env->GetObjectClass(variant), "value", "J"))), user_color);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetChromeColorSchemeMode(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getChromeColorSchemeMode0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     auto _r = s->get_chrome_color_scheme_mode(s);
@@ -206,13 +206,13 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jint JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetChromeColorSchemeColor(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefRequestContext), getChromeColorSchemeColor0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_chrome_color_scheme_color(s));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetChromeColorSchemeVariant(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getChromeColorSchemeVariant0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     auto _r = s->get_chrome_color_scheme_variant(s);
@@ -221,7 +221,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1AddSettingObserver(JNIEnv* env, jobject obj, jlong self, jobject observer) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), addSettingObserver0)(JNIEnv* env, jobject obj, jlong self, jobject observer) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
     cef_setting_observer_t* _observer_ptr = observer ? Create_JniCefSettingObserver(env, observer) : nullptr;
@@ -232,14 +232,14 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1ClearHttpCache(JNIEnv* env, jobject obj, jlong self, jobject callback) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), clearHttpCache0)(JNIEnv* env, jobject obj, jlong self, jobject callback) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     s->clear_http_cache(s, _callback_ptr);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1GetGlobalContext(JNIEnv* env, jclass clz) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getGlobalContext0)(JNIEnv* env, jclass clz) {
     auto _r = cef_request_context_get_global_context();
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
@@ -247,10 +247,36 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1CreateContext(JNIEnv* env, jclass clz, jobject settings, jobject handler) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), createContext0)(JNIEnv* env, jclass clz, jobject settings, jobject handler) {
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr;}
     cef_request_context_settings_t _settings_val = {};
-    if (settings) {auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRequestContextSettings"); jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;")); if (_rd_cache_path) {const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr); jsize _rd_cache_path_len = env->GetStringLength(_rd_cache_path); cef_string_set(reinterpret_cast<const char16_t*>(_rd_cache_path_chars), _rd_cache_path_len, &_settings_val.cache_path, 1); env->ReleaseStringChars(_rd_cache_path, _rd_cache_path_chars);}_settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_c, "persistSessionCookies", "I"))); jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "acceptLanguageList", "Ljava/lang/String;")); if (_rd_accept_language_list) {const jchar* _rd_accept_language_list_chars = env->GetStringChars(_rd_accept_language_list, nullptr); jsize _rd_accept_language_list_len = env->GetStringLength(_rd_accept_language_list); cef_string_set(reinterpret_cast<const char16_t*>(_rd_accept_language_list_chars), _rd_accept_language_list_len, &_settings_val.accept_language_list, 1); env->ReleaseStringChars(_rd_accept_language_list, _rd_accept_language_list_chars);}jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cookieableSchemesList", "Ljava/lang/String;")); if (_rd_cookieable_schemes_list) {const jchar* _rd_cookieable_schemes_list_chars = env->GetStringChars(_rd_cookieable_schemes_list, nullptr); jsize _rd_cookieable_schemes_list_len = env->GetStringLength(_rd_cookieable_schemes_list); cef_string_set(reinterpret_cast<const char16_t*>(_rd_cookieable_schemes_list_chars), _rd_cookieable_schemes_list_len, &_settings_val.cookieable_schemes_list, 1); env->ReleaseStringChars(_rd_cookieable_schemes_list, _rd_cookieable_schemes_list_chars);}_settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_c, "cookieableSchemesExcludeDefaults", "I"))); _settings_val.size = sizeof(cef_request_context_settings_t);}
+    if (settings) {
+        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRequestContextSettings");
+        jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;"));
+        if (_rd_cache_path) {
+            const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr);
+            jsize _rd_cache_path_len = env->GetStringLength(_rd_cache_path);
+            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cache_path_chars), _rd_cache_path_len, &_settings_val.cache_path, 1);
+            env->ReleaseStringChars(_rd_cache_path, _rd_cache_path_chars);
+        }
+        _settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_c, "persistSessionCookies", "I")));
+        jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "acceptLanguageList", "Ljava/lang/String;"));
+        if (_rd_accept_language_list) {
+            const jchar* _rd_accept_language_list_chars = env->GetStringChars(_rd_accept_language_list, nullptr);
+            jsize _rd_accept_language_list_len = env->GetStringLength(_rd_accept_language_list);
+            cef_string_set(reinterpret_cast<const char16_t*>(_rd_accept_language_list_chars), _rd_accept_language_list_len, &_settings_val.accept_language_list, 1);
+            env->ReleaseStringChars(_rd_accept_language_list, _rd_accept_language_list_chars);
+        }
+        jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cookieableSchemesList", "Ljava/lang/String;"));
+        if (_rd_cookieable_schemes_list) {
+            const jchar* _rd_cookieable_schemes_list_chars = env->GetStringChars(_rd_cookieable_schemes_list, nullptr);
+            jsize _rd_cookieable_schemes_list_len = env->GetStringLength(_rd_cookieable_schemes_list);
+            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cookieable_schemes_list_chars), _rd_cookieable_schemes_list_len, &_settings_val.cookieable_schemes_list, 1);
+            env->ReleaseStringChars(_rd_cookieable_schemes_list, _rd_cookieable_schemes_list_chars);
+        }
+        _settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_c, "cookieableSchemesExcludeDefaults", "I")));
+        _settings_val.size = sizeof(cef_request_context_settings_t);
+    }
     cef_request_context_handler_t* _handler_ptr = handler ? Create_JniCefRequestContextHandler(env, handler) : nullptr;
     auto _r = cef_request_context_create_context(&_settings_val, _handler_ptr);
     if (!_r) return nullptr;
@@ -259,7 +285,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestConte
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefRequestContext_00024NativePeer_N_1CefCreateContextShared(JNIEnv* env, jclass clz, jobject other, jobject handler) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), cefCreateContextShared0)(JNIEnv* env, jclass clz, jobject other, jobject handler) {
     cef_request_context_t* _other_ptr = other ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(other, env->GetFieldID(env->GetObjectClass(other), "nativePtr", "J"))) : nullptr;
     if (_other_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_other_ptr); _b->add_ref(_b);}
     cef_request_context_handler_t* _handler_ptr = handler ? Create_JniCefRequestContextHandler(env, handler) : nullptr;

@@ -3,13 +3,19 @@ package net.kurobako.cef4j.codegen.passes
 import java.nio.file.Files
 import java.nio.file.Path
 
+import net.kurobako.cef4j.codegen.Banners
+
 object EmitMarkerInterfaces {
   def apply(outJava: Path, javaPackage: String): Unit = {
-    val banner = "// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native"
+    val banner     = Banners.java
+    val importLine = s"import ${Banners.javaAnnotationClass};"
+    val annotation = Banners.javaAnnotation
     Files.writeString(
       outJava.resolve("CefLibraryObject.java"),
       s"""$banner
 package $javaPackage;
+
+$importLine
 
 /**
  * Marker interface for CEF structs allocated on the library (DLL) side.
@@ -24,6 +30,7 @@ package $javaPackage;
  *
  * @see CefClientHandler
  */
+$annotation
 public interface CefLibraryObject extends AutoCloseable {
     @Override void close();
 
@@ -42,6 +49,8 @@ public interface CefLibraryObject extends AutoCloseable {
       s"""$banner
 package $javaPackage;
 
+$importLine
+
 /**
  * Marker interface for CEF structs allocated on the client side.
  *
@@ -55,6 +64,7 @@ package $javaPackage;
  *
  * @see CefLibraryObject
  */
+$annotation
 public interface CefClientHandler {}
 """
     )
@@ -62,6 +72,8 @@ public interface CefClientHandler {}
       outJava.resolve("CefEnum.java"),
       s"""$banner
 package $javaPackage;
+
+$importLine
 
 /**
  * Common interface for generated wrappers around CEF enum values.
@@ -75,6 +87,7 @@ package $javaPackage;
  *
  * @param <T> the concrete generated enum wrapper type
  */
+$annotation
 public interface CefEnum<T extends CefEnum<T>> {
 
     /** The underlying C enum numeric value. */

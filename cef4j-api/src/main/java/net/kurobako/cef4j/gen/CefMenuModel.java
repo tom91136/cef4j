@@ -1,9 +1,11 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Supports creation and modification of menus. See cef_menu_id_t for the command ids that have default implementations.
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:44</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMenuModel extends CefLibraryObject {
 
     /**
@@ -719,7 +722,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefMenuModel> create(@Nullable CefMenuModelDelegate delegate) {
-        return Optional.ofNullable(NativePeer.N_Create(delegate));
+        return Optional.ofNullable(NativePeer.create0(delegate));
     }
 
     final class NativePeer implements CefMenuModel, AutoCloseable {
@@ -759,454 +762,454 @@ public interface CefMenuModel extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMenuModel 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isSubMenu() {
             checkNotClosed();
-            return N_IsSubMenu(nativePtr);
+            return isSubMenu0(nativePtr);
         }
 
         @Override
         public boolean clear() {
             checkNotClosed();
-            return N_Clear(nativePtr);
+            return clear0(nativePtr);
         }
 
         @Override
         public long getCount() {
             checkNotClosed();
-            return N_GetCount(nativePtr);
+            return getCount0(nativePtr);
         }
 
         @Override
         public boolean addSeparator() {
             checkNotClosed();
-            return N_AddSeparator(nativePtr);
+            return addSeparator0(nativePtr);
         }
 
         @Override
         public boolean addItem(int commandId, @Nullable String label) {
             checkNotClosed();
-            return N_AddItem(nativePtr, commandId, label);
+            return addItem0(nativePtr, commandId, label);
         }
 
         @Override
         public boolean addCheckItem(int commandId, @Nullable String label) {
             checkNotClosed();
-            return N_AddCheckItem(nativePtr, commandId, label);
+            return addCheckItem0(nativePtr, commandId, label);
         }
 
         @Override
         public boolean addRadioItem(int commandId, @Nullable String label, int groupId) {
             checkNotClosed();
-            return N_AddRadioItem(nativePtr, commandId, label, groupId);
+            return addRadioItem0(nativePtr, commandId, label, groupId);
         }
 
         @Override
         public Optional<CefMenuModel> addSubMenu(int commandId, @Nullable String label) {
             checkNotClosed();
-            return Optional.ofNullable(N_AddSubMenu(nativePtr, commandId, label));
+            return Optional.ofNullable(addSubMenu0(nativePtr, commandId, label));
         }
 
         @Override
         public boolean insertSeparatorAt(long index) {
             checkNotClosed();
-            return N_InsertSeparatorAt(nativePtr, index);
+            return insertSeparatorAt0(nativePtr, index);
         }
 
         @Override
         public boolean insertItemAt(long index, int commandId, @Nullable String label) {
             checkNotClosed();
-            return N_InsertItemAt(nativePtr, index, commandId, label);
+            return insertItemAt0(nativePtr, index, commandId, label);
         }
 
         @Override
         public boolean insertCheckItemAt(long index, int commandId, @Nullable String label) {
             checkNotClosed();
-            return N_InsertCheckItemAt(nativePtr, index, commandId, label);
+            return insertCheckItemAt0(nativePtr, index, commandId, label);
         }
 
         @Override
         public boolean insertRadioItemAt(long index, int commandId, @Nullable String label, int groupId) {
             checkNotClosed();
-            return N_InsertRadioItemAt(nativePtr, index, commandId, label, groupId);
+            return insertRadioItemAt0(nativePtr, index, commandId, label, groupId);
         }
 
         @Override
         public Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nullable String label) {
             checkNotClosed();
-            return Optional.ofNullable(N_InsertSubMenuAt(nativePtr, index, commandId, label));
+            return Optional.ofNullable(insertSubMenuAt0(nativePtr, index, commandId, label));
         }
 
         @Override
         public boolean remove(int commandId) {
             checkNotClosed();
-            return N_Remove(nativePtr, commandId);
+            return remove0(nativePtr, commandId);
         }
 
         @Override
         public boolean removeAt(long index) {
             checkNotClosed();
-            return N_RemoveAt(nativePtr, index);
+            return removeAt0(nativePtr, index);
         }
 
         @Override
         public int getIndexOf(int commandId) {
             checkNotClosed();
-            return N_GetIndexOf(nativePtr, commandId);
+            return getIndexOf0(nativePtr, commandId);
         }
 
         @Override
         public int getCommandIdAt(long index) {
             checkNotClosed();
-            return N_GetCommandIdAt(nativePtr, index);
+            return getCommandIdAt0(nativePtr, index);
         }
 
         @Override
         public boolean setCommandIdAt(long index, int commandId) {
             checkNotClosed();
-            return N_SetCommandIdAt(nativePtr, index, commandId);
+            return setCommandIdAt0(nativePtr, index, commandId);
         }
 
         @Override
         public Optional<String> getLabel(int commandId) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLabel(nativePtr, commandId));
+            return Optional.ofNullable(getLabel0(nativePtr, commandId));
         }
 
         @Override
         public boolean setLabel(int commandId, @Nullable String label) {
             checkNotClosed();
-            return N_SetLabel(nativePtr, commandId, label);
+            return setLabel0(nativePtr, commandId, label);
         }
 
         @Override
         public boolean setLabelAt(long index, @Nullable String label) {
             checkNotClosed();
-            return N_SetLabelAt(nativePtr, index, label);
+            return setLabelAt0(nativePtr, index, label);
         }
 
         @Override
         public CefMenuItemType getType(int commandId) {
             checkNotClosed();
-            return N_GetType(nativePtr, commandId);
+            return getType0(nativePtr, commandId);
         }
 
         @Override
         public int getGroupId(int commandId) {
             checkNotClosed();
-            return N_GetGroupId(nativePtr, commandId);
+            return getGroupId0(nativePtr, commandId);
         }
 
         @Override
         public int getGroupIdAt(long index) {
             checkNotClosed();
-            return N_GetGroupIdAt(nativePtr, index);
+            return getGroupIdAt0(nativePtr, index);
         }
 
         @Override
         public boolean setGroupId(int commandId, int groupId) {
             checkNotClosed();
-            return N_SetGroupId(nativePtr, commandId, groupId);
+            return setGroupId0(nativePtr, commandId, groupId);
         }
 
         @Override
         public boolean setGroupIdAt(long index, int groupId) {
             checkNotClosed();
-            return N_SetGroupIdAt(nativePtr, index, groupId);
+            return setGroupIdAt0(nativePtr, index, groupId);
         }
 
         @Override
         public Optional<CefMenuModel> getSubMenu(int commandId) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSubMenu(nativePtr, commandId));
+            return Optional.ofNullable(getSubMenu0(nativePtr, commandId));
         }
 
         @Override
         public Optional<CefMenuModel> getSubMenuAt(long index) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetSubMenuAt(nativePtr, index));
+            return Optional.ofNullable(getSubMenuAt0(nativePtr, index));
         }
 
         @Override
         public boolean isVisible(int commandId) {
             checkNotClosed();
-            return N_IsVisible(nativePtr, commandId);
+            return isVisible0(nativePtr, commandId);
         }
 
         @Override
         public boolean isVisibleAt(long index) {
             checkNotClosed();
-            return N_IsVisibleAt(nativePtr, index);
+            return isVisibleAt0(nativePtr, index);
         }
 
         @Override
         public boolean setVisible(int commandId, boolean visible) {
             checkNotClosed();
-            return N_SetVisible(nativePtr, commandId, visible);
+            return setVisible0(nativePtr, commandId, visible);
         }
 
         @Override
         public boolean setVisibleAt(long index, boolean visible) {
             checkNotClosed();
-            return N_SetVisibleAt(nativePtr, index, visible);
+            return setVisibleAt0(nativePtr, index, visible);
         }
 
         @Override
         public boolean isEnabled(int commandId) {
             checkNotClosed();
-            return N_IsEnabled(nativePtr, commandId);
+            return isEnabled0(nativePtr, commandId);
         }
 
         @Override
         public boolean isEnabledAt(long index) {
             checkNotClosed();
-            return N_IsEnabledAt(nativePtr, index);
+            return isEnabledAt0(nativePtr, index);
         }
 
         @Override
         public boolean setEnabled(int commandId, boolean enabled) {
             checkNotClosed();
-            return N_SetEnabled(nativePtr, commandId, enabled);
+            return setEnabled0(nativePtr, commandId, enabled);
         }
 
         @Override
         public boolean setEnabledAt(long index, boolean enabled) {
             checkNotClosed();
-            return N_SetEnabledAt(nativePtr, index, enabled);
+            return setEnabledAt0(nativePtr, index, enabled);
         }
 
         @Override
         public boolean isChecked(int commandId) {
             checkNotClosed();
-            return N_IsChecked(nativePtr, commandId);
+            return isChecked0(nativePtr, commandId);
         }
 
         @Override
         public boolean isCheckedAt(long index) {
             checkNotClosed();
-            return N_IsCheckedAt(nativePtr, index);
+            return isCheckedAt0(nativePtr, index);
         }
 
         @Override
         public boolean setChecked(int commandId, boolean checked) {
             checkNotClosed();
-            return N_SetChecked(nativePtr, commandId, checked);
+            return setChecked0(nativePtr, commandId, checked);
         }
 
         @Override
         public boolean setCheckedAt(long index, boolean checked) {
             checkNotClosed();
-            return N_SetCheckedAt(nativePtr, index, checked);
+            return setCheckedAt0(nativePtr, index, checked);
         }
 
         @Override
         public boolean hasAccelerator(int commandId) {
             checkNotClosed();
-            return N_HasAccelerator(nativePtr, commandId);
+            return hasAccelerator0(nativePtr, commandId);
         }
 
         @Override
         public boolean hasAcceleratorAt(long index) {
             checkNotClosed();
-            return N_HasAcceleratorAt(nativePtr, index);
+            return hasAcceleratorAt0(nativePtr, index);
         }
 
         @Override
         public boolean setAccelerator(
                 int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed) {
             checkNotClosed();
-            return N_SetAccelerator(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
+            return setAccelerator0(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean setAcceleratorAt(
                 long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed) {
             checkNotClosed();
-            return N_SetAcceleratorAt(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
+            return setAcceleratorAt0(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean removeAccelerator(int commandId) {
             checkNotClosed();
-            return N_RemoveAccelerator(nativePtr, commandId);
+            return removeAccelerator0(nativePtr, commandId);
         }
 
         @Override
         public boolean removeAcceleratorAt(long index) {
             checkNotClosed();
-            return N_RemoveAcceleratorAt(nativePtr, index);
+            return removeAcceleratorAt0(nativePtr, index);
         }
 
         @Override
         public boolean getAccelerator(
                 int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed) {
             checkNotClosed();
-            return N_GetAccelerator(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
+            return getAccelerator0(nativePtr, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean getAcceleratorAt(
                 long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed) {
             checkNotClosed();
-            return N_GetAcceleratorAt(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
+            return getAcceleratorAt0(nativePtr, index, keyCode, shiftPressed, ctrlPressed, altPressed);
         }
 
         @Override
         public boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color) {
             checkNotClosed();
-            return N_SetColor(nativePtr, commandId, colorType, color);
+            return setColor0(nativePtr, commandId, colorType, color);
         }
 
         @Override
         public boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color) {
             checkNotClosed();
-            return N_SetColorAt(nativePtr, index, colorType, color);
+            return setColorAt0(nativePtr, index, colorType, color);
         }
 
         @Override
         public boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color) {
             checkNotClosed();
-            return N_GetColor(nativePtr, commandId, colorType, color);
+            return getColor0(nativePtr, commandId, colorType, color);
         }
 
         @Override
         public boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color) {
             checkNotClosed();
-            return N_GetColorAt(nativePtr, index, colorType, color);
+            return getColorAt0(nativePtr, index, colorType, color);
         }
 
         @Override
         public boolean setFontList(int commandId, @Nullable String fontList) {
             checkNotClosed();
-            return N_SetFontList(nativePtr, commandId, fontList);
+            return setFontList0(nativePtr, commandId, fontList);
         }
 
         @Override
         public boolean setFontListAt(int index, @Nullable String fontList) {
             checkNotClosed();
-            return N_SetFontListAt(nativePtr, index, fontList);
+            return setFontListAt0(nativePtr, index, fontList);
         }
 
-        private static native boolean N_IsSubMenu(long self);
+        private static native boolean isSubMenu0(long self);
 
-        private static native boolean N_Clear(long self);
+        private static native boolean clear0(long self);
 
-        private static native long N_GetCount(long self);
+        private static native long getCount0(long self);
 
-        private static native boolean N_AddSeparator(long self);
+        private static native boolean addSeparator0(long self);
 
-        private static native boolean N_AddItem(long self, int commandId, String label);
+        private static native boolean addItem0(long self, int commandId, String label);
 
-        private static native boolean N_AddCheckItem(long self, int commandId, String label);
+        private static native boolean addCheckItem0(long self, int commandId, String label);
 
-        private static native boolean N_AddRadioItem(long self, int commandId, String label, int groupId);
+        private static native boolean addRadioItem0(long self, int commandId, String label, int groupId);
 
-        private static native CefMenuModel N_AddSubMenu(long self, int commandId, String label);
+        private static native CefMenuModel addSubMenu0(long self, int commandId, String label);
 
-        private static native boolean N_InsertSeparatorAt(long self, long index);
+        private static native boolean insertSeparatorAt0(long self, long index);
 
-        private static native boolean N_InsertItemAt(long self, long index, int commandId, String label);
+        private static native boolean insertItemAt0(long self, long index, int commandId, String label);
 
-        private static native boolean N_InsertCheckItemAt(long self, long index, int commandId, String label);
+        private static native boolean insertCheckItemAt0(long self, long index, int commandId, String label);
 
-        private static native boolean N_InsertRadioItemAt(
+        private static native boolean insertRadioItemAt0(
                 long self, long index, int commandId, String label, int groupId);
 
-        private static native CefMenuModel N_InsertSubMenuAt(long self, long index, int commandId, String label);
+        private static native CefMenuModel insertSubMenuAt0(long self, long index, int commandId, String label);
 
-        private static native boolean N_Remove(long self, int commandId);
+        private static native boolean remove0(long self, int commandId);
 
-        private static native boolean N_RemoveAt(long self, long index);
+        private static native boolean removeAt0(long self, long index);
 
-        private static native int N_GetIndexOf(long self, int commandId);
+        private static native int getIndexOf0(long self, int commandId);
 
-        private static native int N_GetCommandIdAt(long self, long index);
+        private static native int getCommandIdAt0(long self, long index);
 
-        private static native boolean N_SetCommandIdAt(long self, long index, int commandId);
+        private static native boolean setCommandIdAt0(long self, long index, int commandId);
 
-        private static native String N_GetLabel(long self, int commandId);
+        private static native String getLabel0(long self, int commandId);
 
-        private static native boolean N_SetLabel(long self, int commandId, String label);
+        private static native boolean setLabel0(long self, int commandId, String label);
 
-        private static native boolean N_SetLabelAt(long self, long index, String label);
+        private static native boolean setLabelAt0(long self, long index, String label);
 
-        private static native CefMenuItemType N_GetType(long self, int commandId);
+        private static native CefMenuItemType getType0(long self, int commandId);
 
-        private static native int N_GetGroupId(long self, int commandId);
+        private static native int getGroupId0(long self, int commandId);
 
-        private static native int N_GetGroupIdAt(long self, long index);
+        private static native int getGroupIdAt0(long self, long index);
 
-        private static native boolean N_SetGroupId(long self, int commandId, int groupId);
+        private static native boolean setGroupId0(long self, int commandId, int groupId);
 
-        private static native boolean N_SetGroupIdAt(long self, long index, int groupId);
+        private static native boolean setGroupIdAt0(long self, long index, int groupId);
 
-        private static native CefMenuModel N_GetSubMenu(long self, int commandId);
+        private static native CefMenuModel getSubMenu0(long self, int commandId);
 
-        private static native CefMenuModel N_GetSubMenuAt(long self, long index);
+        private static native CefMenuModel getSubMenuAt0(long self, long index);
 
-        private static native boolean N_IsVisible(long self, int commandId);
+        private static native boolean isVisible0(long self, int commandId);
 
-        private static native boolean N_IsVisibleAt(long self, long index);
+        private static native boolean isVisibleAt0(long self, long index);
 
-        private static native boolean N_SetVisible(long self, int commandId, boolean visible);
+        private static native boolean setVisible0(long self, int commandId, boolean visible);
 
-        private static native boolean N_SetVisibleAt(long self, long index, boolean visible);
+        private static native boolean setVisibleAt0(long self, long index, boolean visible);
 
-        private static native boolean N_IsEnabled(long self, int commandId);
+        private static native boolean isEnabled0(long self, int commandId);
 
-        private static native boolean N_IsEnabledAt(long self, long index);
+        private static native boolean isEnabledAt0(long self, long index);
 
-        private static native boolean N_SetEnabled(long self, int commandId, boolean enabled);
+        private static native boolean setEnabled0(long self, int commandId, boolean enabled);
 
-        private static native boolean N_SetEnabledAt(long self, long index, boolean enabled);
+        private static native boolean setEnabledAt0(long self, long index, boolean enabled);
 
-        private static native boolean N_IsChecked(long self, int commandId);
+        private static native boolean isChecked0(long self, int commandId);
 
-        private static native boolean N_IsCheckedAt(long self, long index);
+        private static native boolean isCheckedAt0(long self, long index);
 
-        private static native boolean N_SetChecked(long self, int commandId, boolean checked);
+        private static native boolean setChecked0(long self, int commandId, boolean checked);
 
-        private static native boolean N_SetCheckedAt(long self, long index, boolean checked);
+        private static native boolean setCheckedAt0(long self, long index, boolean checked);
 
-        private static native boolean N_HasAccelerator(long self, int commandId);
+        private static native boolean hasAccelerator0(long self, int commandId);
 
-        private static native boolean N_HasAcceleratorAt(long self, long index);
+        private static native boolean hasAcceleratorAt0(long self, long index);
 
-        private static native boolean N_SetAccelerator(
+        private static native boolean setAccelerator0(
                 long self, int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
-        private static native boolean N_SetAcceleratorAt(
+        private static native boolean setAcceleratorAt0(
                 long self, long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
-        private static native boolean N_RemoveAccelerator(long self, int commandId);
+        private static native boolean removeAccelerator0(long self, int commandId);
 
-        private static native boolean N_RemoveAcceleratorAt(long self, long index);
+        private static native boolean removeAcceleratorAt0(long self, long index);
 
-        private static native boolean N_GetAccelerator(
+        private static native boolean getAccelerator0(
                 long self, int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        private static native boolean N_GetAcceleratorAt(
+        private static native boolean getAcceleratorAt0(
                 long self, long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        private static native boolean N_SetColor(long self, int commandId, CefMenuColorType colorType, int color);
+        private static native boolean setColor0(long self, int commandId, CefMenuColorType colorType, int color);
 
-        private static native boolean N_SetColorAt(long self, int index, CefMenuColorType colorType, int color);
+        private static native boolean setColorAt0(long self, int index, CefMenuColorType colorType, int color);
 
-        private static native boolean N_GetColor(long self, int commandId, CefMenuColorType colorType, int[] color);
+        private static native boolean getColor0(long self, int commandId, CefMenuColorType colorType, int[] color);
 
-        private static native boolean N_GetColorAt(long self, int index, CefMenuColorType colorType, int[] color);
+        private static native boolean getColorAt0(long self, int index, CefMenuColorType colorType, int[] color);
 
-        private static native boolean N_SetFontList(long self, int commandId, String fontList);
+        private static native boolean setFontList0(long self, int commandId, String fontList);
 
-        private static native boolean N_SetFontListAt(long self, int index, String fontList);
+        private static native boolean setFontListAt0(long self, int index, String fontList);
 
-        static native CefMenuModel N_Create(CefMenuModelDelegate delegate);
+        static native CefMenuModel create0(CefMenuModelDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

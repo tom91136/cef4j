@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent a browser. When used in the browser process the methods of this class may be called on any
@@ -20,6 +22,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:55</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefBrowser extends CefLibraryObject {
 
     /**
@@ -299,180 +302,180 @@ public interface CefBrowser extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefBrowser 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public boolean isValid() {
             checkNotClosed();
-            return N_IsValid(nativePtr);
+            return isValid0(nativePtr);
         }
 
         @Override
         public Optional<CefBrowserHost> getHost() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetHost(nativePtr));
+            return Optional.ofNullable(getHost0(nativePtr));
         }
 
         @Override
         public boolean canGoBack() {
             checkNotClosed();
-            return N_CanGoBack(nativePtr);
+            return canGoBack0(nativePtr);
         }
 
         @Override
         public void goBack() {
             checkNotClosed();
-            N_GoBack(nativePtr);
+            goBack0(nativePtr);
         }
 
         @Override
         public boolean canGoForward() {
             checkNotClosed();
-            return N_CanGoForward(nativePtr);
+            return canGoForward0(nativePtr);
         }
 
         @Override
         public void goForward() {
             checkNotClosed();
-            N_GoForward(nativePtr);
+            goForward0(nativePtr);
         }
 
         @Override
         public boolean isLoading() {
             checkNotClosed();
-            return N_IsLoading(nativePtr);
+            return isLoading0(nativePtr);
         }
 
         @Override
         public void reload() {
             checkNotClosed();
-            N_Reload(nativePtr);
+            reload0(nativePtr);
         }
 
         @Override
         public void reloadIgnoreCache() {
             checkNotClosed();
-            N_ReloadIgnoreCache(nativePtr);
+            reloadIgnoreCache0(nativePtr);
         }
 
         @Override
         public void stopLoad() {
             checkNotClosed();
-            N_StopLoad(nativePtr);
+            stopLoad0(nativePtr);
         }
 
         @Override
         public int getIdentifier() {
             checkNotClosed();
-            return N_GetIdentifier(nativePtr);
+            return getIdentifier0(nativePtr);
         }
 
         @Override
         public boolean isSame(@Nullable CefBrowser that) {
             checkNotClosed();
             CefLibraryObject.requireOpen(that, "CefBrowser");
-            return N_IsSame(nativePtr, that);
+            return isSame0(nativePtr, that);
         }
 
         @Override
         public boolean isPopup() {
             checkNotClosed();
-            return N_IsPopup(nativePtr);
+            return isPopup0(nativePtr);
         }
 
         @Override
         public boolean hasDocument() {
             checkNotClosed();
-            return N_HasDocument(nativePtr);
+            return hasDocument0(nativePtr);
         }
 
         @Override
         public Optional<CefFrame> getMainFrame() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetMainFrame(nativePtr));
+            return Optional.ofNullable(getMainFrame0(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getFocusedFrame() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFocusedFrame(nativePtr));
+            return Optional.ofNullable(getFocusedFrame0(nativePtr));
         }
 
         @Override
         public Optional<CefFrame> getFrameByIdentifier(@Nullable String identifier) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFrameByIdentifier(nativePtr, identifier));
+            return Optional.ofNullable(getFrameByIdentifier0(nativePtr, identifier));
         }
 
         @Override
         public Optional<CefFrame> getFrameByName(@Nullable String name) {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFrameByName(nativePtr, name));
+            return Optional.ofNullable(getFrameByName0(nativePtr, name));
         }
 
         @Override
         public long getFrameCount() {
             checkNotClosed();
-            return N_GetFrameCount(nativePtr);
+            return getFrameCount0(nativePtr);
         }
 
         @Override
         public void getFrameIdentifiers(@Nonnull List<String> identifiers) {
             checkNotClosed();
-            N_GetFrameIdentifiers(nativePtr, identifiers);
+            getFrameIdentifiers0(nativePtr, identifiers);
         }
 
         @Override
         public void getFrameNames(@Nonnull List<String> names) {
             checkNotClosed();
-            N_GetFrameNames(nativePtr, names);
+            getFrameNames0(nativePtr, names);
         }
 
-        private static native boolean N_IsValid(long self);
+        private static native boolean isValid0(long self);
 
-        private static native CefBrowserHost N_GetHost(long self);
+        private static native CefBrowserHost getHost0(long self);
 
-        private static native boolean N_CanGoBack(long self);
+        private static native boolean canGoBack0(long self);
 
-        private static native void N_GoBack(long self);
+        private static native void goBack0(long self);
 
-        private static native boolean N_CanGoForward(long self);
+        private static native boolean canGoForward0(long self);
 
-        private static native void N_GoForward(long self);
+        private static native void goForward0(long self);
 
-        private static native boolean N_IsLoading(long self);
+        private static native boolean isLoading0(long self);
 
-        private static native void N_Reload(long self);
+        private static native void reload0(long self);
 
-        private static native void N_ReloadIgnoreCache(long self);
+        private static native void reloadIgnoreCache0(long self);
 
-        private static native void N_StopLoad(long self);
+        private static native void stopLoad0(long self);
 
-        private static native int N_GetIdentifier(long self);
+        private static native int getIdentifier0(long self);
 
-        private static native boolean N_IsSame(long self, CefBrowser that);
+        private static native boolean isSame0(long self, CefBrowser that);
 
-        private static native boolean N_IsPopup(long self);
+        private static native boolean isPopup0(long self);
 
-        private static native boolean N_HasDocument(long self);
+        private static native boolean hasDocument0(long self);
 
-        private static native CefFrame N_GetMainFrame(long self);
+        private static native CefFrame getMainFrame0(long self);
 
-        private static native CefFrame N_GetFocusedFrame(long self);
+        private static native CefFrame getFocusedFrame0(long self);
 
-        private static native CefFrame N_GetFrameByIdentifier(long self, String identifier);
+        private static native CefFrame getFrameByIdentifier0(long self, String identifier);
 
-        private static native CefFrame N_GetFrameByName(long self, String name);
+        private static native CefFrame getFrameByName0(long self, String name);
 
-        private static native long N_GetFrameCount(long self);
+        private static native long getFrameCount0(long self);
 
-        private static native void N_GetFrameIdentifiers(long self, List<String> identifiers);
+        private static native void getFrameIdentifiers0(long self, List<String> identifiers);
 
-        private static native void N_GetFrameNames(long self, List<String> names);
+        private static native void getFrameNames0(long self, List<String> names);
 
         @Override
         public boolean equals(Object obj) {

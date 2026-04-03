@@ -1,22 +1,22 @@
-// GENERATED - do not edit.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_ssl_status_capi.h"
 #include "include/capi/cef_x509_certificate_capi.h"
 #include "jni_util.h"
 
-extern "C" JNIEXPORT void JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1Release(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefSslStatus), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1IsSecureConnection(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefSslStatus), isSecureConnection0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_secure_connection(s);
     return static_cast<jboolean>(_r);
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1GetCertStatus(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getCertStatus0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return 0;
     auto _r = s->get_cert_status(s);
@@ -25,7 +25,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1GetSslVersion(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getSslVersion0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return 0;
     auto _r = s->get_sslversion(s);
@@ -34,7 +34,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1GetContentStatus(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getContentStatus0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return 0;
     auto _r = s->get_content_status(s);
@@ -43,7 +43,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_net_kurobako_cef4j_gen_CefSslStatus_00024NativePeer_N_1GetX509certificate(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSslStatus), getX509certificate0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_sslstatus_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_x509_certificate(s);

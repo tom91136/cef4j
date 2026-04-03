@@ -1,8 +1,10 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Represents a sink to which media can be routed. Instances of this object are retrieved via
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:221</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefMediaSink extends CefLibraryObject {
 
     /**
@@ -138,68 +141,68 @@ public interface CefMediaSink extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefMediaSink 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<String> getId() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetId(nativePtr));
+            return Optional.ofNullable(getId0(nativePtr));
         }
 
         @Override
         public Optional<String> getName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetName(nativePtr));
+            return Optional.ofNullable(getName0(nativePtr));
         }
 
         @Override
         public CefMediaSinkIconType getIconType() {
             checkNotClosed();
-            return N_GetIconType(nativePtr);
+            return getIconType0(nativePtr);
         }
 
         @Override
         public void getDeviceInfo(@Nullable CefMediaSinkDeviceInfoCallback callback) {
             checkNotClosed();
-            N_GetDeviceInfo(nativePtr, callback);
+            getDeviceInfo0(nativePtr, callback);
         }
 
         @Override
         public boolean isCastSink() {
             checkNotClosed();
-            return N_IsCastSink(nativePtr);
+            return isCastSink0(nativePtr);
         }
 
         @Override
         public boolean isDialSink() {
             checkNotClosed();
-            return N_IsDialSink(nativePtr);
+            return isDialSink0(nativePtr);
         }
 
         @Override
         public boolean isCompatibleWith(@Nullable CefMediaSource source) {
             checkNotClosed();
             CefLibraryObject.requireOpen(source, "CefMediaSource");
-            return N_IsCompatibleWith(nativePtr, source);
+            return isCompatibleWith0(nativePtr, source);
         }
 
-        private static native String N_GetId(long self);
+        private static native String getId0(long self);
 
-        private static native String N_GetName(long self);
+        private static native String getName0(long self);
 
-        private static native CefMediaSinkIconType N_GetIconType(long self);
+        private static native CefMediaSinkIconType getIconType0(long self);
 
-        private static native void N_GetDeviceInfo(long self, CefMediaSinkDeviceInfoCallback callback);
+        private static native void getDeviceInfo0(long self, CefMediaSinkDeviceInfoCallback callback);
 
-        private static native boolean N_IsCastSink(long self);
+        private static native boolean isCastSink0(long self);
 
-        private static native boolean N_IsDialSink(long self);
+        private static native boolean isDialSink0(long self);
 
-        private static native boolean N_IsCompatibleWith(long self, CefMediaSource source);
+        private static native boolean isCompatibleWith0(long self, CefMediaSource source);
 
         @Override
         public boolean equals(Object obj) {

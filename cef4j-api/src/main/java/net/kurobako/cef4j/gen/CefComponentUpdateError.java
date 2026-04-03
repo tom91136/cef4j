@@ -1,11 +1,15 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
 
 /**
  * Possible values: {@link Kind#NONE}, {@link Kind#UPDATE_IN_PROGRESS}, {@link Kind#UPDATE_CANCELED},
  * {@link Kind#RETRY_LATER}, {@link Kind#SERVICE_ERROR}, {@link Kind#UPDATE_CHECK_ERROR}, {@link Kind#CRX_NOT_FOUND},
  * {@link Kind#INVALID_ARGUMENT}, {@link Kind#BAD_CRX_DATA_CALLBACK}
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public final class CefComponentUpdateError implements CefEnum<CefComponentUpdateError> {
 
     /** Known constants for {@link CefComponentUpdateError}. */

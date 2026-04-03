@@ -1,7 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Callback structure that is passed to CefV8Value.createArrayBuffer(). NOTE: This struct is allocated client-side.
@@ -15,6 +17,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8__capi_8h.html">cef_v8_capi.h:375</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefV8ArrayBufferReleaseCallback extends CefLibraryObject {
 
     /**
@@ -69,19 +72,19 @@ public interface CefV8ArrayBufferReleaseCallback extends CefLibraryObject {
             public void run() {
                 if (_log.isTraceEnabled())
                     _log.trace("release CefV8ArrayBufferReleaseCallback 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public void releaseBuffer(@Nullable NativePointer buffer) {
             checkNotClosed();
-            N_ReleaseBuffer(nativePtr, buffer);
+            releaseBuffer0(nativePtr, buffer);
         }
 
-        private static native void N_ReleaseBuffer(long self, NativePointer buffer);
+        private static native void releaseBuffer0(long self, NativePointer buffer);
 
         @Override
         public boolean equals(Object obj) {

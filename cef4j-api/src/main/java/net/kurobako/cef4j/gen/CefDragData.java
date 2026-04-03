@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
+// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 /**
  * Class used to represent drag data. The methods of this class may be called on any thread.
@@ -18,6 +20,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:47</a>
  */
+@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 public interface CefDragData extends CefLibraryObject {
 
     /**
@@ -345,7 +348,7 @@ public interface CefDragData extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefDragData> create() {
-        return Optional.ofNullable(NativePeer.N_Create());
+        return Optional.ofNullable(NativePeer.create0());
     }
 
     final class NativePeer implements CefDragData, AutoCloseable {
@@ -385,230 +388,230 @@ public interface CefDragData extends CefLibraryObject {
             @Override
             public void run() {
                 if (_log.isTraceEnabled()) _log.trace("release CefDragData 0x{}", Long.toHexString(ptr));
-                N_Release(ptr);
+                release0(ptr);
             }
         }
 
-        private static native void N_Release(long ptr);
+        private static native void release0(long ptr);
 
         @Override
         public Optional<CefDragData> cefClone() {
             checkNotClosed();
-            return Optional.ofNullable(N_Clone(nativePtr));
+            return Optional.ofNullable(cefClone0(nativePtr));
         }
 
         @Override
         public boolean isReadOnly() {
             checkNotClosed();
-            return N_IsReadOnly(nativePtr);
+            return isReadOnly0(nativePtr);
         }
 
         @Override
         public boolean isLink() {
             checkNotClosed();
-            return N_IsLink(nativePtr);
+            return isLink0(nativePtr);
         }
 
         @Override
         public boolean isFragment() {
             checkNotClosed();
-            return N_IsFragment(nativePtr);
+            return isFragment0(nativePtr);
         }
 
         @Override
         public boolean isFile() {
             checkNotClosed();
-            return N_IsFile(nativePtr);
+            return isFile0(nativePtr);
         }
 
         @Override
         public Optional<String> getLinkUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLinkUrl(nativePtr));
+            return Optional.ofNullable(getLinkUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getLinkTitle() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLinkTitle(nativePtr));
+            return Optional.ofNullable(getLinkTitle0(nativePtr));
         }
 
         @Override
         public Optional<String> getLinkMetadata() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetLinkMetadata(nativePtr));
+            return Optional.ofNullable(getLinkMetadata0(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentText() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFragmentText(nativePtr));
+            return Optional.ofNullable(getFragmentText0(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentHtml() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFragmentHtml(nativePtr));
+            return Optional.ofNullable(getFragmentHtml0(nativePtr));
         }
 
         @Override
         public Optional<String> getFragmentBaseUrl() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFragmentBaseUrl(nativePtr));
+            return Optional.ofNullable(getFragmentBaseUrl0(nativePtr));
         }
 
         @Override
         public Optional<String> getFileName() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetFileName(nativePtr));
+            return Optional.ofNullable(getFileName0(nativePtr));
         }
 
         @Override
         public long getFileContents(@Nullable CefStreamWriter writer) {
             checkNotClosed();
             CefLibraryObject.requireOpen(writer, "CefStreamWriter");
-            return N_GetFileContents(nativePtr, writer);
+            return getFileContents0(nativePtr, writer);
         }
 
         @Override
         public boolean getFileNames(@Nonnull List<String> names) {
             checkNotClosed();
-            return N_GetFileNames(nativePtr, names);
+            return getFileNames0(nativePtr, names);
         }
 
         @Override
         public boolean getFilePaths(@Nonnull List<String> paths) {
             checkNotClosed();
-            return N_GetFilePaths(nativePtr, paths);
+            return getFilePaths0(nativePtr, paths);
         }
 
         @Override
         public void setLinkUrl(@Nullable String url) {
             checkNotClosed();
-            N_SetLinkUrl(nativePtr, url);
+            setLinkUrl0(nativePtr, url);
         }
 
         @Override
         public void setLinkTitle(@Nullable String title) {
             checkNotClosed();
-            N_SetLinkTitle(nativePtr, title);
+            setLinkTitle0(nativePtr, title);
         }
 
         @Override
         public void setLinkMetadata(@Nullable String data) {
             checkNotClosed();
-            N_SetLinkMetadata(nativePtr, data);
+            setLinkMetadata0(nativePtr, data);
         }
 
         @Override
         public void setFragmentText(@Nullable String text) {
             checkNotClosed();
-            N_SetFragmentText(nativePtr, text);
+            setFragmentText0(nativePtr, text);
         }
 
         @Override
         public void setFragmentHtml(@Nullable String html) {
             checkNotClosed();
-            N_SetFragmentHtml(nativePtr, html);
+            setFragmentHtml0(nativePtr, html);
         }
 
         @Override
         public void setFragmentBaseUrl(@Nullable String baseUrl) {
             checkNotClosed();
-            N_SetFragmentBaseUrl(nativePtr, baseUrl);
+            setFragmentBaseUrl0(nativePtr, baseUrl);
         }
 
         @Override
         public void resetFileContents() {
             checkNotClosed();
-            N_ResetFileContents(nativePtr);
+            resetFileContents0(nativePtr);
         }
 
         @Override
         public void addFile(@Nullable String path, @Nullable String displayName) {
             checkNotClosed();
-            N_AddFile(nativePtr, path, displayName);
+            addFile0(nativePtr, path, displayName);
         }
 
         @Override
         public void clearFilenames() {
             checkNotClosed();
-            N_ClearFilenames(nativePtr);
+            clearFilenames0(nativePtr);
         }
 
         @Override
         public Optional<CefImage> getImage() {
             checkNotClosed();
-            return Optional.ofNullable(N_GetImage(nativePtr));
+            return Optional.ofNullable(getImage0(nativePtr));
         }
 
         @Override
         public CefPoint getImageHotspot() {
             checkNotClosed();
-            return N_GetImageHotspot(nativePtr);
+            return getImageHotspot0(nativePtr);
         }
 
         @Override
         public boolean hasImage() {
             checkNotClosed();
-            return N_HasImage(nativePtr);
+            return hasImage0(nativePtr);
         }
 
-        private static native CefDragData N_Clone(long self);
+        private static native CefDragData cefClone0(long self);
 
-        private static native boolean N_IsReadOnly(long self);
+        private static native boolean isReadOnly0(long self);
 
-        private static native boolean N_IsLink(long self);
+        private static native boolean isLink0(long self);
 
-        private static native boolean N_IsFragment(long self);
+        private static native boolean isFragment0(long self);
 
-        private static native boolean N_IsFile(long self);
+        private static native boolean isFile0(long self);
 
-        private static native String N_GetLinkUrl(long self);
+        private static native String getLinkUrl0(long self);
 
-        private static native String N_GetLinkTitle(long self);
+        private static native String getLinkTitle0(long self);
 
-        private static native String N_GetLinkMetadata(long self);
+        private static native String getLinkMetadata0(long self);
 
-        private static native String N_GetFragmentText(long self);
+        private static native String getFragmentText0(long self);
 
-        private static native String N_GetFragmentHtml(long self);
+        private static native String getFragmentHtml0(long self);
 
-        private static native String N_GetFragmentBaseUrl(long self);
+        private static native String getFragmentBaseUrl0(long self);
 
-        private static native String N_GetFileName(long self);
+        private static native String getFileName0(long self);
 
-        private static native long N_GetFileContents(long self, CefStreamWriter writer);
+        private static native long getFileContents0(long self, CefStreamWriter writer);
 
-        private static native boolean N_GetFileNames(long self, List<String> names);
+        private static native boolean getFileNames0(long self, List<String> names);
 
-        private static native boolean N_GetFilePaths(long self, List<String> paths);
+        private static native boolean getFilePaths0(long self, List<String> paths);
 
-        private static native void N_SetLinkUrl(long self, String url);
+        private static native void setLinkUrl0(long self, String url);
 
-        private static native void N_SetLinkTitle(long self, String title);
+        private static native void setLinkTitle0(long self, String title);
 
-        private static native void N_SetLinkMetadata(long self, String data);
+        private static native void setLinkMetadata0(long self, String data);
 
-        private static native void N_SetFragmentText(long self, String text);
+        private static native void setFragmentText0(long self, String text);
 
-        private static native void N_SetFragmentHtml(long self, String html);
+        private static native void setFragmentHtml0(long self, String html);
 
-        private static native void N_SetFragmentBaseUrl(long self, String baseUrl);
+        private static native void setFragmentBaseUrl0(long self, String baseUrl);
 
-        private static native void N_ResetFileContents(long self);
+        private static native void resetFileContents0(long self);
 
-        private static native void N_AddFile(long self, String path, String displayName);
+        private static native void addFile0(long self, String path, String displayName);
 
-        private static native void N_ClearFilenames(long self);
+        private static native void clearFilenames0(long self);
 
-        private static native CefImage N_GetImage(long self);
+        private static native CefImage getImage0(long self);
 
-        private static native CefPoint N_GetImageHotspot(long self);
+        private static native CefPoint getImageHotspot0(long self);
 
-        private static native boolean N_HasImage(long self);
+        private static native boolean hasImage0(long self);
 
-        static native CefDragData N_Create();
+        static native CefDragData create0();
 
         @Override
         public boolean equals(Object obj) {
