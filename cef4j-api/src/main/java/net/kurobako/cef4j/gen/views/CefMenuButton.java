@@ -1,11 +1,15 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefMenuAnchorPosition;
+import net.kurobako.cef4j.gen.CefMenuModel;
+import net.kurobako.cef4j.gen.CefPoint;
 
 /**
  * MenuButton is a button with optional text, icon and/or menu marker that shows a menu when clicked with the left mouse
@@ -27,7 +31,8 @@ public interface CefMenuButton extends CefLibraryObject {
     /**
      * Show a menu with contents {@code menu_model}. {@code screen_point} specifies the menu position in screen
      * coordinates. {@code anchor_position} specifies how the menu will be anchored relative to {@code screen_point}.
-     * This method should be called from {@link CefMenuButtonDelegate#onMenuButtonPressed(CefMenuButton, CefPoint,
+     * This method should be called from
+     * {@link net.kurobako.cef4j.gen.views.CefMenuButtonDelegate#onMenuButtonPressed(CefMenuButton, CefPoint,
      * CefMenuButtonPressedLock)}.
      *
      * <p>Definition generated from views/cef_menu_button_capi.h
@@ -46,7 +51,8 @@ public interface CefMenuButton extends CefLibraryObject {
 
     /**
      * Show the menu for this button. Results in a call to
-     * {@link CefMenuButtonDelegate#onMenuButtonPressed(CefMenuButton, CefPoint, CefMenuButtonPressedLock)}.
+     * {@link net.kurobako.cef4j.gen.views.CefMenuButtonDelegate#onMenuButtonPressed(CefMenuButton, CefPoint,
+     * CefMenuButtonPressedLock)}.
      *
      * <p>Definition generated from views/cef_menu_button_capi.h
      *

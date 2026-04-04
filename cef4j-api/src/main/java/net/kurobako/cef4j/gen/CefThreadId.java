@@ -32,41 +32,44 @@ public final class CefThreadId implements CefEnum<CefThreadId> {
         /**
          * The main thread in the browser. This will be the same as the main application thread if CefInitialize() is
          * called with a CefSettings.multi_threaded_message_loop value of {@code false}. Do not perform blocking tasks
-         * on this thread. All tasks posted after {@link CefBrowserProcessHandler#onContextInitialized()} and before
-         * CefShutdown() are guaranteed to run. This thread will outlive all other CEF threads.
+         * on this thread. All tasks posted after
+         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
+         * guaranteed to run. This thread will outlive all other CEF threads.
          */
         UI(0, "0", "TID_UI"),
         /**
          * Used for blocking tasks like file system access where the user won't notice if the task takes an arbitrarily
-         * long time to complete. All tasks posted after {@link CefBrowserProcessHandler#onContextInitialized()} and
-         * before CefShutdown() are guaranteed to run.
+         * long time to complete. All tasks posted after
+         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
+         * guaranteed to run.
          */
         FILE_BACKGROUND(1, "1", "TID_FILE_BACKGROUND"),
         /**
          * Used for blocking tasks like file system access that affect UI or responsiveness of future user interactions.
          * Do not use if an immediate response to a user interaction is expected. All tasks posted after
-         * {@link CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run.
-         * Examples: - Updating the UI to reflect progress on a long task. - Loading data that might be shown in the UI
-         * after a future user interaction.
+         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
+         * guaranteed to run. Examples: - Updating the UI to reflect progress on a long task. - Loading data that might
+         * be shown in the UI after a future user interaction.
          */
         FILE_USER_VISIBLE(2, "2", "TID_FILE_USER_VISIBLE"),
         /**
          * Used for blocking tasks like file system access that affect UI immediately after a user interaction. All
-         * tasks posted after {@link CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
-         * guaranteed to run. Example: Generating data shown in the UI immediately after a click.
+         * tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before
+         * CefShutdown() are guaranteed to run. Example: Generating data shown in the UI immediately after a click.
          */
         FILE_USER_BLOCKING(3, "3", "TID_FILE_USER_BLOCKING"),
         /** Used to launch and terminate browser processes. */
         PROCESS_LAUNCHER(4, "4", "TID_PROCESS_LAUNCHER"),
         /**
          * Used to process IPC and network messages. Do not perform blocking tasks on this thread. All tasks posted
-         * after {@link CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run.
+         * after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown()
+         * are guaranteed to run.
          */
         IO(5, "5", "TID_IO"),
         /**
          * The main thread in the renderer. Used for all WebKit and V8 interaction. Tasks may be posted to this thread
-         * after {@link CefRenderProcessHandler#onWebKitInitialized()} but are not guaranteed to run before sub-process
-         * termination (sub-processes may be killed at any time without warning).
+         * after {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onWebKitInitialized()} but are not guaranteed to
+         * run before sub-process termination (sub-processes may be killed at any time without warning).
          */
         RENDERER(6, "6", "TID_RENDERER"),
         NUM_VALUES(7, "7", "TID_NUM_VALUES");

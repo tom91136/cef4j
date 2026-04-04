@@ -72,10 +72,11 @@ public interface CefDisplayHandler extends CefClientHandler {
      * Called when web content in the page has toggled fullscreen mode. If {@code fullscreen} is {@code true} the
      * content will automatically be sized to fill the browser content area. If {@code fullscreen} is {@code false} the
      * content will automatically return to its original size and position. With Alloy style the client is responsible
-     * for triggering the fullscreen transition (for example, by calling {@link CefWindow#setFullscreen(boolean)} when
-     * using Views). With Chrome style the fullscreen transition will be triggered automatically. The
-     * {@link CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)} method will be called during the
-     * fullscreen transition for notification purposes.
+     * for triggering the fullscreen transition (for example, by calling
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#setFullscreen(boolean)} when using Views). With Chrome style the
+     * fullscreen transition will be triggered automatically. The
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)} method
+     * will be called during the fullscreen transition for notification purposes.
      *
      * <p>Definition generated from cef_display_handler_capi.h
      *
@@ -148,9 +149,9 @@ public interface CefDisplayHandler extends CefClientHandler {
     }
 
     /**
-     * Called when auto-resize is enabled via {@link CefBrowserHost#setAutoResizeEnabled(boolean, CefSize, CefSize)} and
-     * the contents have auto-resized. {@code new_size} will be the desired size in DIP coordinates. Return {@code true}
-     * if the resize was handled or {@code false} for default handling.
+     * Called when auto-resize is enabled via {@link net.kurobako.cef4j.gen.CefBrowserHost#setAutoResizeEnabled(boolean,
+     * CefSize, CefSize)} and the contents have auto-resized. {@code new_size} will be the desired size in DIP
+     * coordinates. Return {@code true} if the resize was handled or {@code false} for default handling.
      *
      * <p>Definition generated from cef_display_handler_capi.h
      *
@@ -220,12 +221,13 @@ public interface CefDisplayHandler extends CefClientHandler {
      * {@code new_bounds} are in DIP screen coordinates.
      *
      * <p>With Views-hosted browsers {@code new_bounds} are the desired bounds for the containing CefWindow and may be
-     * passed directly to CefWindow.setBounds(). With external (client-provided) parent on macOS and Windows
-     * {@code new_bounds} are the desired frame bounds for the containing root window. With other non-Views browsers
-     * {@code new_bounds} are the desired bounds for the browser content only unless the client implements either
-     * {@link CefDisplayHandler#getRootWindowScreenRect(CefBrowser, CefRect.Mutable)} for windowed browsers or
-     * CefRenderHandler.getWindowScreenRect() for windowless browsers. Clients may expand browser content bounds to
-     * window bounds using OS-specific or CefDisplay methods.
+     * passed directly to net.kurobako.cef4j.gen.views.CefWindow.setBounds(). With external (client-provided) parent on
+     * macOS and Windows {@code new_bounds} are the desired frame bounds for the containing root window. With other
+     * non-Views browsers {@code new_bounds} are the desired bounds for the browser content only unless the client
+     * implements either {@link net.kurobako.cef4j.gen.CefDisplayHandler#getRootWindowScreenRect(CefBrowser,
+     * CefRect.Mutable)} for windowed browsers or net.kurobako.cef4j.gen.CefRenderHandler.getWindowScreenRect() for
+     * windowless browsers. Clients may expand browser content bounds to window bounds using OS-specific or CefDisplay
+     * methods.
      *
      * <p>Return {@code true} if this method was handled or {@code false} for default handling. Default move/resize
      * behavior is only provided with Views-hosted Chrome style browsers.
@@ -249,7 +251,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * Called to retrieve the external (client-provided) root window rectangle in screen DIP coordinates. Only called
      * for windowed browsers on Windows and Linux. Return {@code true} if the rectangle was provided. Return
      * {@code false} to use the root window bounds on Windows or the browser content bounds on Linux. For additional
-     * usage details see {@link CefBrowserHost#notifyScreenInfoChanged()}.
+     * usage details see {@link net.kurobako.cef4j.gen.CefBrowserHost#notifyScreenInfoChanged()}.
      *
      * <p>Added in CEF API version 13700.
      *

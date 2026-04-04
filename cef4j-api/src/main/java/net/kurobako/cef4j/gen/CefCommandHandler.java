@@ -28,8 +28,9 @@ public interface CefCommandHandler extends CefClientHandler {
      * cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to
      * version-specific numerical {@code command_id} values. {@code disposition} provides information about the intended
      * command target. Return {@code true} if the command was handled or {@code false} for the default implementation.
-     * For context menu commands this will be called after {@link CefContextMenuHandler#onContextMenuCommand(CefBrowser,
-     * CefFrame, CefContextMenuParams, int, CefEventFlags)}. Only used with Chrome style.
+     * For context menu commands this will be called after
+     * {@link net.kurobako.cef4j.gen.CefContextMenuHandler#onContextMenuCommand(CefBrowser, CefFrame,
+     * CefContextMenuParams, int, CefEventFlags)}. Only used with Chrome style.
      *
      * <p>Definition generated from cef_command_handler_capi.h
      *

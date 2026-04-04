@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for {@link CefMediaSink#getDeviceInfo(CefMediaSinkDeviceInfoCallback)}. The methods of this class
- * will be called on the browser process UI thread.
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefMediaSink#getDeviceInfo(CefMediaSinkDeviceInfoCallback)}. The
+ * methods of this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *

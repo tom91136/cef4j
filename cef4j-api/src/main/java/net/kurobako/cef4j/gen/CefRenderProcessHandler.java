@@ -39,11 +39,12 @@ public interface CefRenderProcessHandler extends CefClientHandler {
     /**
      * Called after a browser has been created. When browsing cross-origin a new browser will be created before the old
      * browser with the same identifier is destroyed. {@code extra_info} is an optional read-only value originating from
-     * CefBrowserHost.createBrowser(), CefBrowserHost.createBrowserSync(),
-     * {@link CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition,
-     * boolean, NativePointer, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference,
-     * CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])} or
-     * CefBrowserView.createBrowserView().
+     * net.kurobako.cef4j.gen.CefBrowserHost.createBrowser(), net.kurobako.cef4j.gen.CefBrowserHost.createBrowserSync(),
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String,
+     * CefWindowOpenDisposition, boolean, NativePointer, CefWindowInfo.Mutable,
+     * java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable,
+     * java.util.concurrent.atomic.AtomicReference, int[])} or
+     * net.kurobako.cef4j.gen.views.CefBrowserView.createBrowserView().
      *
      * <p>Definition generated from cef_render_process_handler_capi.h
      *
@@ -87,9 +88,9 @@ public interface CefRenderProcessHandler extends CefClientHandler {
 
     /**
      * Called immediately after the V8 context for a frame has been created. To retrieve the JavaScript 'window' object
-     * use the {@link CefV8Context#getGlobal()} method. V8 handles can only be accessed from the thread on which they
-     * are created. A task runner for posting tasks on the associated thread can be retrieved via the
-     * {@link CefV8Context#getTaskRunner()} method.
+     * use the {@link net.kurobako.cef4j.gen.CefV8Context#getGlobal()} method. V8 handles can only be accessed from the
+     * thread on which they are created. A task runner for posting tasks on the associated thread can be retrieved via
+     * the {@link net.kurobako.cef4j.gen.CefV8Context#getTaskRunner()} method.
      *
      * <p>Definition generated from cef_render_process_handler_capi.h
      *

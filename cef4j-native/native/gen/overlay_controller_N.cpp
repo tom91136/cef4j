@@ -5,19 +5,19 @@
 #include "include/capi/views/cef_window_capi.h"
 #include "jni_util.h"
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefOverlayController), isValid0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefOverlayController), isValid0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_valid(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefOverlayController), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefOverlayController), isSame0)(JNIEnv* env, jobject obj, jlong self, jobject that) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return JNI_FALSE;
     cef_overlay_controller_t* _that_ptr = that ? reinterpret_cast<cef_overlay_controller_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
@@ -26,27 +26,27 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefOverlayController), isSame0)(JNIEnv* en
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getContentsView0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getContentsView0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_contents_view(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getWindow0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getWindow0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_window(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefWindow$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getDockingMode0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getDockingMode0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return 0;
     auto _r = s->get_docking_mode(s);
@@ -55,13 +55,13 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getDockingMode0)(JNI
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), destroy0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), destroy0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     s->destroy(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setBounds0)(JNIEnv* env, jobject obj, jlong self, jobject bounds) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setBounds0)(JNIEnv* env, jobject obj, jlong self, jobject bounds) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     if (!bounds) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return;}
@@ -76,7 +76,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setBounds0)(JNIEnv* env
     s->set_bounds(s, &_bounds_val);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getBounds0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getBounds0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_bounds(s);
@@ -86,7 +86,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getBounds0)(JNIEnv* 
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getBoundsInScreen0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getBoundsInScreen0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_bounds_in_screen(s);
@@ -96,7 +96,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getBoundsInScreen0)(
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setSize0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setSize0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     if (!size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return;}
@@ -109,7 +109,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setSize0)(JNIEnv* env, 
     s->set_size(s, &_size_val);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getSize0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     cef_size_t result = s->get_size(s);
@@ -119,7 +119,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getSize0)(JNIEnv* en
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setPosition0)(JNIEnv* env, jobject obj, jlong self, jobject position) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setPosition0)(JNIEnv* env, jobject obj, jlong self, jobject position) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     if (!position) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "position must not be null"); return;}
@@ -132,7 +132,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setPosition0)(JNIEnv* e
     s->set_position(s, &_position_val);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getPosition0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getPosition0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     cef_point_t result = s->get_position(s);
@@ -142,7 +142,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getPosition0)(JNIEnv
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setInsets0)(JNIEnv* env, jobject obj, jlong self, jobject insets) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setInsets0)(JNIEnv* env, jobject obj, jlong self, jobject insets) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     if (!insets) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "insets must not be null"); return;}
@@ -157,7 +157,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setInsets0)(JNIEnv* env
     s->set_insets(s, &_insets_val);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getInsets0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getInsets0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return nullptr;
     cef_insets_t result = s->get_insets(s);
@@ -167,26 +167,26 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefOverlayController), getInsets0)(JNIEnv* 
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), sizeToPreferredSize0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), sizeToPreferredSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     s->size_to_preferred_size(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefOverlayController), setVisible0)(JNIEnv* env, jobject obj, jlong self, jboolean visible) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setVisible0)(JNIEnv* env, jobject obj, jlong self, jboolean visible) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
     s->set_visible(s, static_cast<bool>(visible));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefOverlayController), isVisible0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefOverlayController), isVisible0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_visible(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefOverlayController), isDrawn0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefOverlayController), isDrawn0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_drawn(s);

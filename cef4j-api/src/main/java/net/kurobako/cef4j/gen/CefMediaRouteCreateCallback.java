@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for {@link CefMediaRouter#createRoute(CefMediaSource, CefMediaSink, CefMediaRouteCreateCallback)}.
- * The methods of this class will be called on the browser process UI thread.
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink,
+ * CefMediaRouteCreateCallback)}. The methods of this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *
@@ -24,9 +24,9 @@ public interface CefMediaRouteCreateCallback extends CefClientHandler {
 
     /**
      * Method that will be executed when the route creation has finished. {@code result} will be
-     * {@link CefMediaRouteCreateResult.Kind#OK} if the route creation succeeded. {@code error} will be a description of
-     * the error if the route creation failed. {@code route} is the resulting route, or empty if the route creation
-     * failed.
+     * {@link net.kurobako.cef4j.gen.CefMediaRouteCreateResult.Kind#OK} if the route creation succeeded. {@code error}
+     * will be a description of the error if the route creation failed. {@code route} is the resulting route, or empty
+     * if the route creation failed.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *

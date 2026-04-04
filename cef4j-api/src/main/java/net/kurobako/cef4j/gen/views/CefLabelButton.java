@@ -1,11 +1,16 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefButtonState;
+import net.kurobako.cef4j.gen.CefHorizontalAlignment;
+import net.kurobako.cef4j.gen.CefImage;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefSize;
 
 /**
  * LabelButton is a button with optional text and/or icon. Methods must be called on the browser process UI thread
@@ -62,7 +67,7 @@ public interface CefLabelButton extends CefLibraryObject {
 
     /**
      * Sets the image shown for {@code button_state}. When this Button is drawn if no image exists for the current state
-     * then the image for {@link CefButtonState.Kind#NORMAL}, if any, will be shown.
+     * then the image for {@link net.kurobako.cef4j.gen.CefButtonState.Kind#NORMAL}, if any, will be shown.
      *
      * <p>Definition generated from views/cef_label_button_capi.h
      *
@@ -78,7 +83,7 @@ public interface CefLabelButton extends CefLibraryObject {
 
     /**
      * Returns the image shown for {@code button_state}. If no image exists for that state then the image for
-     * {@link CefButtonState.Kind#NORMAL} will be returned.
+     * {@link net.kurobako.cef4j.gen.CefButtonState.Kind#NORMAL} will be returned.
      *
      * <p>Definition generated from views/cef_label_button_capi.h
      *
@@ -147,7 +152,8 @@ public interface CefLabelButton extends CefLibraryObject {
     void setFontList(@Nullable String fontList);
 
     /**
-     * Sets the horizontal alignment; reversed in RTL. Default is {@link CefHorizontalAlignment.Kind#CENTER}.
+     * Sets the horizontal alignment; reversed in RTL. Default is
+     * {@link net.kurobako.cef4j.gen.CefHorizontalAlignment.Kind#CENTER}.
      *
      * <p>Definition generated from views/cef_label_button_capi.h
      *

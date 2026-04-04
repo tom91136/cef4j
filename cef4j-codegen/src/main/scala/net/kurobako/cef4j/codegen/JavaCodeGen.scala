@@ -38,12 +38,14 @@ ${allLines.mkString("\n")}
       capiSource: String = "",
       cPrototype: String = "",
       cppSource: String = "",
-      classDocSuffix: String = ""
+      classDocSuffix: String = "",
+      subPackage: String = ""
   )(using Naming.Context, DocComments.Context): String = {
     val allImports  = (Banners.javaAnnotationImport :: imports).distinct
     val importBlock = s"\n${allImports.mkString("\n")}\n"
+    val pkg         = if (subPackage.nonEmpty) s"${Naming.javaPackage}.$subPackage" else Naming.javaPackage
     s"""${Banners.java}
-package ${Naming.javaPackage};
+package $pkg;
 $importBlock
 ${renderClassDoc(classDoc, capiSource, cPrototype, cppSource, classDocSuffix)}${Banners.javaAnnotation}
 $declaration {
@@ -53,8 +55,9 @@ $body
 """
   }
 
-  def writeJavaFile(outDir: Path, className: String, content: String): Unit = {
-    val file = outDir.resolve(s"$className.java")
+  def writeJavaFile(outDir: Path, className: String, content: String, subPackage: String = ""): Unit = {
+    val dir  = if (subPackage.nonEmpty) outDir.resolve(subPackage.replace('.', '/')) else outDir
+    val file = dir.resolve(s"$className.java")
     Files.createDirectories(file.getParent)
     Files.writeString(file, content)
   }

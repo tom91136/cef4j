@@ -268,8 +268,9 @@ public interface CefDragData extends CefLibraryObject {
     void setFragmentBaseUrl(@Nullable String baseUrl);
 
     /**
-     * Reset the file contents. You should do this before calling {@link CefBrowserHost#dragTargetDragEnter(CefDragData,
-     * CefMouseEvent, CefDragOperationsMask)} as the web view does not allow us to drag in this kind of data.
+     * Reset the file contents. You should do this before calling
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#dragTargetDragEnter(CefDragData, CefMouseEvent,
+     * CefDragOperationsMask)} as the web view does not allow us to drag in this kind of data.
      *
      * <p>Definition generated from cef_drag_data_capi.h
      *

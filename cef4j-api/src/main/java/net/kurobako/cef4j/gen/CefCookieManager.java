@@ -110,7 +110,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * Returns the global cookie manager. By default data will be stored at cef_settings_t.cache_path if specified or in
      * memory otherwise. If {@code callback} is non-{@code null} it will be executed asnychronously on the UI thread
      * after the manager's storage has been initialized. Using this method is equivalent to calling
-     * CefRequestContext.getGlobalContext()->GetDefaultCookieManager().
+     * net.kurobako.cef4j.gen.CefRequestContext.getGlobalContext()->GetDefaultCookieManager().
      *
      * <p>Definition generated from cef_cookie_capi.h
      *

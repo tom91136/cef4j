@@ -9,9 +9,10 @@ import javax.annotation.processing.Generated;
 
 /**
  * Implement this interface to handle HTTP server requests. A new thread will be created for each
- * CefServer.createServer() call (the "dedicated server thread"), and the methods of this class will be called on that
- * thread. It is therefore recommended to use a different CefServerHandler instance for each CefServer.createServer()
- * call to avoid thread safety issues in the CefServerHandler implementation.
+ * net.kurobako.cef4j.gen.CefServer.createServer() call (the "dedicated server thread"), and the methods of this class
+ * will be called on that thread. It is therefore recommended to use a different CefServerHandler instance for each
+ * net.kurobako.cef4j.gen.CefServer.createServer() call to avoid thread safety issues in the CefServerHandler
+ * implementation.
  *
  * <p>Definition generated from cef_server_capi.h
  *
@@ -26,10 +27,11 @@ import javax.annotation.processing.Generated;
 public interface CefServerHandler extends CefClientHandler {
 
     /**
-     * Called when {@code server} is created. If the server was started successfully then {@link CefServer#isRunning()}
-     * will return {@code true}. The server will continue running until {@link CefServer#shutdown()} is called, after
-     * which time OnServerDestroyed will be called. If the server failed to start then OnServerDestroyed will be called
-     * immediately after this method returns.
+     * Called when {@code server} is created. If the server was started successfully then
+     * {@link net.kurobako.cef4j.gen.CefServer#isRunning()} will return {@code true}. The server will continue running
+     * until {@link net.kurobako.cef4j.gen.CefServer#shutdown()} is called, after which time OnServerDestroyed will be
+     * called. If the server failed to start then OnServerDestroyed will be called immediately after this method
+     * returns.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -73,7 +75,7 @@ public interface CefServerHandler extends CefClientHandler {
      * The client should release any data associated with {@code connection_id} when this method is called and
      * {@code connection_id} should no longer be passed to CefServer methods. Disconnects can originate from either the
      * client or the server. For example, the server will disconnect automatically after a
-     * CefServer.sendHttpXxxresponse() method is called.
+     * net.kurobako.cef4j.gen.CefServer.sendHttpXxxresponse() method is called.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -112,9 +114,9 @@ public interface CefServerHandler extends CefClientHandler {
      * {@code callback} either synchronously or asynchronously to accept or decline the WebSocket connection. If the
      * request is accepted then OnWebSocketConnected will be called after the WebSocket has connected and incoming
      * messages will be delivered to the OnWebSocketMessage callback. If the request is declined then the client will be
-     * disconnected and OnClientDisconnected will be called. Call the {@link CefServer#sendWebSocketMessage(int,
-     * java.nio.ByteBuffer)} method after receiving the OnWebSocketConnected callback to respond with WebSocket
-     * messages.
+     * disconnected and OnClientDisconnected will be called. Call the
+     * {@link net.kurobako.cef4j.gen.CefServer#sendWebSocketMessage(int, java.nio.ByteBuffer)} method after receiving
+     * the OnWebSocketConnected callback to respond with WebSocket messages.
      *
      * <p>Definition generated from cef_server_capi.h
      *

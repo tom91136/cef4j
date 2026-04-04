@@ -5,7 +5,7 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Docking modes supported by CefWindow.addOverlay().
+ * Docking modes supported by net.kurobako.cef4j.gen.views.CefWindow.addOverlay().
  *
  * <p>Definition generated from cef_types.h
  *

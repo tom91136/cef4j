@@ -12,7 +12,7 @@ import javax.annotation.processing.Generated;
  * Class representing a V8 value handle. V8 handles can only be accessed from the thread on which they are created.
  * Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and WebWorker
  * threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * {@link CefV8Context#getTaskRunner()} method.
+ * {@link net.kurobako.cef4j.gen.CefV8Context#getTaskRunner()} method.
  *
  * <p>Definition generated from cef_v8_capi.h
  *
@@ -430,9 +430,9 @@ public interface CefV8Value extends CefLibraryObject {
 
     /**
      * Registers an identifier and returns {@code true} on success. Access to the identifier will be forwarded to the
-     * CefV8Accessor instance passed to CefV8Value.createObject(). Returns {@code false} if this method is called
-     * incorrectly or an exception is thrown. For read-only values this method will return {@code true} even though
-     * assignment failed.
+     * CefV8Accessor instance passed to net.kurobako.cef4j.gen.CefV8Value.createObject(). Returns {@code false} if this
+     * method is called incorrectly or an exception is thrown. For read-only values this method will return {@code true}
+     * even though assignment failed.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
@@ -524,8 +524,8 @@ public interface CefV8Value extends CefLibraryObject {
     /**
      * Prevent the ArrayBuffer from using it's memory block by setting the length to zero. This operation cannot be
      * undone. If the ArrayBuffer was created with CreateArrayBuffer then
-     * {@link CefV8ArrayBufferReleaseCallback#releaseBuffer(NativePointer)} will be called to release the underlying
-     * buffer.
+     * {@link net.kurobako.cef4j.gen.CefV8ArrayBufferReleaseCallback#releaseBuffer(NativePointer)} will be called to
+     * release the underlying buffer.
      *
      * <p>Definition generated from cef_v8_capi.h
      *
@@ -773,9 +773,9 @@ public interface CefV8Value extends CefLibraryObject {
      * Create a new CefV8Value object of type ArrayBuffer which wraps the provided {@code buffer} of size {@code length}
      * bytes. The ArrayBuffer is externalized, meaning that it does not own {@code buffer}. The caller is responsible
      * for freeing {@code buffer} when requested via a call to
-     * {@link CefV8ArrayBufferReleaseCallback#releaseBuffer(NativePointer)}. This method should only be called from
-     * within the scope of a CefRenderProcessHandler, CefV8Handler or CefV8Accessor callback, or in combination with
-     * calling Enter() and Exit() on a stored CefV8Context reference.
+     * {@link net.kurobako.cef4j.gen.CefV8ArrayBufferReleaseCallback#releaseBuffer(NativePointer)}. This method should
+     * only be called from within the scope of a CefRenderProcessHandler, CefV8Handler or CefV8Accessor callback, or in
+     * combination with calling Enter() and Exit() on a stored CefV8Context reference.
      *
      * <p>NOTE: Always returns {@code null} when V8 sandbox is enabled.
      *
@@ -810,10 +810,10 @@ public interface CefV8Value extends CefLibraryObject {
 
     /**
      * Create a new CefV8Value object of type ArrayBuffer from a backing store previously created with
-     * CefV8BackingStore.create(). This is a zero-copy operation — the ArrayBuffer uses the memory already allocated by
-     * the backing store. The backing store is consumed and becomes invalid after this call. This method should only be
-     * called from within the scope of a CefRenderProcessHandler, CefV8Handler or CefV8Accessor callback, or in
-     * combination with calling Enter() and Exit() on a stored CefV8Context reference.
+     * net.kurobako.cef4j.gen.CefV8BackingStore.create(). This is a zero-copy operation — the ArrayBuffer uses the
+     * memory already allocated by the backing store. The backing store is consumed and becomes invalid after this call.
+     * This method should only be called from within the scope of a CefRenderProcessHandler, CefV8Handler or
+     * CefV8Accessor callback, or in combination with calling Enter() and Exit() on a stored CefV8Context reference.
      *
      * <p>Definition generated from cef_v8_capi.h
      *

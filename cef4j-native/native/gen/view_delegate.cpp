@@ -34,11 +34,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return cef_size_t {};}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
@@ -61,11 +61,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return cef_size_t {};}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
@@ -88,11 +88,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return cef_size_t {};}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
@@ -115,11 +115,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return 0;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getHeightForWidth", "(Lnet/kurobako/cef4j/gen/CefView;I)I");
+        auto mid = env->GetMethodID(cls, "getHeightForWidth", "(Lnet/kurobako/cef4j/gen/views/CefView;I)I");
         if (!mid) {env->PopLocalFrame(nullptr); return 0;}
         auto jResult = env->CallIntMethod(h->javaHandler, mid, j_view, static_cast<jint>(width));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
@@ -134,16 +134,16 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(11) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         cef_view_t* _p_parent = parent;
         if (_p_parent) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_parent); _b->add_ref(_b);}
-        auto j_parent_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_parent_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_parent_ctor = env->GetMethodID(j_parent_cls, "<init>", "(J)V");
         auto j_parent = _p_parent ? env->NewObject(j_parent_cls, j_parent_ctor, reinterpret_cast<jlong>(_p_parent)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onParentViewChanged", "(Lnet/kurobako/cef4j/gen/CefView;ZLnet/kurobako/cef4j/gen/CefView;)V");
+        auto mid = env->GetMethodID(cls, "onParentViewChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;ZLnet/kurobako/cef4j/gen/views/CefView;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view, static_cast<jboolean>(added), j_parent);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -156,16 +156,16 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(11) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         cef_view_t* _p_child = child;
         if (_p_child) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_child); _b->add_ref(_b);}
-        auto j_child_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_child_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_child_ctor = env->GetMethodID(j_child_cls, "<init>", "(J)V");
         auto j_child = _p_child ? env->NewObject(j_child_cls, j_child_ctor, reinterpret_cast<jlong>(_p_child)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onChildViewChanged", "(Lnet/kurobako/cef4j/gen/CefView;ZLnet/kurobako/cef4j/gen/CefView;)V");
+        auto mid = env->GetMethodID(cls, "onChildViewChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;ZLnet/kurobako/cef4j/gen/views/CefView;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view, static_cast<jboolean>(added), j_child);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -178,11 +178,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onWindowChanged", "(Lnet/kurobako/cef4j/gen/CefView;Z)V");
+        auto mid = env->GetMethodID(cls, "onWindowChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;Z)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view, static_cast<jboolean>(added));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -195,14 +195,14 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(11) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto j_new_bounds_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
         auto j_new_bounds_ctor = env->GetMethodID(j_new_bounds_cls, "<init>", "(IIII)V");
         auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>(new_bounds->x), static_cast<jint>(new_bounds->y), static_cast<jint>(new_bounds->width), static_cast<jint>(new_bounds->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onLayoutChanged", "(Lnet/kurobako/cef4j/gen/CefView;Lnet/kurobako/cef4j/gen/CefRect;)V");
+        auto mid = env->GetMethodID(cls, "onLayoutChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;Lnet/kurobako/cef4j/gen/CefRect;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view, j_new_bounds);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -215,11 +215,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onFocus", "(Lnet/kurobako/cef4j/gen/CefView;)V");
+        auto mid = env->GetMethodID(cls, "onFocus", "(Lnet/kurobako/cef4j/gen/views/CefView;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -232,11 +232,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onBlur", "(Lnet/kurobako/cef4j/gen/CefView;)V");
+        auto mid = env->GetMethodID(cls, "onBlur", "(Lnet/kurobako/cef4j/gen/views/CefView;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
@@ -249,11 +249,11 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return;}
         cef_view_t* _p_view = view;
         if (_p_view) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_view); _b->add_ref(_b);}
-        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+        auto j_view_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onThemeChanged", "(Lnet/kurobako/cef4j/gen/CefView;)V");
+        auto mid = env->GetMethodID(cls, "onThemeChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}

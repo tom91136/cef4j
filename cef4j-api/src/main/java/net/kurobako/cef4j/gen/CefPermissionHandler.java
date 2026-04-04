@@ -54,9 +54,10 @@ public interface CefPermissionHandler extends CefClientHandler {
      * Called when a page should show a permission prompt. {@code prompt_id} uniquely identifies the prompt.
      * {@code requesting_origin} is the URL origin requesting permission. {@code requested_permissions} is a combination
      * of values from cef_permission_request_types_t that represent the requested permissions. Return {@code true} and
-     * call CefPermissionPromptCallback.continue() either in this method or at a later time to continue or cancel the
-     * request. Return {@code false} to proceed with default handling. With Chrome style, default handling will display
-     * the permission prompt UI. With Alloy style, default handling is {@link CefPermissionRequestResult.Kind#IGNORE}.
+     * call net.kurobako.cef4j.gen.CefPermissionPromptCallback.continue() either in this method or at a later time to
+     * continue or cancel the request. Return {@code false} to proceed with default handling. With Chrome style, default
+     * handling will display the permission prompt UI. With Alloy style, default handling is
+     * {@link net.kurobako.cef4j.gen.CefPermissionRequestResult.Kind#IGNORE}.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *
@@ -79,9 +80,10 @@ public interface CefPermissionHandler extends CefClientHandler {
     /**
      * Called when a permission prompt handled via OnShowPermissionPrompt is dismissed. {@code prompt_id} will match the
      * value that was passed to OnShowPermissionPrompt. {@code result} will be the value passed to
-     * CefPermissionPromptCallback.continue() or {@link CefPermissionRequestResult.Kind#IGNORE} if the dialog was
-     * dismissed for other reasons such as navigation, browser closure, etc. This method will not be called if
-     * OnShowPermissionPrompt returned {@code false} for {@code prompt_id}.
+     * net.kurobako.cef4j.gen.CefPermissionPromptCallback.continue() or
+     * {@link net.kurobako.cef4j.gen.CefPermissionRequestResult.Kind#IGNORE} if the dialog was dismissed for other
+     * reasons such as navigation, browser closure, etc. This method will not be called if OnShowPermissionPrompt
+     * returned {@code false} for {@code prompt_id}.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *

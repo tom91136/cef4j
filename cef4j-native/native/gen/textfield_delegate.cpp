@@ -26,7 +26,7 @@ struct JniCefTextfieldDelegate: public cef_textfield_delegate_t {
         if (env->PushLocalFrame(14) < 0) {return false;}
         cef_textfield_t* _p_textfield = textfield;
         if (_p_textfield) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_textfield); _b->add_ref(_b);}
-        auto j_textfield_cls = env->FindClass("net/kurobako/cef4j/gen/CefTextfield$NativePeer");
+        auto j_textfield_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefTextfield$NativePeer");
         auto j_textfield_ctor = env->GetMethodID(j_textfield_cls, "<init>", "(J)V");
         auto j_textfield = _p_textfield ? env->NewObject(j_textfield_cls, j_textfield_ctor, reinterpret_cast<jlong>(_p_textfield)) : nullptr;
         auto _bv_event_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEventType");
@@ -47,7 +47,7 @@ struct JniCefTextfieldDelegate: public cef_textfield_delegate_t {
         : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onKeyEvent", "(Lnet/kurobako/cef4j/gen/CefTextfield;Lnet/kurobako/cef4j/gen/CefKeyEvent;)Z");
+        auto mid = env->GetMethodID(cls, "onKeyEvent", "(Lnet/kurobako/cef4j/gen/views/CefTextfield;Lnet/kurobako/cef4j/gen/CefKeyEvent;)Z");
         if (!mid) {env->PopLocalFrame(nullptr); return false;}
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_textfield, j_event);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
@@ -61,11 +61,11 @@ struct JniCefTextfieldDelegate: public cef_textfield_delegate_t {
         if (env->PushLocalFrame(8) < 0) {return;}
         cef_textfield_t* _p_textfield = textfield;
         if (_p_textfield) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_textfield); _b->add_ref(_b);}
-        auto j_textfield_cls = env->FindClass("net/kurobako/cef4j/gen/CefTextfield$NativePeer");
+        auto j_textfield_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefTextfield$NativePeer");
         auto j_textfield_ctor = env->GetMethodID(j_textfield_cls, "<init>", "(J)V");
         auto j_textfield = _p_textfield ? env->NewObject(j_textfield_cls, j_textfield_ctor, reinterpret_cast<jlong>(_p_textfield)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onAfterUserAction", "(Lnet/kurobako/cef4j/gen/CefTextfield;)V");
+        auto mid = env->GetMethodID(cls, "onAfterUserAction", "(Lnet/kurobako/cef4j/gen/views/CefTextfield;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_textfield);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}

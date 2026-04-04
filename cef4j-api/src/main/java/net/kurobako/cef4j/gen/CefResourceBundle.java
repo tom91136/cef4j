@@ -8,8 +8,9 @@ import javax.annotation.processing.Generated;
 
 /**
  * Class used for retrieving resources from the resource bundle (*.pak) files loaded by CEF during startup or via the
- * CefResourceBundleHandler returned from CefApp.getResourceBundleHandler(). See CefSettings for additional options
- * related to resource bundle loading. The methods of this class may be called on any thread unless otherwise indicated.
+ * CefResourceBundleHandler returned from net.kurobako.cef4j.gen.CefApp.getResourceBundleHandler(). See CefSettings for
+ * additional options related to resource bundle loading. The methods of this class may be called on any thread unless
+ * otherwise indicated.
  *
  * <p>Definition generated from cef_resource_bundle_capi.h
  *

@@ -27,8 +27,8 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
      * inferred from {@code default_value}'s type and cannot be changed after registration. Returns {@code true} on
      * success. Returns {@code false} if {@code name} is already registered or if {@code default_value} has an invalid
      * type. This method must be called from within the scope of the
-     * {@link CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType, CefPreferenceRegistrar)}
-     * callback.
+     * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
+     * CefPreferenceRegistrar)} callback.
      *
      * <p>Definition generated from cef_preference_capi.h
      *

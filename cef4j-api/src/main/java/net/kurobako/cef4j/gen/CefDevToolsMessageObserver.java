@@ -8,7 +8,8 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for {@link CefBrowserHost#addDevToolsMessageObserver(CefDevToolsMessageObserver)}. The methods of
+ * Callback interface for
+ * {@link net.kurobako.cef4j.gen.CefBrowserHost#addDevToolsMessageObserver(CefDevToolsMessageObserver)}. The methods of
  * this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_devtools_message_observer_capi.h
@@ -32,10 +33,10 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
      *
      * <p>Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from
-     * {@link CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a "result" (dictionary) or
-     * "error" (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event
-     * dictionaries include a "method" (string) value and optionally a "params" (dictionary) value. See the DevTools
-     * protocol documentation at <a
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a
+     * "result" (dictionary) or "error" (dictionary) value. The "error" dictionary will contain "code" (int) and
+     * "message" (string) values. Event dictionaries include a "method" (string) value and optionally a "params"
+     * (dictionary) value. See the DevTools protocol documentation at <a
      * href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>
      * for details of supported method calls and the expected "result" or "params" dictionary contents. JSON
      * dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance

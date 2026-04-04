@@ -6,12 +6,12 @@
 #include "jni_util.h"
 
 extern "C" cef_view_delegate_t* Create_JniCefViewDelegate(JNIEnv *env, jobject handler);
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefScrollView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefScrollView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefScrollView), setContentView0)(JNIEnv* env, jobject obj, jlong self, jobject view) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefScrollView), setContentView0)(JNIEnv* env, jobject obj, jlong self, jobject view) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return;
     cef_view_t* _view_ptr = view ? reinterpret_cast<cef_view_t*>(env->GetLongField(view, env->GetFieldID(env->GetObjectClass(view), "nativePtr", "J"))) : nullptr;
@@ -19,17 +19,17 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefScrollView), setContentView0)(JNIEnv* env, 
     s->set_content_view(s, _view_ptr);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefScrollView), getContentView0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), getContentView0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_content_view(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefScrollView), getVisibleContentRect0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), getVisibleContentRect0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_visible_content_rect(s);
@@ -39,37 +39,37 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefScrollView), getVisibleContentRect0)(JNI
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefScrollView), hasHorizontalScrollbar0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefScrollView), hasHorizontalScrollbar0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_horizontal_scrollbar(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefScrollView), getHorizontalScrollbarHeight0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(views_CefScrollView), getHorizontalScrollbarHeight0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_horizontal_scrollbar_height(s));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefScrollView), hasVerticalScrollbar0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefScrollView), hasVerticalScrollbar0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->has_vertical_scrollbar(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefScrollView), getVerticalScrollbarWidth0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jint, CEF4J_PEER(views_CefScrollView), getVerticalScrollbarWidth0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return 0;
     return static_cast<jint>(s->get_vertical_scrollbar_width(s));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefScrollView), create0)(JNIEnv* env, jclass clz, jobject delegate) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), create0)(JNIEnv* env, jclass clz, jobject delegate) {
     cef_view_delegate_t* _delegate_ptr = delegate ? Create_JniCefViewDelegate(env, delegate) : nullptr;
     auto _r = cef_scroll_view_create(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefScrollView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefScrollView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

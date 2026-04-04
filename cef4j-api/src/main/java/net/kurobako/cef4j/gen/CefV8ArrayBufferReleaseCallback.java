@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface that is passed to CefV8Value.createArrayBuffer().
+ * Callback interface that is passed to net.kurobako.cef4j.gen.CefV8Value.createArrayBuffer().
  *
  * <p>Definition generated from cef_v8_capi.h
  *

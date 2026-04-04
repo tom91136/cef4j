@@ -10,7 +10,8 @@ import javax.annotation.processing.Generated;
  * must be created on a thread with a valid V8 isolate (renderer main thread or WebWorker thread). Once created, the
  * Data() pointer can be safely read/written from any thread. This allows expensive operations like memcpy to be
  * performed on a background thread before creating the ArrayBuffer on the V8 thread. The backing store is consumed when
- * passed to CefV8Value.createArrayBufferFromBackingStore(), after which IsValid() returns {@code false}.
+ * passed to net.kurobako.cef4j.gen.CefV8Value.createArrayBufferFromBackingStore(), after which IsValid() returns
+ * {@code false}.
  *
  * <p>Definition generated from cef_v8_capi.h
  *

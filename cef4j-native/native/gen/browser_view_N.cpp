@@ -11,12 +11,12 @@
 
 extern "C" cef_client_t* Create_JniCefClient(JNIEnv *env, jobject handler);
 extern "C" cef_browser_view_delegate_t* Create_JniCefBrowserViewDelegate(JNIEnv *env, jobject handler);
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefBrowserView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getBrowser0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getBrowser0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_browser_view_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_browser(s);
@@ -26,23 +26,23 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getBrowser0)(JNIEnv* env, 
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getChromeToolbar0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getChromeToolbar0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_browser_view_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_chrome_toolbar(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserView), setPreferAccelerators0)(JNIEnv* env, jobject obj, jlong self, jboolean prefer_accelerators) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefBrowserView), setPreferAccelerators0)(JNIEnv* env, jobject obj, jlong self, jboolean prefer_accelerators) {
     auto* s = reinterpret_cast<cef_browser_view_t*>(self);
     if (!s) return;
     s->set_prefer_accelerators(s, static_cast<bool>(prefer_accelerators));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getRuntimeStyle0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getRuntimeStyle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_browser_view_t*>(self);
     if (!s) return 0;
     auto _r = s->get_runtime_style(s);
@@ -51,7 +51,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getRuntimeStyle0)(JNIEnv* 
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), create0)(JNIEnv* env, jclass clz, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context, jobject delegate) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env, jclass clz, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context, jobject delegate) {
     if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr;}
     cef_client_t* _client_ptr = client ? Create_JniCefClient(env, client) : nullptr;
     auto _url_str = url ? JStringToCefString(env, url) : nullptr;
@@ -183,17 +183,17 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), create0)(JNIEnv* env, jcla
     auto _r = cef_browser_view_create(_client_ptr, _url_str, &_settings_val, _extra_info_ptr, _request_context_ptr, _delegate_ptr);
     if (_url_str) cef_string_userfree_free(_url_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserView), getForBrowser0)(JNIEnv* env, jclass clz, jobject browser) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getForBrowser0)(JNIEnv* env, jclass clz, jobject browser) {
     cef_browser_t* _browser_ptr = browser ? reinterpret_cast<cef_browser_t*>(env->GetLongField(browser, env->GetFieldID(env->GetObjectClass(browser), "nativePtr", "J"))) : nullptr;
     if (_browser_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_browser_ptr); _b->add_ref(_b);}
     auto _r = cef_browser_view_get_for_browser(_browser_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

@@ -82,8 +82,8 @@ public interface CefTaskManager extends CefLibraryObject {
 
     /**
      * Returns the task ID associated with the main task for {@code browser_id} (value from
-     * {@link CefBrowser#getIdentifier()}). Returns -1 if {@code browser_id} is invalid, does not currently have an
-     * associated task, or the method was called from the incorrect thread.
+     * {@link net.kurobako.cef4j.gen.CefBrowser#getIdentifier()}). Returns -1 if {@code browser_id} is invalid, does not
+     * currently have an associated task, or the method was called from the incorrect thread.
      *
      * <p>Definition generated from cef_task_manager_capi.h
      *

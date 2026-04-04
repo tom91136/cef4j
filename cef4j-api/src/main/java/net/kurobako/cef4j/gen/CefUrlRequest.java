@@ -106,9 +106,9 @@ public interface CefUrlRequest extends CefLibraryObject {
     void cancel();
     /**
      * Create a new URL request that is not associated with a specific browser or frame. Use
-     * {@link CefFrame#createUrlRequest(CefRequest, CefUrlRequestClient)} instead if you want the request to have this
-     * association, in which case it may be handled differently (see documentation on that method). A request created
-     * with this method may only originate from the browser process, and will behave as follows:
+     * {@link net.kurobako.cef4j.gen.CefFrame#createUrlRequest(CefRequest, CefUrlRequestClient)} instead if you want the
+     * request to have this association, in which case it may be handled differently (see documentation on that method).
+     * A request created with this method may only originate from the browser process, and will behave as follows:
      *
      * <ul>
      *   <li>It may be intercepted by the client via CefResourceRequestHandler or

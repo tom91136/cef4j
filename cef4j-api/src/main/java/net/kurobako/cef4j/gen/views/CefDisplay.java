@@ -1,12 +1,15 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefRect;
 
 /**
  * This class typically, but not always, corresponds to a physical display connected to the system. A fake Display may

@@ -15,16 +15,28 @@ public final class CefTouchHandleState {
     public final int touchHandleId;
     /** Combination of cef_touch_handle_state_flags_t values indicating what state is set. */
     public final int flags;
-    /** Enabled state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ENABLED}. */
+    /**
+     * Enabled state. Only set if {@code flags} contains
+     * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ENABLED}.
+     */
     public final int enabled;
-    /** Orientation state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ORIENTATION}. */
+    /**
+     * Orientation state. Only set if {@code flags} contains
+     * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIENTATION}.
+     */
     public final CefHorizontalAlignment orientation;
 
     public final int mirrorVertical;
     public final int mirrorHorizontal;
-    /** Origin state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ORIGIN}. */
+    /**
+     * Origin state. Only set if {@code flags} contains
+     * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIGIN}.
+     */
     public final CefPoint origin;
-    /** Alpha state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ALPHA}. */
+    /**
+     * Alpha state. Only set if {@code flags} contains
+     * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ALPHA}.
+     */
     public final float alpha;
 
     public CefTouchHandleState(
@@ -99,16 +111,28 @@ public final class CefTouchHandleState {
         public int touchHandleId;
         /** Combination of cef_touch_handle_state_flags_t values indicating what state is set. */
         public int flags;
-        /** Enabled state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ENABLED}. */
+        /**
+         * Enabled state. Only set if {@code flags} contains
+         * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ENABLED}.
+         */
         public int enabled;
-        /** Orientation state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ORIENTATION}. */
+        /**
+         * Orientation state. Only set if {@code flags} contains
+         * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIENTATION}.
+         */
         public CefHorizontalAlignment orientation;
 
         public int mirrorVertical;
         public int mirrorHorizontal;
-        /** Origin state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ORIGIN}. */
+        /**
+         * Origin state. Only set if {@code flags} contains
+         * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIGIN}.
+         */
         public CefPoint origin;
-        /** Alpha state. Only set if {@code flags} contains {@link CefTouchHandleStateFlags.Kind#ALPHA}. */
+        /**
+         * Alpha state. Only set if {@code flags} contains
+         * {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ALPHA}.
+         */
         public float alpha;
 
         public Mutable() {}

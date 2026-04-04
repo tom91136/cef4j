@@ -5,7 +5,7 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Specifies the zoom commands supported by {@link CefBrowserHost#zoom(CefZoomCommand)}.
+ * Specifies the zoom commands supported by {@link net.kurobako.cef4j.gen.CefBrowserHost#zoom(CefZoomCommand)}.
  *
  * <p>Definition generated from cef_types.h
  *

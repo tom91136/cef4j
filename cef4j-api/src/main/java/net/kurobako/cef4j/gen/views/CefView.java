@@ -1,11 +1,16 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefInsets;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefSize;
 
 /**
  * A View is a rectangle within the views View hierarchy. It is the base class for all Views. All size and position
@@ -505,7 +510,7 @@ public interface CefView extends CefLibraryObject {
 
     /**
      * Returns {@code true} if this View has focus in the context of the containing Window. Check both this method and
-     * {@link CefWindow#isActive()} to determine global keyboard focus.
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#isActive()} to determine global keyboard focus.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *
@@ -530,7 +535,7 @@ public interface CefView extends CefLibraryObject {
 
     /**
      * Sets the background color for this View. The background color will be automatically reset when
-     * {@link CefViewDelegate#onThemeChanged(CefView)} is called.
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} is called.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *
@@ -543,8 +548,8 @@ public interface CefView extends CefLibraryObject {
     /**
      * Returns the background color for this View. If the background color is unset then the current
      * `GetThemeColor(CEF_ColorPrimaryBackground)` value will be returned. If this View belongs to an overlay (created
-     * with {@link CefWindow#addOverlayView(CefView, CefDockingMode, boolean)}), and the background color is unset, then
-     * a value of transparent (0) will be returned.
+     * with {@link net.kurobako.cef4j.gen.views.CefWindow#addOverlayView(CefView, CefDockingMode, boolean)}), and the
+     * background color is unset, then a value of transparent (0) will be returned.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *
@@ -557,7 +562,7 @@ public interface CefView extends CefLibraryObject {
     /**
      * Returns the current theme color associated with {@code color_id}, or the placeholder color (red) if unset. See
      * cef_color_ids.h for standard ID values. Standard colors can be overridden and custom colors can be added using
-     * {@link CefWindow#setThemeColor(int, int)}.
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#setThemeColor(int, int)}.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *
@@ -570,8 +575,8 @@ public interface CefView extends CefLibraryObject {
     /**
      * Convert {@code point} from this View's coordinate system to DIP screen coordinates. This View must belong to a
      * Window when calling this method. Returns {@code true} if the conversion is successful or {@code false} otherwise.
-     * Use {@link CefDisplay#convertPointToPixels(CefPoint.Mutable)} after calling this method if further conversion to
-     * display-specific pixel coordinates is desired.
+     * Use {@link net.kurobako.cef4j.gen.views.CefDisplay#convertPointToPixels(CefPoint.Mutable)} after calling this
+     * method if further conversion to display-specific pixel coordinates is desired.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *
@@ -584,8 +589,8 @@ public interface CefView extends CefLibraryObject {
     /**
      * Convert {@code point} to this View's coordinate system from DIP screen coordinates. This View must belong to a
      * Window when calling this method. Returns {@code true} if the conversion is successful or {@code false} otherwise.
-     * Use {@link CefDisplay#convertPointFromPixels(CefPoint.Mutable)} before calling this method if conversion from
-     * display-specific pixel coordinates is necessary.
+     * Use {@link net.kurobako.cef4j.gen.views.CefDisplay#convertPointFromPixels(CefPoint.Mutable)} before calling this
+     * method if conversion from display-specific pixel coordinates is necessary.
      *
      * <p>Definition generated from views/cef_view_capi.h
      *

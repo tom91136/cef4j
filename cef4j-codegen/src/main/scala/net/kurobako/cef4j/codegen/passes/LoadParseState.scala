@@ -9,16 +9,19 @@ object LoadParseState {
   def apply(cfg: Config, headerInputs: HeaderInputs): ParseState = {
     val metadata         = IndexHeaderMetadata(cfg)
     val compoundSegments = metadata.deriveCompoundSegments(cfg.cefInclude)
+    val structHeaderMap  = IndexStructHeaders(headerInputs.capiDir, cfg.extraCapiDirs)
+    val subPackages      = Naming.buildSubPackages(structHeaderMap)
 
     ParseState(
-      namingContext = Naming.Context.fromCppClassNames(metadata.cppClassNames, compoundSegments, cfg.javaPackage),
+      namingContext =
+        Naming.Context.fromCppClassNames(metadata.cppClassNames, compoundSegments, cfg.javaPackage, subPackages),
       docContext = InitialiseDocContext(cfg.cefInclude),
       handlerNames = metadata.handlerNames,
       docs = metadata.docs,
       cppTypeInfo = metadata.cppTypeInfo,
       enumDocs = metadata.enumDocs,
       classDocs = metadata.classDocs,
-      structHeaderMap = IndexStructHeaders(headerInputs.capiDir, cfg.extraCapiDirs),
+      structHeaderMap = structHeaderMap,
       structFieldDocs = metadata.structFieldDocs
     )
   }

@@ -132,15 +132,16 @@ class JniCppCodeGen(
     val releaseFn       = renderRelease(decl.name, decl.scoped)
     val javaName        = Naming.structToJavaName(decl.name)
     val ffFunctions     = if (freeFunctions.nonEmpty) {
-      "\n\n" + freeFunctions.map(ff => renderFreeFunction(javaName, ff)).mkString("\n\n")
+      "\n\n" + freeFunctions
+        .map(ff => renderFreeFunction(javaName, ff, ownerStructName = decl.name))
+        .mkString("\n\n")
     } else ""
     renderGeneratedCpp(includes, s"$handlerFwdDecls$releaseFn\n\n$functions$ffFunctions")
   }
 
   // Generate the N_Release JNI function used by NativeCleaner cleanup.
   private def renderRelease(structName: String, scoped: Boolean): String = {
-    val javaName  = Naming.structToJavaName(structName)
-    val exportSig = Naming.jniExportPeerStatic(javaName, "release", "void")
+    val exportSig = Naming.jniExportPeerStatic(Naming.jniClassPrefix(structName), "release", "void")
     val body      = if (scoped) "    // Scoped struct - no ref-counting, release is a no-op."
     else
       s"""    auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
@@ -578,11 +579,13 @@ $convertAndReturn"""
   def renderFreeFunction(
       javaClassName: String,
       ff: CefDecl.FreeFunction,
-      isDirectClass: Boolean = false
+      isDirectClass: Boolean = false,
+      ownerStructName: String = ""
   ): String = {
     val retJni    = Naming.jniType(ff.ret)
+    val clsPrefix = if (ownerStructName.nonEmpty) Naming.jniClassPrefix(ownerStructName) else javaClassName
     val exportSig = if (isDirectClass) Naming.jniExportStatic(javaClassName, ff.javaMethodName, retJni)
-    else Naming.jniExportPeerStatic(javaClassName, ff.javaMethodName, retJni)
+    else Naming.jniExportPeerStatic(clsPrefix, ff.javaMethodName, retJni)
     val jniParams =
       ("JNIEnv* env" :: "jclass clz" :: ff.visibleParams.map { p =>
         s"${Naming.jniType(p.typ)} ${p.name}"

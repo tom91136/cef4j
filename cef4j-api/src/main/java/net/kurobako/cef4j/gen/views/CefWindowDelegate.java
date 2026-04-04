@@ -1,10 +1,17 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefRuntimeStyle;
+import net.kurobako.cef4j.gen.CefShowState;
+import net.kurobako.cef4j.gen.CefState;
+import net.kurobako.cef4j.gen.NativePointer;
 
 /**
  * Implement this interface to handle window events. The methods of this class will be called on the browser process UI
@@ -96,8 +103,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * asynchronously with {@code is_competed} set to {@code false} when the transition starts and {@code true} after
      * the transition completes. On other platforms the transition occurs synchronously with {@code is_completed} set to
      * {@code true} after the transition completes. With Alloy style you must also implement
-     * {@link CefDisplayHandler#onFullscreenModeChange(CefBrowser, boolean)} to handle fullscreen transitions initiated
-     * by browser content.
+     * {@link net.kurobako.cef4j.gen.CefDisplayHandler#onFullscreenModeChange(CefBrowser, boolean)} to handle fullscreen
+     * transitions initiated by browser content.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -134,8 +141,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * Return {@code true} if {@code window} should be created as a window modal dialog. Only called when a Window is
      * returned via GetParentWindow() with {@code is_menu} set to {@code false}. All controls in the parent Window will
      * be disabled while {@code window} is visible. This functionality is not supported by all Linux window managers.
-     * Alternately, use {@link CefWindow#showAsBrowserModalDialog(CefBrowserView)} for a browser modal dialog that works
-     * on all platforms.
+     * Alternately, use {@link net.kurobako.cef4j.gen.views.CefWindow#showAsBrowserModalDialog(CefBrowserView)} for a
+     * browser modal dialog that works on all platforms.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -154,7 +161,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * Return the initial bounds for {@code window} in density independent pixel (DIP) coordinates. If this method
      * returns an empty CefRect then GetPreferredSize() will be called to retrieve the size, and the window will be
      * placed on the screen with origin (0,0). This method can be used in combination with
-     * {@link CefView#getBoundsInScreen()} to restore the previous window bounds.
+     * {@link net.kurobako.cef4j.gen.views.CefView#getBoundsInScreen()} to restore the previous window bounds.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -183,13 +190,14 @@ public interface CefWindowDelegate extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:141</a>
      */
     default CefShowState getInitialShowState(@Nullable CefWindow window) {
-        return CefShowState.of(CefShowState.Kind.NORMAL);
+        return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
     }
 
     /**
      * Return {@code true} if {@code window} should be created without a frame or title bar. The window will be
-     * resizable if CanResize() returns {@code true}. Use {@link CefWindow#setDraggableRegions(long, NativePointer)} to
-     * specify draggable regions.
+     * resizable if CanResize() returns {@code true}. Use
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#setDraggableRegions(long, NativePointer)} to specify draggable
+     * regions.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -257,7 +265,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:179</a>
      */
     default CefState acceptsFirstMouse(@Nullable CefWindow window) {
-        return CefState.of(CefState.Kind.DEFAULT);
+        return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
     }
 
     /**
@@ -304,7 +312,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
     /**
      * Return {@code true} if {@code window} can be closed. This will be called for user-initiated window close actions
-     * and when {@link CefWindow#cefClose()} is called.
+     * and when {@link net.kurobako.cef4j.gen.views.CefWindow#cefClose()} is called.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -318,8 +326,9 @@ public interface CefWindowDelegate extends CefClientHandler {
     }
 
     /**
-     * Called when a keyboard accelerator registered with {@link CefWindow#setAccelerator(int, int, boolean, boolean,
-     * boolean, boolean)} is triggered. Return {@code true} if the accelerator was handled or {@code false} otherwise.
+     * Called when a keyboard accelerator registered with
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#setAccelerator(int, int, boolean, boolean, boolean, boolean)} is
+     * triggered. Return {@code true} if the accelerator was handled or {@code false} otherwise.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -363,18 +372,19 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * <p>Chrome theme colors will be applied and this callback will be triggered if/when a BrowserView is added to the
      * Window's component hierarchy. Chrome theme colors can be configured on a per-RequestContext basis using
-     * {@link CefRequestContext#setChromeColorScheme(CefColorVariant, int)} or (Chrome style only) by visiting
-     * chrome://settings/manageProfile. Any theme changes using those mechanisms will also trigger this callback. Chrome
-     * theme colors will be persisted and restored from disk cache.
+     * {@link net.kurobako.cef4j.gen.CefRequestContext#setChromeColorScheme(CefColorVariant, int)} or (Chrome style
+     * only) by visiting chrome://settings/manageProfile. Any theme changes using those mechanisms will also trigger
+     * this callback. Chrome theme colors will be persisted and restored from disk cache.
      *
      * <p>This callback is not triggered on Window creation so clients that wish to customize the initial native/OS
-     * theme must call {@link CefWindow#setThemeColor(int, int)} and {@link CefWindow#themeChanged()} before showing the
-     * first Window.
+     * theme must call {@link net.kurobako.cef4j.gen.views.CefWindow#setThemeColor(int, int)} and
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#themeChanged()} before showing the first Window.
      *
      * <p>Theme colors will be reset to standard values before this callback is called for the first affected Window.
-     * Call {@link CefWindow#setThemeColor(int, int)} from inside this callback to override a standard color or add a
-     * custom color. {@link CefViewDelegate#onThemeChanged(CefView)} will be called after this callback for the complete
-     * {@code window} component hierarchy.
+     * Call {@link net.kurobako.cef4j.gen.views.CefWindow#setThemeColor(int, int)} from inside this callback to override
+     * a standard color or add a custom color.
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} will be called after this callback
+     * for the complete {@code window} component hierarchy.
      *
      * <p>Definition generated from views/cef_window_delegate_capi.h
      *
@@ -399,7 +409,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:273</a>
      */
     default CefRuntimeStyle getWindowRuntimeStyle() {
-        return CefRuntimeStyle.of(CefRuntimeStyle.Kind.DEFAULT);
+        return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
     }
 
     /**

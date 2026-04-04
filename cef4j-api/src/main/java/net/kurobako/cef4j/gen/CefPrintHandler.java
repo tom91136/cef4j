@@ -23,8 +23,8 @@ public interface CefPrintHandler extends CefClientHandler {
 
     /**
      * Called when printing has started for the specified {@code browser}. This method will be called before the other
-     * OnPrint*() methods and irrespective of how printing was initiated (e.g. {@link CefBrowserHost#print()},
-     * JavaScript window.print() or PDF extension print button).
+     * OnPrint*() methods and irrespective of how printing was initiated (e.g.
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#print()}, JavaScript window.print() or PDF extension print button).
      *
      * <p>Definition generated from cef_print_handler_capi.h
      *
@@ -106,8 +106,8 @@ public interface CefPrintHandler extends CefClientHandler {
     default void onPrintReset(@Nullable CefBrowser browser) {}
 
     /**
-     * Return the PDF paper size in device units. Used in combination with {@link CefBrowserHost#printToPdf(String,
-     * CefPdfPrintSettings, CefPdfPrintCallback)}.
+     * Return the PDF paper size in device units. Used in combination with
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#printToPdf(String, CefPdfPrintSettings, CefPdfPrintCallback)}.
      *
      * <p>Definition generated from cef_print_handler_capi.h
      *

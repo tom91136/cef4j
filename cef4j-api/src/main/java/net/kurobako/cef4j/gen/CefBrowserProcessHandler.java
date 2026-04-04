@@ -27,14 +27,16 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
     /**
      * Provides an opportunity to register custom preferences prior to global and request context initialization.
      *
-     * <p>If {@code type} is {@link CefPreferencesType.Kind#GLOBAL} the registered preferences can be accessed via
-     * CefPreferenceManager.getGlobalPreferences() after OnContextInitialized is called. Global preferences are
-     * registered a single time at application startup. See related cef_settings_t.cache_path configuration.
+     * <p>If {@code type} is {@link net.kurobako.cef4j.gen.CefPreferencesType.Kind#GLOBAL} the registered preferences
+     * can be accessed via net.kurobako.cef4j.gen.CefPreferenceManager.getGlobalPreferences() after OnContextInitialized
+     * is called. Global preferences are registered a single time at application startup. See related
+     * cef_settings_t.cache_path configuration.
      *
-     * <p>If {@code type} is {@link CefPreferencesType.Kind#REQUEST_CONTEXT} the preferences can be accessed via the
-     * CefRequestContext after {@link CefRequestContextHandler#onRequestContextInitialized(CefRequestContext)} is
-     * called. Request context preferences are registered each time a new CefRequestContext is created. It is intended
-     * but not required that all request contexts have the same registered preferences. See related
+     * <p>If {@code type} is {@link net.kurobako.cef4j.gen.CefPreferencesType.Kind#REQUEST_CONTEXT} the preferences can
+     * be accessed via the CefRequestContext after
+     * {@link net.kurobako.cef4j.gen.CefRequestContextHandler#onRequestContextInitialized(CefRequestContext)} is called.
+     * Request context preferences are registered each time a new CefRequestContext is created. It is intended but not
+     * required that all request contexts have the same registered preferences. See related
      * cef_request_context_settings_t.cache_path configuration.
      *
      * <p>Do not keep a reference to the {@code registrar} object. This method is called on the browser process UI

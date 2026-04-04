@@ -45,9 +45,12 @@ public final class CefTouchEvent {
     /** The normalized pressure of the pointer input in the range of [0,1]. Set to 0 if not applicable. */
     public final float pressure;
     /**
-     * The state of the touch point. Touches begin with one {@link CefTouchEventType.Kind#PRESSED} event followed by
-     * zero or more {@link CefTouchEventType.Kind#MOVED} events and finally one {@link CefTouchEventType.Kind#RELEASED}
-     * or {@link CefTouchEventType.Kind#CANCELLED} event. Events not respecting this order will be ignored.
+     * The state of the touch point. Touches begin with one
+     * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#PRESSED} event followed by zero or more
+     * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#MOVED} events and finally one
+     * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#RELEASED} or
+     * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#CANCELLED} event. Events not respecting this order will be
+     * ignored.
      */
     public final CefTouchEventType type;
     /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */
@@ -150,10 +153,12 @@ public final class CefTouchEvent {
         /** The normalized pressure of the pointer input in the range of [0,1]. Set to 0 if not applicable. */
         public float pressure;
         /**
-         * The state of the touch point. Touches begin with one {@link CefTouchEventType.Kind#PRESSED} event followed by
-         * zero or more {@link CefTouchEventType.Kind#MOVED} events and finally one
-         * {@link CefTouchEventType.Kind#RELEASED} or {@link CefTouchEventType.Kind#CANCELLED} event. Events not
-         * respecting this order will be ignored.
+         * The state of the touch point. Touches begin with one
+         * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#PRESSED} event followed by zero or more
+         * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#MOVED} events and finally one
+         * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#RELEASED} or
+         * {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#CANCELLED} event. Events not respecting this order will
+         * be ignored.
          */
         public CefTouchEventType type;
         /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */

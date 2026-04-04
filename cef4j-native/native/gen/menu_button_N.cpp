@@ -6,12 +6,12 @@
 #include "jni_util.h"
 
 extern "C" cef_menu_button_delegate_t* Create_JniCefMenuButtonDelegate(JNIEnv *env, jobject handler);
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuButton), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuButton), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
     auto* s = reinterpret_cast<cef_menu_button_t*>(self);
     if (!s) return;
     if (!screen_point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "screenPoint must not be null"); return;}
@@ -27,19 +27,19 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuButton), showMenu0)(JNIEnv* env, jobjec
     s->show_menu(s, _menu_model_ptr, &_screen_point_val, static_cast<cef_menu_anchor_position_t>(env->GetLongField(anchor_position, env->GetFieldID(env->GetObjectClass(anchor_position), "value", "J"))));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuButton), triggerMenu0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), triggerMenu0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_menu_button_t*>(self);
     if (!s) return;
     s->trigger_menu(s);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuButton), create0)(JNIEnv* env, jclass clz, jobject delegate, jstring text) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefMenuButton), create0)(JNIEnv* env, jclass clz, jobject delegate, jstring text) {
     cef_menu_button_delegate_t* _delegate_ptr = delegate ? Create_JniCefMenuButtonDelegate(env, delegate) : nullptr;
     auto _text_str = text ? JStringToCefString(env, text) : nullptr;
     auto _r = cef_menu_button_create(_delegate_ptr, _text_str);
     if (_text_str) cef_string_userfree_free(_text_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuButton$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefMenuButton$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

@@ -1,8 +1,9 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefLibraryObject;
 
 /**
  * A simple Layout that causes the associated Panel's one child to be sized to match the bounds of its parent. Methods

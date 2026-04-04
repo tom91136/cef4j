@@ -22,9 +22,9 @@ public interface CefMediaAccessCallback extends CefLibraryObject {
 
     /**
      * Call to allow or deny media access. If this callback was initiated in response to a getUserMedia (indicated by
-     * {@link CefMediaAccessPermissionTypes.Kind#DEVICE_AUDIO_CAPTURE} and/or
-     * {@link CefMediaAccessPermissionTypes.Kind#DEVICE_VIDEO_CAPTURE} being set) then {@code allowed_permissions} must
-     * match {@code required_permissions} passed to OnRequestMediaAccessPermission.
+     * {@link net.kurobako.cef4j.gen.CefMediaAccessPermissionTypes.Kind#DEVICE_AUDIO_CAPTURE} and/or
+     * {@link net.kurobako.cef4j.gen.CefMediaAccessPermissionTypes.Kind#DEVICE_VIDEO_CAPTURE} being set) then
+     * {@code allowed_permissions} must match {@code required_permissions} passed to OnRequestMediaAccessPermission.
      *
      * <p>Definition generated from cef_permission_handler_capi.h
      *

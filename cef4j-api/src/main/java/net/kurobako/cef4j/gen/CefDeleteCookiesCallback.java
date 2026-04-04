@@ -5,8 +5,8 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Interface to implement to be notified of asynchronous completion via {@link CefCookieManager#deleteCookies(String,
- * String, CefDeleteCookiesCallback)}.
+ * Interface to implement to be notified of asynchronous completion via
+ * {@link net.kurobako.cef4j.gen.CefCookieManager#deleteCookies(String, String, CefDeleteCookiesCallback)}.
  *
  * <p>Definition generated from cef_cookie_capi.h
  *

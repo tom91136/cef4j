@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefRect;
 
 /**
  * A ScrollView will show horizontal and/or vertical scrollbars when necessary based on the size of the attached content
@@ -23,8 +25,9 @@ import javax.annotation.processing.Generated;
 public interface CefScrollView extends CefLibraryObject {
 
     /**
-     * Set the content View. The content View must have a specified size (e.g. via {@link CefView#setBounds(CefRect)} or
-     * {@link CefViewDelegate#getPreferredSize(CefView)}).
+     * Set the content View. The content View must have a specified size (e.g. via
+     * {@link net.kurobako.cef4j.gen.views.CefView#setBounds(CefRect)} or
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#getPreferredSize(CefView)}).
      *
      * <p>Definition generated from views/cef_scroll_view_capi.h
      *

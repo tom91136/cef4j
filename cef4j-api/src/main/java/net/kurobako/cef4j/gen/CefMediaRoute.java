@@ -9,9 +9,10 @@ import javax.annotation.processing.Generated;
 
 /**
  * Represents the route between a media source and sink. Instances of this object are created via
- * {@link CefMediaRouter#createRoute(CefMediaSource, CefMediaSink, CefMediaRouteCreateCallback)} and retrieved via
- * {@link CefMediaObserver#onRoutes(long, CefMediaRoute[])}. Contains the status and metadata of a routing operation.
- * The methods of this class may be called on any browser process thread unless otherwise indicated.
+ * {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink, CefMediaRouteCreateCallback)}
+ * and retrieved via {@link net.kurobako.cef4j.gen.CefMediaObserver#onRoutes(long, CefMediaRoute[])}. Contains the
+ * status and metadata of a routing operation. The methods of this class may be called on any browser process thread
+ * unless otherwise indicated.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *
@@ -78,8 +79,8 @@ public interface CefMediaRoute extends CefLibraryObject {
     void sendRouteMessage(@Nonnull ByteBuffer message);
 
     /**
-     * Terminate this route. Will result in an asynchronous call to {@link CefMediaObserver#onRoutes(long,
-     * CefMediaRoute[])} on all registered observers.
+     * Terminate this route. Will result in an asynchronous call to
+     * {@link net.kurobako.cef4j.gen.CefMediaObserver#onRoutes(long, CefMediaRoute[])} on all registered observers.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *

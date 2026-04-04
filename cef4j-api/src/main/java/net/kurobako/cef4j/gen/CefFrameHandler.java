@@ -10,44 +10,51 @@ import javax.annotation.processing.Generated;
  * initial CefBrowserHost creation and navigation of the main frame:
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameCreated(CefBrowser, CefFrame)} => The initial main frame object has been
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameCreated(CefBrowser, CefFrame)} => The initial main frame
+ *       object has been
  * </ul>
  *
  * created. Any commands will be queued until the frame is attached.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => The initial main frame object has
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => The
+ *       initial main frame object has
  * </ul>
  *
  * been assigned to the browser.
  *
  * <ul>
- *   <li>{@link CefLifeSpanHandler#onAfterCreated(CefBrowser)} => The browser is now valid and can be
+ *   <li>{@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onAfterCreated(CefBrowser)} => The browser is now valid and
+ *       can be
  * </ul>
  *
  * used.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameAttached(CefBrowser, CefFrame, boolean)} => The initial main frame object is now
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameAttached(CefBrowser, CefFrame, boolean)} => The initial
+ *       main frame object is now
  * </ul>
  *
  * connected to its peer in the renderer process. Commands can be routed. (2) During further CefBrowserHost
  * navigation/loading of the main frame and/or sub-frames:
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameCreated(CefBrowser, CefFrame)} => A new main frame or sub-frame object
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameCreated(CefBrowser, CefFrame)} => A new main frame or
+ *       sub-frame object
  * </ul>
  *
  * has been created. Any commands will be queued until the frame is attached.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameAttached(CefBrowser, CefFrame, boolean)} => A new main frame or sub-frame object
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameAttached(CefBrowser, CefFrame, boolean)} => A new main
+ *       frame or sub-frame object
  * </ul>
  *
  * is now connected to its peer in the renderer process. Commands can be routed.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => An existing main frame or sub-frame
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => An existing main frame
+ *       or sub-frame
  * </ul>
  *
  * object has lost its connection to the renderer process. If multiple objects are detached at the same time then
@@ -61,14 +68,16 @@ import javax.annotation.processing.Generated;
  * object has been destroyed.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => A new main frame object has been
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => A new main
+ *       frame object has been
  * </ul>
  *
  * assigned to the browser. This will only occur with cross-origin navigation or re-navigation after renderer process
  * termination (due to crashes, etc). (3) During final CefBrowserHost destruction of the main frame:
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => Any sub-frame objects have lost their
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => Any sub-frame objects
+ *       have lost their
  * </ul>
  *
  * connection to the renderer process. Commands can no longer be routed and will be discarded.
@@ -80,8 +89,9 @@ import javax.annotation.processing.Generated;
  * destroyed.
  *
  * <ul>
- *   <li>{@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} => The browser has been destroyed.
- *   <li>{@link CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => The main frame object have lost its
+ *   <li>{@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} => The browser has been destroyed.
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onFrameDetached(CefBrowser, CefFrame)} => The main frame object
+ *       have lost its
  * </ul>
  *
  * connection to the renderer process. Notifications will be sent for any sub-frame objects before the main frame
@@ -94,7 +104,8 @@ import javax.annotation.processing.Generated;
  * destroyed.
  *
  * <ul>
- *   <li>{@link CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => The final main frame object has
+ *   <li>{@link net.kurobako.cef4j.gen.CefFrameHandler#onMainFrameChanged(CefBrowser, CefFrame, CefFrame)} => The final
+ *       main frame object has
  * </ul>
  *
  * been removed from the browser. Special handling applies for cross-origin loading on creation/navigation of
@@ -106,8 +117,8 @@ import javax.annotation.processing.Generated;
  * commands will be discarded). When the main frame navigates to a different origin the OnMainFrameChanged callback (2)
  * will be executed with the old and new main frame objects. Callbacks will not be executed for placeholders that may be
  * created during pre-commit navigation for sub-frames that do not yet exist in the renderer process. Placeholders will
- * have {@link CefFrame#getIdentifier()} == -4. The methods of this class will be called on the UI thread unless
- * otherwise indicated.
+ * have {@link net.kurobako.cef4j.gen.CefFrame#getIdentifier()} == -4. The methods of this class will be called on the
+ * UI thread unless otherwise indicated.
  *
  * <p>Definition generated from cef_frame_handler_capi.h
  *
@@ -140,10 +151,10 @@ public interface CefFrameHandler extends CefClientHandler {
 
     /**
      * Called when an existing frame is destroyed. This will be the last notification that references {@code frame} and
-     * {@link CefFrame#isValid()} will return {@code false} for {@code frame}. If called during browser destruction and
-     * after {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} then {@link CefBrowser#isValid()} will return
-     * {@code false} for {@code browser}. Any queued commands that have not been sent will be discarded before this
-     * callback.
+     * {@link net.kurobako.cef4j.gen.CefFrame#isValid()} will return {@code false} for {@code frame}. If called during
+     * browser destruction and after {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} then
+     * {@link net.kurobako.cef4j.gen.CefBrowser#isValid()} will return {@code false} for {@code browser}. Any queued
+     * commands that have not been sent will be discarded before this callback.
      *
      * <p>Definition generated from cef_frame_handler_capi.h
      *
@@ -177,12 +188,13 @@ public interface CefFrameHandler extends CefClientHandler {
      * Called when a frame loses its connection to the renderer process. This may occur when a frame is destroyed,
      * enters the BackForwardCache, or encounters a rare connection error. In the case of frame destruction this call
      * will be followed by a (potentially async) call to OnFrameDestroyed. If frame destruction is occuring
-     * synchronously then {@link CefFrame#isValid()} will return {@code false} for {@code frame}. If called during
-     * browser destruction and after {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} then
-     * {@link CefBrowser#isValid()} will return {@code false} for {@code browser}. If, in the non-destruction case, the
-     * same frame later exits the BackForwardCache or recovers from a connection error then there will be a follow-up
-     * call to OnFrameAttached. This method will not be called for temporary frames created during cross-origin
-     * navigation.
+     * synchronously then {@link net.kurobako.cef4j.gen.CefFrame#isValid()} will return {@code false} for {@code frame}.
+     * If called during browser destruction and after
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} then
+     * {@link net.kurobako.cef4j.gen.CefBrowser#isValid()} will return {@code false} for {@code browser}. If, in the
+     * non-destruction case, the same frame later exits the BackForwardCache or recovers from a connection error then
+     * there will be a follow-up call to OnFrameAttached. This method will not be called for temporary frames created
+     * during cross-origin navigation.
      *
      * <p>Definition generated from cef_frame_handler_capi.h
      *
@@ -204,8 +216,8 @@ public interface CefFrameHandler extends CefClientHandler {
      * and {@code new_frame} will be non-{@code null} for cross-origin navigations or re-navigation after renderer
      * process termination. This method will be called after OnFrameCreated() for {@code new_frame} and/or after
      * OnFrameDestroyed() for {@code old_frame}. If called during browser destruction and after
-     * {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} then {@link CefBrowser#isValid()} will return {@code false}
-     * for {@code browser}.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} then
+     * {@link net.kurobako.cef4j.gen.CefBrowser#isValid()} will return {@code false} for {@code browser}.
      *
      * <p>Definition generated from cef_frame_handler_capi.h
      *

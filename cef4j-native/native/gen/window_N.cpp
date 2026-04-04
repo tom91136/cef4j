@@ -11,18 +11,18 @@
 #include "jni_util.h"
 
 extern "C" cef_window_delegate_t* Create_JniCefWindowDelegate(JNIEnv *env, jobject handler);
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), release0)(JNIEnv* env, jclass clz, jlong ptr) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), show0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), show0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->show(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), showAsBrowserModalDialog0)(JNIEnv* env, jobject obj, jlong self, jobject browser_view) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), showAsBrowserModalDialog0)(JNIEnv* env, jobject obj, jlong self, jobject browser_view) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     cef_browser_view_t* _browser_view_ptr = browser_view ? reinterpret_cast<cef_browser_view_t*>(env->GetLongField(browser_view, env->GetFieldID(env->GetObjectClass(browser_view), "nativePtr", "J"))) : nullptr;
@@ -30,13 +30,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), showAsBrowserModalDialog0)(JNIEnv*
     s->show_as_browser_modal_dialog(s, _browser_view_ptr);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), hide0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), hide0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->hide(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), centerWindow0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), centerWindow0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     if (!size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return;}
@@ -49,113 +49,113 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), centerWindow0)(JNIEnv* env, jobjec
     s->center_window(s, &_size_val);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), cefClose0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), cefClose0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->close(s);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isClosed0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isClosed0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_closed(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), activate0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), activate0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->activate(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), deactivate0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), deactivate0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->deactivate(s);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isActive0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isActive0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_active(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), bringToTop0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), bringToTop0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->bring_to_top(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setAlwaysOnTop0)(JNIEnv* env, jobject obj, jlong self, jboolean on_top) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setAlwaysOnTop0)(JNIEnv* env, jobject obj, jlong self, jboolean on_top) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->set_always_on_top(s, static_cast<bool>(on_top));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isAlwaysOnTop0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isAlwaysOnTop0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_always_on_top(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), maximize0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), maximize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->maximize(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), minimize0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), minimize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->minimize(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), restore0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), restore0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->restore(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setFullscreen0)(JNIEnv* env, jobject obj, jlong self, jboolean fullscreen) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setFullscreen0)(JNIEnv* env, jobject obj, jlong self, jboolean fullscreen) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->set_fullscreen(s, static_cast<bool>(fullscreen));
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isMaximized0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isMaximized0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_maximized(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isMinimized0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isMinimized0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_minimized(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWindow), isFullscreen0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefWindow), isFullscreen0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return JNI_FALSE;
     auto _r = s->is_fullscreen(s);
     return static_cast<jboolean>(_r);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getFocusedView0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getFocusedView0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_focused_view(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefView$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setTitle0)(JNIEnv* env, jobject obj, jlong self, jstring title) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setTitle0)(JNIEnv* env, jobject obj, jlong self, jstring title) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     auto _title_str = title ? JStringToCefString(env, title) : nullptr;
@@ -163,7 +163,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setTitle0)(JNIEnv* env, jobject ob
     if (_title_str) cef_string_userfree_free(_title_str);
 }
 
-CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefWindow), getTitle0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(views_CefWindow), getTitle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     auto result = s->get_title(s);
@@ -173,7 +173,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefWindow), getTitle0)(JNIEnv* env, jobject
     return jstr;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setWindowIcon0)(JNIEnv* env, jobject obj, jlong self, jobject image) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setWindowIcon0)(JNIEnv* env, jobject obj, jlong self, jobject image) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     cef_image_t* _image_ptr = image ? reinterpret_cast<cef_image_t*>(env->GetLongField(image, env->GetFieldID(env->GetObjectClass(image), "nativePtr", "J"))) : nullptr;
@@ -181,7 +181,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setWindowIcon0)(JNIEnv* env, jobje
     s->set_window_icon(s, _image_ptr);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getWindowIcon0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getWindowIcon0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_window_icon(s);
@@ -191,7 +191,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getWindowIcon0)(JNIEnv* env, jo
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setWindowAppIcon0)(JNIEnv* env, jobject obj, jlong self, jobject image) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setWindowAppIcon0)(JNIEnv* env, jobject obj, jlong self, jobject image) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     cef_image_t* _image_ptr = image ? reinterpret_cast<cef_image_t*>(env->GetLongField(image, env->GetFieldID(env->GetObjectClass(image), "nativePtr", "J"))) : nullptr;
@@ -199,7 +199,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setWindowAppIcon0)(JNIEnv* env, jo
     s->set_window_app_icon(s, _image_ptr);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getWindowAppIcon0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getWindowAppIcon0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_window_app_icon(s);
@@ -209,7 +209,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getWindowAppIcon0)(JNIEnv* env,
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), addOverlayView0)(JNIEnv* env, jobject obj, jlong self, jobject view, jobject docking_mode, jboolean can_activate) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), addOverlayView0)(JNIEnv* env, jobject obj, jlong self, jobject view, jobject docking_mode, jboolean can_activate) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     if (!docking_mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "dockingMode must not be null"); return nullptr;}
@@ -217,12 +217,12 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), addOverlayView0)(JNIEnv* env, j
     if (_view_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b);}
     auto _r = s->add_overlay_view(s, _view_ptr, static_cast<cef_docking_mode_t>(env->GetLongField(docking_mode, env->GetFieldID(env->GetObjectClass(docking_mode), "value", "J"))), static_cast<bool>(can_activate));
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefOverlayController$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefOverlayController$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     if (!screen_point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "screenPoint must not be null"); return;}
@@ -238,23 +238,23 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), showMenu0)(JNIEnv* env, jobject ob
     s->show_menu(s, _menu_model_ptr, &_screen_point_val, static_cast<cef_menu_anchor_position_t>(env->GetLongField(anchor_position, env->GetFieldID(env->GetObjectClass(anchor_position), "value", "J"))));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), cancelMenu0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), cancelMenu0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->cancel_menu(s);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getDisplay0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getDisplay0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_display(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDisplay$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefDisplay$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getClientAreaBoundsInScreen0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getClientAreaBoundsInScreen0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_client_area_bounds_in_screen(s);
@@ -264,68 +264,68 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getClientAreaBoundsInScreen0)(J
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setDraggableRegions0)(JNIEnv* env, jobject obj, jlong self, jlong regionsCount, jobject regions) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setDraggableRegions0)(JNIEnv* env, jobject obj, jlong self, jlong regionsCount, jobject regions) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->set_draggable_regions(s, regionsCount, reinterpret_cast<cef_draggable_region_t const*>(regions ? env->GetLongField(regions, env->GetFieldID(env->GetObjectClass(regions), "address", "J")) : 0));
 }
 
-CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefWindow), getWindowHandle0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefWindow), getWindowHandle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return 0;
     return static_cast<jlong>(s->get_window_handle(s));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), sendKeyPress0)(JNIEnv* env, jobject obj, jlong self, jint key_code, jint event_flags) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendKeyPress0)(JNIEnv* env, jobject obj, jlong self, jint key_code, jint event_flags) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->send_key_press(s, key_code, event_flags);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), sendMouseMove0)(JNIEnv* env, jobject obj, jlong self, jint screen_x, jint screen_y) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendMouseMove0)(JNIEnv* env, jobject obj, jlong self, jint screen_x, jint screen_y) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->send_mouse_move(s, screen_x, screen_y);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), sendMouseEvents0)(JNIEnv* env, jobject obj, jlong self, jobject button, jboolean mouse_down, jboolean mouse_up) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendMouseEvents0)(JNIEnv* env, jobject obj, jlong self, jobject button, jboolean mouse_down, jboolean mouse_up) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     if (!button) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "button must not be null"); return;}
     s->send_mouse_events(s, static_cast<cef_mouse_button_type_t>(env->GetLongField(button, env->GetFieldID(env->GetObjectClass(button), "value", "J"))), static_cast<bool>(mouse_down), static_cast<bool>(mouse_up));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed, jboolean high_priority) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jint key_code, jboolean shift_pressed, jboolean ctrl_pressed, jboolean alt_pressed, jboolean high_priority) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->set_accelerator(s, command_id, key_code, static_cast<bool>(shift_pressed), static_cast<bool>(ctrl_pressed), static_cast<bool>(alt_pressed), static_cast<bool>(high_priority));
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), removeAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), removeAccelerator0)(JNIEnv* env, jobject obj, jlong self, jint command_id) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->remove_accelerator(s, command_id);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), removeAllAccelerators0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), removeAllAccelerators0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->remove_all_accelerators(s);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), setThemeColor0)(JNIEnv* env, jobject obj, jlong self, jint color_id, jint color) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setThemeColor0)(JNIEnv* env, jobject obj, jlong self, jint color_id, jint color) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->set_theme_color(s, color_id, color);
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefWindow), themeChanged0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), themeChanged0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
     s->theme_changed(s);
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getRuntimeStyle0)(JNIEnv* env, jobject obj, jlong self) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getRuntimeStyle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return 0;
     auto _r = s->get_runtime_style(s);
@@ -334,11 +334,11 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), getRuntimeStyle0)(JNIEnv* env, 
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWindow), createTopLevel0)(JNIEnv* env, jclass clz, jobject delegate) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), createTopLevel0)(JNIEnv* env, jclass clz, jobject delegate) {
     cef_window_delegate_t* _delegate_ptr = delegate ? Create_JniCefWindowDelegate(env, delegate) : nullptr;
     auto _r = cef_window_create_top_level(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefWindow$NativePeer");
+    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

@@ -1,10 +1,13 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefSize;
 
 /**
  * Implement this interface to handle view events. All size and position values are in density independent pixels (DIP)
@@ -180,13 +183,15 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>This will be called in the following cases:
      *
      * <p>1. When {@code view}, or a parent of {@code view}, is added to a Window. 2. When the native/OS or Chrome theme
-     * changes for the Window that contains {@code view}. See {@link CefWindowDelegate#onThemeColorsChanged(CefWindow,
-     * boolean)} documentation. 3. When the client explicitly calls {@link CefWindow#themeChanged()} on the Window that
+     * changes for the Window that contains {@code view}. See
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)} documentation. 3.
+     * When the client explicitly calls {@link net.kurobako.cef4j.gen.views.CefWindow#themeChanged()} on the Window that
      * contains {@code view}.
      *
      * <p>Optionally use this callback to override the new per-View theme colors by calling
-     * {@link CefView#setBackgroundColor(int)} or the appropriate component-specific method. See
-     * {@link CefWindow#setThemeColor(int, int)} documentation for how to customize additional Window theme colors.
+     * {@link net.kurobako.cef4j.gen.views.CefView#setBackgroundColor(int)} or the appropriate component-specific
+     * method. See {@link net.kurobako.cef4j.gen.views.CefWindow#setThemeColor(int, int)} documentation for how to
+     * customize additional Window theme colors.
      *
      * <p>Definition generated from views/cef_view_delegate_capi.h
      *

@@ -1,11 +1,22 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefDockingMode;
+import net.kurobako.cef4j.gen.CefImage;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefMenuAnchorPosition;
+import net.kurobako.cef4j.gen.CefMenuModel;
+import net.kurobako.cef4j.gen.CefMouseButtonType;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefRuntimeStyle;
+import net.kurobako.cef4j.gen.CefSize;
+import net.kurobako.cef4j.gen.NativePointer;
 
 /**
  * A Window is a top-level Window/widget in the Views hierarchy. By default it will have a non-client area with title
@@ -38,12 +49,12 @@ public interface CefWindow extends CefLibraryObject {
 
     /**
      * Show the Window as a browser modal dialog relative to {@code browser_view}. A parent Window must be returned via
-     * {@link CefWindowDelegate#getParentWindow(CefWindow, int[], int[])} and {@code browser_view} must belong to that
-     * parent Window. While this Window is visible, {@code browser_view} will be disabled while other controls in the
-     * parent Window remain enabled. Navigating or destroying the {@code browser_view} will close this Window
-     * automatically. Alternately, use Show() and return {@code true} from
-     * {@link CefWindowDelegate#isWindowModalDialog(CefWindow)} for a window modal dialog where all controls in the
-     * parent Window are disabled.
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#getParentWindow(CefWindow, int[], int[])} and
+     * {@code browser_view} must belong to that parent Window. While this Window is visible, {@code browser_view} will
+     * be disabled while other controls in the parent Window remain enabled. Navigating or destroying the
+     * {@code browser_view} will close this Window automatically. Alternately, use Show() and return {@code true} from
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#isWindowModalDialog(CefWindow)} for a window modal dialog
+     * where all controls in the parent Window are disabled.
      *
      * <p>Definition generated from views/cef_window_capi.h
      *
@@ -199,8 +210,9 @@ public interface CefWindow extends CefLibraryObject {
     void restore();
 
     /**
-     * Set fullscreen Window state. The {@link CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)}
-     * method will be called during the fullscreen transition for notification purposes.
+     * Set fullscreen Window state. The
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)} method
+     * will be called during the fullscreen transition for notification purposes.
      *
      * <p>Definition generated from views/cef_window_capi.h
      *
@@ -331,17 +343,19 @@ public interface CefWindow extends CefLibraryObject {
      * the overlay view to receive input focus. The returned CefOverlayController object is used to control the overlay.
      * Overlays are hidden by default.
      *
-     * <p>With {@link CefDockingMode.Kind#CUSTOM}: 1. The overlay is initially hidden, sized to {@code view}'s preferred
-     * size, and positioned in the top-left corner. 2. Optionally change the overlay position and/or size by calling
-     * CefOverlayController methods. 3. Call {@link CefOverlayController#setVisible(boolean)}({@code true}) to show the
-     * overlay. 4. The overlay will be automatically re-sized if {@code view}'s layout changes. Optionally change the
-     * overlay position and/or size when OnLayoutChanged is called on the Window's delegate to indicate a change in
-     * Window bounds.
+     * <p>With {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM}: 1. The overlay is initially hidden, sized to
+     * {@code view}'s preferred size, and positioned in the top-left corner. 2. Optionally change the overlay position
+     * and/or size by calling CefOverlayController methods. 3. Call
+     * {@link net.kurobako.cef4j.gen.views.CefOverlayController#setVisible(boolean)}({@code true}) to show the overlay.
+     * 4. The overlay will be automatically re-sized if {@code view}'s layout changes. Optionally change the overlay
+     * position and/or size when OnLayoutChanged is called on the Window's delegate to indicate a change in Window
+     * bounds.
      *
      * <p>With other docking modes: 1. The overlay is initially hidden, sized to {@code view}'s preferred size, and
-     * positioned based on {@code docking_mode}. 2. Call {@link CefOverlayController#setVisible(boolean)}({@code true})
-     * to show the overlay. 3. The overlay will be automatically re-sized if {@code view}'s layout changes and
-     * re-positioned as appropriate when the Window resizes.
+     * positioned based on {@code docking_mode}. 2. Call
+     * {@link net.kurobako.cef4j.gen.views.CefOverlayController#setVisible(boolean)}({@code true}) to show the overlay.
+     * 3. The overlay will be automatically re-sized if {@code view}'s layout changes and re-positioned as appropriate
+     * when the Window resizes.
      *
      * <p>Overlays created by this method will receive a higher z-order then any child Views added previously. It is
      * therefore recommended to call this method last after all other child Views have been added so that the overlay
@@ -481,13 +495,14 @@ public interface CefWindow extends CefLibraryObject {
     /**
      * Set the keyboard accelerator for the specified {@code command_id}. {@code key_code} can be any virtual key or
      * character value. Required modifier keys are specified by {@code shift_pressed}, {@code ctrl_pressed} and/or
-     * {@code alt_pressed}. {@link CefWindowDelegate#onAccelerator(CefWindow, int)} will be called if the keyboard
-     * combination is triggered while this window has focus.
+     * {@code alt_pressed}. {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onAccelerator(CefWindow, int)} will be
+     * called if the keyboard combination is triggered while this window has focus.
      *
      * <p>The {@code high_priority} value will be considered if a child CefBrowserView has focus when the keyboard
      * combination is triggered. If {@code high_priority} is {@code true} then the key event will not be forwarded to
      * the web content (`keydown` event handler) or CefKeyboardHandler first. If {@code high_priority} is {@code false}
-     * then the behavior will depend on the {@link CefBrowserView#setPreferAccelerators(boolean)} configuration.
+     * then the behavior will depend on the
+     * {@link net.kurobako.cef4j.gen.views.CefBrowserView#setPreferAccelerators(boolean)} configuration.
      *
      * <p>Definition generated from views/cef_window_capi.h
      *
@@ -532,13 +547,16 @@ public interface CefWindow extends CefLibraryObject {
      * standard ID values. Recommended usage is as follows:
      *
      * <p>1. Customize the default native/OS theme by calling SetThemeColor before showing the first Window. When done
-     * setting colors call {@link CefWindow#themeChanged()} to trigger {@link CefViewDelegate#onThemeChanged(CefView)}
-     * notifications. 2. Customize the current native/OS or Chrome theme after it changes by calling SetThemeColor from
-     * the {@link CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)} callback.
-     * {@link CefViewDelegate#onThemeChanged(CefView)} notifications will then be triggered automatically.
+     * setting colors call {@link net.kurobako.cef4j.gen.views.CefWindow#themeChanged()} to trigger
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} notifications. 2. Customize the
+     * current native/OS or Chrome theme after it changes by calling SetThemeColor from the
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)} callback.
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} notifications will then be triggered
+     * automatically.
      *
-     * <p>The configured color will be available immediately via {@link CefView#getThemeColor(int)} and will be applied
-     * to each View in this Window's component hierarchy when {@link CefViewDelegate#onThemeChanged(CefView)} is called.
+     * <p>The configured color will be available immediately via
+     * {@link net.kurobako.cef4j.gen.views.CefView#getThemeColor(int)} and will be applied to each View in this Window's
+     * component hierarchy when {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} is called.
      * See OnThemeColorsChanged documentation for additional details.
      *
      * <p>Clients wishing to add custom colors should use {@code color_id} values >= CEF_ChromeColorsEnd.
@@ -552,12 +570,14 @@ public interface CefWindow extends CefLibraryObject {
     void setThemeColor(int colorId, int color);
 
     /**
-     * Trigger {@link CefViewDelegate#onThemeChanged(CefView)} callbacks for each View in this Window's component
-     * hierarchy. Unlike a native/OS or Chrome theme change this method does not reset theme colors to standard values
-     * and does not result in a call to {@link CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)}.
+     * Trigger {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)} callbacks for each View in
+     * this Window's component hierarchy. Unlike a native/OS or Chrome theme change this method does not reset theme
+     * colors to standard values and does not result in a call to
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)}.
      *
-     * <p>Do not call this method from {@link CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)} or
-     * {@link CefViewDelegate#onThemeChanged(CefView)}.
+     * <p>Do not call this method from
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onThemeColorsChanged(CefWindow, boolean)} or
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onThemeChanged(CefView)}.
      *
      * <p>Definition generated from views/cef_window_capi.h
      *

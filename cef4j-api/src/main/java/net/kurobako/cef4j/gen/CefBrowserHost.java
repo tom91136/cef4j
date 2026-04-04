@@ -38,19 +38,22 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Request that the browser close. Closing a browser is a multi-stage process that may complete either synchronously
-     * or asynchronously, and involves callbacks such as {@link CefLifeSpanHandler#doClose(CefBrowser)} (Alloy style
-     * only), {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)}, and a top-level window close handler such as
-     * {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent). In some cases a close request
-     * may be delayed or canceled by the user. Using TryCloseBrowser() instead of CloseBrowser() is recommended for most
-     * use cases. See {@link CefLifeSpanHandler#doClose(CefBrowser)} documentation for detailed usage and examples.
+     * or asynchronously, and involves callbacks such as
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#doClose(CefBrowser)} (Alloy style only),
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)}, and a top-level window close handler
+     * such as {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#canClose(CefWindow)} (or platform-specific
+     * equivalent). In some cases a close request may be delayed or canceled by the user. Using TryCloseBrowser()
+     * instead of CloseBrowser() is recommended for most use cases. See
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#doClose(CefBrowser)} documentation for detailed usage and
+     * examples.
      *
      * <p>If {@code force_close} is {@code false} then JavaScript unload handlers, if any, may be fired and the close
      * may be delayed or canceled by the user. If {@code force_close} is {@code true} then the user will not be prompted
      * and the close will proceed immediately (possibly asynchronously). If browser close is delayed and not canceled
      * the default behavior is to call the top-level window close handler once the browser is ready to be closed. This
      * default behavior can be changed for Alloy style browsers by implementing
-     * {@link CefLifeSpanHandler#doClose(CefBrowser)}. IsReadyToBeClosed() can be used to detect mandatory browser close
-     * events when customizing close behavior on the browser process UI thread.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#doClose(CefBrowser)}. IsReadyToBeClosed() can be used to detect
+     * mandatory browser close events when customizing close behavior on the browser process UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -63,11 +66,11 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Helper for closing a browser. This is similar in behavior to CLoseBrowser({@code false}) but returns a boolean to
      * reflect the immediate close status. Call this method from a top-level window close handler such as
-     * {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent) to request that the browser
-     * close, and return the result to indicate if the window close should proceed. Returns {@code false} if the close
-     * will be delayed (JavaScript unload handlers triggered but still pending) or {@code true} if the close will
-     * proceed immediately (possibly asynchronously). See CloseBrowser() documentation for additional usage information.
-     * This method must be called on the browser process UI thread.
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent) to
+     * request that the browser close, and return the result to indicate if the window close should proceed. Returns
+     * {@code false} if the close will be delayed (JavaScript unload handlers triggered but still pending) or
+     * {@code true} if the close will proceed immediately (possibly asynchronously). See CloseBrowser() documentation
+     * for additional usage information. This method must be called on the browser process UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -80,13 +83,13 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Returns {@code true} if the browser is ready to be closed, meaning that the close has already been initiated and
      * that JavaScript unload handlers have already executed or should be ignored. This can be used from a top-level
-     * window close handler such as {@link CefWindowDelegate#canClose(CefWindow)} (or platform-specific equivalent) to
-     * distringuish between potentially cancelable browser close events (like the user clicking the top-level window
-     * close button before browser close has started) and mandatory browser close events (like JavaScript
-     * `window.close()` or after browser close has started in response to [Try]CloseBrowser()). Not completing the
-     * browser close for mandatory close events (when this method returns {@code true}) will leave the browser in a
-     * partially closed state that interferes with proper functioning. See CloseBrowser() documentation for additional
-     * usage information. This method must be called on the browser process UI thread.
+     * window close handler such as {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#canClose(CefWindow)} (or
+     * platform-specific equivalent) to distringuish between potentially cancelable browser close events (like the user
+     * clicking the top-level window close button before browser close has started) and mandatory browser close events
+     * (like JavaScript `window.close()` or after browser close has started in response to [Try]CloseBrowser()). Not
+     * completing the browser close for mandatory close events (when this method returns {@code true}) will leave the
+     * browser in a partially closed state that interferes with proper functioning. See CloseBrowser() documentation for
+     * additional usage information. This method must be called on the browser process UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -315,7 +318,7 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Print the current browser contents to the PDF file specified by {@code path} and execute {@code callback} on
      * completion. The caller is responsible for deleting {@code path} when done. For PDF printing to work on Linux you
-     * must implement the {@link CefPrintHandler#getPdfPaperSize(CefBrowser, int)} method.
+     * must implement the {@link net.kurobako.cef4j.gen.CefPrintHandler#getPdfPaperSize(CefBrowser, int)} method.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -334,7 +337,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * {@code matchCase} indicates whether the search should be case-sensitive. {@code findNext} indicates whether this
      * is the first request or a follow-up. The search will be restarted if {@code searchText} or {@code matchCase}
      * change. The search will be stopped if {@code searchText} is empty. The CefFindHandler instance, if any, returned
-     * via {@link CefClient#getFindHandler()} will be called to report find results.
+     * via {@link net.kurobako.cef4j.gen.CefClient#getFindHandler()} will be called to report find results.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -419,8 +422,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * <p>Every valid method call will result in an asynchronous method result or error message that references the sent
      * message "id". Event messages are received while notifications are enabled (for example, between method calls for
      * "Page.enable" and "Page.disable"). All received messages will be delivered to the observer(s) registered with
-     * AddDevToolsMessageObserver. See {@link CefDevToolsMessageObserver#onDevToolsMessage(CefBrowser,
-     * java.nio.ByteBuffer)} documentation for details of received message contents.
+     * AddDevToolsMessageObserver. See
+     * {@link net.kurobako.cef4j.gen.CefDevToolsMessageObserver#onDevToolsMessage(CefBrowser, java.nio.ByteBuffer)}
+     * documentation for details of received message contents.
      *
      * <p>Usage of the SendDevToolsMessage, ExecuteDevToolsMethod and AddDevToolsMessageObserver methods does not
      * require an active DevTools front-end or remote-debugging session. Other active DevTools sessions will continue to
@@ -533,9 +537,10 @@ public interface CefBrowserHost extends CefLibraryObject {
 
     /**
      * Notify the browser that the widget has been resized. The browser will first call
-     * {@link CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)} to get the new size and then call
-     * {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)}
-     * asynchronously with the updated regions. This method is only used when window rendering is disabled.
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)} to get the new size and
+     * then call {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long,
+     * CefRect[], java.nio.ByteBuffer, int, int)} asynchronously with the updated regions. This method is only used when
+     * window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -546,9 +551,10 @@ public interface CefBrowserHost extends CefLibraryObject {
     void wasResized();
 
     /**
-     * Notify the browser that it has been hidden or shown. Layouting and {@link CefRenderHandler#onPaint(CefBrowser,
-     * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} notification will stop when the browser is
-     * hidden. This method is only used when window rendering is disabled.
+     * Notify the browser that it has been hidden or shown. Layouting and
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[],
+     * java.nio.ByteBuffer, int, int)} notification will stop when the browser is hidden. This method is only used when
+     * window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -567,14 +573,16 @@ public interface CefBrowserHost extends CefLibraryObject {
      * <p>This method is used with (a) windowless rendering and (b) windowed rendering with external (client-provided)
      * root window.
      *
-     * <p>With windowless rendering the browser will call {@link CefRenderHandler#getScreenInfo(CefBrowser,
-     * CefScreenInfo.Mutable)}, {@link CefRenderHandler#getRootScreenRect(CefBrowser, CefRect.Mutable)} and
-     * {@link CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)}. This simulates moving or resizing the root
-     * window in the current display, moving the root window from one display to another, or changing the properties of
-     * the current display.
+     * <p>With windowless rendering the browser will call
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)},
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#getRootScreenRect(CefBrowser, CefRect.Mutable)} and
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#getViewRect(CefBrowser, CefRect.Mutable)}. This simulates moving
+     * or resizing the root window in the current display, moving the root window from one display to another, or
+     * changing the properties of the current display.
      *
-     * <p>With windowed rendering the browser will call {@link CefDisplayHandler#getRootWindowScreenRect(CefBrowser,
-     * CefRect.Mutable)} and use the associated display properties.
+     * <p>With windowed rendering the browser will call
+     * {@link net.kurobako.cef4j.gen.CefDisplayHandler#getRootWindowScreenRect(CefBrowser, CefRect.Mutable)} and use the
+     * associated display properties.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -585,9 +593,9 @@ public interface CefBrowserHost extends CefLibraryObject {
     void notifyScreenInfoChanged();
 
     /**
-     * Invalidate the view. The browser will call {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long,
-     * CefRect[], java.nio.ByteBuffer, int, int)} asynchronously. This method is only used when window rendering is
-     * disabled.
+     * Invalidate the view. The browser will call {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser,
+     * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} asynchronously. This method is only used
+     * when window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -598,8 +606,8 @@ public interface CefBrowserHost extends CefLibraryObject {
     void invalidate(@Nonnull CefPaintElementType type);
 
     /**
-     * Issue a BeginFrame request to Chromium. Only valid when CefWindowInfo.externalBeginFrameEnabled() is set to
-     * {@code true}.
+     * Issue a BeginFrame request to Chromium. Only valid when
+     * net.kurobako.cef4j.gen.CefWindowInfo.externalBeginFrameEnabled() is set to {@code true}.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -653,7 +661,8 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Send a mouse wheel event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left
      * corner of the view. The {@code deltaX} and {@code deltaY} values represent the movement delta in the X and Y
      * directions respectively. In order to scroll inside select popups with window rendering disabled
-     * {@link CefRenderHandler#getScreenPoint(CefBrowser, int, int, int[], int[])} should be implemented properly.
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenPoint(CefBrowser, int, int, int[], int[])} should be
+     * implemented properly.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -701,10 +710,11 @@ public interface CefBrowserHost extends CefLibraryObject {
     void notifyMoveOrResizeStarted();
 
     /**
-     * Returns the maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser,
-     * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless browser.
-     * The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum value is 1
-     * and the default value is 30. This method can only be called on the UI thread.
+     * Returns the maximum rate in frames per second (fps) that
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[],
+     * java.nio.ByteBuffer, int, int)} will be called for a windowless browser. The actual fps may be lower if the
+     * browser cannot generate frames at the requested rate. The minimum value is 1 and the default value is 30. This
+     * method can only be called on the UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -810,9 +820,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Call this method when the user drags the mouse into the web view (before calling
      * DragTargetDragOver/DragTargetLeave/DragTargetDrop). {@code drag_data} should not contain file contents as this
      * type of data is not allowed to be dragged into the web view. File contents can be removed using
-     * {@link CefDragData#resetFileContents()} (for example, if {@code drag_data} comes from
-     * {@link CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int, int)}). This method is
-     * only used when window rendering is disabled.
+     * {@link net.kurobako.cef4j.gen.CefDragData#resetFileContents()} (for example, if {@code drag_data} comes from
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int,
+     * int)}). This method is only used when window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -867,11 +877,12 @@ public interface CefBrowserHost extends CefLibraryObject {
     void dragTargetDrop(@Nonnull CefMouseEvent event);
 
     /**
-     * Call this method when the drag operation started by a {@link CefRenderHandler#startDragging(CefBrowser,
-     * CefDragData, CefDragOperationsMask, int, int)} call has ended either in a drop or by being cancelled. {@code x}
-     * and {@code y} are mouse coordinates relative to the upper-left corner of the view. If the web view is both the
-     * drag source and the drag target then all DragTarget* methods should be called before DragSource* mthods. This
-     * method is only used when window rendering is disabled.
+     * Call this method when the drag operation started by a
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int,
+     * int)} call has ended either in a drop or by being cancelled. {@code x} and {@code y} are mouse coordinates
+     * relative to the upper-left corner of the view. If the web view is both the drag source and the drag target then
+     * all DragTarget* methods should be called before DragSource* mthods. This method is only used when window
+     * rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -884,11 +895,11 @@ public interface CefBrowserHost extends CefLibraryObject {
     void dragSourceEndedAt(int x, int y, @Nonnull CefDragOperationsMask op);
 
     /**
-     * Call this method when the drag operation started by a {@link CefRenderHandler#startDragging(CefBrowser,
-     * CefDragData, CefDragOperationsMask, int, int)} call has completed. This method may be called immediately without
-     * first calling DragSourceEndedAt to cancel a drag operation. If the web view is both the drag source and the drag
-     * target then all DragTarget* methods should be called before DragSource* mthods. This method is only used when
-     * window rendering is disabled.
+     * Call this method when the drag operation started by a
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int,
+     * int)} call has completed. This method may be called immediately without first calling DragSourceEndedAt to cancel
+     * a drag operation. If the web view is both the drag source and the drag target then all DragTarget* methods should
+     * be called before DragSource* mthods. This method is only used when window rendering is disabled.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -940,8 +951,9 @@ public interface CefBrowserHost extends CefLibraryObject {
     void setAccessibilityState(@Nonnull CefState accessibilityState);
 
     /**
-     * Enable notifications of auto resize via {@link CefDisplayHandler#onAutoResize(CefBrowser, CefSize)}.
-     * Notifications are disabled by default. {@code min_size} and {@code max_size} define the range of allowed sizes.
+     * Enable notifications of auto resize via {@link net.kurobako.cef4j.gen.CefDisplayHandler#onAutoResize(CefBrowser,
+     * CefSize)}. Notifications are disabled by default. {@code min_size} and {@code max_size} define the range of
+     * allowed sizes.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -991,11 +1003,12 @@ public interface CefBrowserHost extends CefLibraryObject {
     /**
      * Requests the renderer to exit browser fullscreen. In most cases exiting window fullscreen should also exit
      * browser fullscreen. With Alloy style this method should be called in response to a user action such as clicking
-     * the green traffic light button on MacOS ({@link CefWindowDelegate#onWindowFullscreenTransition(CefWindow,
-     * boolean)} callback) or pressing the "ESC" key ({@link CefKeyboardHandler#onPreKeyEvent(CefBrowser, CefKeyEvent,
-     * long, int[])} callback). With Chrome style these standard exit actions are handled internally but new/additional
-     * user actions can use this method. Set {@code will_cause_resize} to {@code true} if exiting browser fullscreen
-     * will cause a view resize.
+     * the green traffic light button on MacOS
+     * ({@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onWindowFullscreenTransition(CefWindow, boolean)}
+     * callback) or pressing the "ESC" key ({@link net.kurobako.cef4j.gen.CefKeyboardHandler#onPreKeyEvent(CefBrowser,
+     * CefKeyEvent, long, int[])} callback). With Chrome style these standard exit actions are handled internally but
+     * new/additional user actions can use this method. Set {@code will_cause_resize} to {@code true} if exiting browser
+     * fullscreen will cause a view resize.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -1037,8 +1050,8 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Returns {@code true} if the render process associated with this browser is currently unresponsive as indicated by
      * a lack of input event processing for at least 15 seconds. To receive associated state change notifications and
      * optionally handle an unresponsive render process implement
-     * {@link CefRequestHandler#onRenderProcessUnresponsive(CefBrowser, CefUnresponsiveProcessCallback)}. This method
-     * can only be called on the UI thread.
+     * {@link net.kurobako.cef4j.gen.CefRequestHandler#onRenderProcessUnresponsive(CefBrowser,
+     * CefUnresponsiveProcessCallback)}. This method can only be called on the UI thread.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -1083,8 +1096,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * internally and the actual window (if any) will be created on the UI thread. If {@code request_context} is empty
      * the global request context will be used. This method can be called on any browser process thread and will not
      * block. The optional {@code extra_info} parameter provides an opportunity to specify extra information specific to
-     * the created browser that will be passed to {@link CefRenderProcessHandler#onBrowserCreated(CefBrowser,
-     * CefDictionaryValue)} in the render process.
+     * the created browser that will be passed to
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the
+     * render process.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -1108,8 +1122,9 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Create a new browser using the window parameters specified by {@code windowInfo}. If {@code request_context} is
      * empty the global request context will be used. This method can only be called on the browser process UI thread.
      * The optional {@code extra_info} parameter provides an opportunity to specify extra information specific to the
-     * created browser that will be passed to {@link CefRenderProcessHandler#onBrowserCreated(CefBrowser,
-     * CefDictionaryValue)} in the render process.
+     * created browser that will be passed to
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the
+     * render process.
      *
      * <p>Definition generated from cef_browser_capi.h
      *

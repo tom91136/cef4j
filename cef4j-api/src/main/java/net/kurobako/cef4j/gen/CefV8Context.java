@@ -11,7 +11,7 @@ import javax.annotation.processing.Generated;
  * Class representing a V8 context handle. V8 handles can only be accessed from the thread on which they are created.
  * Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and WebWorker
  * threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * {@link CefV8Context#getTaskRunner()} method.
+ * {@link net.kurobako.cef4j.gen.CefV8Context#getTaskRunner()} method.
  *
  * <p>Definition generated from cef_v8_capi.h
  *

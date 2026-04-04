@@ -11,8 +11,9 @@ object JavaInterfaceCodeGen {
       classDoc: String = "",
       handlerNames: Set[String] = Set.empty,
       freeFunctions: List[CefDecl.FreeFunction] = Nil
-  )(using Naming.Context, DocComments.Context): Unit = {
+  )(using ctx: Naming.Context, dc: DocComments.Context): Unit = {
     val javaName       = Naming.structToJavaName(decl.name)
+    val subPkg         = ctx.subPackages.getOrElse(decl.name, "")
     val ffNativeDecls  = collectFreeFuncNativeDecls(freeFunctions)
     val nativePeerBody = JavaNativeCodeGen.renderInnerClass(decl, ffNativeDecls, handlerNames)
     val content        =
@@ -25,9 +26,10 @@ object JavaInterfaceCodeGen {
         nativePeerBody = nativePeerBody,
         freeFunctions = freeFunctions,
         sourceHeader = decl.sourceHeader,
-        cefStructName = decl.name
+        cefStructName = decl.name,
+        subPackage = subPkg
       )
-    JavaCodeGen.writeJavaFile(outDir, javaName, content)
+    JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
   def emitGlobals(
@@ -46,8 +48,9 @@ object JavaInterfaceCodeGen {
       docs: Map[String, String] = Map.empty,
       classDoc: String = "",
       handlerNames: Set[String] = Set.empty
-  )(using Naming.Context, DocComments.Context): Unit = {
+  )(using ctx: Naming.Context, dc: DocComments.Context): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
+    val subPkg   = ctx.subPackages.getOrElse(decl.name, "")
     val content  =
       renderInterface(
         javaName,
@@ -57,9 +60,10 @@ object JavaInterfaceCodeGen {
         classDoc = classDoc,
         handlerNames = handlerNames,
         sourceHeader = decl.sourceHeader,
-        cefStructName = decl.name
+        cefStructName = decl.name,
+        subPackage = subPkg
       )
-    JavaCodeGen.writeJavaFile(outDir, javaName, content)
+    JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
   private def isHandlerPtrReturn(ret: CType, handlerNames: Set[String]): Boolean = ret match {
@@ -84,7 +88,8 @@ object JavaInterfaceCodeGen {
       handlerNames: Set[String] = Set.empty,
       freeFunctions: List[CefDecl.FreeFunction] = Nil,
       sourceHeader: String = "",
-      cefStructName: String = ""
+      cefStructName: String = "",
+      subPackage: String = ""
   )(using Naming.Context, DocComments.Context): String = {
     val hasNullable = fns.exists { fn =>
       JavaMethods.hasNullableParam(fn.params, fn.metaAttrs)
@@ -149,11 +154,26 @@ object JavaInterfaceCodeGen {
     val ffTypes     = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
     val typeImports = (fnTypes ++ ffTypes).flatMap(Naming.javaImports).distinct.sorted.map(i => s"import $i;")
 
+    // Cross-package imports: if this class is in a sub-package, import referenced types from other packages
+    val crossPkgImports = if (subPackage.nonEmpty) {
+      val allTypes  = fnTypes ++ ffTypes
+      val cefNames  = allTypes.flatMap(Naming.referencedCefNames).distinct
+      val basePkg   = Naming.javaPackage
+      val thisPkg   = s"$basePkg.$subPackage"
+      val fromTypes = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
+      // Import marker interfaces and helper types from base package
+      val markerImports =
+        if (isObject) List(s"$basePkg.CefLibraryObject") else List(s"$basePkg.CefClientHandler")
+      val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
+      val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
+      (fromTypes ++ markerImports ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
+    } else Nil
+
     val allImports = (List(
       if (hasOptional || ffHasOptional) Some("import java.util.Optional;") else None,
       if (hasNullable || ffHasNullable) Some("import javax.annotation.Nullable;") else None,
       if (hasNonnull || ffHasNonnull) Some("import javax.annotation.Nonnull;") else None
-    ).flatten ++ typeImports).distinct.sorted
+    ).flatten ++ typeImports ++ crossPkgImports).distinct.sorted
 
     val extendsClause = if (isObject) " extends CefLibraryObject" else " extends CefClientHandler"
     val structProto = if (cefStructName.nonEmpty) DocComments.cPrototypeForStruct(cefStructName, hasBase = true) else ""
@@ -163,7 +183,8 @@ object JavaInterfaceCodeGen {
       imports = allImports,
       classDoc = classDoc,
       capiSource = sourceHeader,
-      cPrototype = structProto
+      cPrototype = structProto,
+      subPackage = subPackage
     )
   }
 

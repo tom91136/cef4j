@@ -8,8 +8,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Implemented by the client to observe content and website setting changes and registered via
- * {@link CefRequestContext#addSettingObserver(CefSettingObserver)}. The methods of this class will be called on the
- * browser process UI thread.
+ * {@link net.kurobako.cef4j.gen.CefRequestContext#addSettingObserver(CefSettingObserver)}. The methods of this class
+ * will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_request_context_capi.h
  *
@@ -26,8 +26,8 @@ public interface CefSettingObserver extends CefClientHandler {
 
     /**
      * Called when a content or website setting has changed. The new value can be retrieved using
-     * {@link CefRequestContext#getContentSetting(String, String, CefContentSettingTypes)} or
-     * {@link CefRequestContext#getWebsiteSetting(String, String, CefContentSettingTypes)}.
+     * {@link net.kurobako.cef4j.gen.CefRequestContext#getContentSetting(String, String, CefContentSettingTypes)} or
+     * {@link net.kurobako.cef4j.gen.CefRequestContext#getWebsiteSetting(String, String, CefContentSettingTypes)}.
      *
      * <p>Definition generated from cef_request_context_capi.h
      *

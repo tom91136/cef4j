@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefPoint;
 
 /**
  * Implement this interface to handle MenuButton events. The methods of this class will be called on the browser process
@@ -24,10 +26,10 @@ import javax.annotation.processing.Generated;
 public interface CefMenuButtonDelegate extends CefClientHandler {
 
     /**
-     * Called when {@code button} is pressed. Call {@link CefMenuButton#showMenu(CefMenuModel, CefPoint,
-     * CefMenuAnchorPosition)} to show a popup menu at {@code screen_point}. When showing a custom popup such as a
-     * window keep a reference to {@code button_pressed_lock} until the popup is hidden to maintain the pressed button
-     * state.
+     * Called when {@code button} is pressed. Call
+     * {@link net.kurobako.cef4j.gen.views.CefMenuButton#showMenu(CefMenuModel, CefPoint, CefMenuAnchorPosition)} to
+     * show a popup menu at {@code screen_point}. When showing a custom popup such as a window keep a reference to
+     * {@code button_pressed_lock} until the popup is hidden to maintain the pressed button state.
      *
      * <p>Definition generated from views/cef_menu_button_delegate_capi.h
      *

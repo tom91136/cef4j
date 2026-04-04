@@ -1,10 +1,12 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefKeyEvent;
 
 /**
  * Implement this interface to handle Textfield events. The methods of this class will be called on the browser process

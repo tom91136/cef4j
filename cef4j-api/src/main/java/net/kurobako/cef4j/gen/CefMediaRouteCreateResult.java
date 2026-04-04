@@ -5,8 +5,9 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Result codes for {@link CefMediaRouter#createRoute(CefMediaSource, CefMediaSink, CefMediaRouteCreateCallback)}.
- * Should be kept in sync with Chromium's media_router::mojom::RouteRequestResultCode type.
+ * Result codes for {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink,
+ * CefMediaRouteCreateCallback)}. Should be kept in sync with Chromium's media_router::mojom::RouteRequestResultCode
+ * type.
  *
  * <p>Definition generated from cef_types.h
  *

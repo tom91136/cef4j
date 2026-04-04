@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for {@link CefBrowserHost#printToPdf(String, CefPdfPrintSettings, CefPdfPrintCallback)}. The
- * methods of this class will be called on the browser process UI thread.
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefBrowserHost#printToPdf(String, CefPdfPrintSettings,
+ * CefPdfPrintCallback)}. The methods of this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_browser_capi.h
  *

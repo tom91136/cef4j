@@ -5,7 +5,8 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback for asynchronous continuation of {@link CefResourceHandler#skip(long, long[], CefResourceSkipCallback)}.
+ * Callback for asynchronous continuation of {@link net.kurobako.cef4j.gen.CefResourceHandler#skip(long, long[],
+ * CefResourceSkipCallback)}.
  *
  * <p>Definition generated from cef_resource_handler_capi.h
  *

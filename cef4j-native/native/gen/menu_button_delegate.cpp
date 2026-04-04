@@ -25,7 +25,7 @@ struct JniCefMenuButtonDelegate: public cef_menu_button_delegate_t {
         if (env->PushLocalFrame(14) < 0) {return;}
         cef_menu_button_t* _p_menu_button = menu_button;
         if (_p_menu_button) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_button); _b->add_ref(_b);}
-        auto j_menu_button_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuButton$NativePeer");
+        auto j_menu_button_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefMenuButton$NativePeer");
         auto j_menu_button_ctor = env->GetMethodID(j_menu_button_cls, "<init>", "(J)V");
         auto j_menu_button = _p_menu_button ? env->NewObject(j_menu_button_cls, j_menu_button_ctor, reinterpret_cast<jlong>(_p_menu_button)) : nullptr;
         auto j_screen_point_cls = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -33,11 +33,11 @@ struct JniCefMenuButtonDelegate: public cef_menu_button_delegate_t {
         auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>(screen_point->x), static_cast<jint>(screen_point->y)) : nullptr;
         cef_menu_button_pressed_lock_t* _p_button_pressed_lock = button_pressed_lock;
         if (_p_button_pressed_lock) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_button_pressed_lock); _b->add_ref(_b);}
-        auto j_button_pressed_lock_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuButtonPressedLock$NativePeer");
+        auto j_button_pressed_lock_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefMenuButtonPressedLock$NativePeer");
         auto j_button_pressed_lock_ctor = env->GetMethodID(j_button_pressed_lock_cls, "<init>", "(J)V");
         auto j_button_pressed_lock = _p_button_pressed_lock ? env->NewObject(j_button_pressed_lock_cls, j_button_pressed_lock_ctor, reinterpret_cast<jlong>(_p_button_pressed_lock)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onMenuButtonPressed", "(Lnet/kurobako/cef4j/gen/CefMenuButton;Lnet/kurobako/cef4j/gen/CefPoint;Lnet/kurobako/cef4j/gen/CefMenuButtonPressedLock;)V");
+        auto mid = env->GetMethodID(cls, "onMenuButtonPressed", "(Lnet/kurobako/cef4j/gen/views/CefMenuButton;Lnet/kurobako/cef4j/gen/CefPoint;Lnet/kurobako/cef4j/gen/views/CefMenuButtonPressedLock;)V");
         if (!mid) {env->PopLocalFrame(nullptr); return;}
         env->CallVoidMethod(h->javaHandler, mid, j_menu_button, j_screen_point, j_button_pressed_lock);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}

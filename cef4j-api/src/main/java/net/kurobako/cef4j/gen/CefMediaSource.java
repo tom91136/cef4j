@@ -7,8 +7,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Represents a source from which media can be routed. Instances of this object are retrieved via
- * {@link CefMediaRouter#getSource(String)}. The methods of this class may be called on any browser process thread
- * unless otherwise indicated.
+ * {@link net.kurobako.cef4j.gen.CefMediaRouter#getSource(String)}. The methods of this class may be called on any
+ * browser process thread unless otherwise indicated.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *

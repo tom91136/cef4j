@@ -51,8 +51,8 @@ public interface CefMediaRouter extends CefLibraryObject {
     Optional<CefMediaSource> getSource(@Nullable String urn);
 
     /**
-     * Trigger an asynchronous call to {@link CefMediaObserver#onSinks(long, CefMediaSink[])} on all registered
-     * observers.
+     * Trigger an asynchronous call to {@link net.kurobako.cef4j.gen.CefMediaObserver#onSinks(long, CefMediaSink[])} on
+     * all registered observers.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
@@ -64,9 +64,10 @@ public interface CefMediaRouter extends CefLibraryObject {
 
     /**
      * Create a new route between {@code source} and {@code sink}. Source and sink must be valid, compatible (as
-     * reported by {@link CefMediaSink#isCompatibleWith(CefMediaSource)}), and a route between them must not already
-     * exist. {@code callback} will be executed on success or failure. If route creation succeeds it will also trigger
-     * an asynchronous call to {@link CefMediaObserver#onRoutes(long, CefMediaRoute[])} on all registered observers.
+     * reported by {@link net.kurobako.cef4j.gen.CefMediaSink#isCompatibleWith(CefMediaSource)}), and a route between
+     * them must not already exist. {@code callback} will be executed on success or failure. If route creation succeeds
+     * it will also trigger an asynchronous call to {@link net.kurobako.cef4j.gen.CefMediaObserver#onRoutes(long,
+     * CefMediaRoute[])} on all registered observers.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
@@ -82,8 +83,8 @@ public interface CefMediaRouter extends CefLibraryObject {
             @Nullable CefMediaRouteCreateCallback callback);
 
     /**
-     * Trigger an asynchronous call to {@link CefMediaObserver#onRoutes(long, CefMediaRoute[])} on all registered
-     * observers.
+     * Trigger an asynchronous call to {@link net.kurobako.cef4j.gen.CefMediaObserver#onRoutes(long, CefMediaRoute[])}
+     * on all registered observers.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
@@ -95,7 +96,7 @@ public interface CefMediaRouter extends CefLibraryObject {
     /**
      * Returns the MediaRouter object associated with the global request context. If {@code callback} is
      * non-{@code null} it will be executed asnychronously on the UI thread after the manager's storage has been
-     * initialized. Equivalent to calling CefRequestContext.getGlobalContext()->GetMediaRouter().
+     * initialized. Equivalent to calling net.kurobako.cef4j.gen.CefRequestContext.getGlobalContext()->GetMediaRouter().
      *
      * <p>Definition generated from cef_media_router_capi.h
      *

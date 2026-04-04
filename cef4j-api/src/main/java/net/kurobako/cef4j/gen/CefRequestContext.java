@@ -117,10 +117,10 @@ public interface CefRequestContext extends CefLibraryObject {
      * {@code domain_name} value will be ignored for non-standard schemes. If {@code scheme_name} is a built-in scheme
      * and no handler is returned by {@code factory} then the built-in scheme handler factory will be called. If
      * {@code scheme_name} is a custom scheme then you must also implement the
-     * {@link CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all processes. This function may be called
-     * multiple times to change or remove the factory that matches the specified {@code scheme_name} and optional
-     * {@code domain_name}. Returns {@code false} if an error occurs. This function may be called on any thread in the
-     * browser process.
+     * {@link net.kurobako.cef4j.gen.CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all processes. This
+     * function may be called multiple times to change or remove the factory that matches the specified
+     * {@code scheme_name} and optional {@code domain_name}. Returns {@code false} if an error occurs. This function may
+     * be called on any thread in the browser process.
      *
      * <p>Definition generated from cef_request_context_capi.h
      *
@@ -151,10 +151,10 @@ public interface CefRequestContext extends CefLibraryObject {
 
     /**
      * Clears all certificate exceptions that were added as part of handling
-     * {@link CefRequestHandler#onCertificateError(CefBrowser, CefErrorCode, String, CefSslInfo, CefCallback)}. If you
-     * call this it is recommended that you also call CloseAllConnections() or you risk not being prompted again for
-     * server certificates if you reconnect quickly. If {@code callback} is non-{@code null} it will be executed on the
-     * UI thread after completion.
+     * {@link net.kurobako.cef4j.gen.CefRequestHandler#onCertificateError(CefBrowser, CefErrorCode, String, CefSslInfo,
+     * CefCallback)}. If you call this it is recommended that you also call CloseAllConnections() or you risk not being
+     * prompted again for server certificates if you reconnect quickly. If {@code callback} is non-{@code null} it will
+     * be executed on the UI thread after completion.
      *
      * <p>Definition generated from cef_request_context_capi.h
      *
@@ -258,8 +258,9 @@ public interface CefRequestContext extends CefLibraryObject {
      *
      * <p><b>WARNING:</b> Incorrect usage of this method may cause instability or security issues in Chromium. Make sure
      * that you first understand the potential impact of any changes to {@code content_type} by reviewing the related
-     * source code in Chromium. For example, if you plan to modify {@link CefContentSettingTypes.Kind#POPUPS}, first
-     * review and understand the usage of ContentSettingsType::POPUPS in Chromium: <a
+     * source code in Chromium. For example, if you plan to modify
+     * {@link net.kurobako.cef4j.gen.CefContentSettingTypes.Kind#POPUPS}, first review and understand the usage of
+     * ContentSettingsType::POPUPS in Chromium: <a
      * href="https://source.chromium.org/search?q=ContentSettingsType::POPUPS">https://source.chromium.org/search?q=ContentSettingsType::POPUPS</a>
      *
      * <p>Definition generated from cef_request_context_capi.h
@@ -282,8 +283,8 @@ public interface CefRequestContext extends CefLibraryObject {
 
     /**
      * Returns the current value for {@code content_type} that applies for the specified URLs. If both URLs are empty
-     * the default value will be returned. Returns {@link CefContentSettingValues.Kind#DEFAULT} if no value is
-     * configured. Must be called on the browser process UI thread.
+     * the default value will be returned. Returns {@link net.kurobako.cef4j.gen.CefContentSettingValues.Kind#DEFAULT}
+     * if no value is configured. Must be called on the browser process UI thread.
      *
      * <p>Definition generated from cef_request_context_capi.h
      *
@@ -303,12 +304,14 @@ public interface CefRequestContext extends CefLibraryObject {
     /**
      * Sets the current value for {@code content_type} for the specified URLs in the default scope. If both URLs are
      * empty, and the context is not incognito, the default value will be set. Pass
-     * {@link CefContentSettingValues.Kind#DEFAULT} for {@code value} to use the default value for this content type.
+     * {@link net.kurobako.cef4j.gen.CefContentSettingValues.Kind#DEFAULT} for {@code value} to use the default value
+     * for this content type.
      *
      * <p><b>WARNING:</b> Incorrect usage of this method may cause instability or security issues in Chromium. Make sure
      * that you first understand the potential impact of any changes to {@code content_type} by reviewing the related
-     * source code in Chromium. For example, if you plan to modify {@link CefContentSettingTypes.Kind#POPUPS}, first
-     * review and understand the usage of ContentSettingsType::POPUPS in Chromium: <a
+     * source code in Chromium. For example, if you plan to modify
+     * {@link net.kurobako.cef4j.gen.CefContentSettingTypes.Kind#POPUPS}, first review and understand the usage of
+     * ContentSettingsType::POPUPS in Chromium: <a
      * href="https://source.chromium.org/search?q=ContentSettingsType::POPUPS">https://source.chromium.org/search?q=ContentSettingsType::POPUPS</a>
      *
      * <p>Definition generated from cef_request_context_capi.h

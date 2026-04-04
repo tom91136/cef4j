@@ -40,7 +40,8 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * hosted in the same renderer process as the source browser. Any modifications to {@code windowInfo} will be
      * ignored if the parent browser is wrapped in a CefBrowserView. The {@code extra_info} parameter provides an
      * opportunity to specify extra information specific to the created popup browser that will be passed to
-     * {@link CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the render process.
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the
+     * render process.
      *
      * <p>If popup browser creation succeeds then OnAfterCreated will be called for the new popup browser. If popup
      * browser creation fails, and if the opener browser has not yet been destroyed, then OnBeforePopupAborted will be
@@ -48,8 +49,9 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      *
      * <p>A default popup window is created if this method returns {@code false} without setting a parent window handle
      * via CefWindowInfo (for native-hosted popups), or without implementing
-     * {@link CefBrowserViewDelegate#onPopupBrowserViewCreated(CefBrowserView, CefBrowserView, boolean)} (for
-     * Views-hosted popups). The default popup window type depends on the parent browser configuration:
+     * {@link net.kurobako.cef4j.gen.views.CefBrowserViewDelegate#onPopupBrowserViewCreated(CefBrowserView,
+     * CefBrowserView, boolean)} (for Views-hosted popups). The default popup window type depends on the parent browser
+     * configuration:
      *
      * <ul>
      *   <li>Views-hosted parent: Creates a Views-hosted popup window.
@@ -96,7 +98,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Any client state associated with pending popups should be cleared in OnBeforePopupAborted, OnAfterCreated of
      * the popup browser, or OnBeforeClose of the opener browser. OnBeforeClose of the opener browser may be called
      * before this method in cases where the opener is closing during popup creation, in which case
-     * CefBrowserHost.isValid() will return {@code false} in this method.
+     * net.kurobako.cef4j.gen.CefBrowserHost.isValid() will return {@code false} in this method.
      *
      * <p>Definition generated from cef_life_span_handler_capi.h
      *
@@ -117,14 +119,15 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * Views-hosted (wrapped in a CefBrowserView).
      *
      * <p>The {@code extra_info} parameter provides an opportunity to specify extra information specific to the created
-     * popup browser that will be passed to {@link CefRenderProcessHandler#onBrowserCreated(CefBrowser,
-     * CefDictionaryValue)} in the render process. The existing {@code extra_info} object, if any, will be read-only but
-     * may be replaced with a new object.
+     * popup browser that will be passed to
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the
+     * render process. The existing {@code extra_info} object, if any, will be read-only but may be replaced with a new
+     * object.
      *
      * <p>Views-hosted source browsers will create Views-hosted DevTools popups unless {@code use_default_window} is set
      * to to {@code true}. DevTools popups can be blocked by returning {@code true} from
-     * {@link CefCommandHandler#onChromeCommand(CefBrowser, int, CefWindowOpenDisposition)} for IDC_DEV_TOOLS. Only used
-     * with Chrome style.
+     * {@link net.kurobako.cef4j.gen.CefCommandHandler#onChromeCommand(CefBrowser, int, CefWindowOpenDisposition)} for
+     * IDC_DEV_TOOLS. Only used with Chrome style.
      *
      * <p>Definition generated from cef_life_span_handler_capi.h
      *
@@ -168,14 +171,15 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * example), as it is no longer possible to customize the close behavior at that point.
      *
      * <p>An application should handle top-level parent window close notifications by calling
-     * {@link CefBrowserHost#tryCloseBrowser()} or {@link CefBrowserHost#closeBrowser(boolean)}({@code false}) instead
-     * of allowing the window to close immediately (see the examples below). This gives CEF an opportunity to process
-     * JavaScript unload handlers and optionally cancel the close before DoClose() is called.
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#tryCloseBrowser()} or
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#closeBrowser(boolean)}({@code false}) instead of allowing the window
+     * to close immediately (see the examples below). This gives CEF an opportunity to process JavaScript unload
+     * handlers and optionally cancel the close before DoClose() is called.
      *
      * <p>When windowed rendering is enabled CEF will create an internal child window/view to host the browser. In that
      * case returning {@code false} from DoClose() will send the standard close notification to the browser's top-level
      * parent window (e.g. WM_CLOSE on Windows, performClose: on OS X, "delete_event" on Linux or
-     * {@link CefWindowDelegate#canClose(CefWindow)} callback from Views).
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#canClose(CefWindow)} callback from Views).
      *
      * <p>When windowed rendering is disabled there is no internal window/view and returning {@code false} from
      * DoClose() will cause the browser object to be destroyed immediately.
@@ -184,23 +188,23 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * notification from DoClose() and return {@code true}. You are still required to complete the browser close as soon
      * as possible (either by calling [Try]CloseBrowser() or by proceeding with window/view hierarchy tear-down),
      * otherwise the browser will be left in a partially closed state that interferes with proper functioning. Top-level
-     * windows created on the browser process UI thread can alternately call {@link CefBrowserHost#isReadyToBeClosed()}
-     * in the close handler to check close status instead of relying on custom DoClose() handling. See documentation on
-     * that method for additional details.
+     * windows created on the browser process UI thread can alternately call
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#isReadyToBeClosed()} in the close handler to check close status
+     * instead of relying on custom DoClose() handling. See documentation on that method for additional details.
      *
-     * <p>The {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} method will be called after DoClose() (if DoClose()
-     * is called) and immediately before the browser object is destroyed. The application should only exit after
-     * OnBeforeClose() has been called for all existing browsers.
+     * <p>The {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} method will be called after
+     * DoClose() (if DoClose() is called) and immediately before the browser object is destroyed. The application should
+     * only exit after OnBeforeClose() has been called for all existing browsers.
      *
      * <p>The below examples describe what should happen during window close when the browser is parented to an
      * application-provided top-level window.
      *
-     * <p>Example 1: Using {@link CefBrowserHost#tryCloseBrowser()}. This is recommended for clients using standard
-     * close handling and windows created on the browser process UI thread. 1. User clicks the window close button which
-     * sends a close notification to the application's top-level window. 2. Application's top-level window receives the
-     * close notification and calls TryCloseBrowser() (similar to calling CloseBrowser({@code false})).
-     * TryCloseBrowser() returns {@code false} so the client cancels the window close. 3. JavaScript 'onbeforeunload'
-     * handler executes and shows the close confirmation dialog (which can be overridden via
+     * <p>Example 1: Using {@link net.kurobako.cef4j.gen.CefBrowserHost#tryCloseBrowser()}. This is recommended for
+     * clients using standard close handling and windows created on the browser process UI thread. 1. User clicks the
+     * window close button which sends a close notification to the application's top-level window. 2. Application's
+     * top-level window receives the close notification and calls TryCloseBrowser() (similar to calling
+     * CloseBrowser({@code false})). TryCloseBrowser() returns {@code false} so the client cancels the window close. 3.
+     * JavaScript 'onbeforeunload' handler executes and shows the close confirmation dialog (which can be overridden via
      * CefJSDialogHandler.onBeforeUnloadDialog()). 4. User approves the close. 5. JavaScript 'onunload' handler
      * executes. 6. Application's DoClose() handler is called and returns {@code false} by default. 7. CEF sends a close
      * notification to the application's top-level window (because DoClose() returned {@code false}). 8. Application's
@@ -209,20 +213,20 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * destruction of the child browser window. 10. Application's OnBeforeClose() handler is called and the browser
      * object is destroyed. 11. Application exits by calling CefQuitMessageLoop() if no other browsers exist.
      *
-     * <p>Example 2: Using {@link CefBrowserHost#closeBrowser(boolean)}({@code false}) and implementing the DoClose()
-     * callback. This is recommended for clients using non-standard close handling or windows that were not created on
-     * the browser process UI thread. 1. User clicks the window close button which sends a close notification to the
-     * application's top-level window. 2. Application's top-level window receives the close notification and: A. Calls
-     * {@link CefBrowserHost#closeBrowser(boolean)}({@code false}). B. Cancels the window close. 3. JavaScript
-     * 'onbeforeunload' handler executes and shows the close confirmation dialog (which can be overridden via
-     * CefJSDialogHandler.onBeforeUnloadDialog()). 4. User approves the close. 5. JavaScript 'onunload' handler
-     * executes. 6. Application's DoClose() handler is called. Application will: A. Set a flag to indicate that the next
-     * top-level window close attempt will be allowed. B. Return {@code false}. 7. CEF sends a close notification to the
-     * application's top-level window (because DoClose() returned {@code false}). 8. Application's top-level window
-     * receives the close notification and allows the window to close based on the flag from #6A. 9. Application's
-     * top-level window is destroyed, triggering destruction of the child browser window. 10. Application's
-     * OnBeforeClose() handler is called and the browser object is destroyed. 11. Application exits by calling
-     * CefQuitMessageLoop() if no other browsers exist.
+     * <p>Example 2: Using {@link net.kurobako.cef4j.gen.CefBrowserHost#closeBrowser(boolean)}({@code false}) and
+     * implementing the DoClose() callback. This is recommended for clients using non-standard close handling or windows
+     * that were not created on the browser process UI thread. 1. User clicks the window close button which sends a
+     * close notification to the application's top-level window. 2. Application's top-level window receives the close
+     * notification and: A. Calls {@link net.kurobako.cef4j.gen.CefBrowserHost#closeBrowser(boolean)}({@code false}). B.
+     * Cancels the window close. 3. JavaScript 'onbeforeunload' handler executes and shows the close confirmation dialog
+     * (which can be overridden via CefJSDialogHandler.onBeforeUnloadDialog()). 4. User approves the close. 5.
+     * JavaScript 'onunload' handler executes. 6. Application's DoClose() handler is called. Application will: A. Set a
+     * flag to indicate that the next top-level window close attempt will be allowed. B. Return {@code false}. 7. CEF
+     * sends a close notification to the application's top-level window (because DoClose() returned {@code false}). 8.
+     * Application's top-level window receives the close notification and allows the window to close based on the flag
+     * from #6A. 9. Application's top-level window is destroyed, triggering destruction of the child browser window. 10.
+     * Application's OnBeforeClose() handler is called and the browser object is destroyed. 11. Application exits by
+     * calling CefQuitMessageLoop() if no other browsers exist.
      *
      * <p>Definition generated from cef_life_span_handler_capi.h
      *
@@ -239,11 +243,11 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * Called just before a browser is destroyed. Release all references to the browser object and do not attempt to
      * execute any methods on the browser object (other than IsValid, GetIdentifier or IsSame) after this callback
      * returns. CefFrameHandler callbacks related to final main frame destruction, and OnBeforePopupAborted callbacks
-     * for any pending popups, will arrive after this callback and {@link CefBrowser#isValid()} will return
-     * {@code false} at that time. Any in-progress network requests associated with {@code browser} will be aborted when
-     * the browser is destroyed, and CefResourceRequestHandler callbacks related to those requests may still arrive on
-     * the IO thread after this callback. See CefFrameHandler and DoClose() documentation for additional usage
-     * information.
+     * for any pending popups, will arrive after this callback and {@link net.kurobako.cef4j.gen.CefBrowser#isValid()}
+     * will return {@code false} at that time. Any in-progress network requests associated with {@code browser} will be
+     * aborted when the browser is destroyed, and CefResourceRequestHandler callbacks related to those requests may
+     * still arrive on the IO thread after this callback. See CefFrameHandler and DoClose() documentation for additional
+     * usage information.
      *
      * <p>Definition generated from cef_life_span_handler_capi.h
      *

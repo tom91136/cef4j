@@ -6,7 +6,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Screen information used when window rendering is disabled. This structure is passed as a parameter to
- * {@link CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)} and should be filled in by the client.
+ * {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)} and should be filled
+ * in by the client.
  *
  * <p>Definition generated from internal/cef_types.h
  *
@@ -108,8 +109,8 @@ public final class CefScreenInfo {
 
     /**
      * Mutable variant of {@link CefScreenInfo}. Screen information used when window rendering is disabled. This
-     * structure is passed as a parameter to {@link CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)}
-     * and should be filled in by the client.
+     * structure is passed as a parameter to {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenInfo(CefBrowser,
+     * CefScreenInfo.Mutable)} and should be filled in by the client.
      *
      * <p>Definition generated from internal/cef_types.h
      *

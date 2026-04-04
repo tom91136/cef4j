@@ -6,7 +6,7 @@ import javax.annotation.processing.Generated;
 
 /**
  * Supported menu IDs. Non-English translations can be provided for the IDS_MENU_* strings in
- * {@link CefResourceBundleHandler#getLocalizedString(int, String)}.
+ * {@link net.kurobako.cef4j.gen.CefResourceBundleHandler#getLocalizedString(int, String)}.
  *
  * <p>Definition generated from cef_types.h
  *

@@ -44,9 +44,10 @@ public interface CefResourceHandler extends CefClientHandler {
     }
 
     /**
-     * Begin processing the request. To handle the request return {@code true} and call CefCallback.continue() once the
-     * response header information is available (CefCallback.continue() can also be called from inside this method if
-     * header information is available immediately). To cancel the request return {@code false}.
+     * Begin processing the request. To handle the request return {@code true} and call
+     * net.kurobako.cef4j.gen.CefCallback.continue() once the response header information is available
+     * (net.kurobako.cef4j.gen.CefCallback.continue() can also be called from inside this method if header information
+     * is available immediately). To cancel the request return {@code false}.
      *
      * <p><b>WARNING:</b> This method is deprecated. Use Open instead.
      *
@@ -138,8 +139,9 @@ public interface CefResourceHandler extends CefClientHandler {
     /**
      * Read response data. If data is available immediately copy up to {@code bytes_to_read} bytes into
      * {@code data_out}, set {@code bytes_read} to the number of bytes copied, and return {@code true}. To read the data
-     * at a later time set {@code bytes_read} to 0, return {@code true} and call CefCallback.continue() when the data is
-     * available. To indicate response completion return {@code false}.
+     * at a later time set {@code bytes_read} to 0, return {@code true} and call
+     * net.kurobako.cef4j.gen.CefCallback.continue() when the data is available. To indicate response completion return
+     * {@code false}.
      *
      * <p><b>WARNING:</b> This method is deprecated. Use Skip and Read instead.
      *

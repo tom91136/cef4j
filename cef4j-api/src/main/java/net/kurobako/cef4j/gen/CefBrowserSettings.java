@@ -53,10 +53,12 @@ public final class CefBrowserSettings {
     private volatile long size = -1;
 
     /**
-     * The maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser, CefPaintElementType,
-     * long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless browser. The actual fps may be
-     * lower if the browser cannot generate frames at the requested rate. The minimum value is 1 and the default value
-     * is 30. This value can also be changed dynamically via {@link CefBrowserHost#setWindowlessFrameRate(int)}.
+     * The maximum rate in frames per second (fps) that
+     * {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[],
+     * java.nio.ByteBuffer, int, int)} will be called for a windowless browser. The actual fps may be lower if the
+     * browser cannot generate frames at the requested rate. The minimum value is 1 and the default value is 30. This
+     * value can also be changed dynamically via
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#setWindowlessFrameRate(int)}.
      */
     public final int windowlessFrameRate;
     /**
@@ -198,7 +200,7 @@ public final class CefBrowserSettings {
      * accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel
      * will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected — they use a
      * separate code path. Can also be configured at runtime using
-     * {@link CefBrowserHost#setAxViewportCollapse(boolean)}.
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#setAxViewportCollapse(boolean)}.
      */
     public final CefState axViewportCollapse;
 
@@ -397,11 +399,12 @@ public final class CefBrowserSettings {
         private volatile long size = -1;
 
         /**
-         * The maximum rate in frames per second (fps) that {@link CefRenderHandler#onPaint(CefBrowser,
-         * CefPaintElementType, long, CefRect[], java.nio.ByteBuffer, int, int)} will be called for a windowless
-         * browser. The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum
-         * value is 1 and the default value is 30. This value can also be changed dynamically via
-         * {@link CefBrowserHost#setWindowlessFrameRate(int)}.
+         * The maximum rate in frames per second (fps) that
+         * {@link net.kurobako.cef4j.gen.CefRenderHandler#onPaint(CefBrowser, CefPaintElementType, long, CefRect[],
+         * java.nio.ByteBuffer, int, int)} will be called for a windowless browser. The actual fps may be lower if the
+         * browser cannot generate frames at the requested rate. The minimum value is 1 and the default value is 30.
+         * This value can also be changed dynamically via
+         * {@link net.kurobako.cef4j.gen.CefBrowserHost#setWindowlessFrameRate(int)}.
          */
         public int windowlessFrameRate;
         /**
@@ -544,7 +547,7 @@ public final class CefBrowserSettings {
          * accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility
          * panel will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected — they use
          * a separate code path. Can also be configured at runtime using
-         * {@link CefBrowserHost#setAxViewportCollapse(boolean)}.
+         * {@link net.kurobako.cef4j.gen.CefBrowserHost#setAxViewportCollapse(boolean)}.
          */
         public CefState axViewportCollapse;
 

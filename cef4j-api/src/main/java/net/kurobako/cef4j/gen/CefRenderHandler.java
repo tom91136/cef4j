@@ -146,7 +146,8 @@ public interface CefRenderHandler extends CefClientHandler {
      * indicates whether the element is the view or the popup widget. {@code buffer} contains the pixel data for the
      * whole image. {@code dirtyRects} contains the set of rectangles in pixel coordinates that need to be repainted.
      * {@code buffer} will be {@code width}*{@code height}*4 bytes in size and represents a BGRA image with an
-     * upper-left origin. This method is only called when CefWindowInfo.sharedTextureEnabled() is set to {@code false}.
+     * upper-left origin. This method is only called when net.kurobako.cef4j.gen.CefWindowInfo.sharedTextureEnabled() is
+     * set to {@code false}.
      *
      * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
      * parameter is derived from the buffer's capacity.</b>
@@ -236,12 +237,13 @@ public interface CefRenderHandler extends CefClientHandler {
      * supplied by {@code drag_data}. ({@code x}, {@code y}) is the drag start location in screen coordinates. OS APIs
      * that run a system message loop may be used within the StartDragging call.
      *
-     * <p>Return {@code false} to abort the drag operation. Don't call any of CefBrowserHost.dragSource()*Ended* methods
-     * after returning {@code false}.
+     * <p>Return {@code false} to abort the drag operation. Don't call any of
+     * net.kurobako.cef4j.gen.CefBrowserHost.dragSource()*Ended* methods after returning {@code false}.
      *
-     * <p>Return {@code true} to handle the drag operation. Call {@link CefBrowserHost#dragSourceEndedAt(int, int,
-     * CefDragOperationsMask)} and DragSourceSystemDragEnded either synchronously or asynchronously to inform the web
-     * view that the drag operation has ended.
+     * <p>Return {@code true} to handle the drag operation. Call
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#dragSourceEndedAt(int, int, CefDragOperationsMask)} and
+     * DragSourceSystemDragEnded either synchronously or asynchronously to inform the web view that the drag operation
+     * has ended.
      *
      * <p>Definition generated from cef_render_handler_capi.h
      *
@@ -329,8 +331,9 @@ public interface CefRenderHandler extends CefClientHandler {
 
     /**
      * Called when an on-screen keyboard should be shown or hidden for the specified {@code browser}. {@code input_mode}
-     * specifies what kind of keyboard should be opened. If {@code input_mode} is {@link CefTextInputMode.Kind#NONE},
-     * any existing keyboard for this browser should be hidden.
+     * specifies what kind of keyboard should be opened. If {@code input_mode} is
+     * {@link net.kurobako.cef4j.gen.CefTextInputMode.Kind#NONE}, any existing keyboard for this browser should be
+     * hidden.
      *
      * <p>Definition generated from cef_render_handler_capi.h
      *

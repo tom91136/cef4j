@@ -8,8 +8,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Represents a sink to which media can be routed. Instances of this object are retrieved via
- * {@link CefMediaObserver#onSinks(long, CefMediaSink[])}. The methods of this class may be called on any browser
- * process thread unless otherwise indicated.
+ * {@link net.kurobako.cef4j.gen.CefMediaObserver#onSinks(long, CefMediaSink[])}. The methods of this class may be
+ * called on any browser process thread unless otherwise indicated.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *

@@ -1,10 +1,15 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefChromeToolbarType;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefGestureCommand;
+import net.kurobako.cef4j.gen.CefRuntimeStyle;
 
 /**
  * Implement this interface to handle BrowserView events. The methods of this class will be called on the browser
@@ -25,8 +30,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
 
     /**
      * Called when {@code browser} associated with {@code browser_view} is created. This method will be called after
-     * {@link CefLifeSpanHandler#onAfterCreated(CefBrowser)} is called for {@code browser} and before
-     * OnPopupBrowserViewCreated() is called for {@code browser}'s parent delegate if {@code browser} is a popup.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onAfterCreated(CefBrowser)} is called for {@code browser} and
+     * before OnPopupBrowserViewCreated() is called for {@code browser}'s parent delegate if {@code browser} is a popup.
      *
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      *
@@ -42,7 +47,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     /**
      * Called when {@code browser} associated with {@code browser_view} is destroyed. Release all references to
      * {@code browser} and do not attempt to execute any methods on {@code browser} after this callback returns. This
-     * method will be called before {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called for {@code browser}.
+     * method will be called before {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} is
+     * called for {@code browser}.
      *
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      *
@@ -57,10 +63,11 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
 
     /**
      * Called after {@code popup_browser_view} is created. This method will be called after
-     * {@link CefLifeSpanHandler#onAfterCreated(CefBrowser)} and OnBrowserCreated() are called for the new popup
-     * browser. The popup originated from {@code browser_view}. {@code is_devtools} will be {@code true} if the popup is
-     * a DevTools browser. Optionally add {@code popup_browser_view} to the views hierarchy yourself and return
-     * {@code true}. Otherwise return {@code false} and a default CefWindow will be created for the popup.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onAfterCreated(CefBrowser)} and OnBrowserCreated() are called
+     * for the new popup browser. The popup originated from {@code browser_view}. {@code is_devtools} will be
+     * {@code true} if the popup is a DevTools browser. Optionally add {@code popup_browser_view} to the views hierarchy
+     * yourself and return {@code true}. Otherwise return {@code false} and a default CefWindow will be created for the
+     * popup.
      *
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      *
@@ -77,8 +84,9 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     }
 
     /**
-     * Returns the Chrome toolbar type that will be available via {@link CefBrowserView#getChromeToolbar()}. See that
-     * method for related documentation.
+     * Returns the Chrome toolbar type that will be available via
+     * {@link net.kurobako.cef4j.gen.views.CefBrowserView#getChromeToolbar()}. See that method for related
+     * documentation.
      *
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      *
@@ -91,7 +99,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:111</a>
      */
     default CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
-        return CefChromeToolbarType.of(CefChromeToolbarType.Kind.NONE);
+        return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
     }
 
     /**
@@ -114,8 +122,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     /**
      * Called when {@code browser_view} receives a gesture command. Return {@code true} to handle (or disable) a
      * {@code gesture_command} or {@code false} to propagate the gesture to the browser for default handling. With
-     * Chrome style these commands can also be handled via {@link CefCommandHandler#onChromeCommand(CefBrowser, int,
-     * CefWindowOpenDisposition)}.
+     * Chrome style these commands can also be handled via
+     * {@link net.kurobako.cef4j.gen.CefCommandHandler#onChromeCommand(CefBrowser, int, CefWindowOpenDisposition)}.
      *
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      *
@@ -143,7 +151,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:169</a>
      */
     default CefRuntimeStyle getBrowserRuntimeStyle() {
-        return CefRuntimeStyle.of(CefRuntimeStyle.Kind.DEFAULT);
+        return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
     }
 
     /**

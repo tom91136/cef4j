@@ -5,7 +5,8 @@ object Naming {
   case class Context(
       cppClassNames: Map[String, String],
       compoundSegments: Map[String, List[String]],
-      javaPackage: String
+      javaPackage: String,
+      subPackages: Map[String, String] = Map.empty
   )
 
   object Context {
@@ -14,14 +15,29 @@ object Naming {
     def fromCppClassNames(
         names: Map[String, String],
         compoundSegments: Map[String, List[String]],
-        javaPackage: String
+        javaPackage: String,
+        subPackages: Map[String, String] = Map.empty
     ): Context =
       Context(
         cppClassNames = names,
         compoundSegments = compoundSegments.map { case (k, words) => k -> words.map(titleCase) },
-        javaPackage = javaPackage
+        javaPackage = javaPackage,
+        subPackages = subPackages
       )
   }
+
+  /** Derive sub-package from sourceHeader directory, e.g. "views/cef_display_capi.h" -> "views". */
+  def subPackageFromHeader(sourceHeader: String): Option[String] = {
+    val normalized = sourceHeader.replace('\\', '/')
+    val slashIdx   = normalized.lastIndexOf('/')
+    if (slashIdx > 0) Some(normalized.substring(0, slashIdx).replace('/', '.')) else None
+  }
+
+  /** Build subPackages map from structHeaderMap. */
+  def buildSubPackages(structHeaderMap: Map[String, String]): Map[String, String] =
+    structHeaderMap.flatMap { case (structName, header) =>
+      subPackageFromHeader(header).map(structName -> _)
+    }
 
   def toCamelCase(snake: String)(using context: Context): String = {
     // If there are no underscores, the name is already camelCase (e.g. "dirtyRectsCount") -
@@ -144,17 +160,24 @@ object Naming {
 
   def javaPackage(using context: Context): String = context.javaPackage
 
+  /** Package for a specific struct, including sub-package if configured. */
+  def javaPackageFor(cefStructName: String)(using context: Context): String =
+    context.subPackages.get(cefStructName) match {
+      case Some(sub) => s"${context.javaPackage}.$sub"
+      case None      => context.javaPackage
+    }
+
   def javaInternalName(name: String): String = name.replace('.', '/')
 
   private def jniPackagePrefix(using context: Context): String = javaPackage.replace('.', '_')
 
-  // cef_browser_t -> configured.package.CefBrowser
+  // cef_browser_t -> configured.package.CefBrowser (or configured.package.views.CefDisplay for sub-packages)
   def fullyQualifiedJavaName(cefStructName: String)(using Context): String =
-    s"$javaPackage.${structToJavaName(cefStructName)}"
+    s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}"
 
   // cef_rect_t -> configured.package.CefRect$Mutable (JNI internal name uses $ for inner class)
   def fullyQualifiedMutableName(cefStructName: String)(using Context): String =
-    s"$javaPackage.${structToJavaName(cefStructName)}$$Mutable"
+    s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}$$Mutable"
 
   private def nativePointerFqcn(using Context): String = s"$javaPackage.NativePointer"
 
@@ -172,13 +195,23 @@ object Naming {
 
   private def peerExpr(javaClass: String): String = s"CEF4J_PEER($javaClass)"
 
+  /** JNI class prefix for macros, e.g. "CefBrowser" or "views_CefDisplay" for sub-packages. */
+  def jniClassPrefix(cefStructName: String)(using context: Context): String = {
+    val javaName = structToJavaName(cefStructName)
+    context.subPackages.get(cefStructName) match {
+      case Some(sub) => s"${sub.replace('.', '_')}_$javaName"
+      case None      => javaName
+    }
+  }
+
   // Method on NativePeer inner class: CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefBrowser), isValid0)
   def jniExportPeer(cefStructName: String, fn: FnPtr, retJni: String)(using Context): String =
-    jniExport(retJni, peerExpr(structToJavaName(cefStructName)), nativeMethodName(fn))
+    jniExport(retJni, peerExpr(jniClassPrefix(cefStructName)), nativeMethodName(fn))
 
   // Static method on NativePeer inner class (by name): CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefX), release0)
-  def jniExportPeerStatic(javaClass: String, javaMethodName: String, retJni: String): String =
-    jniExport(retJni, peerExpr(javaClass), nativeMethodName(javaMethodName))
+  // The jniClassPrefix should already include sub-package prefix if needed.
+  def jniExportPeerStatic(jniClassPrefix: String, javaMethodName: String, retJni: String): String =
+    jniExport(retJni, peerExpr(jniClassPrefix), nativeMethodName(javaMethodName))
 
   // Static method on a top-level class: CEF4J_JNI_EXPORT($ret, CefGlobals, initialize0)
   def jniExportStatic(javaClass: String, javaMethodName: String, retJni: String): String =
@@ -230,6 +263,20 @@ object Naming {
     case CType.CountFuncArray(elem, _, _, _) if !isPrimitiveElement(elem) =>
       Set("java.util.List", "java.util.Arrays", "java.util.Collections")
     case _ => Set.empty
+  }
+
+  /** Extract CEF struct names referenced by a CType (for cross-package imports). */
+  def referencedCefNames(ct: CType): List[String] = ct match {
+    case CType.ObjectPtr(name)               => List(name)
+    case CType.OutObjectPtr(name)            => List(name)
+    case CType.ObjectPtrArray(name)          => List(name)
+    case CType.ByValueIn(name)               => List(name)
+    case CType.ByValueOut(name)              => List(name)
+    case CType.ByValueArray(name)            => List(name)
+    case CType.Enum(name)                    => List(name)
+    case CType.DataStruct(name)              => List(name)
+    case CType.CountFuncArray(elem, _, _, _) => referencedCefNames(elem)
+    case _                                   => Nil
   }
 
   // Whether a CountFuncArray element type maps to a primitive Java array.

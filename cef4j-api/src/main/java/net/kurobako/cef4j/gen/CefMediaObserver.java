@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Implemented by the client to observe MediaRouter events and registered via
- * {@link CefMediaRouter#addObserver(CefMediaObserver)}. The methods of this class will be called on the browser process
- * UI thread.
+ * {@link net.kurobako.cef4j.gen.CefMediaRouter#addObserver(CefMediaObserver)}. The methods of this class will be called
+ * on the browser process UI thread.
  *
  * <p>Definition generated from cef_media_router_capi.h
  *
@@ -25,7 +25,8 @@ import javax.annotation.processing.Generated;
 public interface CefMediaObserver extends CefClientHandler {
 
     /**
-     * The list of available media sinks has changed or {@link CefMediaRouter#notifyCurrentSinks()} was called.
+     * The list of available media sinks has changed or
+     * {@link net.kurobako.cef4j.gen.CefMediaRouter#notifyCurrentSinks()} was called.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *
@@ -38,7 +39,8 @@ public interface CefMediaObserver extends CefClientHandler {
     default void onSinks(long sinksCount, @Nullable CefMediaSink[] sinks) {}
 
     /**
-     * The list of available media routes has changed or {@link CefMediaRouter#notifyCurrentRoutes()} was called.
+     * The list of available media routes has changed or
+     * {@link net.kurobako.cef4j.gen.CefMediaRouter#notifyCurrentRoutes()} was called.
      *
      * <p>Definition generated from cef_media_router_capi.h
      *

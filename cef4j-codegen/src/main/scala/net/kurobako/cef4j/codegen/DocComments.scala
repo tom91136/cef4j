@@ -5,7 +5,8 @@ object DocComments {
       docsBaseUrl: String,
       enumConstantMap: Map[String, String] = Map.empty,
       classNameMap: Map[String, String] = Map.empty,
-      methodSigMap: Map[(String, String), List[List[String]]] = Map.empty
+      methodSigMap: Map[(String, String), List[List[String]]] = Map.empty,
+      javaClassFqnMap: Map[String, String] = Map.empty
   )
 
   object Context {
@@ -54,11 +55,12 @@ object DocComments {
   def withEnumConstants(context: Context, enums: List[CefDecl.Enum])(using Naming.Context): Context =
     context.copy(enumConstantMap = enums.flatMap { e =>
       val javaEnum = Naming.structToJavaName(e.name)
+      val fqn      = s"${Naming.javaPackage}.$javaEnum"
       val cNames   = e.values.map(_._1)
       val prefix   = Naming.computeEnumPrefix(cNames)
       e.values.flatMap { case (constName, _, _) =>
         val jName = constName.stripPrefix(prefix)
-        List(constName -> s"$javaEnum.Kind#$jName")
+        List(constName -> s"$fqn.Kind#$jName")
       }
     }.toMap)
 
@@ -69,11 +71,17 @@ object DocComments {
       case None            => cConstName
     }
 
-  def withClassNames(context: Context, structNames: Set[String])(using Naming.Context): Context =
-    context.copy(classNameMap = structNames.map { cName =>
+  def withClassNames(context: Context, structNames: Set[String])(using Naming.Context): Context = {
+    val classMap = structNames.map { cName =>
       val cppName = Naming.toPascalCase(cName.stripSuffix("_t"))
       cppName -> Naming.structToJavaName(cName)
-    }.toMap)
+    }.toMap
+    val fqnMap = structNames.map { cName =>
+      val javaName = Naming.structToJavaName(cName)
+      javaName -> Naming.fullyQualifiedJavaName(cName)
+    }.toMap
+    context.copy(classNameMap = classMap, javaClassFqnMap = fqnMap)
+  }
 
   def withMethodSignatures(context: Context, decls: List[CefDecl])(using Naming.Context): Context = {
     val entries = decls.flatMap {
@@ -94,14 +102,17 @@ object DocComments {
   }
 
   // Resolve a method cross-reference to a Javadoc link when the target signature is known.
-  private def resolveMethodLink(javaClass: String, javaMethod: String)(using context: Context): String =
+  // Uses the fully-qualified Java class name so cross-package references resolve correctly.
+  private def resolveMethodLink(javaClass: String, javaMethod: String)(using context: Context): String = {
+    val fqn = context.javaClassFqnMap.getOrElse(javaClass, javaClass)
     context.methodSigMap.get((javaClass, javaMethod)) match {
       case Some(sigs) if sigs.size == 1 =>
         val sig = sigs.head.mkString(", ")
-        s"{@link $javaClass#$javaMethod($sig)}"
-      case Some(_) => s"$javaClass.$javaMethod()"
-      case None    => s"$javaClass.$javaMethod()"
+        s"{@link $fqn#$javaMethod($sig)}"
+      case Some(_) => s"$fqn.$javaMethod()"
+      case None    => s"$fqn.$javaMethod()"
     }
+  }
 
   private val PipeRefRe       = """\|([^|]+)\|""".r
   private val CapiCrossRefRe  = """(cef_\w+_t)::(\w+)\(\)""".r // cef_xxx_t::method()

@@ -59,7 +59,7 @@ public final class CefWindowInfo {
     public final int sharedTextureEnabled;
     /**
      * Set to {@code true} (1) to enable the ability to issue BeginFrame requests from the client application by calling
-     * {@link CefBrowserHost#sendExternalBeginFrame()}.
+     * {@link net.kurobako.cef4j.gen.CefBrowserHost#sendExternalBeginFrame()}.
      */
     public final int externalBeginFrameEnabled;
     /** Pointer for the new browser window. Only used with windowed rendering. */
@@ -182,7 +182,7 @@ public final class CefWindowInfo {
         public int sharedTextureEnabled;
         /**
          * Set to {@code true} (1) to enable the ability to issue BeginFrame requests from the client application by
-         * calling {@link CefBrowserHost#sendExternalBeginFrame()}.
+         * calling {@link net.kurobako.cef4j.gen.CefBrowserHost#sendExternalBeginFrame()}.
          */
         public int externalBeginFrameEnabled;
         /** Pointer for the new browser window. Only used with windowed rendering. */

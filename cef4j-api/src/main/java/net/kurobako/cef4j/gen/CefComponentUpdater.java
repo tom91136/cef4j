@@ -74,13 +74,14 @@ public interface CefComponentUpdater extends CefLibraryObject {
     /**
      * Triggers an on-demand update for the component with the specified {@code component_id}. {@code priority}
      * specifies whether the update should be processed in the background or foreground. Use
-     * {@link CefComponentUpdatePriority.Kind#FOREGROUND} for user-initiated updates.
+     * {@link net.kurobako.cef4j.gen.CefComponentUpdatePriority.Kind#FOREGROUND} for user-initiated updates.
      *
      * <p>{@code callback} will be called asynchronously on the UI thread when the update operation completes. The
      * callback is always executed, including when the component is already up-to-date (returns
-     * {@link CefComponentUpdateError.Kind#NONE}), when the requested component doesn't exist, or when the service is
-     * unavailable (returns {@link CefComponentUpdateError.Kind#SERVICE_ERROR}). The callback may be {@code null} if no
-     * notification is needed.
+     * {@link net.kurobako.cef4j.gen.CefComponentUpdateError.Kind#NONE}), when the requested component doesn't exist, or
+     * when the service is unavailable (returns
+     * {@link net.kurobako.cef4j.gen.CefComponentUpdateError.Kind#SERVICE_ERROR}). The callback may be {@code null} if
+     * no notification is needed.
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *

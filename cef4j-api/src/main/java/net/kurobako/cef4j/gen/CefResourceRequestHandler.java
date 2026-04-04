@@ -71,7 +71,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
             @Nullable CefFrame frame,
             @Nullable CefRequest request,
             @Nullable CefCallback callback) {
-        return CefReturnValue.of(CefReturnValue.Kind.CONTINUE);
+        return CefReturnValue.of(net.kurobako.cef4j.gen.CefReturnValue.Kind.CONTINUE);
     }
 
     /**
@@ -184,9 +184,10 @@ public interface CefResourceRequestHandler extends CefClientHandler {
      * modified in this callback. {@code status} indicates the load completion status. {@code received_content_length}
      * is the number of response bytes actually read. This method will be called for all requests, including requests
      * that are aborted due to CEF shutdown or destruction of the associated browser. In cases where the associated
-     * browser is destroyed this callback may arrive after the {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)}
-     * callback for that browser. The {@link CefFrame#isValid()} method can be used to test for this situation, and care
-     * should be taken not to call {@code browser} or {@code frame} methods that modify state (like LoadURL,
+     * browser is destroyed this callback may arrive after the
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} callback for that browser. The
+     * {@link net.kurobako.cef4j.gen.CefFrame#isValid()} method can be used to test for this situation, and care should
+     * be taken not to call {@code browser} or {@code frame} methods that modify state (like LoadURL,
      * SendProcessMessage, etc.) if the frame is invalid.
      *
      * <p>Definition generated from cef_resource_request_handler_capi.h

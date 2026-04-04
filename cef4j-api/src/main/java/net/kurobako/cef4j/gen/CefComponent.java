@@ -7,8 +7,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Class representing a snapshot of a component's state at the time of retrieval. To get updated information, retrieve a
- * new CefComponent object via {@link CefComponentUpdater#getComponentById(String)} or GetComponents. The methods of
- * this class may be called on any thread.
+ * new CefComponent object via {@link net.kurobako.cef4j.gen.CefComponentUpdater#getComponentById(String)} or
+ * GetComponents. The methods of this class may be called on any thread.
  *
  * <p>Definition generated from cef_component_updater_capi.h
  *
@@ -61,8 +61,9 @@ public interface CefComponent extends CefLibraryObject {
 
     /**
      * Returns the state of this component at the time this object was created. A component is considered installed when
-     * its state is one of: {@link CefComponentState.Kind#UPDATED}, {@link CefComponentState.Kind#UP_TO_DATE}, or
-     * {@link CefComponentState.Kind#RUN}.
+     * its state is one of: {@link net.kurobako.cef4j.gen.CefComponentState.Kind#UPDATED},
+     * {@link net.kurobako.cef4j.gen.CefComponentState.Kind#UP_TO_DATE}, or
+     * {@link net.kurobako.cef4j.gen.CefComponentState.Kind#RUN}.
      *
      * <p>Definition generated from cef_component_updater_capi.h
      *

@@ -27,7 +27,7 @@ public interface CefBrowser extends CefLibraryObject {
 
     /**
      * True if this object is currently valid. This will return {@code false} after
-     * {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called.
      *
      * <p>Definition generated from cef_browser_capi.h
      *
@@ -182,10 +182,10 @@ public interface CefBrowser extends CefLibraryObject {
 
     /**
      * Returns the main (top-level) frame for the browser. In the browser process this will return a valid object until
-     * after {@link CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called. In the renderer process this will return
-     * {@code null} if the main frame is hosted in a different renderer process (e.g. for cross-origin sub-frames). The
-     * main frame object will change during cross-origin navigation or re-navigation after renderer process termination
-     * (due to crashes, etc).
+     * after {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforeClose(CefBrowser)} is called. In the renderer
+     * process this will return {@code null} if the main frame is hosted in a different renderer process (e.g. for
+     * cross-origin sub-frames). The main frame object will change during cross-origin navigation or re-navigation after
+     * renderer process termination (due to crashes, etc).
      *
      * <p>Definition generated from cef_browser_capi.h
      *

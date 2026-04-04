@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for {@link CefRequestContext#resolveHost(String, CefResolveCallback)}.
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefRequestContext#resolveHost(String, CefResolveCallback)}.
  *
  * <p>Definition generated from cef_request_context_capi.h
  *

@@ -10,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 /**
  * Manage access to preferences. Many built-in preferences are registered by Chromium. Custom preferences can be
- * registered in {@link CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
+ * registered in {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
  * CefPreferenceRegistrar)}.
  *
  * <p>Definition generated from cef_preference_capi.h

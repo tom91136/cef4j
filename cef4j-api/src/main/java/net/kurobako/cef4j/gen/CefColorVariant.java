@@ -5,7 +5,7 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Specifies the color variants supported by CefRequestContext.setChromeThemeColor().
+ * Specifies the color variants supported by net.kurobako.cef4j.gen.CefRequestContext.setChromeThemeColor().
  *
  * <p>Definition generated from cef_types.h
  *

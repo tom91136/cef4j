@@ -89,11 +89,11 @@ public interface CefUrlRequestClient extends CefClientHandler {
     /**
      * Called on the IO thread when the browser needs credentials from the user. {@code isProxy} indicates whether the
      * host is a proxy server. {@code host} contains the hostname and {@code port} contains the port number. Return
-     * {@code true} to continue the request and call CefAuthCallback.continue() when the authentication information is
-     * available. If the request has an associated browser/frame then returning {@code false} will result in a call to
-     * GetAuthCredentials on the CefRequestHandler associated with that browser, if any. Otherwise, returning
-     * {@code false} will cancel the request immediately. This method will only be called for requests initiated from
-     * the browser process.
+     * {@code true} to continue the request and call net.kurobako.cef4j.gen.CefAuthCallback.continue() when the
+     * authentication information is available. If the request has an associated browser/frame then returning
+     * {@code false} will result in a call to GetAuthCredentials on the CefRequestHandler associated with that browser,
+     * if any. Otherwise, returning {@code false} will cancel the request immediately. This method will only be called
+     * for requests initiated from the browser process.
      *
      * <p>Definition generated from cef_urlrequest_capi.h
      *

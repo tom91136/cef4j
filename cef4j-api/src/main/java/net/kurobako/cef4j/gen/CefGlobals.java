@@ -63,9 +63,10 @@ public final class CefGlobals {
     /**
      * This function can optionally be called on the main application thread after CefInitialize to retrieve the
      * initialization exit code. When CefInitialize returns {@code true} the exit code will be 0
-     * ({@link CefResultcode.Kind#NORMAL_EXIT}). Otherwise, see cef_resultcode_t for possible exit code values including
-     * browser process initialization errors and normal early exit conditions (such as
-     * {@link CefResultcode.Kind#NORMAL_EXIT_PROCESS_NOTIFIED} for process singleton relaunch behavior).
+     * ({@link net.kurobako.cef4j.gen.CefResultcode.Kind#NORMAL_EXIT}). Otherwise, see cef_resultcode_t for possible
+     * exit code values including browser process initialization errors and normal early exit conditions (such as
+     * {@link net.kurobako.cef4j.gen.CefResultcode.Kind#NORMAL_EXIT_PROCESS_NOTIFIED} for process singleton relaunch
+     * behavior).
      *
      * <p>Definition generated from cef_app_capi.h
      *
@@ -97,10 +98,11 @@ public final class CefGlobals {
      * recommended for most users; use either the CefRunMessageLoop() function or
      * cef_settings_t.multi_threaded_message_loop if possible. When using this function care must be taken to balance
      * performance against excessive CPU usage. It is recommended to enable the cef_settings_t.external_message_pump
-     * option when using this function so that {@link CefBrowserProcessHandler#onScheduleMessagePumpWork(long)}
-     * callbacks can facilitate the scheduling process. This function should only be called on the main application
-     * thread and only if CefInitialize() is called with a cef_settings_t.multi_threaded_message_loop value of
-     * {@code false}. This function will not block.
+     * option when using this function so that
+     * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onScheduleMessagePumpWork(long)} callbacks can facilitate
+     * the scheduling process. This function should only be called on the main application thread and only if
+     * CefInitialize() is called with a cef_settings_t.multi_threaded_message_loop value of {@code false}. This function
+     * will not block.
      *
      * <p>Definition generated from cef_app_capi.h
      *
@@ -606,11 +608,12 @@ public final class CefGlobals {
      * standard scheme will cause the factory to match all domain names. The {@code domain_name} value will be ignored
      * for non-standard schemes. If {@code scheme_name} is a built-in scheme and no handler is returned by
      * {@code factory} then the built-in scheme handler factory will be called. If {@code scheme_name} is a custom
-     * scheme then you must also implement the {@link CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all
-     * processes. This function may be called multiple times to change or remove the factory that matches the specified
+     * scheme then you must also implement the
+     * {@link net.kurobako.cef4j.gen.CefApp#onRegisterCustomSchemes(CefSchemeRegistrar)} method in all processes. This
+     * function may be called multiple times to change or remove the factory that matches the specified
      * {@code scheme_name} and optional {@code domain_name}. Returns {@code false} if an error occurs. This function may
      * be called on any thread in the browser process. Using this function is equivalent to calling
-     * CefRequestContext.getGlobalContext()->RegisterSchemeHandlerFactory().
+     * net.kurobako.cef4j.gen.CefRequestContext.getGlobalContext()->RegisterSchemeHandlerFactory().
      *
      * <p>Definition generated from cef_scheme_capi.h
      *
@@ -628,7 +631,7 @@ public final class CefGlobals {
     /**
      * Clear all scheme handler factories registered with the global request context. Returns {@code false} on error.
      * This function may be called on any thread in the browser process. Using this function is equivalent to calling
-     * CefRequestContext.getGlobalContext()->ClearSchemeHandlerFactories().
+     * net.kurobako.cef4j.gen.CefRequestContext.getGlobalContext()->ClearSchemeHandlerFactories().
      *
      * <p>Definition generated from cef_scheme_capi.h
      *
@@ -655,7 +658,7 @@ public final class CefGlobals {
 
     /**
      * Returns {@code true} if called on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->BelongsToCurrentThread().
+     * net.kurobako.cef4j.gen.CefTaskRunner.getForThread()(threadId)->BelongsToCurrentThread().
      *
      * <p>Definition generated from cef_task_capi.h
      *
@@ -669,7 +672,7 @@ public final class CefGlobals {
 
     /**
      * Post a task for execution on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->PostTask(task).
+     * net.kurobako.cef4j.gen.CefTaskRunner.getForThread()(threadId)->PostTask(task).
      *
      * <p>Definition generated from cef_task_capi.h
      *
@@ -683,7 +686,7 @@ public final class CefGlobals {
 
     /**
      * Post a task for delayed execution on the specified thread. Equivalent to using
-     * CefTaskRunner.getForThread()(threadId)->PostDelayedTask(task, delay_ms).
+     * net.kurobako.cef4j.gen.CefTaskRunner.getForThread()(threadId)->PostDelayedTask(task, delay_ms).
      *
      * <p>Definition generated from cef_task_capi.h
      *

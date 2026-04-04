@@ -7,8 +7,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Implemented by the client to observe preference changes and registered via
- * {@link CefPreferenceManager#addPreferenceObserver(String, CefPreferenceObserver)}. The methods of this class will be
- * called on the browser process UI thread.
+ * {@link net.kurobako.cef4j.gen.CefPreferenceManager#addPreferenceObserver(String, CefPreferenceObserver)}. The methods
+ * of this class will be called on the browser process UI thread.
  *
  * <p>Definition generated from cef_preference_capi.h
  *
@@ -24,7 +24,7 @@ public interface CefPreferenceObserver extends CefClientHandler {
 
     /**
      * Called when a preference has changed. The new value can be retrieved using
-     * {@link CefPreferenceManager#getPreference(String)}.
+     * {@link net.kurobako.cef4j.gen.CefPreferenceManager#getPreference(String)}.
      *
      * <p>Definition generated from cef_preference_capi.h
      *

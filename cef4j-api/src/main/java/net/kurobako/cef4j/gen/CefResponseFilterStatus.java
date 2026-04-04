@@ -5,7 +5,8 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Return values for {@link CefResponseFilter#filter(java.nio.ByteBuffer, long[], java.nio.ByteBuffer, long[])}.
+ * Return values for {@link net.kurobako.cef4j.gen.CefResponseFilter#filter(java.nio.ByteBuffer, long[],
+ * java.nio.ByteBuffer, long[])}.
  *
  * <p>Definition generated from cef_types.h
  *

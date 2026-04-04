@@ -8,7 +8,8 @@ import javax.annotation.processing.Generated;
 
 /**
  * Interface that should be implemented to handle V8 accessor calls. Accessor identifiers are registered by calling
- * CefV8Value.setValue(). The methods of this class will be called on the thread associated with the V8 accessor.
+ * net.kurobako.cef4j.gen.CefV8Value.setValue(). The methods of this class will be called on the thread associated with
+ * the V8 accessor.
  *
  * <p>Definition generated from cef_v8_capi.h
  *

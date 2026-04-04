@@ -5,7 +5,7 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Show states supported by {@link CefWindowDelegate#getInitialShowState(CefWindow)}.
+ * Show states supported by {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#getInitialShowState(CefWindow)}.
  *
  * <p>Definition generated from cef_types.h
  *

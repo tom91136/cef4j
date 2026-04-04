@@ -5,7 +5,8 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Preferences type passed to {@link CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
+ * Preferences type passed to
+ * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
  * CefPreferenceRegistrar)}.
  *
  * <p>Definition generated from cef_types.h

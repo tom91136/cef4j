@@ -86,11 +86,11 @@ public final class CefSettings {
     public final int multiThreadedMessageLoop;
     /**
      * Set to {@code true} (1) to control browser process main (UI) thread message pump scheduling via the
-     * {@link CefBrowserProcessHandler#onScheduleMessagePumpWork(long)} callback. This option is recommended for use in
-     * combination with the CefDoMessageLoopWork() function in cases where the CEF message loop must be integrated into
-     * an existing application message loop (see additional comments and warnings on CefDoMessageLoopWork). Enabling
-     * this option is not recommended for most users; leave this option disabled and use either the CefRunMessageLoop()
-     * function or multi_threaded_message_loop if possible.
+     * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onScheduleMessagePumpWork(long)} callback. This option is
+     * recommended for use in combination with the CefDoMessageLoopWork() function in cases where the CEF message loop
+     * must be integrated into an existing application message loop (see additional comments and warnings on
+     * CefDoMessageLoopWork). Enabling this option is not recommended for most users; leave this option disabled and use
+     * either the CefRunMessageLoop() function or multi_threaded_message_loop if possible.
      */
     public final int externalMessagePump;
     /**
@@ -101,7 +101,7 @@ public final class CefSettings {
     /**
      * Set to {@code true} (1) to disable configuration of browser process features using standard CEF and Chromium
      * command-line arguments. Configuration can still be specified using CEF data structures or via the
-     * {@link CefApp#onBeforeCommandLineProcessing(String, CefCommandLine)} method.
+     * {@link net.kurobako.cef4j.gen.CefApp#onBeforeCommandLineProcessing(String, CefCommandLine)} method.
      */
     public final int commandLineArgsDisabled;
     /**
@@ -206,9 +206,9 @@ public final class CefSettings {
     public final int remoteDebuggingPort;
     /**
      * The number of stack trace frames to capture for uncaught exceptions. Specify a positive value to enable the
-     * {@link CefRenderProcessHandler#onUncaughtException(CefBrowser, CefFrame, CefV8Context, CefV8Exception,
-     * CefV8StackTrace)} callback. Specify 0 (default value) and OnUncaughtException() will not be called. Also
-     * configurable using the "uncaught-exception-stack-size" command-line switch.
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onUncaughtException(CefBrowser, CefFrame, CefV8Context,
+     * CefV8Exception, CefV8StackTrace)} callback. Specify 0 (default value) and OnUncaughtException() will not be
+     * called. Also configurable using the "uncaught-exception-stack-size" command-line switch.
      */
     public final int uncaughtExceptionStackSize;
     /**
@@ -260,10 +260,11 @@ public final class CefSettings {
     /**
      * If {@code true} use a Views (bare-bones) window instead of a Chrome UI window when creating default popups for
      * Chrome style native-hosted (non-Views) browsers. This applies when
-     * {@link CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition,
-     * boolean, NativePointer, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference,
-     * CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])} has not been implemented to
-     * provide parent window information for the new popup.
+     * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String,
+     * CefWindowOpenDisposition, boolean, NativePointer, CefWindowInfo.Mutable,
+     * java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable,
+     * java.util.concurrent.atomic.AtomicReference, int[])} has not been implemented to provide parent window
+     * information for the new popup.
      */
     public final int useViewsDefaultPopup;
 
@@ -506,9 +507,9 @@ public final class CefSettings {
         public int multiThreadedMessageLoop;
         /**
          * Set to {@code true} (1) to control browser process main (UI) thread message pump scheduling via the
-         * {@link CefBrowserProcessHandler#onScheduleMessagePumpWork(long)} callback. This option is recommended for use
-         * in combination with the CefDoMessageLoopWork() function in cases where the CEF message loop must be
-         * integrated into an existing application message loop (see additional comments and warnings on
+         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onScheduleMessagePumpWork(long)} callback. This option
+         * is recommended for use in combination with the CefDoMessageLoopWork() function in cases where the CEF message
+         * loop must be integrated into an existing application message loop (see additional comments and warnings on
          * CefDoMessageLoopWork). Enabling this option is not recommended for most users; leave this option disabled and
          * use either the CefRunMessageLoop() function or multi_threaded_message_loop if possible.
          */
@@ -521,7 +522,7 @@ public final class CefSettings {
         /**
          * Set to {@code true} (1) to disable configuration of browser process features using standard CEF and Chromium
          * command-line arguments. Configuration can still be specified using CEF data structures or via the
-         * {@link CefApp#onBeforeCommandLineProcessing(String, CefCommandLine)} method.
+         * {@link net.kurobako.cef4j.gen.CefApp#onBeforeCommandLineProcessing(String, CefCommandLine)} method.
          */
         public int commandLineArgsDisabled;
         /**
@@ -629,9 +630,9 @@ public final class CefSettings {
         public int remoteDebuggingPort;
         /**
          * The number of stack trace frames to capture for uncaught exceptions. Specify a positive value to enable the
-         * {@link CefRenderProcessHandler#onUncaughtException(CefBrowser, CefFrame, CefV8Context, CefV8Exception,
-         * CefV8StackTrace)} callback. Specify 0 (default value) and OnUncaughtException() will not be called. Also
-         * configurable using the "uncaught-exception-stack-size" command-line switch.
+         * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onUncaughtException(CefBrowser, CefFrame, CefV8Context,
+         * CefV8Exception, CefV8StackTrace)} callback. Specify 0 (default value) and OnUncaughtException() will not be
+         * called. Also configurable using the "uncaught-exception-stack-size" command-line switch.
          */
         public int uncaughtExceptionStackSize;
         /**
@@ -683,10 +684,11 @@ public final class CefSettings {
         /**
          * If {@code true} use a Views (bare-bones) window instead of a Chrome UI window when creating default popups
          * for Chrome style native-hosted (non-Views) browsers. This applies when
-         * {@link CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition,
-         * boolean, NativePointer, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference,
-         * CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])} has not been implemented to
-         * provide parent window information for the new popup.
+         * {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String,
+         * CefWindowOpenDisposition, boolean, NativePointer, CefWindowInfo.Mutable,
+         * java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable,
+         * java.util.concurrent.atomic.AtomicReference, int[])} has not been implemented to provide parent window
+         * information for the new popup.
          */
         public int useViewsDefaultPopup;
 

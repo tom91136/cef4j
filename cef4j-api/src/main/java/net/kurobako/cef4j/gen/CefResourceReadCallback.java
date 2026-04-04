@@ -5,8 +5,8 @@ package net.kurobako.cef4j.gen;
 import javax.annotation.processing.Generated;
 
 /**
- * Callback for asynchronous continuation of {@link CefResourceHandler#read(NativePointer, int, int[],
- * CefResourceReadCallback)}.
+ * Callback for asynchronous continuation of {@link net.kurobako.cef4j.gen.CefResourceHandler#read(NativePointer, int,
+ * int[], CefResourceReadCallback)}.
  *
  * <p>Definition generated from cef_resource_handler_capi.h
  *

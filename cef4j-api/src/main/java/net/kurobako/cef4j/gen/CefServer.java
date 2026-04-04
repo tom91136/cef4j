@@ -40,7 +40,8 @@ public interface CefServer extends CefLibraryObject {
 
     /**
      * Stop the server and shut down the dedicated server thread. See
-     * {@link CefServerHandler#onServerCreated(CefServer)} documentation for a description of server lifespan.
+     * {@link net.kurobako.cef4j.gen.CefServerHandler#onServerCreated(CefServer)} documentation for a description of
+     * server lifespan.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -52,8 +53,8 @@ public interface CefServer extends CefLibraryObject {
 
     /**
      * Returns {@code true} if the server is currently running and accepting incoming connections. See
-     * {@link CefServerHandler#onServerCreated(CefServer)} documentation for a description of server lifespan. This
-     * method must be called on the dedicated server thread.
+     * {@link net.kurobako.cef4j.gen.CefServerHandler#onServerCreated(CefServer)} documentation for a description of
+     * server lifespan. This method must be called on the dedicated server thread.
      *
      * <p>Definition generated from cef_server_capi.h
      *
@@ -209,8 +210,8 @@ public interface CefServer extends CefLibraryObject {
     /**
      * Send a WebSocket message to the connection identified by {@code connection_id}. {@code data} is the response
      * content and {@code data_size} is the size of {@code data} in bytes. The contents of {@code data} will be copied.
-     * See {@link CefServerHandler#onWebSocketRequest(CefServer, int, String, CefRequest, CefCallback)} documentation
-     * for intended usage.
+     * See {@link net.kurobako.cef4j.gen.CefServerHandler#onWebSocketRequest(CefServer, int, String, CefRequest,
+     * CefCallback)} documentation for intended usage.
      *
      * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
      * {@code dataSize} parameter is derived from the buffer's capacity.</b>
@@ -233,9 +234,10 @@ public interface CefServer extends CefLibraryObject {
      * between 1025 and 65535 on most platforms). {@code backlog} is the maximum number of pending connections. A new
      * thread will be created for each CreateServer call (the "dedicated server thread"). It is therefore recommended to
      * use a different CefServerHandler instance for each CreateServer call to avoid thread safety issues in the
-     * CefServerHandler implementation. The {@link CefServerHandler#onServerCreated(CefServer)} method will be called on
-     * the dedicated server thread to report success or failure. See {@link CefServerHandler#onServerCreated(CefServer)}
-     * documentation for a description of server lifespan.
+     * CefServerHandler implementation. The {@link net.kurobako.cef4j.gen.CefServerHandler#onServerCreated(CefServer)}
+     * method will be called on the dedicated server thread to report success or failure. See
+     * {@link net.kurobako.cef4j.gen.CefServerHandler#onServerCreated(CefServer)} documentation for a description of
+     * server lifespan.
      *
      * <p>Definition generated from cef_server_capi.h
      *

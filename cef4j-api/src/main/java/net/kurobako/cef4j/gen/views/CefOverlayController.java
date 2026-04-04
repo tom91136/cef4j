@@ -1,17 +1,23 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefDockingMode;
+import net.kurobako.cef4j.gen.CefInsets;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefSize;
 
 /**
- * Controller for an overlay that contains a contents View added via {@link CefWindow#addOverlayView(CefView,
- * CefDockingMode, boolean)}. Methods exposed by this controller should be called in preference to methods of the same
- * name exposed by the contents View unless otherwise indicated. Methods must be called on the browser process UI thread
- * unless otherwise indicated.
+ * Controller for an overlay that contains a contents View added via
+ * {@link net.kurobako.cef4j.gen.views.CefWindow#addOverlayView(CefView, CefDockingMode, boolean)}. Methods exposed by
+ * this controller should be called in preference to methods of the same name exposed by the contents View unless
+ * otherwise indicated. Methods must be called on the browser process UI thread unless otherwise indicated.
  *
  * <p>Definition generated from views/cef_overlay_controller_capi.h
  *
@@ -105,9 +111,9 @@ public interface CefOverlayController extends CefLibraryObject {
      * Sets the bounds (size and position) of this overlay. This will set the bounds of the contents View to match and
      * trigger a re-layout if necessary. {@code bounds} is in parent coordinates and any insets configured on this
      * overlay will be ignored. Use this method only for overlays created with a docking mode value of
-     * {@link CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of this overlay and/or layout of
-     * the contents View and call SizeToPreferredSize() instead to calculate the new size and re-position the overlay if
-     * necessary.
+     * {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of this
+     * overlay and/or layout of the contents View and call SizeToPreferredSize() instead to calculate the new size and
+     * re-position the overlay if necessary.
      *
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      *
@@ -146,9 +152,9 @@ public interface CefOverlayController extends CefLibraryObject {
      * Sets the size of this overlay without changing the position. This will set the size of the contents View to match
      * and trigger a re-layout if necessary. {@code size} is in parent coordinates and any insets configured on this
      * overlay will be ignored. Use this method only for overlays created with a docking mode value of
-     * {@link CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of this overlay and/or layout of
-     * the contents View and call SizeToPreferredSize() instead to calculate the new size and re-position the overlay if
-     * necessary.
+     * {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of this
+     * overlay and/or layout of the contents View and call SizeToPreferredSize() instead to calculate the new size and
+     * re-position the overlay if necessary.
      *
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      *
@@ -174,9 +180,9 @@ public interface CefOverlayController extends CefLibraryObject {
     /**
      * Sets the position of this overlay without changing the size. {@code position} is in parent coordinates and any
      * insets configured on this overlay will be ignored. Use this method only for overlays created with a docking mode
-     * value of {@link CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of this overlay and/or
-     * layout of the contents View and call SizeToPreferredSize() instead to calculate the new size and re-position the
-     * overlay if necessary.
+     * value of {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM}. With other docking modes modify the insets of
+     * this overlay and/or layout of the contents View and call SizeToPreferredSize() instead to calculate the new size
+     * and re-position the overlay if necessary.
      *
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      *
@@ -202,7 +208,7 @@ public interface CefOverlayController extends CefLibraryObject {
 
     /**
      * Sets the insets for this overlay. {@code insets} is in parent coordinates. Use this method only for overlays
-     * created with a docking mode value other than {@link CefDockingMode.Kind#CUSTOM}.
+     * created with a docking mode value other than {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM}.
      *
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      *
@@ -227,9 +233,9 @@ public interface CefOverlayController extends CefLibraryObject {
 
     /**
      * Size this overlay to its preferred size and trigger a re-layout if necessary. The position of overlays created
-     * with a docking mode value of {@link CefDockingMode.Kind#CUSTOM} will not be modified by calling this method. With
-     * other docking modes this method may re-position the overlay if necessary to accommodate the new size and any
-     * insets configured on the contents View.
+     * with a docking mode value of {@link net.kurobako.cef4j.gen.CefDockingMode.Kind#CUSTOM} will not be modified by
+     * calling this method. With other docking modes this method may re-position the overlay if necessary to accommodate
+     * the new size and any insets configured on the contents View.
      *
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      *

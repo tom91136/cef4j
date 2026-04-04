@@ -85,6 +85,6 @@ public interface CefResponseFilter extends CefClientHandler {
      */
     default CefResponseFilterStatus filter(
             @Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
-        return CefResponseFilterStatus.of(CefResponseFilterStatus.Kind.ERROR);
+        return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
     }
 }

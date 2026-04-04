@@ -26,13 +26,14 @@ public interface CefRequestHandler extends CefClientHandler {
     /**
      * Called on the UI thread before browser navigation. Return {@code true} to cancel the navigation or {@code false}
      * to allow the navigation to proceed. The {@code request} object cannot be modified in this callback.
-     * {@link CefLoadHandler#onLoadingStateChange(CefBrowser, boolean, boolean, boolean)} will be called twice in all
-     * cases. If the navigation is allowed {@link CefLoadHandler#onLoadStart(CefBrowser, CefFrame, CefTransitionType)}
-     * and {@link CefLoadHandler#onLoadEnd(CefBrowser, CefFrame, int)} will be called. If the navigation is canceled
-     * {@link CefLoadHandler#onLoadError(CefBrowser, CefFrame, CefErrorCode, String, String)} will be called with an
-     * {@code errorCode} value of {@code ERR_ABORTED}. The {@code user_gesture} value will be {@code true} if the
-     * browser navigated via explicit user gesture (e.g. clicking a link) or {@code false} if it navigated automatically
-     * (e.g. via the DomContentLoaded event).
+     * {@link net.kurobako.cef4j.gen.CefLoadHandler#onLoadingStateChange(CefBrowser, boolean, boolean, boolean)} will be
+     * called twice in all cases. If the navigation is allowed
+     * {@link net.kurobako.cef4j.gen.CefLoadHandler#onLoadStart(CefBrowser, CefFrame, CefTransitionType)} and
+     * {@link net.kurobako.cef4j.gen.CefLoadHandler#onLoadEnd(CefBrowser, CefFrame, int)} will be called. If the
+     * navigation is canceled {@link net.kurobako.cef4j.gen.CefLoadHandler#onLoadError(CefBrowser, CefFrame,
+     * CefErrorCode, String, String)} will be called with an {@code errorCode} value of {@code ERR_ABORTED}. The
+     * {@code user_gesture} value will be {@code true} if the browser navigated via explicit user gesture (e.g. clicking
+     * a link) or {@code false} if it navigated automatically (e.g. via the DomContentLoaded event).
      *
      * <p>Definition generated from cef_request_handler_capi.h
      *
@@ -88,8 +89,8 @@ public interface CefRequestHandler extends CefClientHandler {
      * the hostname and {@code port} contains the port number. {@code realm} is the realm of the challenge and may be
      * empty. {@code scheme} is the authentication scheme used, such as "basic" or "digest", and will be empty if the
      * source of the request is an FTP server. Return {@code true} to continue the request and call
-     * CefAuthCallback.continue() either in this method or at a later time when the authentication information is
-     * available. Return {@code false} to cancel the request immediately.
+     * net.kurobako.cef4j.gen.CefAuthCallback.continue() either in this method or at a later time when the
+     * authentication information is available. Return {@code false} to cancel the request immediately.
      *
      * <p>Definition generated from cef_request_handler_capi.h
      *
@@ -143,12 +144,12 @@ public interface CefRequestHandler extends CefClientHandler {
      * use the default behavior. If the {@code certificates} list is not empty the default behavior will be to display a
      * dialog for certificate selection. If the {@code certificates} list is empty then the default behavior will be not
      * to show a dialog and it will continue without using any certificate. Return {@code true} and call
-     * {@link CefSelectClientCertificateCallback#select(CefX509Certificate)} either in this method or at a later time to
-     * select a certificate. Do not call Select or call it with {@code null} to continue without using any certificate.
-     * {@code isProxy} indicates whether the host is an HTTPS proxy or the origin server. {@code host} and {@code port}
-     * contains the hostname and port of the SSL server. {@code certificates} is the list of certificates to choose
-     * from; this list has already been pruned by Chromium so that it only contains certificates from issuers that the
-     * server trusts.
+     * {@link net.kurobako.cef4j.gen.CefSelectClientCertificateCallback#select(CefX509Certificate)} either in this
+     * method or at a later time to select a certificate. Do not call Select or call it with {@code null} to continue
+     * without using any certificate. {@code isProxy} indicates whether the host is an HTTPS proxy or the origin server.
+     * {@code host} and {@code port} contains the hostname and port of the SSL server. {@code certificates} is the list
+     * of certificates to choose from; this list has already been pruned by Chromium so that it only contains
+     * certificates from issuers that the server trusts.
      *
      * <p>Definition generated from cef_request_handler_capi.h
      *
@@ -190,13 +191,14 @@ public interface CefRequestHandler extends CefClientHandler {
      * event processing for at least 15 seconds. Return {@code false} for the default behavior which is to continue
      * waiting with Alloy style or display of the "Page unresponsive" dialog with Chrome style. Return {@code true} and
      * don't execute the callback to continue waiting without display of the Chrome style dialog. Return {@code true}
-     * and call {@link CefUnresponsiveProcessCallback#cefWait()} either in this method or at a later time to reset the
-     * wait timer. In cases where you continue waiting there may be another call to this method if the process remains
-     * unresponsive. Return {@code true} and call {@link CefUnresponsiveProcessCallback#terminate()} either in this
-     * method or at a later time to terminate the unresponsive process, resulting in a call to
-     * OnRenderProcessTerminated. OnRenderProcessResponsive will be called if the process becomes responsive after this
-     * method is called. This functionality depends on the hang monitor which can be disabled by passing the
-     * `--disable-hang-monitor` command-line flag.
+     * and call {@link net.kurobako.cef4j.gen.CefUnresponsiveProcessCallback#cefWait()} either in this method or at a
+     * later time to reset the wait timer. In cases where you continue waiting there may be another call to this method
+     * if the process remains unresponsive. Return {@code true} and call
+     * {@link net.kurobako.cef4j.gen.CefUnresponsiveProcessCallback#terminate()} either in this method or at a later
+     * time to terminate the unresponsive process, resulting in a call to OnRenderProcessTerminated.
+     * OnRenderProcessResponsive will be called if the process becomes responsive after this method is called. This
+     * functionality depends on the hang monitor which can be disabled by passing the `--disable-hang-monitor`
+     * command-line flag.
      *
      * <p>Definition generated from cef_request_handler_capi.h
      *

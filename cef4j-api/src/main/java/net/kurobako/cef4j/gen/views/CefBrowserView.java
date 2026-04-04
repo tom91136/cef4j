@@ -1,11 +1,18 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
-package net.kurobako.cef4j.gen;
+package net.kurobako.cef4j.gen.views;
 
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
+import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefDictionaryValue;
+import net.kurobako.cef4j.gen.CefLibraryObject;
+import net.kurobako.cef4j.gen.CefRequestContext;
+import net.kurobako.cef4j.gen.CefRuntimeStyle;
 
 /**
  * A View hosting a CefBrowser instance. Methods must be called on the browser process UI thread unless otherwise
@@ -40,8 +47,9 @@ public interface CefBrowserView extends CefLibraryObject {
     /**
      * Returns the Chrome toolbar associated with this BrowserView. Only supported when using Chrome style. The
      * CefBrowserViewDelegate:: GetChromeToolbarType() method must return a value other than
-     * {@link CefChromeToolbarType.Kind#NONE} and the toolbar will not be available until after this BrowserView is
-     * added to a CefWindow and {@link CefViewDelegate#onWindowChanged(CefView, boolean)} has been called.
+     * {@link net.kurobako.cef4j.gen.CefChromeToolbarType.Kind#NONE} and the toolbar will not be available until after
+     * this BrowserView is added to a CefWindow and
+     * {@link net.kurobako.cef4j.gen.views.CefViewDelegate#onWindowChanged(CefView, boolean)} has been called.
      *
      * <p>Definition generated from views/cef_browser_view_capi.h
      *
@@ -54,15 +62,16 @@ public interface CefBrowserView extends CefLibraryObject {
 
     /**
      * Sets whether normal priority accelerators are first forwarded to the web content (`keydown` event handler) or
-     * CefKeyboardHandler. Normal priority accelerators can be registered via {@link CefWindow#setAccelerator(int, int,
-     * boolean, boolean, boolean, boolean)} (with {@code high_priority}={@code false}) or internally for standard
-     * accelerators supported by Chrome style. If {@code prefer_accelerators} is {@code true} then the matching
-     * accelerator will be triggered immediately (calling {@link CefWindowDelegate#onAccelerator(CefWindow, int)} or
-     * {@link CefCommandHandler#onChromeCommand(CefBrowser, int, CefWindowOpenDisposition)} respectively) and the event
-     * will not be forwarded to the web content or CefKeyboardHandler first. If {@code prefer_accelerators} is
-     * {@code false} then the matching accelerator will only be triggered if the event is not handled by web content
-     * (`keydown` event handler that calls `event.preventDefault()`) or by CefKeyboardHandler. The default value is
-     * {@code false}.
+     * CefKeyboardHandler. Normal priority accelerators can be registered via
+     * {@link net.kurobako.cef4j.gen.views.CefWindow#setAccelerator(int, int, boolean, boolean, boolean, boolean)} (with
+     * {@code high_priority}={@code false}) or internally for standard accelerators supported by Chrome style. If
+     * {@code prefer_accelerators} is {@code true} then the matching accelerator will be triggered immediately (calling
+     * {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#onAccelerator(CefWindow, int)} or
+     * {@link net.kurobako.cef4j.gen.CefCommandHandler#onChromeCommand(CefBrowser, int, CefWindowOpenDisposition)}
+     * respectively) and the event will not be forwarded to the web content or CefKeyboardHandler first. If
+     * {@code prefer_accelerators} is {@code false} then the matching accelerator will only be triggered if the event is
+     * not handled by web content (`keydown` event handler that calls `event.preventDefault()`) or by
+     * CefKeyboardHandler. The default value is {@code false}.
      *
      * <p>Definition generated from views/cef_browser_view_capi.h
      *
@@ -91,7 +100,8 @@ public interface CefBrowserView extends CefLibraryObject {
      * Create a new BrowserView. The underlying CefBrowser will not be created until this view is added to the views
      * hierarchy. The optional {@code extra_info} parameter provides an opportunity to specify extra information
      * specific to the created browser that will be passed to
-     * {@link CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the render process.
+     * {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the
+     * render process.
      *
      * <p>Definition generated from views/cef_browser_view_capi.h
      *
