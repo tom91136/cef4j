@@ -48,6 +48,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-platform</artifactId>
+            <version>${project.version}</version>
+            <classifier>${cef.platform}</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -67,6 +74,39 @@
                 <configuration>
                     <release>11</release>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
+                    </systemPropertyVariables>
+                    <!-- Default fork: javafx-only compat tests (no CEF).
+                         CEF initialization breaks the JavaFX platform, so
+                         CefWebView tests and cef compat tests need a separate fork. -->
+                    <excludes>
+                        <exclude>**/CefWebView*.java</exclude>
+                        <exclude>**/compat/cef/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>cef-tests</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <!-- Fresh JVM per test class: CefWebView tests leave CEF
+                                 state (browsers, message loop) that interferes with
+                                 subsequent classes in the same fork. -->
+                            <reuseForks>false</reuseForks>
+                            <excludes combine.self="override"/>
+                            <includes>
+                                <include>**/CefWebView*.java</include>
+                                <include>**/compat/cef/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
@@ -91,6 +131,9 @@ File sourceDir = new File(project.basedir, "src/test/java/net/kurobako/cef4j/osr
 File targetDir = new File(project.build.directory, "generated-test-sources/cef-compat")
 if (!sourceDir.isDirectory()) {
     return
+}
+if (targetDir.exists()) {
+    targetDir.deleteDir()
 }
 targetDir.mkdirs()
 sourceDir.eachFileRecurse { File sourceFile ->
@@ -123,6 +166,11 @@ sourceDir.eachFileRecurse { File sourceFile ->
     text = text.replaceAll("\\bPromptData\\b", "CefPromptData")
     text = text.replaceAll("\\bWebErrorEvent\\b", "CefWebErrorEvent")
     text = text.replaceAll("\\bWebEvent\\b", "CefWebEvent")
+
+    // In the cef compat variant, ensureStarted() must initialise CEF before starting JavaFX.
+    text = text.replace(
+            'run them under Xvfb or Wayland.");',
+            'run them under Xvfb or Wayland.");\n        CefWebView.setup();')
 
     String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
     File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)

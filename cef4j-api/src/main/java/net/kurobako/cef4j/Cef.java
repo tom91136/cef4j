@@ -66,14 +66,35 @@ public enum Cef {
     }
 
     /**
-     * Initialise CEF on the current thread, any CEF lifecycle (e.g. {@link #dispose()}, {@link #doMessageLoopWork()},
-     * etc.) calls must be made on the same thread from here on. It is safe to call this method multiple times, but
-     * further calls are no-ops and settings/args will be ignored. Re-initialising CEF is not supported per CEF design.
-     * CEF must be initialised before creating any browsers.
+     * Initialise CEF on the current thread. All subsequent CEF lifecycle calls ({@link #dispose()},
+     * {@link #doMessageLoopWork()}, etc.) must be made on the same thread. Safe to call multiple times - subsequent
+     * calls are no-ops. Re-initialising after {@link #dispose()} is not supported per CEF design.
+     *
+     * <p>If using {@code CefWebView}, prefer {@code CefWebView.setup()} which calls this internally. If a higher-level
+     * library (e.g. {@code CefMonacoPane}) provides its own {@code setup()}, call that first - it configures custom
+     * schemes and handlers before calling through to this method. Less-specific initialisations that follow are no-ops
+     * since CEF is already running.
      *
      * @throws IllegalStateException if CEF has been shut down
      */
     public synchronized void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+        initialise(settings, extraArgs, null);
+    }
+
+    /**
+     * Initialise CEF with a custom {@link CefApp} handler.
+     *
+     * <p>If {@code appHandler} is null, a default handler is used that only handles Windows command-line processing.
+     * Use this overload when you need to register custom schemes via {@link CefApp#onRegisterCustomSchemes}.
+     *
+     * <p>Note: when a non-null {@code appHandler} is provided, the default Windows {@code extraArgs} command-line
+     * processing is not applied - your handler is responsible for implementing
+     * {@link CefApp#onBeforeCommandLineProcessing} if needed.
+     *
+     * @throws IllegalStateException if CEF has been shut down
+     */
+    public synchronized void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(extraArgs);
         if (state == State.INITIALISED) return;
@@ -116,21 +137,21 @@ public enum Cef {
                 settings.browserSubprocessPath,
                 settings.resourcesDirPath);
 
-        var appHandler = (OS.isWindows() && !extraArgs.isEmpty())
-                ? new CefApp() {
-                    @Override
-                    public void onBeforeCommandLineProcessing(
-                            @Nullable String processType, @Nullable CefCommandLine commandLine) {
-                        if (commandLine != null && (processType == null || processType.isEmpty())) {
-                            for (String arg : extraArgs) {
-                                if (arg != null && !arg.isEmpty()) {
-                                    commandLine.appendSwitch(arg.startsWith("--") ? arg.substring(2) : arg);
-                                }
+        if (appHandler == null) {
+            appHandler = new CefApp() {
+                @Override
+                public void onBeforeCommandLineProcessing(
+                        @Nullable String processType, @Nullable CefCommandLine commandLine) {
+                    if (OS.isWindows() && commandLine != null && (processType == null || processType.isEmpty())) {
+                        for (String arg : extraArgs) {
+                            if (arg != null && !arg.isEmpty()) {
+                                commandLine.appendSwitch(arg.startsWith("--") ? arg.substring(2) : arg);
                             }
                         }
                     }
                 }
-                : null;
+            };
+        }
 
         try (var args = new NativePointer.Managed(
                 createMainArgs0(OS.isWindows() ? null : extraArgs.toArray(String[]::new)), Cef::freeMainArgs0)) {
@@ -141,6 +162,7 @@ public enum Cef {
                 throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed with error code: " + result);
             }
         }
+
         state = State.INITIALISED;
         initThread = Thread.currentThread();
         log.info("CEF initialized");

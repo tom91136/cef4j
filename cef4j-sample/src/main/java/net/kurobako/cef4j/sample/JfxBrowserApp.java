@@ -24,6 +24,13 @@ import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.osr.jfx.CefWebView;
 
 public final class JfxBrowserApp {
+
+    private static Path createCacheDir() throws IOException {
+        Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
+        cacheDir.toFile().deleteOnExit();
+        return cacheDir;
+    }
+
     public static void main(String[] args) throws IOException {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = createCacheDir().toAbsolutePath().toString();
@@ -372,11 +379,5 @@ public final class JfxBrowserApp {
         private static double clampZoom(double value) {
             return Math.max(0.25, Math.min(5.0, value));
         }
-    }
-
-    private static Path createCacheDir() throws IOException {
-        Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
-        cacheDir.toFile().deleteOnExit();
-        return cacheDir;
     }
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.kurobako.cef4j.gen.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Integration tests for {@link CefXmlReader}, parameterised over file-backed and callback-backed
  * {@link CefStreamReader} factories.
  */
-class CefXmlReaderTest {
+class CefXmlReaderTest extends CefTestBase {
 
     // XML fixtures
     private static final String SIMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -34,14 +33,6 @@ class CefXmlReaderTest {
             + "<r:root xmlns:r=\"http://example.com/r\">\n"
             + "  <r:child r:attr=\"val\">text</r:child>\n"
             + "</r:root>\n";
-
-    @BeforeAll
-    static void initCef() throws Exception {
-        SystemBootstrap.load();
-        // Use the singleton - if CefInteropTest already initialized CEF this is a no-op.
-        // We never call dispose() so CEF stays alive across test classes in the same JVM fork.
-        Cef.INSTANCE.initialise(new CefSettings.Mutable(), List.of());
-    }
 
     @FunctionalInterface
     interface StreamFactory {

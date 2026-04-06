@@ -1,11 +1,17 @@
 package net.kurobako.cef4j.osr.jfx;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Platform;
@@ -36,8 +42,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
+import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.SystemBootstrap;
+import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -65,6 +73,8 @@ import net.kurobako.cef4j.gen.CefNavigationEntry;
 import net.kurobako.cef4j.gen.CefNavigationEntryVisitor;
 import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefProcessId;
+import net.kurobako.cef4j.gen.CefProcessMessage;
 import net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
@@ -92,7 +102,7 @@ import org.slf4j.LoggerFactory;
  * <p>It is not a perfect behavioural clone. Browser lifetime is managed internally, but some semantics remain
  * approximate.
  */
-@SuppressWarnings("this-escape")
+@SuppressWarnings({"this-escape", "resource"})
 public class CefWebView extends Region {
     private static final Logger log = LoggerFactory.getLogger(CefWebView.class);
     private static final Object SETUP_LOCK = new Object();
@@ -110,6 +120,8 @@ public class CefWebView extends Region {
     private final ImageView imageView = new ImageView();
     private final CefFrameBuffer<int[]> frameBuffer;
     private final CefWebEngine engine = new CefWebEngine(this);
+    private final CefScriptEngine scriptEngine = new CefScriptEngine(
+            () -> getBrowser() != null ? getBrowser().getMainFrame().orElse(null) : null);
     private final CefClient client = new DefaultClient();
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
         if (isShowing) {
@@ -154,8 +166,13 @@ public class CefWebView extends Region {
     private volatile CefRect popupRect;
     private volatile boolean browserCreationPosted;
     private volatile boolean browserCreated;
+    private volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
+    private final Queue<BrowserAction> pendingBrowserActions = new ConcurrentLinkedQueue<>();
 
     public CefWebView() {
+        if (activeSetup == null) {
+            throw new IllegalStateException("CefWebView.setup() must be called before creating a CefWebView instance");
+        }
         int maxW = 1;
         int maxH = 1;
         for (Screen screen : Screen.getScreens()) {
@@ -206,8 +223,6 @@ public class CefWebView extends Region {
             }
             maybeCreateBrowser(false);
         });
-
-        engine.load("about:blank");
     }
 
     public static void setup() {
@@ -215,9 +230,30 @@ public class CefWebView extends Region {
     }
 
     public static void setup(CefSettings.Mutable settings, String... extraArgs) {
+        setup(settings, null, extraArgs);
+    }
+
+    /**
+     * Initialise CEF for off-screen rendering with a custom {@link CefApp} handler.
+     *
+     * <p>Must be called before the JavaFX toolkit is started and before creating any {@code CefWebView} instances. Safe
+     * to call multiple times with the same settings - subsequent calls are no-ops.
+     *
+     * <p>If a higher-level library (e.g. {@code CefMonacoPane}) provides its own {@code setup()}, call that instead -
+     * it will call this method internally. The most specific setup should be called first; less-specific setups that
+     * follow are no-ops since CEF is already initialised.
+     *
+     * <p>If {@code appHandler} is null, the default handler is used. Pass a custom handler when you need to register
+     * custom schemes via {@link CefApp#onRegisterCustomSchemes}. Note: when a non-null handler is provided, the default
+     * Windows command-line processing is not applied.
+     *
+     * @throws IllegalStateException if the JavaFX toolkit is already running
+     */
+    public static void setup(CefSettings.Mutable settings, CefApp appHandler, String... extraArgs) {
         SetupState requested = SetupState.of(settings, extraArgs);
         synchronized (SETUP_LOCK) {
-            if (activeSetup != null && !activeSetup.equals(requested)) {
+            if (activeSetup != null && activeSetup.equals(requested)) return;
+            if (activeSetup != null) {
                 throw new IllegalStateException("CEF can only be configured once per JVM. Existing setup "
                         + activeSetup
                         + " does not match requested setup "
@@ -225,8 +261,14 @@ public class CefWebView extends Region {
                         + ".");
             }
             if (activeSetup == null) {
+                if (Platform.isFxApplicationThread()
+                        || Thread.getAllStackTraces().keySet().stream()
+                                .anyMatch(t -> "JavaFX Application Thread".equals(t.getName()))) {
+                    throw new IllegalStateException(
+                            "CefWebView.setup() must be called before the JavaFX toolkit is started");
+                }
                 SystemBootstrap.load();
-                Cef.INSTANCE.initialise(requested.settings.toMutable(), requested.extraArgs);
+                Cef.INSTANCE.initialise(requested.settings.toMutable(), requested.extraArgs, appHandler);
                 activeSetup = requested;
                 if (!shutdownHookRegistered) {
                     Runtime.getRuntime().addShutdownHook(new Thread(CefWebView::shutdownCef, "cef4j-jfx-shutdown"));
@@ -244,6 +286,10 @@ public class CefWebView extends Region {
         return client;
     }
 
+    public CefScriptEngine getScriptEngine() {
+        return scriptEngine;
+    }
+
     /** Returns the underlying browser instance, or {@code null} if not yet attached or not yet created. */
     public CefBrowser getBrowser() {
         BrowserHandle current = browser;
@@ -253,18 +299,6 @@ public class CefWebView extends Region {
     public CefBrowserHost getBrowserHost() {
         BrowserHandle current = browser;
         return current != null ? current.getHost() : null;
-    }
-
-    /** Attach an externally-created browser to this view. */
-    public void setBrowser(CefBrowser browser) {
-        if (browser == null) {
-            this.browser = null;
-            this.browserCreated = false;
-        } else {
-            this.browser = new BrowserHandle(browser);
-            this.browserCreated = true;
-            applyZoom(getZoom());
-        }
     }
 
     /** Returns the zoom factor, matching the JavaFX {@code WebView} API shape. */
@@ -349,7 +383,7 @@ public class CefWebView extends Region {
         pixelBuf = null;
         pixelBuffer = null;
         writableImage = null;
-        javafx.scene.Scene scene = getScene();
+        var scene = getScene();
         if (scene != null) {
             scene.windowProperty().removeListener(sceneWindowListener);
             Window window = scene.getWindow();
@@ -373,7 +407,12 @@ public class CefWebView extends Region {
             public boolean getRootScreenRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
                 javafx.geometry.Bounds bounds = localToScreen(getBoundsInLocal());
                 if (bounds == null) {
-                    return false;
+                    Rectangle2D fallback = detachedBounds;
+                    rect.x = (int) Math.round(fallback.getMinX());
+                    rect.y = (int) Math.round(fallback.getMinY());
+                    rect.width = Math.max(1, (int) Math.round(fallback.getWidth()));
+                    rect.height = Math.max(1, (int) Math.round(fallback.getHeight()));
+                    return true;
                 }
                 rect.x = (int) Math.round(bounds.getMinX());
                 rect.y = (int) Math.round(bounds.getMinY());
@@ -384,17 +423,18 @@ public class CefWebView extends Region {
 
             @Override
             public void getViewRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
+                Rectangle2D bounds = detachedBounds;
                 rect.x = 0;
                 rect.y = 0;
-                rect.width = Math.max(1, (int) getWidth());
-                rect.height = Math.max(1, (int) getHeight());
+                rect.width = Math.max(1, (int) Math.round(getWidth() > 0 ? getWidth() : bounds.getWidth()));
+                rect.height = Math.max(1, (int) Math.round(getHeight() > 0 ? getHeight() : bounds.getHeight()));
             }
 
             @Override
             public boolean getScreenInfo(CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
                 Screen screen = currentScreen();
-                float scale = currentScaleFactor(screen);
-                screenInfo.deviceScaleFactor = scale;
+                var scale = currentScaleFactor(screen);
+                screenInfo.deviceScaleFactor = (float) scale;
                 screenInfo.depth = 32;
                 screenInfo.depthPerComponent = 8;
                 javafx.geometry.Rectangle2D bounds = screen.getBounds();
@@ -420,9 +460,9 @@ public class CefWebView extends Region {
                     screenY[0] = (int) Math.round(point.getY());
                     return true;
                 }
-                float scale = currentScaleFactor(currentScreen());
-                screenX[0] = Math.round(viewX * scale);
-                screenY[0] = Math.round(viewY * scale);
+                Rectangle2D fallback = detachedBounds;
+                screenX[0] = (int) Math.round(fallback.getMinX() + viewX);
+                screenY[0] = (int) Math.round(fallback.getMinY() + viewY);
                 return true;
             }
 
@@ -506,16 +546,22 @@ public class CefWebView extends Region {
         }
         if (browser != null || browserCreationPosted || browserCreated) return;
         browserCreationPosted = true;
-        engine.getLocation();
         try {
-            ensureConfigured();
+            if (activeSetup == null) {
+                setup();
+            }
             CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
             windowInfo.bounds = new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight()));
             windowInfo.windowlessRenderingEnabled = 1;
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
+            // Always create the browser without an initial URL. The actual navigation
+            // comes from the pending load action queued by load()/loadContent(). This
+            // avoids a spurious about:blank load whose onLoadEnd fires a premature
+            // SUCCEEDED before the real page has loaded, which causes the main frame
+            // to be invalid when subsequent evaluate() calls try to use it.
             int result = CefBrowserHost.createBrowser(
-                    windowInfo.toImmutable(), client, engine.getLocation(), browserSettings.toImmutable(), null, null);
+                    windowInfo.toImmutable(), client, "", browserSettings.toImmutable(), null, null);
             if (result == 0) {
                 throw new IllegalStateException("CEF failed to create windowless browser");
             }
@@ -547,10 +593,9 @@ public class CefWebView extends Region {
         ensureBuffer(width, height);
         System.arraycopy(pixels, 0, pixelBuf.array(), 0, width * height);
         pixelBuffer.updateBuffer(pb -> null);
-
-        float scale = currentScaleFactor(currentScreen());
-        int expectedW = Math.max(1, Math.round((float) getWidth() * scale));
-        int expectedH = Math.max(1, Math.round((float) getHeight() * scale));
+        var scale = currentScaleFactor(currentScreen());
+        int expectedW = (int) Math.max(1.0, Math.round(getWidth() * scale));
+        int expectedH = (int) Math.max(1.0, Math.round(getHeight() * scale));
         if (width != expectedW || height != expectedH) {
             requestViewRefresh(true);
         }
@@ -643,7 +688,7 @@ public class CefWebView extends Region {
         }
         System.arraycopy(pixels, 0, osrPopupPixelBuf.array(), 0, width * height);
         osrPopupPixelBuffer.updateBuffer(pb -> null);
-        float scale = currentScaleFactor(currentScreen());
+        var scale = currentScaleFactor(currentScreen());
         osrPopupImageView.setFitWidth(width / scale);
         osrPopupImageView.setFitHeight(height / scale);
         Point2D screen = localToScreen(rect.x, rect.y);
@@ -658,6 +703,7 @@ public class CefWebView extends Region {
     }
 
     private void onResize() {
+        detachedBounds = new Rectangle2D(detachedBounds.getMinX(), detachedBounds.getMinY(), getWidth(), getHeight());
         frameBuffer.resetBackPressure();
         getWidth();
         getHeight();
@@ -739,6 +785,15 @@ public class CefWebView extends Region {
         });
     }
 
+    private void updateDetachedBounds(@Nullable CefRect bounds, boolean notify) {
+        if (bounds == null) return;
+        detachedBounds = new Rectangle2D(bounds.x, bounds.y, Math.max(1, bounds.width), Math.max(1, bounds.height));
+        if (notify) {
+            Platform.runLater(() ->
+                    engine.fireResized(new Rectangle2D(0, 0, Math.max(1, bounds.width), Math.max(1, bounds.height))));
+        }
+    }
+
     private static Cursor cursorForKind(CefCursorType.Kind k) {
         switch (k) {
             case CROSS:
@@ -790,7 +845,7 @@ public class CefWebView extends Region {
                 return screens.get(0);
             }
         }
-        javafx.scene.Scene scene = getScene();
+        var scene = getScene();
         Window window = scene != null ? scene.getWindow() : null;
         if (window != null) {
             List<Screen> screens = Screen.getScreensForRectangle(
@@ -802,34 +857,23 @@ public class CefWebView extends Region {
         return Screen.getPrimary();
     }
 
-    private float currentScaleFactor(Screen screen) {
-        javafx.scene.Scene scene = getScene();
-        Window window = scene != null ? scene.getWindow() : null;
+    private double currentScaleFactor(Screen screen) {
+        var scene = getScene();
+        var window = scene != null ? scene.getWindow() : null;
         if (window != null) {
             double outputScale = Math.max(window.getOutputScaleX(), window.getOutputScaleY());
             if (outputScale > 0.0) {
-                return (float) outputScale;
+                return outputScale;
             }
             double renderScale = Math.max(window.getRenderScaleX(), window.getRenderScaleY());
             if (renderScale > 0.0) {
-                return (float) renderScale;
+                return renderScale;
             }
         }
-        float scale = getDeviceScaleFactor(screen);
-        return scale;
-    }
-
-    private static float getDeviceScaleFactor(Screen screen) {
         try {
             return (float) Math.max(screen.getOutputScaleX(), screen.getOutputScaleY());
-        } catch (Exception e) {
-            return 1.0f;
-        }
-    }
-
-    private static void ensureConfigured() {
-        if (activeSetup == null) {
-            setup();
+        } catch (Exception ignored) {
+            return 1.0;
         }
     }
 
@@ -976,6 +1020,17 @@ public class CefWebView extends Region {
         current = browser;
         if (current != null) {
             action.run(current);
+            return;
+        }
+        if (!browserCreated) {
+            pendingBrowserActions.add(action);
+        }
+    }
+
+    private void flushPendingBrowserActions(BrowserHandle current) {
+        BrowserAction action;
+        while ((action = pendingBrowserActions.poll()) != null) {
+            action.run(current);
         }
     }
 
@@ -1014,6 +1069,14 @@ public class CefWebView extends Region {
         }
     }
 
+    private void restoreBrowserFocus() {
+        Platform.runLater(() -> {
+            requestFocus();
+            CefBrowserHost h = host();
+            if (h != null) h.setFocus(true);
+        });
+    }
+
     private List<MenuItem> buildMenuItems(
             CefMenuModel model,
             CefRunContextMenuCallback callback,
@@ -1042,8 +1105,11 @@ public class CefWebView extends Region {
                     ci.setSelected(model.isChecked(commandId));
                     ci.setDisable(!model.isEnabled(commandId));
                     ci.setOnAction(e -> {
-                        if (dispatched.compareAndSet(false, true))
+                        if (dispatched.compareAndSet(false, true)) {
+                            hideContextMenu();
                             callback.cont(commandId, CefEventFlags.of(CefEventFlags.Kind.NONE));
+                            restoreBrowserFocus();
+                        }
                     });
                     items.add(ci);
                     break;
@@ -1054,8 +1120,11 @@ public class CefWebView extends Region {
                     MenuItem mi = new MenuItem(label);
                     mi.setDisable(!model.isEnabled(commandId));
                     mi.setOnAction(e -> {
-                        if (dispatched.compareAndSet(false, true))
+                        if (dispatched.compareAndSet(false, true)) {
+                            hideContextMenu();
                             callback.cont(commandId, CefEventFlags.of(CefEventFlags.Kind.NONE));
+                            restoreBrowserFocus();
+                        }
                     });
                     items.add(mi);
                     break;
@@ -1096,10 +1165,14 @@ public class CefWebView extends Region {
             return java.util.Optional.of(new CefLifeSpanHandler() {
                 @Override
                 public void onAfterCreated(CefBrowser b) {
+                    BrowserHandle created = new BrowserHandle(b);
+                    if (browser == null) {
+                        browser = created;
+                    }
+                    if (!pendingBrowserActions.isEmpty()) {
+                        flushPendingBrowserActions(browser);
+                    }
                     Platform.runLater(() -> {
-                        if (browser == null) {
-                            browser = new BrowserHandle(b);
-                        }
                         requestFocus();
                         CefBrowserHost h = b.getHost().orElse(null);
                         if (h != null) h.setFocus(true);
@@ -1134,12 +1207,14 @@ public class CefWebView extends Region {
                             () -> popupEngine.set(handler.call(new CefPopupFeatures(false, false, false, true))));
                     CefWebEngine createdEngine = popupEngine.get();
                     if (createdEngine == null) return true;
+                    createdEngine.getView().updateDetachedBounds(windowInfo.bounds, true);
                     clientRef.set(createdEngine.getView().getCefClient());
                     return false;
                 }
 
                 @Override
                 public void onBeforeClose(CefBrowser browser) {
+                    scriptEngine.dispose();
                     Platform.runLater(() -> engine.fireVisibilityChanged(false));
                 }
             });
@@ -1196,14 +1271,39 @@ public class CefWebView extends Region {
                 }
 
                 @Override
+                public boolean onConsoleMessage(
+                        CefBrowser b,
+                        net.kurobako.cef4j.gen.CefLogSeverity level,
+                        String message,
+                        String source,
+                        int line) {
+                    return false;
+                }
+
+                @Override
                 public void onStatusMessage(CefBrowser b, String value) {
                     Platform.runLater(() -> engine.fireStatusChanged(value != null ? value : ""));
                 }
 
                 @Override
                 public boolean onAutoResize(CefBrowser browser, CefSize newSize) {
+                    Rectangle2D currentBounds = detachedBounds;
+                    updateDetachedBounds(
+                            new CefRect(
+                                    (int) Math.round(currentBounds.getMinX()),
+                                    (int) Math.round(currentBounds.getMinY()),
+                                    Math.max(1, newSize.width),
+                                    Math.max(1, newSize.height)),
+                            false);
                     Platform.runLater(() -> engine.fireResized(new Rectangle2D(0, 0, newSize.width, newSize.height)));
                     return false;
+                }
+
+                @Override
+                public boolean onContentsBoundsChange(CefBrowser browser, CefRect newBounds) {
+                    updateDetachedBounds(newBounds, true);
+                    requestViewRefresh(true);
+                    return true;
                 }
 
                 @Override
@@ -1326,6 +1426,10 @@ public class CefWebView extends Region {
         }
 
         private void refreshHistoryFromBrowser(CefBrowser browser) {
+            if (engine.shouldSuppressNavigationHistory()) {
+                Platform.runLater(() -> engine.refreshHistory(List.of(), 0));
+                return;
+            }
             CefBrowserHost host = browser != null ? browser.getHost().orElse(null) : null;
             if (host == null) return;
             List<CefWebHistory.EntrySnapshot> snapshots = new ArrayList<>();
@@ -1346,6 +1450,15 @@ public class CefWebView extends Region {
                         }
                     },
                     false);
+        }
+
+        @Override
+        public boolean onProcessMessageReceived(
+                @Nullable CefBrowser browser,
+                @Nullable CefFrame frame,
+                @Nonnull CefProcessId sourceProcess,
+                @Nullable CefProcessMessage message) {
+            return scriptEngine.handleMessage(browser, frame, sourceProcess, message);
         }
 
         private void runOnFxAndWait(Runnable runnable) {
@@ -1424,10 +1537,20 @@ public class CefWebView extends Region {
                     .toImmutable()
                     .toMutable();
             //            settings.noSandbox = 1;
+            if (settings.cachePath == null) {
+                Path cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
+                try {
+                    Files.createDirectories(cacheDir);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+                settings.cachePath = cacheDir.toAbsolutePath().toString();
+            }
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
             List<String> args = new ArrayList<>();
+            args.add("--disable-popup-blocking");
             if (OS.isLinux()) {
                 args.add("--ozone-platform=x11");
                 //                args.add("--no-zygote");

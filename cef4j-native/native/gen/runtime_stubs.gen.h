@@ -5,6 +5,8 @@
 #pragma once
 #include <jni.h>
 
+CEF4J_JNI_EXPORT_RT(void, NativeMemory, putBytes)(JNIEnv* env, jclass clz, jlong address, jobjectArray src, jint offset, jint length);
+
 CEF4J_JNI_EXPORT_RT(jlong, Cef, createMainArgs0)(JNIEnv* env, jclass clz, jobjectArray extraArgs);
 
 CEF4J_JNI_EXPORT_RT(void, Cef, freeMainArgs0)(JNIEnv* env, jclass clz, jlong address);

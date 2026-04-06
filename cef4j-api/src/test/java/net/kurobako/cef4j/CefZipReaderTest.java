@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import net.kurobako.cef4j.gen.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,15 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Integration tests for {@link CefZipReader}, parameterised over file-backed and callback-backed
  * {@link CefStreamReader} factories.
  */
-class CefZipReaderTest {
-
-    @BeforeAll
-    static void initCef() throws Exception {
-        SystemBootstrap.load();
-        // Use the singleton - if CefInteropTest already initialized CEF this is a no-op.
-        // We never call dispose() so CEF stays alive across test classes in the same JVM fork.
-        Cef.INSTANCE.initialise(new CefSettings.Mutable(), List.of());
-    }
+class CefZipReaderTest extends CefTestBase {
 
     @FunctionalInterface
     interface StreamFactory {

@@ -70,7 +70,7 @@ public final class CefWebHistory {
         }
         trimToMaxSize();
         if (entries.isEmpty()) {
-            currentIndex.set(-1);
+            currentIndex.set(0);
         } else {
             currentIndex.set(Math.max(0, Math.min(entries.size() - 1, nextCurrentIndex)));
         }

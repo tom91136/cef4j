@@ -34,6 +34,8 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
 
 @SuppressWarnings({"this-escape"})
 public class CefBrowserView extends JPanel {
+    private static final long serialVersionUID = 1L;
+
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
     private static final int EVENTFLAG_CONTROL_DOWN = 1 << 2;
     private static final int EVENTFLAG_ALT_DOWN = 1 << 3;

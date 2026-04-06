@@ -38,7 +38,7 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
@@ -65,7 +65,7 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}
@@ -92,7 +92,7 @@ struct JniCefViewDelegate: public cef_view_delegate_t {
         auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}

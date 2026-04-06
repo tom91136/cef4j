@@ -4,6 +4,8 @@ import javafx.event.EventType;
 
 /** JavaFX-style web error event without depending on {@code javafx-web}. */
 public final class CefWebErrorEvent extends CefWebEvent<String> {
+    private static final long serialVersionUID = 1L;
+
     public static final EventType<CefWebErrorEvent> ANY = new EventType<>(CefWebEvent.ANY, "CEF_WEB_ERROR");
 
     private final Throwable exception;

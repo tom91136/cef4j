@@ -220,6 +220,15 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.5</version>
+                    <configuration>
+                        <!-- Cap the forked JVM so a hung test can't block the build indefinitely -->
+                        <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
+                        <systemPropertyVariables>
+                            <!-- JUnit 5 per-test timeout (also picked up by IDEs) -->
+                            <junit.jupiter.execution.timeout.default>10 s</junit.jupiter.execution.timeout.default>
+                            <junit.jupiter.execution.timeout.lifecycle.method.default>10 s</junit.jupiter.execution.timeout.lifecycle.method.default>
+                        </systemPropertyVariables>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -317,7 +326,7 @@
                 <executions>
                     <execution>
                         <id>spotless-check</id>
-                        <phase>validate</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>

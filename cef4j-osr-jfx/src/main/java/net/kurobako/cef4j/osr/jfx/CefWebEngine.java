@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -22,6 +23,7 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Callback;
+import net.kurobako.cef4j.CefScriptEngine;
 import org.w3c.dom.Document;
 
 /**
@@ -61,6 +63,7 @@ public final class CefWebEngine {
     private final ObjectProperty<Callback<CefPromptData, String>> promptHandler =
             new SimpleObjectProperty<>(this, "promptHandler");
     private final ObjectProperty<EventHandler<CefWebErrorEvent>> onError = new SimpleObjectProperty<>(this, "onError");
+    private volatile boolean suppressNavigationHistory;
 
     CefWebEngine(CefWebView view) {
         this.view = view;
@@ -77,6 +80,11 @@ public final class CefWebEngine {
     }
 
     public void load(String url) {
+        suppressNavigationHistory = false;
+        loadInternal(url);
+    }
+
+    private void loadInternal(String url) {
         String next = url == null || url.isEmpty() ? "about:blank" : url;
         location.set(next);
         document.set(null);
@@ -89,10 +97,11 @@ public final class CefWebEngine {
     }
 
     public void loadContent(String content, String contentType) {
+        suppressNavigationHistory = true;
         String mime = contentType == null || contentType.isEmpty() ? "text/html" : contentType;
         String body = content == null ? "" : content;
         String encoded = URLEncoder.encode(body, StandardCharsets.UTF_8).replace("+", "%20");
-        load("data:" + mime + ";charset=UTF-8," + encoded);
+        loadInternal("data:" + mime + ";charset=UTF-8," + encoded);
     }
 
     public void reload() {
@@ -102,6 +111,21 @@ public final class CefWebEngine {
     public Object executeScript(String script) {
         view.executeScript(script);
         return null;
+    }
+
+    /**
+     * Evaluate a JavaScript expression asynchronously and return the JSON-serialized result.
+     *
+     * @param expression the JS expression to evaluate
+     * @return future completing with the JSON string result
+     */
+    public CompletableFuture<String> evaluateScriptAsync(String expression) {
+        return view.getScriptEngine().evaluate(expression);
+    }
+
+    /** Returns the {@link CefScriptEngine} for advanced handle-based operations. */
+    public CefScriptEngine getScriptEngine() {
+        return view.getScriptEngine();
     }
 
     public void stop() {
@@ -352,6 +376,10 @@ public final class CefWebEngine {
 
     void refreshHistory(List<CefWebHistory.EntrySnapshot> entries, int currentIndex) {
         history.replaceEntries(entries, currentIndex);
+    }
+
+    boolean shouldSuppressNavigationHistory() {
+        return suppressNavigationHistory;
     }
 
     void fireAlert(String data) {

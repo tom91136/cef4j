@@ -2,16 +2,11 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.gen.views.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -26,42 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * <p>Shares the same CEF process as {@link CefInteropTest} - CEF is initialised once per JVM fork.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CefViewsInteropTest {
-
-    @BeforeAll
-    static void initCef() throws Exception {
-        SystemBootstrap.load();
-
-        if (Cef.INSTANCE.getState() == Cef.State.UNINITIALISED) {
-            Path cacheDir = Files.createTempDirectory("cef4j-views-test-cache-");
-            cacheDir.toFile().deleteOnExit();
-
-            CefSettings.Mutable settings = new CefSettings.Mutable();
-            settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.windowlessRenderingEnabled = 1;
-            settings.externalMessagePump = 1;
-            settings.multiThreadedMessageLoop = 0;
-
-            List<String> extraArgs = new ArrayList<>();
-            if (OS.isLinux()) {
-                extraArgs.add("--no-sandbox");
-                String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
-                if (ozonePlatform != null && !ozonePlatform.isBlank()) {
-                    extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
-                }
-            }
-            String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
-            if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
-                for (String arg : extraArgsProperty.split(",")) {
-                    String trimmed = arg.trim();
-                    if (!trimmed.isEmpty()) {
-                        extraArgs.add(trimmed);
-                    }
-                }
-            }
-            Cef.INSTANCE.initialise(settings, extraArgs);
-        }
-    }
+class CefViewsInteropTest extends CefTestBase {
 
     // -- Panel --
 
@@ -390,15 +350,6 @@ class CefViewsInteropTest {
     }
 
     // Helpers
-
-    private static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16);
-        }
-        return latch.getCount() == 0;
-    }
 
     private static void pumpFor(long durationMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + durationMs;

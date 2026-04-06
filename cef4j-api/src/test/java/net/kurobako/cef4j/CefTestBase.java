@@ -1,0 +1,90 @@
+package net.kurobako.cef4j;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import net.kurobako.cef4j.gen.CefApp;
+import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
+import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.gen.CefWindowInfo;
+import org.junit.jupiter.api.BeforeAll;
+
+/**
+ * Shared CEF initialization for API-layer tests running in external-message-pump mode.
+ *
+ * <p>All test classes that need CEF initialized with {@code externalMessagePump=1} should extend this class. CEF
+ * initialization happens once per JVM fork (the singleton returns early if already initialised).
+ */
+abstract class CefTestBase {
+
+    @BeforeAll
+    static void initCef() throws Exception {
+        initCef(List.of(), null);
+    }
+
+    static void initCef(List<String> additionalArgs) throws Exception {
+        initCef(additionalArgs, null);
+    }
+
+    static void initCef(List<String> additionalArgs, CefApp appHandler) throws Exception {
+        SystemBootstrap.load();
+        if (Cef.INSTANCE.getState() != Cef.State.UNINITIALISED) return;
+
+        Path cacheDir = Files.createTempDirectory("cef4j-test-cache-");
+        cacheDir.toFile().deleteOnExit();
+
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.windowlessRenderingEnabled = 1;
+        settings.externalMessagePump = 1;
+        settings.multiThreadedMessageLoop = 0;
+
+        List<String> args = new ArrayList<>(additionalArgs);
+        if (OS.isLinux()) {
+            args.add("--no-sandbox");
+            String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
+            if (ozonePlatform != null && !ozonePlatform.isBlank()) {
+                args.add("--ozone-platform=" + ozonePlatform.trim());
+            }
+        }
+        String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
+        if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
+            for (String arg : extraArgsProperty.split(",")) {
+                String trimmed = arg.trim();
+                if (!trimmed.isEmpty()) {
+                    args.add(trimmed);
+                }
+            }
+        }
+        Cef.INSTANCE.initialise(settings, args, appHandler);
+    }
+
+    static CefBrowser createWindowlessBrowser(CefClient client, String url) {
+        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
+        windowInfo.bounds = new CefRect(0, 0, 800, 600);
+        windowInfo.windowlessRenderingEnabled = 1;
+        CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
+        browserSettings.windowlessFrameRate = 60;
+        return Cef.INSTANCE.createBrowser(client, url, windowInfo.toImmutable(), browserSettings.toImmutable());
+    }
+
+    static void closeBrowser(CefBrowser browser) {
+        if (browser != null) {
+            browser.getHost().ifPresent(host -> host.closeBrowser(true));
+        }
+    }
+
+    /** Pump CEF message loop until latch reaches zero or timeout. */
+    static boolean pumpUntil(java.util.concurrent.CountDownLatch latch, long timeoutMs) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + timeoutMs;
+        while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
+            Cef.INSTANCE.doMessageLoopWork();
+            Thread.sleep(5);
+        }
+        return latch.getCount() == 0;
+    }
+}

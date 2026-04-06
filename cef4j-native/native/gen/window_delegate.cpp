@@ -198,7 +198,7 @@ struct JniCefWindowDelegate: public cef_window_delegate_t {
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getInitialBounds", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getInitialBounds", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Lnet/kurobako/cef4j/gen/CefRect;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_rect_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_rect_t {};}

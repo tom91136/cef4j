@@ -61,7 +61,37 @@
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                     </systemPropertyVariables>
+                    <!-- Exclude multi-threaded-message-loop tests from the default fork;
+                         they initialise CEF with multiThreadedMessageLoop=1 which is
+                         incompatible with the external-message-pump mode used by the
+                         other test classes (CEF cannot be re-initialised). -->
+                    <excludes>
+                        <exclude>**/CefScriptEngineMultiThreadedTest.java</exclude>
+                        <exclude>**/CefSchemeHandlerTest.java</exclude>
+                    </excludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>scheme-handler-tests</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <excludes combine.self="override"/>
+                            <includes>
+                                <include>**/CefSchemeHandlerTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>multi-threaded-message-loop-tests</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <excludes combine.self="override"/>
+                            <includes>
+                                <include>**/CefScriptEngineMultiThreadedTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

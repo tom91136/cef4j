@@ -550,6 +550,33 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
   }
 
+  test("jniSig for DataStruct emits fully-qualified class descriptor, not Object") {
+    assertEquals(
+      Naming.jniSig(CType.DataStruct("cef_size_t")),
+      "Lnet/kurobako/cef4j/gen/CefSize;"
+    )
+  }
+
+  test("handler trampoline uses correct JNI descriptor for DataStruct return") {
+    val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
+      "cef_example_handler_t",
+      List(
+        FnPtr("get_size", CType.DataStruct("cef_size_t"), Nil)
+      )
+    )
+
+    val cpp = byValueCodegen.emitHandlerToString(decl)
+
+    assert(
+      cpp.contains("()Lnet/kurobako/cef4j/gen/CefSize;"),
+      s"Expected DataStruct return descriptor to use CefSize, not Object, in:\n$cpp"
+    )
+    assert(
+      !cpp.contains("Ljava/lang/Object;"),
+      s"DataStruct return descriptor must not fall back to Object in:\n$cpp"
+    )
+  }
+
   test("handler emits C-linkage factory function") {
     val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct("cef_client_t", Nil)
     val cpp                         = codegen.emitHandlerToString(decl)

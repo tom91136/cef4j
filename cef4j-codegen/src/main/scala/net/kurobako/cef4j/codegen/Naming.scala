@@ -351,7 +351,7 @@ object Naming {
     case CType.Buffer(_)                     => "Ljava/nio/ByteBuffer;"
     case CType.BufferSize(_)                 => "J" // hidden; not emitted in JNI sigs
     case CType.Enum(name)                    => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
-    case CType.DataStruct(_)                 => "Ljava/lang/Object;"
+    case CType.DataStruct(name)              => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
     case CType.StringList                    => "Ljava/util/List;"
     case CType.StringMap                     => "Ljava/util/Map;"
     case CType.StringMultimap                => "Ljava/util/Map;"

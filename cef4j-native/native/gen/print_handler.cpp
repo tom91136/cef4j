@@ -138,7 +138,7 @@ struct JniCefPrintHandler: public cef_print_handler_t {
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getPdfPaperSize", "(Lnet/kurobako/cef4j/gen/CefBrowser;I)Ljava/lang/Object;");
+        auto mid = env->GetMethodID(cls, "getPdfPaperSize", "(Lnet/kurobako/cef4j/gen/CefBrowser;I)Lnet/kurobako/cef4j/gen/CefSize;");
         if (!mid) {env->PopLocalFrame(nullptr); return cef_size_t {};}
         auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, static_cast<jint>(device_units_per_inch));
         if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return cef_size_t {};}

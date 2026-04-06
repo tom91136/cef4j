@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,42 +41,11 @@ import org.junit.jupiter.api.TestMethodOrder;
  * <p>If the native library is not available, all tests are skipped via assumption.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CefInteropTest {
+class CefInteropTest extends CefTestBase {
 
     @BeforeAll
     static void initCef() throws Exception {
-        SystemBootstrap.load();
-
-        Path cacheDir = Files.createTempDirectory("cef4j-test-cache-");
-        cacheDir.toFile().deleteOnExit();
-
-        if (Cef.INSTANCE.getState() == Cef.State.UNINITIALISED) {
-            CefSettings.Mutable settings = new CefSettings.Mutable();
-            settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.windowlessRenderingEnabled = 1;
-            settings.externalMessagePump = 1;
-            settings.multiThreadedMessageLoop = 0;
-
-            List<String> extraArgs = new ArrayList<>();
-            extraArgs.add("--disable-popup-blocking");
-            if (OS.isLinux()) {
-                extraArgs.add("--no-sandbox");
-                String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
-                if (ozonePlatform != null && !ozonePlatform.isBlank()) {
-                    extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
-                }
-            }
-            String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
-            if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
-                for (String arg : extraArgsProperty.split(",")) {
-                    String trimmed = arg.trim();
-                    if (!trimmed.isEmpty()) {
-                        extraArgs.add(trimmed);
-                    }
-                }
-            }
-            Cef.INSTANCE.initialise(settings, extraArgs);
-        }
+        initCef(List.of("--disable-popup-blocking"));
     }
 
     @AfterAll
@@ -1185,17 +1152,6 @@ class CefInteropTest {
         outer.close();
     }
 
-    // Pump CEF message loop until latch reaches zero or timeout.
-    // Must run on the same thread as cef_initialize.
-    private static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-            Cef.INSTANCE.doMessageLoopWork();
-            Thread.sleep(16); // ~60Hz
-        }
-        return latch.getCount() == 0;
-    }
-
     /**
      * Minimal render handler that provides a fixed viewport size. Required for all OSR browsers - CEF queries
      * getViewRect to know the render target size.
@@ -1215,21 +1171,6 @@ class CefInteropTest {
             rect.y = 0;
             rect.width = width;
             rect.height = height;
-        }
-    }
-
-    private static CefBrowser createWindowlessBrowser(CefClient client, String url) {
-        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
-        windowInfo.bounds = new CefRect(0, 0, 800, 600);
-        windowInfo.windowlessRenderingEnabled = 1;
-        CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
-        browserSettings.windowlessFrameRate = 60;
-        return Cef.INSTANCE.createBrowser(client, url, windowInfo.toImmutable(), browserSettings.toImmutable());
-    }
-
-    private static void closeBrowser(CefBrowser browser) {
-        if (browser != null) {
-            browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
     }
 }
