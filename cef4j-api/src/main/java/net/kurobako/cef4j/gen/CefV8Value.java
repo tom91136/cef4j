@@ -2,6 +2,7 @@
 // -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -788,8 +789,8 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:567</a>
      */
     static Optional<CefV8Value> createArrayBuffer(
-            @Nullable NativePointer buffer, long length, @Nullable CefV8ArrayBufferReleaseCallback releaseCallback) {
-        return Optional.ofNullable(NativePeer.createArrayBuffer0(buffer, length, releaseCallback));
+            @Nullable ByteBuffer buffer, @Nullable CefV8ArrayBufferReleaseCallback releaseCallback) {
+        return Optional.ofNullable(NativePeer.createArrayBuffer0(buffer, releaseCallback));
     }
 
     /**
@@ -804,8 +805,8 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:585</a>
      */
-    static Optional<CefV8Value> createArrayBufferWithCopy(@Nullable NativePointer buffer, long length) {
-        return Optional.ofNullable(NativePeer.createArrayBufferWithCopy0(buffer, length));
+    static Optional<CefV8Value> createArrayBufferWithCopy(@Nullable ByteBuffer buffer) {
+        return Optional.ofNullable(NativePeer.createArrayBufferWithCopy0(buffer));
     }
 
     /**
@@ -1339,10 +1340,9 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native CefV8Value createArray0(int length);
 
-        static native CefV8Value createArrayBuffer0(
-                NativePointer buffer, long length, CefV8ArrayBufferReleaseCallback releaseCallback);
+        static native CefV8Value createArrayBuffer0(ByteBuffer buffer, CefV8ArrayBufferReleaseCallback releaseCallback);
 
-        static native CefV8Value createArrayBufferWithCopy0(NativePointer buffer, long length);
+        static native CefV8Value createArrayBufferWithCopy0(ByteBuffer buffer);
 
         static native CefV8Value createArrayBufferFromBackingStore0(CefV8BackingStore backingStore);
 

@@ -2,6 +2,7 @@ package net.kurobako.cef4j.osr.jfx;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.ref.Cleaner;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
@@ -55,6 +56,7 @@ import net.kurobako.cef4j.gen.CefContextMenuParams;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDictionaryValue;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
+import net.kurobako.cef4j.gen.CefErrorCode;
 import net.kurobako.cef4j.gen.CefEventFlags;
 import net.kurobako.cef4j.gen.CefFocusHandler;
 import net.kurobako.cef4j.gen.CefFrame;
@@ -65,6 +67,7 @@ import net.kurobako.cef4j.gen.CefKeyEvent;
 import net.kurobako.cef4j.gen.CefKeyEventType;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
+import net.kurobako.cef4j.gen.CefLogSeverity;
 import net.kurobako.cef4j.gen.CefMenuItemType;
 import net.kurobako.cef4j.gen.CefMenuModel;
 import net.kurobako.cef4j.gen.CefMouseButtonType;
@@ -106,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class CefWebView extends Region {
     private static final Logger log = LoggerFactory.getLogger(CefWebView.class);
     private static final Object SETUP_LOCK = new Object();
+    private static final Cleaner CLEANER = Cleaner.create();
 
     private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
     private static final int EVENTFLAG_CONTROL_DOWN = 1 << 2;
@@ -150,6 +154,8 @@ public class CefWebView extends Region {
         }
     };
     private volatile BrowserHandle browser;
+    private final BrowserCloser browserCloser = new BrowserCloser();
+    private final Cleaner.Cleanable cleanable;
     private ContextMenu activeContextMenu;
     private IntBuffer pixelBuf;
     private PixelBuffer<IntBuffer> pixelBuffer;
@@ -223,6 +229,7 @@ public class CefWebView extends Region {
             }
             maybeCreateBrowser(false);
         });
+        cleanable = CLEANER.register(this, browserCloser);
     }
 
     public static void setup() {
@@ -275,6 +282,22 @@ public class CefWebView extends Region {
                     shutdownHookRegistered = true;
                 }
             }
+        }
+    }
+
+    /**
+     * Shuts down CEF and releases all native resources.
+     *
+     * <p>After this call, no {@code CefWebView} instances may be used and {@link #setup} cannot be called again in the
+     * same JVM (CEF does not support re-initialisation). If CEF has not been initialised, this method is a no-op.
+     *
+     * <p>This is equivalent to the work performed by the automatic shutdown hook registered during {@link #setup}, but
+     * allows callers to control the timing explicitly - for example, to shut down CEF before other shutdown hooks run.
+     */
+    public static void shutdown() {
+        synchronized (SETUP_LOCK) {
+            shutdownCef();
+            activeSetup = null;
         }
     }
 
@@ -375,8 +398,8 @@ public class CefWebView extends Region {
 
     public void dispose() {
         hideOsrPopup();
-        BrowserHandle current = browser;
         browser = null;
+        browserCloser.handle = null;
         browserCreated = false;
         browserCreationPosted = false;
         imageView.setImage(null);
@@ -390,9 +413,7 @@ public class CefWebView extends Region {
             if (window != null) detachWindowListeners(window);
         }
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
-        if (current != null) {
-            current.close(true);
-        }
+        cleanable.clean();
     }
 
     @Override
@@ -1168,14 +1189,14 @@ public class CefWebView extends Region {
                     BrowserHandle created = new BrowserHandle(b);
                     if (browser == null) {
                         browser = created;
+                        browserCloser.handle = created;
                     }
                     if (!pendingBrowserActions.isEmpty()) {
                         flushPendingBrowserActions(browser);
                     }
                     Platform.runLater(() -> {
                         requestFocus();
-                        CefBrowserHost h = b.getHost().orElse(null);
-                        if (h != null) h.setFocus(true);
+                        b.getHost().ifPresent(h -> h.setFocus(true));
                         browserCreated = true;
                         browserCreationPosted = false;
                         applyZoom(getZoom());
@@ -1192,12 +1213,12 @@ public class CefWebView extends Region {
                         int popupId,
                         String targetUrl,
                         String targetFrameName,
-                        CefWindowOpenDisposition targetDisposition,
+                        @Nonnull CefWindowOpenDisposition targetDisposition,
                         boolean userGesture,
                         NativePointer popupFeatures,
-                        CefWindowInfo.Mutable windowInfo,
+                        @Nonnull CefWindowInfo.Mutable windowInfo,
                         AtomicReference<CefClient> clientRef,
-                        CefBrowserSettings.Mutable settings,
+                        @Nonnull CefBrowserSettings.Mutable settings,
                         AtomicReference<CefDictionaryValue> extraInfo,
                         int[] noJavascriptAccess) {
                     javafx.util.Callback<CefPopupFeatures, CefWebEngine> handler = engine.getCreatePopupHandler();
@@ -1244,7 +1265,7 @@ public class CefWebView extends Region {
                 public void onLoadError(
                         CefBrowser browser,
                         CefFrame frame,
-                        net.kurobako.cef4j.gen.CefErrorCode errorCode,
+                        @Nonnull CefErrorCode errorCode,
                         String errorText,
                         String failedUrl) {
                     Platform.runLater(() -> engine.markLoadFailed(new RuntimeException(errorText)));
@@ -1272,11 +1293,7 @@ public class CefWebView extends Region {
 
                 @Override
                 public boolean onConsoleMessage(
-                        CefBrowser b,
-                        net.kurobako.cef4j.gen.CefLogSeverity level,
-                        String message,
-                        String source,
-                        int line) {
+                        CefBrowser b, @Nonnull CefLogSeverity level, String message, String source, int line) {
                     return false;
                 }
 
@@ -1286,7 +1303,7 @@ public class CefWebView extends Region {
                 }
 
                 @Override
-                public boolean onAutoResize(CefBrowser browser, CefSize newSize) {
+                public boolean onAutoResize(CefBrowser browser, @Nonnull CefSize newSize) {
                     Rectangle2D currentBounds = detachedBounds;
                     updateDetachedBounds(
                             new CefRect(
@@ -1300,7 +1317,7 @@ public class CefWebView extends Region {
                 }
 
                 @Override
-                public boolean onContentsBoundsChange(CefBrowser browser, CefRect newBounds) {
+                public boolean onContentsBoundsChange(CefBrowser browser, @Nonnull CefRect newBounds) {
                     updateDetachedBounds(newBounds, true);
                     requestViewRefresh(true);
                     return true;
@@ -1308,7 +1325,7 @@ public class CefWebView extends Region {
 
                 @Override
                 public boolean onCursorChange(
-                        CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
+                        CefBrowser b, long cursor, @Nonnull CefCursorType type, NativePointer customCursorInfo) {
                     Cursor jfxCursor = mapCursor(type);
                     Platform.runLater(() -> setCursor(jfxCursor));
                     return true;
@@ -1492,6 +1509,21 @@ public class CefWebView extends Region {
         void run(BrowserHandle browser);
     }
 
+    /**
+     * Holds the native browser handle for Cleaner-based auto-close. Must not reference the enclosing {@code CefWebView}
+     * instance - otherwise the phantom reference used by {@link Cleaner} would never enqueue.
+     */
+    private static final class BrowserCloser implements Runnable {
+        volatile BrowserHandle handle;
+
+        @Override
+        public void run() {
+            BrowserHandle h = handle;
+            handle = null;
+            if (h != null) h.close(true);
+        }
+    }
+
     private static final class BrowserHandle {
         private final CefBrowser browser;
 
@@ -1533,10 +1565,7 @@ public class CefWebView extends Region {
         }
 
         private static SetupState of(CefSettings.Mutable requestedSettings, String... requestedExtraArgs) {
-            CefSettings.Mutable settings = (requestedSettings != null ? requestedSettings : new CefSettings.Mutable())
-                    .toImmutable()
-                    .toMutable();
-            //            settings.noSandbox = 1;
+            CefSettings.Mutable settings = (requestedSettings != null ? requestedSettings : new CefSettings.Mutable());
             if (settings.cachePath == null) {
                 Path cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
                 try {
@@ -1552,8 +1581,8 @@ public class CefWebView extends Region {
             List<String> args = new ArrayList<>();
             args.add("--disable-popup-blocking");
             if (OS.isLinux()) {
+                // JFX is Xwayland/X11 only
                 args.add("--ozone-platform=x11");
-                //                args.add("--no-zygote");
             }
             if (requestedExtraArgs != null) {
                 for (String requestedExtraArg : requestedExtraArgs) {

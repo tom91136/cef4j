@@ -31,6 +31,7 @@
         <junit.jupiter.version>5.11.4</junit.jupiter.version>
         <assertj.version>3.27.3</assertj.version>
         <javafx.version>11.0.2</javafx.version>
+        <flatlaf.version>3.6</flatlaf.version>
         <palantir.java.format.version>2.72.0</palantir.java.format.version>
 
         <!-- exec-maven-plugin: skip by default, override in modules that need it.
@@ -111,6 +112,11 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
                 <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.formdev</groupId>
+                <artifactId>flatlaf</artifactId>
+                <version>${flatlaf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

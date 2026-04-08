@@ -681,7 +681,10 @@ object CHeaderParser {
                 p.name.toLowerCase == s"${lower}_size" ||
                 p.name.toLowerCase == s"${lower}length" ||
                 p.name.toLowerCase == s"${lower}_length" ||
-                (Set("bytes", "buffer", "data", "ptr").contains(lower) && p.name.toLowerCase == "size")
+                (Set("bytes", "buffer", "data", "ptr").contains(lower) && Set(
+                  "size",
+                  "length"
+                ).contains(p.name.toLowerCase))
             ) =>
           p.name
       }

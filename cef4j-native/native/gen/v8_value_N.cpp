@@ -510,17 +510,21 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArray0)(JNIEnv* env, jcl
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBuffer0)(JNIEnv* env, jclass clz, jobject buffer, jlong length, jobject release_callback) {
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBuffer0)(JNIEnv* env, jclass clz, jobject buffer, jobject release_callback) {
+    void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
+    if (buffer && !_buffer_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
     cef_v8_array_buffer_release_callback_t* _release_callback_ptr = release_callback ? Create_JniCefV8ArrayBufferReleaseCallback(env, release_callback) : nullptr;
-    auto _r = cef_v8_value_create_array_buffer(reinterpret_cast<void*>(buffer ? env->GetLongField(buffer, env->GetFieldID(env->GetObjectClass(buffer), "address", "J")) : 0), length, _release_callback_ptr);
+    auto _r = cef_v8_value_create_array_buffer(_buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)), _release_callback_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
-CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBufferWithCopy0)(JNIEnv* env, jclass clz, jobject buffer, jlong length) {
-    auto _r = cef_v8_value_create_array_buffer_with_copy(reinterpret_cast<void*>(buffer ? env->GetLongField(buffer, env->GetFieldID(env->GetObjectClass(buffer), "address", "J")) : 0), length);
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBufferWithCopy0)(JNIEnv* env, jclass clz, jobject buffer) {
+    void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
+    if (buffer && !_buffer_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    auto _r = cef_v8_value_create_array_buffer_with_copy(_buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
