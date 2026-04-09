@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Structure representing mouse event information.
- *
  * <p>Definition generated from internal/cef_types.h
- *
  * <pre>typedef struct _cef_mouse_event_t {
  *   int x;
  *   int y;
@@ -18,14 +15,18 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:2054</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMouseEvent {
 
-    /** X coordinate relative to the left side of the view. */
-    public final int x;
-    /** Y coordinate relative to the top side of the view. */
-    public final int y;
-    /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */
-    public final int modifiers;
+        /**
+         * X coordinate relative to the left side of the view. 
+         */    public final int x;
+        /**
+         * Y coordinate relative to the top side of the view. 
+         */    public final int y;
+        /**
+         * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
+         */    public final int modifiers;
 
     public CefMouseEvent(int x, int y, int modifiers) {
         this.x = x;
@@ -43,7 +44,9 @@ public final class CefMouseEvent {
         if (this == obj) return true;
         if (!(obj instanceof CefMouseEvent)) return false;
         CefMouseEvent other = (CefMouseEvent) obj;
-        return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
+        return this.x == other.x
+                    && this.y == other.y
+                    && this.modifiers == other.modifiers;
     }
 
     @Override
@@ -58,19 +61,21 @@ public final class CefMouseEvent {
 
     /**
      * Mutable variant of {@link CefMouseEvent}. Structure representing mouse event information.
-     *
      * <p>Definition generated from internal/cef_types.h
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:2054</a>
      */
     public static final class Mutable {
 
-        /** X coordinate relative to the left side of the view. */
-        public int x;
-        /** Y coordinate relative to the top side of the view. */
-        public int y;
-        /** Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. */
-        public int modifiers;
+            /**
+             * X coordinate relative to the left side of the view. 
+             */        public int x;
+            /**
+             * Y coordinate relative to the top side of the view. 
+             */        public int y;
+            /**
+             * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
+             */        public int modifiers;
 
         public Mutable() {}
 
@@ -90,7 +95,9 @@ public final class CefMouseEvent {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
-            return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
+            return this.x == other.x
+                        && this.y == other.y
+                        && this.modifiers == other.modifiers;
         }
 
         @Override

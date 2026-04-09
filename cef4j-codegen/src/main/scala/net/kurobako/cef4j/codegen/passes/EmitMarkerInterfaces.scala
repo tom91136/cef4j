@@ -6,7 +6,7 @@ import java.nio.file.Path
 import net.kurobako.cef4j.codegen.Banners
 
 object EmitMarkerInterfaces {
-  def apply(outJava: Path, javaPackage: String): Unit = {
+  def apply(outJava: Path, javaPackage: String)(using Banners): Unit = {
     val banner     = Banners.java
     val importLine = s"import ${Banners.javaAnnotationClass};"
     val annotation = Banners.javaAnnotation

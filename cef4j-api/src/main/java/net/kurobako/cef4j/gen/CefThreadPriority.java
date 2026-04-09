@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Thread priority values listed in increasing order of importance.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   TP_BACKGROUND = 0,
  *   TP_NORMAL = 1,
@@ -16,24 +13,23 @@ import javax.annotation.processing.Generated;
  *   TP_REALTIME_AUDIO = 3,
  *   TP_NUM_VALUES = 4
  * } cef_thread_priority_t;</pre>
- *
- * <p>Possible values: {@link Kind#BACKGROUND}, {@link Kind#NORMAL}, {@link Kind#DISPLAY}, {@link Kind#REALTIME_AUDIO},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#BACKGROUND}, {@link Kind#NORMAL}, {@link Kind#DISPLAY}, {@link Kind#REALTIME_AUDIO}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefThreadPriority implements CefEnum<CefThreadPriority> {
 
     /** Known constants for {@link CefThreadPriority}. */
     public enum Kind {
-        /** Suitable for threads that shouldn't disrupt high priority work. */
+        /** Suitable for threads that shouldn't disrupt high priority work.  */
         BACKGROUND(0, "0", "TP_BACKGROUND"),
-        /** Default priority level. */
+        /** Default priority level.  */
         NORMAL(1, "1", "TP_NORMAL"),
-        /** Suitable for threads which generate data for the display (at ~60Hz). */
+        /** Suitable for threads which generate data for the display (at ~60Hz).  */
         DISPLAY(2, "2", "TP_DISPLAY"),
-        /** Suitable for low-latency, glitch-resistant audio. */
+        /** Suitable for low-latency, glitch-resistant audio.  */
         REALTIME_AUDIO(3, "3", "TP_REALTIME_AUDIO"),
         NUM_VALUES(4, "4", "TP_NUM_VALUES");
 
@@ -86,8 +82,8 @@ public final class CefThreadPriority implements CefEnum<CefThreadPriority> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

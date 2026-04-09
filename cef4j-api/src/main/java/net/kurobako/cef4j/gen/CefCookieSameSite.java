@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Cookie same site values.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_COOKIE_SAME_SITE_UNSPECIFIED = 0,
  *   CEF_COOKIE_SAME_SITE_NO_RESTRICTION = 1,
@@ -16,13 +13,12 @@ import javax.annotation.processing.Generated;
  *   CEF_COOKIE_SAME_SITE_STRICT_MODE = 3,
  *   CEF_COOKIE_SAME_SITE_NUM_VALUES = 4
  * } cef_cookie_same_site_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNSPECIFIED}, {@link Kind#NO_RESTRICTION}, {@link Kind#LAX_MODE},
- * {@link Kind#STRICT_MODE}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNSPECIFIED}, {@link Kind#NO_RESTRICTION}, {@link Kind#LAX_MODE}, {@link Kind#STRICT_MODE}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefCookieSameSite implements CefEnum<CefCookieSameSite> {
 
     /** Known constants for {@link CefCookieSameSite}. */
@@ -82,8 +78,8 @@ public final class CefCookieSameSite implements CefEnum<CefCookieSameSite> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

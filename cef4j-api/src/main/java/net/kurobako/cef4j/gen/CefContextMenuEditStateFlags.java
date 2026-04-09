@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Supported context menu edit state bit flags. These constants match their equivalents in Chromium's
- * ContextMenuDataEditFlags and should not be renumbered.
- *
+ * Supported context menu edit state bit flags. These constants match their equivalents in Chromium's ContextMenuDataEditFlags and should not be renumbered.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CM_EDITFLAG_NONE = 0,
  *   CM_EDITFLAG_CAN_UNDO = 1 &lt;&lt; 0,
@@ -18,14 +14,12 @@ import javax.annotation.processing.Generated;
  *   CM_EDITFLAG_CAN_COPY = 1 &lt;&lt; 3,
  *   ...
  * } cef_context_menu_edit_state_flags_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAN_UNDO}, {@link Kind#CAN_REDO}, {@link Kind#CAN_CUT},
- * {@link Kind#CAN_COPY}, {@link Kind#CAN_PASTE}, {@link Kind#CAN_DELETE}, {@link Kind#CAN_SELECT_ALL},
- * {@link Kind#CAN_TRANSLATE}, {@link Kind#CAN_EDIT_RICHLY}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAN_UNDO}, {@link Kind#CAN_REDO}, {@link Kind#CAN_CUT}, {@link Kind#CAN_COPY}, {@link Kind#CAN_PASTE}, {@link Kind#CAN_DELETE}, {@link Kind#CAN_SELECT_ALL}, {@link Kind#CAN_TRANSLATE}, {@link Kind#CAN_EDIT_RICHLY}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefContextMenuEditStateFlags implements CefEnum<CefContextMenuEditStateFlags> {
 
     /** Known constants for {@link CefContextMenuEditStateFlags}. */
@@ -90,8 +84,8 @@ public final class CefContextMenuEditStateFlags implements CefEnum<CefContextMen
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,37 +1,34 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * V8 property attribute values.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   V8_PROPERTY_ATTRIBUTE_NONE = 0,
  *   V8_PROPERTY_ATTRIBUTE_READONLY = 1 &lt;&lt; 0,
  *   V8_PROPERTY_ATTRIBUTE_DONTENUM = 1 &lt;&lt; 1,
  *   V8_PROPERTY_ATTRIBUTE_DONTDELETE = 1 &lt;&lt; 2
  * } cef_v8_propertyattribute_t;</pre>
- *
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#READONLY}, {@link Kind#DONTENUM}, {@link Kind#DONTDELETE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefV8PropertyAttribute implements CefEnum<CefV8PropertyAttribute> {
 
     /** Known constants for {@link CefV8PropertyAttribute}. */
     public enum Kind {
-        /** Writeable, Enumerable, Configurable */
+        /** Writeable, Enumerable, Configurable  */
         NONE(0, "0", "V8_PROPERTY_ATTRIBUTE_NONE"),
-        /** Not writeable */
+        /** Not writeable  */
         READONLY(1 << 0, "1 << 0", "V8_PROPERTY_ATTRIBUTE_READONLY"),
-        /** Not enumerable */
+        /** Not enumerable  */
         DONTENUM(1 << 1, "1 << 1", "V8_PROPERTY_ATTRIBUTE_DONTENUM"),
-        /** Not configurable */
+        /** Not configurable  */
         DONTDELETE(1 << 2, "1 << 2", "V8_PROPERTY_ATTRIBUTE_DONTDELETE");
 
         private static final Kind[] VALUES = Kind.values();
@@ -83,8 +80,8 @@ public final class CefV8PropertyAttribute implements CefEnum<CefV8PropertyAttrib
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

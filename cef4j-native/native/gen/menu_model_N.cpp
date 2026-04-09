@@ -4,7 +4,7 @@
 #include "include/capi/cef_menu_model_delegate_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_menu_model_delegate_t* Create_JniCefMenuModelDelegate(JNIEnv *env, jobject handler);
+extern "C" cef_menu_model_delegate_t* Create_JniCefMenuModelDelegate(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMenuModel), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -368,18 +368,18 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getAccelerator0)(JNIEnv* en
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     int _key_code_val = 0;
-    if (key_code) {jint _jv; env->GetIntArrayRegion(key_code, 0, 1, &_jv); _key_code_val = _jv;}
+    if (key_code) { jint _jv; env->GetIntArrayRegion(key_code, 0, 1, &_jv); _key_code_val = _jv; }
     int _shift_pressed_val = 0;
-    if (shift_pressed) {jint _jv; env->GetIntArrayRegion(shift_pressed, 0, 1, &_jv); _shift_pressed_val = _jv;}
+    if (shift_pressed) { jint _jv; env->GetIntArrayRegion(shift_pressed, 0, 1, &_jv); _shift_pressed_val = _jv; }
     int _ctrl_pressed_val = 0;
-    if (ctrl_pressed) {jint _jv; env->GetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); _ctrl_pressed_val = _jv;}
+    if (ctrl_pressed) { jint _jv; env->GetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); _ctrl_pressed_val = _jv; }
     int _alt_pressed_val = 0;
-    if (alt_pressed) {jint _jv; env->GetIntArrayRegion(alt_pressed, 0, 1, &_jv); _alt_pressed_val = _jv;}
+    if (alt_pressed) { jint _jv; env->GetIntArrayRegion(alt_pressed, 0, 1, &_jv); _alt_pressed_val = _jv; }
     auto _r = s->get_accelerator(s, command_id, &_key_code_val, &_shift_pressed_val, &_ctrl_pressed_val, &_alt_pressed_val);
-    if (key_code) {jint _jv = _key_code_val; env->SetIntArrayRegion(key_code, 0, 1, &_jv);}
-    if (shift_pressed) {jint _jv = _shift_pressed_val; env->SetIntArrayRegion(shift_pressed, 0, 1, &_jv);}
-    if (ctrl_pressed) {jint _jv = _ctrl_pressed_val; env->SetIntArrayRegion(ctrl_pressed, 0, 1, &_jv);}
-    if (alt_pressed) {jint _jv = _alt_pressed_val; env->SetIntArrayRegion(alt_pressed, 0, 1, &_jv);}
+    if (key_code) { jint _jv = _key_code_val; env->SetIntArrayRegion(key_code, 0, 1, &_jv); }
+    if (shift_pressed) { jint _jv = _shift_pressed_val; env->SetIntArrayRegion(shift_pressed, 0, 1, &_jv); }
+    if (ctrl_pressed) { jint _jv = _ctrl_pressed_val; env->SetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); }
+    if (alt_pressed) { jint _jv = _alt_pressed_val; env->SetIntArrayRegion(alt_pressed, 0, 1, &_jv); }
     return static_cast<jboolean>(_r);
 }
 
@@ -387,25 +387,25 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getAcceleratorAt0)(JNIEnv* 
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
     int _key_code_val = 0;
-    if (key_code) {jint _jv; env->GetIntArrayRegion(key_code, 0, 1, &_jv); _key_code_val = _jv;}
+    if (key_code) { jint _jv; env->GetIntArrayRegion(key_code, 0, 1, &_jv); _key_code_val = _jv; }
     int _shift_pressed_val = 0;
-    if (shift_pressed) {jint _jv; env->GetIntArrayRegion(shift_pressed, 0, 1, &_jv); _shift_pressed_val = _jv;}
+    if (shift_pressed) { jint _jv; env->GetIntArrayRegion(shift_pressed, 0, 1, &_jv); _shift_pressed_val = _jv; }
     int _ctrl_pressed_val = 0;
-    if (ctrl_pressed) {jint _jv; env->GetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); _ctrl_pressed_val = _jv;}
+    if (ctrl_pressed) { jint _jv; env->GetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); _ctrl_pressed_val = _jv; }
     int _alt_pressed_val = 0;
-    if (alt_pressed) {jint _jv; env->GetIntArrayRegion(alt_pressed, 0, 1, &_jv); _alt_pressed_val = _jv;}
+    if (alt_pressed) { jint _jv; env->GetIntArrayRegion(alt_pressed, 0, 1, &_jv); _alt_pressed_val = _jv; }
     auto _r = s->get_accelerator_at(s, index, &_key_code_val, &_shift_pressed_val, &_ctrl_pressed_val, &_alt_pressed_val);
-    if (key_code) {jint _jv = _key_code_val; env->SetIntArrayRegion(key_code, 0, 1, &_jv);}
-    if (shift_pressed) {jint _jv = _shift_pressed_val; env->SetIntArrayRegion(shift_pressed, 0, 1, &_jv);}
-    if (ctrl_pressed) {jint _jv = _ctrl_pressed_val; env->SetIntArrayRegion(ctrl_pressed, 0, 1, &_jv);}
-    if (alt_pressed) {jint _jv = _alt_pressed_val; env->SetIntArrayRegion(alt_pressed, 0, 1, &_jv);}
+    if (key_code) { jint _jv = _key_code_val; env->SetIntArrayRegion(key_code, 0, 1, &_jv); }
+    if (shift_pressed) { jint _jv = _shift_pressed_val; env->SetIntArrayRegion(shift_pressed, 0, 1, &_jv); }
+    if (ctrl_pressed) { jint _jv = _ctrl_pressed_val; env->SetIntArrayRegion(ctrl_pressed, 0, 1, &_jv); }
+    if (alt_pressed) { jint _jv = _alt_pressed_val; env->SetIntArrayRegion(alt_pressed, 0, 1, &_jv); }
     return static_cast<jboolean>(_r);
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
+    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     auto _r = s->set_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
     return static_cast<jboolean>(_r);
 }
@@ -413,7 +413,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, job
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
+    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     auto _r = s->set_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
     return static_cast<jboolean>(_r);
 }
@@ -421,22 +421,22 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
+    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     unsigned int _color_val = 0;
-    if (color) {jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv);}
+    if (color) { jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv); }
     auto _r = s->get_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), &_color_val);
-    if (color) {jint _jv = static_cast<jint>(_color_val); env->SetIntArrayRegion(color, 0, 1, &_jv);}
+    if (color) { jint _jv = static_cast<jint>(_color_val); env->SetIntArrayRegion(color, 0, 1, &_jv); }
     return static_cast<jboolean>(_r);
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE;}
+    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     unsigned int _color_val = 0;
-    if (color) {jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv);}
+    if (color) { jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv); }
     auto _r = s->get_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), &_color_val);
-    if (color) {jint _jv = static_cast<jint>(_color_val); env->SetIntArrayRegion(color, 0, 1, &_jv);}
+    if (color) { jint _jv = static_cast<jint>(_color_val); env->SetIntArrayRegion(color, 0, 1, &_jv); }
     return static_cast<jboolean>(_r);
 }
 

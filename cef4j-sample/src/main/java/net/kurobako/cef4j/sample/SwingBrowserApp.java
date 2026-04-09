@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.*;
-import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
-import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -62,32 +60,25 @@ public final class SwingBrowserApp {
                         .getDefaultConfiguration());
         log.info("Display scaling - system: {}, user: {}", systemScale, userScale);
 
-        SystemBootstrap.load();
-
         Path cacheDir = Files.createTempDirectory("cef4j-swing-");
         cacheDir.toFile().deleteOnExit();
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.noSandbox = 1;
-        settings.windowlessRenderingEnabled = 1;
-        settings.externalMessagePump = 0;
-        settings.multiThreadedMessageLoop = 1;
         List<String> extraArgs = new ArrayList<>();
         if (OS.isLinux()) {
             extraArgs.add("--ozone-platform=x11");
             extraArgs.add("--no-zygote");
         }
-        Cef.INSTANCE.initialise(settings, extraArgs);
+        CefBrowserPanel.initialise(settings, null, extraArgs.toArray(String[]::new));
 
         SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
         SigintHelper.install(SwingBrowserApp::requestShutdown);
 
-        // Block the main thread until shutdown is requested - Cef.dispose() must run here
+        // Block the main thread until shutdown is requested - CefBrowserPanel.terminate() must run here
         shutdownLatch.await();
-        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-            Cef.INSTANCE.dispose();
-        }
+        CefBrowserPanel.terminate();
         log.info("Exiting");
         System.exit(0);
     }
@@ -200,7 +191,7 @@ public final class SwingBrowserApp {
         int index = tabbedPane.indexOfComponent(tab);
         if (index >= 0) {
             tabbedPane.removeTabAt(index);
-            tab.dispose();
+            tab.release();
         }
         // Only the "+" placeholder tab remains - no real tabs left
         boolean noRealTabs = true;
@@ -223,11 +214,11 @@ public final class SwingBrowserApp {
             for (int i = tabbedPane.getTabCount() - 1; i >= 0; i--) {
                 Component c = tabbedPane.getComponentAt(i);
                 if (c instanceof BrowserTab) {
-                    ((BrowserTab) c).dispose();
+                    ((BrowserTab) c).release();
                 }
             }
             window.dispose();
-            // Signal the main thread to proceed with Cef.dispose()
+            // Signal the main thread to proceed with CefBrowserPanel.terminate()
             shutdownLatch.countDown();
         };
         if (SwingUtilities.isEventDispatchThread()) {
@@ -239,7 +230,9 @@ public final class SwingBrowserApp {
 
     @SuppressWarnings("this-escape")
     private static final class BrowserTab extends JPanel {
-        private final CefBrowserPanel surface;
+        private static final long serialVersionUID = 1L;
+
+        private final transient CefBrowserPanel surface;
         private final JTextField urlBar;
         private final JButton backBtn;
         private final JButton fwdBtn;
@@ -248,7 +241,7 @@ public final class SwingBrowserApp {
         private final JButton zoomResetBtn;
         private final JButton zoomInBtn;
         private final JButton devToolsBtn;
-        private volatile CefBrowser browser;
+        private transient volatile CefBrowser browser;
         private double zoomLevel = 1.0;
         private boolean disposed;
 
@@ -658,10 +651,10 @@ public final class SwingBrowserApp {
             });
         }
 
-        void dispose() {
+        void release() {
             if (disposed) return;
             disposed = true;
-            surface.dispose();
+            surface.release();
         }
 
         // Plain data extracted from CefMenuModel on CEF thread (no Swing dependency)

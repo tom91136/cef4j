@@ -1,7 +1,13 @@
 package net.kurobako.cef4j.codegen
 
 enum CefDecl {
-  case ObjectStruct(name: String, fns: List[FnPtr], sourceHeader: String = "", scoped: Boolean = false)
+  case ObjectStruct(
+      name: String,
+      fns: List[FnPtr],
+      sourceHeader: String = "",
+      scoped: Boolean = false,
+      parentStruct: Option[String] = None
+  )
   case HandlerStruct(name: String, fns: List[FnPtr], sourceHeader: String = "")
   case DataStruct(name: String, fields: List[Field], sourceHeader: String = "", needsMutable: Boolean = false)
   case Enum(
@@ -24,7 +30,7 @@ enum CefDecl {
 extension (decl: CefDecl) {
   def namedStruct: Option[String] =
     decl match {
-      case CefDecl.ObjectStruct(name, _, _, _)       => Some(name)
+      case CefDecl.ObjectStruct(name, _, _, _, _)    => Some(name)
       case CefDecl.HandlerStruct(name, _, _)         => Some(name)
       case CefDecl.DataStruct(name, _, _, _)         => Some(name)
       case CefDecl.Enum(_, _, _, _)                  => None

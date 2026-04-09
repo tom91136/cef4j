@@ -4,10 +4,10 @@
 #include "include/capi/cef_callback_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_cookie_visitor_t* Create_JniCefCookieVisitor(JNIEnv *env, jobject handler);
-extern "C" cef_set_cookie_callback_t* Create_JniCefSetCookieCallback(JNIEnv *env, jobject handler);
-extern "C" cef_delete_cookies_callback_t* Create_JniCefDeleteCookiesCallback(JNIEnv *env, jobject handler);
-extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv *env, jobject handler);
+extern "C" cef_cookie_visitor_t* Create_JniCefCookieVisitor(JNIEnv* env, jobject handler);
+extern "C" cef_set_cookie_callback_t* Create_JniCefSetCookieCallback(JNIEnv* env, jobject handler);
+extern "C" cef_delete_cookies_callback_t* Create_JniCefDeleteCookiesCallback(JNIEnv* env, jobject handler);
+extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCookieManager), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -34,7 +34,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCookieManager), visitUrlCookies0)(JNIEn
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCookieManager), setCookie0)(JNIEnv* env, jobject obj, jlong self, jstring url, jobject cookie, jobject callback) {
     auto* s = reinterpret_cast<cef_cookie_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!cookie) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "cookie must not be null"); return JNI_FALSE;}
+    if (!cookie) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "cookie must not be null"); return JNI_FALSE; }
     auto _url_str = JStringToCefString(env, url);
     cef_cookie_t _cookie_val = {};
     if (cookie) {

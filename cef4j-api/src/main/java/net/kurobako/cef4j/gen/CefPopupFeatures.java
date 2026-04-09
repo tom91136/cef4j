@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Popup window features.
- *
  * <p>Definition generated from internal/cef_types.h
- *
  * <pre>typedef struct _cef_popup_features_t {
  *   size_t size;
  *   int x;
@@ -25,10 +22,11 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:2474</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPopupFeatures {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
     public final int x;
@@ -39,11 +37,11 @@ public final class CefPopupFeatures {
     public final int widthSet;
     public final int height;
     public final int heightSet;
-    /** True (1) if browser interface elements should be hidden. */
-    public final int isPopup;
+        /**
+         * True (1) if browser interface elements should be hidden. 
+         */    public final int isPopup;
 
-    public CefPopupFeatures(
-            int x, int xSet, int y, int ySet, int width, int widthSet, int height, int heightSet, int isPopup) {
+    public CefPopupFeatures(int x, int xSet, int y, int ySet, int width, int widthSet, int height, int heightSet, int isPopup) {
         this.x = x;
         this.xSet = xSet;
         this.y = y;
@@ -61,14 +59,14 @@ public final class CefPopupFeatures {
         if (!(obj instanceof CefPopupFeatures)) return false;
         CefPopupFeatures other = (CefPopupFeatures) obj;
         return this.x == other.x
-                && this.xSet == other.xSet
-                && this.y == other.y
-                && this.ySet == other.ySet
-                && this.width == other.width
-                && this.widthSet == other.widthSet
-                && this.height == other.height
-                && this.heightSet == other.heightSet
-                && this.isPopup == other.isPopup;
+                    && this.xSet == other.xSet
+                    && this.y == other.y
+                    && this.ySet == other.ySet
+                    && this.width == other.width
+                    && this.widthSet == other.widthSet
+                    && this.height == other.height
+                    && this.heightSet == other.heightSet
+                    && this.isPopup == other.isPopup;
     }
 
     @Override
@@ -78,9 +76,6 @@ public final class CefPopupFeatures {
 
     @Override
     public String toString() {
-        return "CefPopupFeatures{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "x=" + x + ", "
-                + "xSet=" + xSet + ", " + "y=" + y + ", " + "ySet=" + ySet + ", " + "width=" + width + ", "
-                + "widthSet=" + widthSet + ", " + "height=" + height + ", " + "heightSet=" + heightSet + ", "
-                + "isPopup=" + isPopup + "}";
+        return "CefPopupFeatures{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "x=" + x + ", " + "xSet=" + xSet + ", " + "y=" + y + ", " + "ySet=" + ySet + ", " + "width=" + width + ", " + "widthSet=" + widthSet + ", " + "height=" + height + ", " + "heightSet=" + heightSet + ", " + "isPopup=" + isPopup + "}";
     }
 }

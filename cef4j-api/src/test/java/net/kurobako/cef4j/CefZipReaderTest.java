@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,30 +24,24 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class CefZipReaderTest extends CefTestBase {
 
-    @FunctionalInterface
-    interface StreamFactory {
-        CefStreamReader create(byte[] data, Path tmpDir) throws Exception;
+    static Stream<Named<BiFunction<byte[], Path, CefStreamReader>>> streamFactories() {
+        return Stream.of(Named.of("file", CefZipReaderTest::createFileFactory), Named.of("data", (data, tmpDir) -> {
+            ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
+            buf.put(data);
+            return CefStreamReader.createForData(buf)
+                    .orElseThrow(() -> new AssertionError("createForData returned empty"));
+        }));
     }
 
-    private static final StreamFactory FILE_FACTORY = (data, tmpDir) -> {
-        Path file = tmpDir.resolve("test-data.zip");
-        Files.write(file, data);
-        return CefStreamReader.createForFile(file.toAbsolutePath().toString())
-                .orElseThrow(() -> new AssertionError("createForFile returned empty"));
-    };
-
-    // createForHandler returns 1 element per read call; minizip doesn't loop on partial reads
-    // when parsing the central directory, so handler-backed zip creation fails. Use createForData
-    // (pure native copy, no JNI callbacks) as the second factory for zip tests.
-    // Note: createForData requires a direct ByteBuffer (GetDirectBufferAddress returns null for heap buffers).
-    private static final StreamFactory DATA_FACTORY = (data, tmpDir) -> {
-        ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
-        buf.put(data);
-        return CefStreamReader.createForData(buf).orElseThrow(() -> new AssertionError("createForData returned empty"));
-    };
-
-    static Stream<Named<StreamFactory>> streamFactories() {
-        return Stream.of(Named.of("file", FILE_FACTORY), Named.of("data", DATA_FACTORY));
+    private static CefStreamReader createFileFactory(byte[] data, Path tmpDir) {
+        try {
+            Path file = tmpDir.resolve("test-data.zip");
+            Files.write(file, data);
+            return CefStreamReader.createForFile(file.toAbsolutePath().toString())
+                    .orElseThrow(() -> new AssertionError("createForFile returned empty"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static byte[] makeZip(String... nameContentPairs) throws Exception {
@@ -85,9 +80,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void readSingleEntry(StreamFactory factory) throws Exception {
+    void readSingleEntry(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         byte[] zipBytes = makeZip("hello.txt", "Hello, CEF!");
-        try (CefStreamReader reader = factory.create(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFirstFile()).isTrue();
             assertThat(zr.getFileName()).hasValue("hello.txt");
@@ -104,9 +99,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void readMultipleEntries(StreamFactory factory) throws Exception {
+    void readMultipleEntries(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         byte[] zipBytes = makeZip("a.txt", "alpha", "b.txt", "bravo", "c.txt", "charlie");
-        try (CefStreamReader reader = factory.create(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             List<String> names = new ArrayList<>();
             List<String> contents = new ArrayList<>();
@@ -127,9 +122,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void moveToFileByName(StreamFactory factory) throws Exception {
+    void moveToFileByName(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         byte[] zipBytes = makeZip("first.txt", "one", "second.txt", "two", "third.txt", "three");
-        try (CefStreamReader reader = factory.create(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFile("second.txt", true)).isTrue();
             assertThat(zr.getFileName()).hasValue("second.txt");
@@ -144,9 +139,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void eofAndTell(StreamFactory factory) throws Exception {
+    void eofAndTell(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         byte[] zipBytes = makeZip("data.bin", "0123456789");
-        try (CefStreamReader reader = factory.create(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFirstFile()).isTrue();
             assertThat(zr.openFile(null)).isTrue();

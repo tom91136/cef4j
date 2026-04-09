@@ -6,7 +6,7 @@
 #include "include/capi/cef_response_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_urlrequest_client_t* Create_JniCefUrlRequestClient(JNIEnv *env, jobject handler);
+extern "C" cef_urlrequest_client_t* Create_JniCefUrlRequestClient(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefUrlRequest), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -75,10 +75,10 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefUrlRequest), cancel0)(JNIEnv* env, jobject 
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), create0)(JNIEnv* env, jclass clz, jobject request, jobject client, jobject request_context) {
     cef_request_t* _request_ptr = request ? reinterpret_cast<cef_request_t*>(env->GetLongField(request, env->GetFieldID(env->GetObjectClass(request), "nativePtr", "J"))) : nullptr;
-    if (_request_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b);}
+    if (_request_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b); }
     cef_urlrequest_client_t* _client_ptr = client ? Create_JniCefUrlRequestClient(env, client) : nullptr;
     cef_request_context_t* _request_context_ptr = request_context ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(request_context, env->GetFieldID(env->GetObjectClass(request_context), "nativePtr", "J"))) : nullptr;
-    if (_request_context_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b);}
+    if (_request_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b); }
     auto _r = cef_urlrequest_create(_request_ptr, _client_ptr, _request_context_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");

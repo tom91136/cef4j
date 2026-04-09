@@ -1,17 +1,12 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
-import java.util.Optional;
 import javax.annotation.processing.Generated;
+import java.util.Optional;
 
 /**
- * Represents a source from which media can be routed. Instances of this object are retrieved via
- * {@link net.kurobako.cef4j.gen.CefMediaRouter#getSource(String)}. The methods of this class may be called on any
- * browser process thread unless otherwise indicated.
- *
+ * Represents a source from which media can be routed. Instances of this object are retrieved via {@link net.kurobako.cef4j.gen.CefMediaRouter#getSource(String)}. The methods of this class may be called on any browser process thread unless otherwise indicated.
  * <p>Definition generated from cef_media_router_capi.h
- *
  * <pre>typedef struct _cef_media_source_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -20,13 +15,12 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:291</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMediaSource extends CefLibraryObject {
 
     /**
      * Returns the ID (media source URN or URL) for this source.
-     *
      * <p>Definition generated from cef_media_router_capi.h
-     *
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_media_source_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
@@ -35,9 +29,7 @@ public interface CefMediaSource extends CefLibraryObject {
 
     /**
      * Returns {@code true} if this source outputs its content via Cast.
-     *
      * <p>Definition generated from cef_media_router_capi.h
-     *
      * <pre>int (CEF_CALLBACK* is_cast_source)(struct _cef_media_source_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:305</a>
@@ -46,15 +38,12 @@ public interface CefMediaSource extends CefLibraryObject {
 
     /**
      * Returns {@code true} if this source outputs its content via DIAL.
-     *
      * <p>Definition generated from cef_media_router_capi.h
-     *
      * <pre>int (CEF_CALLBACK* is_dial_source)(struct _cef_media_source_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:311</a>
      */
     boolean isDialSource();
-
     final class NativePeer implements CefMediaSource, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -99,28 +88,30 @@ public interface CefMediaSource extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public Optional<String> getId() {
-            checkNotClosed();
-            return Optional.ofNullable(getId0(nativePtr));
-        }
+      public Optional<String> getId() {
+          checkNotClosed();
+          return Optional.ofNullable(getId0(nativePtr));
+      }
 
         @Override
-        public boolean isCastSource() {
-            checkNotClosed();
-            return isCastSource0(nativePtr);
-        }
+      public boolean isCastSource() {
+          checkNotClosed();
+          return isCastSource0(nativePtr);
+      }
 
         @Override
-        public boolean isDialSource() {
-            checkNotClosed();
-            return isDialSource0(nativePtr);
-        }
+      public boolean isDialSource() {
+          checkNotClosed();
+          return isDialSource0(nativePtr);
+      }
 
-        private static native String getId0(long self);
 
-        private static native boolean isCastSource0(long self);
+        static native String getId0(long self);
 
-        private static native boolean isDialSource0(long self);
+        static native boolean isCastSource0(long self);
+
+        static native boolean isDialSource0(long self);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -139,4 +130,5 @@ public interface CefMediaSource extends CefLibraryObject {
             return "CefMediaSource{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

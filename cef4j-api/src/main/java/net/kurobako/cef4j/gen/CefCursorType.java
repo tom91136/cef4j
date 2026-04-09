@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Cursor type values.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CT_POINTER = 0,
  *   CT_CROSS = 1,
@@ -17,24 +14,12 @@ import javax.annotation.processing.Generated;
  *   CT_WAIT = 4,
  *   ...
  * } cef_cursor_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#POINTER}, {@link Kind#CROSS}, {@link Kind#HAND}, {@link Kind#IBEAM},
- * {@link Kind#WAIT}, {@link Kind#HELP}, {@link Kind#EASTRESIZE}, {@link Kind#NORTHRESIZE},
- * {@link Kind#NORTHEASTRESIZE}, {@link Kind#NORTHWESTRESIZE}, {@link Kind#SOUTHRESIZE}, {@link Kind#SOUTHEASTRESIZE},
- * {@link Kind#SOUTHWESTRESIZE}, {@link Kind#WESTRESIZE}, {@link Kind#NORTHSOUTHRESIZE}, {@link Kind#EASTWESTRESIZE},
- * {@link Kind#NORTHEASTSOUTHWESTRESIZE}, {@link Kind#NORTHWESTSOUTHEASTRESIZE}, {@link Kind#COLUMNRESIZE},
- * {@link Kind#ROWRESIZE}, {@link Kind#MIDDLEPANNING}, {@link Kind#EASTPANNING}, {@link Kind#NORTHPANNING},
- * {@link Kind#NORTHEASTPANNING}, {@link Kind#NORTHWESTPANNING}, {@link Kind#SOUTHPANNING},
- * {@link Kind#SOUTHEASTPANNING}, {@link Kind#SOUTHWESTPANNING}, {@link Kind#WESTPANNING}, {@link Kind#MOVE},
- * {@link Kind#VERTICALTEXT}, {@link Kind#CELL}, {@link Kind#CONTEXTMENU}, {@link Kind#ALIAS}, {@link Kind#PROGRESS},
- * {@link Kind#NODROP}, {@link Kind#COPY}, {@link Kind#NONE}, {@link Kind#NOTALLOWED}, {@link Kind#ZOOMIN},
- * {@link Kind#ZOOMOUT}, {@link Kind#GRAB}, {@link Kind#GRABBING}, {@link Kind#MIDDLE_PANNING_VERTICAL},
- * {@link Kind#MIDDLE_PANNING_HORIZONTAL}, {@link Kind#CUSTOM}, {@link Kind#DND_NONE}, {@link Kind#DND_MOVE},
- * {@link Kind#DND_COPY}, {@link Kind#DND_LINK}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#POINTER}, {@link Kind#CROSS}, {@link Kind#HAND}, {@link Kind#IBEAM}, {@link Kind#WAIT}, {@link Kind#HELP}, {@link Kind#EASTRESIZE}, {@link Kind#NORTHRESIZE}, {@link Kind#NORTHEASTRESIZE}, {@link Kind#NORTHWESTRESIZE}, {@link Kind#SOUTHRESIZE}, {@link Kind#SOUTHEASTRESIZE}, {@link Kind#SOUTHWESTRESIZE}, {@link Kind#WESTRESIZE}, {@link Kind#NORTHSOUTHRESIZE}, {@link Kind#EASTWESTRESIZE}, {@link Kind#NORTHEASTSOUTHWESTRESIZE}, {@link Kind#NORTHWESTSOUTHEASTRESIZE}, {@link Kind#COLUMNRESIZE}, {@link Kind#ROWRESIZE}, {@link Kind#MIDDLEPANNING}, {@link Kind#EASTPANNING}, {@link Kind#NORTHPANNING}, {@link Kind#NORTHEASTPANNING}, {@link Kind#NORTHWESTPANNING}, {@link Kind#SOUTHPANNING}, {@link Kind#SOUTHEASTPANNING}, {@link Kind#SOUTHWESTPANNING}, {@link Kind#WESTPANNING}, {@link Kind#MOVE}, {@link Kind#VERTICALTEXT}, {@link Kind#CELL}, {@link Kind#CONTEXTMENU}, {@link Kind#ALIAS}, {@link Kind#PROGRESS}, {@link Kind#NODROP}, {@link Kind#COPY}, {@link Kind#NONE}, {@link Kind#NOTALLOWED}, {@link Kind#ZOOMIN}, {@link Kind#ZOOMOUT}, {@link Kind#GRAB}, {@link Kind#GRABBING}, {@link Kind#MIDDLE_PANNING_VERTICAL}, {@link Kind#MIDDLE_PANNING_HORIZONTAL}, {@link Kind#CUSTOM}, {@link Kind#DND_NONE}, {@link Kind#DND_MOVE}, {@link Kind#DND_COPY}, {@link Kind#DND_LINK}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefCursorType implements CefEnum<CefCursorType> {
 
     /** Known constants for {@link CefCursorType}. */
@@ -140,8 +125,8 @@ public final class CefCursorType implements CefEnum<CefCursorType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

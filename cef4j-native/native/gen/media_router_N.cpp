@@ -5,9 +5,9 @@
 #include "include/capi/cef_registration_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_media_observer_t* Create_JniCefMediaObserver(JNIEnv *env, jobject handler);
-extern "C" cef_media_route_create_callback_t* Create_JniCefMediaRouteCreateCallback(JNIEnv *env, jobject handler);
-extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv *env, jobject handler);
+extern "C" cef_media_observer_t* Create_JniCefMediaObserver(JNIEnv* env, jobject handler);
+extern "C" cef_media_route_create_callback_t* Create_JniCefMediaRouteCreateCallback(JNIEnv* env, jobject handler);
+extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -46,9 +46,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRouter), createRoute0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_media_router_t*>(self);
     if (!s) return;
     cef_media_source_t* _source_ptr = source ? reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J"))) : nullptr;
-    if (_source_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_source_ptr); _b->add_ref(_b);}
+    if (_source_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_source_ptr); _b->add_ref(_b); }
     cef_media_sink_t* _sink_ptr = sink ? reinterpret_cast<cef_media_sink_t*>(env->GetLongField(sink, env->GetFieldID(env->GetObjectClass(sink), "nativePtr", "J"))) : nullptr;
-    if (_sink_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_sink_ptr); _b->add_ref(_b);}
+    if (_sink_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_sink_ptr); _b->add_ref(_b); }
     cef_media_route_create_callback_t* _callback_ptr = callback ? Create_JniCefMediaRouteCreateCallback(env, callback) : nullptr;
     s->create_route(s, _source_ptr, _sink_ptr, _callback_ptr);
 }

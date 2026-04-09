@@ -1,16 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Result codes for {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink,
- * CefMediaRouteCreateCallback)}. Should be kept in sync with Chromium's media_router::mojom::RouteRequestResultCode
- * type.
- *
+ * Result codes for {@link net.kurobako.cef4j.gen.CefMediaRouter#createRoute(CefMediaSource, CefMediaSink, CefMediaRouteCreateCallback)}. Should be kept in sync with Chromium's media_router::mojom::RouteRequestResultCode type.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_MRCR_UNKNOWN_ERROR = 0,
  *   CEF_MRCR_OK = 1,
@@ -19,17 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_MRCR_SINK_NOT_FOUND = 4,
  *   ...
  * } cef_media_route_create_result_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN_ERROR}, {@link Kind#OK}, {@link Kind#TIMED_OUT},
- * {@link Kind#ROUTE_NOT_FOUND}, {@link Kind#SINK_NOT_FOUND}, {@link Kind#INVALID_ORIGIN},
- * {@link Kind#OFF_THE_RECORD_MISMATCH_DEPRECATED}, {@link Kind#NO_SUPPORTED_PROVIDER}, {@link Kind#CANCELLED},
- * {@link Kind#ROUTE_ALREADY_EXISTS}, {@link Kind#DESKTOP_PICKER_FAILED}, {@link Kind#ROUTE_ALREADY_TERMINATED},
- * {@link Kind#REDUNDANT_REQUEST}, {@link Kind#USER_NOT_ALLOWED}, {@link Kind#NOTIFICATION_DISABLED},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN_ERROR}, {@link Kind#OK}, {@link Kind#TIMED_OUT}, {@link Kind#ROUTE_NOT_FOUND}, {@link Kind#SINK_NOT_FOUND}, {@link Kind#INVALID_ORIGIN}, {@link Kind#OFF_THE_RECORD_MISMATCH_DEPRECATED}, {@link Kind#NO_SUPPORTED_PROVIDER}, {@link Kind#CANCELLED}, {@link Kind#ROUTE_ALREADY_EXISTS}, {@link Kind#DESKTOP_PICKER_FAILED}, {@link Kind#ROUTE_ALREADY_TERMINATED}, {@link Kind#REDUNDANT_REQUEST}, {@link Kind#USER_NOT_ALLOWED}, {@link Kind#NOTIFICATION_DISABLED}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMediaRouteCreateResult implements CefEnum<CefMediaRouteCreateResult> {
 
     /** Known constants for {@link CefMediaRouteCreateResult}. */
@@ -100,8 +90,8 @@ public final class CefMediaRouteCreateResult implements CefEnum<CefMediaRouteCre
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

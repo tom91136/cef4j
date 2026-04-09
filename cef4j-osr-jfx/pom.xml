@@ -84,7 +84,10 @@
                     </systemPropertyVariables>
                     <!-- Default fork: javafx-only compat tests (no CEF).
                          CEF initialization breaks the JavaFX platform, so
-                         CefWebView tests and cef compat tests need a separate fork. -->
+                         CefWebView tests and cef compat tests need a separate fork.
+                         Fresh JVM per test class prevents JavaFX WebKit state (timers,
+                         focus, open windows) from one test class interfering with the next. -->
+                    <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/CefWebView*.java</exclude>
                         <exclude>**/compat/cef/**</exclude>
@@ -170,7 +173,7 @@ sourceDir.eachFileRecurse { File sourceFile ->
     // In the cef compat variant, ensureStarted() must initialise CEF before starting JavaFX.
     text = text.replace(
             'run them under Xvfb or Wayland.");',
-            'run them under Xvfb or Wayland.");\n        CefWebView.setup();')
+            'run them under Xvfb or Wayland.");\n        CefWebView.initialise();')
 
     String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
     File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)

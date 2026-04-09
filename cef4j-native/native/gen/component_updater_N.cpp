@@ -3,7 +3,7 @@
 #include "include/capi/cef_component_updater_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_component_update_callback_t* Create_JniCefComponentUpdateCallback(JNIEnv *env, jobject handler);
+extern "C" cef_component_update_callback_t* Create_JniCefComponentUpdateCallback(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -49,7 +49,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), getComponentById0)(JN
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), update0)(JNIEnv* env, jobject obj, jlong self, jstring component_id, jobject priority, jobject callback) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return;
-    if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return;}
+    if (!priority) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return; }
     auto _component_id_str = JStringToCefString(env, component_id);
     cef_component_update_callback_t* _callback_ptr = callback ? Create_JniCefComponentUpdateCallback(env, callback) : nullptr;
     s->update(s, _component_id_str, static_cast<cef_component_update_priority_t>(env->GetLongField(priority, env->GetFieldID(env->GetObjectClass(priority), "value", "J"))), _callback_ptr);

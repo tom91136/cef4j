@@ -29,7 +29,7 @@ object EmitRuntimeStubs {
   private val ClassRe   = """(?:public\s+)?(?:final\s+)?(?:class|enum)\s+(\w+)""".r
   private val StaticRe  = """\bstatic\b""".r
 
-  def apply(javaSourceRoot: Path, generatedPackageDir: Path, outCpp: Path): Unit = {
+  def apply(javaSourceRoot: Path, generatedPackageDir: Path, outCpp: Path)(using Banners): Unit = {
     val javaFiles = Files.walk(javaSourceRoot)
       .toScala(List)
       .filter(p => p.toString.endsWith(".java") && !p.startsWith(generatedPackageDir))

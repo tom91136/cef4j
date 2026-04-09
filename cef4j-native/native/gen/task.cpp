@@ -6,12 +6,12 @@
 #include <atomic>
 #include "jni_util.h"
 
-struct JniCefTask: public cef_task_t {
-    JavaVM *jvm;
+struct JniCefTask : public cef_task_t {
+    JavaVM* jvm;
     jobject javaHandler;  // global ref
-    std::atomic<int> refCount { 1 };
+    std::atomic<int> refCount{1};
 
-    JniCefTask(JavaVM *vm, jobject handler) : cef_task_t { }, jvm(vm) {
+    JniCefTask(JavaVM* vm, jobject handler) : cef_task_t{}, jvm(vm) {
         javaHandler = handler;
         InitRefCount<JniCefTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_task_t*>(this)));
         execute = &_execute;
@@ -20,18 +20,18 @@ struct JniCefTask: public cef_task_t {
     static void CEF_CALLBACK _execute(cef_task_t* self) {
         auto* h = reinterpret_cast<JniCefTask*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(5) < 0) {return;}
+        if (env->PushLocalFrame(5) < 0) { return; }
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "execute", "()V");
-        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
     }
 };
 
-extern "C" cef_task_t* Create_JniCefTask(JNIEnv *env, jobject handler) {
-    JavaVM *jvm;
+extern "C" cef_task_t* Create_JniCefTask(JNIEnv* env, jobject handler) {
+    JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_task_t*>(new JniCefTask(jvm, globalRef));

@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Process result codes. This is not a comprehensive list, as result codes might also include platform-specific crash
- * values (Posix signal or Windows hardware exception), or internal-only implementation values.
- *
+ * Process result codes. This is not a comprehensive list, as result codes might also include platform-specific crash values (Posix signal or Windows hardware exception), or internal-only implementation values.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_RESULT_CODE_NORMAL_EXIT = 0,
  *   CEF_RESULT_CODE_KILLED = 1,
@@ -18,24 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_RESULT_CODE_GPU_DEAD_ON_ARRIVAL = 4,
  *   ...
  * } cef_resultcode_t;</pre>
- *
- * <p>Possible values: {@link Kind#NORMAL_EXIT}, {@link Kind#KILLED}, {@link Kind#HUNG},
- * {@link Kind#KILLED_BAD_MESSAGE}, {@link Kind#GPU_DEAD_ON_ARRIVAL}, {@link Kind#CHROME_FIRST},
- * {@link Kind#BAD_PROCESS_TYPE}, {@link Kind#MISSING_DATA}, {@link Kind#UNSUPPORTED_PARAM},
- * {@link Kind#PROFILE_IN_USE}, {@link Kind#PACK_EXTENSION_ERROR}, {@link Kind#NORMAL_EXIT_PROCESS_NOTIFIED},
- * {@link Kind#INVALID_SANDBOX_STATE}, {@link Kind#CLOUD_POLICY_ENROLLMENT_FAILED},
- * {@link Kind#GPU_EXIT_ON_CONTEXT_LOST}, {@link Kind#NORMAL_EXIT_PACK_EXTENSION_SUCCESS},
- * {@link Kind#SYSTEM_RESOURCE_EXHAUSTED}, {@link Kind#NORMAL_EXIT_AUTO_DE_ELEVATED},
- * {@link Kind#TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE}, {@link Kind#CHROME_LAST},
- * {@link Kind#SANDBOX_FATAL_FIRST}, {@link Kind#SANDBOX_FATAL_INTEGRITY}, {@link Kind#SANDBOX_FATAL_DROPTOKEN},
- * {@link Kind#SANDBOX_FATAL_FLUSHANDLES}, {@link Kind#SANDBOX_FATAL_CACHEDISABLE},
- * {@link Kind#SANDBOX_FATAL_CLOSEHANDLES}, {@link Kind#SANDBOX_FATAL_MITIGATION},
- * {@link Kind#SANDBOX_FATAL_MEMORY_EXCEEDED}, {@link Kind#SANDBOX_FATAL_WARMUP},
- * {@link Kind#SANDBOX_FATAL_BROKER_SHUTDOWN_HUNG}, {@link Kind#SANDBOX_FATAL_LAST}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#NORMAL_EXIT}, {@link Kind#KILLED}, {@link Kind#HUNG}, {@link Kind#KILLED_BAD_MESSAGE}, {@link Kind#GPU_DEAD_ON_ARRIVAL}, {@link Kind#CHROME_FIRST}, {@link Kind#BAD_PROCESS_TYPE}, {@link Kind#MISSING_DATA}, {@link Kind#UNSUPPORTED_PARAM}, {@link Kind#PROFILE_IN_USE}, {@link Kind#PACK_EXTENSION_ERROR}, {@link Kind#NORMAL_EXIT_PROCESS_NOTIFIED}, {@link Kind#INVALID_SANDBOX_STATE}, {@link Kind#CLOUD_POLICY_ENROLLMENT_FAILED}, {@link Kind#GPU_EXIT_ON_CONTEXT_LOST}, {@link Kind#NORMAL_EXIT_PACK_EXTENSION_SUCCESS}, {@link Kind#SYSTEM_RESOURCE_EXHAUSTED}, {@link Kind#NORMAL_EXIT_AUTO_DE_ELEVATED}, {@link Kind#TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE}, {@link Kind#CHROME_LAST}, {@link Kind#SANDBOX_FATAL_FIRST}, {@link Kind#SANDBOX_FATAL_INTEGRITY}, {@link Kind#SANDBOX_FATAL_DROPTOKEN}, {@link Kind#SANDBOX_FATAL_FLUSHANDLES}, {@link Kind#SANDBOX_FATAL_CACHEDISABLE}, {@link Kind#SANDBOX_FATAL_CLOSEHANDLES}, {@link Kind#SANDBOX_FATAL_MITIGATION}, {@link Kind#SANDBOX_FATAL_MEMORY_EXCEEDED}, {@link Kind#SANDBOX_FATAL_WARMUP}, {@link Kind#SANDBOX_FATAL_BROKER_SHUTDOWN_HUNG}, {@link Kind#SANDBOX_FATAL_LAST}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefResultcode implements CefEnum<CefResultcode> {
 
     /** Known constants for {@link CefResultcode}. */
@@ -70,24 +54,16 @@ public final class CefResultcode implements CefEnum<CefResultcode> {
         GPU_EXIT_ON_CONTEXT_LOST(34, "34", "CEF_RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"),
         /** An early startup command was executed and the browser must exit. */
         NORMAL_EXIT_PACK_EXTENSION_SUCCESS(36, "36", "CEF_RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"),
-        /**
-         * The browser process exited because system resources are exhausted. The system state can't be recovered and
-         * will be unstable.
-         */
+        /** The browser process exited because system resources are exhausted. The system state can't be recovered and will be unstable. */
         SYSTEM_RESOURCE_EXHAUSTED(37, "37", "CEF_RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED"),
         /** The browser process exited because it was re-launched without elevation. */
         NORMAL_EXIT_AUTO_DE_ELEVATED(38, "38", "CEF_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED"),
-        /**
-         * Upon encountering a commit failure in a process, PartitionAlloc terminated another process deemed less
-         * important.
-         */
-        TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE(
-                39, "39", "CEF_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE"),
+        /** Upon encountering a commit failure in a process, PartitionAlloc terminated another process deemed less important. */
+        TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE(39, "39", "CEF_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE"),
         CHROME_LAST(40, "40", "CEF_RESULT_CODE_CHROME_LAST"),
         SANDBOX_FATAL_FIRST(7006, "7006", "CEF_RESULT_CODE_SANDBOX_FATAL_FIRST"),
         /** Windows sandbox could not set the integrity level. */
-        SANDBOX_FATAL_INTEGRITY(
-                7006L, "CEF_RESULT_CODE_SANDBOX_FATAL_FIRST", "CEF_RESULT_CODE_SANDBOX_FATAL_INTEGRITY"),
+        SANDBOX_FATAL_INTEGRITY(7006L, "CEF_RESULT_CODE_SANDBOX_FATAL_FIRST", "CEF_RESULT_CODE_SANDBOX_FATAL_INTEGRITY"),
         /** Windows sandbox could not lower the token. */
         SANDBOX_FATAL_DROPTOKEN(7007, "7007", "CEF_RESULT_CODE_SANDBOX_FATAL_DROPTOKEN"),
         /** Windows sandbox failed to flush registry handles. */
@@ -155,8 +131,8 @@ public final class CefResultcode implements CefEnum<CefResultcode> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

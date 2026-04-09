@@ -3,6 +3,7 @@ package net.kurobako.cef4j;
 import java.util.Locale;
 
 /** Platform detection utility. Identifies the current OS and architecture for native library loading. */
+@SuppressWarnings("unused")
 public final class OS {
 
     private OS() {}

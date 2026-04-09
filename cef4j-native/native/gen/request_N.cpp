@@ -54,7 +54,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), setMethod0)(JNIEnv* env, jobject 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), setReferrer0)(JNIEnv* env, jobject obj, jlong self, jstring referrer_url, jobject policy) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!policy) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "policy must not be null"); return;}
+    if (!policy) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "policy must not be null"); return; }
     auto _referrer_url_str = referrer_url ? JStringToCefString(env, referrer_url) : nullptr;
     s->set_referrer(s, _referrer_url_str, static_cast<cef_referrer_policy_t>(env->GetLongField(policy, env->GetFieldID(env->GetObjectClass(policy), "value", "J"))));
     if (_referrer_url_str) cef_string_userfree_free(_referrer_url_str);
@@ -93,14 +93,14 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), setPostData0)(JNIEnv* env, jobjec
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
     cef_post_data_t* _postData_ptr = postData ? reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J"))) : nullptr;
-    if (_postData_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b);}
+    if (_postData_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b); }
     s->set_post_data(s, _postData_ptr);
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), getHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
+    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->get_header_map(s, _headerMap_csmm);
     CefStringMultimapWriteBack(env, _headerMap_csmm, headerMap);
@@ -109,7 +109,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), getHeaderMap0)(JNIEnv* env, jobje
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), setHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
+    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set_header_map(s, _headerMap_csmm);
     cef_string_multimap_free(_headerMap_csmm);
@@ -140,11 +140,11 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), setHeaderByName0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequest), set0)(JNIEnv* env, jobject obj, jlong self, jstring url, jstring method, jobject postData, jobject headerMap) {
     auto* s = reinterpret_cast<cef_request_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
+    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _url_str = JStringToCefString(env, url);
     auto _method_str = JStringToCefString(env, method);
     cef_post_data_t* _postData_ptr = postData ? reinterpret_cast<cef_post_data_t*>(env->GetLongField(postData, env->GetFieldID(env->GetObjectClass(postData), "nativePtr", "J"))) : nullptr;
-    if (_postData_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b);}
+    if (_postData_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_postData_ptr); _b->add_ref(_b); }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set(s, _url_str, _method_str, _postData_ptr, _headerMap_csmm);
     if (_url_str) cef_string_userfree_free(_url_str);

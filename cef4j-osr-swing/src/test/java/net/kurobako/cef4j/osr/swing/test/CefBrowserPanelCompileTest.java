@@ -17,7 +17,7 @@ class CefBrowserPanelCompileTest {
         Supplier<CefBrowserPanel> ctor = CefBrowserPanel::new;
         Function<CefBrowserPanel, CefRenderHandler> createRenderHandler = CefBrowserPanel::createRenderHandler;
         Function<CefBrowserPanel, CefBrowser> getBrowser = CefBrowserPanel::getBrowser;
-        Consumer<CefBrowserPanel> dispose = CefBrowserPanel::dispose;
+        Consumer<CefBrowserPanel> dispose = CefBrowserPanel::release;
 
         assertThat(ctor).isNotNull();
         assertThat(createRenderHandler).isNotNull();

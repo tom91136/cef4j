@@ -163,4 +163,45 @@ class WebViewRuntimeLoadCompatTest extends WebViewRuntimeCompatTestBase {
             assertThat(onFxThread(() -> view.getEngine().getLocation())).isEqualTo(server.url("/final"));
         }
     }
+
+    @Test
+    void iframeNavigationDoesNotOverwriteTopLevelLocation() throws Exception {
+        try (LocalTestServer server = startServer(Map.of(
+                "/host",
+                        "<html><head><title>host-start</title></head><body>"
+                                + "<iframe src='/child'></iframe>"
+                                + "</body></html>",
+                "/child",
+                        "<html><body><script>"
+                                + "parent.document.title = 'child-ready';"
+                                + "</script></body></html>"))) {
+            WebView view = createAttachedWebView();
+            String hostUrl = server.url("/host");
+
+            onFxThread(() -> view.getEngine().load(hostUrl));
+
+            assertThat(waitUntilOnFx(() -> "child-ready".equals(view.getEngine().getTitle()), 5_000))
+                    .isTrue();
+            assertThat(onFxThread(() -> view.getEngine().getLocation())).isEqualTo(hostUrl);
+        }
+    }
+
+    @Test
+    void iframeLoadErrorsDoNotFailTopLevelLoadWorker() throws Exception {
+        WebView view = createAttachedWebView();
+
+        onFxThread(() -> view.getEngine()
+                .loadContent("<html><head><title>host-start</title></head><body>"
+                        + "<iframe src='http://127.0.0.1:9/unreachable' "
+                        + "onerror=\"parent.document.title='iframe-error'\">"
+                        + "</iframe>"
+                        + "<script>setTimeout(function(){ document.title = 'host-stable'; }, 150);</script>"
+                        + "</body></html>"));
+
+        assertThat(waitUntilOnFx(() -> "host-stable".equals(view.getEngine().getTitle()), 5_000))
+                .isTrue();
+        Thread.sleep(300);
+        assertThat(onFxThread(() -> view.getEngine().getLoadWorker().getState()))
+                .isEqualTo(Worker.State.SUCCEEDED);
+    }
 }

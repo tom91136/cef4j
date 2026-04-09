@@ -21,7 +21,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefOverlayController), isSame0)(JNIE
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return JNI_FALSE;
     cef_overlay_controller_t* _that_ptr = that ? reinterpret_cast<cef_overlay_controller_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -64,7 +64,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), destroy0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setBounds0)(JNIEnv* env, jobject obj, jlong self, jobject bounds) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
-    if (!bounds) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return;}
+    if (!bounds) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return; }
     cef_rect_t _bounds_val = {};
     if (bounds) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");
@@ -99,7 +99,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getBoundsInScr
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setSize0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
-    if (!size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return;}
+    if (!size) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
     if (size) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize");
@@ -122,7 +122,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getSize0)(JNIE
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setPosition0)(JNIEnv* env, jobject obj, jlong self, jobject position) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
-    if (!position) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "position must not be null"); return;}
+    if (!position) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "position must not be null"); return; }
     cef_point_t _position_val = {};
     if (position) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -145,7 +145,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getPosition0)(
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setInsets0)(JNIEnv* env, jobject obj, jlong self, jobject insets) {
     auto* s = reinterpret_cast<cef_overlay_controller_t*>(self);
     if (!s) return;
-    if (!insets) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "insets must not be null"); return;}
+    if (!insets) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "insets must not be null"); return; }
     cef_insets_t _insets_val = {};
     if (insets) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefInsets");

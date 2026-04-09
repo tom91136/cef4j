@@ -1,11 +1,13 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
-/** Possible values: {@link Kind#DEFAULT}, {@link Kind#CHROME}, {@link Kind#ALLOY} */
+/**
+ * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#CHROME}, {@link Kind#ALLOY}
+ */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefRuntimeStyle implements CefEnum<CefRuntimeStyle> {
 
     /** Known constants for {@link CefRuntimeStyle}. */
@@ -63,8 +65,8 @@ public final class CefRuntimeStyle implements CefEnum<CefRuntimeStyle> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

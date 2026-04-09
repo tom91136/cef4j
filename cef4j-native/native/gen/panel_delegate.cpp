@@ -6,20 +6,21 @@
 #include <atomic>
 #include "jni_util.h"
 
-struct JniCefPanelDelegate: public cef_panel_delegate_t {
-    JavaVM *jvm;
+struct JniCefPanelDelegate : public cef_panel_delegate_t {
+    JavaVM* jvm;
     jobject javaHandler;  // global ref
-    std::atomic<int> refCount { 1 };
+    std::atomic<int> refCount{1};
 
-    JniCefPanelDelegate(JavaVM *vm, jobject handler) : cef_panel_delegate_t { }, jvm(vm) {
+    JniCefPanelDelegate(JavaVM* vm, jobject handler) : cef_panel_delegate_t{}, jvm(vm) {
         javaHandler = handler;
         InitRefCount<JniCefPanelDelegate, cef_panel_delegate_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_panel_delegate_t*>(this)));
     }
 
+
 };
 
-extern "C" cef_panel_delegate_t* Create_JniCefPanelDelegate(JNIEnv *env, jobject handler) {
-    JavaVM *jvm;
+extern "C" cef_panel_delegate_t* Create_JniCefPanelDelegate(JNIEnv* env, jobject handler) {
+    JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_panel_delegate_t*>(new JniCefPanelDelegate(jvm, globalRef));

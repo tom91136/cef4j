@@ -446,7 +446,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(9)
-    void staticFactory_dictionaryValueRoundTrip() throws Exception {
+    void staticFactory_dictionaryValueRoundTrip() {
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         assertThat(dict.isValid()).isTrue();
 
@@ -706,7 +706,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(20)
-    void objectPtr_setters_preserveArgValidity() throws Exception {
+    void objectPtr_setters_preserveArgValidity() {
         CefDictionaryValue parent = CefDictionaryValue.create().orElseThrow();
 
         // setDictionary: child is passed as ObjectPtr
@@ -732,7 +732,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(21)
-    void dictionaryCopy_isEqual() throws Exception {
+    void dictionaryCopy_isEqual() {
         CefDictionaryValue original = CefDictionaryValue.create().orElseThrow();
         original.setString("a", "1");
         original.setInt("b", 2);

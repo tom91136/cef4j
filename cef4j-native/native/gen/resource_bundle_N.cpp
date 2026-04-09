@@ -32,7 +32,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResource0)(JNIEn
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResourceForScale0)(JNIEnv* env, jobject obj, jlong self, jint resource_id, jobject scale_factor) {
     auto* s = reinterpret_cast<cef_resource_bundle_t*>(self);
     if (!s) return nullptr;
-    if (!scale_factor) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "scaleFactor must not be null"); return nullptr;}
+    if (!scale_factor) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "scaleFactor must not be null"); return nullptr; }
     auto _r = s->get_data_resource_for_scale(s, resource_id, static_cast<cef_scale_factor_t>(env->GetLongField(scale_factor, env->GetFieldID(env->GetObjectClass(scale_factor), "value", "J"))));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");

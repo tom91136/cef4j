@@ -58,7 +58,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDomNode), isSame0)(JNIEnv* env, jobject
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return JNI_FALSE;
     cef_domnode_t* _that_ptr = that ? reinterpret_cast<cef_domnode_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -210,7 +210,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementAttribute0)(JNIEnv* 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDomNode), getElementAttributes0)(JNIEnv* env, jobject obj, jlong self, jobject attrMap) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return;
-    if (!attrMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrMap must not be null"); return;}
+    if (!attrMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrMap must not be null"); return; }
     auto _attrMap_csm = JavaMapToCefStringMap(env, attrMap);
     s->get_element_attributes(s, _attrMap_csm);
     CefStringMapWriteBack(env, _attrMap_csm, attrMap);

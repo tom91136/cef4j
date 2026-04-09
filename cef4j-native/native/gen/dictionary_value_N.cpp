@@ -33,7 +33,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isSame0)(JNIEnv* env,
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -42,7 +42,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), isEqual0)(JNIEnv* env
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _that_ptr = that ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_equal(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -82,7 +82,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), hasKey0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), getKeys0)(JNIEnv* env, jobject obj, jlong self, jobject keys) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!keys) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE;}
+    if (!keys) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE; }
     auto _keys_csl = JavaListToCefStringList(env, keys);
     auto _r = s->get_keys(s, _keys_csl);
     CefStringListWriteBack(env, _keys_csl, keys);
@@ -197,7 +197,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setValue0)(JNIEnv* en
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
     cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_value(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
     return static_cast<jboolean>(_r);
@@ -255,7 +255,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setBinary0)(JNIEnv* e
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
     cef_binary_value_t* _value_ptr = value ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_binary(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
     return static_cast<jboolean>(_r);
@@ -266,7 +266,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setDictionary0)(JNIEn
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
     cef_dictionary_value_t* _value_ptr = value ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_dictionary(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
     return static_cast<jboolean>(_r);
@@ -277,7 +277,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setList0)(JNIEnv* env
     if (!s) return JNI_FALSE;
     auto _key_str = JStringToCefString(env, key);
     cef_list_value_t* _value_ptr = value ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_list(s, _key_str, _value_ptr);
     if (_key_str) cef_string_userfree_free(_key_str);
     return static_cast<jboolean>(_r);

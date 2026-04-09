@@ -3,9 +3,9 @@ package net.kurobako.cef4j.osr.jfx.compat.javafx;
 import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.web.WebView;
@@ -97,10 +97,12 @@ class WebViewRuntimeVisualCompatTest extends WebViewRuntimeCompatTestBase {
                                 + "setTimeout(function() { window.close(); }, 200);"
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
-            List<Boolean> visibilityEvents = new ArrayList<>();
+            List<Boolean> visibilityEvents = new CopyOnWriteArrayList<>();
+            AtomicReference<WebView> popupRef = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = new WebView();
+                popupRef.set(popupView);
                 popupView.getEngine().setOnVisibilityChanged(event -> visibilityEvents.add(event.getData()));
                 return popupView.getEngine();
             }));

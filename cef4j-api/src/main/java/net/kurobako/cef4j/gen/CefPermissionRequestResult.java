@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Permission request results.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_PERMISSION_RESULT_ACCEPT = 0,
  *   CEF_PERMISSION_RESULT_DENY = 1,
@@ -16,27 +13,23 @@ import javax.annotation.processing.Generated;
  *   CEF_PERMISSION_RESULT_IGNORE = 3,
  *   CEF_PERMISSION_RESULT_NUM_VALUES = 4
  * } cef_permission_request_result_t;</pre>
- *
- * <p>Possible values: {@link Kind#ACCEPT}, {@link Kind#DENY}, {@link Kind#DISMISS}, {@link Kind#IGNORE},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#ACCEPT}, {@link Kind#DENY}, {@link Kind#DISMISS}, {@link Kind#IGNORE}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPermissionRequestResult implements CefEnum<CefPermissionRequestResult> {
 
     /** Known constants for {@link CefPermissionRequestResult}. */
     public enum Kind {
-        /** Accept the permission request as an explicit user action. */
+        /** Accept the permission request as an explicit user action.  */
         ACCEPT(0, "0", "CEF_PERMISSION_RESULT_ACCEPT"),
-        /** Deny the permission request as an explicit user action. */
+        /** Deny the permission request as an explicit user action.  */
         DENY(1, "1", "CEF_PERMISSION_RESULT_DENY"),
-        /** Dismiss the permission request as an explicit user action. */
+        /** Dismiss the permission request as an explicit user action.  */
         DISMISS(2, "2", "CEF_PERMISSION_RESULT_DISMISS"),
-        /**
-         * Ignore the permission request. If the prompt remains unhandled (e.g. OnShowPermissionPrompt returns
-         * {@code false} and there is no default permissions UI) then any related promises may remain unresolved.
-         */
+        /** Ignore the permission request. If the prompt remains unhandled (e.g. OnShowPermissionPrompt returns {@code false} and there is no default permissions UI) then any related promises may remain unresolved.  */
         IGNORE(3, "3", "CEF_PERMISSION_RESULT_IGNORE"),
         NUM_VALUES(4, "4", "CEF_PERMISSION_RESULT_NUM_VALUES");
 
@@ -89,8 +82,8 @@ public final class CefPermissionRequestResult implements CefEnum<CefPermissionRe
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

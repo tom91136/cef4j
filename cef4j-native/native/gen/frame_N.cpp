@@ -10,9 +10,9 @@
 #include "include/capi/cef_v8_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_string_visitor_t* Create_JniCefStringVisitor(JNIEnv *env, jobject handler);
-extern "C" cef_domvisitor_t* Create_JniCefDomVisitor(JNIEnv *env, jobject handler);
-extern "C" cef_urlrequest_client_t* Create_JniCefUrlRequestClient(JNIEnv *env, jobject handler);
+extern "C" cef_string_visitor_t* Create_JniCefStringVisitor(JNIEnv* env, jobject handler);
+extern "C" cef_domvisitor_t* Create_JniCefDomVisitor(JNIEnv* env, jobject handler);
+extern "C" cef_urlrequest_client_t* Create_JniCefUrlRequestClient(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -97,7 +97,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), loadRequest0)(JNIEnv* env, jobject 
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
     cef_request_t* _request_ptr = request ? reinterpret_cast<cef_request_t*>(env->GetLongField(request, env->GetFieldID(env->GetObjectClass(request), "nativePtr", "J"))) : nullptr;
-    if (_request_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b);}
+    if (_request_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b); }
     s->load_request(s, _request_ptr);
 }
 
@@ -204,7 +204,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), createUrlRequest0)(JNIEnv* env, 
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return nullptr;
     cef_request_t* _request_ptr = request ? reinterpret_cast<cef_request_t*>(env->GetLongField(request, env->GetFieldID(env->GetObjectClass(request), "nativePtr", "J"))) : nullptr;
-    if (_request_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b);}
+    if (_request_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_ptr); _b->add_ref(_b); }
     cef_urlrequest_client_t* _client_ptr = client ? Create_JniCefUrlRequestClient(env, client) : nullptr;
     auto _r = s->create_urlrequest(s, _request_ptr, _client_ptr);
     if (!_r) return nullptr;
@@ -216,8 +216,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefFrame), createUrlRequest0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefFrame), sendProcessMessage0)(JNIEnv* env, jobject obj, jlong self, jobject target_process, jobject message) {
     auto* s = reinterpret_cast<cef_frame_t*>(self);
     if (!s) return;
-    if (!target_process) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetProcess must not be null"); return;}
+    if (!target_process) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "targetProcess must not be null"); return; }
     cef_process_message_t* _message_ptr = message ? reinterpret_cast<cef_process_message_t*>(env->GetLongField(message, env->GetFieldID(env->GetObjectClass(message), "nativePtr", "J"))) : nullptr;
-    if (_message_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_message_ptr); _b->add_ref(_b);}
+    if (_message_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_message_ptr); _b->add_ref(_b); }
     s->send_process_message(s, static_cast<cef_process_id_t>(env->GetLongField(target_process, env->GetFieldID(env->GetObjectClass(target_process), "value", "J"))), _message_ptr);
 }

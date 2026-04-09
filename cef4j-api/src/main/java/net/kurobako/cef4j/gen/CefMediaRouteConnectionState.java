@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Connection state for a MediaRoute object. Should be kept in sync with Chromium's
- * blink::mojom::PresentationConnectionState type.
- *
+ * Connection state for a MediaRoute object. Should be kept in sync with Chromium's blink::mojom::PresentationConnectionState type.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_MRCS_UNKNOWN = -1,
  *   CEF_MRCS_CONNECTING = 0,
@@ -18,13 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_MRCS_TERMINATED = 3,
  *   ...
  * } cef_media_route_connection_state_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CONNECTING}, {@link Kind#CONNECTED}, {@link Kind#CLOSED},
- * {@link Kind#TERMINATED}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CONNECTING}, {@link Kind#CONNECTED}, {@link Kind#CLOSED}, {@link Kind#TERMINATED}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMediaRouteConnectionState implements CefEnum<CefMediaRouteConnectionState> {
 
     /** Known constants for {@link CefMediaRouteConnectionState}. */
@@ -85,8 +80,8 @@ public final class CefMediaRouteConnectionState implements CefEnum<CefMediaRoute
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

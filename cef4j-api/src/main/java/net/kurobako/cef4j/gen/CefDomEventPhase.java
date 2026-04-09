@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * DOM event processing phases.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   DOM_EVENT_PHASE_UNKNOWN = 0,
  *   DOM_EVENT_PHASE_CAPTURING = 1,
@@ -16,13 +13,12 @@ import javax.annotation.processing.Generated;
  *   DOM_EVENT_PHASE_BUBBLING = 3,
  *   DOM_EVENT_PHASE_NUM_VALUES = 4
  * } cef_dom_event_phase_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CAPTURING}, {@link Kind#AT_TARGET}, {@link Kind#BUBBLING},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CAPTURING}, {@link Kind#AT_TARGET}, {@link Kind#BUBBLING}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDomEventPhase implements CefEnum<CefDomEventPhase> {
 
     /** Known constants for {@link CefDomEventPhase}. */
@@ -82,8 +78,8 @@ public final class CefDomEventPhase implements CefEnum<CefDomEventPhase> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,5 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -7,19 +6,18 @@ import net.kurobako.cef4j.gen.CefLibraryObject;
 
 /**
  * MenuButton pressed lock is released when this object is destroyed.
- *
  * <p>Definition generated from views/cef_menu_button_delegate_capi.h
- *
  * <pre>typedef struct _cef_menu_button_pressed_lock_t {
  *   cef_base_ref_counted_t base;
  *   ...
  * } cef_menu_button_pressed_lock_t;</pre>
  *
- * @see <a
- *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:45</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMenuButtonPressedLock extends CefLibraryObject {
+
 
     final class NativePeer implements CefMenuButtonPressedLock, AutoCloseable {
         private final long nativePtr;
@@ -64,6 +62,12 @@ public interface CefMenuButtonPressedLock extends CefLibraryObject {
 
         private static native void release0(long ptr);
 
+
+
+
+
+
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -81,4 +85,5 @@ public interface CefMenuButtonPressedLock extends CefLibraryObject {
             return "CefMenuButtonPressedLock{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

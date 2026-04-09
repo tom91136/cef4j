@@ -38,8 +38,8 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPrintSettings), isLandscape0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setPrinterPrintableArea0)(JNIEnv* env, jobject obj, jlong self, jobject physical_size_device_units, jobject printable_area_device_units, jboolean landscape_needs_flip) {
     auto* s = reinterpret_cast<cef_print_settings_t*>(self);
     if (!s) return;
-    if (!physical_size_device_units) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "physicalSizeDeviceUnits must not be null"); return;}
-    if (!printable_area_device_units) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "printableAreaDeviceUnits must not be null"); return;}
+    if (!physical_size_device_units) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "physicalSizeDeviceUnits must not be null"); return; }
+    if (!printable_area_device_units) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "printableAreaDeviceUnits must not be null"); return; }
     cef_size_t _physical_size_device_units_val = {};
     if (physical_size_device_units) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize");
@@ -90,17 +90,17 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefPrintSettings), getDpi0)(JNIEnv* env, jobje
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setPageRanges0)(JNIEnv* env, jobject obj, jlong self, jlong rangesCount, jobjectArray ranges) {
     auto* s = reinterpret_cast<cef_print_settings_t*>(self);
     if (!s) return;
-    if (!ranges) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "ranges must not be null"); return;}
+    if (!ranges) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "ranges must not be null"); return; }
     size_t _ranges_sz = static_cast<size_t>(rangesCount);
     cef_range_t* _ranges_arr = _ranges_sz > 0 ? new cef_range_t[_ranges_sz]() : nullptr;
-    {   auto _bvac = env->FindClass("net/kurobako/cef4j/gen/CefRange");
-        for (size_t _i = 0; _i < _ranges_sz; _i++) {
-            auto _elem = env->GetObjectArrayElement(ranges, _i);
-            if (_elem) {
-                _ranges_arr[_i].from = static_cast<decltype(_ranges_arr[_i].from)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "from", "I")));
-                _ranges_arr[_i].to = static_cast<decltype(_ranges_arr[_i].to)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "to", "I")));
-            }
-        }}
+    { auto _bvac = env->FindClass("net/kurobako/cef4j/gen/CefRange");
+    for (size_t _i = 0; _i < _ranges_sz; _i++) {
+        auto _elem = env->GetObjectArrayElement(ranges, _i);
+        if (_elem) {
+            _ranges_arr[_i].from = static_cast<decltype(_ranges_arr[_i].from)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "from", "I")));
+            _ranges_arr[_i].to = static_cast<decltype(_ranges_arr[_i].to)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "to", "I")));
+        }
+    } }
     s->set_page_ranges(s, rangesCount, _ranges_arr);
     delete[] _ranges_arr;
 }
@@ -157,7 +157,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPrintSettings), willCollate0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setColorModel0)(JNIEnv* env, jobject obj, jlong self, jobject model) {
     auto* s = reinterpret_cast<cef_print_settings_t*>(self);
     if (!s) return;
-    if (!model) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "model must not be null"); return;}
+    if (!model) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "model must not be null"); return; }
     s->set_color_model(s, static_cast<cef_color_model_t>(env->GetLongField(model, env->GetFieldID(env->GetObjectClass(model), "value", "J"))));
 }
 
@@ -185,7 +185,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefPrintSettings), getCopies0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setDuplexMode0)(JNIEnv* env, jobject obj, jlong self, jobject mode) {
     auto* s = reinterpret_cast<cef_print_settings_t*>(self);
     if (!s) return;
-    if (!mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mode must not be null"); return;}
+    if (!mode) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mode must not be null"); return; }
     s->set_duplex_mode(s, static_cast<cef_duplex_mode_t>(env->GetLongField(mode, env->GetFieldID(env->GetObjectClass(mode), "value", "J"))));
 }
 

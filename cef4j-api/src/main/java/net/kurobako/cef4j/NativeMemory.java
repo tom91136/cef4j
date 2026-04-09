@@ -4,6 +4,7 @@ package net.kurobako.cef4j;
  * JNI helper for writing bytes to raw native memory addresses. Used by {@link UrlResourceHandler} to copy data into
  * CEF's {@code void* data_out} buffers passed via {@link net.kurobako.cef4j.gen.NativePointer}.
  */
+@SuppressWarnings("unused")
 public final class NativeMemory {
 
     private NativeMemory() {}

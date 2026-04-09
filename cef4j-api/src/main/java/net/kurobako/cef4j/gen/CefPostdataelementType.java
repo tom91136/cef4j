@@ -1,26 +1,23 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Post data elements may represent either bytes or files.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   PDE_TYPE_EMPTY = 0,
  *   PDE_TYPE_BYTES = 1,
  *   PDE_TYPE_FILE = 2,
  *   PDE_TYPE_NUM_VALUES = 3
  * } cef_postdataelement_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#EMPTY}, {@link Kind#BYTES}, {@link Kind#FILE}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPostdataelementType implements CefEnum<CefPostdataelementType> {
 
     /** Known constants for {@link CefPostdataelementType}. */
@@ -79,8 +76,8 @@ public final class CefPostdataelementType implements CefEnum<CefPostdataelementT
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

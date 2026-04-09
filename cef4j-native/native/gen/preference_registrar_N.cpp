@@ -13,7 +13,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPreferenceRegistrar), addPreference0)(J
     if (!s) return JNI_FALSE;
     auto _name_str = JStringToCefString(env, name);
     cef_value_t* _default_value_ptr = default_value ? reinterpret_cast<cef_value_t*>(env->GetLongField(default_value, env->GetFieldID(env->GetObjectClass(default_value), "nativePtr", "J"))) : nullptr;
-    if (_default_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_default_value_ptr); _b->add_ref(_b);}
+    if (_default_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_default_value_ptr); _b->add_ref(_b); }
     auto _r = s->add_preference(s, _name_str, _default_value_ptr);
     if (_name_str) cef_string_userfree_free(_name_str);
     return static_cast<jboolean>(_r);

@@ -9,7 +9,8 @@ object JavaEnumCodeGen {
 
   def emit(decl: CefDecl.Enum, outDir: Path, sourceHeader: String = "")(using
       Naming.Context,
-      DocComments.Context
+      DocComments.Context,
+      Banners
   ): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
     val content  = render(javaName, decl.name, decl.values, decl.doc, decl.valueDocs, sourceHeader)
@@ -29,7 +30,7 @@ object JavaEnumCodeGen {
       doc: String = "",
       valueDocs: Map[String, String] = Map.empty,
       sourceHeader: String = ""
-  )(using Naming.Context, DocComments.Context): String = {
+  )(using Naming.Context, DocComments.Context, Banners): String = {
     // Deduplicate enum constants and keep the first occurrence of each name.
     val deduped = values.foldLeft((Set.empty[String], List.empty[(String, Long, String)])) {
       case ((seen, acc), entry @ (name, _, _)) if seen.contains(name) => (seen, acc)

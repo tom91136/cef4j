@@ -147,7 +147,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefContextMenuParams), getMisspelledWord0)(
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefContextMenuParams), getDictionarySuggestions0)(JNIEnv* env, jobject obj, jlong self, jobject suggestions) {
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!suggestions) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "suggestions must not be null"); return JNI_FALSE;}
+    if (!suggestions) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "suggestions must not be null"); return JNI_FALSE; }
     auto _suggestions_csl = JavaListToCefStringList(env, suggestions);
     auto _r = s->get_dictionary_suggestions(s, _suggestions_csl);
     CefStringListWriteBack(env, _suggestions_csl, suggestions);

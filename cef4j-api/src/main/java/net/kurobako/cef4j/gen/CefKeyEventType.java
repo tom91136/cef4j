@@ -1,43 +1,34 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Key event types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   KEYEVENT_RAWKEYDOWN = 0,
  *   KEYEVENT_KEYDOWN = 1,
  *   KEYEVENT_KEYUP = 2,
  *   KEYEVENT_CHAR = 3
  * } cef_key_event_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#RAWKEYDOWN}, {@link Kind#KEYDOWN}, {@link Kind#KEYUP}, {@link Kind#CHAR}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefKeyEventType implements CefEnum<CefKeyEventType> {
 
     /** Known constants for {@link CefKeyEventType}. */
     public enum Kind {
-        /** Notification that a key transitioned from "up" to "down". */
+        /** Notification that a key transitioned from "up" to "down".  */
         RAWKEYDOWN(0, "0", "KEYEVENT_RAWKEYDOWN"),
-        /**
-         * Notification that a key was pressed. This does not necessarily correspond to a character depending on the key
-         * and language. Use KEYEVENT_CHAR for character input.
-         */
+        /** Notification that a key was pressed. This does not necessarily correspond to a character depending on the key and language. Use KEYEVENT_CHAR for character input.  */
         KEYDOWN(1, "1", "KEYEVENT_KEYDOWN"),
-        /** Notification that a key was released. */
+        /** Notification that a key was released.  */
         KEYUP(2, "2", "KEYEVENT_KEYUP"),
-        /**
-         * Notification that a character was typed. Use this for text input. Key down events may generate 0, 1, or more
-         * than one character event depending on the key, locale, and operating system.
-         */
+        /** Notification that a character was typed. Use this for text input. Key down events may generate 0, 1, or more than one character event depending on the key, locale, and operating system.  */
         CHAR(3, "3", "KEYEVENT_CHAR");
 
         private static final Kind[] VALUES = Kind.values();
@@ -89,8 +80,8 @@ public final class CefKeyEventType implements CefEnum<CefKeyEventType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,146 +1,84 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
+import javax.annotation.processing.Generated;
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.processing.Generated;
 
 /**
- * Callback interface for
- * {@link net.kurobako.cef4j.gen.CefBrowserHost#addDevToolsMessageObserver(CefDevToolsMessageObserver)}. The methods of
- * this class will be called on the browser process UI thread.
- *
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefBrowserHost#addDevToolsMessageObserver(CefDevToolsMessageObserver)}. The methods of this class will be called on the browser process UI thread.
  * <p>Definition generated from cef_devtools_message_observer_capi.h
- *
  * <pre>typedef struct _cef_dev_tools_message_observer_t {
  *   cef_base_ref_counted_t base;
  *   ...
  * } cef_dev_tools_message_observer_t;</pre>
  *
- * @see <a
- *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDevToolsMessageObserver extends CefClientHandler {
 
     /**
-     * Method that will be called on receipt of a DevTools protocol message. {@code browser} is the originating browser
-     * instance. {@code message} is a UTF8-encoded JSON dictionary representing either a method result or an event.
-     * {@code message} is only valid for the scope of this callback and should be copied if necessary. Return
-     * {@code true} if the message was handled or {@code false} if the message should be further processed and passed to
-     * the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
-     *
-     * <p>Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from
-     * {@link net.kurobako.cef4j.gen.CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a
-     * "result" (dictionary) or "error" (dictionary) value. The "error" dictionary will contain "code" (int) and
-     * "message" (string) values. Event dictionaries include a "method" (string) value and optionally a "params"
-     * (dictionary) value. See the DevTools protocol documentation at <a
-     * href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>
-     * for details of supported method calls and the expected "result" or "params" dictionary contents. JSON
-     * dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance
-     * considerations when parsing large messages (some of which may exceed 1MB in size).
-     *
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
-     * {@code messageSize} parameter is derived from the buffer's capacity.</b>
-     *
+     * Method that will be called on receipt of a DevTools protocol message. {@code browser} is the originating browser instance. {@code message} is a UTF8-encoded JSON dictionary representing either a method result or an event. {@code message} is only valid for the scope of this callback and should be copied if necessary. Return {@code true} if the message was handled or {@code false} if the message should be further processed and passed to the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
+     * <p>
+     * Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from {@link net.kurobako.cef4j.gen.CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a "result" (dictionary) or "error" (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event dictionaries include a "method" (string) value and optionally a "params" (dictionary) value. See the DevTools protocol documentation at <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a> for details of supported method calls and the expected "result" or "params" dictionary contents. JSON dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance considerations when parsing large messages (some of which may exceed 1MB in size).
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code messageSize} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
+     * <pre>int (CEF_CALLBACK* on_dev_tools_message)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const void* message, size_t message_size);</pre>
      *
-     * <pre>
-     * int (CEF_CALLBACK* on_dev_tools_message)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const void* message, size_t message_size);
-     * </pre>
+     * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not
-     *     reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to
-     *     it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
     default boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
     }
 
     /**
-     * Method that will be called after attempted execution of a DevTools protocol method. {@code browser} is the
-     * originating browser instance. {@code message_id} is the "id" value that identifies the originating method call
-     * message. If the method succeeded {@code success} will be {@code true} and {@code result} will be the UTF8-encoded
-     * JSON "result" dictionary value (which may be empty). If the method failed {@code success} will be {@code false}
-     * and {@code result} will be the UTF8-encoded JSON "error" dictionary value. {@code result} is only valid for the
-     * scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional
-     * details on {@code result} contents.
-     *
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
-     * {@code resultSize} parameter is derived from the buffer's capacity.</b>
-     *
+     * Method that will be called after attempted execution of a DevTools protocol method. {@code browser} is the originating browser instance. {@code message_id} is the "id" value that identifies the originating method call message. If the method succeeded {@code success} will be {@code true} and {@code result} will be the UTF8-encoded JSON "result" dictionary value (which may be empty). If the method failed {@code success} will be {@code false} and {@code result} will be the UTF8-encoded JSON "error" dictionary value. {@code result} is only valid for the scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional details on {@code result} contents.
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code resultSize} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
+     * <pre>void (CEF_CALLBACK* on_dev_tools_method_result)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, int message_id, int success, const void* result, size_t result_size);</pre>
      *
-     * <pre>
-     * void (CEF_CALLBACK* on_dev_tools_method_result)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, int message_id, int success, const void* result, size_t result_size);
-     * </pre>
+     * @param result may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @param result may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer
-     *     is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a
-     *     reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native
-     *     crashes.</b>
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
      */
-    default void onDevToolsMethodResult(
-            @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {}
+    default void onDevToolsMethodResult(@Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
+    }
 
     /**
-     * Method that will be called on receipt of a DevTools protocol event. {@code browser} is the originating browser
-     * instance. {@code method} is the "method" value. {@code params} is the UTF8-encoded JSON "params" dictionary value
-     * (which may be empty). {@code params} is only valid for the scope of this callback and should be copied if
-     * necessary. See the OnDevToolsMessage documentation for additional details on {@code params} contents.
-     *
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden
-     * {@code paramsSize} parameter is derived from the buffer's capacity.</b>
-     *
+     * Method that will be called on receipt of a DevTools protocol event. {@code browser} is the originating browser instance. {@code method} is the "method" value. {@code params} is the UTF8-encoded JSON "params" dictionary value (which may be empty). {@code params} is only valid for the scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional details on {@code params} contents.
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code paramsSize} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
+     * <pre>void (CEF_CALLBACK* on_dev_tools_event)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const cef_string_t* method, const void* params, size_t params_size);</pre>
      *
-     * <pre>
-     * void (CEF_CALLBACK* on_dev_tools_event)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const cef_string_t* method, const void* params, size_t params_size);
-     * </pre>
+     * @param params may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @param params may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer
-     *     is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a
-     *     reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native
-     *     crashes.</b>
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
      */
-    default void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {}
+    default void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
+    }
 
     /**
-     * Method that will be called when the DevTools agent has attached. {@code browser} is the originating browser
-     * instance. This will generally occur in response to the first message sent while the agent is detached.
-     *
+     * Method that will be called when the DevTools agent has attached. {@code browser} is the originating browser instance. This will generally occur in response to the first message sent while the agent is detached.
      * <p>Definition generated from cef_devtools_message_observer_capi.h
+     * <pre>void (CEF_CALLBACK* on_dev_tools_agent_attached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * <pre>
-     * void (CEF_CALLBACK* on_dev_tools_agent_attached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);
-     * </pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
      */
-    default void onDevToolsAgentAttached(@Nullable CefBrowser browser) {}
+    default void onDevToolsAgentAttached(@Nullable CefBrowser browser) {
+    }
 
     /**
-     * Method that will be called when the DevTools agent has detached. {@code browser} is the originating browser
-     * instance. Any method results that were pending before the agent became detached will not be delivered, and any
-     * active event subscriptions will be canceled.
-     *
+     * Method that will be called when the DevTools agent has detached. {@code browser} is the originating browser instance. Any method results that were pending before the agent became detached will not be delivered, and any active event subscriptions will be canceled.
      * <p>Definition generated from cef_devtools_message_observer_capi.h
+     * <pre>void (CEF_CALLBACK* on_dev_tools_agent_detached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * <pre>
-     * void (CEF_CALLBACK* on_dev_tools_agent_detached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);
-     * </pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
      */
-    default void onDevToolsAgentDetached(@Nullable CefBrowser browser) {}
+    default void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
+    }
 }

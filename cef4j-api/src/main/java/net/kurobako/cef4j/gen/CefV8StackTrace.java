@@ -1,18 +1,12 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
-import java.util.Optional;
 import javax.annotation.processing.Generated;
+import java.util.Optional;
 
 /**
- * Class representing a V8 stack trace handle. V8 handles can only be accessed from the thread on which they are
- * created. Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and
- * WebWorker threads. A task runner for posting tasks on the associated thread can be retrieved via the
- * {@link net.kurobako.cef4j.gen.CefV8Context#getTaskRunner()} method.
- *
+ * Class representing a V8 stack trace handle. V8 handles can only be accessed from the thread on which they are created. Valid threads for creating a V8 handle include the render process main thread ({@code TID_RENDERER}) and WebWorker threads. A task runner for posting tasks on the associated thread can be retrieved via the {@link net.kurobako.cef4j.gen.CefV8Context#getTaskRunner()} method.
  * <p>Definition generated from cef_v8_capi.h
- *
  * <pre>typedef struct _cef_v8_stack_trace_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -21,14 +15,12 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1032</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8StackTrace extends CefLibraryObject {
 
     /**
-     * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call
-     * any other methods if this method returns {@code false}.
-     *
+     * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_v8_capi.h
-     *
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_stack_trace_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1049</a>
@@ -37,27 +29,22 @@ public interface CefV8StackTrace extends CefLibraryObject {
 
     /**
      * Returns the number of stack frames.
-     *
      * <p>Definition generated from cef_v8_capi.h
-     *
      * <pre>int (CEF_CALLBACK* get_frame_count)(struct _cef_v8_stack_trace_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1057</a>
      */
     int getFrameCount();
     /**
-     * Returns the stack trace for the currently active context. {@code frame_limit} is the maximum number of frames
-     * that will be captured.
-     *
+     * Returns the stack trace for the currently active context. {@code frame_limit} is the maximum number of frames that will be captured.
      * <p>Definition generated from cef_v8_capi.h
-     *
      * <pre>CEF_EXPORT cef_v8_stack_trace_t* cef_v8_stack_trace_get_current(int frame_limit);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1042</a>
      */
     static Optional<CefV8StackTrace> getCurrent(int frameLimit) {
-        return Optional.ofNullable(NativePeer.getCurrent0(frameLimit));
-    }
+      return Optional.ofNullable(NativePeer.getCurrent0(frameLimit));
+  }
 
     final class NativePeer implements CefV8StackTrace, AutoCloseable {
         private final long nativePtr;
@@ -103,20 +90,21 @@ public interface CefV8StackTrace extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public boolean isValid() {
-            checkNotClosed();
-            return isValid0(nativePtr);
-        }
+      public boolean isValid() {
+          checkNotClosed();
+          return isValid0(nativePtr);
+      }
 
         @Override
-        public int getFrameCount() {
-            checkNotClosed();
-            return getFrameCount0(nativePtr);
-        }
+      public int getFrameCount() {
+          checkNotClosed();
+          return getFrameCount0(nativePtr);
+      }
 
-        private static native boolean isValid0(long self);
 
-        private static native int getFrameCount0(long self);
+        static native boolean isValid0(long self);
+
+        static native int getFrameCount0(long self);
 
         static native CefV8StackTrace getCurrent0(int frameLimit);
 
@@ -137,4 +125,5 @@ public interface CefV8StackTrace extends CefLibraryObject {
             return "CefV8StackTrace{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

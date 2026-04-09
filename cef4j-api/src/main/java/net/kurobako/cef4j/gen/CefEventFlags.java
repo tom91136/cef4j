@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported event bit flags.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   EVENTFLAG_NONE = 0,
  *   EVENTFLAG_CAPS_LOCK_ON = 1 &lt;&lt; 0,
@@ -17,16 +14,12 @@ import javax.annotation.processing.Generated;
  *   EVENTFLAG_ALT_DOWN = 1 &lt;&lt; 3,
  *   ...
  * } cef_event_flags_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAPS_LOCK_ON}, {@link Kind#SHIFT_DOWN}, {@link Kind#CONTROL_DOWN},
- * {@link Kind#ALT_DOWN}, {@link Kind#LEFT_MOUSE_BUTTON}, {@link Kind#MIDDLE_MOUSE_BUTTON},
- * {@link Kind#RIGHT_MOUSE_BUTTON}, {@link Kind#COMMAND_DOWN}, {@link Kind#NUM_LOCK_ON}, {@link Kind#IS_KEY_PAD},
- * {@link Kind#IS_LEFT}, {@link Kind#IS_RIGHT}, {@link Kind#ALTGR_DOWN}, {@link Kind#IS_REPEAT},
- * {@link Kind#PRECISION_SCROLLING_DELTA}, {@link Kind#SCROLL_BY_PAGE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAPS_LOCK_ON}, {@link Kind#SHIFT_DOWN}, {@link Kind#CONTROL_DOWN}, {@link Kind#ALT_DOWN}, {@link Kind#LEFT_MOUSE_BUTTON}, {@link Kind#MIDDLE_MOUSE_BUTTON}, {@link Kind#RIGHT_MOUSE_BUTTON}, {@link Kind#COMMAND_DOWN}, {@link Kind#NUM_LOCK_ON}, {@link Kind#IS_KEY_PAD}, {@link Kind#IS_LEFT}, {@link Kind#IS_RIGHT}, {@link Kind#ALTGR_DOWN}, {@link Kind#IS_REPEAT}, {@link Kind#PRECISION_SCROLLING_DELTA}, {@link Kind#SCROLL_BY_PAGE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefEventFlags implements CefEnum<CefEventFlags> {
 
     /** Known constants for {@link CefEventFlags}. */
@@ -99,8 +92,8 @@ public final class CefEventFlags implements CefEnum<CefEventFlags> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

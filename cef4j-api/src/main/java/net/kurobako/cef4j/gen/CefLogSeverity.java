@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Log severity levels.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   LOGSEVERITY_DEFAULT = 0,
  *   LOGSEVERITY_VERBOSE = 1,
@@ -17,32 +14,31 @@ import javax.annotation.processing.Generated;
  *   LOGSEVERITY_WARNING = 3,
  *   ...
  * } cef_log_severity_t;</pre>
- *
- * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#VERBOSE}, {@link Kind#DEBUG}, {@link Kind#INFO},
- * {@link Kind#WARNING}, {@link Kind#ERROR}, {@link Kind#FATAL}, {@link Kind#DISABLE}
+ * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#VERBOSE}, {@link Kind#DEBUG}, {@link Kind#INFO}, {@link Kind#WARNING}, {@link Kind#ERROR}, {@link Kind#FATAL}, {@link Kind#DISABLE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefLogSeverity implements CefEnum<CefLogSeverity> {
 
     /** Known constants for {@link CefLogSeverity}. */
     public enum Kind {
-        /** Default logging (currently INFO logging). */
+        /** Default logging (currently INFO logging).  */
         DEFAULT(0, "0", "LOGSEVERITY_DEFAULT"),
-        /** Verbose logging. */
+        /** Verbose logging.  */
         VERBOSE(1, "1", "LOGSEVERITY_VERBOSE"),
-        /** DEBUG logging. */
+        /** DEBUG logging.  */
         DEBUG(1L, "LOGSEVERITY_VERBOSE", "LOGSEVERITY_DEBUG"),
-        /** INFO logging. */
+        /** INFO logging.  */
         INFO(2, "2", "LOGSEVERITY_INFO"),
-        /** WARNING logging. */
+        /** WARNING logging.  */
         WARNING(3, "3", "LOGSEVERITY_WARNING"),
-        /** ERROR logging. */
+        /** ERROR logging.  */
         ERROR(4, "4", "LOGSEVERITY_ERROR"),
-        /** FATAL logging. */
+        /** FATAL logging.  */
         FATAL(5, "5", "LOGSEVERITY_FATAL"),
-        /** Disable logging to file for all messages, and to stderr for messages with severity less than FATAL. */
+        /** Disable logging to file for all messages, and to stderr for messages with severity less than FATAL.  */
         DISABLE(99, "99", "LOGSEVERITY_DISABLE");
 
         private static final Kind[] VALUES = Kind.values();
@@ -94,8 +90,8 @@ public final class CefLogSeverity implements CefEnum<CefLogSeverity> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

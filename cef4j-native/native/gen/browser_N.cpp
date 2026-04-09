@@ -87,7 +87,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowser), isSame0)(JNIEnv* env, jobject
     auto* s = reinterpret_cast<cef_browser_t*>(self);
     if (!s) return JNI_FALSE;
     cef_browser_t* _that_ptr = that ? reinterpret_cast<cef_browser_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -159,7 +159,7 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBrowser), getFrameCount0)(JNIEnv* env, job
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), getFrameIdentifiers0)(JNIEnv* env, jobject obj, jlong self, jobject identifiers) {
     auto* s = reinterpret_cast<cef_browser_t*>(self);
     if (!s) return;
-    if (!identifiers) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "identifiers must not be null"); return;}
+    if (!identifiers) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "identifiers must not be null"); return; }
     auto _identifiers_csl = JavaListToCefStringList(env, identifiers);
     s->get_frame_identifiers(s, _identifiers_csl);
     CefStringListWriteBack(env, _identifiers_csl, identifiers);
@@ -168,7 +168,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), getFrameIdentifiers0)(JNIEnv* env
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowser), getFrameNames0)(JNIEnv* env, jobject obj, jlong self, jobject names) {
     auto* s = reinterpret_cast<cef_browser_t*>(self);
     if (!s) return;
-    if (!names) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "names must not be null"); return;}
+    if (!names) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "names must not be null"); return; }
     auto _names_csl = JavaListToCefStringList(env, names);
     s->get_frame_names(s, _names_csl);
     CefStringListWriteBack(env, _names_csl, names);

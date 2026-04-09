@@ -1,34 +1,31 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Return value types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   RV_CANCEL = 0,
  *   RV_CONTINUE = 1,
  *   RV_CONTINUE_ASYNC = 2
  * } cef_return_value_t;</pre>
- *
  * <p>Possible values: {@link Kind#CANCEL}, {@link Kind#CONTINUE}, {@link Kind#CONTINUE_ASYNC}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefReturnValue implements CefEnum<CefReturnValue> {
 
     /** Known constants for {@link CefReturnValue}. */
     public enum Kind {
-        /** Cancel immediately. */
+        /** Cancel immediately.  */
         CANCEL(0, "0", "RV_CANCEL"),
-        /** Continue immediately. */
+        /** Continue immediately.  */
         CONTINUE(1, "1", "RV_CONTINUE"),
-        /** Continue asynchronously (usually via a callback). */
+        /** Continue asynchronously (usually via a callback).  */
         CONTINUE_ASYNC(2, "2", "RV_CONTINUE_ASYNC");
 
         private static final Kind[] VALUES = Kind.values();
@@ -80,8 +77,8 @@ public final class CefReturnValue implements CefEnum<CefReturnValue> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

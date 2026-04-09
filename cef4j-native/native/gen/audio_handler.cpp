@@ -7,12 +7,12 @@
 #include <atomic>
 #include "jni_util.h"
 
-struct JniCefAudioHandler: public cef_audio_handler_t {
-    JavaVM *jvm;
+struct JniCefAudioHandler : public cef_audio_handler_t {
+    JavaVM* jvm;
     jobject javaHandler;  // global ref
-    std::atomic<int> refCount { 1 };
+    std::atomic<int> refCount{1};
 
-    JniCefAudioHandler(JavaVM *vm, jobject handler) : cef_audio_handler_t { }, jvm(vm) {
+    JniCefAudioHandler(JavaVM* vm, jobject handler) : cef_audio_handler_t{}, jvm(vm) {
         javaHandler = handler;
         InitRefCount<JniCefAudioHandler, cef_audio_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_audio_handler_t*>(this)));
         get_audio_parameters = &_get_audio_parameters;
@@ -25,9 +25,9 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
     static int CEF_CALLBACK _get_audio_parameters(cef_audio_handler_t* self, struct _cef_browser_t* browser, cef_audio_parameters_t* params) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(16) < 0) {return false;}
+        if (env->PushLocalFrame(16) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
-        if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
+        if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
@@ -40,9 +40,9 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
         if (j_params) env->SetLongField(j_params, env->GetFieldID(j_params_cls, "size", "J"), static_cast<jlong>(params->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "getAudioParameters", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefAudioParameters$Mutable;)Z");
-        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_params);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (params && j_params) {
             auto _wb_channel_layout = env->GetObjectField(j_params, env->GetFieldID(j_params_cls, "channelLayout", "Lnet/kurobako/cef4j/gen/CefChannelLayout;"));
             if (_wb_channel_layout) {
@@ -58,9 +58,9 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
     static void CEF_CALLBACK _on_audio_stream_started(cef_audio_handler_t* self, struct _cef_browser_t* browser, const cef_audio_parameters_t* params, int channels) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(14) < 0) {return;}
+        if (env->PushLocalFrame(14) < 0) { return; }
         cef_browser_t* _p_browser = browser;
-        if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
+        if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
@@ -73,18 +73,18 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
         if (j_params) env->SetLongField(j_params, env->GetFieldID(j_params_cls, "size", "J"), static_cast<jlong>(params->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAudioStreamStarted", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefAudioParameters;I)V");
-        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_params, static_cast<jint>(channels));
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
     }
 
     static void CEF_CALLBACK _on_audio_stream_packet(cef_audio_handler_t* self, struct _cef_browser_t* browser, const float** data, int frames, int64_t pts) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(11) < 0) {return;}
+        if (env->PushLocalFrame(11) < 0) { return; }
         cef_browser_t* _p_browser = browser;
-        if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
+        if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
@@ -93,50 +93,50 @@ struct JniCefAudioHandler: public cef_audio_handler_t {
         auto j_data = env->NewObject(j_data_cls, j_data_ctor, reinterpret_cast<jlong>(data));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAudioStreamPacket", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/NativePointer;IJ)V");
-        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_data, static_cast<jint>(frames), static_cast<jlong>(pts));
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
     }
 
     static void CEF_CALLBACK _on_audio_stream_stopped(cef_audio_handler_t* self, struct _cef_browser_t* browser) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(8) < 0) {return;}
+        if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
-        if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
+        if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAudioStreamStopped", "(Lnet/kurobako/cef4j/gen/CefBrowser;)V");
-        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid, j_browser);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
     }
 
     static void CEF_CALLBACK _on_audio_stream_error(cef_audio_handler_t* self, struct _cef_browser_t* browser, const cef_string_t* message) {
         auto* h = reinterpret_cast<JniCefAudioHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(9) < 0) {return;}
+        if (env->PushLocalFrame(9) < 0) { return; }
         cef_browser_t* _p_browser = browser;
-        if (_p_browser) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b);}
+        if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_message = CefStringToJString(env, message);
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAudioStreamError", "(Lnet/kurobako/cef4j/gen/CefBrowser;Ljava/lang/String;)V");
-        if (!mid) {env->PopLocalFrame(nullptr); return;}
+        if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_message);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
     }
 };
 
-extern "C" cef_audio_handler_t* Create_JniCefAudioHandler(JNIEnv *env, jobject handler) {
-    JavaVM *jvm;
+extern "C" cef_audio_handler_t* Create_JniCefAudioHandler(JNIEnv* env, jobject handler) {
+    JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_audio_handler_t*>(new JniCefAudioHandler(jvm, globalRef));

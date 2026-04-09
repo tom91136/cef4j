@@ -1,34 +1,31 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Specifies the horizontal text alignment mode.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_HORIZONTAL_ALIGNMENT_LEFT = 0,
  *   CEF_HORIZONTAL_ALIGNMENT_CENTER = 1,
  *   CEF_HORIZONTAL_ALIGNMENT_RIGHT = 2
  * } cef_horizontal_alignment_t;</pre>
- *
  * <p>Possible values: {@link Kind#LEFT}, {@link Kind#CENTER}, {@link Kind#RIGHT}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefHorizontalAlignment implements CefEnum<CefHorizontalAlignment> {
 
     /** Known constants for {@link CefHorizontalAlignment}. */
     public enum Kind {
-        /** Align the text's left edge with that of its display area. */
+        /** Align the text's left edge with that of its display area.  */
         LEFT(0, "0", "CEF_HORIZONTAL_ALIGNMENT_LEFT"),
-        /** Align the text's center with that of its display area. */
+        /** Align the text's center with that of its display area.  */
         CENTER(1, "1", "CEF_HORIZONTAL_ALIGNMENT_CENTER"),
-        /** Align the text's right edge with that of its display area. */
+        /** Align the text's right edge with that of its display area.  */
         RIGHT(2, "2", "CEF_HORIZONTAL_ALIGNMENT_RIGHT");
 
         private static final Kind[] VALUES = Kind.values();
@@ -80,8 +77,8 @@ public final class CefHorizontalAlignment implements CefEnum<CefHorizontalAlignm
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

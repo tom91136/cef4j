@@ -136,10 +136,9 @@ class JniCppHandlerTrampolineGen(
       else
         s"env->Call${callType}Method(h->javaHandler, mid$argsStr)"
       val nativeConv = convertJniReturnToNative(fn.ret, "jResult")
-      val addRefLine = ""
       s"""        auto jResult = $callExpr;
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); $earlyReturn }$postCall
-        $retC nativeResult = $nativeConv;$addRefLine
+        $retC nativeResult = $nativeConv;
         env->PopLocalFrame(nullptr);
         return nativeResult;"""
     }

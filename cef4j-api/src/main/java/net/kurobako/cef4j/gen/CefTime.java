@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Time information. Values should always be in UTC.
- *
  * <p>Definition generated from internal/cef_time.h
- *
  * <pre>typedef struct _cef_time_t {
  *   int year;
  *   int month;
@@ -23,27 +20,35 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__time_8h.html">internal/cef_time.h:57</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefTime {
 
-    /** Four or five digit year "2007" (1601 to 30827 on Windows, 1970 to 2038 on 32-bit POSIX) */
-    public final int year;
-    /** 1-based month (values 1 = January, etc.) */
-    public final int month;
-    /** 0-based day of week (0 = Sunday, etc.) */
-    public final int dayOfWeek;
-    /** 1-based day of month (1-31) */
-    public final int dayOfMonth;
-    /** Hour within the current day (0-23) */
-    public final int hour;
-    /** Minute within the current hour (0-59) */
-    public final int minute;
-    /** Second within the current minute (0-59 plus leap seconds which may take it up to 60). */
-    public final int second;
-    /** Milliseconds within the current second (0-999) */
-    public final int millisecond;
+        /**
+         * Four or five digit year "2007" (1601 to 30827 on Windows, 1970 to 2038 on 32-bit POSIX) 
+         */    public final int year;
+        /**
+         * 1-based month (values 1 = January, etc.) 
+         */    public final int month;
+        /**
+         * 0-based day of week (0 = Sunday, etc.) 
+         */    public final int dayOfWeek;
+        /**
+         * 1-based day of month (1-31) 
+         */    public final int dayOfMonth;
+        /**
+         * Hour within the current day (0-23) 
+         */    public final int hour;
+        /**
+         * Minute within the current hour (0-59) 
+         */    public final int minute;
+        /**
+         * Second within the current minute (0-59 plus leap seconds which may take it up to 60). 
+         */    public final int second;
+        /**
+         * Milliseconds within the current second (0-999) 
+         */    public final int millisecond;
 
-    public CefTime(
-            int year, int month, int dayOfWeek, int dayOfMonth, int hour, int minute, int second, int millisecond) {
+    public CefTime(int year, int month, int dayOfWeek, int dayOfMonth, int hour, int minute, int second, int millisecond) {
         this.year = year;
         this.month = month;
         this.dayOfWeek = dayOfWeek;
@@ -60,13 +65,13 @@ public final class CefTime {
         if (!(obj instanceof CefTime)) return false;
         CefTime other = (CefTime) obj;
         return this.year == other.year
-                && this.month == other.month
-                && this.dayOfWeek == other.dayOfWeek
-                && this.dayOfMonth == other.dayOfMonth
-                && this.hour == other.hour
-                && this.minute == other.minute
-                && this.second == other.second
-                && this.millisecond == other.millisecond;
+                    && this.month == other.month
+                    && this.dayOfWeek == other.dayOfWeek
+                    && this.dayOfMonth == other.dayOfMonth
+                    && this.hour == other.hour
+                    && this.minute == other.minute
+                    && this.second == other.second
+                    && this.millisecond == other.millisecond;
     }
 
     @Override
@@ -76,8 +81,6 @@ public final class CefTime {
 
     @Override
     public String toString() {
-        return "CefTime{" + "year=" + year + ", " + "month=" + month + ", " + "dayOfWeek=" + dayOfWeek + ", "
-                + "dayOfMonth=" + dayOfMonth + ", " + "hour=" + hour + ", " + "minute=" + minute + ", " + "second="
-                + second + ", " + "millisecond=" + millisecond + "}";
+        return "CefTime{" + "year=" + year + ", " + "month=" + month + ", " + "dayOfWeek=" + dayOfWeek + ", " + "dayOfMonth=" + dayOfMonth + ", " + "hour=" + hour + ", " + "minute=" + minute + ", " + "second=" + second + ", " + "millisecond=" + millisecond + "}";
     }
 }

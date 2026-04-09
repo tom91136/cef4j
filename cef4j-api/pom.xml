@@ -53,6 +53,13 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <java>
+                        <excludes>
+                            <exclude>src/main/java/net/kurobako/cef4j/gen/**/*.java</exclude>
+                        </excludes>
+                    </java>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

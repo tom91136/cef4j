@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Structure containing shared texture common metadata. For documentation on each field, please refer to
- * src/media/base/video_frame_metadata.h for actual details.
- *
+ * Structure containing shared texture common metadata. For documentation on each field, please refer to src/media/base/video_frame_metadata.h for actual details.
  * <p>Definition generated from internal/cef_types_osr.h
- *
  * <pre>typedef struct _cef_accelerated_paint_info_common_t {
  *   size_t size;
  *   int64_t timestamp;
@@ -29,50 +25,51 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__osr_8h.html">internal/cef_types_osr.h:43</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefAcceleratedPaintInfoCommon {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
-    /** Timestamp of the frame in microseconds since capture start. */
-    public final long timestamp;
-    /** The full dimensions of the video frame. */
-    public final CefSize codedSize;
-    /** The visible area of the video frame. */
-    public final CefRect visibleRect;
-    /** The region of the video frame that capturer would like to populate. */
-    public final CefRect contentRect;
-    /** Full size of the source frame. */
-    public final CefSize sourceSize;
-    /** Updated area of frame, can be considered as the `dirty` area. */
-    public final CefRect captureUpdateRect;
-    /** May reflects where the frame's contents originate from if region capture is used internally. */
-    public final CefRect regionCaptureRect;
-    /** The increamental counter of the frame. */
-    public final long captureCounter;
-    /** Optional flag of capture_update_rect */
-    public final int hasCaptureUpdateRect;
-    /** Optional flag of region_capture_rect */
-    public final int hasRegionCaptureRect;
-    /** Optional flag of source_size */
-    public final int hasSourceSize;
-    /** Optional flag of capture_counter */
-    public final int hasCaptureCounter;
+        /**
+         * Timestamp of the frame in microseconds since capture start. 
+         */    public final long timestamp;
+        /**
+         * The full dimensions of the video frame. 
+         */    public final CefSize codedSize;
+        /**
+         * The visible area of the video frame. 
+         */    public final CefRect visibleRect;
+        /**
+         * The region of the video frame that capturer would like to populate. 
+         */    public final CefRect contentRect;
+        /**
+         * Full size of the source frame. 
+         */    public final CefSize sourceSize;
+        /**
+         * Updated area of frame, can be considered as the `dirty` area. 
+         */    public final CefRect captureUpdateRect;
+        /**
+         * May reflects where the frame's contents originate from if region capture is used internally. 
+         */    public final CefRect regionCaptureRect;
+        /**
+         * The increamental counter of the frame. 
+         */    public final long captureCounter;
+        /**
+         * Optional flag of capture_update_rect 
+         */    public final int hasCaptureUpdateRect;
+        /**
+         * Optional flag of region_capture_rect 
+         */    public final int hasRegionCaptureRect;
+        /**
+         * Optional flag of source_size 
+         */    public final int hasSourceSize;
+        /**
+         * Optional flag of capture_counter 
+         */    public final int hasCaptureCounter;
 
-    public CefAcceleratedPaintInfoCommon(
-            long timestamp,
-            CefSize codedSize,
-            CefRect visibleRect,
-            CefRect contentRect,
-            CefSize sourceSize,
-            CefRect captureUpdateRect,
-            CefRect regionCaptureRect,
-            long captureCounter,
-            int hasCaptureUpdateRect,
-            int hasRegionCaptureRect,
-            int hasSourceSize,
-            int hasCaptureCounter) {
+    public CefAcceleratedPaintInfoCommon(long timestamp, CefSize codedSize, CefRect visibleRect, CefRect contentRect, CefSize sourceSize, CefRect captureUpdateRect, CefRect regionCaptureRect, long captureCounter, int hasCaptureUpdateRect, int hasRegionCaptureRect, int hasSourceSize, int hasCaptureCounter) {
         this.timestamp = timestamp;
         this.codedSize = codedSize;
         this.visibleRect = visibleRect;
@@ -93,44 +90,26 @@ public final class CefAcceleratedPaintInfoCommon {
         if (!(obj instanceof CefAcceleratedPaintInfoCommon)) return false;
         CefAcceleratedPaintInfoCommon other = (CefAcceleratedPaintInfoCommon) obj;
         return this.timestamp == other.timestamp
-                && java.util.Objects.equals(this.codedSize, other.codedSize)
-                && java.util.Objects.equals(this.visibleRect, other.visibleRect)
-                && java.util.Objects.equals(this.contentRect, other.contentRect)
-                && java.util.Objects.equals(this.sourceSize, other.sourceSize)
-                && java.util.Objects.equals(this.captureUpdateRect, other.captureUpdateRect)
-                && java.util.Objects.equals(this.regionCaptureRect, other.regionCaptureRect)
-                && this.captureCounter == other.captureCounter
-                && this.hasCaptureUpdateRect == other.hasCaptureUpdateRect
-                && this.hasRegionCaptureRect == other.hasRegionCaptureRect
-                && this.hasSourceSize == other.hasSourceSize
-                && this.hasCaptureCounter == other.hasCaptureCounter;
+                    && java.util.Objects.equals(this.codedSize, other.codedSize)
+                    && java.util.Objects.equals(this.visibleRect, other.visibleRect)
+                    && java.util.Objects.equals(this.contentRect, other.contentRect)
+                    && java.util.Objects.equals(this.sourceSize, other.sourceSize)
+                    && java.util.Objects.equals(this.captureUpdateRect, other.captureUpdateRect)
+                    && java.util.Objects.equals(this.regionCaptureRect, other.regionCaptureRect)
+                    && this.captureCounter == other.captureCounter
+                    && this.hasCaptureUpdateRect == other.hasCaptureUpdateRect
+                    && this.hasRegionCaptureRect == other.hasRegionCaptureRect
+                    && this.hasSourceSize == other.hasSourceSize
+                    && this.hasCaptureCounter == other.hasCaptureCounter;
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(
-                timestamp,
-                codedSize,
-                visibleRect,
-                contentRect,
-                sourceSize,
-                captureUpdateRect,
-                regionCaptureRect,
-                captureCounter,
-                hasCaptureUpdateRect,
-                hasRegionCaptureRect,
-                hasSourceSize,
-                hasCaptureCounter);
+        return java.util.Objects.hash(timestamp, codedSize, visibleRect, contentRect, sourceSize, captureUpdateRect, regionCaptureRect, captureCounter, hasCaptureUpdateRect, hasRegionCaptureRect, hasSourceSize, hasCaptureCounter);
     }
 
     @Override
     public String toString() {
-        return "CefAcceleratedPaintInfoCommon{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", "
-                + "timestamp=" + timestamp + ", " + "codedSize=" + codedSize + ", " + "visibleRect=" + visibleRect
-                + ", " + "contentRect=" + contentRect + ", " + "sourceSize=" + sourceSize + ", " + "captureUpdateRect="
-                + captureUpdateRect + ", " + "regionCaptureRect=" + regionCaptureRect + ", " + "captureCounter="
-                + captureCounter + ", " + "hasCaptureUpdateRect=" + hasCaptureUpdateRect + ", "
-                + "hasRegionCaptureRect=" + hasRegionCaptureRect + ", " + "hasSourceSize=" + hasSourceSize + ", "
-                + "hasCaptureCounter=" + hasCaptureCounter + "}";
+        return "CefAcceleratedPaintInfoCommon{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "timestamp=" + timestamp + ", " + "codedSize=" + codedSize + ", " + "visibleRect=" + visibleRect + ", " + "contentRect=" + contentRect + ", " + "sourceSize=" + sourceSize + ", " + "captureUpdateRect=" + captureUpdateRect + ", " + "regionCaptureRect=" + regionCaptureRect + ", " + "captureCounter=" + captureCounter + ", " + "hasCaptureUpdateRect=" + hasCaptureUpdateRect + ", " + "hasRegionCaptureRect=" + hasRegionCaptureRect + ", " + "hasSourceSize=" + hasSourceSize + ", " + "hasCaptureCounter=" + hasCaptureCounter + "}";
     }
 }

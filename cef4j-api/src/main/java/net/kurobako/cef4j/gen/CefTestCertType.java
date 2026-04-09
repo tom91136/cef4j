@@ -1,27 +1,23 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Certificate types supported by CefTestServer.createAndStart(). The matching certificate file must exist in the
- * "net/data/ssl/certificates" directory. See CefSetDataDirectoryForTests() for related configuration.
- *
+ * Certificate types supported by CefTestServer.createAndStart(). The matching certificate file must exist in the "net/data/ssl/certificates" directory. See CefSetDataDirectoryForTests() for related configuration.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_TEST_CERT_OK_IP = 0,
  *   CEF_TEST_CERT_OK_DOMAIN = 1,
  *   CEF_TEST_CERT_EXPIRED = 2,
  *   CEF_TEST_CERT_NUM_VALUES = 3
  * } cef_test_cert_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#OK_IP}, {@link Kind#OK_DOMAIN}, {@link Kind#EXPIRED}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefTestCertType implements CefEnum<CefTestCertType> {
 
     /** Known constants for {@link CefTestCertType}. */
@@ -83,8 +79,8 @@ public final class CefTestCertType implements CefEnum<CefTestCertType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Specifies the task type variants supported by CefTaskManager. Should be kept in sync with Chromium's
- * task_manager::Task::Type type.
- *
+ * Specifies the task type variants supported by CefTaskManager. Should be kept in sync with Chromium's task_manager::Task::Type type.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_TASK_TYPE_UNKNOWN = 0,
  *   CEF_TASK_TYPE_BROWSER = 1,
@@ -18,15 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_TASK_TYPE_UTILITY = 4,
  *   ...
  * } cef_task_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#BROWSER}, {@link Kind#GPU}, {@link Kind#ZYGOTE},
- * {@link Kind#UTILITY}, {@link Kind#RENDERER}, {@link Kind#EXTENSION}, {@link Kind#GUEST},
- * {@link Kind#PLUGIN_DEPRECATED}, {@link Kind#SANDBOX_HELPER}, {@link Kind#DEDICATED_WORKER},
- * {@link Kind#SHARED_WORKER}, {@link Kind#SERVICE_WORKER}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#BROWSER}, {@link Kind#GPU}, {@link Kind#ZYGOTE}, {@link Kind#UTILITY}, {@link Kind#RENDERER}, {@link Kind#EXTENSION}, {@link Kind#GUEST}, {@link Kind#PLUGIN_DEPRECATED}, {@link Kind#SANDBOX_HELPER}, {@link Kind#DEDICATED_WORKER}, {@link Kind#SHARED_WORKER}, {@link Kind#SERVICE_WORKER}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefTaskType implements CefEnum<CefTaskType> {
 
     /** Known constants for {@link CefTaskType}. */
@@ -106,8 +99,8 @@ public final class CefTaskType implements CefEnum<CefTaskType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

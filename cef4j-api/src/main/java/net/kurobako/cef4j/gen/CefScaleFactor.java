@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Supported UI scale factors for the platform. SCALE_FACTOR_NONE is used for density independent resources such as
- * string, html/js files or an image that can be used for any scale factors (such as wallpapers).
- *
+ * Supported UI scale factors for the platform. SCALE_FACTOR_NONE is used for density independent resources such as string, html/js files or an image that can be used for any scale factors (such as wallpapers).
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   SCALE_FACTOR_NONE = 0,
  *   SCALE_FACTOR_100P = 1,
@@ -18,15 +14,12 @@ import javax.annotation.processing.Generated;
  *   SCALE_FACTOR_140P = 4,
  *   ...
  * } cef_scale_factor_t;</pre>
- *
- * <p>Possible values: {@link Kind#SCALE_FACTOR_NONE}, {@link Kind#SCALE_FACTOR_100P}, {@link Kind#SCALE_FACTOR_125P},
- * {@link Kind#SCALE_FACTOR_133P}, {@link Kind#SCALE_FACTOR_140P}, {@link Kind#SCALE_FACTOR_150P},
- * {@link Kind#SCALE_FACTOR_180P}, {@link Kind#SCALE_FACTOR_200P}, {@link Kind#SCALE_FACTOR_250P},
- * {@link Kind#SCALE_FACTOR_300P}, {@link Kind#SCALE_FACTOR_NUM_VALUES}
+ * <p>Possible values: {@link Kind#SCALE_FACTOR_NONE}, {@link Kind#SCALE_FACTOR_100P}, {@link Kind#SCALE_FACTOR_125P}, {@link Kind#SCALE_FACTOR_133P}, {@link Kind#SCALE_FACTOR_140P}, {@link Kind#SCALE_FACTOR_150P}, {@link Kind#SCALE_FACTOR_180P}, {@link Kind#SCALE_FACTOR_200P}, {@link Kind#SCALE_FACTOR_250P}, {@link Kind#SCALE_FACTOR_300P}, {@link Kind#SCALE_FACTOR_NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefScaleFactor implements CefEnum<CefScaleFactor> {
 
     /** Known constants for {@link CefScaleFactor}. */
@@ -92,8 +85,8 @@ public final class CefScaleFactor implements CefEnum<CefScaleFactor> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

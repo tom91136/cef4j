@@ -98,7 +98,7 @@ class CefWebViewSchemeTest {
             }
         };
         CefSettings.Mutable settings = new CefSettings.Mutable();
-        CefWebView.setup(settings, appHandler);
+        CefWebView.initialise(settings, appHandler);
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
 
         CountDownLatch fxLatch = new CountDownLatch(1);

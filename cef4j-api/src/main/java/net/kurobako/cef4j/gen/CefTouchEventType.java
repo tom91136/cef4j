@@ -1,26 +1,23 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Touch points states types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_TET_RELEASED = 0,
  *   CEF_TET_PRESSED = 1,
  *   CEF_TET_MOVED = 2,
  *   CEF_TET_CANCELLED = 3
  * } cef_touch_event_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#RELEASED}, {@link Kind#PRESSED}, {@link Kind#MOVED}, {@link Kind#CANCELLED}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefTouchEventType implements CefEnum<CefTouchEventType> {
 
     /** Known constants for {@link CefTouchEventType}. */
@@ -79,8 +76,8 @@ public final class CefTouchEventType implements CefEnum<CefTouchEventType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

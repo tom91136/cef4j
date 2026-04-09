@@ -5,7 +5,7 @@
 #include "include/capi/views/cef_view_delegate_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_view_delegate_t* Create_JniCefViewDelegate(JNIEnv *env, jobject handler);
+extern "C" cef_view_delegate_t* Create_JniCefViewDelegate(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefScrollView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -15,7 +15,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefScrollView), setContentView0)(JNIEnv*
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return;
     cef_view_t* _view_ptr = view ? reinterpret_cast<cef_view_t*>(env->GetLongField(view, env->GetFieldID(env->GetObjectClass(view), "nativePtr", "J"))) : nullptr;
-    if (_view_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b);}
+    if (_view_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b); }
     s->set_content_view(s, _view_ptr);
 }
 

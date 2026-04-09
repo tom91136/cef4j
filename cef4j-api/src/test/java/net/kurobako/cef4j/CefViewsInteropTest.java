@@ -50,8 +50,8 @@ class CefViewsInteropTest extends CefTestBase {
     @Order(3)
     void panel_setBoxLayout() {
         try (CefPanel panel = CefPanel.create(null).orElseThrow()) {
-            // null settings may return empty on some platforms; verify no crash
-            Optional<CefBoxLayout> layout = panel.setToBoxLayout(null);
+            // setToBoxLayout may return empty on some platforms; verify no crash
+            Optional<CefBoxLayout> layout = panel.setToBoxLayout(new CefBoxLayoutSettings.Mutable().toImmutable());
             if (layout.isPresent()) {
                 assertThat(panel.getLayout())
                         .as("getLayout after setToBoxLayout")
@@ -79,9 +79,8 @@ class CefViewsInteropTest extends CefTestBase {
 
             Optional<CefBrowser> browser = bv.getBrowser();
             // Browser may not be created until the view is added to a window
-            if (browser.isPresent()) {
-                assertThat(browser.get().isValid()).as("browser isValid").isTrue();
-            }
+            browser.ifPresent(cefBrowser ->
+                    assertThat(cefBrowser.isValid()).as("browser isValid").isTrue());
 
             assertThat(bv).as("browser view instance").isNotNull();
         }
@@ -223,11 +222,9 @@ class CefViewsInteropTest extends CefTestBase {
 
             // On headless, display may or may not be available
             Optional<CefDisplay> display = window.getDisplay();
-            if (display.isPresent()) {
-                assertThat(display.get().getDeviceScaleFactor())
-                        .as("scale factor")
-                        .isGreaterThan(0f);
-            }
+            display.ifPresent(cefDisplay -> assertThat(cefDisplay.getDeviceScaleFactor())
+                    .as("scale factor")
+                    .isGreaterThan(0f));
 
             window.cefClose();
         }

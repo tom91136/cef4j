@@ -10,12 +10,12 @@
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_run_file_dialog_callback_t* Create_JniCefRunFileDialogCallback(JNIEnv *env, jobject handler);
-extern "C" cef_download_image_callback_t* Create_JniCefDownloadImageCallback(JNIEnv *env, jobject handler);
-extern "C" cef_pdf_print_callback_t* Create_JniCefPdfPrintCallback(JNIEnv *env, jobject handler);
-extern "C" cef_client_t* Create_JniCefClient(JNIEnv *env, jobject handler);
-extern "C" cef_dev_tools_message_observer_t* Create_JniCefDevToolsMessageObserver(JNIEnv *env, jobject handler);
-extern "C" cef_navigation_entry_visitor_t* Create_JniCefNavigationEntryVisitor(JNIEnv *env, jobject handler);
+extern "C" cef_run_file_dialog_callback_t* Create_JniCefRunFileDialogCallback(JNIEnv* env, jobject handler);
+extern "C" cef_download_image_callback_t* Create_JniCefDownloadImageCallback(JNIEnv* env, jobject handler);
+extern "C" cef_pdf_print_callback_t* Create_JniCefPdfPrintCallback(JNIEnv* env, jobject handler);
+extern "C" cef_client_t* Create_JniCefClient(JNIEnv* env, jobject handler);
+extern "C" cef_dev_tools_message_observer_t* Create_JniCefDevToolsMessageObserver(JNIEnv* env, jobject handler);
+extern "C" cef_navigation_entry_visitor_t* Create_JniCefNavigationEntryVisitor(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -105,7 +105,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), getRequestContext0)(JNIEnv
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowserHost), canZoom0)(JNIEnv* env, jobject obj, jlong self, jobject command) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!command) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "command must not be null"); return JNI_FALSE;}
+    if (!command) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "command must not be null"); return JNI_FALSE; }
     auto _r = s->can_zoom(s, static_cast<cef_zoom_command_t>(env->GetLongField(command, env->GetFieldID(env->GetObjectClass(command), "value", "J"))));
     return static_cast<jboolean>(_r);
 }
@@ -113,7 +113,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowserHost), canZoom0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), zoom0)(JNIEnv* env, jobject obj, jlong self, jobject command) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!command) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "command must not be null"); return;}
+    if (!command) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "command must not be null"); return; }
     s->zoom(s, static_cast<cef_zoom_command_t>(env->GetLongField(command, env->GetFieldID(env->GetObjectClass(command), "value", "J"))));
 }
 
@@ -138,7 +138,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), setZoomLevel0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), runFileDialog0)(JNIEnv* env, jobject obj, jlong self, jobject mode, jstring title, jstring default_file_path, jobject accept_filters, jobject callback) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mode must not be null"); return;}
+    if (!mode) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "mode must not be null"); return; }
     auto _title_str = title ? JStringToCefString(env, title) : nullptr;
     auto _default_file_path_str = default_file_path ? JStringToCefString(env, default_file_path) : nullptr;
     auto _accept_filters_csl = JavaListToCefStringList(env, accept_filters);
@@ -175,7 +175,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), print0)(JNIEnv* env, jobject 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), printToPdf0)(JNIEnv* env, jobject obj, jlong self, jstring path, jobject settings, jobject callback) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return;}
+    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return; }
     auto _path_str = JStringToCefString(env, path);
     cef_pdf_print_settings_t _settings_val = {};
     if (settings) {
@@ -417,9 +417,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowserHost), hasDevTools0)(JNIEnv* env
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowserHost), sendDevToolsMessage0)(JNIEnv* env, jobject obj, jlong self, jobject message) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!message) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return JNI_FALSE;}
+    if (!message) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return JNI_FALSE; }
     const void* _message_addr = message ? env->GetDirectBufferAddress(message) : nullptr;
-    if (message && !_message_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE;}
+    if (message && !_message_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return JNI_FALSE; }
     auto _r = s->send_dev_tools_message(s, _message_addr, static_cast<size_t>(env->GetDirectBufferCapacity(message)));
     return static_cast<jboolean>(_r);
 }
@@ -429,7 +429,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefBrowserHost), executeDevToolsMethod0)(JNIEn
     if (!s) return 0;
     auto _method_str = JStringToCefString(env, method);
     cef_dictionary_value_t* _params_ptr = params ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(params, env->GetFieldID(env->GetObjectClass(params), "nativePtr", "J"))) : nullptr;
-    if (_params_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_params_ptr); _b->add_ref(_b);}
+    if (_params_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_params_ptr); _b->add_ref(_b); }
     return static_cast<jint>(s->execute_dev_tools_method(s, message_id, _method_str, _params_ptr));
 }
 
@@ -495,7 +495,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), notifyScreenInfoChanged0)(JNI
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), invalidate0)(JNIEnv* env, jobject obj, jlong self, jobject type) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "type must not be null"); return;}
+    if (!type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "type must not be null"); return; }
     s->invalidate(s, static_cast<cef_paint_element_type_t>(env->GetLongField(type, env->GetFieldID(env->GetObjectClass(type), "value", "J"))));
 }
 
@@ -508,7 +508,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendExternalBeginFrame0)(JNIE
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendKeyEvent0)(JNIEnv* env, jobject obj, jlong self, jobject event) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
     cef_key_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
@@ -531,8 +531,8 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendKeyEvent0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseClickEvent0)(JNIEnv* env, jobject obj, jlong self, jobject event, jobject type, jboolean mouseUp, jint clickCount) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
-    if (!type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "type must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
+    if (!type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "type must not be null"); return; }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -546,7 +546,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseClickEvent0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseMoveEvent0)(JNIEnv* env, jobject obj, jlong self, jobject event, jboolean mouseLeave) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -560,7 +560,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseMoveEvent0)(JNIEnv* 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseWheelEvent0)(JNIEnv* env, jobject obj, jlong self, jobject event, jint deltaX, jint deltaY) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -574,7 +574,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendMouseWheelEvent0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), sendTouchEvent0)(JNIEnv* env, jobject obj, jlong self, jobject event) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
     cef_touch_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefTouchEvent");
@@ -625,31 +625,31 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), setWindowlessFrameRate0)(JNIE
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), imeSetComposition0)(JNIEnv* env, jobject obj, jlong self, jstring text, jlong underlinesCount, jobjectArray underlines, jobject replacement_range, jobject selection_range) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!replacement_range) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "replacementRange must not be null"); return;}
-    if (!selection_range) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "selectionRange must not be null"); return;}
+    if (!replacement_range) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "replacementRange must not be null"); return; }
+    if (!selection_range) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "selectionRange must not be null"); return; }
     auto _text_str = text ? JStringToCefString(env, text) : nullptr;
     size_t _underlines_sz = static_cast<size_t>(underlinesCount);
     cef_composition_underline_t* _underlines_arr = _underlines_sz > 0 ? new cef_composition_underline_t[_underlines_sz]() : nullptr;
-    {   auto _bvac = env->FindClass("net/kurobako/cef4j/gen/CefCompositionUnderline");
-        for (size_t _i = 0; _i < _underlines_sz; _i++) {
-            auto _elem = env->GetObjectArrayElement(underlines, _i);
-            if (_elem) {
-                auto _rd_range = env->GetObjectField(_elem, env->GetFieldID(_bvac, "range", "Lnet/kurobako/cef4j/gen/CefRange;"));
-                if (_rd_range) {
-                    auto _rd_rangec = env->GetObjectClass(_rd_range);
-                    _underlines_arr[_i].range.from = static_cast<decltype(_underlines_arr[_i].range.from)>(env->GetIntField(_rd_range, env->GetFieldID(_rd_rangec, "from", "I")));
-                    _underlines_arr[_i].range.to = static_cast<decltype(_underlines_arr[_i].range.to)>(env->GetIntField(_rd_range, env->GetFieldID(_rd_rangec, "to", "I")));
-                }
-                _underlines_arr[_i].color = static_cast<decltype(_underlines_arr[_i].color)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "color", "I")));
-                _underlines_arr[_i].background_color = static_cast<decltype(_underlines_arr[_i].background_color)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "backgroundColor", "I")));
-                _underlines_arr[_i].thick = static_cast<decltype(_underlines_arr[_i].thick)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "thick", "I")));
-                auto _rd_style = env->GetObjectField(_elem, env->GetFieldID(_bvac, "style", "Lnet/kurobako/cef4j/gen/CefCompositionUnderlineStyle;"));
-                if (_rd_style) {
-                    _underlines_arr[_i].style = static_cast<decltype(_underlines_arr[_i].style)>(env->GetLongField(_rd_style, env->GetFieldID(env->GetObjectClass(_rd_style), "value", "J")));
-                }
-                _underlines_arr[_i].size = sizeof(cef_composition_underline_t);
+    { auto _bvac = env->FindClass("net/kurobako/cef4j/gen/CefCompositionUnderline");
+    for (size_t _i = 0; _i < _underlines_sz; _i++) {
+        auto _elem = env->GetObjectArrayElement(underlines, _i);
+        if (_elem) {
+            auto _rd_range = env->GetObjectField(_elem, env->GetFieldID(_bvac, "range", "Lnet/kurobako/cef4j/gen/CefRange;"));
+            if (_rd_range) {
+                auto _rd_rangec = env->GetObjectClass(_rd_range);
+                _underlines_arr[_i].range.from = static_cast<decltype(_underlines_arr[_i].range.from)>(env->GetIntField(_rd_range, env->GetFieldID(_rd_rangec, "from", "I")));
+                _underlines_arr[_i].range.to = static_cast<decltype(_underlines_arr[_i].range.to)>(env->GetIntField(_rd_range, env->GetFieldID(_rd_rangec, "to", "I")));
             }
-        }}
+            _underlines_arr[_i].color = static_cast<decltype(_underlines_arr[_i].color)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "color", "I")));
+            _underlines_arr[_i].background_color = static_cast<decltype(_underlines_arr[_i].background_color)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "backgroundColor", "I")));
+            _underlines_arr[_i].thick = static_cast<decltype(_underlines_arr[_i].thick)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "thick", "I")));
+            auto _rd_style = env->GetObjectField(_elem, env->GetFieldID(_bvac, "style", "Lnet/kurobako/cef4j/gen/CefCompositionUnderlineStyle;"));
+            if (_rd_style) {
+                _underlines_arr[_i].style = static_cast<decltype(_underlines_arr[_i].style)>(env->GetLongField(_rd_style, env->GetFieldID(env->GetObjectClass(_rd_style), "value", "J")));
+            }
+            _underlines_arr[_i].size = sizeof(cef_composition_underline_t);
+        }
+    } }
     cef_range_t _replacement_range_val = {};
     if (replacement_range) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRange");
@@ -670,7 +670,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), imeSetComposition0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), imeCommitText0)(JNIEnv* env, jobject obj, jlong self, jstring text, jobject replacement_range, jint relative_cursor_pos) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!replacement_range) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "replacementRange must not be null"); return;}
+    if (!replacement_range) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "replacementRange must not be null"); return; }
     auto _text_str = text ? JStringToCefString(env, text) : nullptr;
     cef_range_t _replacement_range_val = {};
     if (replacement_range) {
@@ -697,10 +697,10 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), imeCancelComposition0)(JNIEnv
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDragEnter0)(JNIEnv* env, jobject obj, jlong self, jobject drag_data, jobject event, jobject allowed_ops) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
-    if (!allowed_ops) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "allowedOps must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
+    if (!allowed_ops) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "allowedOps must not be null"); return; }
     cef_drag_data_t* _drag_data_ptr = drag_data ? reinterpret_cast<cef_drag_data_t*>(env->GetLongField(drag_data, env->GetFieldID(env->GetObjectClass(drag_data), "nativePtr", "J"))) : nullptr;
-    if (_drag_data_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_drag_data_ptr); _b->add_ref(_b);}
+    if (_drag_data_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_drag_data_ptr); _b->add_ref(_b); }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -714,8 +714,8 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDragEnter0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDragOver0)(JNIEnv* env, jobject obj, jlong self, jobject event, jobject allowed_ops) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
-    if (!allowed_ops) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "allowedOps must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
+    if (!allowed_ops) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "allowedOps must not be null"); return; }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -735,7 +735,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDragLeave0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDrop0)(JNIEnv* env, jobject obj, jlong self, jobject event) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!event) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return;}
+    if (!event) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "event must not be null"); return; }
     cef_mouse_event_t _event_val = {};
     if (event) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefMouseEvent");
@@ -749,7 +749,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragTargetDrop0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), dragSourceEndedAt0)(JNIEnv* env, jobject obj, jlong self, jint x, jint y, jobject op) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!op) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "op must not be null"); return;}
+    if (!op) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "op must not be null"); return; }
     s->drag_source_ended_at(s, x, y, static_cast<cef_drag_operations_mask_t>(env->GetLongField(op, env->GetFieldID(env->GetObjectClass(op), "value", "J"))));
 }
 
@@ -772,15 +772,15 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), getVisibleNavigationEntry0
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), setAccessibilityState0)(JNIEnv* env, jobject obj, jlong self, jobject accessibility_state) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!accessibility_state) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "accessibilityState must not be null"); return;}
+    if (!accessibility_state) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "accessibilityState must not be null"); return; }
     s->set_accessibility_state(s, static_cast<cef_state_t>(env->GetLongField(accessibility_state, env->GetFieldID(env->GetObjectClass(accessibility_state), "value", "J"))));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), setAutoResizeEnabled0)(JNIEnv* env, jobject obj, jlong self, jboolean enabled, jobject min_size, jobject max_size) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!min_size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "minSize must not be null"); return;}
-    if (!max_size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "maxSize must not be null"); return;}
+    if (!min_size) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "minSize must not be null"); return; }
+    if (!max_size) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "maxSize must not be null"); return; }
     cef_size_t _min_size_val = {};
     if (min_size) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize");
@@ -832,7 +832,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBrowserHost), canExecuteChromeCommand0)
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), executeChromeCommand0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject disposition) {
     auto* s = reinterpret_cast<cef_browser_host_t*>(self);
     if (!s) return;
-    if (!disposition) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "disposition must not be null"); return;}
+    if (!disposition) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "disposition must not be null"); return; }
     s->execute_chrome_command(s, command_id, static_cast<cef_window_open_disposition_t>(env->GetLongField(disposition, env->GetFieldID(env->GetObjectClass(disposition), "value", "J"))));
 }
 
@@ -859,8 +859,8 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), setAxViewportCollapse0)(JNIEn
 }
 
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefBrowserHost), createBrowser0)(JNIEnv* env, jclass clz, jobject windowInfo, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context) {
-    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return 0;}
-    if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0;}
+    if (!windowInfo) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return 0; }
+    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0; }
     cef_window_info_t _windowInfo_val = {};
     if (windowInfo) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo");
@@ -1013,15 +1013,15 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefBrowserHost), createBrowser0)(JNIEnv* env, 
         _settings_val.size = sizeof(cef_browser_settings_t);
     }
     cef_dictionary_value_t* _extra_info_ptr = extra_info ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(extra_info, env->GetFieldID(env->GetObjectClass(extra_info), "nativePtr", "J"))) : nullptr;
-    if (_extra_info_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b);}
+    if (_extra_info_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b); }
     cef_request_context_t* _request_context_ptr = request_context ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(request_context, env->GetFieldID(env->GetObjectClass(request_context), "nativePtr", "J"))) : nullptr;
-    if (_request_context_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b);}
+    if (_request_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b); }
     return static_cast<jint>(cef_browser_host_create_browser(&_windowInfo_val, _client_ptr, _url_str, &_settings_val, _extra_info_ptr, _request_context_ptr));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), createBrowserSync0)(JNIEnv* env, jclass clz, jobject windowInfo, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context) {
-    if (!windowInfo) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return nullptr;}
-    if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr;}
+    if (!windowInfo) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "windowInfo must not be null"); return nullptr; }
+    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_window_info_t _windowInfo_val = {};
     if (windowInfo) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo");
@@ -1174,9 +1174,9 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), createBrowserSync0)(JNIEnv
         _settings_val.size = sizeof(cef_browser_settings_t);
     }
     cef_dictionary_value_t* _extra_info_ptr = extra_info ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(extra_info, env->GetFieldID(env->GetObjectClass(extra_info), "nativePtr", "J"))) : nullptr;
-    if (_extra_info_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b);}
+    if (_extra_info_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b); }
     cef_request_context_t* _request_context_ptr = request_context ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(request_context, env->GetFieldID(env->GetObjectClass(request_context), "nativePtr", "J"))) : nullptr;
-    if (_request_context_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b);}
+    if (_request_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b); }
     auto _r = cef_browser_host_create_browser_sync(&_windowInfo_val, _client_ptr, _url_str, &_settings_val, _extra_info_ptr, _request_context_ptr);
     if (_url_str) cef_string_userfree_free(_url_str);
     if (!_r) return nullptr;

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * resource files (locales, .pak, .dat, .bin). This is typically the {@code Release/} directory of a CEF binary
  * distribution.
  */
+@SuppressWarnings("unused")
 public final class SystemBootstrap {
 
     private static final Logger log = LoggerFactory.getLogger(SystemBootstrap.class);
@@ -79,7 +80,7 @@ public final class SystemBootstrap {
         log.debug("Loading native library from explicit path: {}", fullPath);
         System.load(fullPath.toAbsolutePath().toString());
         loaded = true;
-        log.info("Loaded cef4j native library from {}", fullPath);
+        log.info("Loaded cef4j native library from filesystem path {}", fullPath);
     }
 
     /** Returns whether the native library has been loaded. */

@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported context menu type flags.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CM_TYPEFLAG_NONE = 0,
  *   CM_TYPEFLAG_PAGE = 1 &lt;&lt; 0,
@@ -17,30 +14,29 @@ import javax.annotation.processing.Generated;
  *   CM_TYPEFLAG_MEDIA = 1 &lt;&lt; 3,
  *   ...
  * } cef_context_menu_type_flags_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#PAGE}, {@link Kind#FRAME}, {@link Kind#LINK}, {@link Kind#MEDIA},
- * {@link Kind#SELECTION}, {@link Kind#EDITABLE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#PAGE}, {@link Kind#FRAME}, {@link Kind#LINK}, {@link Kind#MEDIA}, {@link Kind#SELECTION}, {@link Kind#EDITABLE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefContextMenuTypeFlags implements CefEnum<CefContextMenuTypeFlags> {
 
     /** Known constants for {@link CefContextMenuTypeFlags}. */
     public enum Kind {
-        /** No node is selected. */
+        /** No node is selected.  */
         NONE(0, "0", "CM_TYPEFLAG_NONE"),
-        /** The top page is selected. */
+        /** The top page is selected.  */
         PAGE(1 << 0, "1 << 0", "CM_TYPEFLAG_PAGE"),
-        /** A subframe page is selected. */
+        /** A subframe page is selected.  */
         FRAME(1 << 1, "1 << 1", "CM_TYPEFLAG_FRAME"),
-        /** A link is selected. */
+        /** A link is selected.  */
         LINK(1 << 2, "1 << 2", "CM_TYPEFLAG_LINK"),
-        /** A media node is selected. */
+        /** A media node is selected.  */
         MEDIA(1 << 3, "1 << 3", "CM_TYPEFLAG_MEDIA"),
-        /** There is a textual or mixed selection that is selected. */
+        /** There is a textual or mixed selection that is selected.  */
         SELECTION(1 << 4, "1 << 4", "CM_TYPEFLAG_SELECTION"),
-        /** An editable element is selected. */
+        /** An editable element is selected.  */
         EDITABLE(1 << 5, "1 << 5", "CM_TYPEFLAG_EDITABLE");
 
         private static final Kind[] VALUES = Kind.values();
@@ -92,8 +88,8 @@ public final class CefContextMenuTypeFlags implements CefEnum<CefContextMenuType
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

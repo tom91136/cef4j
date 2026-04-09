@@ -6,12 +6,12 @@
 #include <atomic>
 #include "jni_util.h"
 
-struct JniCefV8Handler: public cef_v8_handler_t {
-    JavaVM *jvm;
+struct JniCefV8Handler : public cef_v8_handler_t {
+    JavaVM* jvm;
     jobject javaHandler;  // global ref
-    std::atomic<int> refCount { 1 };
+    std::atomic<int> refCount{1};
 
-    JniCefV8Handler(JavaVM *vm, jobject handler) : cef_v8_handler_t { }, jvm(vm) {
+    JniCefV8Handler(JavaVM* vm, jobject handler) : cef_v8_handler_t{}, jvm(vm) {
         javaHandler = handler;
         InitRefCount<JniCefV8Handler, cef_v8_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_v8_handler_t*>(this)));
         execute = &_execute;
@@ -20,10 +20,10 @@ struct JniCefV8Handler: public cef_v8_handler_t {
     static int CEF_CALLBACK _execute(cef_v8_handler_t* self, const cef_string_t* name, struct _cef_v8_value_t* object, size_t argumentsCount, struct _cef_v8_value_t* const* arguments, struct _cef_v8_value_t** retval, cef_string_t* exception) {
         auto* h = reinterpret_cast<JniCefV8Handler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(36) < 0) {return false;}
+        if (env->PushLocalFrame(36) < 0) { return false; }
         auto j_name = CefStringToJString(env, name);
         cef_v8_value_t* _p_object = object;
-        if (_p_object) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b);}
+        if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
         auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
@@ -33,7 +33,7 @@ struct JniCefV8Handler: public cef_v8_handler_t {
         auto j_arguments = env->NewObjectArray(j_arguments_len, j_arguments_cls, nullptr);
         for (jsize _i = 0; _i < j_arguments_len; _i++) {
             cef_v8_value_t* _elem = arguments[_i];
-            if (_elem) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_elem); _b->add_ref(_b);}
+            if (_elem) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_elem); _b->add_ref(_b); }
             auto _jelem = _elem ? env->NewObject(j_arguments_cls, j_arguments_ctor, reinterpret_cast<jlong>(_elem)) : nullptr;
             env->SetObjectArrayElement(j_arguments, _i, _jelem);
         }
@@ -43,16 +43,16 @@ struct JniCefV8Handler: public cef_v8_handler_t {
         auto j_retval_peer_ctor = env->GetMethodID(j_retval_peer_cls, "<init>", "(J)V");
         jobject j_retval_init = nullptr;
         if (retval && *retval) {
-            {   auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(*retval); _b->add_ref(_b);}
+            { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(*retval); _b->add_ref(_b); }
             j_retval_init = env->NewObject(j_retval_peer_cls, j_retval_peer_ctor, reinterpret_cast<jlong>(*retval));
         }
         auto j_retval = env->NewObject(j_retval_ar_cls, j_retval_ar_ctor, j_retval_init);
         auto j_exception = CefStringToJString(env, exception);
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "execute", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefV8Value;J[Lnet/kurobako/cef4j/gen/CefV8Value;Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/String;)Z");
-        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_name, j_object, static_cast<jlong>(argumentsCount), j_arguments, j_retval, j_exception);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (retval) {
             auto j_retval_get = env->GetMethodID(j_retval_ar_cls, "get", "()Ljava/lang/Object;");
             auto j_retval_new = env->CallObjectMethod(j_retval, j_retval_get);
@@ -69,8 +69,8 @@ struct JniCefV8Handler: public cef_v8_handler_t {
     }
 };
 
-extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv *env, jobject handler) {
-    JavaVM *jvm;
+extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv* env, jobject handler) {
+    JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_v8_handler_t*>(new JniCefV8Handler(jvm, globalRef));

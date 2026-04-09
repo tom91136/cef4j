@@ -22,7 +22,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefButton), asLabelButton0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefButton), setState0)(JNIEnv* env, jobject obj, jlong self, jobject state) {
     auto* s = reinterpret_cast<cef_button_t*>(self);
     if (!s) return;
-    if (!state) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "state must not be null"); return;}
+    if (!state) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "state must not be null"); return; }
     s->set_state(s, static_cast<cef_button_state_t>(env->GetLongField(state, env->GetFieldID(env->GetObjectClass(state), "value", "J"))));
 }
 

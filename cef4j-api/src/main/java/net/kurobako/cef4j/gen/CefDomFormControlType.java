@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * DOM form control types. Should be kept in sync with Chromium's blink::mojom::FormControlType type.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   DOM_FORM_CONTROL_TYPE_UNSUPPORTED = 0,
  *   DOM_FORM_CONTROL_TYPE_BUTTON_BUTTON = 1,
@@ -17,20 +14,12 @@ import javax.annotation.processing.Generated;
  *   DOM_FORM_CONTROL_TYPE_BUTTON_POPOVER = 4,
  *   ...
  * } cef_dom_form_control_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNSUPPORTED}, {@link Kind#BUTTON_BUTTON}, {@link Kind#BUTTON_SUBMIT},
- * {@link Kind#BUTTON_RESET}, {@link Kind#BUTTON_POPOVER}, {@link Kind#FIELDSET}, {@link Kind#INPUT_BUTTON},
- * {@link Kind#INPUT_CHECKBOX}, {@link Kind#INPUT_COLOR}, {@link Kind#INPUT_DATE}, {@link Kind#INPUT_DATETIME_LOCAL},
- * {@link Kind#INPUT_EMAIL}, {@link Kind#INPUT_FILE}, {@link Kind#INPUT_HIDDEN}, {@link Kind#INPUT_IMAGE},
- * {@link Kind#INPUT_MONTH}, {@link Kind#INPUT_NUMBER}, {@link Kind#INPUT_PASSWORD}, {@link Kind#INPUT_RADIO},
- * {@link Kind#INPUT_RANGE}, {@link Kind#INPUT_RESET}, {@link Kind#INPUT_SEARCH}, {@link Kind#INPUT_SUBMIT},
- * {@link Kind#INPUT_TELEPHONE}, {@link Kind#INPUT_TEXT}, {@link Kind#INPUT_TIME}, {@link Kind#INPUT_URL},
- * {@link Kind#INPUT_WEEK}, {@link Kind#OUTPUT}, {@link Kind#SELECT_ONE}, {@link Kind#SELECT_MULTIPLE},
- * {@link Kind#TEXT_AREA}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNSUPPORTED}, {@link Kind#BUTTON_BUTTON}, {@link Kind#BUTTON_SUBMIT}, {@link Kind#BUTTON_RESET}, {@link Kind#BUTTON_POPOVER}, {@link Kind#FIELDSET}, {@link Kind#INPUT_BUTTON}, {@link Kind#INPUT_CHECKBOX}, {@link Kind#INPUT_COLOR}, {@link Kind#INPUT_DATE}, {@link Kind#INPUT_DATETIME_LOCAL}, {@link Kind#INPUT_EMAIL}, {@link Kind#INPUT_FILE}, {@link Kind#INPUT_HIDDEN}, {@link Kind#INPUT_IMAGE}, {@link Kind#INPUT_MONTH}, {@link Kind#INPUT_NUMBER}, {@link Kind#INPUT_PASSWORD}, {@link Kind#INPUT_RADIO}, {@link Kind#INPUT_RANGE}, {@link Kind#INPUT_RESET}, {@link Kind#INPUT_SEARCH}, {@link Kind#INPUT_SUBMIT}, {@link Kind#INPUT_TELEPHONE}, {@link Kind#INPUT_TEXT}, {@link Kind#INPUT_TIME}, {@link Kind#INPUT_URL}, {@link Kind#INPUT_WEEK}, {@link Kind#OUTPUT}, {@link Kind#SELECT_ONE}, {@link Kind#SELECT_MULTIPLE}, {@link Kind#TEXT_AREA}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDomFormControlType implements CefEnum<CefDomFormControlType> {
 
     /** Known constants for {@link CefDomFormControlType}. */
@@ -118,8 +107,8 @@ public final class CefDomFormControlType implements CefEnum<CefDomFormControlTyp
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

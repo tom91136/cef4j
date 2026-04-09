@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Path key values.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   PK_DIR_CURRENT = 0,
  *   PK_DIR_EXE = 1,
@@ -17,38 +14,33 @@ import javax.annotation.processing.Generated;
  *   PK_FILE_EXE = 4,
  *   ...
  * } cef_path_key_t;</pre>
- *
- * <p>Possible values: {@link Kind#DIR_CURRENT}, {@link Kind#DIR_EXE}, {@link Kind#DIR_MODULE}, {@link Kind#DIR_TEMP},
- * {@link Kind#FILE_EXE}, {@link Kind#FILE_MODULE}, {@link Kind#LOCAL_APP_DATA}, {@link Kind#USER_DATA},
- * {@link Kind#DIR_RESOURCES}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#DIR_CURRENT}, {@link Kind#DIR_EXE}, {@link Kind#DIR_MODULE}, {@link Kind#DIR_TEMP}, {@link Kind#FILE_EXE}, {@link Kind#FILE_MODULE}, {@link Kind#LOCAL_APP_DATA}, {@link Kind#USER_DATA}, {@link Kind#DIR_RESOURCES}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPathKey implements CefEnum<CefPathKey> {
 
     /** Known constants for {@link CefPathKey}. */
     public enum Kind {
-        /** Current directory. */
+        /** Current directory.  */
         DIR_CURRENT(0, "0", "PK_DIR_CURRENT"),
-        /** Directory containing PK_FILE_EXE. */
+        /** Directory containing PK_FILE_EXE.  */
         DIR_EXE(1, "1", "PK_DIR_EXE"),
-        /** Directory containing PK_FILE_MODULE. */
+        /** Directory containing PK_FILE_MODULE.  */
         DIR_MODULE(2, "2", "PK_DIR_MODULE"),
-        /** Temporary directory. */
+        /** Temporary directory.  */
         DIR_TEMP(3, "3", "PK_DIR_TEMP"),
-        /** Path and filename of the current executable. */
+        /** Path and filename of the current executable.  */
         FILE_EXE(4, "4", "PK_FILE_EXE"),
-        /** Path and filename of the module containing the CEF code (usually the libcef module). */
+        /** Path and filename of the module containing the CEF code (usually the libcef module).  */
         FILE_MODULE(5, "5", "PK_FILE_MODULE"),
-        /** "Local Settings\Application Data" directory under the user profile directory on Windows. */
+        /** "Local Settings\Application Data" directory under the user profile directory on Windows.  */
         LOCAL_APP_DATA(6, "6", "PK_LOCAL_APP_DATA"),
-        /**
-         * "Application Data" directory under the user profile directory on Windows and "~/Library/Application Support"
-         * directory on MacOS.
-         */
+        /** "Application Data" directory under the user profile directory on Windows and "~/Library/Application Support" directory on MacOS.  */
         USER_DATA(7, "7", "PK_USER_DATA"),
-        /** Directory containing application resources. Can be configured via CefSettings.resources_dir_path. */
+        /** Directory containing application resources. Can be configured via CefSettings.resources_dir_path.  */
         DIR_RESOURCES(8, "8", "PK_DIR_RESOURCES"),
         NUM_VALUES(9, "9", "PK_NUM_VALUES");
 
@@ -101,8 +93,8 @@ public final class CefPathKey implements CefEnum<CefPathKey> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

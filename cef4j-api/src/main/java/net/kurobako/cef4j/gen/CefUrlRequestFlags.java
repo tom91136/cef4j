@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Flags used to customize the behavior of CefURLRequest.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   UR_FLAG_NONE = 0,
  *   UR_FLAG_SKIP_CACHE = 1 &lt;&lt; 0,
@@ -17,53 +14,33 @@ import javax.annotation.processing.Generated;
  *   UR_FLAG_ALLOW_STORED_CREDENTIALS = 1 &lt;&lt; 3,
  *   ...
  * } cef_urlrequest_flags_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#SKIP_CACHE}, {@link Kind#ONLY_FROM_CACHE},
- * {@link Kind#DISABLE_CACHE}, {@link Kind#ALLOW_STORED_CREDENTIALS}, {@link Kind#REPORT_UPLOAD_PROGRESS},
- * {@link Kind#NO_DOWNLOAD_DATA}, {@link Kind#NO_RETRY_ON_5XX}, {@link Kind#STOP_ON_REDIRECT}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#SKIP_CACHE}, {@link Kind#ONLY_FROM_CACHE}, {@link Kind#DISABLE_CACHE}, {@link Kind#ALLOW_STORED_CREDENTIALS}, {@link Kind#REPORT_UPLOAD_PROGRESS}, {@link Kind#NO_DOWNLOAD_DATA}, {@link Kind#NO_RETRY_ON_5XX}, {@link Kind#STOP_ON_REDIRECT}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefUrlRequestFlags implements CefEnum<CefUrlRequestFlags> {
 
     /** Known constants for {@link CefUrlRequestFlags}. */
     public enum Kind {
-        /** Default behavior. */
+        /** Default behavior.  */
         NONE(0, "0", "UR_FLAG_NONE"),
-        /**
-         * If set the cache will be skipped when handling the request. Setting this value is equivalent to specifying
-         * the "Cache-Control: no-cache" request header. Setting this value in combination with UR_FLAG_ONLY_FROM_CACHE
-         * will cause the request to fail.
-         */
+        /** If set the cache will be skipped when handling the request. Setting this value is equivalent to specifying the "Cache-Control: no-cache" request header. Setting this value in combination with UR_FLAG_ONLY_FROM_CACHE will cause the request to fail.  */
         SKIP_CACHE(1 << 0, "1 << 0", "UR_FLAG_SKIP_CACHE"),
-        /**
-         * If set the request will fail if it cannot be served from the cache (or some equivalent local store). Setting
-         * this value is equivalent to specifying the "Cache-Control: only-if-cached" request header. Setting this value
-         * in combination with UR_FLAG_SKIP_CACHE or UR_FLAG_DISABLE_CACHE will cause the request to fail.
-         */
+        /** If set the request will fail if it cannot be served from the cache (or some equivalent local store). Setting this value is equivalent to specifying the "Cache-Control: only-if-cached" request header. Setting this value in combination with UR_FLAG_SKIP_CACHE or UR_FLAG_DISABLE_CACHE will cause the request to fail.  */
         ONLY_FROM_CACHE(1 << 1, "1 << 1", "UR_FLAG_ONLY_FROM_CACHE"),
-        /**
-         * If set the cache will not be used at all. Setting this value is equivalent to specifying the "Cache-Control:
-         * no-store" request header. Setting this value in combination with UR_FLAG_ONLY_FROM_CACHE will cause the
-         * request to fail.
-         */
+        /** If set the cache will not be used at all. Setting this value is equivalent to specifying the "Cache-Control: no-store" request header. Setting this value in combination with UR_FLAG_ONLY_FROM_CACHE will cause the request to fail.  */
         DISABLE_CACHE(1 << 2, "1 << 2", "UR_FLAG_DISABLE_CACHE"),
-        /**
-         * If set user name, password, and cookies may be sent with the request, and cookies may be saved from the
-         * response.
-         */
+        /** If set user name, password, and cookies may be sent with the request, and cookies may be saved from the response.  */
         ALLOW_STORED_CREDENTIALS(1 << 3, "1 << 3", "UR_FLAG_ALLOW_STORED_CREDENTIALS"),
-        /** If set upload progress events will be generated when a request has a body. */
+        /** If set upload progress events will be generated when a request has a body.  */
         REPORT_UPLOAD_PROGRESS(1 << 4, "1 << 4", "UR_FLAG_REPORT_UPLOAD_PROGRESS"),
-        /** If set the CefURLRequestClient.onDownloadData() method will not be called. */
+        /** If set the CefURLRequestClient.onDownloadData() method will not be called.  */
         NO_DOWNLOAD_DATA(1 << 5, "1 << 5", "UR_FLAG_NO_DOWNLOAD_DATA"),
-        /**
-         * If set 5XX redirect errors will be propagated to the observer instead of automatically re-tried. This
-         * currently only applies for requests originated in the browser process.
-         */
+        /** If set 5XX redirect errors will be propagated to the observer instead of automatically re-tried. This currently only applies for requests originated in the browser process.  */
         NO_RETRY_ON_5XX(1 << 6, "1 << 6", "UR_FLAG_NO_RETRY_ON_5XX"),
-        /** If set 3XX responses will cause the fetch to halt immediately rather than continue through the redirect. */
+        /** If set 3XX responses will cause the fetch to halt immediately rather than continue through the redirect.  */
         STOP_ON_REDIRECT(1 << 7, "1 << 7", "UR_FLAG_STOP_ON_REDIRECT");
 
         private static final Kind[] VALUES = Kind.values();
@@ -115,8 +92,8 @@ public final class CefUrlRequestFlags implements CefEnum<CefUrlRequestFlags> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

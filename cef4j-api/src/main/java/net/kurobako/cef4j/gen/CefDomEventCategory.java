@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * DOM event category flags.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   DOM_EVENT_CATEGORY_UNKNOWN = 0x0,
  *   DOM_EVENT_CATEGORY_UI = 0x1,
@@ -17,15 +14,12 @@ import javax.annotation.processing.Generated;
  *   DOM_EVENT_CATEGORY_KEYBOARD = 0x8,
  *   ...
  * } cef_dom_event_category_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#UI}, {@link Kind#MOUSE}, {@link Kind#MUTATION},
- * {@link Kind#KEYBOARD}, {@link Kind#TEXT}, {@link Kind#COMPOSITION}, {@link Kind#DRAG}, {@link Kind#CLIPBOARD},
- * {@link Kind#MESSAGE}, {@link Kind#WHEEL}, {@link Kind#BEFORE_TEXT_INSERTED}, {@link Kind#OVERFLOW},
- * {@link Kind#PAGE_TRANSITION}, {@link Kind#POPSTATE}, {@link Kind#PROGRESS}, {@link Kind#XMLHTTPREQUEST_PROGRESS}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#UI}, {@link Kind#MOUSE}, {@link Kind#MUTATION}, {@link Kind#KEYBOARD}, {@link Kind#TEXT}, {@link Kind#COMPOSITION}, {@link Kind#DRAG}, {@link Kind#CLIPBOARD}, {@link Kind#MESSAGE}, {@link Kind#WHEEL}, {@link Kind#BEFORE_TEXT_INSERTED}, {@link Kind#OVERFLOW}, {@link Kind#PAGE_TRANSITION}, {@link Kind#POPSTATE}, {@link Kind#PROGRESS}, {@link Kind#XMLHTTPREQUEST_PROGRESS}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDomEventCategory implements CefEnum<CefDomEventCategory> {
 
     /** Known constants for {@link CefDomEventCategory}. */
@@ -97,8 +91,8 @@ public final class CefDomEventCategory implements CefEnum<CefDomEventCategory> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

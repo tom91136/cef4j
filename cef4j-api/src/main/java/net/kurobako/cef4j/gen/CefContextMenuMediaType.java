@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Supported context menu media types. These constants match their equivalents in Chromium's ContextMenuDataMediaType
- * and should not be renumbered.
- *
+ * Supported context menu media types. These constants match their equivalents in Chromium's ContextMenuDataMediaType and should not be renumbered.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CM_MEDIATYPE_NONE = 0,
  *   CM_MEDIATYPE_IMAGE = 1,
@@ -18,30 +14,29 @@ import javax.annotation.processing.Generated;
  *   CM_MEDIATYPE_CANVAS = 4,
  *   ...
  * } cef_context_menu_media_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#IMAGE}, {@link Kind#VIDEO}, {@link Kind#AUDIO},
- * {@link Kind#CANVAS}, {@link Kind#FILE}, {@link Kind#PLUGIN}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#IMAGE}, {@link Kind#VIDEO}, {@link Kind#AUDIO}, {@link Kind#CANVAS}, {@link Kind#FILE}, {@link Kind#PLUGIN}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefContextMenuMediaType implements CefEnum<CefContextMenuMediaType> {
 
     /** Known constants for {@link CefContextMenuMediaType}. */
     public enum Kind {
-        /** No special node is in context. */
+        /** No special node is in context.  */
         NONE(0, "0", "CM_MEDIATYPE_NONE"),
-        /** An image node is selected. */
+        /** An image node is selected.  */
         IMAGE(1, "1", "CM_MEDIATYPE_IMAGE"),
-        /** A video node is selected. */
+        /** A video node is selected.  */
         VIDEO(2, "2", "CM_MEDIATYPE_VIDEO"),
-        /** An audio node is selected. */
+        /** An audio node is selected.  */
         AUDIO(3, "3", "CM_MEDIATYPE_AUDIO"),
-        /** An canvas node is selected. */
+        /** An canvas node is selected.  */
         CANVAS(4, "4", "CM_MEDIATYPE_CANVAS"),
-        /** A file node is selected. */
+        /** A file node is selected.  */
         FILE(5, "5", "CM_MEDIATYPE_FILE"),
-        /** A plugin node is selected. */
+        /** A plugin node is selected.  */
         PLUGIN(6, "6", "CM_MEDIATYPE_PLUGIN"),
         NUM_VALUES(7, "7", "CM_MEDIATYPE_NUM_VALUES");
 
@@ -94,8 +89,8 @@ public final class CefContextMenuMediaType implements CefEnum<CefContextMenuMedi
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

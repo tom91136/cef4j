@@ -28,25 +28,26 @@ object CHeaderParser {
       "cef_browser_settings_t",
       "cef_pdf_print_settings_t",
       "cef_settings_t",
-      "cef_request_context_settings_t"
+      "cef_request_context_settings_t",
+      "cef_box_layout_settings_t"
     )
-
-  private val OpaqueStructs: Set[String] = Set.empty
 
   def isByValueStruct(name: String): Boolean = ByValueStructs.contains(name)
 
   private def isIdentifier(value: String): Boolean =
     value.nonEmpty && value.head.isLetter && value.forall(ch => ch.isLetterOrDigit || ch == '_')
 
-  private val StructTypedefRe = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
-  private val EnumTypedefRe   = """typedef\s+enum\s*\{""".r
-  private val StructClosingRe = """}\s*cef_\w+_t\s*;""".r
-  private val FnPtrLineRe     = """\w\s*\*?\s*\(\s*\*\s*\w+\s*\)""".r
-  private val EnumClosingRe   = """}\s*\w+\s*;""".r
-  private val BaseFieldRe     = """.*cef_\w+_t\s+base\s*;.*""".r
-  private val ScopedBaseRe    = """.*cef_base_scoped_t\s+base\s*;.*""".r
-  private val StructOpenRe    = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
-  private val StructCloseRe   = """}\s*(cef_\w+_t)\s*;""".r
+  private val StructTypedefRe   = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
+  private val EnumTypedefRe     = """typedef\s+enum\s*\{""".r
+  private val StructClosingRe   = """}\s*cef_\w+_t\s*;""".r
+  private val FnPtrLineRe       = """\w\s*\*?\s*\(\s*\*\s*\w+\s*\)""".r
+  private val EnumClosingRe     = """}\s*\w+\s*;""".r
+  private val BaseFieldRe       = """.*cef_\w+_t\s+base\s*;.*""".r
+  private val ScopedBaseRe      = """.*cef_base_scoped_t\s+base\s*;.*""".r
+  private val BaseTypeCaptureRe = """(cef_\w+_t)\s+base\s*;""".r
+  private val RootBaseTypes     = Set("cef_base_ref_counted_t", "cef_base_scoped_t")
+  private val StructOpenRe      = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
+  private val StructCloseRe     = """}\s*(cef_\w+_t)\s*;""".r
 
   private case class TopState(decls: List[CefDecl], idx: Int)
 
@@ -99,6 +100,7 @@ object CHeaderParser {
       fields: List[Field],
       hasBase: Boolean,
       isScoped: Boolean,
+      parentType: Option[String],
       idx: Int
   )
 
@@ -116,8 +118,11 @@ object CHeaderParser {
       } else {
         val line = lines(state.idx)
         if (BaseFieldRe.matches(line)) {
-          val scoped = ScopedBaseRe.matches(line)
-          loop(state.copy(hasBase = true, isScoped = scoped, idx = state.idx + 1))
+          val scoped     = ScopedBaseRe.matches(line)
+          val parentType = BaseTypeCaptureRe.findFirstMatchIn(line)
+            .map(_.group(1))
+            .filterNot(RootBaseTypes.contains)
+          loop(state.copy(hasBase = true, isScoped = scoped, parentType = parentType, idx = state.idx + 1))
         } else if (isFnPtrLine(line)) {
           val fnText = collectFnPtr(lines, state.idx)
           val newFns = parseFnPtr(fnText, dataStructNames).fold(state.fnPtrs)(_ :: state.fnPtrs)
@@ -130,7 +135,7 @@ object CHeaderParser {
         }
       }
 
-    val result = loop(StructState(Nil, Nil, hasBase = false, isScoped = false, startIdx + 1))
+    val result = loop(StructState(Nil, Nil, hasBase = false, isScoped = false, parentType = None, startIdx + 1))
 
     val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
     val structName  = """}\s*(cef_\w+_t)\s*;""".r
@@ -143,7 +148,12 @@ object CHeaderParser {
     } else if (handlerNames.contains(structName)) {
       CefDecl.HandlerStruct(structName, result.fnPtrs.reverse.map(classifySpecial))
     } else {
-      CefDecl.ObjectStruct(structName, result.fnPtrs.reverse.map(classifySpecial), scoped = result.isScoped)
+      CefDecl.ObjectStruct(
+        structName,
+        result.fnPtrs.reverse.map(classifySpecial),
+        scoped = result.isScoped,
+        parentStruct = result.parentType
+      )
     }
 
     (decl, result.idx + 1)
@@ -607,8 +617,6 @@ object CHeaderParser {
         } else if (objectStructNames.contains(stripped))
           CType.ObjectPtr(stripped)
         else if (stripped == "void" || stripped.isEmpty)
-          CType.OpaquePtr
-        else if (OpaqueStructs.contains(stripped))
           CType.OpaquePtr
         else if (dataStructNames.contains(stripped))
           CType.OpaquePtr // Data struct pointers not in ByValueStructs -> opaque for now

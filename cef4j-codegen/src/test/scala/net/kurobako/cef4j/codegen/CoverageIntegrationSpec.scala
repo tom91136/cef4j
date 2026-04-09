@@ -65,31 +65,26 @@ class CoverageIntegrationSpec extends munit.FunSuite {
 
   test("parser produces non-empty declarations from real headers") {
     assert(allDecls.nonEmpty, "No declarations parsed from real CEF headers")
-    println(s"Parsed ${allDecls.size} total declarations")
   }
 
   test("parser finds object structs") {
     val objects = allDecls.collect { case d: CefDecl.ObjectStruct => d }
     assert(objects.nonEmpty, "No ObjectStruct declarations found")
-    println(s"  ObjectStructs: ${objects.size}")
   }
 
   test("parser finds handler structs") {
     val handlers = allDecls.collect { case d: CefDecl.HandlerStruct => d }
     assert(handlers.nonEmpty, "No HandlerStruct declarations found")
-    println(s"  HandlerStructs: ${handlers.size}")
   }
 
   test("parser finds enums") {
     val enums = allDecls.collect { case d: CefDecl.Enum => d }
     assert(enums.nonEmpty, "No Enum declarations found")
-    println(s"  Enums: ${enums.size}")
   }
 
   test("parser finds data structs") {
     val data = allDecls.collect { case d: CefDecl.DataStruct => d }
     assert(data.nonEmpty, "No DataStruct declarations found")
-    println(s"  DataStructs: ${data.size}")
   }
 
   test("cef_browser_t is parsed as ObjectStruct with known methods") {
@@ -185,7 +180,6 @@ class CoverageIntegrationSpec extends munit.FunSuite {
   test("doc comments extracted from C++ headers") {
     val docs = CHeaderParser.parseDocComments(cefInclude)
     assert(docs.nonEmpty, "No doc comments extracted from C++ headers")
-    println(s"  Extracted ${docs.size} doc comments")
   }
 
   test("summary: declaration counts") {

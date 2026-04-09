@@ -23,7 +23,7 @@ CEF4J_JNI_EXPORT(jfloat, CEF4J_PEER(views_CefDisplay), getDeviceScaleFactor0)(JN
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefDisplay), convertPointToPixels0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_display_t*>(self);
     if (!s) return;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -36,7 +36,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefDisplay), convertPointToPixels0)(JNIE
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefDisplay), convertPointFromPixels0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_display_t*>(self);
     if (!s) return;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -81,7 +81,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), getPrimary0)(JNIEnv* env
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), getNearestPoint0)(JNIEnv* env, jclass clz, jobject point, jint input_pixel_coords) {
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -96,7 +96,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), getNearestPoint0)(JNIEnv
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), getMatchingBounds0)(JNIEnv* env, jclass clz, jobject bounds, jint input_pixel_coords) {
-    if (!bounds) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return nullptr;}
+    if (!bounds) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return nullptr; }
     cef_rect_t _bounds_val = {};
     if (bounds) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");
@@ -132,7 +132,7 @@ CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(views_CefDisplay), getAlls0)(JNIEnv* e
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenPointToPixels0)(JNIEnv* env, jclass clz, jobject point) {
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -147,7 +147,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenPointToPixe
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenPointFromPixels0)(JNIEnv* env, jclass clz, jobject point) {
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return nullptr; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -162,7 +162,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenPointFromPi
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenRectToPixels0)(JNIEnv* env, jclass clz, jobject rect) {
-    if (!rect) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "rect must not be null"); return nullptr;}
+    if (!rect) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "rect must not be null"); return nullptr; }
     cef_rect_t _rect_val = {};
     if (rect) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");
@@ -179,7 +179,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenRectToPixel
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefDisplay), convertScreenRectFromPixels0)(JNIEnv* env, jclass clz, jobject rect) {
-    if (!rect) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "rect must not be null"); return nullptr;}
+    if (!rect) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "rect must not be null"); return nullptr; }
     cef_rect_t _rect_val = {};
     if (rect) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");

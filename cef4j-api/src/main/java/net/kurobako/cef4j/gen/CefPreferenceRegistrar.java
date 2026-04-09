@@ -1,15 +1,12 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Class that manages custom preference registrations.
- *
  * <p>Definition generated from cef_preference_capi.h
- *
  * <pre>typedef struct _cef_preference_registrar_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -18,28 +15,17 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:47</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPreferenceRegistrar extends CefLibraryObject {
 
     /**
-     * Register a preference with the specified {@code name} and {@code default_value}. To avoid conflicts with built-in
-     * preferences the {@code name} value should contain an application-specific prefix followed by a period (e.g.
-     * "myapp.value"). The contents of {@code default_value} will be copied. The data type for the preference will be
-     * inferred from {@code default_value}'s type and cannot be changed after registration. Returns {@code true} on
-     * success. Returns {@code false} if {@code name} is already registered or if {@code default_value} has an invalid
-     * type. This method must be called from within the scope of the
-     * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
-     * CefPreferenceRegistrar)} callback.
-     *
+     * Register a preference with the specified {@code name} and {@code default_value}. To avoid conflicts with built-in preferences the {@code name} value should contain an application-specific prefix followed by a period (e.g. "myapp.value"). The contents of {@code default_value} will be copied. The data type for the preference will be inferred from {@code default_value}'s type and cannot be changed after registration. Returns {@code true} on success. Returns {@code false} if {@code name} is already registered or if {@code default_value} has an invalid type. This method must be called from within the scope of the {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType, CefPreferenceRegistrar)} callback.
      * <p>Definition generated from cef_preference_capi.h
-     *
-     * <pre>
-     * int (CEF_CALLBACK* add_preference)(struct _cef_preference_registrar_t* self, const cef_string_t* name, struct _cef_value_t* default_value);
-     * </pre>
+     * <pre>int (CEF_CALLBACK* add_preference)(struct _cef_preference_registrar_t* self, const cef_string_t* name, struct _cef_value_t* default_value);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:53</a>
      */
     boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue);
-
     final class NativePeer implements CefPreferenceRegistrar, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -84,13 +70,15 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue) {
-            checkNotClosed();
+      public boolean addPreference(@Nullable String name, @Nullable CefValue defaultValue) {
+          checkNotClosed();
             CefLibraryObject.requireOpen(defaultValue, "CefValue");
-            return addPreference0(nativePtr, name, defaultValue);
-        }
+          return addPreference0(nativePtr, name, defaultValue);
+      }
 
-        private static native boolean addPreference0(long self, String name, CefValue defaultValue);
+
+        static native boolean addPreference0(long self, String name, CefValue defaultValue);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -109,4 +97,5 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
             return "CefPreferenceRegistrar{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

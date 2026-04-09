@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported quick menu state bit flags.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   QM_EDITFLAG_NONE = 0,
  *   QM_EDITFLAG_CAN_ELLIPSIS = 1 &lt;&lt; 0,
@@ -16,13 +13,12 @@ import javax.annotation.processing.Generated;
  *   QM_EDITFLAG_CAN_COPY = 1 &lt;&lt; 2,
  *   QM_EDITFLAG_CAN_PASTE = 1 &lt;&lt; 3
  * } cef_quick_menu_edit_state_flags_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAN_ELLIPSIS}, {@link Kind#CAN_CUT}, {@link Kind#CAN_COPY},
- * {@link Kind#CAN_PASTE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAN_ELLIPSIS}, {@link Kind#CAN_CUT}, {@link Kind#CAN_COPY}, {@link Kind#CAN_PASTE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefQuickMenuEditStateFlags implements CefEnum<CefQuickMenuEditStateFlags> {
 
     /** Known constants for {@link CefQuickMenuEditStateFlags}. */
@@ -82,8 +78,8 @@ public final class CefQuickMenuEditStateFlags implements CefEnum<CefQuickMenuEdi
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

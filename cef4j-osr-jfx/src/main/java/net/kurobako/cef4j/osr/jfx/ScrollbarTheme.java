@@ -92,6 +92,7 @@ final class ScrollbarTheme {
                     }
                 }
             } catch (Exception ignored) {
+                // Scene graph may not be fully initialised; fall back to default.
             }
         }
         return DEFAULT_BASE;
@@ -131,6 +132,7 @@ final class ScrollbarTheme {
         }
     }
 
+    // ITU-R BT.709 luma coefficients for sRGB.
     private static double luminance(Color color) {
         return 0.2126 * color.getRed() + 0.7152 * color.getGreen() + 0.0722 * color.getBlue();
     }

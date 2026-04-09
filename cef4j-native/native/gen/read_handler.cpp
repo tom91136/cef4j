@@ -6,12 +6,12 @@
 #include <atomic>
 #include "jni_util.h"
 
-struct JniCefReadHandler: public cef_read_handler_t {
-    JavaVM *jvm;
+struct JniCefReadHandler : public cef_read_handler_t {
+    JavaVM* jvm;
     jobject javaHandler;  // global ref
-    std::atomic<int> refCount { 1 };
+    std::atomic<int> refCount{1};
 
-    JniCefReadHandler(JavaVM *vm, jobject handler) : cef_read_handler_t { }, jvm(vm) {
+    JniCefReadHandler(JavaVM* vm, jobject handler) : cef_read_handler_t{}, jvm(vm) {
         javaHandler = handler;
         InitRefCount<JniCefReadHandler, cef_read_handler_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_read_handler_t*>(this)));
         read = &_read;
@@ -24,13 +24,13 @@ struct JniCefReadHandler: public cef_read_handler_t {
     static size_t CEF_CALLBACK _read(cef_read_handler_t* self, void* ptr, size_t size, size_t n) {
         auto* h = reinterpret_cast<JniCefReadHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(6) < 0) {return 0;}
+        if (env->PushLocalFrame(6) < 0) { return 0; }
         jobject j_ptr = (size > 0 && ptr) ? env->NewDirectByteBuffer(static_cast<void*>(ptr), static_cast<jlong>(size)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "read", "(Ljava/nio/ByteBuffer;J)J");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
+        if (!mid) { env->PopLocalFrame(nullptr); return 0; }
         auto jResult = env->CallLongMethod(h->javaHandler, mid, j_ptr, static_cast<jlong>(n));
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return 0; }
         size_t nativeResult = static_cast<size_t>(jResult);
         env->PopLocalFrame(nullptr);
         return nativeResult;
@@ -39,12 +39,12 @@ struct JniCefReadHandler: public cef_read_handler_t {
     static int CEF_CALLBACK _seek(cef_read_handler_t* self, int64_t offset, int whence) {
         auto* h = reinterpret_cast<JniCefReadHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(5) < 0) {return 0;}
+        if (env->PushLocalFrame(5) < 0) { return 0; }
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "seek", "(JI)I");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
+        if (!mid) { env->PopLocalFrame(nullptr); return 0; }
         auto jResult = env->CallIntMethod(h->javaHandler, mid, static_cast<jlong>(offset), static_cast<jint>(whence));
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return 0; }
         int nativeResult = static_cast<int>(jResult);
         env->PopLocalFrame(nullptr);
         return nativeResult;
@@ -53,12 +53,12 @@ struct JniCefReadHandler: public cef_read_handler_t {
     static int64_t CEF_CALLBACK _tell(cef_read_handler_t* self) {
         auto* h = reinterpret_cast<JniCefReadHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(5) < 0) {return 0;}
+        if (env->PushLocalFrame(5) < 0) { return 0; }
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "tell", "()J");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
+        if (!mid) { env->PopLocalFrame(nullptr); return 0; }
         auto jResult = env->CallLongMethod(h->javaHandler, mid);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return 0; }
         int64_t nativeResult = static_cast<int64_t>(jResult);
         env->PopLocalFrame(nullptr);
         return nativeResult;
@@ -67,12 +67,12 @@ struct JniCefReadHandler: public cef_read_handler_t {
     static int CEF_CALLBACK _eof(cef_read_handler_t* self) {
         auto* h = reinterpret_cast<JniCefReadHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(5) < 0) {return 0;}
+        if (env->PushLocalFrame(5) < 0) { return 0; }
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "eof", "()I");
-        if (!mid) {env->PopLocalFrame(nullptr); return 0;}
+        if (!mid) { env->PopLocalFrame(nullptr); return 0; }
         auto jResult = env->CallIntMethod(h->javaHandler, mid);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return 0;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return 0; }
         int nativeResult = static_cast<int>(jResult);
         env->PopLocalFrame(nullptr);
         return nativeResult;
@@ -81,19 +81,19 @@ struct JniCefReadHandler: public cef_read_handler_t {
     static int CEF_CALLBACK _may_block(cef_read_handler_t* self) {
         auto* h = reinterpret_cast<JniCefReadHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(5) < 0) {return false;}
+        if (env->PushLocalFrame(5) < 0) { return false; }
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "mayBlock", "()Z");
-        if (!mid) {env->PopLocalFrame(nullptr); return false;}
+        if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid);
-        if (CheckJNIException(env)) {env->PopLocalFrame(nullptr); return false;}
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         env->PopLocalFrame(nullptr);
         return jResult;
     }
 };
 
-extern "C" cef_read_handler_t* Create_JniCefReadHandler(JNIEnv *env, jobject handler) {
-    JavaVM *jvm;
+extern "C" cef_read_handler_t* Create_JniCefReadHandler(JNIEnv* env, jobject handler) {
+    JavaVM* jvm;
     env->GetJavaVM(&jvm);
     auto globalRef = env->NewGlobalRef(handler);
     return reinterpret_cast<cef_read_handler_t*>(new JniCefReadHandler(jvm, globalRef));

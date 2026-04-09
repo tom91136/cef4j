@@ -2,6 +2,8 @@ package net.kurobako.cef4j.codegen
 
 class CodeGenOutputSpec extends munit.FunSuite {
 
+  private given Banners = new Banners("test")
+
   private val codegen        = new JniCppCodeGen(Map.empty)
   private val byValueCodegen = new JniCppCodeGen(
     Map(
@@ -95,7 +97,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     val java = JavaNativeCodeGen.renderInnerClass(decl)
     assert(java.contains("final class NativePeer"), s"Missing NativePeer class in:\n$java")
     assert(java.contains("isValid0(nativePtr)"), s"Missing delegation in:\n$java")
-    assert(java.contains("private static native boolean isValid0(long self)"), s"Missing native decl in:\n$java")
+    assert(java.contains("static native boolean isValid0(long self)"), s"Missing native decl in:\n$java")
   }
 
   test("Java enum codegen produces final class with prefix stripping and expressions") {

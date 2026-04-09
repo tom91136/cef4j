@@ -33,7 +33,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), isSame0)(JNIEnv* env, jobje
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_list_value_t* _that_ptr = that ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -42,7 +42,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), isEqual0)(JNIEnv* env, jobj
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_list_value_t* _that_ptr = that ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_equal(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -136,7 +136,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), setValue0)(JNIEnv* env, job
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_value(s, index, _value_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -182,7 +182,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), setBinary0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _value_ptr = value ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_binary(s, index, _value_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -191,7 +191,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), setDictionary0)(JNIEnv* env
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _value_ptr = value ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_dictionary(s, index, _value_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -200,7 +200,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefListValue), setList0)(JNIEnv* env, jobj
     auto* s = reinterpret_cast<cef_list_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_list_value_t* _value_ptr = value ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_list(s, index, _value_ptr);
     return static_cast<jboolean>(_r);
 }

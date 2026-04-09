@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Structure representing insets.
- *
  * <p>Definition generated from internal/cef_types_geometry.h
- *
  * <pre>typedef struct _cef_insets_t {
  *   int top;
  *   int left;
@@ -16,10 +13,10 @@ import javax.annotation.processing.Generated;
  *   int right;
  * } cef_insets_t;</pre>
  *
- * @see <a
- *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:64</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:64</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefInsets {
 
     public final int top;
@@ -45,9 +42,9 @@ public final class CefInsets {
         if (!(obj instanceof CefInsets)) return false;
         CefInsets other = (CefInsets) obj;
         return this.top == other.top
-                && this.left == other.left
-                && this.bottom == other.bottom
-                && this.right == other.right;
+                    && this.left == other.left
+                    && this.bottom == other.bottom
+                    && this.right == other.right;
     }
 
     @Override
@@ -57,17 +54,14 @@ public final class CefInsets {
 
     @Override
     public String toString() {
-        return "CefInsets{" + "top=" + top + ", " + "left=" + left + ", " + "bottom=" + bottom + ", " + "right=" + right
-                + "}";
+        return "CefInsets{" + "top=" + top + ", " + "left=" + left + ", " + "bottom=" + bottom + ", " + "right=" + right + "}";
     }
 
     /**
      * Mutable variant of {@link CefInsets}. Structure representing insets.
-     *
      * <p>Definition generated from internal/cef_types_geometry.h
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:64</a>
      */
     public static final class Mutable {
 
@@ -96,9 +90,9 @@ public final class CefInsets {
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
             return this.top == other.top
-                    && this.left == other.left
-                    && this.bottom == other.bottom
-                    && this.right == other.right;
+                        && this.left == other.left
+                        && this.bottom == other.bottom
+                        && this.right == other.right;
         }
 
         @Override
@@ -108,8 +102,7 @@ public final class CefInsets {
 
         @Override
         public String toString() {
-            return "CefInsets.Mutable{" + "top=" + top + ", " + "left=" + left + ", " + "bottom=" + bottom + ", "
-                    + "right=" + right + "}";
+            return "CefInsets.Mutable{" + "top=" + top + ", " + "left=" + left + ", " + "bottom=" + bottom + ", " + "right=" + right + "}";
         }
     }
 }

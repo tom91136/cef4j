@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * "Verb" of a drag-and-drop operation as negotiated between the source and destination. These constants match their
- * equivalents in WebCore's DragActions.h and should not be renumbered.
- *
+ * "Verb" of a drag-and-drop operation as negotiated between the source and destination. These constants match their equivalents in WebCore's DragActions.h and should not be renumbered.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   DRAG_OPERATION_NONE = 0,
  *   DRAG_OPERATION_COPY = 1,
@@ -18,13 +14,12 @@ import javax.annotation.processing.Generated;
  *   DRAG_OPERATION_PRIVATE = 8,
  *   ...
  * } cef_drag_operations_mask_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC},
- * {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC}, {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMask> {
 
     /** Known constants for {@link CefDragOperationsMask}. */
@@ -86,8 +81,8 @@ public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMas
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

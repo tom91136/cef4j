@@ -1,5 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -7,15 +6,17 @@ import javax.annotation.processing.Generated;
 /**
  * Common interface for generated wrappers around CEF enum values.
  *
- * <p>Each generated enum wrapper preserves the original numeric C value while exposing known constants through a nested
- * {@code Kind} enum. Unknown or composite values are still represented losslessly.
+ * <p>Each generated enum wrapper preserves the original numeric C value while
+ * exposing known constants through a nested {@code Kind} enum. Unknown or
+ * composite values are still represented losslessly.
  *
- * <p>This allows flag sets and forward-compatible values to round-trip through the Java API without collapsing them to
- * only the known named constants.
+ * <p>This allows flag sets and forward-compatible values to round-trip through
+ * the Java API without collapsing them to only the known named constants.
  *
  * @param <T> the concrete generated enum wrapper type
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefEnum<T extends CefEnum<T>> {
 
     /** The underlying C enum numeric value. */

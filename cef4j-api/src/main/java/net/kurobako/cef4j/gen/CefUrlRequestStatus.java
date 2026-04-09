@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Flags that represent CefURLRequest status.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   UR_UNKNOWN = 0,
  *   UR_SUCCESS = 1,
@@ -17,26 +14,25 @@ import javax.annotation.processing.Generated;
  *   UR_FAILED = 4,
  *   ...
  * } cef_urlrequest_status_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#SUCCESS}, {@link Kind#IO_PENDING}, {@link Kind#CANCELED},
- * {@link Kind#FAILED}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#SUCCESS}, {@link Kind#IO_PENDING}, {@link Kind#CANCELED}, {@link Kind#FAILED}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefUrlRequestStatus implements CefEnum<CefUrlRequestStatus> {
 
     /** Known constants for {@link CefUrlRequestStatus}. */
     public enum Kind {
-        /** Unknown status. */
+        /** Unknown status.  */
         UNKNOWN(0, "0", "UR_UNKNOWN"),
-        /** Request succeeded. */
+        /** Request succeeded.  */
         SUCCESS(1, "1", "UR_SUCCESS"),
-        /** An IO request is pending, and the caller will be informed when it is completed. */
+        /** An IO request is pending, and the caller will be informed when it is completed.  */
         IO_PENDING(2, "2", "UR_IO_PENDING"),
-        /** Request was canceled programatically. */
+        /** Request was canceled programatically.  */
         CANCELED(3, "3", "UR_CANCELED"),
-        /** Request failed for some reason. */
+        /** Request failed for some reason.  */
         FAILED(4, "4", "UR_FAILED"),
         NUM_VALUES(5, "5", "UR_NUM_VALUES");
 
@@ -89,8 +85,8 @@ public final class CefUrlRequestStatus implements CefEnum<CefUrlRequestStatus> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -16,6 +16,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyBoundsAdapter;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -27,13 +28,18 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
+import net.kurobako.cef4j.CefInputEventFlags;
+import net.kurobako.cef4j.SystemBootstrap;
+import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefCursorType;
@@ -45,20 +51,16 @@ import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
+import net.kurobako.cef4j.gen.CefSettings;
 
-@SuppressWarnings({"this-escape"})
+/** Swing off-screen rendering panel for a CEF browser. */
+@SuppressWarnings({"this-escape", "resource"})
 public class CefBrowserPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private static final int EVENTFLAG_SHIFT_DOWN = 1 << 1;
-    private static final int EVENTFLAG_CONTROL_DOWN = 1 << 2;
-    private static final int EVENTFLAG_ALT_DOWN = 1 << 3;
-    private static final int EVENTFLAG_LEFT_MOUSE_BUTTON = 1 << 4;
-    private static final int EVENTFLAG_MIDDLE_MOUSE_BUTTON = 1 << 5;
-    private static final int EVENTFLAG_RIGHT_MOUSE_BUTTON = 1 << 6;
-    private static final int EVENTFLAG_COMMAND_DOWN = 1 << 7;
-    private static final int EVENTFLAG_IS_LEFT = 1 << 10;
-    private static final int EVENTFLAG_IS_RIGHT = 1 << 11;
+    private static final int SCROLL_UNITS_MULTIPLIER = 20;
+    private static final int SCREEN_DEPTH = 32;
+    private static final int SCREEN_DEPTH_PER_COMPONENT = 8;
 
     private final transient CefFrameBuffer<BufferedImage> frameBuffer;
     private transient volatile CefBrowser browser;
@@ -66,6 +68,40 @@ public class CefBrowserPanel extends JPanel {
     private transient JWindow osrPopupWindow;
     private transient BufferedImage osrPopupImage;
     private transient BufferedImage lastPaintedImage;
+
+    /** Initialise CEF with default settings. */
+    public static void initialise() {
+        initialise(new CefSettings.Mutable());
+    }
+
+    /**
+     * Initialise CEF for Swing off-screen rendering.
+     *
+     * @throws IllegalStateException if CEF has been terminated
+     */
+    public static void initialise(CefSettings.Mutable settings, String... extraArgs) {
+        initialise(settings, null, extraArgs);
+    }
+
+    /**
+     * Initialise CEF for Swing off-screen rendering with an optional custom {@link CefApp} handler.
+     *
+     * @throws IllegalStateException if CEF has been terminated
+     */
+    public static void initialise(CefSettings.Mutable settings, @Nullable CefApp appHandler, String... extraArgs) {
+        if (settings == null) settings = new CefSettings.Mutable();
+        settings.windowlessRenderingEnabled = 1;
+        settings.externalMessagePump = 0;
+        settings.multiThreadedMessageLoop = 1;
+        SystemBootstrap.load();
+        Cef.INSTANCE.initialise(
+                settings, extraArgs != null ? java.util.Arrays.asList(extraArgs) : java.util.List.of(), appHandler);
+    }
+
+    /** Terminate CEF and release all native resources. */
+    public static void terminate() {
+        Cef.INSTANCE.terminate();
+    }
 
     public CefBrowserPanel() {
         int maxW = 1, maxH = 1;
@@ -84,8 +120,7 @@ public class CefBrowserPanel extends JPanel {
                     ? prev
                     : new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
             int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
-            // Always full copy: pixelBuffer is complete, but with double-buffering each
-            // image only sees every other frame, so dirty-rect-only copies cause flicker.
+            // The paint buffer is a full frame; partial copies flicker with the current double-buffering path.
             System.arraycopy(pixels, 0, dst, 0, w * h);
             return img;
         });
@@ -103,13 +138,17 @@ public class CefBrowserPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                // Don't tell CEF about focus loss if our popup is showing
+                // Keep focus while the popup window owns pointer interaction, or CEF closes the popup immediately.
                 if (osrPopupWindow != null && osrPopupWindow.isVisible()) return;
                 CefBrowserHost h = host();
                 if (h != null) h.setFocus(false);
             }
         });
 
+        Consumer<MouseEvent> sendMouseMove = e -> {
+            CefBrowserHost h = host();
+            if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
+        };
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -122,7 +161,6 @@ public class CefBrowserPanel extends JPanel {
                             false,
                             e.getClickCount());
                 }
-                // Prevent Swing from processing popup trigger - CEF handles context menus
                 e.consume();
             }
 
@@ -141,16 +179,12 @@ public class CefBrowserPanel extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) {
-                    h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
-                }
+                sendMouseMove.accept(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                // Don't send mouse-leave to CEF if the cursor moved to our popup window,
-                // otherwise CEF dismisses the <select> dropdown immediately.
+                // Ignore transitions into the popup window so CEF does not treat them as a real leave.
                 JWindow popup = osrPopupWindow;
                 if (popup != null && popup.isVisible()) {
                     Point screen = e.getLocationOnScreen();
@@ -165,20 +199,18 @@ public class CefBrowserPanel extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
+                sendMouseMove.accept(e);
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
+                sendMouseMove.accept(e);
             }
         });
         addMouseWheelListener(e -> {
             CefBrowserHost h = host();
             if (h != null) {
-                int delta = -e.getUnitsToScroll() * 20;
+                int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
                 int deltaX = 0;
                 int deltaY = delta;
                 if (e.isShiftDown()) {
@@ -192,7 +224,6 @@ public class CefBrowserPanel extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                // Skip events already consumed by Swing key bindings (InputMap/ActionMap)
                 if (e.isConsumed()) return;
                 CefBrowserHost h = host();
                 if (h == null) return;
@@ -234,19 +265,25 @@ public class CefBrowserPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) {
-                    frameBuffer.resetBackPressure();
-                    h.wasResized();
-                    h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
-                }
+                refreshView(false);
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                refreshView(true);
+            }
+        });
+        addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
+            @Override
+            public void ancestorMoved(HierarchyEvent e) {
+                refreshView(true);
             }
         });
 
         addHierarchyListener(e -> {
             if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0) {
                 if (!isDisplayable()) {
-                    dispose();
+                    release();
                 }
             }
         });
@@ -257,6 +294,18 @@ public class CefBrowserPanel extends JPanel {
         return current != null ? current.getHost().orElse(null) : null;
     }
 
+    private void refreshView(boolean screenInfoChanged) {
+        CefBrowserHost h = host();
+        if (h == null) return;
+        frameBuffer.resetBackPressure();
+        if (screenInfoChanged) {
+            h.notifyScreenInfoChanged();
+        }
+        h.wasResized();
+        h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+    }
+
+    /** Creates the render handler used to paint this panel. */
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
@@ -299,8 +348,8 @@ public class CefBrowserPanel extends JPanel {
                 if (gc == null) return false;
                 float scale = getEffectiveScaleFactor();
                 screenInfo.deviceScaleFactor = scale;
-                screenInfo.depth = 32;
-                screenInfo.depthPerComponent = 8;
+                screenInfo.depth = SCREEN_DEPTH;
+                screenInfo.depthPerComponent = SCREEN_DEPTH_PER_COMPONENT;
                 Rectangle bounds = gc.getBounds();
                 screenInfo.rect = new CefRect(
                         (int) (bounds.x * scale),
@@ -356,14 +405,17 @@ public class CefBrowserPanel extends JPanel {
         };
     }
 
+    /** Attaches an already-created browser to this panel. */
     public void setBrowser(CefBrowser browser) {
         this.browser = browser;
     }
 
+    /** Returns the attached browser, or {@code null} if none is attached. */
     public CefBrowser getBrowser() {
         return browser;
     }
 
+    /** Returns the effective HiDPI scale factor for this panel. */
     float getEffectiveScaleFactor() {
         GraphicsConfiguration gc = getGraphicsConfiguration();
         if (gc == null) return 1f;
@@ -371,7 +423,8 @@ public class CefBrowserPanel extends JPanel {
         return (float) Math.max(tx.getScaleX(), tx.getScaleY());
     }
 
-    public void dispose() {
+    /** Releases the attached browser if present. */
+    public void release() {
         CefBrowser b = browser;
         browser = null;
         lastPaintedImage = null;
@@ -397,8 +450,6 @@ public class CefBrowserPanel extends JPanel {
     public Cursor mapCursor(CefCursorType type) {
         return type.kind().map(CefBrowserPanel::cursorForKind).orElse(Cursor.getDefaultCursor());
     }
-
-    // -- OSR popup (e.g. <select> dropdown) ------------------------------------------------
 
     private void showOsrPopup() {
         hideOsrPopup();
@@ -442,7 +493,7 @@ public class CefBrowserPanel extends JPanel {
             if (rect == null) return;
             CefBrowserHost h = host();
             if (h != null) {
-                int delta = -e.getUnitsToScroll() * 20;
+                int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
                 h.sendMouseWheelEvent(
                         new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, baseModifiers(e)), 0, delta);
             }
@@ -492,21 +543,17 @@ public class CefBrowserPanel extends JPanel {
         }
         int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
         System.arraycopy(pixels, 0, dst, 0, width * height);
-        // Size the popup window in logical (view) coordinates - the image is drawn scaled
         osrPopupWindow.setSize(rect.width, rect.height);
         try {
             Point panelScreen = getLocationOnScreen();
             osrPopupWindow.setLocation(panelScreen.x + rect.x, panelScreen.y + rect.y);
         } catch (java.awt.IllegalComponentStateException ignored) {
-            // Component not showing
         }
         if (!osrPopupWindow.isVisible()) {
             osrPopupWindow.setVisible(true);
         }
         osrPopupWindow.repaint();
     }
-
-    // -- Cursor mapping -------------------------------------------------------------------
 
     private static Cursor cursorForKind(CefCursorType.Kind k) {
         switch (k) {
@@ -521,10 +568,14 @@ public class CefBrowserPanel extends JPanel {
             case MOVE:
                 return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
             case NORTHRESIZE:
+            case NORTHSOUTHRESIZE:
+            case ROWRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
             case SOUTHRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR);
             case EASTRESIZE:
+            case EASTWESTRESIZE:
+            case COLUMNRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
             case WESTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
@@ -536,18 +587,10 @@ public class CefBrowserPanel extends JPanel {
                 return Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR);
             case SOUTHWESTRESIZE:
                 return Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR);
-            case NORTHSOUTHRESIZE:
-            case ROWRESIZE:
-                return Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
-            case EASTWESTRESIZE:
-            case COLUMNRESIZE:
-                return Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
             default:
                 return Cursor.getDefaultCursor();
         }
     }
-
-    // -- Input event helpers --------------------------------------------------------------
 
     private static int cefButton(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) return 0;
@@ -557,27 +600,20 @@ public class CefBrowserPanel extends JPanel {
     }
 
     private static int baseModifiers(InputEvent e) {
-        int mods = 0;
-        if (e.isShiftDown()) mods |= EVENTFLAG_SHIFT_DOWN;
-        if (e.isControlDown()) mods |= EVENTFLAG_CONTROL_DOWN;
-        if (e.isAltDown()) mods |= EVENTFLAG_ALT_DOWN;
-        if (e.isMetaDown()) mods |= EVENTFLAG_COMMAND_DOWN;
-        return mods;
+        return CefInputEventFlags.baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
     }
 
     private static int mouseModifiers(MouseEvent e) {
-        int mods = baseModifiers(e);
-        if ((e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) mods |= EVENTFLAG_LEFT_MOUSE_BUTTON;
-        if ((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) != 0) mods |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
-        if ((e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) mods |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
-        return mods;
+        return CefInputEventFlags.withMouseButtons(
+                baseModifiers(e),
+                (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0,
+                (e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) != 0,
+                (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0);
     }
 
     private static int keyModifiers(KeyEvent e) {
-        int mods = baseModifiers(e);
         int loc = e.getKeyLocation();
-        if (loc == KeyEvent.KEY_LOCATION_LEFT) mods |= EVENTFLAG_IS_LEFT;
-        if (loc == KeyEvent.KEY_LOCATION_RIGHT) mods |= EVENTFLAG_IS_RIGHT;
-        return mods;
+        return CefInputEventFlags.withKeyLocation(
+                baseModifiers(e), loc == KeyEvent.KEY_LOCATION_LEFT, loc == KeyEvent.KEY_LOCATION_RIGHT);
     }
 }

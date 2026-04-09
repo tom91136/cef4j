@@ -1,10 +1,10 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefAcceleratedPaintNativePixmapPlane {
 
     public final int stride;
@@ -25,9 +25,9 @@ public final class CefAcceleratedPaintNativePixmapPlane {
         if (!(obj instanceof CefAcceleratedPaintNativePixmapPlane)) return false;
         CefAcceleratedPaintNativePixmapPlane other = (CefAcceleratedPaintNativePixmapPlane) obj;
         return this.stride == other.stride
-                && this.offset == other.offset
-                && this.size == other.size
-                && this.fd == other.fd;
+                    && this.offset == other.offset
+                    && this.size == other.size
+                    && this.fd == other.fd;
     }
 
     @Override
@@ -37,7 +37,6 @@ public final class CefAcceleratedPaintNativePixmapPlane {
 
     @Override
     public String toString() {
-        return "CefAcceleratedPaintNativePixmapPlane{" + "stride=" + stride + ", " + "offset=" + offset + ", " + "size="
-                + size + ", " + "fd=" + fd + "}";
+        return "CefAcceleratedPaintNativePixmapPlane{" + "stride=" + stride + ", " + "offset=" + offset + ", " + "size=" + size + ", " + "fd=" + fd + "}";
     }
 }

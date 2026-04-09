@@ -3,7 +3,7 @@
 #include "include/capi/cef_stream_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_read_handler_t* Create_JniCefReadHandler(JNIEnv *env, jobject handler);
+extern "C" cef_read_handler_t* Create_JniCefReadHandler(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefStreamReader), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -12,9 +12,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefStreamReader), release0)(JNIEnv* env, jclas
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefStreamReader), read0)(JNIEnv* env, jobject obj, jlong self, jobject ptr, jlong n) {
     auto* s = reinterpret_cast<cef_stream_reader_t*>(self);
     if (!s) return 0;
-    if (!ptr) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "ptr must not be null"); return 0;}
+    if (!ptr) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "ptr must not be null"); return 0; }
     void* _ptr_addr = ptr ? env->GetDirectBufferAddress(ptr) : nullptr;
-    if (ptr && !_ptr_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "ptr must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
+    if (ptr && !_ptr_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "ptr must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0; }
     return static_cast<jlong>(s->read(s, _ptr_addr, static_cast<size_t>(env->GetDirectBufferCapacity(ptr)), n));
 }
 
@@ -54,9 +54,9 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefStreamReader), createForFile0)(JNIEnv* e
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefStreamReader), createForData0)(JNIEnv* env, jclass clz, jobject data) {
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr; }
     void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     auto _r = cef_stream_reader_create_for_data(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefStreamReader$NativePeer");

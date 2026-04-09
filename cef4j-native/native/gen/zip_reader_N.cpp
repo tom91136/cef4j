@@ -84,9 +84,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), closeFile0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefZipReader), readFile0)(JNIEnv* env, jobject obj, jlong self, jobject buffer) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
-    if (!buffer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0;}
+    if (!buffer) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0; }
     void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
-    if (buffer && !_buffer_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
+    if (buffer && !_buffer_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0; }
     return static_cast<jint>(s->read_file(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer))));
 }
 
@@ -105,7 +105,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), eof0)(JNIEnv* env, jobject 
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), create0)(JNIEnv* env, jclass clz, jobject stream) {
     cef_stream_reader_t* _stream_ptr = stream ? reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J"))) : nullptr;
-    if (_stream_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b);}
+    if (_stream_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b); }
     auto _r = cef_zip_reader_create(_stream_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefZipReader$NativePeer");

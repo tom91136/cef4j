@@ -39,9 +39,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefThread), isRunning0)(JNIEnv* env, jobje
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefThread), create0)(JNIEnv* env, jclass clz, jstring display_name, jobject priority, jobject message_loop_type, jint stoppable, jobject com_init_mode) {
-    if (!priority) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return nullptr;}
-    if (!message_loop_type) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "messageLoopType must not be null"); return nullptr;}
-    if (!com_init_mode) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "comInitMode must not be null"); return nullptr;}
+    if (!priority) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return nullptr; }
+    if (!message_loop_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "messageLoopType must not be null"); return nullptr; }
+    if (!com_init_mode) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "comInitMode must not be null"); return nullptr; }
     auto _display_name_str = JStringToCefString(env, display_name);
     auto _r = cef_thread_create(_display_name_str, static_cast<cef_thread_priority_t>(env->GetLongField(priority, env->GetFieldID(env->GetObjectClass(priority), "value", "J"))), static_cast<cef_message_loop_type_t>(env->GetLongField(message_loop_type, env->GetFieldID(env->GetObjectClass(message_loop_type), "value", "J"))), stoppable, static_cast<cef_com_init_mode_t>(env->GetLongField(com_init_mode, env->GetFieldID(env->GetObjectClass(com_init_mode), "value", "J"))));
     if (_display_name_str) cef_string_userfree_free(_display_name_str);

@@ -34,7 +34,7 @@ class CefWebViewMultiBrowserTest {
                 "Requires a display server; run under xvfb-run");
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
-        CefWebView.setup(settings);
+        CefWebView.initialise(settings);
 
         CountDownLatch fxLatch = new CountDownLatch(1);
         try {

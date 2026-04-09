@@ -1,40 +1,30 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Callback for asynchronous continuation of {@link net.kurobako.cef4j.gen.CefResourceHandler#skip(long, long[],
- * CefResourceSkipCallback)}.
- *
+ * Callback for asynchronous continuation of {@link net.kurobako.cef4j.gen.CefResourceHandler#skip(long, long[], CefResourceSkipCallback)}.
  * <p>Definition generated from cef_resource_handler_capi.h
- *
  * <pre>typedef struct _cef_resource_skip_callback_t {
  *   cef_base_ref_counted_t base;
  *   ...
  * } cef_resource_skip_callback_t;</pre>
  *
- * @see <a
- *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:48</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:48</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResourceSkipCallback extends CefLibraryObject {
 
     /**
-     * Callback for asynchronous continuation of Skip(). If {@code bytes_skipped} > 0 then either Skip() will be called
-     * again until the requested number of bytes have been skipped or the request will proceed. If {@code bytes_skipped}
-     * &lt;= 0 the request will fail with {@code ERR_REQUEST_RANGE_NOT_SATISFIABLE}.
-     *
+     * Callback for asynchronous continuation of Skip(). If {@code bytes_skipped} > 0 then either Skip() will be called again until the requested number of bytes have been skipped or the request will proceed. If {@code bytes_skipped} &lt;= 0 the request will fail with {@code ERR_REQUEST_RANGE_NOT_SATISFIABLE}.
      * <p>Definition generated from cef_resource_handler_capi.h
-     *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_resource_skip_callback_t* self, int64_t bytes_skipped);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:54</a>
      */
     void cont(long bytesSkipped);
-
     final class NativePeer implements CefResourceSkipCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -79,12 +69,14 @@ public interface CefResourceSkipCallback extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void cont(long bytesSkipped) {
-            checkNotClosed();
-            cont0(nativePtr, bytesSkipped);
-        }
+      public void cont(long bytesSkipped) {
+          checkNotClosed();
+          cont0(nativePtr, bytesSkipped);
+      }
 
-        private static native void cont0(long self, long bytesSkipped);
+
+        static native void cont0(long self, long bytesSkipped);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -103,4 +95,5 @@ public interface CefResourceSkipCallback extends CefLibraryObject {
             return "CefResourceSkipCallback{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

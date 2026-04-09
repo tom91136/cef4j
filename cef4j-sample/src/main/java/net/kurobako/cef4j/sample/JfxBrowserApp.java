@@ -34,7 +34,7 @@ public final class JfxBrowserApp {
     public static void main(String[] args) throws IOException {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = createCacheDir().toAbsolutePath().toString();
-        CefWebView.setup(settings);
+        CefWebView.initialise(settings);
         SigintHelper.install(() -> {
             if (Platform.isFxApplicationThread()) {
                 Platform.exit();
@@ -43,6 +43,7 @@ public final class JfxBrowserApp {
             }
         });
         Application.launch(JfxApp.class, args);
+        CefWebView.terminate();
     }
 
     public static class JfxApp extends Application {
@@ -81,7 +82,7 @@ public final class JfxBrowserApp {
                     if (change.wasRemoved()) {
                         for (Tab removed : change.getRemoved()) {
                             if (removed instanceof BrowserTab) {
-                                ((BrowserTab) removed).dispose();
+                                ((BrowserTab) removed).release();
                             }
                         }
                     }
@@ -105,7 +106,7 @@ public final class JfxBrowserApp {
             stage.setOnCloseRequest(e -> {
                 for (Tab tab : tabPane.getTabs()) {
                     if (tab instanceof BrowserTab) {
-                        ((BrowserTab) tab).dispose();
+                        ((BrowserTab) tab).release();
                     }
                 }
                 Platform.exit();
@@ -166,7 +167,7 @@ public final class JfxBrowserApp {
             setText("New Tab");
             setClosable(true);
             setContent(createContent());
-            setOnClosed(e -> dispose());
+            setOnClosed(e -> release());
 
             Button backBtn = new Button("\u25C0");
             Button fwdBtn = new Button("\u25B6");
@@ -370,10 +371,10 @@ public final class JfxBrowserApp {
             }
         }
 
-        private void dispose() {
+        private void release() {
             if (disposed) return;
             disposed = true;
-            view.dispose();
+            view.release();
         }
 
         private static double clampZoom(double value) {

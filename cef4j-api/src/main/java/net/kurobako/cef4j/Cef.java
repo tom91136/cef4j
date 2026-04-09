@@ -30,11 +30,12 @@ import org.slf4j.LoggerFactory;
  * <p>Usage:
  *
  * <pre>{@code
- * CefApp.INSTANCE.initialise();
+ * Cef.INSTANCE.initialise(settings, args);
  * }</pre>
  *
- * <p>CEF cannot be re-initialized after {@link #dispose()}.
+ * <p>CEF cannot be re-initialized after {@link #terminate()}.
  */
+@SuppressWarnings("unused")
 public enum Cef {
     INSTANCE;
 
@@ -57,25 +58,26 @@ public enum Cef {
 
     private void checkState() {
         if (state != State.INITIALISED)
-            throw new IllegalStateException("Invalid CEF state, expected INITIALIZED, but was " + state);
+            throw new IllegalStateException("CEF must be in state INITIALISED, was: " + state);
         if (Thread.currentThread() != initThread) {
             throw new IllegalStateException(
-                    "doMessageLoopWork must be called on the same thread that called Cef#initialize(): current="
-                            + Thread.currentThread() + ", init=" + initThread);
+                    "Must be called on the CEF thread (the thread that called initialise()): current="
+                            + Thread.currentThread() + ", cef=" + initThread);
         }
     }
 
     /**
-     * Initialise CEF on the current thread. All subsequent CEF lifecycle calls ({@link #dispose()},
+     * Initialise CEF on the current thread. All subsequent CEF lifecycle calls ({@link #terminate()},
      * {@link #doMessageLoopWork()}, etc.) must be made on the same thread. Safe to call multiple times - subsequent
-     * calls are no-ops. Re-initialising after {@link #dispose()} is not supported per CEF design.
+     * calls are no-ops if CEF is already initialised. Re-initialising after {@link #terminate()} is not supported per
+     * CEF design.
      *
-     * <p>If using {@code CefWebView}, prefer {@code CefWebView.setup()} which calls this internally. If a higher-level
-     * library (e.g. {@code CefMonacoPane}) provides its own {@code setup()}, call that first - it configures custom
-     * schemes and handlers before calling through to this method. Less-specific initialisations that follow are no-ops
-     * since CEF is already running.
+     * <p>If using {@code CefWebView}, prefer {@code CefWebView.initialise()} which calls this internally. If a
+     * higher-level library (e.g. {@code CefMonacoPane}) provides its own {@code initialise()}, call that first - it
+     * configures custom schemes and handlers before calling through to this method. Less-specific initialisations that
+     * follow are no-ops since CEF is already running.
      *
-     * @throws IllegalStateException if CEF has been shut down
+     * @throws IllegalStateException if CEF has been terminated
      */
     public synchronized void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
         initialise(settings, extraArgs, null);
@@ -168,19 +170,28 @@ public enum Cef {
         log.info("CEF initialized");
     }
 
-    /** Create a new browser with the given client, URL, and settings. */
+    /**
+     * Create a new browser synchronously. Must be called on the same thread that called {@link #initialise} and only
+     * while CEF is in the {@link State#INITIALISED} state.
+     *
+     * @throws IllegalStateException if CEF is not initialised or called from the wrong thread
+     */
     public CefBrowser createBrowser(CefClient client, String url, CefWindowInfo info, CefBrowserSettings settings) {
+        checkState();
         return CefBrowserHost.createBrowserSync(info, client, url, settings, null, null)
                 .orElseThrow();
     }
 
     /**
-     * Shut down CEF cleanly. Must be called on the same thread that called {@link #initialise(Mutable, List)}.
+     * Shut down CEF cleanly. Must be called on the same thread that called {@link #initialise(Mutable, List)} when
+     * using the external message pump (single-threaded mode). Safe to call multiple times - subsequent calls are
+     * no-ops.
      *
      * <p>As per CEF design, after this call, CEF cannot be re-initialised in the same process (i.e. JVM). The singleton
      * remains accessible but all operations will throw {@link IllegalStateException}.
      */
-    public synchronized void dispose() {
+    public synchronized void terminate() {
+        if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
         checkState();
 
         state = State.SHUTTING_DOWN;
@@ -203,7 +214,7 @@ public enum Cef {
      * {@link #initialise(Mutable, List)}}. This is only needed if {@link #initialise(Mutable, List)} is configured with
      * {@link CefSettings#externalMessagePump} set to true.
      *
-     * <p>{@see CefGlobals#doMessageLoopWork()}
+     * @see CefGlobals#doMessageLoopWork()
      */
     public void doMessageLoopWork() {
         checkState();

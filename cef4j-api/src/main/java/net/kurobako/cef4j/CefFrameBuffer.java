@@ -40,6 +40,7 @@ import net.kurobako.cef4j.gen.CefRect;
  *
  * @param <I> the toolkit image type (e.g. {@code BufferedImage}, {@code WritableImage})
  */
+@SuppressWarnings("unused")
 public final class CefFrameBuffer<I> {
 
     /**

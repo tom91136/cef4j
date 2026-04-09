@@ -19,7 +19,8 @@ object Main {
   def main(args: Array[String]): Unit = {
     val startNanos = System.nanoTime()
     val cfg        = parseArgs(args.toList)
-    Banners.init(cfg.cefInclude)
+
+    given Banners = Banners.fromInclude(cfg.cefInclude)
 
     val headerInputs      = DiscoverHeaders(cfg)
     val preprocessed      = PreprocessHeaders(headerInputs, cfg)

@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.Named;
@@ -34,24 +35,22 @@ class CefXmlReaderTest extends CefTestBase {
             + "  <r:child r:attr=\"val\">text</r:child>\n"
             + "</r:root>\n";
 
-    @FunctionalInterface
-    interface StreamFactory {
-        CefStreamReader create(byte[] data, Path tmpDir) throws Exception;
+    static Stream<Named<BiFunction<byte[], Path, CefStreamReader>>> streamFactories() {
+        return Stream.of(
+                Named.of("file", CefXmlReaderTest::createFileFactory),
+                Named.of("handler", (data, tmpDir) -> CefStreamReader.createForHandler(new ByteArrayReadHandler(data))
+                        .orElseThrow(() -> new AssertionError("createForHandler returned empty"))));
     }
 
-    private static final StreamFactory FILE_FACTORY = (data, tmpDir) -> {
-        Path file = tmpDir.resolve("test-data.xml");
-        Files.write(file, data);
-        return CefStreamReader.createForFile(file.toAbsolutePath().toString())
-                .orElseThrow(() -> new AssertionError("createForFile returned empty"));
-    };
-
-    private static final StreamFactory HANDLER_FACTORY =
-            (data, tmpDir) -> CefStreamReader.createForHandler(new ByteArrayReadHandler(data))
-                    .orElseThrow(() -> new AssertionError("createForHandler returned empty"));
-
-    static Stream<Named<StreamFactory>> streamFactories() {
-        return Stream.of(Named.of("file", FILE_FACTORY), Named.of("handler", HANDLER_FACTORY));
+    private static CefStreamReader createFileFactory(byte[] data, Path tmpDir) {
+        try {
+            Path file = tmpDir.resolve("test-data.xml");
+            Files.write(file, data);
+            return CefStreamReader.createForFile(file.toAbsolutePath().toString())
+                    .orElseThrow(() -> new AssertionError("createForFile returned empty"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static class ByteArrayReadHandler implements CefReadHandler {
@@ -112,10 +111,10 @@ class CefXmlReaderTest extends CefTestBase {
         }
     }
 
-    private static CefXmlReader openXml(StreamFactory factory, String xmlString, Path tmpDir, String uri)
-            throws Exception {
+    private static CefXmlReader openXml(
+            BiFunction<byte[], Path, CefStreamReader> factory, String xmlString, Path tmpDir, String uri) {
         byte[] bytes = xmlString.getBytes(StandardCharsets.UTF_8);
-        CefStreamReader reader = factory.create(bytes, tmpDir);
+        CefStreamReader reader = factory.apply(bytes, tmpDir);
         return CefXmlReader.create(reader, CefXmlEncodingType.of(CefXmlEncodingType.Kind.UTF8), uri)
                 .orElseThrow();
     }
@@ -128,14 +127,14 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void parseElementsAndText(StreamFactory factory) throws Exception {
+    void parseElementsAndText(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://simple.xml")) {
             List<String> elementNames = new ArrayList<>();
             List<String> textValues = new ArrayList<>();
 
             while (xr.moveToNextNode()) {
                 Optional<CefXmlNodeType.Kind> kind = xr.getType().kind();
-                if (!kind.isPresent()) continue;
+                if (kind.isEmpty()) continue;
                 if (kind.get() == CefXmlNodeType.Kind.ELEMENT_START) {
                     xr.getLocalName().ifPresent(elementNames::add);
                 } else if (kind.get() == CefXmlNodeType.Kind.TEXT) {
@@ -152,7 +151,7 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void parseAttributes(StreamFactory factory) throws Exception {
+    void parseAttributes(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://attrs.xml")) {
             List<String> attrValues = new ArrayList<>();
 
@@ -171,7 +170,7 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void emptyElement(StreamFactory factory) throws Exception {
+    void emptyElement(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://empty.xml")) {
             boolean foundEmpty = false;
 
@@ -193,7 +192,7 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void depthAndLineNumbers(StreamFactory factory) throws Exception {
+    void depthAndLineNumbers(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://depth.xml")) {
             int maxDepth = 0;
             List<Integer> elementLines = new ArrayList<>();
@@ -216,7 +215,7 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void namespacePrefixAndUri(StreamFactory factory) throws Exception {
+    void namespacePrefixAndUri(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         try (CefXmlReader xr = openXml(factory, NS_XML, makeTmpDir(), "test://ns.xml")) {
             boolean foundChild = false;
 
@@ -240,7 +239,7 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void innerAndOuterXml(StreamFactory factory) throws Exception {
+    void innerAndOuterXml(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><child>text</child></root>\n";
         try (CefXmlReader xr = openXml(factory, xml, makeTmpDir(), "test://innerxml.xml")) {
             while (xr.moveToNextNode()) {

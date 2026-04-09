@@ -54,8 +54,8 @@ final class NativeStderr {
                                 log.debug("{}", line);
                             }
                         }
-                    } catch (Exception e) {
-                        // Pipe closed - normal during shutdown
+                    } catch (Exception ignored) {
+                        // Pipe closed during shutdown, ignore
                     }
                 },
                 "cef4j-stderr-reader");

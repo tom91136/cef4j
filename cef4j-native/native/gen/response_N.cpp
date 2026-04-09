@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResponse), getError0)(JNIEnv* env, jobje
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setError0)(JNIEnv* env, jobject obj, jlong self, jobject error) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!error) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "error must not be null"); return;}
+    if (!error) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "error must not be null"); return; }
     s->set_error(s, static_cast<cef_errorcode_t>(env->GetLongField(error, env->GetFieldID(env->GetObjectClass(error), "value", "J"))));
 }
 
@@ -122,7 +122,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderByName0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
+    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->get_header_map(s, _headerMap_csmm);
     CefStringMultimapWriteBack(env, _headerMap_csmm, headerMap);
@@ -131,7 +131,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv* env, jobj
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!headerMap) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return;}
+    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set_header_map(s, _headerMap_csmm);
     cef_string_multimap_free(_headerMap_csmm);

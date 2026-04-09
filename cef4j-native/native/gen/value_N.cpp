@@ -34,7 +34,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefValue), isSame0)(JNIEnv* env, jobject o
     auto* s = reinterpret_cast<cef_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_value_t* _that_ptr = that ? reinterpret_cast<cef_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -43,7 +43,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefValue), isEqual0)(JNIEnv* env, jobject 
     auto* s = reinterpret_cast<cef_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_value_t* _that_ptr = that ? reinterpret_cast<cef_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_equal(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -167,7 +167,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefValue), setBinary0)(JNIEnv* env, jobjec
     auto* s = reinterpret_cast<cef_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _value_ptr = value ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_binary(s, _value_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -176,7 +176,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefValue), setDictionary0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_dictionary_value_t* _value_ptr = value ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_dictionary(s, _value_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -185,13 +185,13 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefValue), setList0)(JNIEnv* env, jobject 
     auto* s = reinterpret_cast<cef_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_list_value_t* _value_ptr = value ? reinterpret_cast<cef_list_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _r = s->set_list(s, _value_ptr);
     return static_cast<jboolean>(_r);
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefValue), parseJson0)(JNIEnv* env, jclass clz, jstring json_string, jobject options) {
-    if (!options) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr;}
+    if (!options) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr; }
     auto _json_string_str = JStringToCefString(env, json_string);
     auto _r = cef_parse_json(_json_string_str, static_cast<cef_json_parser_options_t>(env->GetLongField(options, env->GetFieldID(env->GetObjectClass(options), "value", "J"))));
     if (_json_string_str) cef_string_userfree_free(_json_string_str);
@@ -202,10 +202,10 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefValue), parseJson0)(JNIEnv* env, jclass 
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefValue), parseJsonBuffer0)(JNIEnv* env, jclass clz, jobject json, jobject options) {
-    if (!json) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "json must not be null"); return nullptr;}
-    if (!options) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr;}
+    if (!json) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "json must not be null"); return nullptr; }
+    if (!options) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr; }
     const void* _json_addr = json ? env->GetDirectBufferAddress(json) : nullptr;
-    if (json && !_json_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "json must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    if (json && !_json_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "json must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     auto _r = cef_parse_json_buffer(_json_addr, static_cast<size_t>(env->GetDirectBufferCapacity(json)), static_cast<cef_json_parser_options_t>(env->GetLongField(options, env->GetFieldID(env->GetObjectClass(options), "value", "J"))));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefValue$NativePeer");
@@ -214,7 +214,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefValue), parseJsonBuffer0)(JNIEnv* env, j
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefValue), parseJsonandReturnError0)(JNIEnv* env, jclass clz, jstring json_string, jobject options, jstring error_msg_out) {
-    if (!options) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr;}
+    if (!options) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr; }
     auto _json_string_str = JStringToCefString(env, json_string);
     auto _error_msg_out_str = JStringToCefString(env, error_msg_out);
     auto _r = cef_parse_jsonand_return_error(_json_string_str, static_cast<cef_json_parser_options_t>(env->GetLongField(options, env->GetFieldID(env->GetObjectClass(options), "value", "J"))), _error_msg_out_str);

@@ -13,7 +13,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintDialogCallback), cont0)(JNIEnv* env, j
     auto* s = reinterpret_cast<cef_print_dialog_callback_t*>(self);
     if (!s) return;
     cef_print_settings_t* _settings_ptr = settings ? reinterpret_cast<cef_print_settings_t*>(env->GetLongField(settings, env->GetFieldID(env->GetObjectClass(settings), "nativePtr", "J"))) : nullptr;
-    if (_settings_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_settings_ptr); _b->add_ref(_b);}
+    if (_settings_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_settings_ptr); _b->add_ref(_b); }
     s->cont(s, _settings_ptr);
 }
 

@@ -1,26 +1,23 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported JavaScript dialog types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   JSDIALOGTYPE_ALERT = 0,
  *   JSDIALOGTYPE_CONFIRM = 1,
  *   JSDIALOGTYPE_PROMPT = 2,
  *   JSDIALOGTYPE_NUM_VALUES = 3
  * } cef_jsdialog_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#ALERT}, {@link Kind#CONFIRM}, {@link Kind#PROMPT}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefJsDialogType implements CefEnum<CefJsDialogType> {
 
     /** Known constants for {@link CefJsDialogType}. */
@@ -79,8 +76,8 @@ public final class CefJsDialogType implements CefEnum<CefJsDialogType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

@@ -11,6 +11,6 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPermissionPromptCallback), release0)(JNIEnv
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPermissionPromptCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jobject result) {
     auto* s = reinterpret_cast<cef_permission_prompt_callback_t*>(self);
     if (!s) return;
-    if (!result) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "result must not be null"); return;}
+    if (!result) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "result must not be null"); return; }
     s->cont(s, static_cast<cef_permission_request_result_t>(env->GetLongField(result, env->GetFieldID(env->GetObjectClass(result), "value", "J"))));
 }

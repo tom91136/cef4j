@@ -18,19 +18,19 @@
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_app_t* Create_JniCefApp(JNIEnv *env, jobject handler);
-extern "C" cef_scheme_handler_factory_t* Create_JniCefSchemeHandlerFactory(JNIEnv *env, jobject handler);
-extern "C" cef_task_t* Create_JniCefTask(JNIEnv *env, jobject handler);
-extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv *env, jobject handler);
-extern "C" cef_end_tracing_callback_t* Create_JniCefEndTracingCallback(JNIEnv *env, jobject handler);
-extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv *env, jobject handler);
+extern "C" cef_app_t* Create_JniCefApp(JNIEnv* env, jobject handler);
+extern "C" cef_scheme_handler_factory_t* Create_JniCefSchemeHandlerFactory(JNIEnv* env, jobject handler);
+extern "C" cef_task_t* Create_JniCefTask(JNIEnv* env, jobject handler);
+extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv* env, jobject handler);
+extern "C" cef_end_tracing_callback_t* Create_JniCefEndTracingCallback(JNIEnv* env, jobject handler);
+extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(jint, CefGlobals, executeProcess0)(JNIEnv* env, jclass clz, jobject args, jobject application, jobject windows_sandbox_info) {
     cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
     return static_cast<jint>(cef_execute_process(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, initialize0)(JNIEnv* env, jclass clz, jobject args, jobject settings, jobject application, jobject windows_sandbox_info) {
-    if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0;}
+    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return 0; }
     cef_settings_t _settings_val = {};
     if (settings) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSettings");
@@ -307,7 +307,7 @@ CEF4J_JNI_EXPORT(jstring, CefGlobals, getMimeType0)(JNIEnv* env, jclass clz, jst
 }
 
 CEF4J_JNI_EXPORT(void, CefGlobals, getExtensionsForMimeType0)(JNIEnv* env, jclass clz, jstring mime_type, jobject extensions) {
-    if (!extensions) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "extensions must not be null"); return;}
+    if (!extensions) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "extensions must not be null"); return; }
     auto _mime_type_str = JStringToCefString(env, mime_type);
     auto _extensions_csl = JavaListToCefStringList(env, extensions);
     cef_get_extensions_for_mime_type(_mime_type_str, _extensions_csl);
@@ -316,9 +316,9 @@ CEF4J_JNI_EXPORT(void, CefGlobals, getExtensionsForMimeType0)(JNIEnv* env, jclas
 }
 
 CEF4J_JNI_EXPORT(jstring, CefGlobals, base64Encode0)(JNIEnv* env, jclass clz, jobject data) {
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr; }
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     auto result = cef_base64_encode(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (!result) return nullptr;
     auto jstr = CefStringToJString(env, result);
@@ -337,7 +337,7 @@ CEF4J_JNI_EXPORT(jstring, CefGlobals, uriencode0)(JNIEnv* env, jclass clz, jstri
 }
 
 CEF4J_JNI_EXPORT(jstring, CefGlobals, uridecode0)(JNIEnv* env, jclass clz, jstring text, jint convert_to_utf8, jobject unescape_rule) {
-    if (!unescape_rule) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "unescapeRule must not be null"); return nullptr;}
+    if (!unescape_rule) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "unescapeRule must not be null"); return nullptr; }
     auto _text_str = JStringToCefString(env, text);
     auto result = cef_uridecode(_text_str, convert_to_utf8, static_cast<cef_uri_unescape_rule_t>(env->GetLongField(unescape_rule, env->GetFieldID(env->GetObjectClass(unescape_rule), "value", "J"))));
     if (_text_str) cef_string_userfree_free(_text_str);
@@ -348,9 +348,9 @@ CEF4J_JNI_EXPORT(jstring, CefGlobals, uridecode0)(JNIEnv* env, jclass clz, jstri
 }
 
 CEF4J_JNI_EXPORT(jstring, CefGlobals, writeJson0)(JNIEnv* env, jclass clz, jobject node, jobject options) {
-    if (!options) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr;}
+    if (!options) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "options must not be null"); return nullptr; }
     cef_value_t* _node_ptr = node ? reinterpret_cast<cef_value_t*>(env->GetLongField(node, env->GetFieldID(env->GetObjectClass(node), "nativePtr", "J"))) : nullptr;
-    if (_node_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_node_ptr); _b->add_ref(_b);}
+    if (_node_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_node_ptr); _b->add_ref(_b); }
     auto result = cef_write_json(_node_ptr, static_cast<cef_json_writer_options_t>(env->GetLongField(options, env->GetFieldID(env->GetObjectClass(options), "value", "J"))));
     if (!result) return nullptr;
     auto jstr = CefStringToJString(env, result);
@@ -359,14 +359,14 @@ CEF4J_JNI_EXPORT(jstring, CefGlobals, writeJson0)(JNIEnv* env, jclass clz, jobje
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, getPath0)(JNIEnv* env, jclass clz, jobject key, jstring path) {
-    if (!key) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0;}
+    if (!key) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "key must not be null"); return 0; }
     auto _path_str = JStringToCefString(env, path);
     return static_cast<jint>(cef_get_path(static_cast<cef_path_key_t>(env->GetLongField(key, env->GetFieldID(env->GetObjectClass(key), "value", "J"))), _path_str));
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, launchProcess0)(JNIEnv* env, jclass clz, jobject command_line) {
     cef_command_line_t* _command_line_ptr = command_line ? reinterpret_cast<cef_command_line_t*>(env->GetLongField(command_line, env->GetFieldID(env->GetObjectClass(command_line), "nativePtr", "J"))) : nullptr;
-    if (_command_line_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_command_line_ptr); _b->add_ref(_b);}
+    if (_command_line_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_command_line_ptr); _b->add_ref(_b); }
     return static_cast<jint>(cef_launch_process(_command_line_ptr));
 }
 
@@ -386,24 +386,24 @@ CEF4J_JNI_EXPORT(jboolean, CefGlobals, clearSchemeHandlerFactories0)(JNIEnv* env
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, isCertStatusError0)(JNIEnv* env, jclass clz, jobject status) {
-    if (!status) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "status must not be null"); return 0;}
+    if (!status) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "status must not be null"); return 0; }
     return static_cast<jint>(cef_is_cert_status_error(static_cast<cef_cert_status_t>(env->GetLongField(status, env->GetFieldID(env->GetObjectClass(status), "value", "J")))));
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, currentlyOn0)(JNIEnv* env, jclass clz, jobject threadId) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return 0;}
+    if (!threadId) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return 0; }
     return static_cast<jint>(cef_currently_on(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J")))));
 }
 
 CEF4J_JNI_EXPORT(jboolean, CefGlobals, postTask0)(JNIEnv* env, jclass clz, jobject threadId, jobject task) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE;}
+    if (!threadId) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE; }
     cef_task_t* _task_ptr = task ? Create_JniCefTask(env, task) : nullptr;
     auto _r = cef_post_task(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))), _task_ptr);
     return static_cast<jboolean>(_r);
 }
 
 CEF4J_JNI_EXPORT(jboolean, CefGlobals, postDelayedTask0)(JNIEnv* env, jclass clz, jobject threadId, jobject task, jlong delay_ms) {
-    if (!threadId) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE;}
+    if (!threadId) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE; }
     cef_task_t* _task_ptr = task ? Create_JniCefTask(env, task) : nullptr;
     auto _r = cef_post_delayed_task(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))), _task_ptr, delay_ms);
     return static_cast<jboolean>(_r);

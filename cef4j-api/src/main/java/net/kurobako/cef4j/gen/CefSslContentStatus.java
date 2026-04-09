@@ -1,26 +1,22 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported SSL content status flags. See content/public/common/ssl_status.h for more information.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   SSL_CONTENT_NORMAL_CONTENT = 0,
  *   SSL_CONTENT_DISPLAYED_INSECURE_CONTENT = 1 &lt;&lt; 0,
  *   SSL_CONTENT_RAN_INSECURE_CONTENT = 1 &lt;&lt; 1
  * } cef_ssl_content_status_t;</pre>
- *
- * <p>Possible values: {@link Kind#NORMAL_CONTENT}, {@link Kind#DISPLAYED_INSECURE_CONTENT},
- * {@link Kind#RAN_INSECURE_CONTENT}
+ * <p>Possible values: {@link Kind#NORMAL_CONTENT}, {@link Kind#DISPLAYED_INSECURE_CONTENT}, {@link Kind#RAN_INSECURE_CONTENT}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefSslContentStatus implements CefEnum<CefSslContentStatus> {
 
     /** Known constants for {@link CefSslContentStatus}. */
@@ -78,8 +74,8 @@ public final class CefSslContentStatus implements CefEnum<CefSslContentStatus> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

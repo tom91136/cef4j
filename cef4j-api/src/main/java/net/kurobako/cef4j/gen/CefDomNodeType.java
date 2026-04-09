@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * DOM node types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   DOM_NODE_TYPE_UNSUPPORTED = 0,
  *   DOM_NODE_TYPE_ELEMENT = 1,
@@ -17,14 +14,12 @@ import javax.annotation.processing.Generated;
  *   DOM_NODE_TYPE_CDATA_SECTION = 4,
  *   ...
  * } cef_dom_node_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#UNSUPPORTED}, {@link Kind#ELEMENT}, {@link Kind#ATTRIBUTE}, {@link Kind#TEXT},
- * {@link Kind#CDATA_SECTION}, {@link Kind#PROCESSING_INSTRUCTIONS}, {@link Kind#COMMENT}, {@link Kind#DOCUMENT},
- * {@link Kind#DOCUMENT_TYPE}, {@link Kind#DOCUMENT_FRAGMENT}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNSUPPORTED}, {@link Kind#ELEMENT}, {@link Kind#ATTRIBUTE}, {@link Kind#TEXT}, {@link Kind#CDATA_SECTION}, {@link Kind#PROCESSING_INSTRUCTIONS}, {@link Kind#COMMENT}, {@link Kind#DOCUMENT}, {@link Kind#DOCUMENT_TYPE}, {@link Kind#DOCUMENT_FRAGMENT}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDomNodeType implements CefEnum<CefDomNodeType> {
 
     /** Known constants for {@link CefDomNodeType}. */
@@ -90,8 +85,8 @@ public final class CefDomNodeType implements CefEnum<CefDomNodeType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

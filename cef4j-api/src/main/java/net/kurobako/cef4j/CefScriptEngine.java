@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -30,7 +31,12 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Thread safety: all public methods are safe to call from any thread. IPC ordering is per-frame as guaranteed by
  * CEF.
+ *
+ * <p><b>Navigation and pending futures:</b> if the page navigates away before the renderer sends a reply, pending
+ * futures from the previous page will never complete. Use {@link java.util.concurrent.CompletableFuture#orTimeout} or
+ * {@link java.util.concurrent.CompletableFuture#completeOnTimeout} to avoid indefinite hangs.
  */
+@SuppressWarnings({"resource", "unused"})
 public final class CefScriptEngine {
 
     private static final Logger log = LoggerFactory.getLogger(CefScriptEngine.class);
@@ -60,6 +66,10 @@ public final class CefScriptEngine {
      * Receives callback invocations from JS. Each argument is a V8 handle ID that can be used with
      * {@link #getProperty}, {@link #call}, etc. A handle ID of {@code -1} indicates null/undefined. The caller is
      * responsible for releasing argument handles when done.
+     *
+     * <p>Threading: in multithreaded message loop mode (e.g. {@code CefWebView}), {@code onCallback} is invoked on the
+     * CEF browser process IPC thread - do not block. In single-threaded mode (e.g. {@code ViewsBrowserApp}), it is
+     * invoked on the CEF UI thread.
      */
     @FunctionalInterface
     public interface CallbackHandler {
@@ -155,6 +165,8 @@ public final class CefScriptEngine {
     private final AtomicInteger nextCallbackId = new AtomicInteger(1);
     private final ConcurrentHashMap<Integer, CompletableFuture<Result>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, CallbackHandler> callbacks = new ConcurrentHashMap<>();
+    private final Object lifecycleLock = new Object();
+    private volatile boolean disposed;
 
     /**
      * Creates a new engine that obtains the target frame from the given supplier on each operation.
@@ -216,29 +228,12 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Result> getProperty(int handleId, @Nonnull String key, boolean asHandle) {
         Objects.requireNonNull(key, "key");
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
-
-        CefProcessMessage msg = CefProcessMessage.create(MSG_GET).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to create CefProcessMessage"));
-            return future;
-        }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to get argument list"));
-            return future;
-        }
-        args.setSize(4);
-        args.setInt(0, reqId);
-        args.setInt(1, handleId);
-        args.setString(2, key);
-        args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
-        frame().sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
-        return future;
+        return sendRequest(frame(), MSG_GET, 4, null, (args, reqId) -> {
+            args.setInt(0, reqId);
+            args.setInt(1, handleId);
+            args.setString(2, key);
+            args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
+        });
     }
 
     /**
@@ -253,30 +248,16 @@ public final class CefScriptEngine {
     public CompletableFuture<Void> setProperty(int handleId, @Nonnull String key, @Nonnull String valueJson) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(valueJson, "valueJson");
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
-
-        CefProcessMessage msg = CefProcessMessage.create(MSG_SET).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            return failedFuture(new IllegalStateException("Failed to create CefProcessMessage"));
-        }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            return failedFuture(new IllegalStateException("Failed to get argument list"));
-        }
-        args.setSize(4);
-        args.setInt(0, reqId);
-        args.setInt(1, handleId);
-        args.setString(2, key);
-        args.setString(3, valueJson);
-        frame().sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
-        return future.thenApply(result -> {
-            if (result.isError()) throw new CefScriptException(result.error());
-            return null;
-        });
+        return sendRequest(frame(), MSG_SET, 4, null, (args, reqId) -> {
+                    args.setInt(0, reqId);
+                    args.setInt(1, handleId);
+                    args.setString(2, key);
+                    args.setString(3, valueJson);
+                })
+                .thenApply(result -> {
+                    if (result.isError()) throw new CefScriptException(result.error());
+                    return null;
+                });
     }
 
     /**
@@ -293,30 +274,13 @@ public final class CefScriptEngine {
             int handleId, @Nonnull String method, @Nonnull String argsJson, boolean asHandle) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(argsJson, "argsJson");
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
-
-        CefProcessMessage msg = CefProcessMessage.create(MSG_CALL).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to create CefProcessMessage"));
-            return future;
-        }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to get argument list"));
-            return future;
-        }
-        args.setSize(5);
-        args.setInt(0, reqId);
-        args.setInt(1, handleId);
-        args.setString(2, method);
-        args.setString(3, argsJson);
-        args.setInt(4, asHandle ? MODE_HANDLE : MODE_JSON);
-        frame().sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
-        return future;
+        return sendRequest(frame(), MSG_CALL, 5, null, (args, reqId) -> {
+            args.setInt(0, reqId);
+            args.setInt(1, handleId);
+            args.setString(2, method);
+            args.setString(3, argsJson);
+            args.setInt(4, asHandle ? MODE_HANDLE : MODE_JSON);
+        });
     }
 
     /**
@@ -330,30 +294,12 @@ public final class CefScriptEngine {
     @Nonnull
     public CompletableFuture<Result> invoke(int handleId, @Nonnull String argsJson, boolean asHandle) {
         Objects.requireNonNull(argsJson, "argsJson");
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
-
-        CefProcessMessage msg = CefProcessMessage.create(MSG_INVOKE).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to create CefProcessMessage"));
-            return future;
-        }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to get argument list"));
-            return future;
-        }
-        args.setSize(4);
-        args.setInt(0, reqId);
-        args.setInt(1, handleId);
-        args.setString(2, argsJson);
-        args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
-
-        frame().sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
-        return future;
+        return sendRequest(frame(), MSG_INVOKE, 4, null, (args, reqId) -> {
+            args.setInt(0, reqId);
+            args.setInt(1, handleId);
+            args.setString(2, argsJson);
+            args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
+        });
     }
 
     /**
@@ -396,37 +342,19 @@ public final class CefScriptEngine {
         Objects.requireNonNull(handler, "handler");
         int callbackId = nextCallbackId.getAndIncrement();
         callbacks.put(callbackId, handler);
-
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
-
-        CefProcessMessage msg = CefProcessMessage.create(MSG_CREATE_CALLBACK).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            callbacks.remove(callbackId);
-            return failedFuture(new IllegalStateException("Failed to create CefProcessMessage"));
-        }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            callbacks.remove(callbackId);
-            return failedFuture(new IllegalStateException("Failed to get argument list"));
-        }
-        args.setSize(2);
-        args.setInt(0, reqId);
-        args.setInt(1, callbackId);
-
-        frame().sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
-        return future.thenApply(result -> {
-            if (result.isError()) {
-                callbacks.remove(callbackId);
-                throw new CefScriptException(result.error());
-            }
-            if (result.isHandle()) return result.handle();
-            callbacks.remove(callbackId);
-            throw new IllegalStateException("Unexpected result type for createCallback: " + result);
-        });
+        return sendRequest(frame(), MSG_CREATE_CALLBACK, 2, () -> callbacks.remove(callbackId), (args, reqId) -> {
+                    args.setInt(0, reqId);
+                    args.setInt(1, callbackId);
+                })
+                .thenApply(result -> {
+                    if (result.isError()) {
+                        callbacks.remove(callbackId);
+                        throw new CefScriptException(result.error());
+                    }
+                    if (result.isHandle()) return result.handle();
+                    callbacks.remove(callbackId);
+                    throw new IllegalStateException("Unexpected result type for createCallback: " + result);
+                });
     }
 
     /**
@@ -514,40 +442,67 @@ public final class CefScriptEngine {
         return true;
     }
 
-    /** Cancel all pending futures and clear all callbacks. Call this when the browser is closing. */
+    /**
+     * Cancels all pending futures and clears all callbacks. Call this when the browser is closing or when the view is
+     * disposed. Safe to call multiple times - subsequent calls are no-ops.
+     */
     public void dispose() {
-        CefScriptException ex = new CefScriptException("CefScriptEngine disposed");
-        pending.forEach((id, future) -> future.completeExceptionally(ex));
-        pending.clear();
-        callbacks.clear();
+        synchronized (lifecycleLock) {
+            if (disposed) return;
+            disposed = true;
+            CefScriptException ex = new CefScriptException("CefScriptEngine disposed");
+            pending.forEach((id, future) -> future.completeExceptionally(ex));
+            pending.clear();
+            callbacks.clear();
+        }
     }
 
     private CompletableFuture<Result> sendEval(CefFrame frame, String expression, int mode) {
-        int reqId = nextId.getAndIncrement();
-        CompletableFuture<Result> future = new CompletableFuture<>();
-        pending.put(reqId, future);
+        return sendRequest(frame, MSG_EVAL, 3, null, (args, reqId) -> {
+            args.setInt(0, reqId);
+            args.setString(1, expression);
+            args.setInt(2, mode);
+        });
+    }
 
-        CefProcessMessage msg = CefProcessMessage.create(MSG_EVAL).orElse(null);
-        if (msg == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to create CefProcessMessage"));
+    private CompletableFuture<Result> sendRequest(
+            CefFrame frame,
+            String messageName,
+            int argCount,
+            Runnable onFailure,
+            ObjIntConsumer<CefListValue> requestWriter) {
+        synchronized (lifecycleLock) {
+            if (disposed) {
+                if (onFailure != null) onFailure.run();
+                return failedFuture(new CefScriptException("CefScriptEngine disposed"));
+            }
+            int reqId = nextId.getAndIncrement();
+            CompletableFuture<Result> future = new CompletableFuture<>();
+            pending.put(reqId, future);
+
+            CefProcessMessage message = CefProcessMessage.create(messageName).orElse(null);
+            if (message == null) {
+                return failRequest(reqId, future, onFailure, "Failed to create CefProcessMessage");
+            }
+            CefListValue args = message.getArgumentList().orElse(null);
+            if (args == null) {
+                return failRequest(reqId, future, onFailure, "Failed to get argument list");
+            }
+            args.setSize(argCount);
+            requestWriter.accept(args, reqId);
+            frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), message);
             return future;
         }
-        CefListValue args = msg.getArgumentList().orElse(null);
-        if (args == null) {
-            pending.remove(reqId);
-            future.completeExceptionally(new IllegalStateException("Failed to get argument list"));
-            return future;
-        }
-        args.setSize(3);
-        args.setInt(0, reqId);
-        args.setString(1, expression);
-        args.setInt(2, mode);
-        frame.sendProcessMessage(CefProcessId.of(CefProcessId.Kind.RENDERER), msg);
+    }
+
+    private CompletableFuture<Result> failRequest(
+            int reqId, CompletableFuture<Result> future, Runnable onFailure, String message) {
+        pending.remove(reqId);
+        if (onFailure != null) onFailure.run();
+        future.completeExceptionally(new IllegalStateException(message));
         return future;
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> CompletableFuture<T> failedFuture(Throwable ex) {
         CompletableFuture<T> f = new CompletableFuture<>();
         f.completeExceptionally(ex);

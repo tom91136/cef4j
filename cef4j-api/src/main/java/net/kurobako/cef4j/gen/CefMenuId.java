@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Supported menu IDs. Non-English translations can be provided for the IDS_MENU_* strings in
- * {@link net.kurobako.cef4j.gen.CefResourceBundleHandler#getLocalizedString(int, String)}.
- *
+ * Supported menu IDs. Non-English translations can be provided for the IDS_MENU_* strings in {@link net.kurobako.cef4j.gen.CefResourceBundleHandler#getLocalizedString(int, String)}.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   MENU_ID_BACK = 100,
  *   MENU_ID_FORWARD = 101,
@@ -18,18 +14,12 @@ import javax.annotation.processing.Generated;
  *   MENU_ID_STOPLOAD = 104,
  *   ...
  * } cef_menu_id_t;</pre>
- *
- * <p>Possible values: {@link Kind#BACK}, {@link Kind#FORWARD}, {@link Kind#RELOAD}, {@link Kind#RELOAD_NOCACHE},
- * {@link Kind#STOPLOAD}, {@link Kind#UNDO}, {@link Kind#REDO}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE},
- * {@link Kind#PASTE_MATCH_STYLE}, {@link Kind#DELETE}, {@link Kind#SELECT_ALL}, {@link Kind#FIND}, {@link Kind#PRINT},
- * {@link Kind#VIEW_SOURCE}, {@link Kind#SPELLCHECK_SUGGESTION_0}, {@link Kind#SPELLCHECK_SUGGESTION_1},
- * {@link Kind#SPELLCHECK_SUGGESTION_2}, {@link Kind#SPELLCHECK_SUGGESTION_3}, {@link Kind#SPELLCHECK_SUGGESTION_4},
- * {@link Kind#SPELLCHECK_SUGGESTION_LAST}, {@link Kind#NO_SPELLING_SUGGESTIONS}, {@link Kind#ADD_TO_DICTIONARY},
- * {@link Kind#CUSTOM_FIRST}, {@link Kind#CUSTOM_LAST}, {@link Kind#USER_FIRST}, {@link Kind#USER_LAST}
+ * <p>Possible values: {@link Kind#BACK}, {@link Kind#FORWARD}, {@link Kind#RELOAD}, {@link Kind#RELOAD_NOCACHE}, {@link Kind#STOPLOAD}, {@link Kind#UNDO}, {@link Kind#REDO}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE}, {@link Kind#PASTE_MATCH_STYLE}, {@link Kind#DELETE}, {@link Kind#SELECT_ALL}, {@link Kind#FIND}, {@link Kind#PRINT}, {@link Kind#VIEW_SOURCE}, {@link Kind#SPELLCHECK_SUGGESTION_0}, {@link Kind#SPELLCHECK_SUGGESTION_1}, {@link Kind#SPELLCHECK_SUGGESTION_2}, {@link Kind#SPELLCHECK_SUGGESTION_3}, {@link Kind#SPELLCHECK_SUGGESTION_4}, {@link Kind#SPELLCHECK_SUGGESTION_LAST}, {@link Kind#NO_SPELLING_SUGGESTIONS}, {@link Kind#ADD_TO_DICTIONARY}, {@link Kind#CUSTOM_FIRST}, {@link Kind#CUSTOM_LAST}, {@link Kind#USER_FIRST}, {@link Kind#USER_LAST}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMenuId implements CefEnum<CefMenuId> {
 
     /** Known constants for {@link CefMenuId}. */
@@ -112,8 +102,8 @@ public final class CefMenuId implements CefEnum<CefMenuId> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

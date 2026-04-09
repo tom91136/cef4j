@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Singleton {@link Cleaner} shared by all generated NativePeer instances. */
+@SuppressWarnings("unused")
 public enum NativeCleaner {
     INSTANCE;
 
@@ -18,12 +19,20 @@ public enum NativeCleaner {
     public Cleaner.Cleanable register(Object obj, Runnable action) {
         if (log.isTraceEnabled()) {
             Class<?> enclosing = obj.getClass().getEnclosingClass();
+            long result;
+            try {
+                var f = obj.getClass().getDeclaredField("nativePtr");
+                f.setAccessible(true);
+                result = f.getLong(obj);
+            } catch (ReflectiveOperationException e) {
+                result = 0;
+            }
             log.trace(
                     "alloc   {} 0x{}",
                     enclosing != null
                             ? enclosing.getSimpleName()
                             : obj.getClass().getSimpleName(),
-                    Long.toHexString(ptrOf(obj)));
+                    Long.toHexString(result));
         }
         Cleaner.Cleanable c = cleaner.register(obj, action);
         Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
@@ -35,7 +44,7 @@ public enum NativeCleaner {
         return holder[0];
     }
 
-    /** Force-release all outstanding NativePeers. Call before cef_shutdown. Returns count released. */
+    /** Force-release all outstanding NativePeers. Call before cef_shutdown. Returns the total ref counts released. */
     public int releaseAll() {
         Set<Cleaner.Cleanable> snapshot = Set.copyOf(active);
         if (log.isTraceEnabled() && !snapshot.isEmpty()) {
@@ -46,16 +55,5 @@ public enum NativeCleaner {
         }
         active.clear();
         return snapshot.size();
-    }
-
-    /** Best-effort extract of nativePtr for logging; returns 0 if unavailable. */
-    private static long ptrOf(Object obj) {
-        try {
-            var f = obj.getClass().getDeclaredField("nativePtr");
-            f.setAccessible(true);
-            return f.getLong(obj);
-        } catch (ReflectiveOperationException e) {
-            return 0;
-        }
     }
 }

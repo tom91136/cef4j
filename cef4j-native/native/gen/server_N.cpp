@@ -4,7 +4,7 @@
 #include "include/capi/cef_task_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_server_handler_t* Create_JniCefServerHandler(JNIEnv *env, jobject handler);
+extern "C" cef_server_handler_t* Create_JniCefServerHandler(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -60,10 +60,10 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefServer), isValidConnection0)(JNIEnv* en
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttp200Response0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jstring content_type, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return; }
     auto _content_type_str = JStringToCefString(env, content_type);
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return; }
     s->send_http200_response(s, connection_id, _content_type_str, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (_content_type_str) cef_string_userfree_free(_content_type_str);
 }
@@ -95,9 +95,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendHttpResponse0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendRawData0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return; }
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return; }
     s->send_raw_data(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 
@@ -110,9 +110,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), closeConnection0)(JNIEnv* env, job
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefServer), sendWebSocketMessage0)(JNIEnv* env, jobject obj, jlong self, jint connection_id, jobject data) {
     auto* s = reinterpret_cast<cef_server_t*>(self);
     if (!s) return;
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return; }
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return; }
     s->send_web_socket_message(s, connection_id, _data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
 }
 

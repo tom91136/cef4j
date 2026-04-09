@@ -305,6 +305,7 @@ object DocComments {
     if (line.trim.isEmpty) "<p>"
     else {
       val escaped = escapeTagLiterals(line.replace("&", "&amp;"))
+        .replace("\u2014", " - ") // em-dash from CEF headers
         .replace("<<", "&lt;&lt;")
         .replace("<=", "&lt;=")
         .replaceAll("""<(?=[\s\d])""", "&lt;")

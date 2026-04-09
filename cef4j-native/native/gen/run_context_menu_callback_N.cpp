@@ -11,7 +11,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRunContextMenuCallback), release0)(JNIEnv* 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRunContextMenuCallback), cont0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject event_flags) {
     auto* s = reinterpret_cast<cef_run_context_menu_callback_t*>(self);
     if (!s) return;
-    if (!event_flags) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "eventFlags must not be null"); return;}
+    if (!event_flags) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "eventFlags must not be null"); return; }
     s->cont(s, command_id, static_cast<cef_event_flags_t>(env->GetLongField(event_flags, env->GetFieldID(env->GetObjectClass(event_flags), "value", "J"))));
 }
 

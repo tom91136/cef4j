@@ -122,14 +122,14 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDragData), getFileContents0)(JNIEnv* env, 
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return 0;
     cef_stream_writer_t* _writer_ptr = writer ? reinterpret_cast<cef_stream_writer_t*>(env->GetLongField(writer, env->GetFieldID(env->GetObjectClass(writer), "nativePtr", "J"))) : nullptr;
-    if (_writer_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_writer_ptr); _b->add_ref(_b);}
+    if (_writer_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_writer_ptr); _b->add_ref(_b); }
     return static_cast<jlong>(s->get_file_contents(s, _writer_ptr));
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFileNames0)(JNIEnv* env, jobject obj, jlong self, jobject names) {
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!names) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "names must not be null"); return JNI_FALSE;}
+    if (!names) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "names must not be null"); return JNI_FALSE; }
     auto _names_csl = JavaListToCefStringList(env, names);
     auto _r = s->get_file_names(s, _names_csl);
     CefStringListWriteBack(env, _names_csl, names);
@@ -139,7 +139,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFileNames0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFilePaths0)(JNIEnv* env, jobject obj, jlong self, jobject paths) {
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!paths) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "paths must not be null"); return JNI_FALSE;}
+    if (!paths) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "paths must not be null"); return JNI_FALSE; }
     auto _paths_csl = JavaListToCefStringList(env, paths);
     auto _r = s->get_file_paths(s, _paths_csl);
     CefStringListWriteBack(env, _paths_csl, paths);

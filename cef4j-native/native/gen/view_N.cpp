@@ -103,7 +103,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), isSame0)(JNIEnv* env, jobj
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
     cef_view_t* _that_ptr = that ? reinterpret_cast<cef_view_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -175,7 +175,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefView), getViewForId0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), setBounds0)(JNIEnv* env, jobject obj, jlong self, jobject bounds) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return;
-    if (!bounds) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return;}
+    if (!bounds) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bounds must not be null"); return; }
     cef_rect_t _bounds_val = {};
     if (bounds) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");
@@ -210,7 +210,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefView), getBoundsInScreen0)(JNIEnv*
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), setSize0)(JNIEnv* env, jobject obj, jlong self, jobject size) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return;
-    if (!size) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return;}
+    if (!size) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
     if (size) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize");
@@ -233,7 +233,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefView), getSize0)(JNIEnv* env, jobj
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), setPosition0)(JNIEnv* env, jobject obj, jlong self, jobject position) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return;
-    if (!position) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "position must not be null"); return;}
+    if (!position) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "position must not be null"); return; }
     cef_point_t _position_val = {};
     if (position) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
@@ -256,7 +256,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefView), getPosition0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefView), setInsets0)(JNIEnv* env, jobject obj, jlong self, jobject insets) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return;
-    if (!insets) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "insets must not be null"); return;}
+    if (!insets) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "insets must not be null"); return; }
     cef_insets_t _insets_val = {};
     if (insets) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefInsets");
@@ -413,7 +413,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(views_CefView), getThemeColor0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToScreen0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -427,7 +427,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToScreen0)(JNI
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointFromScreen0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -441,7 +441,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointFromScreen0)(J
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToWindow0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -455,7 +455,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToWindow0)(JNI
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointFromWindow0)(JNIEnv* env, jobject obj, jlong self, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -469,9 +469,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointFromWindow0)(J
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToView0)(JNIEnv* env, jobject obj, jlong self, jobject view, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_view_t* _view_ptr = view ? reinterpret_cast<cef_view_t*>(env->GetLongField(view, env->GetFieldID(env->GetObjectClass(view), "nativePtr", "J"))) : nullptr;
-    if (_view_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b);}
+    if (_view_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b); }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");
@@ -485,9 +485,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointToView0)(JNIEn
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(views_CefView), convertPointFromView0)(JNIEnv* env, jobject obj, jlong self, jobject view, jobject point) {
     auto* s = reinterpret_cast<cef_view_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE;}
+    if (!point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "point must not be null"); return JNI_FALSE; }
     cef_view_t* _view_ptr = view ? reinterpret_cast<cef_view_t*>(env->GetLongField(view, env->GetFieldID(env->GetObjectClass(view), "nativePtr", "J"))) : nullptr;
-    if (_view_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b);}
+    if (_view_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_view_ptr); _b->add_ref(_b); }
     cef_point_t _point_val = {};
     if (point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint$Mutable");

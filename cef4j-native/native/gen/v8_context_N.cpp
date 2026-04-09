@@ -76,7 +76,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8Context), isSame0)(JNIEnv* env, jobje
     auto* s = reinterpret_cast<cef_v8_context_t*>(self);
     if (!s) return JNI_FALSE;
     cef_v8_context_t* _that_ptr = that ? reinterpret_cast<cef_v8_context_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -104,7 +104,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8Context), eval0)(JNIEnv* env, jobject
     if (retval && _retval_ptr) {
         auto _peerCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");
-        {   auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_retval_ptr); _b->add_ref(_b);}
+        { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_retval_ptr); _b->add_ref(_b); }
         auto _newPeer = env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>(_retval_ptr));
         auto _set = env->GetMethodID(env->GetObjectClass(retval), "set", "(Ljava/lang/Object;)V");
         env->CallVoidMethod(retval, _set, _newPeer);
@@ -112,7 +112,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8Context), eval0)(JNIEnv* env, jobject
     if (exception && _exception_ptr) {
         auto _peerCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Exception$NativePeer");
         auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");
-        {   auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_exception_ptr); _b->add_ref(_b);}
+        { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_exception_ptr); _b->add_ref(_b); }
         auto _newPeer = env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>(_exception_ptr));
         auto _set = env->GetMethodID(env->GetObjectClass(exception), "set", "(Ljava/lang/Object;)V");
         env->CallVoidMethod(exception, _set, _newPeer);

@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported value types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   VTYPE_INVALID = 0,
  *   VTYPE_NULL = 1,
@@ -17,14 +14,12 @@ import javax.annotation.processing.Generated;
  *   VTYPE_DOUBLE = 4,
  *   ...
  * } cef_value_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#INVALID}, {@link Kind#NULL}, {@link Kind#BOOL}, {@link Kind#INT},
- * {@link Kind#DOUBLE}, {@link Kind#STRING}, {@link Kind#BINARY}, {@link Kind#DICTIONARY}, {@link Kind#LIST},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#INVALID}, {@link Kind#NULL}, {@link Kind#BOOL}, {@link Kind#INT}, {@link Kind#DOUBLE}, {@link Kind#STRING}, {@link Kind#BINARY}, {@link Kind#DICTIONARY}, {@link Kind#LIST}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefValueType implements CefEnum<CefValueType> {
 
     /** Known constants for {@link CefValueType}. */
@@ -89,8 +84,8 @@ public final class CefValueType implements CefEnum<CefValueType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

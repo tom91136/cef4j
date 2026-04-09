@@ -51,7 +51,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPostData), removeElement0)(JNIEnv* env,
     auto* s = reinterpret_cast<cef_post_data_t*>(self);
     if (!s) return JNI_FALSE;
     cef_post_data_element_t* _element_ptr = element ? reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J"))) : nullptr;
-    if (_element_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b);}
+    if (_element_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b); }
     auto _r = s->remove_element(s, _element_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -60,7 +60,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPostData), addElement0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_post_data_t*>(self);
     if (!s) return JNI_FALSE;
     cef_post_data_element_t* _element_ptr = element ? reinterpret_cast<cef_post_data_element_t*>(env->GetLongField(element, env->GetFieldID(env->GetObjectClass(element), "nativePtr", "J"))) : nullptr;
-    if (_element_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b);}
+    if (_element_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_element_ptr); _b->add_ref(_b); }
     auto _r = s->add_element(s, _element_ptr);
     return static_cast<jboolean>(_r);
 }

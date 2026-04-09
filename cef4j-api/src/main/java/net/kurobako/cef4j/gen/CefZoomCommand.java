@@ -1,25 +1,22 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Specifies the zoom commands supported by {@link net.kurobako.cef4j.gen.CefBrowserHost#zoom(CefZoomCommand)}.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_ZOOM_COMMAND_OUT = 0,
  *   CEF_ZOOM_COMMAND_RESET = 1,
  *   CEF_ZOOM_COMMAND_IN = 2
  * } cef_zoom_command_t;</pre>
- *
  * <p>Possible values: {@link Kind#OUT}, {@link Kind#RESET}, {@link Kind#IN}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefZoomCommand implements CefEnum<CefZoomCommand> {
 
     /** Known constants for {@link CefZoomCommand}. */
@@ -77,8 +74,8 @@ public final class CefZoomCommand implements CefEnum<CefZoomCommand> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

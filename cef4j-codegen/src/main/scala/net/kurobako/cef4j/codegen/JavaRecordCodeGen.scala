@@ -8,7 +8,7 @@ object JavaRecordCodeGen {
 
   private val NativeSizeDecl =
     s"""    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
-                                         |    @SuppressWarnings("FieldMayBeFinal")
+                                         |    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
                                          |    private volatile long size = -1;
                                          |
                                          |""".stripMargin
@@ -21,7 +21,8 @@ object JavaRecordCodeGen {
       fieldDocs: Map[String, String] = Map.empty
   )(using
       Naming.Context,
-      DocComments.Context
+      DocComments.Context,
+      Banners
   ): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
     val cProto   = DocComments.cPrototypeForDataStruct(decl)
@@ -66,26 +67,16 @@ ${allLines.mkString("\n")}
       sourceHeader: String = "",
       cPrototype: String = "",
       fieldDocs: Map[String, String] = Map.empty
-  )(using Naming.Context, DocComments.Context): String = {
+  )(using Naming.Context, DocComments.Context, Banners): String = {
     val userFields = fields.filterNot(isSizeField)
     val hasSize    = fields.exists(isSizeField)
 
-    val fieldDecls = userFields.map { f =>
-      val doc = renderFieldDoc(f.name, fieldDocs)
-      s"${doc}    public final ${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
-    }.mkString("\n")
-
-    val ctorParams = userFields.map { f =>
-      s"${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}"
-    }.mkString(", ")
-
-    val ctorAssigns = userFields.map { f =>
-      val n = Naming.toCamelCase(f.name)
-      s"        this.$n = $n;"
-    }.mkString("\n")
+    val fieldDecls  = renderFieldDecls(userFields, fieldDocs, "    ", "    public final ")
+    val ctorParams  = renderCtorParams(userFields)
+    val ctorAssigns = renderCtorAssigns(userFields, "        ")
 
     val toMutableMethod = if (needsMutable) {
-      val args = userFields.map(f => s"this.${Naming.toCamelCase(f.name)}").mkString(", ")
+      val args = renderThisArgs(userFields)
       s"""
          |
          |    /** Create a mutable copy of this instance. */
@@ -130,22 +121,10 @@ ${allLines.mkString("\n")}
     val userFields = fields.filterNot(isSizeField)
     val hasSize    = fields.exists(isSizeField)
 
-    val fieldDecls = userFields.map { f =>
-      val doc = renderFieldDoc(f.name, fieldDocs)
-      // Indent an extra 4 spaces for inner class
-      s"${doc.linesIterator.map(l => if (l.nonEmpty) s"    $l" else l).mkString("\n")}        public ${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
-    }.mkString("\n")
-
-    val ctorParams = userFields.map { f =>
-      s"${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}"
-    }.mkString(", ")
-
-    val ctorAssigns = userFields.map { f =>
-      val n = Naming.toCamelCase(f.name)
-      s"            this.$n = $n;"
-    }.mkString("\n")
-
-    val toImmutableArgs = userFields.map(f => s"this.${Naming.toCamelCase(f.name)}").mkString(", ")
+    val fieldDecls      = renderFieldDecls(userFields, fieldDocs, "        ", "        public ")
+    val ctorParams      = renderCtorParams(userFields)
+    val ctorAssigns     = renderCtorAssigns(userFields, "            ")
+    val toImmutableArgs = renderThisArgs(userFields)
 
     val mutableDoc = {
       val docText = if (classDoc.nonEmpty) s"Mutable variant of {@link $immutableName}. $classDoc"
@@ -161,13 +140,7 @@ ${allLines.mkString("\n")}
      */"""
     }
 
-    val sizeDecl = if (hasSize) {
-      s"""        // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
-        @SuppressWarnings("FieldMayBeFinal")
-        private volatile long size = -1;
-
-"""
-    } else ""
+    val sizeDecl = if (hasSize) NativeSizeDecl else ""
 
     s"""$mutableDoc
     public static final class Mutable {
@@ -198,6 +171,33 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
     case _                                                                                           => false
   }
 
+  private def renderFieldDecls(
+      fields: List[Field],
+      fieldDocs: Map[String, String],
+      docIndent: String,
+      fieldPrefix: String
+  )(using Naming.Context, DocComments.Context): String =
+    fields.map { f =>
+      val doc = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
+      s"${doc}${fieldPrefix}${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
+    }.mkString("\n")
+
+  private def renderCtorParams(fields: List[Field])(using Naming.Context): String =
+    fields.map(f => s"${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}").mkString(", ")
+
+  private def renderCtorAssigns(fields: List[Field], indent: String)(using Naming.Context): String =
+    fields.map { f =>
+      val n = Naming.toCamelCase(f.name)
+      s"${indent}this.$n = $n;"
+    }.mkString("\n")
+
+  private def renderThisArgs(fields: List[Field])(using Naming.Context): String =
+    fields.map(f => s"this.${Naming.toCamelCase(f.name)}").mkString(", ")
+
+  private def indentDoc(doc: String, indent: String): String =
+    if (doc.isEmpty) ""
+    else doc.linesIterator.map(l => if (l.nonEmpty) s"$indent$l" else l).mkString("\n")
+
   private def renderEquals(className: String, fields: List[Field], indent: Int = 4)(using Naming.Context): String = {
     val pad         = " " * indent
     val comparisons = fields.map { f =>
@@ -207,28 +207,28 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
     }.mkString(s"\n$pad                && ")
 
     if (fields.isEmpty) {
-      s"""${pad}@Override
+      s"""$pad@Override
 ${pad}public boolean equals(Object obj) {
-${pad}    return this == obj || obj instanceof $className;
-${pad}}"""
+$pad    return this == obj || obj instanceof $className;
+$pad}"""
     } else {
-      s"""${pad}@Override
+      s"""$pad@Override
 ${pad}public boolean equals(Object obj) {
-${pad}    if (this == obj) return true;
-${pad}    if (!(obj instanceof $className)) return false;
-${pad}    $className other = ($className) obj;
-${pad}    return $comparisons;
-${pad}}"""
+$pad    if (this == obj) return true;
+$pad    if (!(obj instanceof $className)) return false;
+$pad    $className other = ($className) obj;
+$pad    return $comparisons;
+$pad}"""
     }
   }
 
   private def renderHashCode(fields: List[Field], indent: Int = 4)(using Naming.Context): String = {
     val pad  = " " * indent
     val args = fields.map(f => Naming.toCamelCase(f.name)).mkString(", ")
-    s"""${pad}@Override
+    s"""$pad@Override
 ${pad}public int hashCode() {
-${pad}    return java.util.Objects.hash($args);
-${pad}}"""
+$pad    return java.util.Objects.hash($args);
+$pad}"""
   }
 
   private def renderToString(className: String, fields: List[Field], indent: Int = 4)(using Naming.Context): String = {
@@ -238,9 +238,9 @@ ${pad}}"""
       if (isSizeField(f)) s""""$n=" + ($n == -1 ? "pending" : Long.toString($n))"""
       else s""""$n=" + $n"""
     }.mkString(""" + ", " + """)
-    s"""${pad}@Override
+    s"""$pad@Override
 ${pad}public String toString() {
-${pad}    return "$className{" + $parts + "}";
-${pad}}"""
+$pad    return "$className{" + $parts + "}";
+$pad}"""
   }
 }

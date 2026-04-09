@@ -5,7 +5,7 @@
 #include "include/capi/views/cef_menu_button_delegate_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_menu_button_delegate_t* Create_JniCefMenuButtonDelegate(JNIEnv *env, jobject handler);
+extern "C" cef_menu_button_delegate_t* Create_JniCefMenuButtonDelegate(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -14,10 +14,10 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), release0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
     auto* s = reinterpret_cast<cef_menu_button_t*>(self);
     if (!s) return;
-    if (!screen_point) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "screenPoint must not be null"); return;}
-    if (!anchor_position) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "anchorPosition must not be null"); return;}
+    if (!screen_point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "screenPoint must not be null"); return; }
+    if (!anchor_position) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "anchorPosition must not be null"); return; }
     cef_menu_model_t* _menu_model_ptr = menu_model ? reinterpret_cast<cef_menu_model_t*>(env->GetLongField(menu_model, env->GetFieldID(env->GetObjectClass(menu_model), "nativePtr", "J"))) : nullptr;
-    if (_menu_model_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_menu_model_ptr); _b->add_ref(_b);}
+    if (_menu_model_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_menu_model_ptr); _b->add_ref(_b); }
     cef_point_t _screen_point_val = {};
     if (screen_point) {
         auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");

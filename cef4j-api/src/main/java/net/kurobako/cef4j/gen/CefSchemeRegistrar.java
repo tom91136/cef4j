@@ -1,15 +1,12 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Class that manages custom scheme registrations.
- *
  * <p>Definition generated from cef_scheme_capi.h
- *
  * <pre>typedef struct _cef_scheme_registrar_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -18,27 +15,21 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:79</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefSchemeRegistrar extends CefLibraryObject {
 
     /**
-     * Register a custom scheme. This method should not be called for the built-in HTTP, HTTPS, FILE, FTP, ABOUT and
-     * DATA schemes.
-     *
-     * <p>See cef_scheme_options_t for possible values for {@code options}.
-     *
-     * <p>This function may be called on any thread. It should only be called once per unique {@code scheme_name} value.
-     * If {@code scheme_name} is already registered or if an error occurs this method will return {@code false}.
-     *
+     * Register a custom scheme. This method should not be called for the built-in HTTP, HTTPS, FILE, FTP, ABOUT and DATA schemes.
+     * <p>
+     * See cef_scheme_options_t for possible values for {@code options}.
+     * <p>
+     * This function may be called on any thread. It should only be called once per unique {@code scheme_name} value. If {@code scheme_name} is already registered or if an error occurs this method will return {@code false}.
      * <p>Definition generated from cef_scheme_capi.h
-     *
-     * <pre>
-     * int (CEF_CALLBACK* add_custom_scheme)(struct _cef_scheme_registrar_t* self, const cef_string_t* scheme_name, int options);
-     * </pre>
+     * <pre>int (CEF_CALLBACK* add_custom_scheme)(struct _cef_scheme_registrar_t* self, const cef_string_t* scheme_name, int options);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:85</a>
      */
     boolean addCustomScheme(@Nullable String schemeName, int options);
-
     final class NativePeer implements CefSchemeRegistrar, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -83,12 +74,14 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public boolean addCustomScheme(@Nullable String schemeName, int options) {
-            checkNotClosed();
-            return addCustomScheme0(nativePtr, schemeName, options);
-        }
+      public boolean addCustomScheme(@Nullable String schemeName, int options) {
+          checkNotClosed();
+          return addCustomScheme0(nativePtr, schemeName, options);
+      }
 
-        private static native boolean addCustomScheme0(long self, String schemeName, int options);
+
+        static native boolean addCustomScheme0(long self, String schemeName, int options);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -107,4 +100,5 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
             return "CefSchemeRegistrar{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

@@ -12,6 +12,7 @@ import net.kurobako.cef4j.gen.CefSchemeHandlerFactory;
  * A {@link CefSchemeHandlerFactory} that creates {@link UrlResourceHandler} instances. Each request gets its own
  * handler that bridges to Java's {@link java.net.URL} system.
  */
+@SuppressWarnings("unused")
 public final class UrlSchemeHandlerFactory implements CefSchemeHandlerFactory {
 
     @Override

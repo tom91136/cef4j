@@ -1,19 +1,14 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen.views;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefLibraryObject;
 
 /**
- * A Layout manager that arranges child views vertically or horizontally in a side-by-side fashion with spacing around
- * and between the child views. The child views are always sized according to their preferred size. If the host's bounds
- * provide insufficient space, child views will be clamped. Excess space will not be distributed. Methods must be called
- * on the browser process UI thread unless otherwise indicated.
- *
+ * A Layout manager that arranges child views vertically or horizontally in a side-by-side fashion with spacing around and between the child views. The child views are always sized according to their preferred size. If the host's bounds provide insufficient space, child views will be clamped. Excess space will not be distributed. Methods must be called on the browser process UI thread unless otherwise indicated.
  * <p>Definition generated from views/cef_box_layout_capi.h
- *
  * <pre>typedef struct _cef_box_layout_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -22,37 +17,26 @@ import net.kurobako.cef4j.gen.CefLibraryObject;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__box__layout_8h.html">views/cef_box_layout.h:45</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
-public interface CefBoxLayout extends CefLibraryObject {
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+public interface CefBoxLayout extends CefLayout {
 
     /**
-     * Set the flex weight for the given {@code view}. Using the preferred size as the basis, free space along the main
-     * axis is distributed to views in the ratio of their flex weights. Similarly, if the views will overflow the
-     * parent, space is subtracted in these ratios. A flex of 0 means this view is not resized. Flex values must not be
-     * negative.
-     *
+     * Set the flex weight for the given {@code view}. Using the preferred size as the basis, free space along the main axis is distributed to views in the ratio of their flex weights. Similarly, if the views will overflow the parent, space is subtracted in these ratios. A flex of 0 means this view is not resized. Flex values must not be negative.
      * <p>Definition generated from views/cef_box_layout_capi.h
+     * <pre>void (CEF_CALLBACK* set_flex_for_view)(struct _cef_box_layout_t* self, struct _cef_view_t* view, int flex);</pre>
      *
-     * <pre>void (CEF_CALLBACK* set_flex_for_view)(struct _cef_box_layout_t* self, struct _cef_view_t* view, int flex);
-     * </pre>
-     *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__box__layout_8h.html">views/cef_box_layout.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__box__layout_8h.html">views/cef_box_layout.h:56</a>
      */
     void setFlexForView(@Nullable CefView view, int flex);
 
     /**
-     * Clears the flex for the given {@code view}, causing it to use the default flex specified via
-     * CefBoxLayoutSettings.default_flex.
-     *
+     * Clears the flex for the given {@code view}, causing it to use the default flex specified via CefBoxLayoutSettings.default_flex.
      * <p>Definition generated from views/cef_box_layout_capi.h
-     *
      * <pre>void (CEF_CALLBACK* clear_flex_for_view)(struct _cef_box_layout_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a
-     *     href="https://cef-builds.spotifycdn.com/docs/146.0/cef__box__layout_8h.html">views/cef_box_layout.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__box__layout_8h.html">views/cef_box_layout.h:66</a>
      */
     void clearFlexForView(@Nullable CefView view);
-
     final class NativePeer implements CefBoxLayout, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -97,22 +81,41 @@ public interface CefBoxLayout extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void setFlexForView(@Nullable CefView view, int flex) {
-            checkNotClosed();
+      public void setFlexForView(@Nullable CefView view, int flex) {
+          checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-            setFlexForView0(nativePtr, view, flex);
-        }
+          setFlexForView0(nativePtr, view, flex);
+      }
 
         @Override
-        public void clearFlexForView(@Nullable CefView view) {
-            checkNotClosed();
+      public void clearFlexForView(@Nullable CefView view) {
+          checkNotClosed();
             CefLibraryObject.requireOpen(view, "CefView");
-            clearFlexForView0(nativePtr, view);
-        }
+          clearFlexForView0(nativePtr, view);
+      }
 
-        private static native void setFlexForView0(long self, CefView view, int flex);
+        @Override
+      public Optional<CefBoxLayout> asBoxLayout() {
+          checkNotClosed();
+          return Optional.ofNullable(CefLayout.NativePeer.asBoxLayout0(nativePtr));
+      }
 
-        private static native void clearFlexForView0(long self, CefView view);
+        @Override
+      public Optional<CefFillLayout> asFillLayout() {
+          checkNotClosed();
+          return Optional.ofNullable(CefLayout.NativePeer.asFillLayout0(nativePtr));
+      }
+
+        @Override
+      public boolean isValid() {
+          checkNotClosed();
+          return CefLayout.NativePeer.isValid0(nativePtr);
+      }
+
+        static native void setFlexForView0(long self, CefView view, int flex);
+
+        static native void clearFlexForView0(long self, CefView view);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -131,4 +134,5 @@ public interface CefBoxLayout extends CefLibraryObject {
             return "CefBoxLayout{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

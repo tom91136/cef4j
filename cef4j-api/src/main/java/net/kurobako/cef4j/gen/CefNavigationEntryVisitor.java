@@ -1,16 +1,12 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
- * Callback interface for {@link net.kurobako.cef4j.gen.CefBrowserHost#getNavigationEntries(CefNavigationEntryVisitor,
- * boolean)}. The methods of this class will be called on the browser process UI thread.
- *
+ * Callback interface for {@link net.kurobako.cef4j.gen.CefBrowserHost#getNavigationEntries(CefNavigationEntryVisitor, boolean)}. The methods of this class will be called on the browser process UI thread.
  * <p>Definition generated from cef_browser_capi.h
- *
  * <pre>typedef struct _cef_navigation_entry_visitor_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -19,19 +15,13 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:219</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefNavigationEntryVisitor extends CefClientHandler {
 
     /**
-     * Method that will be executed. Do not keep a reference to {@code entry} outside of this callback. Return
-     * {@code true} to continue visiting entries or {@code false} to stop. {@code current} is {@code true} if this entry
-     * is the currently loaded navigation entry. {@code index} is the 0-based index of this entry and {@code total} is
-     * the total number of entries.
-     *
+     * Method that will be executed. Do not keep a reference to {@code entry} outside of this callback. Return {@code true} to continue visiting entries or {@code false} to stop. {@code current} is {@code true} if this entry is the currently loaded navigation entry. {@code index} is the 0-based index of this entry and {@code total} is the total number of entries.
      * <p>Definition generated from cef_browser_capi.h
-     *
-     * <pre>
-     * int (CEF_CALLBACK* visit)(struct _cef_navigation_entry_visitor_t* self, struct _cef_navigation_entry_t* entry, int current, int index, int total);
-     * </pre>
+     * <pre>int (CEF_CALLBACK* visit)(struct _cef_navigation_entry_visitor_t* self, struct _cef_navigation_entry_t* entry, int current, int index, int total);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:226</a>
      */

@@ -1,34 +1,31 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Margin type for PDF printing.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   PDF_PRINT_MARGIN_DEFAULT = 0,
  *   PDF_PRINT_MARGIN_NONE = 1,
  *   PDF_PRINT_MARGIN_CUSTOM = 2
  * } cef_pdf_print_margin_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#NONE}, {@link Kind#CUSTOM}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPdfPrintMarginType implements CefEnum<CefPdfPrintMarginType> {
 
     /** Known constants for {@link CefPdfPrintMarginType}. */
     public enum Kind {
-        /** Default margins of 1cm (~0.4 inches). */
+        /** Default margins of 1cm (~0.4 inches).  */
         DEFAULT(0, "0", "PDF_PRINT_MARGIN_DEFAULT"),
-        /** No margins. */
+        /** No margins.  */
         NONE(1, "1", "PDF_PRINT_MARGIN_NONE"),
-        /** Custom margins using the {@code margin_*} values from cef_pdf_print_settings_t. */
+        /** Custom margins using the {@code margin_*} values from cef_pdf_print_settings_t.  */
         CUSTOM(2, "2", "PDF_PRINT_MARGIN_CUSTOM");
 
         private static final Kind[] VALUES = Kind.values();
@@ -80,8 +77,8 @@ public final class CefPdfPrintMarginType implements CefEnum<CefPdfPrintMarginTyp
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

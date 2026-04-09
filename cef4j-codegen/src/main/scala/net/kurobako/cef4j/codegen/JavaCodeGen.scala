@@ -40,7 +40,7 @@ ${allLines.mkString("\n")}
       cppSource: String = "",
       classDocSuffix: String = "",
       subPackage: String = ""
-  )(using Naming.Context, DocComments.Context): String = {
+  )(using Naming.Context, DocComments.Context, Banners): String = {
     val allImports  = (Banners.javaAnnotationImport :: imports).distinct
     val importBlock = s"\n${allImports.mkString("\n")}\n"
     val pkg         = if (subPackage.nonEmpty) s"${Naming.javaPackage}.$subPackage" else Naming.javaPackage

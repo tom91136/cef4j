@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Navigation types.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   NAVIGATION_LINK_CLICKED = 0,
  *   NAVIGATION_FORM_SUBMITTED = 1,
@@ -17,13 +14,12 @@ import javax.annotation.processing.Generated;
  *   NAVIGATION_FORM_RESUBMITTED = 4,
  *   ...
  * } cef_navigation_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#LINK_CLICKED}, {@link Kind#FORM_SUBMITTED}, {@link Kind#BACK_FORWARD},
- * {@link Kind#RELOAD}, {@link Kind#FORM_RESUBMITTED}, {@link Kind#OTHER}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#LINK_CLICKED}, {@link Kind#FORM_SUBMITTED}, {@link Kind#BACK_FORWARD}, {@link Kind#RELOAD}, {@link Kind#FORM_RESUBMITTED}, {@link Kind#OTHER}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefNavigationType implements CefEnum<CefNavigationType> {
 
     /** Known constants for {@link CefNavigationType}. */
@@ -85,8 +81,8 @@ public final class CefNavigationType implements CefEnum<CefNavigationType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

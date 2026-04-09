@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  * A {@link CefResourceHandler} that bridges CEF resource requests to Java's {@link URL} system. Any URL scheme
  * registered via {@link java.net.URL#setURLStreamHandlerFactory} (e.g. {@code classpath:}) is transparently handled.
  */
+@SuppressWarnings("unused")
 public final class UrlResourceHandler implements CefResourceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(UrlResourceHandler.class);

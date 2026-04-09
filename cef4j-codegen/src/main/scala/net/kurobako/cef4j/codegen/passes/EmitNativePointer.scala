@@ -6,7 +6,7 @@ import java.nio.file.Path
 import net.kurobako.cef4j.codegen.Banners
 
 object EmitNativePointer {
-  def apply(outJava: Path, javaPackage: String): Unit = {
+  def apply(outJava: Path, javaPackage: String)(using Banners): Unit = {
     val content =
       s"""${Banners.java}
 package $javaPackage;

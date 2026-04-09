@@ -11,7 +11,7 @@ class JniCppCodeGen(
     handlerNames: Set[String] = Set.empty,
     scopedNames: Set[String] = Set.empty,
     structHeaderMap: Map[String, String] = Map.empty
-)(using Naming.Context) {
+)(using Naming.Context, Banners) {
 
   import JniCppByValueCodeGen.*
 
@@ -269,21 +269,8 @@ $headerIncludes
     val castSelf  = s"    auto* s = reinterpret_cast<$structName*>(self);"
     val nullGuard = s"    if (!s) return${defaultReturn(fn.ret)};"
 
-    // Collect optional params for null-safe conversion
-    val optionalParams = fn.metaAttrs.collect {
-      case ("optional_param", p) => p
-    }.toSet
-
-    // NPE checks for types where null is certainly a programming error (enums, by-value structs,
-    // buffers, collections). Strings, object pointers, and opaques are excluded because CEF
-    // frequently accepts NULL for those but upstream metacomments only annotate ~10% of them.
-    val npeChecks = fn.params.collect {
-      case p if !optionalParams.contains(p.name) && JavaCodeGen.isStrictNullCheck(p.typ) =>
-        val javaParamName = Naming.toCamelCase(p.name)
-        s"""    if (!${p.name}) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
-            fn.ret
-          )}; }"""
-    }
+    val optionalParams = collectOptionalParams(fn.metaAttrs)
+    val npeChecks      = renderStrictNullChecks(fn.params, optionalParams, fn.ret)
 
     // Generate (preCallLines, argExpr, postCallLines) for each param
     val argConversions = fn.params.map { p =>
@@ -372,14 +359,12 @@ $headerIncludes
           convertParamShared(p, isOpt, fn.name.startsWith("get_"), fn.ret)
       }
     }
-    val preCallLines  = argConversions.flatMap(_._1)
-    val callArgs      = argConversions.map(_._2).mkString(", ")
-    val postCallLines = argConversions.flatMap(_._3)
+    val blocks = renderCallBlocks(argConversions, npeChecks)
 
-    val fnCall = if (callArgs.isEmpty) {
+    val fnCall = if (blocks.callArgs.isEmpty) {
       s"s->${fn.name}(s)"
     } else {
-      s"s->${fn.name}(s, $callArgs)"
+      s"s->${fn.name}(s, ${blocks.callArgs})"
     }
 
     // count_func: pre-call to size arrays, only when a CountFuncArray param consumes it
@@ -396,27 +381,27 @@ $headerIncludes
         }
         .getOrElse("")
 
-    val preBlock  = if (preCallLines.nonEmpty) preCallLines.mkString("\n") + "\n" else ""
-    val postBlock = if (postCallLines.nonEmpty) "\n" + postCallLines.mkString("\n") else ""
-    val npeBlock  = if (npeChecks.nonEmpty) npeChecks.mkString("\n") + "\n" else ""
-
     val preamble = s"$castSelf\n$nullGuard\n"
     val body     = fn.ret match {
       case CType.Void =>
-        s"""${preamble}$npeBlock$countFuncSetup
-$preBlock    $fnCall;$postBlock"""
+        s"""${preamble}${blocks.npeBlock}$countFuncSetup
+${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       case cfa @ CType.CountFuncArray(_, _, _, _) =>
-        renderCountFuncArrayBody(structName, fn, cfa, castSelf, nullGuard, npeBlock, preBlock, postBlock)
+        renderCountFuncArrayBody(
+          structName,
+          fn,
+          cfa,
+          castSelf,
+          nullGuard,
+          blocks.npeBlock,
+          blocks.preBlock,
+          blocks.postBlock
+        )
       case _ =>
-        preamble + renderReturnDispatch(fn.ret, retJni, fnCall, npeBlock, preBlock, postBlock)
+        preamble + renderReturnDispatch(fn.ret, retJni, fnCall, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
     }
 
-    // Clean up empty lines from optional countFuncSetup
-    val cleanBody = body.linesIterator.filter(_.trim.nonEmpty).mkString("\n")
-
-    s"""$exportSig($jniParams) {
-$cleanBody
-}"""
+    renderGeneratedFunction(exportSig, jniParams, body)
   }
 
   // Shared return-type dispatch for both object functions and free functions.
@@ -591,15 +576,8 @@ $convertAndReturn"""
         s"${Naming.jniType(p.typ)} ${p.name}"
       }).mkString(", ")
 
-    val optionalParams = ff.metaAttrs.collect { case ("optional_param", p) => p }.toSet
-
-    val npeChecks = ff.params.collect {
-      case p if !optionalParams.contains(p.name) && JavaCodeGen.isStrictNullCheck(p.typ) =>
-        val javaParamName = Naming.toCamelCase(p.name)
-        s"""    if (!${p.name}) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
-            ff.ret
-          )}; }"""
-    }
+    val optionalParams = collectOptionalParams(ff.metaAttrs)
+    val npeChecks      = renderStrictNullChecks(ff.params, optionalParams, ff.ret)
 
     // Reuse the same arg conversion logic as renderObjectFunction
     val argConversions = ff.params.map { p =>
@@ -607,27 +585,58 @@ $convertAndReturn"""
       val isOut = ff.cName.contains("_get_") || ff.cName.startsWith("cef_get_")
       convertParamShared(p, isOpt, isOut, ff.ret)
     }
-    val preCallLines  = argConversions.flatMap(_._1)
-    val callArgs      = argConversions.map(_._2).mkString(", ")
-    val postCallLines = argConversions.flatMap(_._3)
+    val blocks = renderCallBlocks(argConversions, npeChecks)
 
-    val fnCall = s"${ff.cName}($callArgs)"
-
-    val preBlock  = if (preCallLines.nonEmpty) preCallLines.mkString("\n") + "\n" else ""
-    val postBlock = if (postCallLines.nonEmpty) "\n" + postCallLines.mkString("\n") else ""
-    val npeBlock  = if (npeChecks.nonEmpty) npeChecks.mkString("\n") + "\n" else ""
+    val fnCall = s"${ff.cName}(${blocks.callArgs})"
 
     val body = ff.ret match {
       case CType.Void =>
-        s"""$npeBlock$preBlock    $fnCall;$postBlock"""
+        s"""${blocks.npeBlock}${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       case cfa @ CType.CountFuncArray(_, _, _, _) =>
-        renderCountFuncArrayFreeFunctionBody(ff, cfa, npeBlock, preBlock, postBlock)
+        renderCountFuncArrayFreeFunctionBody(ff, cfa, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
       case _ =>
-        renderReturnDispatch(ff.ret, retJni, fnCall, npeBlock, preBlock, postBlock)
+        renderReturnDispatch(ff.ret, retJni, fnCall, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
     }
 
-    val cleanBody = body.linesIterator.filter(_.trim.nonEmpty).mkString("\n")
+    renderGeneratedFunction(exportSig, jniParams, body)
+  }
 
+  private case class CallBlocks(
+      callArgs: String,
+      npeBlock: String,
+      preBlock: String,
+      postBlock: String
+  )
+
+  private def collectOptionalParams(metaAttrs: List[(String, String)]): Set[String] =
+    metaAttrs.collect { case ("optional_param", p) => p }.toSet
+
+  private def renderStrictNullChecks(params: List[Param], optionalParams: Set[String], ret: CType)(using
+      Naming.Context
+  ): List[String] =
+    params.collect {
+      case p if !optionalParams.contains(p.name) && JavaCodeGen.isStrictNullCheck(p.typ) =>
+        val javaParamName = Naming.toCamelCase(p.name)
+        s"""    if (!${p.name}) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
+            ret
+          )}; }"""
+    }
+
+  private def renderCallBlocks(
+      argConversions: List[(List[String], String, List[String])],
+      npeChecks: List[String]
+  ): CallBlocks = {
+    val preCallLines  = argConversions.flatMap(_._1)
+    val callArgs      = argConversions.map(_._2).mkString(", ")
+    val postCallLines = argConversions.flatMap(_._3)
+    val preBlock      = if (preCallLines.nonEmpty) preCallLines.mkString("\n") + "\n" else ""
+    val postBlock     = if (postCallLines.nonEmpty) "\n" + postCallLines.mkString("\n") else ""
+    val npeBlock      = if (npeChecks.nonEmpty) npeChecks.mkString("\n") + "\n" else ""
+    CallBlocks(callArgs, npeBlock, preBlock, postBlock)
+  }
+
+  private def renderGeneratedFunction(exportSig: String, jniParams: String, body: String): String = {
+    val cleanBody = body.linesIterator.filter(_.trim.nonEmpty).mkString("\n")
     s"""$exportSig($jniParams) {
 $cleanBody
 }"""

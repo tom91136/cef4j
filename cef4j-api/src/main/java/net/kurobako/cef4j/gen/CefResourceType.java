@@ -1,15 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Resource type for a request. These constants match their equivalents in Chromium's ResourceType and should not be
- * renumbered.
- *
+ * Resource type for a request. These constants match their equivalents in Chromium's ResourceType and should not be renumbered.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   RT_MAIN_FRAME = 0,
  *   RT_SUB_FRAME = 1,
@@ -18,59 +14,55 @@ import javax.annotation.processing.Generated;
  *   RT_IMAGE = 4,
  *   ...
  * } cef_resource_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#MAIN_FRAME}, {@link Kind#SUB_FRAME}, {@link Kind#STYLESHEET}, {@link Kind#SCRIPT},
- * {@link Kind#IMAGE}, {@link Kind#FONT_RESOURCE}, {@link Kind#SUB_RESOURCE}, {@link Kind#OBJECT}, {@link Kind#MEDIA},
- * {@link Kind#WORKER}, {@link Kind#SHARED_WORKER}, {@link Kind#PREFETCH}, {@link Kind#FAVICON}, {@link Kind#XHR},
- * {@link Kind#PING}, {@link Kind#SERVICE_WORKER}, {@link Kind#CSP_REPORT}, {@link Kind#PLUGIN_RESOURCE},
- * {@link Kind#NAVIGATION_PRELOAD_MAIN_FRAME}, {@link Kind#NAVIGATION_PRELOAD_SUB_FRAME}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#MAIN_FRAME}, {@link Kind#SUB_FRAME}, {@link Kind#STYLESHEET}, {@link Kind#SCRIPT}, {@link Kind#IMAGE}, {@link Kind#FONT_RESOURCE}, {@link Kind#SUB_RESOURCE}, {@link Kind#OBJECT}, {@link Kind#MEDIA}, {@link Kind#WORKER}, {@link Kind#SHARED_WORKER}, {@link Kind#PREFETCH}, {@link Kind#FAVICON}, {@link Kind#XHR}, {@link Kind#PING}, {@link Kind#SERVICE_WORKER}, {@link Kind#CSP_REPORT}, {@link Kind#PLUGIN_RESOURCE}, {@link Kind#NAVIGATION_PRELOAD_MAIN_FRAME}, {@link Kind#NAVIGATION_PRELOAD_SUB_FRAME}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefResourceType implements CefEnum<CefResourceType> {
 
     /** Known constants for {@link CefResourceType}. */
     public enum Kind {
-        /** Top level page. */
+        /** Top level page.  */
         MAIN_FRAME(0, "0", "RT_MAIN_FRAME"),
-        /** Frame or iframe. */
+        /** Frame or iframe.  */
         SUB_FRAME(1, "1", "RT_SUB_FRAME"),
-        /** CSS stylesheet. */
+        /** CSS stylesheet.  */
         STYLESHEET(2, "2", "RT_STYLESHEET"),
-        /** External script. */
+        /** External script.  */
         SCRIPT(3, "3", "RT_SCRIPT"),
-        /** Image (jpg/gif/png/etc). */
+        /** Image (jpg/gif/png/etc).  */
         IMAGE(4, "4", "RT_IMAGE"),
-        /** Font. */
+        /** Font.  */
         FONT_RESOURCE(5, "5", "RT_FONT_RESOURCE"),
-        /** Some other subresource. This is the default type if the actual type is unknown. */
+        /** Some other subresource. This is the default type if the actual type is unknown.  */
         SUB_RESOURCE(6, "6", "RT_SUB_RESOURCE"),
-        /** Object (or embed) tag for a plugin, or a resource that a plugin requested. */
+        /** Object (or embed) tag for a plugin, or a resource that a plugin requested.  */
         OBJECT(7, "7", "RT_OBJECT"),
-        /** Media resource. */
+        /** Media resource.  */
         MEDIA(8, "8", "RT_MEDIA"),
-        /** Main resource of a dedicated worker. */
+        /** Main resource of a dedicated worker.  */
         WORKER(9, "9", "RT_WORKER"),
-        /** Main resource of a shared worker. */
+        /** Main resource of a shared worker.  */
         SHARED_WORKER(10, "10", "RT_SHARED_WORKER"),
-        /** Explicitly requested prefetch. */
+        /** Explicitly requested prefetch.  */
         PREFETCH(11, "11", "RT_PREFETCH"),
-        /** Favicon. */
+        /** Favicon.  */
         FAVICON(12, "12", "RT_FAVICON"),
-        /** XMLHttpRequest. */
+        /** XMLHttpRequest.  */
         XHR(13, "13", "RT_XHR"),
-        /** A request for a "&lt;ping&gt;". */
+        /** A request for a "&lt;ping&gt;".  */
         PING(14, "14", "RT_PING"),
-        /** Main resource of a service worker. */
+        /** Main resource of a service worker.  */
         SERVICE_WORKER(15, "15", "RT_SERVICE_WORKER"),
-        /** A report of Content Security Policy violations. */
+        /** A report of Content Security Policy violations.  */
         CSP_REPORT(16, "16", "RT_CSP_REPORT"),
-        /** A resource that a plugin requested. */
+        /** A resource that a plugin requested.  */
         PLUGIN_RESOURCE(17, "17", "RT_PLUGIN_RESOURCE"),
-        /** A main-frame service worker navigation preload request. */
+        /** A main-frame service worker navigation preload request.  */
         NAVIGATION_PRELOAD_MAIN_FRAME(19, "19", "RT_NAVIGATION_PRELOAD_MAIN_FRAME"),
-        /** A sub-frame service worker navigation preload request. */
+        /** A sub-frame service worker navigation preload request.  */
         NAVIGATION_PRELOAD_SUB_FRAME(20, "20", "RT_NAVIGATION_PRELOAD_SUB_FRAME"),
         NUM_VALUES(21, "21", "RT_NUM_VALUES");
 
@@ -123,8 +115,8 @@ public final class CefResourceType implements CefEnum<CefResourceType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

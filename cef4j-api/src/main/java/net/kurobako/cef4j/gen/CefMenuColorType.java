@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Supported color types for menu items.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_MENU_COLOR_TEXT = 0,
  *   CEF_MENU_COLOR_TEXT_HOVERED = 1,
@@ -17,14 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_MENU_COLOR_BACKGROUND = 4,
  *   ...
  * } cef_menu_color_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#TEXT}, {@link Kind#TEXT_HOVERED}, {@link Kind#TEXT_ACCELERATOR},
- * {@link Kind#TEXT_ACCELERATOR_HOVERED}, {@link Kind#BACKGROUND}, {@link Kind#BACKGROUND_HOVERED},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#TEXT}, {@link Kind#TEXT_HOVERED}, {@link Kind#TEXT_ACCELERATOR}, {@link Kind#TEXT_ACCELERATOR_HOVERED}, {@link Kind#BACKGROUND}, {@link Kind#BACKGROUND_HOVERED}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMenuColorType implements CefEnum<CefMenuColorType> {
 
     /** Known constants for {@link CefMenuColorType}. */
@@ -86,8 +81,8 @@ public final class CefMenuColorType implements CefEnum<CefMenuColorType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

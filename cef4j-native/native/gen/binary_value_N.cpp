@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isSame0)(JNIEnv* env, job
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _that_ptr = that ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_same(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -36,7 +36,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefBinaryValue), isEqual0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return JNI_FALSE;
     cef_binary_value_t* _that_ptr = that ? reinterpret_cast<cef_binary_value_t*>(env->GetLongField(that, env->GetFieldID(env->GetObjectClass(that), "nativePtr", "J"))) : nullptr;
-    if (_that_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b);}
+    if (_that_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_that_ptr); _b->add_ref(_b); }
     auto _r = s->is_equal(s, _that_ptr);
     return static_cast<jboolean>(_r);
 }
@@ -69,9 +69,9 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBinaryValue), getSize0)(JNIEnv* env, jobje
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefBinaryValue), getData0)(JNIEnv* env, jobject obj, jlong self, jobject buffer, jlong data_offset) {
     auto* s = reinterpret_cast<cef_binary_value_t*>(self);
     if (!s) return 0;
-    if (!buffer) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0;}
+    if (!buffer) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "buffer must not be null"); return 0; }
     void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
-    if (buffer && !_buffer_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
+    if (buffer && !_buffer_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0; }
     return static_cast<jlong>(s->get_data(s, _buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)), data_offset));
 }
 
@@ -86,9 +86,9 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), base64Decode0)(JNIEnv* env
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBinaryValue), create0)(JNIEnv* env, jclass clz, jobject data) {
-    if (!data) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr;}
+    if (!data) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "data must not be null"); return nullptr; }
     const void* _data_addr = data ? env->GetDirectBufferAddress(data) : nullptr;
-    if (data && !_data_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr;}
+    if (data && !_data_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "data must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     auto _r = cef_binary_value_create(_data_addr, static_cast<size_t>(env->GetDirectBufferCapacity(data)));
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");

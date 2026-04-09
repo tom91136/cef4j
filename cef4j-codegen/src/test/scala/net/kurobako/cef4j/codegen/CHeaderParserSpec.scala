@@ -21,13 +21,19 @@ class CHeaderParserSpec extends munit.FunSuite {
 
   test("strips self from parameter list") {
     val decls   = CHeaderParser.parse(browserStub, Set.empty)
-    val isValid = decls.head.asInstanceOf[CefDecl.ObjectStruct].fns.head
+    val isValid = decls.head match {
+      case s: CefDecl.ObjectStruct => s.fns.head
+      case other                   => fail(s"Expected ObjectStruct, got $other")
+    }
     assertEquals(isValid.params, Nil)
   }
 
   test("maps cef_string_userfree_t to CType.JString") {
     val decls  = CHeaderParser.parse(browserStub, Set.empty)
-    val getUrl = decls.head.asInstanceOf[CefDecl.ObjectStruct].fns.last
+    val getUrl = decls.head match {
+      case s: CefDecl.ObjectStruct => s.fns.last
+      case other                   => fail(s"Expected ObjectStruct, got $other")
+    }
     assertEquals(getUrl.ret, CType.JString)
   }
 
@@ -54,7 +60,10 @@ class CHeaderParserSpec extends munit.FunSuite {
           const void* buffer, int width, int height);
     } cef_render_handler_t;"""
     val decls   = CHeaderParser.parse(stub, handlerNames = Set("cef_render_handler_t"))
-    val handler = decls.head.asInstanceOf[CefDecl.HandlerStruct]
+    val handler = decls.head match {
+      case h: CefDecl.HandlerStruct => h
+      case other                    => fail(s"Expected HandlerStruct, got $other")
+    }
     assertEquals(handler.fns.head.isSpecial, Some(SpecialFn.OnPaint))
   }
 
@@ -66,7 +75,10 @@ class CHeaderParserSpec extends munit.FunSuite {
       int height;
     } cef_rect_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
-    val ds    = decls.head.asInstanceOf[CefDecl.DataStruct]
+    val ds    = decls.head match {
+      case d: CefDecl.DataStruct => d
+      case other                 => fail(s"Expected DataStruct, got $other")
+    }
     assertEquals(ds.name, "cef_rect_t")
     assertEquals(ds.fields.map(_.name), List("x", "y", "width", "height"))
   }
@@ -78,11 +90,10 @@ class CHeaderParserSpec extends munit.FunSuite {
           struct _cef_request_context_t* other);
     } cef_request_context_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
-    assert(
-      decls.head.isInstanceOf[CefDecl.ObjectStruct],
-      s"Expected ObjectStruct for transitive base, got ${decls.head.getClass.getSimpleName}"
-    )
-    val obj = decls.head.asInstanceOf[CefDecl.ObjectStruct]
+    val obj   = decls.head match {
+      case o: CefDecl.ObjectStruct => o
+      case other => fail(s"Expected ObjectStruct for transitive base, got ${other.getClass.getSimpleName}")
+    }
     assertEquals(obj.name, "cef_request_context_t")
     assertEquals(obj.fns.map(_.name), List("is_same"))
   }
@@ -96,7 +107,10 @@ class CHeaderParserSpec extends munit.FunSuite {
           struct _cef_browser_t* browser, int show);
     } cef_render_handler_t;"""
     val decls = CHeaderParser.parse(stub, handlerNames = Set("cef_render_handler_t"))
-    val fns   = decls.head.asInstanceOf[CefDecl.HandlerStruct].fns
+    val fns   = decls.head match {
+      case h: CefDecl.HandlerStruct => h.fns
+      case other                    => fail(s"Expected HandlerStruct, got $other")
+    }
     assertEquals(fns.map(_.name), List("get_accessibility_handler", "on_popup_show"))
     assertEquals(fns.head.ret, CType.Ptr("cef_accessibility_handler_t"))
   }
@@ -108,7 +122,10 @@ class CHeaderParserSpec extends munit.FunSuite {
           const cef_string_t* key, int modifiers);
     } cef_browser_host_t;"""
     val decls = CHeaderParser.parse(stub, Set.empty)
-    val fn    = decls.head.asInstanceOf[CefDecl.ObjectStruct].fns.head
+    val fn    = decls.head match {
+      case s: CefDecl.ObjectStruct => s.fns.head
+      case other                   => fail(s"Expected ObjectStruct, got $other")
+    }
     assertEquals(fn.name, "send_key_event")
     assertEquals(fn.params.length, 2)
     assertEquals(fn.params.head.typ, CType.JString)

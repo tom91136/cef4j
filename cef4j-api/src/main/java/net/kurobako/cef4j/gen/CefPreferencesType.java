@@ -1,27 +1,22 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
- * Preferences type passed to
- * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType,
- * CefPreferenceRegistrar)}.
- *
+ * Preferences type passed to {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onRegisterCustomPreferences(CefPreferencesType, CefPreferenceRegistrar)}.
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_PREFERENCES_TYPE_GLOBAL = 0,
  *   CEF_PREFERENCES_TYPE_REQUEST_CONTEXT = 1,
  *   CEF_PREFERENCES_TYPE_NUM_VALUES = 2
  * } cef_preferences_type_t;</pre>
- *
  * <p>Possible values: {@link Kind#GLOBAL}, {@link Kind#REQUEST_CONTEXT}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPreferencesType implements CefEnum<CefPreferencesType> {
 
     /** Known constants for {@link CefPreferencesType}. */
@@ -81,8 +76,8 @@ public final class CefPreferencesType implements CefEnum<CefPreferencesType> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

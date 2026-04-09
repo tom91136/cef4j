@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * URI unescape rules passed to CefURIDecode().
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   UU_NONE = 0,
  *   UU_NORMAL = 1 &lt;&lt; 0,
@@ -17,46 +14,27 @@ import javax.annotation.processing.Generated;
  *   UU_URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS = 1 &lt;&lt; 3,
  *   ...
  * } cef_uri_unescape_rule_t;</pre>
- *
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#NORMAL}, {@link Kind#SPACES}, {@link Kind#PATH_SEPARATORS},
- * {@link Kind#URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS}, {@link Kind#REPLACE_PLUS_WITH_SPACE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#NORMAL}, {@link Kind#SPACES}, {@link Kind#PATH_SEPARATORS}, {@link Kind#URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS}, {@link Kind#REPLACE_PLUS_WITH_SPACE}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
 
     /** Known constants for {@link CefUriUnescapeRule}. */
     public enum Kind {
-        /** Don't unescape anything at all. */
+        /** Don't unescape anything at all.  */
         NONE(0, "0", "UU_NONE"),
-        /**
-         * Don't unescape anything special, but all normal unescaping will happen. This is a placeholder and can't be
-         * combined with other flags (since it's just the absence of them). All other unescape rules imply "normal" in
-         * addition to their special meaning. Things like escaped letters, digits, and most symbols will get unescaped
-         * with this mode.
-         */
+        /** Don't unescape anything special, but all normal unescaping will happen. This is a placeholder and can't be combined with other flags (since it's just the absence of them). All other unescape rules imply "normal" in addition to their special meaning. Things like escaped letters, digits, and most symbols will get unescaped with this mode.  */
         NORMAL(1 << 0, "1 << 0", "UU_NORMAL"),
-        /**
-         * Convert %20 to spaces. In some places where we're showing URLs, we may want this. In places where the URL may
-         * be copied and pasted out, then you wouldn't want this since it might not be interpreted in one piece by other
-         * applications.
-         */
+        /** Convert %20 to spaces. In some places where we're showing URLs, we may want this. In places where the URL may be copied and pasted out, then you wouldn't want this since it might not be interpreted in one piece by other applications.  */
         SPACES(1 << 1, "1 << 1", "UU_SPACES"),
-        /**
-         * Unescapes '/' and '\\'. If these characters were unescaped, the resulting URL won't be the same as the source
-         * one. Moreover, they are dangerous to unescape in strings that will be used as file paths or names. This value
-         * should only be used when slashes don't have special meaning, like data URLs.
-         */
+        /** Unescapes '/' and '\\'. If these characters were unescaped, the resulting URL won't be the same as the source one. Moreover, they are dangerous to unescape in strings that will be used as file paths or names. This value should only be used when slashes don't have special meaning, like data URLs.  */
         PATH_SEPARATORS(1 << 2, "1 << 2", "UU_PATH_SEPARATORS"),
-        /**
-         * Unescapes various characters that will change the meaning of URLs, including '%', '+', '&amp;', '#'. Does not
-         * unescape path separators. If these characters were unescaped, the resulting URL won't be the same as the
-         * source one. This flag is used when generating final output like filenames for URLs where we won't be
-         * interpreting as a URL and want to do as much unescaping as possible.
-         */
+        /** Unescapes various characters that will change the meaning of URLs, including '%', '+', '&amp;', '#'. Does not unescape path separators. If these characters were unescaped, the resulting URL won't be the same as the source one. This flag is used when generating final output like filenames for URLs where we won't be interpreting as a URL and want to do as much unescaping as possible.  */
         URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS(1 << 3, "1 << 3", "UU_URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS"),
-        /** URL queries use "+" for space. This flag controls that replacement. */
+        /** URL queries use "+" for space. This flag controls that replacement.  */
         REPLACE_PLUS_WITH_SPACE(1 << 4, "1 << 4", "UU_REPLACE_PLUS_WITH_SPACE");
 
         private static final Kind[] VALUES = Kind.values();
@@ -108,8 +86,8 @@ public final class CefUriUnescapeRule implements CefEnum<CefUriUnescapeRule> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

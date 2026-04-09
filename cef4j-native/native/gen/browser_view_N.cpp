@@ -9,8 +9,8 @@
 #include "include/capi/views/cef_view_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_client_t* Create_JniCefClient(JNIEnv *env, jobject handler);
-extern "C" cef_browser_view_delegate_t* Create_JniCefBrowserViewDelegate(JNIEnv *env, jobject handler);
+extern "C" cef_client_t* Create_JniCefClient(JNIEnv* env, jobject handler);
+extern "C" cef_browser_view_delegate_t* Create_JniCefBrowserViewDelegate(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefBrowserView), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -52,7 +52,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getRuntimeStyle0)(JN
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env, jclass clz, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context, jobject delegate) {
-    if (!settings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr;}
+    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_client_t* _client_ptr = client ? Create_JniCefClient(env, client) : nullptr;
     auto _url_str = url ? JStringToCefString(env, url) : nullptr;
     cef_browser_settings_t _settings_val = {};
@@ -176,9 +176,9 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env
         _settings_val.size = sizeof(cef_browser_settings_t);
     }
     cef_dictionary_value_t* _extra_info_ptr = extra_info ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(extra_info, env->GetFieldID(env->GetObjectClass(extra_info), "nativePtr", "J"))) : nullptr;
-    if (_extra_info_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b);}
+    if (_extra_info_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b); }
     cef_request_context_t* _request_context_ptr = request_context ? reinterpret_cast<cef_request_context_t*>(env->GetLongField(request_context, env->GetFieldID(env->GetObjectClass(request_context), "nativePtr", "J"))) : nullptr;
-    if (_request_context_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b);}
+    if (_request_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b); }
     cef_browser_view_delegate_t* _delegate_ptr = delegate ? Create_JniCefBrowserViewDelegate(env, delegate) : nullptr;
     auto _r = cef_browser_view_create(_client_ptr, _url_str, &_settings_val, _extra_info_ptr, _request_context_ptr, _delegate_ptr);
     if (_url_str) cef_string_userfree_free(_url_str);
@@ -190,7 +190,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getForBrowser0)(JNIEnv* env, jclass clz, jobject browser) {
     cef_browser_t* _browser_ptr = browser ? reinterpret_cast<cef_browser_t*>(env->GetLongField(browser, env->GetFieldID(env->GetObjectClass(browser), "nativePtr", "J"))) : nullptr;
-    if (_browser_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_browser_ptr); _b->add_ref(_b);}
+    if (_browser_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_browser_ptr); _b->add_ref(_b); }
     auto _r = cef_browser_view_get_for_browser(_browser_ptr);
     if (!_r) return nullptr;
     auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");

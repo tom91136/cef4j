@@ -41,9 +41,9 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRoute), getSink0)(JNIEnv* env, jobj
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaRoute), sendRouteMessage0)(JNIEnv* env, jobject obj, jlong self, jobject message) {
     auto* s = reinterpret_cast<cef_media_route_t*>(self);
     if (!s) return;
-    if (!message) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return;}
+    if (!message) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "message must not be null"); return; }
     const void* _message_addr = message ? env->GetDirectBufferAddress(message) : nullptr;
-    if (message && !_message_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
+    if (message && !_message_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "message must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return; }
     s->send_route_message(s, _message_addr, static_cast<size_t>(env->GetDirectBufferCapacity(message)));
 }
 

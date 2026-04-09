@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Existing thread IDs.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   TID_UI = 0,
  *   TID_FILE_BACKGROUND = 1,
@@ -17,60 +14,29 @@ import javax.annotation.processing.Generated;
  *   TID_PROCESS_LAUNCHER = 4,
  *   ...
  * } cef_thread_id_t;</pre>
- *
- * <p>Possible values: {@link Kind#UI}, {@link Kind#FILE_BACKGROUND}, {@link Kind#FILE_USER_VISIBLE},
- * {@link Kind#FILE_USER_BLOCKING}, {@link Kind#PROCESS_LAUNCHER}, {@link Kind#IO}, {@link Kind#RENDERER},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UI}, {@link Kind#FILE_BACKGROUND}, {@link Kind#FILE_USER_VISIBLE}, {@link Kind#FILE_USER_BLOCKING}, {@link Kind#PROCESS_LAUNCHER}, {@link Kind#IO}, {@link Kind#RENDERER}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefThreadId implements CefEnum<CefThreadId> {
 
     /** Known constants for {@link CefThreadId}. */
     public enum Kind {
-        /**
-         * The main thread in the browser. This will be the same as the main application thread if CefInitialize() is
-         * called with a CefSettings.multi_threaded_message_loop value of {@code false}. Do not perform blocking tasks
-         * on this thread. All tasks posted after
-         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
-         * guaranteed to run. This thread will outlive all other CEF threads.
-         */
+        /** The main thread in the browser. This will be the same as the main application thread if CefInitialize() is called with a CefSettings.multi_threaded_message_loop value of {@code false}. Do not perform blocking tasks on this thread. All tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run. This thread will outlive all other CEF threads.  */
         UI(0, "0", "TID_UI"),
-        /**
-         * Used for blocking tasks like file system access where the user won't notice if the task takes an arbitrarily
-         * long time to complete. All tasks posted after
-         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
-         * guaranteed to run.
-         */
+        /** Used for blocking tasks like file system access where the user won't notice if the task takes an arbitrarily long time to complete. All tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run.  */
         FILE_BACKGROUND(1, "1", "TID_FILE_BACKGROUND"),
-        /**
-         * Used for blocking tasks like file system access that affect UI or responsiveness of future user interactions.
-         * Do not use if an immediate response to a user interaction is expected. All tasks posted after
-         * {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are
-         * guaranteed to run. Examples: - Updating the UI to reflect progress on a long task. - Loading data that might
-         * be shown in the UI after a future user interaction.
-         */
+        /** Used for blocking tasks like file system access that affect UI or responsiveness of future user interactions. Do not use if an immediate response to a user interaction is expected. All tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run. Examples: - Updating the UI to reflect progress on a long task. - Loading data that might be shown in the UI after a future user interaction.  */
         FILE_USER_VISIBLE(2, "2", "TID_FILE_USER_VISIBLE"),
-        /**
-         * Used for blocking tasks like file system access that affect UI immediately after a user interaction. All
-         * tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before
-         * CefShutdown() are guaranteed to run. Example: Generating data shown in the UI immediately after a click.
-         */
+        /** Used for blocking tasks like file system access that affect UI immediately after a user interaction. All tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run. Example: Generating data shown in the UI immediately after a click.  */
         FILE_USER_BLOCKING(3, "3", "TID_FILE_USER_BLOCKING"),
-        /** Used to launch and terminate browser processes. */
+        /** Used to launch and terminate browser processes.  */
         PROCESS_LAUNCHER(4, "4", "TID_PROCESS_LAUNCHER"),
-        /**
-         * Used to process IPC and network messages. Do not perform blocking tasks on this thread. All tasks posted
-         * after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown()
-         * are guaranteed to run.
-         */
+        /** Used to process IPC and network messages. Do not perform blocking tasks on this thread. All tasks posted after {@link net.kurobako.cef4j.gen.CefBrowserProcessHandler#onContextInitialized()} and before CefShutdown() are guaranteed to run.  */
         IO(5, "5", "TID_IO"),
-        /**
-         * The main thread in the renderer. Used for all WebKit and V8 interaction. Tasks may be posted to this thread
-         * after {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onWebKitInitialized()} but are not guaranteed to
-         * run before sub-process termination (sub-processes may be killed at any time without warning).
-         */
+        /** The main thread in the renderer. Used for all WebKit and V8 interaction. Tasks may be posted to this thread after {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onWebKitInitialized()} but are not guaranteed to run before sub-process termination (sub-processes may be killed at any time without warning).  */
         RENDERER(6, "6", "TID_RENDERER"),
         NUM_VALUES(7, "7", "TID_NUM_VALUES");
 
@@ -123,8 +89,8 @@ public final class CefThreadId implements CefEnum<CefThreadId> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

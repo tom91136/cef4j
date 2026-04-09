@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Structure representing a range.
- *
  * <p>Definition generated from internal/cef_types.h
- *
  * <pre>typedef struct _cef_range_t {
  *   unsigned int from;
  *   unsigned int to;
@@ -17,6 +14,7 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:3343</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefRange {
 
     public final int from;
@@ -37,7 +35,8 @@ public final class CefRange {
         if (this == obj) return true;
         if (!(obj instanceof CefRange)) return false;
         CefRange other = (CefRange) obj;
-        return this.from == other.from && this.to == other.to;
+        return this.from == other.from
+                    && this.to == other.to;
     }
 
     @Override
@@ -52,7 +51,6 @@ public final class CefRange {
 
     /**
      * Mutable variant of {@link CefRange}. Structure representing a range.
-     *
      * <p>Definition generated from internal/cef_types.h
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:3343</a>
@@ -79,7 +77,8 @@ public final class CefRange {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
             Mutable other = (Mutable) obj;
-            return this.from == other.from && this.to == other.to;
+            return this.from == other.from
+                        && this.to == other.to;
         }
 
         @Override

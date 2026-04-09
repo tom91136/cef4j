@@ -128,37 +128,6 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>format-generated-java</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${project.basedir}/../mvnw</executable>
-                            <workingDirectory>${project.basedir}/..</workingDirectory>
-                            <arguments>
-                                <argument>-pl</argument>
-                                <argument>cef4j-api</argument>
-                                <argument>spotless:apply</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>format-generated-cpp</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${project.basedir}/../mvnw</executable>
-                            <workingDirectory>${project.basedir}/..</workingDirectory>
-                            <arguments>
-                                <argument>-N</argument>
-                                <argument>spotless:apply</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -195,6 +164,41 @@
                                 </resource>
                             </resources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <java>
+                        <includes>
+                            <include>../cef4j-api/src/main/java/net/kurobako/cef4j/gen/**/*.java</include>
+                        </includes>
+                        <palantirJavaFormat>
+                            <version>${palantir.java.format.version}</version>
+                            <style>PALANTIR</style>
+                            <formatJavadoc>true</formatJavadoc>
+                        </palantirJavaFormat>
+                    </java>
+                    <cpp>
+                        <includes>
+                            <include>cef4j-native/native/gen/**/*.cpp</include>
+                            <include>cef4j-native/native/gen/**/*.h</include>
+                        </includes>
+                        <eclipseCdt>
+                            <version>11.6</version>
+                            <file>${maven.multiModuleProjectDirectory}/eclipse-cdt-format.xml</file>
+                        </eclipseCdt>
+                    </cpp>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

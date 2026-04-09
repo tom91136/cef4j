@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Generic callback interface used for asynchronous continuation.
- *
  * <p>Definition generated from cef_callback_capi.h
- *
  * <pre>typedef struct _cef_callback_t {
  *   cef_base_ref_counted_t base;
  *   ...
@@ -17,13 +14,12 @@ import javax.annotation.processing.Generated;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:43</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefCallback extends CefLibraryObject {
 
     /**
      * Continue processing.
-     *
      * <p>Definition generated from cef_callback_capi.h
-     *
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_callback_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:49</a>
@@ -32,15 +28,12 @@ public interface CefCallback extends CefLibraryObject {
 
     /**
      * Cancel processing.
-     *
      * <p>Definition generated from cef_callback_capi.h
-     *
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_callback_t* self);</pre>
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:55</a>
      */
     void cancel();
-
     final class NativePeer implements CefCallback, AutoCloseable {
         private final long nativePtr;
         private final java.lang.ref.Cleaner.Cleanable cleanable;
@@ -85,20 +78,22 @@ public interface CefCallback extends CefLibraryObject {
         private static native void release0(long ptr);
 
         @Override
-        public void cont() {
-            checkNotClosed();
-            cont0(nativePtr);
-        }
+      public void cont() {
+          checkNotClosed();
+          cont0(nativePtr);
+      }
 
         @Override
-        public void cancel() {
-            checkNotClosed();
-            cancel0(nativePtr);
-        }
+      public void cancel() {
+          checkNotClosed();
+          cancel0(nativePtr);
+      }
 
-        private static native void cont0(long self);
 
-        private static native void cancel0(long self);
+        static native void cont0(long self);
+
+        static native void cancel0(long self);
+
 
         @Override
         public boolean equals(Object obj) {
@@ -117,4 +112,5 @@ public interface CefCallback extends CefLibraryObject {
             return "CefCallback{0x" + Long.toHexString(nativePtr) + "}";
         }
     }
+
 }

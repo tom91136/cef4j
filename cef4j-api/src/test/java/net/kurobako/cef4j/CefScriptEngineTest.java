@@ -189,7 +189,7 @@ class CefScriptEngineTest extends CefTestBase {
     void eval_unicodeString() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("'\\u00e9\\u00e8\\u00ea'"), 5_000);
         // JSON should contain the actual unicode chars
-        assertThat(result).contains("\u00e9");
+        assertThat(result).contains("é");
     }
 
     // -----------------------------------------------------------------------
@@ -727,7 +727,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @Test
     @Order(99)
-    void dispose_cancelsPendingFutures() throws Exception {
+    void terminate_cancelsPendingFutures() {
         CefScriptEngine disposable =
                 new CefScriptEngine(() -> browser.getMainFrame().orElse(null));
 

@@ -257,9 +257,9 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefXmlReader), moveToCarryingElement0)(JNI
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefXmlReader), create0)(JNIEnv* env, jclass clz, jobject stream, jobject encodingType, jstring URI) {
-    if (!encodingType) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "encodingType must not be null"); return nullptr;}
+    if (!encodingType) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "encodingType must not be null"); return nullptr; }
     cef_stream_reader_t* _stream_ptr = stream ? reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J"))) : nullptr;
-    if (_stream_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b);}
+    if (_stream_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b); }
     auto _URI_str = JStringToCefString(env, URI);
     auto _r = cef_xml_reader_create(_stream_ptr, static_cast<cef_xml_encoding_type_t>(env->GetLongField(encodingType, env->GetFieldID(env->GetObjectClass(encodingType), "value", "J"))), _URI_str);
     if (_URI_str) cef_string_userfree_free(_URI_str);

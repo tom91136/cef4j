@@ -5,7 +5,7 @@
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_preference_observer_t* Create_JniCefPreferenceObserver(JNIEnv *env, jobject handler);
+extern "C" cef_preference_observer_t* Create_JniCefPreferenceObserver(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceManager), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -56,7 +56,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefPreferenceManager), setPreference0)(JNI
     if (!s) return JNI_FALSE;
     auto _name_str = JStringToCefString(env, name);
     cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
-    if (_value_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b);}
+    if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
     auto _error_str = JStringToCefString(env, error);
     auto _r = s->set_preference(s, _name_str, _value_ptr, _error_str);
     if (_name_str) cef_string_userfree_free(_name_str);
@@ -78,14 +78,14 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPreferenceManager), addPreferenceObserve
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsSwitches0)(JNIEnv* env, jclass clz, jobject switches) {
-    if (!switches) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "switches must not be null"); return;}
+    if (!switches) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "switches must not be null"); return; }
     auto _switches_csl = JavaListToCefStringList(env, switches);
     cef_preference_manager_get_chrome_variations_as_switches(_switches_csl);
     CefStringListWriteBack(env, _switches_csl, switches);
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPreferenceManager), getChromeVariationsAsStrings0)(JNIEnv* env, jclass clz, jobject strings) {
-    if (!strings) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "strings must not be null"); return;}
+    if (!strings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "strings must not be null"); return; }
     auto _strings_csl = JavaListToCefStringList(env, strings);
     cef_preference_manager_get_chrome_variations_as_strings(_strings_csl);
     CefStringListWriteBack(env, _strings_csl, strings);

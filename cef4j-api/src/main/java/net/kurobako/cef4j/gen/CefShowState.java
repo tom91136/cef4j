@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Show states supported by {@link net.kurobako.cef4j.gen.views.CefWindowDelegate#getInitialShowState(CefWindow)}.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_SHOW_STATE_NORMAL = 0,
  *   CEF_SHOW_STATE_MINIMIZED = 1,
@@ -17,13 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_SHOW_STATE_HIDDEN = 4,
  *   ...
  * } cef_show_state_t;</pre>
- *
- * <p>Possible values: {@link Kind#NORMAL}, {@link Kind#MINIMIZED}, {@link Kind#MAXIMIZED}, {@link Kind#FULLSCREEN},
- * {@link Kind#HIDDEN}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#NORMAL}, {@link Kind#MINIMIZED}, {@link Kind#MAXIMIZED}, {@link Kind#FULLSCREEN}, {@link Kind#HIDDEN}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefShowState implements CefEnum<CefShowState> {
 
     /** Known constants for {@link CefShowState}. */
@@ -84,8 +80,8 @@ public final class CefShowState implements CefEnum<CefShowState> {
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {

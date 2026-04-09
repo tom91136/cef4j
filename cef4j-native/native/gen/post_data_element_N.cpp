@@ -32,9 +32,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPostDataElement), setToFile0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPostDataElement), setToBytes0)(JNIEnv* env, jobject obj, jlong self, jobject bytes) {
     auto* s = reinterpret_cast<cef_post_data_element_t*>(self);
     if (!s) return;
-    if (!bytes) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return;}
+    if (!bytes) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return; }
     const void* _bytes_addr = bytes ? env->GetDirectBufferAddress(bytes) : nullptr;
-    if (bytes && !_bytes_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return;}
+    if (bytes && !_bytes_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return; }
     s->set_to_bytes(s, static_cast<size_t>(env->GetDirectBufferCapacity(bytes)), _bytes_addr);
 }
 
@@ -66,9 +66,9 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefPostDataElement), getBytesCount0)(JNIEnv* 
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefPostDataElement), getBytes0)(JNIEnv* env, jobject obj, jlong self, jobject bytes) {
     auto* s = reinterpret_cast<cef_post_data_element_t*>(self);
     if (!s) return 0;
-    if (!bytes) {env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return 0;}
+    if (!bytes) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "bytes must not be null"); return 0; }
     void* _bytes_addr = bytes ? env->GetDirectBufferAddress(bytes) : nullptr;
-    if (bytes && !_bytes_addr) {env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0;}
+    if (bytes && !_bytes_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "bytes must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return 0; }
     return static_cast<jlong>(s->get_bytes(s, static_cast<size_t>(env->GetDirectBufferCapacity(bytes)), _bytes_addr));
 }
 

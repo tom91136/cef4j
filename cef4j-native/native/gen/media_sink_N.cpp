@@ -3,7 +3,7 @@
 #include "include/capi/cef_media_router_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_media_sink_device_info_callback_t* Create_JniCefMediaSinkDeviceInfoCallback(JNIEnv *env, jobject handler);
+extern "C" cef_media_sink_device_info_callback_t* Create_JniCefMediaSinkDeviceInfoCallback(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefMediaSink), release0)(JNIEnv* env, jclass clz, jlong ptr) {
     auto* b = reinterpret_cast<cef_base_ref_counted_t*>(ptr);
     if (b) b->release(b);
@@ -63,7 +63,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMediaSink), isCompatibleWith0)(JNIEnv* 
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return JNI_FALSE;
     cef_media_source_t* _source_ptr = source ? reinterpret_cast<cef_media_source_t*>(env->GetLongField(source, env->GetFieldID(env->GetObjectClass(source), "nativePtr", "J"))) : nullptr;
-    if (_source_ptr) {auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_source_ptr); _b->add_ref(_b);}
+    if (_source_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_source_ptr); _b->add_ref(_b); }
     auto _r = s->is_compatible_with(s, _source_ptr);
     return static_cast<jboolean>(_r);
 }

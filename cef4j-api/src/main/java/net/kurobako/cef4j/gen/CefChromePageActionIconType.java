@@ -1,14 +1,11 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native
-// -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 
 /**
  * Chrome page action icon types. Should be kept in sync with Chromium's PageActionIconType type.
- *
  * <p>Definition generated from cef_types.h
- *
  * <pre>typedef enum {
  *   CEF_CPAIT_BOOKMARK_STAR = 0,
  *   CEF_CPAIT_CLICK_TO_CALL = 1,
@@ -17,24 +14,12 @@ import javax.annotation.processing.Generated;
  *   CEF_CPAIT_FIND = 4,
  *   ...
  * } cef_chrome_page_action_icon_type_t;</pre>
- *
- * <p>Possible values: {@link Kind#BOOKMARK_STAR}, {@link Kind#CLICK_TO_CALL}, {@link Kind#COOKIE_CONTROLS},
- * {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#FIND}, {@link Kind#MEMORY_SAVER}, {@link Kind#INTENT_PICKER},
- * {@link Kind#LOCAL_CARD_MIGRATION}, {@link Kind#MANAGE_PASSWORDS}, {@link Kind#PAYMENTS_OFFER_NOTIFICATION},
- * {@link Kind#PRICE_TRACKING}, {@link Kind#PWA_INSTALL}, {@link Kind#QR_CODE_GENERATOR_DEPRECATED},
- * {@link Kind#READER_MODE_DEPRECATED}, {@link Kind#SAVE_AUTOFILL_ADDRESS}, {@link Kind#SAVE_CARD},
- * {@link Kind#SEND_TAB_TO_SELF_DEPRECATED}, {@link Kind#SHARING_HUB}, {@link Kind#SIDE_SEARCH_DEPRECATED},
- * {@link Kind#SMS_REMOTE_FETCHER}, {@link Kind#TRANSLATE}, {@link Kind#VIRTUAL_CARD_ENROLL},
- * {@link Kind#VIRTUAL_CARD_INFORMATION}, {@link Kind#ZOOM}, {@link Kind#SAVE_IBAN}, {@link Kind#MANDATORY_REAUTH},
- * {@link Kind#PRICE_INSIGHTS}, {@link Kind#READ_ANYTHING_DEPRECATED}, {@link Kind#PRODUCT_SPECIFICATIONS},
- * {@link Kind#LENS_OVERLAY}, {@link Kind#DISCOUNTS}, {@link Kind#OPTIMIZATION_GUIDE},
- * {@link Kind#COLLABORATION_MESSAGING}, {@link Kind#CHANGE_PASSWORD}, {@link Kind#LENS_OVERLAY_HOMEWORK},
- * {@link Kind#AI_MODE}, {@link Kind#READING_MODE}, {@link Kind#CONTEXTUAL_SIDE_PANEL}, {@link Kind#JS_OPTIMIZATIONS},
- * {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#BOOKMARK_STAR}, {@link Kind#CLICK_TO_CALL}, {@link Kind#COOKIE_CONTROLS}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#FIND}, {@link Kind#MEMORY_SAVER}, {@link Kind#INTENT_PICKER}, {@link Kind#LOCAL_CARD_MIGRATION}, {@link Kind#MANAGE_PASSWORDS}, {@link Kind#PAYMENTS_OFFER_NOTIFICATION}, {@link Kind#PRICE_TRACKING}, {@link Kind#PWA_INSTALL}, {@link Kind#QR_CODE_GENERATOR_DEPRECATED}, {@link Kind#READER_MODE_DEPRECATED}, {@link Kind#SAVE_AUTOFILL_ADDRESS}, {@link Kind#SAVE_CARD}, {@link Kind#SEND_TAB_TO_SELF_DEPRECATED}, {@link Kind#SHARING_HUB}, {@link Kind#SIDE_SEARCH_DEPRECATED}, {@link Kind#SMS_REMOTE_FETCHER}, {@link Kind#TRANSLATE}, {@link Kind#VIRTUAL_CARD_ENROLL}, {@link Kind#VIRTUAL_CARD_INFORMATION}, {@link Kind#ZOOM}, {@link Kind#SAVE_IBAN}, {@link Kind#MANDATORY_REAUTH}, {@link Kind#PRICE_INSIGHTS}, {@link Kind#READ_ANYTHING_DEPRECATED}, {@link Kind#PRODUCT_SPECIFICATIONS}, {@link Kind#LENS_OVERLAY}, {@link Kind#DISCOUNTS}, {@link Kind#OPTIMIZATION_GUIDE}, {@link Kind#COLLABORATION_MESSAGING}, {@link Kind#CHANGE_PASSWORD}, {@link Kind#LENS_OVERLAY_HOMEWORK}, {@link Kind#AI_MODE}, {@link Kind#READING_MODE}, {@link Kind#CONTEXTUAL_SIDE_PANEL}, {@link Kind#JS_OPTIMIZATIONS}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefChromePageActionIconType implements CefEnum<CefChromePageActionIconType> {
 
     /** Known constants for {@link CefChromePageActionIconType}. */
@@ -129,8 +114,8 @@ public final class CefChromePageActionIconType implements CefEnum<CefChromePageA
     }
 
     /**
-     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
-     * switch over known constants.
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values.
+     * Use this for exhaustive switch over known constants.
      */
     public java.util.Optional<Kind> kind() {
         for (Kind k : Kind.VALUES) {
