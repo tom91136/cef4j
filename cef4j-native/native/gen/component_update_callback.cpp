@@ -22,7 +22,7 @@ struct JniCefComponentUpdateCallback : public cef_component_update_callback_t {
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(9) < 0) { return; }
         auto j_component_id = CefStringToJString(env, component_id);
-        auto j_error_cls = env->FindClass("net/kurobako/cef4j/gen/CefComponentUpdateError");
+        auto j_error_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefComponentUpdateError");
         auto j_error_from = env->GetStaticMethodID(j_error_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefComponentUpdateError;");
         auto j_error = env->CallStaticObjectMethod(j_error_cls, j_error_from, static_cast<jlong>(error));
         auto cls = env->GetObjectClass(h->javaHandler);

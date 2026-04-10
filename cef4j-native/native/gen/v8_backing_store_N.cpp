@@ -12,7 +12,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8BackingStore), data0)(JNIEnv* env, job
     auto* s = reinterpret_cast<cef_v8_backing_store_t*>(self);
     if (!s) return nullptr;
     auto _r = s->data(s);
-    auto _npCls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+    auto _npCls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
@@ -33,7 +33,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8BackingStore), isValid0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8BackingStore), create0)(JNIEnv* env, jclass clz, jlong byte_length) {
     auto _r = cef_v8_backing_store_create(byte_length);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8BackingStore$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8BackingStore$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

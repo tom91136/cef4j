@@ -27,18 +27,18 @@ struct JniCefJsDialogHandler : public cef_jsdialog_handler_t {
         if (env->PushLocalFrame(18) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_origin_url = CefStringToJString(env, origin_url);
-        auto j_dialog_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefJsDialogType");
+        auto j_dialog_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefJsDialogType");
         auto j_dialog_type_from = env->GetStaticMethodID(j_dialog_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefJsDialogType;");
         auto j_dialog_type = env->CallStaticObjectMethod(j_dialog_type_cls, j_dialog_type_from, static_cast<jlong>(dialog_type));
         auto j_message_text = CefStringToJString(env, message_text);
         auto j_default_prompt_text = CefStringToJString(env, default_prompt_text);
         cef_jsdialog_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefJsDialogCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefJsDialogCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         jintArray j_suppress_message = env->NewIntArray(1);
@@ -59,13 +59,13 @@ struct JniCefJsDialogHandler : public cef_jsdialog_handler_t {
         if (env->PushLocalFrame(12) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_message_text = CefStringToJString(env, message_text);
         cef_jsdialog_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefJsDialogCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefJsDialogCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -83,7 +83,7 @@ struct JniCefJsDialogHandler : public cef_jsdialog_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -100,7 +100,7 @@ struct JniCefJsDialogHandler : public cef_jsdialog_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

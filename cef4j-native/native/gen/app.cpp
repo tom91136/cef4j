@@ -27,7 +27,7 @@ struct JniCefApp : public cef_app_t {
         auto j_process_type = CefStringToJString(env, process_type);
         cef_command_line_t* _p_command_line = command_line;
         if (_p_command_line) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_command_line); _b->add_ref(_b); }
-        auto j_command_line_cls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+        auto j_command_line_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
         auto j_command_line_ctor = env->GetMethodID(j_command_line_cls, "<init>", "(J)V");
         auto j_command_line = _p_command_line ? env->NewObject(j_command_line_cls, j_command_line_ctor, reinterpret_cast<jlong>(_p_command_line)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -43,7 +43,7 @@ struct JniCefApp : public cef_app_t {
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_scheme_registrar_t* _p_registrar = registrar;
-        auto j_registrar_cls = env->FindClass("net/kurobako/cef4j/gen/CefSchemeRegistrar$NativePeer");
+        auto j_registrar_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSchemeRegistrar$NativePeer");
         auto j_registrar_ctor = env->GetMethodID(j_registrar_cls, "<init>", "(J)V");
         auto j_registrar = _p_registrar ? env->NewObject(j_registrar_cls, j_registrar_ctor, reinterpret_cast<jlong>(_p_registrar)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

@@ -21,13 +21,13 @@ struct JniCefMediaRouteCreateCallback : public cef_media_route_create_callback_t
         auto* h = reinterpret_cast<JniCefMediaRouteCreateCallback*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(12) < 0) { return; }
-        auto j_result_cls = env->FindClass("net/kurobako/cef4j/gen/CefMediaRouteCreateResult");
+        auto j_result_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaRouteCreateResult");
         auto j_result_from = env->GetStaticMethodID(j_result_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefMediaRouteCreateResult;");
         auto j_result = env->CallStaticObjectMethod(j_result_cls, j_result_from, static_cast<jlong>(result));
         auto j_error = CefStringToJString(env, error);
         cef_media_route_t* _p_route = route;
         if (_p_route) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_route); _b->add_ref(_b); }
-        auto j_route_cls = env->FindClass("net/kurobako/cef4j/gen/CefMediaRoute$NativePeer");
+        auto j_route_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaRoute$NativePeer");
         auto j_route_ctor = env->GetMethodID(j_route_cls, "<init>", "(J)V");
         auto j_route = _p_route ? env->NewObject(j_route_cls, j_route_ctor, reinterpret_cast<jlong>(_p_route)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

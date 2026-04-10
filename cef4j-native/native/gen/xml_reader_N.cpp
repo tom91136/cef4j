@@ -44,7 +44,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefXmlReader), getType0)(JNIEnv* env, jobje
     auto* s = reinterpret_cast<cef_xml_reader_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefXmlNodeType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefXmlNodeType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefXmlNodeType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -257,14 +257,14 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefXmlReader), moveToCarryingElement0)(JNI
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefXmlReader), create0)(JNIEnv* env, jclass clz, jobject stream, jobject encodingType, jstring URI) {
-    if (!encodingType) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "encodingType must not be null"); return nullptr; }
+    if (!encodingType) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "encodingType must not be null"); return nullptr; }
     cef_stream_reader_t* _stream_ptr = stream ? reinterpret_cast<cef_stream_reader_t*>(env->GetLongField(stream, env->GetFieldID(env->GetObjectClass(stream), "nativePtr", "J"))) : nullptr;
     if (_stream_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_stream_ptr); _b->add_ref(_b); }
     auto _URI_str = JStringToCefString(env, URI);
     auto _r = cef_xml_reader_create(_stream_ptr, static_cast<cef_xml_encoding_type_t>(env->GetLongField(encodingType, env->GetFieldID(env->GetObjectClass(encodingType), "value", "J"))), _URI_str);
     if (_URI_str) cef_string_userfree_free(_URI_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefXmlReader$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefXmlReader$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

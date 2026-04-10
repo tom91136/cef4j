@@ -21,7 +21,7 @@ CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(CefComponentUpdater), getComponents0)(
     size_t _count = s->get_component_count(s);
     cef_component_t** _arr = _count > 0 ? new cef_component_t*[_count]() : nullptr;
     s->get_components(s, &_count, _arr);
-    auto _elemCls = env->FindClass("net/kurobako/cef4j/gen/CefComponent$NativePeer");
+    auto _elemCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefComponent$NativePeer");
     auto _elemCtor = env->GetMethodID(_elemCls, "<init>", "(J)V");
     auto _result = env->NewObjectArray(static_cast<jsize>(_count), _elemCls, nullptr);
     for (size_t _i = 0; _i < _count; _i++) {
@@ -41,7 +41,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), getComponentById0)(JN
     auto _r = s->get_component_by_id(s, _component_id_str);
     if (_component_id_str) cef_string_userfree_free(_component_id_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefComponent$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefComponent$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -49,7 +49,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), getComponentById0)(JN
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), update0)(JNIEnv* env, jobject obj, jlong self, jstring component_id, jobject priority, jobject callback) {
     auto* s = reinterpret_cast<cef_component_updater_t*>(self);
     if (!s) return;
-    if (!priority) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "priority must not be null"); return; }
+    if (!priority) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "priority must not be null"); return; }
     auto _component_id_str = JStringToCefString(env, component_id);
     cef_component_update_callback_t* _callback_ptr = callback ? Create_JniCefComponentUpdateCallback(env, callback) : nullptr;
     s->update(s, _component_id_str, static_cast<cef_component_update_priority_t>(env->GetLongField(priority, env->GetFieldID(env->GetObjectClass(priority), "value", "J"))), _callback_ptr);
@@ -59,7 +59,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefComponentUpdater), update0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponentUpdater), get0)(JNIEnv* env, jclass clz) {
     auto _r = cef_component_updater_get();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefComponentUpdater$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefComponentUpdater$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

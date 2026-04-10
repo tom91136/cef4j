@@ -60,7 +60,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getTransitionType0)(JN
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return 0;
     auto _r = s->get_transition_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefTransitionType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefTransitionType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefTransitionType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -76,7 +76,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getCompletionTime0)(JN
     auto* s = reinterpret_cast<cef_navigation_entry_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_completion_time(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
     return _dsResult;
@@ -93,7 +93,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefNavigationEntry), getSslStatus0)(JNIEnv*
     if (!s) return nullptr;
     auto _r = s->get_sslstatus(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefSslStatus$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSslStatus$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

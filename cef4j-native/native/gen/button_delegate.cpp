@@ -25,7 +25,7 @@ struct JniCefButtonDelegate : public cef_button_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_button_t* _p_button = button;
         if (_p_button) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_button); _b->add_ref(_b); }
-        auto j_button_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefButton$NativePeer");
+        auto j_button_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefButton$NativePeer");
         auto j_button_ctor = env->GetMethodID(j_button_cls, "<init>", "(J)V");
         auto j_button = _p_button ? env->NewObject(j_button_cls, j_button_ctor, reinterpret_cast<jlong>(_p_button)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -42,7 +42,7 @@ struct JniCefButtonDelegate : public cef_button_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_button_t* _p_button = button;
         if (_p_button) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_button); _b->add_ref(_b); }
-        auto j_button_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefButton$NativePeer");
+        auto j_button_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefButton$NativePeer");
         auto j_button_ctor = env->GetMethodID(j_button_cls, "<init>", "(J)V");
         auto j_button = _p_button ? env->NewObject(j_button_cls, j_button_ctor, reinterpret_cast<jlong>(_p_button)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

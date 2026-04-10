@@ -21,7 +21,7 @@ struct JniCefResolveCallback : public cef_resolve_callback_t {
         auto* h = reinterpret_cast<JniCefResolveCallback*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(9) < 0) { return; }
-        auto j_result_cls = env->FindClass("net/kurobako/cef4j/gen/CefErrorCode");
+        auto j_result_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefErrorCode");
         auto j_result_from = env->GetStaticMethodID(j_result_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefErrorCode;");
         auto j_result = env->CallStaticObjectMethod(j_result_cls, j_result_from, static_cast<jlong>(result));
         auto j_resolved_ips = CefStringListToJavaList(env, resolved_ips);

@@ -27,12 +27,12 @@ struct JniCefV8Interceptor : public cef_v8_interceptor_t {
         auto j_name = CefStringToJString(env, name);
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
-        auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_object_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
-        auto j_retval_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_retval_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_retval_ar_ctor = env->GetMethodID(j_retval_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_retval_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_retval_peer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_retval_peer_ctor = env->GetMethodID(j_retval_peer_cls, "<init>", "(J)V");
         jobject j_retval_init = nullptr;
         if (retval && *retval) {
@@ -68,12 +68,12 @@ struct JniCefV8Interceptor : public cef_v8_interceptor_t {
         if (env->PushLocalFrame(16) < 0) { return 0; }
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
-        auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_object_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
-        auto j_retval_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_retval_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_retval_ar_ctor = env->GetMethodID(j_retval_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_retval_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_retval_peer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_retval_peer_ctor = env->GetMethodID(j_retval_peer_cls, "<init>", "(J)V");
         jobject j_retval_init = nullptr;
         if (retval && *retval) {
@@ -110,12 +110,12 @@ struct JniCefV8Interceptor : public cef_v8_interceptor_t {
         auto j_name = CefStringToJString(env, name);
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
-        auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_object_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
         cef_v8_value_t* _p_value = value;
         if (_p_value) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_value); _b->add_ref(_b); }
-        auto j_value_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_value_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_value_ctor = env->GetMethodID(j_value_cls, "<init>", "(J)V");
         auto j_value = _p_value ? env->NewObject(j_value_cls, j_value_ctor, reinterpret_cast<jlong>(_p_value)) : nullptr;
         auto j_exception = CefStringToJString(env, exception);
@@ -135,12 +135,12 @@ struct JniCefV8Interceptor : public cef_v8_interceptor_t {
         if (env->PushLocalFrame(12) < 0) { return 0; }
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
-        auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_object_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
         cef_v8_value_t* _p_value = value;
         if (_p_value) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_value); _b->add_ref(_b); }
-        auto j_value_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_value_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_value_ctor = env->GetMethodID(j_value_cls, "<init>", "(J)V");
         auto j_value = _p_value ? env->NewObject(j_value_cls, j_value_ctor, reinterpret_cast<jlong>(_p_value)) : nullptr;
         auto j_exception = CefStringToJString(env, exception);

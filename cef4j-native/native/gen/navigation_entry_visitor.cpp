@@ -24,7 +24,7 @@ struct JniCefNavigationEntryVisitor : public cef_navigation_entry_visitor_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_navigation_entry_t* _p_entry = entry;
         if (_p_entry) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_entry); _b->add_ref(_b); }
-        auto j_entry_cls = env->FindClass("net/kurobako/cef4j/gen/CefNavigationEntry$NativePeer");
+        auto j_entry_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefNavigationEntry$NativePeer");
         auto j_entry_ctor = env->GetMethodID(j_entry_cls, "<init>", "(J)V");
         auto j_entry = _p_entry ? env->NewObject(j_entry_cls, j_entry_ctor, reinterpret_cast<jlong>(_p_entry)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

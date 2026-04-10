@@ -30,7 +30,7 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -47,12 +47,12 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(11) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_print_settings_t* _p_settings = settings;
         if (_p_settings) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_settings); _b->add_ref(_b); }
-        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefPrintSettings$NativePeer");
+        auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPrintSettings$NativePeer");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(J)V");
         auto j_settings = _p_settings ? env->NewObject(j_settings_cls, j_settings_ctor, reinterpret_cast<jlong>(_p_settings)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -69,12 +69,12 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(11) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_print_dialog_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefPrintDialogCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPrintDialogCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -92,14 +92,14 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(13) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_document_name = CefStringToJString(env, document_name);
         auto j_pdf_file_path = CefStringToJString(env, pdf_file_path);
         cef_print_job_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefPrintJobCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPrintJobCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -117,7 +117,7 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -134,7 +134,7 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         if (env->PushLocalFrame(8) < 0) { return cef_size_t{}; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -145,7 +145,7 @@ struct JniCefPrintHandler : public cef_print_handler_t {
         cef_size_t nativeResult = ([&]() {
         cef_size_t _result = {};
         if (jResult) {
-            auto _c = env->FindClass("net/kurobako/cef4j/gen/CefSize");
+            auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
             _result.width = static_cast<decltype(_result.width)>(env->GetIntField(jResult, env->GetFieldID(_c, "width", "I")));
             _result.height = static_cast<decltype(_result.height)>(env->GetIntField(jResult, env->GetFieldID(_c, "height", "I")));
         }

@@ -14,7 +14,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefButton), asLabelButton0)(JNIEnv* e
     if (!s) return nullptr;
     auto _r = s->as_label_button(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefLabelButton$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefLabelButton$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -22,7 +22,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefButton), asLabelButton0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefButton), setState0)(JNIEnv* env, jobject obj, jlong self, jobject state) {
     auto* s = reinterpret_cast<cef_button_t*>(self);
     if (!s) return;
-    if (!state) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "state must not be null"); return; }
+    if (!state) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "state must not be null"); return; }
     s->set_state(s, static_cast<cef_button_state_t>(env->GetLongField(state, env->GetFieldID(env->GetObjectClass(state), "value", "J"))));
 }
 
@@ -30,7 +30,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefButton), getState0)(JNIEnv* env, j
     auto* s = reinterpret_cast<cef_button_t*>(self);
     if (!s) return 0;
     auto _r = s->get_state(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefButtonState");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefButtonState");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefButtonState;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }

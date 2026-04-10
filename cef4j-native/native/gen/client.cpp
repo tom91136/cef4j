@@ -86,7 +86,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_audio_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -109,7 +109,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_command_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -132,7 +132,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_context_menu_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -155,7 +155,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_dialog_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -178,7 +178,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_display_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -201,7 +201,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_download_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -224,7 +224,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_drag_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -247,7 +247,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_find_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -270,7 +270,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_focus_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -293,7 +293,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_frame_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -316,7 +316,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_permission_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -339,7 +339,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_jsdialog_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -362,7 +362,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_keyboard_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -385,7 +385,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_life_span_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -408,7 +408,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_load_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -431,7 +431,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_print_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -454,7 +454,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_render_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -477,7 +477,7 @@ struct JniCefClient : public cef_client_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_request_handler_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -495,20 +495,20 @@ struct JniCefClient : public cef_client_t {
         if (env->PushLocalFrame(17) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_frame_t* _p_frame = frame;
         if (_p_frame) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_frame); _b->add_ref(_b); }
-        auto j_frame_cls = env->FindClass("net/kurobako/cef4j/gen/CefFrame$NativePeer");
+        auto j_frame_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefFrame$NativePeer");
         auto j_frame_ctor = env->GetMethodID(j_frame_cls, "<init>", "(J)V");
         auto j_frame = _p_frame ? env->NewObject(j_frame_cls, j_frame_ctor, reinterpret_cast<jlong>(_p_frame)) : nullptr;
-        auto j_source_process_cls = env->FindClass("net/kurobako/cef4j/gen/CefProcessId");
+        auto j_source_process_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefProcessId");
         auto j_source_process_from = env->GetStaticMethodID(j_source_process_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefProcessId;");
         auto j_source_process = env->CallStaticObjectMethod(j_source_process_cls, j_source_process_from, static_cast<jlong>(source_process));
         cef_process_message_t* _p_message = message;
         if (_p_message) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_message); _b->add_ref(_b); }
-        auto j_message_cls = env->FindClass("net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
+        auto j_message_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
         auto j_message_ctor = env->GetMethodID(j_message_cls, "<init>", "(J)V");
         auto j_message = _p_message ? env->NewObject(j_message_cls, j_message_ctor, reinterpret_cast<jlong>(_p_message)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

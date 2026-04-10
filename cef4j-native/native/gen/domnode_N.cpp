@@ -12,7 +12,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getType0)(JNIEnv* env, jobject
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNodeType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNodeType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefDomNodeType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -49,7 +49,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getFormControlElementType0)(JN
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return 0;
     auto _r = s->get_form_control_element_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefDomFormControlType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomFormControlType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefDomFormControlType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -107,7 +107,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getDocument0)(JNIEnv* env, job
     if (!s) return nullptr;
     auto _r = s->get_document(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomDocument$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomDocument$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -117,7 +117,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getParent0)(JNIEnv* env, jobje
     if (!s) return nullptr;
     auto _r = s->get_parent(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNode$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNode$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -127,7 +127,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getPreviousSibling0)(JNIEnv* e
     if (!s) return nullptr;
     auto _r = s->get_previous_sibling(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNode$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNode$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -137,7 +137,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getNextSibling0)(JNIEnv* env, 
     if (!s) return nullptr;
     auto _r = s->get_next_sibling(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNode$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNode$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -154,7 +154,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getFirstChild0)(JNIEnv* env, j
     if (!s) return nullptr;
     auto _r = s->get_first_child(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNode$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNode$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -164,7 +164,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getLastChild0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->get_last_child(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDomNode$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomNode$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -210,7 +210,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefDomNode), getElementAttribute0)(JNIEnv* 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefDomNode), getElementAttributes0)(JNIEnv* env, jobject obj, jlong self, jobject attrMap) {
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return;
-    if (!attrMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attrMap must not be null"); return; }
+    if (!attrMap) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "attrMap must not be null"); return; }
     auto _attrMap_csm = JavaMapToCefStringMap(env, attrMap);
     s->get_element_attributes(s, _attrMap_csm);
     CefStringMapWriteBack(env, _attrMap_csm, attrMap);
@@ -241,7 +241,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getElementBounds0)(JNIEnv* env
     auto* s = reinterpret_cast<cef_domnode_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_element_bounds(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
     return _dsResult;

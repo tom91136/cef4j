@@ -25,13 +25,13 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         if (env->PushLocalFrame(15) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
-        auto _bv_event_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEventType");
+        auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
         auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
-        auto j_event_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
+        auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,
@@ -63,13 +63,13 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         if (env->PushLocalFrame(14) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
-        auto _bv_event_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEventType");
+        auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
         auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
-        auto j_event_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
+        auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,

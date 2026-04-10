@@ -29,7 +29,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), copy0)(JNIEnv* env, job
     if (!s) return nullptr;
     auto _r = s->copy(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -49,7 +49,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), getArgumentList0)(JNIEn
     if (!s) return nullptr;
     auto _r = s->get_argument_list(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefListValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefListValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -59,7 +59,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), getSharedMemoryRegion0)
     if (!s) return nullptr;
     auto _r = s->get_shared_memory_region(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefSharedMemoryRegion$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSharedMemoryRegion$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -69,7 +69,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefProcessMessage), create0)(JNIEnv* env, j
     auto _r = cef_process_message_create(_name_str);
     if (_name_str) cef_string_userfree_free(_name_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

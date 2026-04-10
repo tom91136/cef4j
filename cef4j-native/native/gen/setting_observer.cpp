@@ -23,7 +23,7 @@ struct JniCefSettingObserver : public cef_setting_observer_t {
         if (env->PushLocalFrame(10) < 0) { return; }
         auto j_requesting_url = CefStringToJString(env, requesting_url);
         auto j_top_level_url = CefStringToJString(env, top_level_url);
-        auto j_content_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefContentSettingTypes");
+        auto j_content_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContentSettingTypes");
         auto j_content_type_from = env->GetStaticMethodID(j_content_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContentSettingTypes;");
         auto j_content_type = env->CallStaticObjectMethod(j_content_type_cls, j_content_type_from, static_cast<jlong>(content_type));
         auto cls = env->GetObjectClass(h->javaHandler);

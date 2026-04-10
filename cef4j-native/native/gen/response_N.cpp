@@ -19,7 +19,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResponse), getError0)(JNIEnv* env, jobje
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return 0;
     auto _r = s->get_error(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefErrorCode");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefErrorCode");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefErrorCode;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResponse), getError0)(JNIEnv* env, jobje
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setError0)(JNIEnv* env, jobject obj, jlong self, jobject error) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!error) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "error must not be null"); return; }
+    if (!error) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "error must not be null"); return; }
     s->set_error(s, static_cast<cef_errorcode_t>(env->GetLongField(error, env->GetFieldID(env->GetObjectClass(error), "value", "J"))));
 }
 
@@ -122,7 +122,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderByName0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
+    if (!headerMap) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->get_header_map(s, _headerMap_csmm);
     CefStringMultimapWriteBack(env, _headerMap_csmm, headerMap);
@@ -131,7 +131,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), getHeaderMap0)(JNIEnv* env, jobj
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setHeaderMap0)(JNIEnv* env, jobject obj, jlong self, jobject headerMap) {
     auto* s = reinterpret_cast<cef_response_t*>(self);
     if (!s) return;
-    if (!headerMap) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "headerMap must not be null"); return; }
+    if (!headerMap) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "headerMap must not be null"); return; }
     auto _headerMap_csmm = JavaMapToCefStringMultimap(env, headerMap);
     s->set_header_map(s, _headerMap_csmm);
     cef_string_multimap_free(_headerMap_csmm);
@@ -158,7 +158,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefResponse), setUrl0)(JNIEnv* env, jobject ob
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResponse), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_response_create();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefResponse$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefResponse$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

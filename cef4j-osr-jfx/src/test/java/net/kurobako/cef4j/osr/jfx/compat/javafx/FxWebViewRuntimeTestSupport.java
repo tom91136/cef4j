@@ -2,8 +2,6 @@ package net.kurobako.cef4j.osr.jfx.compat.javafx;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import java.awt.AWTException;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -29,12 +27,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
-import javafx.scene.robot.Robot;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -195,12 +194,20 @@ final class FxWebViewRuntimeTestSupport {
         click(view, x, y, MouseButton.SECONDARY);
     }
 
-    static void invokeShortcut(KeyCode key) throws Exception {
-        java.awt.Robot robot = awtRobot();
-        robot.keyPress(KeyEvent.VK_CONTROL);
-        robot.keyPress(toAwtKeyCode(key));
-        robot.keyRelease(toAwtKeyCode(key));
-        robot.keyRelease(KeyEvent.VK_CONTROL);
+    static void invokeShortcut(WebView view, KeyCode key) throws Exception {
+        onFxThread(() -> {
+            if (view.getScene() != null && view.getScene().getWindow() != null) {
+                if (view.getScene().getWindow() instanceof Stage) {
+                    ((Stage) view.getScene().getWindow()).toFront();
+                }
+                view.getScene().getWindow().requestFocus();
+            }
+            view.requestFocus();
+            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", KeyCode.CONTROL, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", key, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", key, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", KeyCode.CONTROL, false, false);
+        });
         Thread.sleep(75);
     }
 
@@ -308,9 +315,8 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     private static void click(WebView view, double x, double y, MouseButton button) throws Exception {
-        Point2D target = onFxThread(() -> {
-            Point2D point = view.localToScreen(x, y);
-            if (point == null) throw new IllegalStateException("View is not on screen");
+        onFxThread(() -> {
+            Point2D point = screenPoint(view, x, y);
             if (view.getScene() != null && view.getScene().getWindow() != null) {
                 if (view.getScene().getWindow() instanceof Stage) {
                     ((Stage) view.getScene().getWindow()).toFront();
@@ -318,13 +324,23 @@ final class FxWebViewRuntimeTestSupport {
                 view.getScene().getWindow().requestFocus();
             }
             view.requestFocus();
-            return point;
-        });
-        onFxThread(() -> {
-            Robot robot = new Robot();
-            robot.mouseMove(target);
-            robot.mousePress(button);
-            robot.mouseRelease(button);
+            if (button == MouseButton.SECONDARY) {
+                fireMouseEvent(view, MouseEvent.MOUSE_PRESSED, x, y, point.getX(), point.getY(), button, false);
+                fireMouseEvent(view, MouseEvent.MOUSE_RELEASED, x, y, point.getX(), point.getY(), button, true);
+                fireMouseEvent(view, MouseEvent.MOUSE_CLICKED, x, y, point.getX(), point.getY(), button, true);
+                view.fireEvent(new ContextMenuEvent(
+                        ContextMenuEvent.CONTEXT_MENU_REQUESTED,
+                        x,
+                        y,
+                        point.getX(),
+                        point.getY(),
+                        false,
+                        new PickResult(view, x, y)));
+                return;
+            }
+            fireMouseEvent(view, MouseEvent.MOUSE_PRESSED, x, y, point.getX(), point.getY(), button, false);
+            fireMouseEvent(view, MouseEvent.MOUSE_RELEASED, x, y, point.getX(), point.getY(), button, false);
+            fireMouseEvent(view, MouseEvent.MOUSE_CLICKED, x, y, point.getX(), point.getY(), button, false);
         });
         Thread.sleep(75);
     }
@@ -381,50 +397,55 @@ final class FxWebViewRuntimeTestSupport {
         double localY = localBounds.getHeight() / 2.0;
         double screenX = screenBounds.getMinX() + screenBounds.getWidth() / 2.0;
         double screenY = screenBounds.getMinY() + screenBounds.getHeight() / 2.0;
-        fireMouseEvent(node, MouseEvent.MOUSE_PRESSED, localX, localY, screenX, screenY);
-        fireMouseEvent(node, MouseEvent.MOUSE_RELEASED, localX, localY, screenX, screenY);
-        fireMouseEvent(node, MouseEvent.MOUSE_CLICKED, localX, localY, screenX, screenY);
+        fireMouseEvent(node, MouseEvent.MOUSE_PRESSED, localX, localY, screenX, screenY, MouseButton.PRIMARY, false);
+        fireMouseEvent(node, MouseEvent.MOUSE_RELEASED, localX, localY, screenX, screenY, MouseButton.PRIMARY, false);
+        fireMouseEvent(node, MouseEvent.MOUSE_CLICKED, localX, localY, screenX, screenY, MouseButton.PRIMARY, false);
         return true;
     }
 
     private static void fireMouseEvent(
-            Node node, javafx.event.EventType<MouseEvent> type, double x, double y, double screenX, double screenY) {
+            Node node,
+            javafx.event.EventType<MouseEvent> type,
+            double x,
+            double y,
+            double screenX,
+            double screenY,
+            MouseButton button,
+            boolean popupTrigger) {
         node.fireEvent(new MouseEvent(
                 type,
                 x,
                 y,
                 screenX,
                 screenY,
-                MouseButton.PRIMARY,
+                button,
                 1,
                 false,
                 false,
                 false,
                 false,
-                true,
+                button == MouseButton.PRIMARY,
+                button == MouseButton.MIDDLE,
+                button == MouseButton.SECONDARY,
                 false,
-                false,
-                true,
-                false,
+                popupTrigger,
                 false,
                 new PickResult(node, x, y)));
     }
 
-    private static java.awt.Robot awtRobot() {
-        try {
-            java.awt.Robot robot = new java.awt.Robot();
-            robot.setAutoDelay(20);
-            return robot;
-        } catch (AWTException e) {
-            throw new RuntimeException("Failed to create AWT robot", e);
-        }
+    private static void fireKeyEvent(
+            WebView view,
+            javafx.event.EventType<KeyEvent> type,
+            String character,
+            KeyCode code,
+            boolean shift,
+            boolean control) {
+        view.fireEvent(new KeyEvent(type, character, code.getName(), code, shift, control, false, false));
     }
 
-    private static int toAwtKeyCode(KeyCode key) {
-        if (key == KeyCode.A) return KeyEvent.VK_A;
-        if (key == KeyCode.C) return KeyEvent.VK_C;
-        if (key == KeyCode.V) return KeyEvent.VK_V;
-        if (key == KeyCode.X) return KeyEvent.VK_X;
-        throw new IllegalArgumentException("Unsupported shortcut key: " + key);
+    private static Point2D screenPoint(WebView view, double x, double y) {
+        Point2D point = view.localToScreen(x, y);
+        if (point == null) throw new IllegalStateException("View is not on screen");
+        return point;
     }
 }

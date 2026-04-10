@@ -27,7 +27,7 @@ struct JniCefDownloadHandler : public cef_download_handler_t {
         if (env->PushLocalFrame(10) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_url = CefStringToJString(env, url);
@@ -47,18 +47,18 @@ struct JniCefDownloadHandler : public cef_download_handler_t {
         if (env->PushLocalFrame(15) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_download_item_t* _p_download_item = download_item;
         if (_p_download_item) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_download_item); _b->add_ref(_b); }
-        auto j_download_item_cls = env->FindClass("net/kurobako/cef4j/gen/CefDownloadItem$NativePeer");
+        auto j_download_item_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDownloadItem$NativePeer");
         auto j_download_item_ctor = env->GetMethodID(j_download_item_cls, "<init>", "(J)V");
         auto j_download_item = _p_download_item ? env->NewObject(j_download_item_cls, j_download_item_ctor, reinterpret_cast<jlong>(_p_download_item)) : nullptr;
         auto j_suggested_name = CefStringToJString(env, suggested_name);
         cef_before_download_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefBeforeDownloadCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBeforeDownloadCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -76,17 +76,17 @@ struct JniCefDownloadHandler : public cef_download_handler_t {
         if (env->PushLocalFrame(14) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_download_item_t* _p_download_item = download_item;
         if (_p_download_item) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_download_item); _b->add_ref(_b); }
-        auto j_download_item_cls = env->FindClass("net/kurobako/cef4j/gen/CefDownloadItem$NativePeer");
+        auto j_download_item_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDownloadItem$NativePeer");
         auto j_download_item_ctor = env->GetMethodID(j_download_item_cls, "<init>", "(J)V");
         auto j_download_item = _p_download_item ? env->NewObject(j_download_item_cls, j_download_item_ctor, reinterpret_cast<jlong>(_p_download_item)) : nullptr;
         cef_download_item_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefDownloadItemCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDownloadItemCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

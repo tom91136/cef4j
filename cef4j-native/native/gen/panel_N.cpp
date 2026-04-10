@@ -20,7 +20,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), asWindow0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->as_window(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -30,7 +30,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), setToFillLayout0)(JNIEnv* 
     if (!s) return nullptr;
     auto _r = s->set_to_fill_layout(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefFillLayout$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefFillLayout$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -38,10 +38,10 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), setToFillLayout0)(JNIEnv* 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), setToBoxLayout0)(JNIEnv* env, jobject obj, jlong self, jobject settings) {
     auto* s = reinterpret_cast<cef_panel_t*>(self);
     if (!s) return nullptr;
-    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
+    if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_box_layout_settings_t _settings_val = {};
     if (settings) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefBoxLayoutSettings");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBoxLayoutSettings");
         _settings_val.horizontal = static_cast<decltype(_settings_val.horizontal)>(env->GetIntField(settings, env->GetFieldID(_c, "horizontal", "I")));
         _settings_val.inside_border_horizontal_spacing = static_cast<decltype(_settings_val.inside_border_horizontal_spacing)>(env->GetIntField(settings, env->GetFieldID(_c, "insideBorderHorizontalSpacing", "I")));
         _settings_val.inside_border_vertical_spacing = static_cast<decltype(_settings_val.inside_border_vertical_spacing)>(env->GetIntField(settings, env->GetFieldID(_c, "insideBorderVerticalSpacing", "I")));
@@ -68,7 +68,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), setToBoxLayout0)(JNIEnv* e
     }
     auto _r = s->set_to_box_layout(s, &_settings_val);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBoxLayout$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefBoxLayout$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -78,7 +78,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), getLayout0)(JNIEnv* env, j
     if (!s) return nullptr;
     auto _r = s->get_layout(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefLayout$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefLayout$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -137,7 +137,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), create0)(JNIEnv* env, jcla
     cef_panel_delegate_t* _delegate_ptr = delegate ? Create_JniCefPanelDelegate(env, delegate) : nullptr;
     auto _r = cef_panel_create(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefPanel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefPanel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

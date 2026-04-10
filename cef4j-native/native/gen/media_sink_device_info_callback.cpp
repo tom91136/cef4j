@@ -21,7 +21,7 @@ struct JniCefMediaSinkDeviceInfoCallback : public cef_media_sink_device_info_cal
         auto* h = reinterpret_cast<JniCefMediaSinkDeviceInfoCallback*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(8) < 0) { return; }
-        auto j_device_info_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_device_info_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_device_info_ctor = env->GetMethodID(j_device_info_cls, "<init>", "(J)V");
         auto j_device_info = env->NewObject(j_device_info_cls, j_device_info_ctor, reinterpret_cast<jlong>(device_info));
         auto cls = env->GetObjectClass(h->javaHandler);

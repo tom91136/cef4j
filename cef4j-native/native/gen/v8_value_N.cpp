@@ -148,7 +148,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getDateValue0)(JNIEnv* env, jo
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_date_value(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
     return _dsResult;
@@ -183,7 +183,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getException0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->get_exception(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Exception$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Exception$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -242,7 +242,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getValueBykey0)(JNIEnv* env, j
     auto _r = s->get_value_bykey(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -250,7 +250,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getValueBykey0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Value), setValueBykey0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject value, jobject attribute) {
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return 0;
-    if (!attribute) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attribute must not be null"); return 0; }
+    if (!attribute) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "attribute must not be null"); return 0; }
     auto _key_str = key ? JStringToCefString(env, key) : nullptr;
     cef_v8_value_t* _value_ptr = value ? reinterpret_cast<cef_v8_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
     if (_value_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_value_ptr); _b->add_ref(_b); }
@@ -268,7 +268,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Value), setValueByindex0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Value), setValueByaccessor0)(JNIEnv* env, jobject obj, jlong self, jstring key, jobject attribute) {
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return 0;
-    if (!attribute) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "attribute must not be null"); return 0; }
+    if (!attribute) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "attribute must not be null"); return 0; }
     auto _key_str = key ? JStringToCefString(env, key) : nullptr;
     return static_cast<jint>(s->set_value_byaccessor(s, _key_str, static_cast<cef_v8_propertyattribute_t>(env->GetLongField(attribute, env->GetFieldID(env->GetObjectClass(attribute), "value", "J")))));
 }
@@ -276,7 +276,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8Value), setValueByaccessor0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8Value), getKeys0)(JNIEnv* env, jobject obj, jlong self, jobject keys) {
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!keys) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE; }
+    if (!keys) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE; }
     auto _keys_csl = JavaListToCefStringList(env, keys);
     auto _r = s->get_keys(s, _keys_csl);
     CefStringListWriteBack(env, _keys_csl, keys);
@@ -294,7 +294,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getUserData0)(JNIEnv* env, job
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_user_data(s);
-    auto _npCls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+    auto _npCls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
@@ -334,7 +334,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getArrayBufferData0)(JNIEnv* e
     auto* s = reinterpret_cast<cef_v8_value_t*>(self);
     if (!s) return nullptr;
     auto _r = s->get_array_buffer_data(s);
-    auto _npCls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+    auto _npCls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
@@ -354,7 +354,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getFunctionHandler0)(JNIEnv* e
     if (!s) return nullptr;
     auto _r = s->get_function_handler(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Handler$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Handler$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -367,7 +367,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunction0)(JNIEnv* env,
     size_t _arguments_sz = static_cast<size_t>(argumentsCount);
     cef_v8_value_t** _arguments_arr = _arguments_sz > 0 ? new cef_v8_value_t*[_arguments_sz]() : nullptr;
     auto _r = s->execute_function(s, _object_ptr, argumentsCount, _arguments_arr);
-    auto _arguments_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _arguments_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _arguments_ctor = env->GetMethodID(_arguments_cls, "<init>", "(J)V");
     for (size_t _i = 0; _i < _arguments_sz; _i++) {
         auto _elem = _arguments_arr[_i] ? env->NewObject(_arguments_cls, _arguments_ctor, reinterpret_cast<jlong>(_arguments_arr[_i])) : nullptr;
@@ -375,7 +375,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunction0)(JNIEnv* env,
     }
     delete[] _arguments_arr;
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -390,7 +390,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunctionWithContext0)(J
     size_t _arguments_sz = static_cast<size_t>(argumentsCount);
     cef_v8_value_t** _arguments_arr = _arguments_sz > 0 ? new cef_v8_value_t*[_arguments_sz]() : nullptr;
     auto _r = s->execute_function_with_context(s, _context_ptr, _object_ptr, argumentsCount, _arguments_arr);
-    auto _arguments_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _arguments_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _arguments_ctor = env->GetMethodID(_arguments_cls, "<init>", "(J)V");
     for (size_t _i = 0; _i < _arguments_sz; _i++) {
         auto _elem = _arguments_arr[_i] ? env->NewObject(_arguments_cls, _arguments_ctor, reinterpret_cast<jlong>(_arguments_arr[_i])) : nullptr;
@@ -398,7 +398,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), executeFunctionWithContext0)(J
     }
     delete[] _arguments_arr;
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -424,7 +424,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefV8Value), rejectPromise0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createUndefined0)(JNIEnv* env, jclass clz) {
     auto _r = cef_v8_value_create_undefined();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -432,7 +432,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createUndefined0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createNull0)(JNIEnv* env, jclass clz) {
     auto _r = cef_v8_value_create_null();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -440,7 +440,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createNull0)(JNIEnv* env, jcla
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createBool0)(JNIEnv* env, jclass clz, jint value) {
     auto _r = cef_v8_value_create_bool(value);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -448,7 +448,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createBool0)(JNIEnv* env, jcla
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createInt0)(JNIEnv* env, jclass clz, jint value) {
     auto _r = cef_v8_value_create_int(value);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -456,7 +456,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createInt0)(JNIEnv* env, jclas
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createUint0)(JNIEnv* env, jclass clz, jint value) {
     auto _r = cef_v8_value_create_uint(value);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -464,7 +464,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createUint0)(JNIEnv* env, jcla
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDouble0)(JNIEnv* env, jclass clz, jdouble value) {
     auto _r = cef_v8_value_create_double(value);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -472,12 +472,12 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDouble0)(JNIEnv* env, jc
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDate0)(JNIEnv* env, jclass clz, jobject date) {
     cef_basetime_t _date_val = {};
     if (date) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefBasetime");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
         _date_val.val = static_cast<decltype(_date_val.val)>(static_cast<size_t>(env->GetLongField(date, env->GetFieldID(_c, "val", "J"))));
     }
     auto _r = cef_v8_value_create_date(_date_val);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -487,7 +487,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createString0)(JNIEnv* env, jc
     auto _r = cef_v8_value_create_string(_value_str);
     if (_value_str) cef_string_userfree_free(_value_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -497,7 +497,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createObject0)(JNIEnv* env, jc
     cef_v8_interceptor_t* _interceptor_ptr = interceptor ? Create_JniCefV8Interceptor(env, interceptor) : nullptr;
     auto _r = cef_v8_value_create_object(_accessor_ptr, _interceptor_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -505,28 +505,28 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createObject0)(JNIEnv* env, jc
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArray0)(JNIEnv* env, jclass clz, jint length) {
     auto _r = cef_v8_value_create_array(length);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBuffer0)(JNIEnv* env, jclass clz, jobject buffer, jobject release_callback) {
     void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
-    if (buffer && !_buffer_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
+    if (buffer && !_buffer_addr) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     cef_v8_array_buffer_release_callback_t* _release_callback_ptr = release_callback ? Create_JniCefV8ArrayBufferReleaseCallback(env, release_callback) : nullptr;
     auto _r = cef_v8_value_create_array_buffer(_buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)), _release_callback_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBufferWithCopy0)(JNIEnv* env, jclass clz, jobject buffer) {
     void* _buffer_addr = buffer ? env->GetDirectBufferAddress(buffer) : nullptr;
-    if (buffer && !_buffer_addr) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
+    if (buffer && !_buffer_addr) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "buffer must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return nullptr; }
     auto _r = cef_v8_value_create_array_buffer_with_copy(_buffer_addr, static_cast<size_t>(env->GetDirectBufferCapacity(buffer)));
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -536,7 +536,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createArrayBufferFromBackingSt
     if (_backing_store_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_backing_store_ptr); _b->add_ref(_b); }
     auto _r = cef_v8_value_create_array_buffer_from_backing_store(_backing_store_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -547,7 +547,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createFunction0)(JNIEnv* env, 
     auto _r = cef_v8_value_create_function(_name_str, _handler_ptr);
     if (_name_str) cef_string_userfree_free(_name_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -555,7 +555,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createFunction0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createPromise0)(JNIEnv* env, jclass clz) {
     auto _r = cef_v8_value_create_promise();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

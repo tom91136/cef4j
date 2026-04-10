@@ -19,7 +19,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), addObserver0)(JNIEnv* env,
     cef_media_observer_t* _observer_ptr = observer ? Create_JniCefMediaObserver(env, observer) : nullptr;
     auto _r = s->add_observer(s, _observer_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRegistration$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRegistration$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -31,7 +31,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), getSource0)(JNIEnv* env, j
     auto _r = s->get_source(s, _urn_str);
     if (_urn_str) cef_string_userfree_free(_urn_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMediaSource$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaSource$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -63,7 +63,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaRouter), getGlobal0)(JNIEnv* env, j
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     auto _r = cef_media_router_get_global(_callback_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMediaRouter$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaRouter$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

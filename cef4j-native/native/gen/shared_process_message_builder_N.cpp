@@ -26,7 +26,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSharedProcessMessageBuilder), memory0)(J
     auto* s = reinterpret_cast<cef_shared_process_message_builder_t*>(self);
     if (!s) return nullptr;
     auto _r = s->memory(s);
-    auto _npCls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+    auto _npCls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }
@@ -36,7 +36,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSharedProcessMessageBuilder), build0)(JN
     if (!s) return nullptr;
     auto _r = s->build(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefProcessMessage$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -46,7 +46,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSharedProcessMessageBuilder), create0)(J
     auto _r = cef_shared_process_message_builder_create(_name_str, byte_size);
     if (_name_str) cef_string_userfree_free(_name_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefSharedProcessMessageBuilder$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSharedProcessMessageBuilder$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

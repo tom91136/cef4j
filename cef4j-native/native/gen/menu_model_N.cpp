@@ -71,7 +71,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), addSubMenu0)(JNIEnv* env, jo
     auto _r = s->add_sub_menu(s, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -117,7 +117,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), insertSubMenuAt0)(JNIEnv* en
     auto _r = s->insert_sub_menu_at(s, index, command_id, _label_str);
     if (_label_str) cef_string_userfree_free(_label_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -187,7 +187,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getType0)(JNIEnv* env, jobje
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type(s, command_id);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuItemType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuItemType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefMenuItemType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -223,7 +223,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getSubMenu0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->get_sub_menu(s, command_id);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -233,7 +233,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), getSubMenuAt0)(JNIEnv* env, 
     if (!s) return nullptr;
     auto _r = s->get_sub_menu_at(s, index);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -405,7 +405,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getAcceleratorAt0)(JNIEnv* 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
+    if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     auto _r = s->set_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
     return static_cast<jboolean>(_r);
 }
@@ -413,7 +413,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColor0)(JNIEnv* env, job
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jint color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
+    if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     auto _r = s->set_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), color);
     return static_cast<jboolean>(_r);
 }
@@ -421,7 +421,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), setColorAt0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColor0)(JNIEnv* env, jobject obj, jlong self, jint command_id, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
+    if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     unsigned int _color_val = 0;
     if (color) { jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv); }
     auto _r = s->get_color(s, command_id, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), &_color_val);
@@ -432,7 +432,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColor0)(JNIEnv* env, job
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefMenuModel), getColorAt0)(JNIEnv* env, jobject obj, jlong self, jint index, jobject color_type, jintArray color) {
     auto* s = reinterpret_cast<cef_menu_model_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!color_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
+    if (!color_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "colorType must not be null"); return JNI_FALSE; }
     unsigned int _color_val = 0;
     if (color) { jint _jv; env->GetIntArrayRegion(color, 0, 1, &_jv); _color_val = static_cast<unsigned int>(_jv); }
     auto _r = s->get_color_at(s, index, static_cast<cef_menu_color_type_t>(env->GetLongField(color_type, env->GetFieldID(env->GetObjectClass(color_type), "value", "J"))), &_color_val);
@@ -462,7 +462,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMenuModel), create0)(JNIEnv* env, jclass
     cef_menu_model_delegate_t* _delegate_ptr = delegate ? Create_JniCefMenuModelDelegate(env, delegate) : nullptr;
     auto _r = cef_menu_model_create(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

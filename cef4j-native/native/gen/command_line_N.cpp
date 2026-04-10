@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), copy0)(JNIEnv* env, jobjec
     if (!s) return nullptr;
     auto _r = s->copy(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -55,7 +55,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), reset0)(JNIEnv* env, jobject 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getArgv0)(JNIEnv* env, jobject obj, jlong self, jobject argv) {
     auto* s = reinterpret_cast<cef_command_line_t*>(self);
     if (!s) return;
-    if (!argv) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "argv must not be null"); return; }
+    if (!argv) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "argv must not be null"); return; }
     auto _argv_csl = JavaListToCefStringList(env, argv);
     s->get_argv(s, _argv_csl);
     CefStringListWriteBack(env, _argv_csl, argv);
@@ -120,7 +120,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefCommandLine), getSwitchValue0)(JNIEnv* e
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getSwitches0)(JNIEnv* env, jobject obj, jlong self, jobject switches) {
     auto* s = reinterpret_cast<cef_command_line_t*>(self);
     if (!s) return;
-    if (!switches) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "switches must not be null"); return; }
+    if (!switches) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "switches must not be null"); return; }
     auto _switches_csm = JavaMapToCefStringMap(env, switches);
     s->get_switches(s, _switches_csm);
     CefStringMapWriteBack(env, _switches_csm, switches);
@@ -154,7 +154,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCommandLine), hasArguments0)(JNIEnv* en
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), getArguments0)(JNIEnv* env, jobject obj, jlong self, jobject arguments) {
     auto* s = reinterpret_cast<cef_command_line_t*>(self);
     if (!s) return;
-    if (!arguments) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "arguments must not be null"); return; }
+    if (!arguments) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "arguments must not be null"); return; }
     auto _arguments_csl = JavaListToCefStringList(env, arguments);
     s->get_arguments(s, _arguments_csl);
     CefStringListWriteBack(env, _arguments_csl, arguments);
@@ -187,7 +187,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), removeSwitch0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_command_line_create();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -195,7 +195,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), create0)(JNIEnv* env, jcla
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), getGlobal0)(JNIEnv* env, jclass clz) {
     auto _r = cef_command_line_get_global();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

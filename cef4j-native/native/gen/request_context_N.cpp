@@ -50,7 +50,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getHandler0)(JNIEnv* en
     if (!s) return nullptr;
     auto _r = s->get_handler(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContextHandler$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContextHandler$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -71,7 +71,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getCookieManager0)(JNIE
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     auto _r = s->get_cookie_manager(s, _callback_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefCookieManager$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCookieManager$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -131,7 +131,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getMediaRouter0)(JNIEnv
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     auto _r = s->get_media_router(s, _callback_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefMediaRouter$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaRouter$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -139,14 +139,14 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getMediaRouter0)(JNIEnv
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getWebsiteSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return nullptr;
-    if (!content_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return nullptr; }
+    if (!content_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "contentType must not be null"); return nullptr; }
     auto _requesting_url_str = requesting_url ? JStringToCefString(env, requesting_url) : nullptr;
     auto _top_level_url_str = top_level_url ? JStringToCefString(env, top_level_url) : nullptr;
     auto _r = s->get_website_setting(s, _requesting_url_str, _top_level_url_str, static_cast<cef_content_setting_types_t>(env->GetLongField(content_type, env->GetFieldID(env->GetObjectClass(content_type), "value", "J"))));
     if (_requesting_url_str) cef_string_userfree_free(_requesting_url_str);
     if (_top_level_url_str) cef_string_userfree_free(_top_level_url_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -154,7 +154,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getWebsiteSetting0)(JNI
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setWebsiteSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
-    if (!content_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return; }
+    if (!content_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "contentType must not be null"); return; }
     auto _requesting_url_str = requesting_url ? JStringToCefString(env, requesting_url) : nullptr;
     auto _top_level_url_str = top_level_url ? JStringToCefString(env, top_level_url) : nullptr;
     cef_value_t* _value_ptr = value ? reinterpret_cast<cef_value_t*>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "nativePtr", "J"))) : nullptr;
@@ -167,13 +167,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setWebsiteSetting0)(JNIEnv
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getContentSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
-    if (!content_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return 0; }
+    if (!content_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "contentType must not be null"); return 0; }
     auto _requesting_url_str = requesting_url ? JStringToCefString(env, requesting_url) : nullptr;
     auto _top_level_url_str = top_level_url ? JStringToCefString(env, top_level_url) : nullptr;
     auto _r = s->get_content_setting(s, _requesting_url_str, _top_level_url_str, static_cast<cef_content_setting_types_t>(env->GetLongField(content_type, env->GetFieldID(env->GetObjectClass(content_type), "value", "J"))));
     if (_requesting_url_str) cef_string_userfree_free(_requesting_url_str);
     if (_top_level_url_str) cef_string_userfree_free(_top_level_url_str);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefContentSettingValues");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContentSettingValues");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContentSettingValues;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -181,8 +181,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getContentSetting0)(JNI
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setContentSetting0)(JNIEnv* env, jobject obj, jlong self, jstring requesting_url, jstring top_level_url, jobject content_type, jobject value) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
-    if (!content_type) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "contentType must not be null"); return; }
-    if (!value) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "value must not be null"); return; }
+    if (!content_type) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "contentType must not be null"); return; }
+    if (!value) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "value must not be null"); return; }
     auto _requesting_url_str = requesting_url ? JStringToCefString(env, requesting_url) : nullptr;
     auto _top_level_url_str = top_level_url ? JStringToCefString(env, top_level_url) : nullptr;
     s->set_content_setting(s, _requesting_url_str, _top_level_url_str, static_cast<cef_content_setting_types_t>(env->GetLongField(content_type, env->GetFieldID(env->GetObjectClass(content_type), "value", "J"))), static_cast<cef_content_setting_values_t>(env->GetLongField(value, env->GetFieldID(env->GetObjectClass(value), "value", "J"))));
@@ -193,7 +193,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setContentSetting0)(JNIEnv
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), setChromeColorScheme0)(JNIEnv* env, jobject obj, jlong self, jobject variant, jint user_color) {
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return;
-    if (!variant) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "variant must not be null"); return; }
+    if (!variant) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "variant must not be null"); return; }
     s->set_chrome_color_scheme(s, static_cast<cef_color_variant_t>(env->GetLongField(variant, env->GetFieldID(env->GetObjectClass(variant), "value", "J"))), user_color);
 }
 
@@ -201,7 +201,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getChromeColorSchemeMod
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     auto _r = s->get_chrome_color_scheme_mode(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefColorVariant");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefColorVariant");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefColorVariant;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -216,7 +216,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getChromeColorSchemeVar
     auto* s = reinterpret_cast<cef_request_context_t*>(self);
     if (!s) return 0;
     auto _r = s->get_chrome_color_scheme_variant(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefColorVariant");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefColorVariant");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefColorVariant;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -227,7 +227,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), addSettingObserver0)(JN
     cef_setting_observer_t* _observer_ptr = observer ? Create_JniCefSettingObserver(env, observer) : nullptr;
     auto _r = s->add_setting_observer(s, _observer_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRegistration$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRegistration$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -242,16 +242,16 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefRequestContext), clearHttpCache0)(JNIEnv* e
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getGlobalContext0)(JNIEnv* env, jclass clz) {
     auto _r = cef_request_context_get_global_context();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), createContext0)(JNIEnv* env, jclass clz, jobject settings, jobject handler) {
-    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
+    if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_request_context_settings_t _settings_val = {};
     if (settings) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRequestContextSettings");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContextSettings");
         jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;"));
         if (_rd_cache_path) {
             const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr);
@@ -280,7 +280,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), createContext0)(JNIEnv*
     cef_request_context_handler_t* _handler_ptr = handler ? Create_JniCefRequestContextHandler(env, handler) : nullptr;
     auto _r = cef_request_context_create_context(&_settings_val, _handler_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -291,7 +291,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), cefCreateContextShared0
     cef_request_context_handler_t* _handler_ptr = handler ? Create_JniCefRequestContextHandler(env, handler) : nullptr;
     auto _r = cef_request_context_cef_create_context_shared(_other_ptr, _handler_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

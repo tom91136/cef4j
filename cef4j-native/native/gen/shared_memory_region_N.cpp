@@ -25,7 +25,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefSharedMemoryRegion), memory0)(JNIEnv* en
     auto* s = reinterpret_cast<cef_shared_memory_region_t*>(self);
     if (!s) return nullptr;
     auto _r = s->memory(s);
-    auto _npCls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+    auto _npCls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));
 }

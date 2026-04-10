@@ -112,7 +112,7 @@ class JniCppByValueCodeGen(
           cName,
           varName,
           List(
-            s"""auto ${varName}_cls = env->FindClass("$nestedFqn");""",
+            s"""auto ${varName}_cls = FindClassCached(env, "$nestedFqn");""",
             s"""auto ${varName}_ctor = env->GetMethodID(${varName}_cls, "<init>", "$nestedSig");""",
             s"""auto $varName = env->NewObject(${varName}_cls, ${varName}_ctor, $nestedArgs);"""
           )
@@ -127,7 +127,7 @@ class JniCppByValueCodeGen(
           cName,
           varName,
           List(
-            s"""auto ${varName}_cls = env->FindClass("$enumFqn");""",
+            s"""auto ${varName}_cls = FindClassCached(env, "$enumFqn");""",
             s"""auto ${varName}_of = env->GetStaticMethodID(${varName}_cls, "of", "(J)L$enumFqn;");""",
             s"""auto $varName = env->CallStaticObjectMethod(${varName}_cls, ${varName}_of, static_cast<jlong>($ptrName->$cName));"""
           )

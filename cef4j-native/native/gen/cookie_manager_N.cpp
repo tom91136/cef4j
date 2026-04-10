@@ -34,11 +34,11 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCookieManager), visitUrlCookies0)(JNIEn
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefCookieManager), setCookie0)(JNIEnv* env, jobject obj, jlong self, jstring url, jobject cookie, jobject callback) {
     auto* s = reinterpret_cast<cef_cookie_manager_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!cookie) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "cookie must not be null"); return JNI_FALSE; }
+    if (!cookie) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "cookie must not be null"); return JNI_FALSE; }
     auto _url_str = JStringToCefString(env, url);
     cef_cookie_t _cookie_val = {};
     if (cookie) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefCookie");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefCookie");
         jstring _rd_name = (jstring)env->GetObjectField(cookie, env->GetFieldID(_c, "name", "Ljava/lang/String;"));
         if (_rd_name) {
             const jchar* _rd_name_chars = env->GetStringChars(_rd_name, nullptr);
@@ -125,7 +125,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCookieManager), getGlobalManager0)(JNIEn
     cef_completion_callback_t* _callback_ptr = callback ? Create_JniCefCompletionCallback(env, callback) : nullptr;
     auto _r = cef_cookie_manager_get_global_manager(_callback_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefCookieManager$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCookieManager$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

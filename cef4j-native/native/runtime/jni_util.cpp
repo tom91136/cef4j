@@ -1,8 +1,15 @@
 #include "jni_util.h"
 #include "include/cef_api_hash.h"
 
+#include <cstring>
 
 static JavaVM* jvm = nullptr;
+
+static struct {
+    jobject appClassLoader;
+    jclass classLoaderClass;
+    jmethodID classLoaderLoadClass;
+} loaderCache;
 
 // Cached JNI class and method IDs, initialized once in JNI_OnLoad.
 // All jclass entries are global refs so they survive across native calls.
@@ -53,6 +60,62 @@ static jclass globalRef(JNIEnv* env, const char* name) {
     jclass global = static_cast<jclass>(env->NewGlobalRef(local));
     env->DeleteLocalRef(local);
     return global;
+}
+
+static bool isBootstrapClassName(const char* name) {
+    return strncmp(name, "java/", 5) == 0 || strncmp(name, "javax/", 6) == 0 || strncmp(name, "jdk/", 4) == 0
+        || strncmp(name, "sun/", 4) == 0 || strncmp(name, "com/sun/", 8) == 0;
+}
+
+static void initClassLoaderCache(JNIEnv* env) {
+    jclass threadClass = env->FindClass("java/lang/Thread");
+    jmethodID currentThread = env->GetStaticMethodID(threadClass, "currentThread", "()Ljava/lang/Thread;");
+    jmethodID getContextClassLoader =
+        env->GetMethodID(threadClass, "getContextClassLoader", "()Ljava/lang/ClassLoader;");
+    jobject thread = env->CallStaticObjectMethod(threadClass, currentThread);
+    jobject loader = thread ? env->CallObjectMethod(thread, getContextClassLoader) : nullptr;
+    if (CheckJNIException(env)) {
+        loader = nullptr;
+    }
+
+    loaderCache.classLoaderClass = globalRef(env, "java/lang/ClassLoader");
+    loaderCache.classLoaderLoadClass = env->GetMethodID(
+        loaderCache.classLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+
+    if (!loader) {
+        jmethodID getSystemClassLoader = env->GetStaticMethodID(
+            loaderCache.classLoaderClass, "getSystemClassLoader", "()Ljava/lang/ClassLoader;");
+        loader = env->CallStaticObjectMethod(loaderCache.classLoaderClass, getSystemClassLoader);
+        if (CheckJNIException(env)) {
+            loader = nullptr;
+        }
+    }
+
+    loaderCache.appClassLoader = loader ? env->NewGlobalRef(loader) : nullptr;
+
+    if (loader) env->DeleteLocalRef(loader);
+    if (thread) env->DeleteLocalRef(thread);
+    env->DeleteLocalRef(threadClass);
+}
+
+jclass FindClassCached(JNIEnv* env, const char* name) {
+    if (!name) return nullptr;
+    if (isBootstrapClassName(name) || !loaderCache.appClassLoader || !loaderCache.classLoaderLoadClass) {
+        return env->FindClass(name);
+    }
+
+    std::string binaryName(name);
+    for (char& ch : binaryName) {
+        if (ch == '/') ch = '.';
+    }
+    jstring jName = env->NewStringUTF(binaryName.c_str());
+    if (!jName) return nullptr;
+    auto cls = static_cast<jclass>(env->CallObjectMethod(loaderCache.appClassLoader, loaderCache.classLoaderLoadClass, jName));
+    env->DeleteLocalRef(jName);
+    if (CheckJNIException(env)) {
+        return nullptr;
+    }
+    return cls;
 }
 
 static void initClassCache(JNIEnv* env) {
@@ -110,10 +173,22 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
     }
 
     initClassCache(env);
+    initClassLoaderCache(env);
     return JNI_VERSION_1_8;
 }
 
 extern "C" JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* /*vm*/, void* /*reserved*/) {
+    if (jvm && loaderCache.appClassLoader) {
+        ScopedJNIEnv env(jvm);
+        env->DeleteGlobalRef(loaderCache.appClassLoader);
+        loaderCache.appClassLoader = nullptr;
+    }
+    if (jvm && loaderCache.classLoaderClass) {
+        ScopedJNIEnv env(jvm);
+        env->DeleteGlobalRef(loaderCache.classLoaderClass);
+        loaderCache.classLoaderClass = nullptr;
+    }
+    loaderCache.classLoaderLoadClass = nullptr;
     jvm = nullptr;
 }
 

@@ -55,7 +55,7 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefTaskManager), getTaskIdForBrowserId0)(JNIE
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefTaskManager), get0)(JNIEnv* env, jclass clz) {
     auto _r = cef_task_manager_get();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefTaskManager$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefTaskManager$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

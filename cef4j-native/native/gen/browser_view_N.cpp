@@ -21,7 +21,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getBrowser0)(JNIEnv*
     if (!s) return nullptr;
     auto _r = s->get_browser(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -31,7 +31,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getChromeToolbar0)(J
     if (!s) return nullptr;
     auto _r = s->get_chrome_toolbar(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -46,18 +46,18 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getRuntimeStyle0)(JN
     auto* s = reinterpret_cast<cef_browser_view_t*>(self);
     if (!s) return 0;
     auto _r = s->get_runtime_style(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefRuntimeStyle");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRuntimeStyle");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env, jclass clz, jobject client, jstring url, jobject settings, jobject extra_info, jobject request_context, jobject delegate) {
-    if (!settings) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
+    if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_client_t* _client_ptr = client ? Create_JniCefClient(env, client) : nullptr;
     auto _url_str = url ? JStringToCefString(env, url) : nullptr;
     cef_browser_settings_t _settings_val = {};
     if (settings) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings");
         _settings_val.windowless_frame_rate = static_cast<decltype(_settings_val.windowless_frame_rate)>(env->GetIntField(settings, env->GetFieldID(_c, "windowlessFrameRate", "I")));
         jstring _rd_standard_font_family = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "standardFontFamily", "Ljava/lang/String;"));
         if (_rd_standard_font_family) {
@@ -183,7 +183,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env
     auto _r = cef_browser_view_create(_client_ptr, _url_str, &_settings_val, _extra_info_ptr, _request_context_ptr, _delegate_ptr);
     if (_url_str) cef_string_userfree_free(_url_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -193,7 +193,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), getForBrowser0)(JNIE
     if (_browser_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_browser_ptr); _b->add_ref(_b); }
     auto _r = cef_browser_view_get_for_browser(_browser_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

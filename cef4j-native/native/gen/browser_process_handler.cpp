@@ -31,11 +31,11 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
         auto* h = reinterpret_cast<JniCefBrowserProcessHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(11) < 0) { return; }
-        auto j_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefPreferencesType");
+        auto j_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPreferencesType");
         auto j_type_from = env->GetStaticMethodID(j_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefPreferencesType;");
         auto j_type = env->CallStaticObjectMethod(j_type_cls, j_type_from, static_cast<jlong>(type));
         cef_preference_registrar_t* _p_registrar = registrar;
-        auto j_registrar_cls = env->FindClass("net/kurobako/cef4j/gen/CefPreferenceRegistrar$NativePeer");
+        auto j_registrar_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPreferenceRegistrar$NativePeer");
         auto j_registrar_ctor = env->GetMethodID(j_registrar_cls, "<init>", "(J)V");
         auto j_registrar = _p_registrar ? env->NewObject(j_registrar_cls, j_registrar_ctor, reinterpret_cast<jlong>(_p_registrar)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -64,7 +64,7 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_command_line_t* _p_command_line = command_line;
         if (_p_command_line) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_command_line); _b->add_ref(_b); }
-        auto j_command_line_cls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+        auto j_command_line_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
         auto j_command_line_ctor = env->GetMethodID(j_command_line_cls, "<init>", "(J)V");
         auto j_command_line = _p_command_line ? env->NewObject(j_command_line_cls, j_command_line_ctor, reinterpret_cast<jlong>(_p_command_line)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -81,7 +81,7 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
         if (env->PushLocalFrame(9) < 0) { return false; }
         cef_command_line_t* _p_command_line = command_line;
         if (_p_command_line) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_command_line); _b->add_ref(_b); }
-        auto j_command_line_cls = env->FindClass("net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
+        auto j_command_line_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCommandLine$NativePeer");
         auto j_command_line_ctor = env->GetMethodID(j_command_line_cls, "<init>", "(J)V");
         auto j_command_line = _p_command_line ? env->NewObject(j_command_line_cls, j_command_line_ctor, reinterpret_cast<jlong>(_p_command_line)) : nullptr;
         auto j_current_directory = CefStringToJString(env, current_directory);
@@ -117,7 +117,7 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         cef_client_t* nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");

@@ -23,7 +23,7 @@ struct JniCefDomVisitor : public cef_domvisitor_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_domdocument_t* _p_document = document;
         if (_p_document) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_document); _b->add_ref(_b); }
-        auto j_document_cls = env->FindClass("net/kurobako/cef4j/gen/CefDomDocument$NativePeer");
+        auto j_document_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDomDocument$NativePeer");
         auto j_document_ctor = env->GetMethodID(j_document_cls, "<init>", "(J)V");
         auto j_document = _p_document ? env->NewObject(j_document_cls, j_document_ctor, reinterpret_cast<jlong>(_p_document)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

@@ -24,10 +24,10 @@ struct JniCefV8Handler : public cef_v8_handler_t {
         auto j_name = CefStringToJString(env, name);
         cef_v8_value_t* _p_object = object;
         if (_p_object) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_object); _b->add_ref(_b); }
-        auto j_object_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_object_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_object_ctor = env->GetMethodID(j_object_cls, "<init>", "(J)V");
         auto j_object = _p_object ? env->NewObject(j_object_cls, j_object_ctor, reinterpret_cast<jlong>(_p_object)) : nullptr;
-        auto j_arguments_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_arguments_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_arguments_ctor = env->GetMethodID(j_arguments_cls, "<init>", "(J)V");
         jsize j_arguments_len = static_cast<jsize>(argumentsCount);
         auto j_arguments = env->NewObjectArray(j_arguments_len, j_arguments_cls, nullptr);
@@ -37,9 +37,9 @@ struct JniCefV8Handler : public cef_v8_handler_t {
             auto _jelem = _elem ? env->NewObject(j_arguments_cls, j_arguments_ctor, reinterpret_cast<jlong>(_elem)) : nullptr;
             env->SetObjectArrayElement(j_arguments, _i, _jelem);
         }
-        auto j_retval_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_retval_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_retval_ar_ctor = env->GetMethodID(j_retval_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_retval_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefV8Value$NativePeer");
+        auto j_retval_peer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");
         auto j_retval_peer_ctor = env->GetMethodID(j_retval_peer_cls, "<init>", "(J)V");
         jobject j_retval_init = nullptr;
         if (retval && *retval) {

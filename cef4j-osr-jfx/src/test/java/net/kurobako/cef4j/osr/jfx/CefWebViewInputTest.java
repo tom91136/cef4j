@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -69,6 +70,7 @@ class CefWebViewInputTest {
         assertThat(waitUntil(() -> workerState(view) == Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
 
+        onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_ENTERED, 80, 80));
         onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_MOVED, 80, 80));
         assertThat(waitUntil(() -> "inside".equals(title(view)), 3_000)).isTrue();
 
@@ -93,12 +95,14 @@ class CefWebViewInputTest {
     }
 
     private static void fireMouse(CefWebView view, javafx.event.EventType<MouseEvent> eventType, double x, double y) {
+        Point2D screenPoint = view.localToScreen(x, y);
+        if (screenPoint == null) throw new IllegalStateException("View is not on screen");
         view.fireEvent(new MouseEvent(
                 eventType,
                 x,
                 y,
-                x,
-                y,
+                screenPoint.getX(),
+                screenPoint.getY(),
                 MouseButton.NONE,
                 0,
                 false,

@@ -28,7 +28,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefTaskRunner), belongsToCurrentThread0)(J
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefTaskRunner), belongsToThread0)(JNIEnv* env, jobject obj, jlong self, jobject threadId) {
     auto* s = reinterpret_cast<cef_task_runner_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!threadId) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE; }
+    if (!threadId) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "threadId must not be null"); return JNI_FALSE; }
     auto _r = s->belongs_to_thread(s, static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))));
     return static_cast<jboolean>(_r);
 }
@@ -52,16 +52,16 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefTaskRunner), postDelayedTask0)(JNIEnv* 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefTaskRunner), getForCurrentThread0)(JNIEnv* env, jclass clz) {
     auto _r = cef_task_runner_get_for_current_thread();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefTaskRunner$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefTaskRunner$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefTaskRunner), getForThread0)(JNIEnv* env, jclass clz, jobject threadId) {
-    if (!threadId) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "threadId must not be null"); return nullptr; }
+    if (!threadId) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "threadId must not be null"); return nullptr; }
     auto _r = cef_task_runner_get_for_thread(static_cast<cef_thread_id_t>(env->GetLongField(threadId, env->GetFieldID(env->GetObjectClass(threadId), "value", "J"))));
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefTaskRunner$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefTaskRunner$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

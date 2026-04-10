@@ -543,7 +543,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
 
     assert(cpp.contains("cef_size_t nativeResult = ([&]()"), s"Missing by-value return conversion in:\n$cpp")
     assert(
-      cpp.contains("""env->FindClass("net/kurobako/cef4j/gen/CefSize")"""),
+      cpp.contains("""FindClassCached(env, "net/kurobako/cef4j/gen/CefSize")"""),
       s"Missing struct class lookup in:\n$cpp"
     )
     assert(

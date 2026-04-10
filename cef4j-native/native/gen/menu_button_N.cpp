@@ -14,13 +14,13 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), release0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), showMenu0)(JNIEnv* env, jobject obj, jlong self, jobject menu_model, jobject screen_point, jobject anchor_position) {
     auto* s = reinterpret_cast<cef_menu_button_t*>(self);
     if (!s) return;
-    if (!screen_point) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "screenPoint must not be null"); return; }
-    if (!anchor_position) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "anchorPosition must not be null"); return; }
+    if (!screen_point) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "screenPoint must not be null"); return; }
+    if (!anchor_position) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "anchorPosition must not be null"); return; }
     cef_menu_model_t* _menu_model_ptr = menu_model ? reinterpret_cast<cef_menu_model_t*>(env->GetLongField(menu_model, env->GetFieldID(env->GetObjectClass(menu_model), "nativePtr", "J"))) : nullptr;
     if (_menu_model_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_menu_model_ptr); _b->add_ref(_b); }
     cef_point_t _screen_point_val = {};
     if (screen_point) {
-        auto _c = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
+        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
         _screen_point_val.x = static_cast<decltype(_screen_point_val.x)>(env->GetIntField(screen_point, env->GetFieldID(_c, "x", "I")));
         _screen_point_val.y = static_cast<decltype(_screen_point_val.y)>(env->GetIntField(screen_point, env->GetFieldID(_c, "y", "I")));
     }
@@ -39,7 +39,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefMenuButton), create0)(JNIEnv* env,
     auto _r = cef_menu_button_create(_delegate_ptr, _text_str);
     if (_text_str) cef_string_userfree_free(_text_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefMenuButton$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefMenuButton$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

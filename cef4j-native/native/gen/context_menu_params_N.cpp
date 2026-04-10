@@ -24,7 +24,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefContextMenuParams), getTypeFlags0)(JNIEn
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return 0;
     auto _r = s->get_type_flags(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefContextMenuTypeFlags");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContextMenuTypeFlags");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContextMenuTypeFlags;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -110,7 +110,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefContextMenuParams), getMediaType0)(JNIEn
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return 0;
     auto _r = s->get_media_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefContextMenuMediaType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContextMenuMediaType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContextMenuMediaType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -119,7 +119,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefContextMenuParams), getMediaStateFlags0)
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return 0;
     auto _r = s->get_media_state_flags(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefContextMenuMediaStateFlags");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContextMenuMediaStateFlags");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContextMenuMediaStateFlags;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -147,7 +147,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefContextMenuParams), getMisspelledWord0)(
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefContextMenuParams), getDictionarySuggestions0)(JNIEnv* env, jobject obj, jlong self, jobject suggestions) {
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!suggestions) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "suggestions must not be null"); return JNI_FALSE; }
+    if (!suggestions) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "suggestions must not be null"); return JNI_FALSE; }
     auto _suggestions_csl = JavaListToCefStringList(env, suggestions);
     auto _r = s->get_dictionary_suggestions(s, _suggestions_csl);
     CefStringListWriteBack(env, _suggestions_csl, suggestions);
@@ -172,7 +172,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefContextMenuParams), getEditStateFlags0)(
     auto* s = reinterpret_cast<cef_context_menu_params_t*>(self);
     if (!s) return 0;
     auto _r = s->get_edit_state_flags(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefContextMenuEditStateFlags");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefContextMenuEditStateFlags");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefContextMenuEditStateFlags;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }

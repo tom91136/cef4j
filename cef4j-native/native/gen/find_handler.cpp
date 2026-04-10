@@ -24,10 +24,10 @@ struct JniCefFindHandler : public cef_find_handler_t {
         if (env->PushLocalFrame(11) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
-        auto j_selectionRect_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+        auto j_selectionRect_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto j_selectionRect_ctor = env->GetMethodID(j_selectionRect_cls, "<init>", "(IIII)V");
         auto j_selectionRect = selectionRect ? env->NewObject(j_selectionRect_cls, j_selectionRect_ctor, static_cast<jint>(selectionRect->x), static_cast<jint>(selectionRect->y), static_cast<jint>(selectionRect->width), static_cast<jint>(selectionRect->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

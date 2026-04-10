@@ -21,7 +21,7 @@ struct JniCefV8ArrayBufferReleaseCallback : public cef_v8_array_buffer_release_c
         auto* h = reinterpret_cast<JniCefV8ArrayBufferReleaseCallback*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(8) < 0) { return; }
-        auto j_buffer_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_buffer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_buffer_ctor = env->GetMethodID(j_buffer_cls, "<init>", "(J)V");
         auto j_buffer = env->NewObject(j_buffer_cls, j_buffer_ctor, reinterpret_cast<jlong>(buffer));
         auto cls = env->GetObjectClass(h->javaHandler);

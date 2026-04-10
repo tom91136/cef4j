@@ -67,6 +67,11 @@ private:
     bool didAttach_;
 };
 
+// Resolve a Java class from native-attached threads using the application
+// class loader captured during JNI_OnLoad. Raw FindClass only works reliably
+// for bootstrap classes on arbitrary native threads.
+jclass FindClassCached(JNIEnv* env, const char* name);
+
 // String conversion
 
 // Convert a CEF string (UTF-16) to a Java String.

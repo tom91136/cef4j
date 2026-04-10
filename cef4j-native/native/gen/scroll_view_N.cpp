@@ -24,7 +24,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), getContentView0)(JNIE
     if (!s) return nullptr;
     auto _r = s->get_content_view(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefView$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -33,7 +33,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), getVisibleContentRect
     auto* s = reinterpret_cast<cef_scroll_view_t*>(self);
     if (!s) return nullptr;
     cef_rect_t result = s->get_visible_content_rect(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
     return _dsResult;
@@ -69,7 +69,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefScrollView), create0)(JNIEnv* env,
     cef_view_delegate_t* _delegate_ptr = delegate ? Create_JniCefViewDelegate(env, delegate) : nullptr;
     auto _r = cef_scroll_view_create(_delegate_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefScrollView$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefScrollView$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

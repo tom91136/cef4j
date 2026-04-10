@@ -24,7 +24,7 @@ struct JniCefRequestContextHandler : public cef_request_context_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_request_context_t* _p_request_context = request_context;
         if (_p_request_context) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_request_context); _b->add_ref(_b); }
-        auto j_request_context_cls = env->FindClass("net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
+        auto j_request_context_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContext$NativePeer");
         auto j_request_context_ctor = env->GetMethodID(j_request_context_cls, "<init>", "(J)V");
         auto j_request_context = _p_request_context ? env->NewObject(j_request_context_cls, j_request_context_ctor, reinterpret_cast<jlong>(_p_request_context)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

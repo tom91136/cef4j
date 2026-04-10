@@ -25,7 +25,7 @@ struct JniCefAccessibilityHandler : public cef_accessibility_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_value_t* _p_value = value;
         if (_p_value) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_value); _b->add_ref(_b); }
-        auto j_value_cls = env->FindClass("net/kurobako/cef4j/gen/CefValue$NativePeer");
+        auto j_value_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefValue$NativePeer");
         auto j_value_ctor = env->GetMethodID(j_value_cls, "<init>", "(J)V");
         auto j_value = _p_value ? env->NewObject(j_value_cls, j_value_ctor, reinterpret_cast<jlong>(_p_value)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -42,7 +42,7 @@ struct JniCefAccessibilityHandler : public cef_accessibility_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_value_t* _p_value = value;
         if (_p_value) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_value); _b->add_ref(_b); }
-        auto j_value_cls = env->FindClass("net/kurobako/cef4j/gen/CefValue$NativePeer");
+        auto j_value_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefValue$NativePeer");
         auto j_value_ctor = env->GetMethodID(j_value_cls, "<init>", "(J)V");
         auto j_value = _p_value ? env->NewObject(j_value_cls, j_value_ctor, reinterpret_cast<jlong>(_p_value)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

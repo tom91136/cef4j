@@ -28,7 +28,7 @@ struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_urlrequest_t* _p_request = request;
         if (_p_request) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_request); _b->add_ref(_b); }
-        auto j_request_cls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
+        auto j_request_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
         auto j_request_ctor = env->GetMethodID(j_request_cls, "<init>", "(J)V");
         auto j_request = _p_request ? env->NewObject(j_request_cls, j_request_ctor, reinterpret_cast<jlong>(_p_request)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -45,7 +45,7 @@ struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_urlrequest_t* _p_request = request;
         if (_p_request) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_request); _b->add_ref(_b); }
-        auto j_request_cls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
+        auto j_request_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
         auto j_request_ctor = env->GetMethodID(j_request_cls, "<init>", "(J)V");
         auto j_request = _p_request ? env->NewObject(j_request_cls, j_request_ctor, reinterpret_cast<jlong>(_p_request)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -62,7 +62,7 @@ struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_urlrequest_t* _p_request = request;
         if (_p_request) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_request); _b->add_ref(_b); }
-        auto j_request_cls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
+        auto j_request_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
         auto j_request_ctor = env->GetMethodID(j_request_cls, "<init>", "(J)V");
         auto j_request = _p_request ? env->NewObject(j_request_cls, j_request_ctor, reinterpret_cast<jlong>(_p_request)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -79,7 +79,7 @@ struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
         if (env->PushLocalFrame(9) < 0) { return; }
         cef_urlrequest_t* _p_request = request;
         if (_p_request) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_request); _b->add_ref(_b); }
-        auto j_request_cls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
+        auto j_request_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
         auto j_request_ctor = env->GetMethodID(j_request_cls, "<init>", "(J)V");
         auto j_request = _p_request ? env->NewObject(j_request_cls, j_request_ctor, reinterpret_cast<jlong>(_p_request)) : nullptr;
         jobject j_data = (data_length > 0 && data) ? env->NewDirectByteBuffer(const_cast<void*>(static_cast<const void*>(data)), static_cast<jlong>(data_length)) : nullptr;
@@ -100,7 +100,7 @@ struct JniCefUrlRequestClient : public cef_urlrequest_client_t {
         auto j_scheme = CefStringToJString(env, scheme);
         cef_auth_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefAuthCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefAuthCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

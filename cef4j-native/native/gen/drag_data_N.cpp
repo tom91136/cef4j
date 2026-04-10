@@ -15,7 +15,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDragData), cefClone0)(JNIEnv* env, jobje
     if (!s) return nullptr;
     auto _r = s->clone(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDragData$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDragData$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -129,7 +129,7 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDragData), getFileContents0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFileNames0)(JNIEnv* env, jobject obj, jlong self, jobject names) {
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!names) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "names must not be null"); return JNI_FALSE; }
+    if (!names) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "names must not be null"); return JNI_FALSE; }
     auto _names_csl = JavaListToCefStringList(env, names);
     auto _r = s->get_file_names(s, _names_csl);
     CefStringListWriteBack(env, _names_csl, names);
@@ -139,7 +139,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFileNames0)(JNIEnv* env, 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), getFilePaths0)(JNIEnv* env, jobject obj, jlong self, jobject paths) {
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!paths) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "paths must not be null"); return JNI_FALSE; }
+    if (!paths) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "paths must not be null"); return JNI_FALSE; }
     auto _paths_csl = JavaListToCefStringList(env, paths);
     auto _r = s->get_file_paths(s, _paths_csl);
     CefStringListWriteBack(env, _paths_csl, paths);
@@ -221,7 +221,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDragData), getImage0)(JNIEnv* env, jobje
     if (!s) return nullptr;
     auto _r = s->get_image(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefImage$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefImage$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -230,7 +230,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDragData), getImageHotspot0)(JNIEnv* env
     auto* s = reinterpret_cast<cef_drag_data_t*>(self);
     if (!s) return nullptr;
     cef_point_t result = s->get_image_hotspot(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
     auto ctor = env->GetMethodID(cls, "<init>", "(II)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y));
     return _dsResult;
@@ -246,7 +246,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDragData), hasImage0)(JNIEnv* env, jobj
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDragData), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_drag_data_create();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDragData$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDragData$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

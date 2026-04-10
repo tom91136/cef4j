@@ -24,7 +24,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResource0)(JNIEn
     if (!s) return nullptr;
     auto _r = s->get_data_resource(s, resource_id);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -32,10 +32,10 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResource0)(JNIEn
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResourceForScale0)(JNIEnv* env, jobject obj, jlong self, jint resource_id, jobject scale_factor) {
     auto* s = reinterpret_cast<cef_resource_bundle_t*>(self);
     if (!s) return nullptr;
-    if (!scale_factor) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "scaleFactor must not be null"); return nullptr; }
+    if (!scale_factor) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "scaleFactor must not be null"); return nullptr; }
     auto _r = s->get_data_resource_for_scale(s, resource_id, static_cast<cef_scale_factor_t>(env->GetLongField(scale_factor, env->GetFieldID(env->GetObjectClass(scale_factor), "value", "J"))));
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -43,7 +43,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getDataResourceForScale
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefResourceBundle), getGlobal0)(JNIEnv* env, jclass clz) {
     auto _r = cef_resource_bundle_get_global();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefResourceBundle$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefResourceBundle$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

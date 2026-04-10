@@ -30,10 +30,10 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(11) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
-        auto j_event_flags_cls = env->FindClass("net/kurobako/cef4j/gen/CefEventFlags");
+        auto j_event_flags_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefEventFlags");
         auto j_event_flags_from = env->GetStaticMethodID(j_event_flags_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefEventFlags;");
         auto j_event_flags = env->CallStaticObjectMethod(j_event_flags_cls, j_event_flags_from, static_cast<jlong>(event_flags));
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -50,10 +50,10 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(11) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
-        auto j_screen_point_cls = env->FindClass("net/kurobako/cef4j/gen/CefPoint");
+        auto j_screen_point_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
         auto j_screen_point_ctor = env->GetMethodID(j_screen_point_cls, "<init>", "(II)V");
         auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>(screen_point->x), static_cast<jint>(screen_point->y)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -70,7 +70,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -87,7 +87,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -104,7 +104,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -121,7 +121,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -138,7 +138,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         if (env->PushLocalFrame(9) < 0) { return false; }
         cef_menu_model_t* _p_menu_model = menu_model;
         if (_p_menu_model) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_menu_model); _b->add_ref(_b); }
-        auto j_menu_model_cls = env->FindClass("net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
+        auto j_menu_model_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMenuModel$NativePeer");
         auto j_menu_model_ctor = env->GetMethodID(j_menu_model_cls, "<init>", "(J)V");
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto j_label = CefStringToJString(env, label);

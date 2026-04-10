@@ -52,7 +52,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), copy0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->copy(s, static_cast<bool>(exclude_empty_children));
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -82,7 +82,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), hasKey0)(JNIEnv* env,
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), getKeys0)(JNIEnv* env, jobject obj, jlong self, jobject keys) {
     auto* s = reinterpret_cast<cef_dictionary_value_t*>(self);
     if (!s) return JNI_FALSE;
-    if (!keys) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE; }
+    if (!keys) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "keys must not be null"); return JNI_FALSE; }
     auto _keys_csl = JavaListToCefStringList(env, keys);
     auto _r = s->get_keys(s, _keys_csl);
     CefStringListWriteBack(env, _keys_csl, keys);
@@ -104,7 +104,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getType0)(JNIEnv* env,
     auto _key_str = JStringToCefString(env, key);
     auto _r = s->get_type(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefValueType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefValueType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefValueType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -116,7 +116,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getValue0)(JNIEnv* env
     auto _r = s->get_value(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -163,7 +163,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getBinary0)(JNIEnv* en
     auto _r = s->get_binary(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBinaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -175,7 +175,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getDictionary0)(JNIEnv
     auto _r = s->get_dictionary(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -187,7 +187,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), getList0)(JNIEnv* env,
     auto _r = s->get_list(s, _key_str);
     if (_key_str) cef_string_userfree_free(_key_str);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefListValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefListValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -286,7 +286,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefDictionaryValue), setList0)(JNIEnv* env
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDictionaryValue), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_dictionary_value_create();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

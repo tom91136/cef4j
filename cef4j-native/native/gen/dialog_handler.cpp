@@ -24,10 +24,10 @@ struct JniCefDialogHandler : public cef_dialog_handler_t {
         if (env->PushLocalFrame(19) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
-        auto j_mode_cls = env->FindClass("net/kurobako/cef4j/gen/CefFileDialogMode");
+        auto j_mode_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefFileDialogMode");
         auto j_mode_from = env->GetStaticMethodID(j_mode_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefFileDialogMode;");
         auto j_mode = env->CallStaticObjectMethod(j_mode_cls, j_mode_from, static_cast<jlong>(mode));
         auto j_title = CefStringToJString(env, title);
@@ -37,7 +37,7 @@ struct JniCefDialogHandler : public cef_dialog_handler_t {
         auto j_accept_descriptions = CefStringListToJavaList(env, accept_descriptions);
         cef_file_dialog_callback_t* _p_callback = callback;
         if (_p_callback) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_callback); _b->add_ref(_b); }
-        auto j_callback_cls = env->FindClass("net/kurobako/cef4j/gen/CefFileDialogCallback$NativePeer");
+        auto j_callback_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefFileDialogCallback$NativePeer");
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

@@ -43,7 +43,7 @@ CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefWaitableEvent), timedWait0)(JNIEnv* env
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefWaitableEvent), create0)(JNIEnv* env, jclass clz, jint automatic_reset, jint initially_signaled) {
     auto _r = cef_waitable_event_create(automatic_reset, initially_signaled);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefWaitableEvent$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWaitableEvent$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

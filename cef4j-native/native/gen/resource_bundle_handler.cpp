@@ -37,7 +37,7 @@ struct JniCefResourceBundleHandler : public cef_resource_bundle_handler_t {
         auto* h = reinterpret_cast<JniCefResourceBundleHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(9) < 0) { return false; }
-        auto j_data_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_data_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_data_ctor = env->GetMethodID(j_data_cls, "<init>", "(J)V");
         auto j_data = env->NewObject(j_data_cls, j_data_ctor, reinterpret_cast<jlong>(data));
         jlongArray j_data_size = env->NewLongArray(1);
@@ -56,10 +56,10 @@ struct JniCefResourceBundleHandler : public cef_resource_bundle_handler_t {
         auto* h = reinterpret_cast<JniCefResourceBundleHandler*>(self);
         ScopedJNIEnv env(h->jvm);
         if (env->PushLocalFrame(12) < 0) { return false; }
-        auto j_scale_factor_cls = env->FindClass("net/kurobako/cef4j/gen/CefScaleFactor");
+        auto j_scale_factor_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefScaleFactor");
         auto j_scale_factor_from = env->GetStaticMethodID(j_scale_factor_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefScaleFactor;");
         auto j_scale_factor = env->CallStaticObjectMethod(j_scale_factor_cls, j_scale_factor_from, static_cast<jlong>(scale_factor));
-        auto j_data_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_data_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_data_ctor = env->GetMethodID(j_data_cls, "<init>", "(J)V");
         auto j_data = env->NewObject(j_data_cls, j_data_ctor, reinterpret_cast<jlong>(data));
         jlongArray j_data_size = env->NewLongArray(1);

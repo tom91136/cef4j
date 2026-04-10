@@ -284,7 +284,7 @@ $headerIncludes
           val pre      = List(
             s"    size_t $sizeVar = static_cast<size_t>($countVar);",
             s"    $cefName* $arrVar = $sizeVar > 0 ? new $cefName[$sizeVar]() : nullptr;",
-            s"""    { auto _bvac = env->FindClass("${jniName(cefName)}");""",
+            s"""    { auto _bvac = FindClassCached(env, "${jniName(cefName)}");""",
             s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
             s"        auto _elem = env->GetObjectArrayElement(${p.name}, _i);",
             s"        if (_elem) {"
@@ -308,7 +308,7 @@ $headerIncludes
             else List(s"        ${addRefExpr(tmp)}")
           val post = List(
             s"    if (${p.name} && $tmp) {",
-            s"""        auto _peerCls = env->FindClass("${jniName(cefName)}$$NativePeer");""",
+            s"""        auto _peerCls = FindClassCached(env, "${jniName(cefName)}$$NativePeer");""",
             s"""        auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");"""
           ) ++ addRefLine ++ List(
             s"        auto _newPeer = env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>($tmp));",
@@ -346,7 +346,7 @@ $headerIncludes
             s"    $cefName** $arrVar = $sizeVar > 0 ? new $cefName*[$sizeVar]() : nullptr;"
           )
           val post = List(
-            s"""    auto _${p.name}_cls = env->FindClass("$javaFqn$$NativePeer");""",
+            s"""    auto _${p.name}_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
             s"""    auto _${p.name}_ctor = env->GetMethodID(_${p.name}_cls, "<init>", "(J)V");""",
             s"    for (size_t _i = 0; _i < $sizeVar; _i++) {",
             s"        auto _elem = $arrVar[_i] ? env->NewObject(_${p.name}_cls, _${p.name}_ctor, reinterpret_cast<jlong>($arrVar[_i])) : nullptr;",
@@ -426,7 +426,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       val javaFqn = jniName(cefName)
       s"""$npeBlock$preBlock    auto _r = $fnCall;$postBlock
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("$javaFqn$$NativePeer");
+    auto _rCls = FindClassCached(env, "$javaFqn$$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));"""
     case CType.Ptr(_) =>
@@ -434,7 +434,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
     return reinterpret_cast<jlong>(_r);"""
     case CType.OpaquePtr =>
       s"""$npeBlock$preBlock    auto _r = $fnCall;$postBlock
-    auto _npCls = env->FindClass("${Naming.nativePointerInternalName}");
+    auto _npCls = FindClassCached(env, "${Naming.nativePointerInternalName}");
     auto _npCtor = env->GetMethodID(_npCls, "<init>", "(J)V");
     return env->NewObject(_npCls, _npCtor, reinterpret_cast<jlong>(_r));"""
     case CType.DataStruct(cefName) =>
@@ -446,14 +446,14 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       else ""
       val newObjExpr = bv.fmtNewObject("cls", "ctor", ctorArgsList)
       s"""$npeBlock$preBlock    $cefName result = $fnCall;$postBlock$preOpsBlock
-    auto cls = env->FindClass("$javaFqn");
+    auto cls = FindClassCached(env, "$javaFqn");
     auto ctor = env->GetMethodID(cls, "<init>", "$ctorSig");
     auto _dsResult = $newObjExpr;$sizeSetLine
     return _dsResult;"""
     case CType.Enum(name) =>
       val javaFqn = jniName(name)
       s"""$npeBlock$preBlock    auto _r = $fnCall;$postBlock
-    auto _eCls = env->FindClass("$javaFqn");
+    auto _eCls = FindClassCached(env, "$javaFqn");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)L$javaFqn;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));"""
     case _ =>
@@ -483,7 +483,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
         val alloc   = s"    $cefName** _arr = _count > 0 ? new $cefName*[_count]() : nullptr;"
         val call    = s"    s->${fn.name}(s, &_count, _arr);"
         val convert =
-          s"""    auto _elemCls = env->FindClass("$javaFqn$$NativePeer");
+          s"""    auto _elemCls = FindClassCached(env, "$javaFqn$$NativePeer");
     auto _elemCtor = env->GetMethodID(_elemCls, "<init>", "(J)V");
     auto _result = env->NewObjectArray(static_cast<jsize>(_count), _elemCls, nullptr);
     for (size_t _i = 0; _i < _count; _i++) {
@@ -509,7 +509,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
         val ctorSig   = s"(${fields.map(f => bv.bvJniSig(f.typ)).mkString})V"
         val fieldExpr = bv.byValueArrayFieldExpr(bvCefName, "_arr", "_i")
         val convert   =
-          s"""    auto _elemCls = env->FindClass("$javaFqn");
+          s"""    auto _elemCls = FindClassCached(env, "$javaFqn");
     auto _elemCtor = env->GetMethodID(_elemCls, "<init>", "$ctorSig");
     auto _result = env->NewObjectArray(static_cast<jsize>(_count), _elemCls, nullptr);
     for (size_t _i = 0; _i < _count; _i++) {
@@ -617,7 +617,7 @@ $convertAndReturn"""
     params.collect {
       case p if !optionalParams.contains(p.name) && JavaCodeGen.isStrictNullCheck(p.typ) =>
         val javaParamName = Naming.toCamelCase(p.name)
-        s"""    if (!${p.name}) { env->ThrowNew(env->FindClass("java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
+        s"""    if (!${p.name}) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "$javaParamName must not be null"); return${defaultReturn(
             ret
           )}; }"""
     }
@@ -667,8 +667,8 @@ $cleanBody
         val alloc   = s"    $cefName** _arr = _count > 0 ? new $cefName*[_count]() : nullptr;"
         val call    = s"    ${ff.cName}(&_count, _arr);"
         val convert =
-          s"""    auto _result = env->NewObjectArray(static_cast<jsize>(_count), env->FindClass("${javaFqn}$$NativePeer"), nullptr);
-    auto _peerCls = env->FindClass("${javaFqn}$$NativePeer");
+          s"""    auto _result = env->NewObjectArray(static_cast<jsize>(_count), FindClassCached(env, "${javaFqn}$$NativePeer"), nullptr);
+    auto _peerCls = FindClassCached(env, "${javaFqn}$$NativePeer");
     auto _peerCtor = env->GetMethodID(_peerCls, "<init>", "(J)V");
     for (size_t _i = 0; _i < _count; _i++) {
         auto _elem = _arr[_i] ? env->NewObject(_peerCls, _peerCtor, reinterpret_cast<jlong>(_arr[_i])) : nullptr;
@@ -746,7 +746,7 @@ $convertAndReturn"""
         val pre = List(
           s"    $cefName $tmp = {};",
           s"""    if (${p.name}) {""",
-          s"""        auto _c = env->FindClass("${jniName(cefName)}");"""
+          s"""        auto _c = FindClassCached(env, "${jniName(cefName)}");"""
         ) ++
           bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
         (pre, s"&$tmp", Nil)
@@ -755,7 +755,7 @@ $convertAndReturn"""
         val pre = List(
           s"    $cefName $tmp = {};",
           s"""    if (${p.name}) {""",
-          s"""        auto _c = env->FindClass("${jniMutableName(cefName)}");"""
+          s"""        auto _c = FindClassCached(env, "${jniMutableName(cefName)}");"""
         ) ++
           bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
         (pre, s"&$tmp", Nil)
@@ -787,7 +787,7 @@ $convertAndReturn"""
         val castType = if (isConst) "const void*" else "void*"
         val pre      = List(
           s"    $castType $addrVar = ${p.name} ? env->GetDirectBufferAddress(${p.name}) : nullptr;",
-          s"""    if (${p.name} && !$addrVar) { env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "${Naming.toCamelCase(
+          s"""    if (${p.name} && !$addrVar) { env->ThrowNew(FindClassCached(env, "java/lang/IllegalArgumentException"), "${Naming.toCamelCase(
               p.name
             )} must be a direct ByteBuffer; use ByteBuffer.allocateDirect(...)"); return${defaultReturn(retType)}; }"""
         )
@@ -819,7 +819,7 @@ $convertAndReturn"""
         val pre = List(
           s"    $cefName $tmp = {};",
           s"""    if (${p.name}) {""",
-          s"""        auto _c = env->FindClass("${jniName(cefName)}");"""
+          s"""        auto _c = FindClassCached(env, "${jniName(cefName)}");"""
         ) ++
           bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
         (pre, tmp, Nil)

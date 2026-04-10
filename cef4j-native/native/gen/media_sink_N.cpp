@@ -33,7 +33,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefMediaSink), getIconType0)(JNIEnv* env, j
     auto* s = reinterpret_cast<cef_media_sink_t*>(self);
     if (!s) return 0;
     auto _r = s->get_icon_type(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefMediaSinkIconType");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefMediaSinkIconType");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefMediaSinkIconType;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }

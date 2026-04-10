@@ -46,7 +46,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -63,7 +63,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -80,7 +80,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -97,7 +97,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -114,10 +114,10 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(11) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
-        auto j_new_bounds_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+        auto j_new_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto j_new_bounds_ctor = env->GetMethodID(j_new_bounds_cls, "<init>", "(IIII)V");
         auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>(new_bounds->x), static_cast<jint>(new_bounds->y), static_cast<jint>(new_bounds->width), static_cast<jint>(new_bounds->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -134,7 +134,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -151,7 +151,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(11) < 0) { return nullptr; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         jintArray j_is_menu = env->NewIntArray(1);
@@ -176,7 +176,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -194,7 +194,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return cef_rect_t{}; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -205,7 +205,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         cef_rect_t nativeResult = ([&]() {
         cef_rect_t _result = {};
         if (jResult) {
-            auto _c = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+            auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
             _result.x = static_cast<decltype(_result.x)>(env->GetIntField(jResult, env->GetFieldID(_c, "x", "I")));
             _result.y = static_cast<decltype(_result.y)>(env->GetIntField(jResult, env->GetFieldID(_c, "y", "I")));
             _result.width = static_cast<decltype(_result.width)>(env->GetIntField(jResult, env->GetFieldID(_c, "width", "I")));
@@ -223,7 +223,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(9) < 0) { return cef_show_state_t::CEF_SHOW_STATE_NORMAL; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -242,7 +242,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -260,7 +260,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -278,7 +278,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(9) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         jfloatArray j_titlebar_height = env->NewFloatArray(1);
@@ -299,7 +299,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(9) < 0) { return cef_state_t::STATE_DEFAULT; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -318,7 +318,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -336,7 +336,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -354,7 +354,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -372,7 +372,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -390,7 +390,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -408,13 +408,13 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(14) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
-        auto _bv_event_type_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEventType");
+        auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
         auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
-        auto j_event_cls = env->FindClass("net/kurobako/cef4j/gen/CefKeyEvent");
+        auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,
@@ -443,7 +443,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -474,10 +474,10 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         if (env->PushLocalFrame(11) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
-        auto j_window_cls = env->FindClass("net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
+        auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
-        auto j_properties_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_properties_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_properties_ctor = env->GetMethodID(j_properties_cls, "<init>", "(J)V");
         auto j_properties = env->NewObject(j_properties_cls, j_properties_ctor, reinterpret_cast<jlong>(properties));
         auto cls = env->GetObjectClass(h->javaHandler);

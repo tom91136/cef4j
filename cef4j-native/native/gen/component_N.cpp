@@ -42,7 +42,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefComponent), getState0)(JNIEnv* env, jobj
     auto* s = reinterpret_cast<cef_component_t*>(self);
     if (!s) return 0;
     auto _r = s->get_state(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefComponentState");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefComponentState");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefComponentState;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }

@@ -114,7 +114,7 @@ class JniCppHandlerTrampolineGen(
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
         $retC nativeResult = nullptr;
         if (jResult) {
-            auto _optCls = env->FindClass("java/util/Optional");
+            auto _optCls = FindClassCached(env, "java/util/Optional");
             auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
             if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
@@ -176,7 +176,7 @@ $callAndReturn$popAndReturn
           if (isScoped) Nil
           else List(s"""if (_p_${p.name}) ${addRefExpr(s"_p_${p.name}")}""")
         val pre = List(s"$cefName* _p_${p.name} = ${p.name};") ++ addRef ++ List(
-          s"""auto ${jName}_cls = env->FindClass("$javaFqn$$NativePeer");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "(J)V");""",
           s"""auto $jName = _p_${p.name} ? env->NewObject(${jName}_cls, ${jName}_ctor, reinterpret_cast<jlong>(_p_${p.name})) : nullptr;"""
         )
@@ -185,7 +185,7 @@ $callAndReturn$popAndReturn
         val javaName    = Naming.structToJavaName(cefName)
         val factoryName = s"Create_Jni$javaName"
         val pre         = List(
-          s"""auto ${jName}_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");""",
+          s"""auto ${jName}_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");""",
           s"""auto ${jName}_ar_ctor = env->GetMethodID(${jName}_ar_cls, "<init>", "(Ljava/lang/Object;)V");""",
           s"jobject ${jName}_init = nullptr;",
           s"""auto $jName = env->NewObject(${jName}_ar_cls, ${jName}_ar_ctor, ${jName}_init);"""
@@ -205,9 +205,9 @@ $callAndReturn$popAndReturn
       case CType.OutObjectPtr(cefName) =>
         val javaFqn = jniName(cefName)
         val pre     = List(
-          s"""auto ${jName}_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");""",
+          s"""auto ${jName}_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");""",
           s"""auto ${jName}_ar_ctor = env->GetMethodID(${jName}_ar_cls, "<init>", "(Ljava/lang/Object;)V");""",
-          s"""auto ${jName}_peer_cls = env->FindClass("$javaFqn$$NativePeer");""",
+          s"""auto ${jName}_peer_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
           s"""auto ${jName}_peer_ctor = env->GetMethodID(${jName}_peer_cls, "<init>", "(J)V");""",
           s"jobject ${jName}_init = nullptr;",
           s"if (${p.name} && *${p.name}) {"
@@ -243,7 +243,7 @@ $callAndReturn$popAndReturn
         (pre, jName, post)
       case CType.OpaquePtr =>
         val pre = List(
-          s"""auto ${jName}_cls = env->FindClass("${Naming.nativePointerInternalName}");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "${Naming.nativePointerInternalName}");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "(J)V");""",
           s"""auto $jName = env->NewObject(${jName}_cls, ${jName}_ctor, reinterpret_cast<jlong>(${p.name}));"""
         )
@@ -255,7 +255,7 @@ $callAndReturn$popAndReturn
         val isScoped  = scopedNames.contains(cefName)
         val countExpr = if (idx > 0) allParams(idx - 1).name else "0"
         val pre       = List(
-          s"""auto ${jName}_cls = env->FindClass("$javaFqn$$NativePeer");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn$$NativePeer");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "(J)V");""",
           s"jsize ${jName}_len = static_cast<jsize>($countExpr);",
           s"""auto $jName = env->NewObjectArray(${jName}_len, ${jName}_cls, nullptr);""",
@@ -286,7 +286,7 @@ $callAndReturn$popAndReturn
       case CType.Enum(name) =>
         val javaFqn = jniName(name)
         val pre     = List(
-          s"""auto ${jName}_cls = env->FindClass("$javaFqn");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn");""",
           s"""auto ${jName}_from = env->GetStaticMethodID(${jName}_cls, "of", "(J)L$javaFqn;");""",
           s"""auto $jName = env->CallStaticObjectMethod(${jName}_cls, ${jName}_from, static_cast<jlong>(${p.name}));"""
         )
@@ -322,7 +322,7 @@ $callAndReturn$popAndReturn
         val (ctorSig, ctorArgsList, nestedPre) = bv.byValueCtorFromPtr(cefName, p.name)
         val sizeSet                            = bv.bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
         val pre                                = nestedPre ++ List(
-          s"""auto ${jName}_cls = env->FindClass("$javaFqn");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
           s"""auto $jName = ${bv.fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList, p.name)};"""
         ) ++ (if (sizeSet.nonEmpty) List(sizeSet) else Nil)
@@ -332,7 +332,7 @@ $callAndReturn$popAndReturn
         val (ctorSig, ctorArgsList, nestedPre) = bv.byValueCtorFromPtr(cefName, p.name)
         val sizeSet                            = bv.bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
         val pre                                = nestedPre ++ List(
-          s"""auto ${jName}_cls = env->FindClass("$mutableFqn");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$mutableFqn");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
           s"""auto $jName = ${bv.fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList, p.name)};"""
         ) ++ (if (sizeSet.nonEmpty) List(sizeSet) else Nil)
@@ -354,7 +354,7 @@ $callAndReturn$popAndReturn
         val countExpr  = countParam.getOrElse("0")
         val fieldExprs = bv.byValueArrayFieldExpr(cefName, p.name, "_i")
         val pre        = List(
-          s"""auto ${jName}_cls = env->FindClass("$javaFqn");""",
+          s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
           s"""jint ${jName}_len = static_cast<jint>($countExpr);""",
           s"""auto $jName = env->NewObjectArray(${jName}_len, ${jName}_cls, nullptr);""",
@@ -452,7 +452,7 @@ $callAndReturn$popAndReturn
       val inner     = (List(
         s"$name _result = {};",
         s"""if ($jniVar) {""",
-        s"""    auto _c = env->FindClass("$javaFqn");"""
+        s"""    auto _c = FindClassCached(env, "$javaFqn");"""
       ) ++ bodyLines.map(l => s"    $l") ++ List("}", "return _result;")).mkString("\n        ")
       s"([&]() {\n        $inner\n    })()"
     case _ => jniVar

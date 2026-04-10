@@ -25,7 +25,7 @@ struct JniCefDownloadImageCallback : public cef_download_image_callback_t {
         auto j_image_url = CefStringToJString(env, image_url);
         cef_image_t* _p_image = image;
         if (_p_image) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_image); _b->add_ref(_b); }
-        auto j_image_cls = env->FindClass("net/kurobako/cef4j/gen/CefImage$NativePeer");
+        auto j_image_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefImage$NativePeer");
         auto j_image_ctor = env->GetMethodID(j_image_cls, "<init>", "(J)V");
         auto j_image = _p_image ? env->NewObject(j_image_cls, j_image_ctor, reinterpret_cast<jlong>(_p_image)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);

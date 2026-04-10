@@ -17,7 +17,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), getRequest0)(JNIEnv* env, j
     if (!s) return nullptr;
     auto _r = s->get_request(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefRequest$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequest$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), getClient0)(JNIEnv* env, jo
     if (!s) return nullptr;
     auto _r = s->get_client(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequestClient$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequestClient$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -36,7 +36,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), getRequestStatus0)(JNIEnv* 
     auto* s = reinterpret_cast<cef_urlrequest_t*>(self);
     if (!s) return 0;
     auto _r = s->get_request_status(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequestStatus");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequestStatus");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefUrlRequestStatus;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -45,7 +45,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), getRequestError0)(JNIEnv* e
     auto* s = reinterpret_cast<cef_urlrequest_t*>(self);
     if (!s) return 0;
     auto _r = s->get_request_error(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefErrorCode");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefErrorCode");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefErrorCode;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -55,7 +55,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), getResponse0)(JNIEnv* env, 
     if (!s) return nullptr;
     auto _r = s->get_response(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefResponse$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefResponse$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -81,7 +81,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefUrlRequest), create0)(JNIEnv* env, jclas
     if (_request_context_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_request_context_ptr); _b->add_ref(_b); }
     auto _r = cef_urlrequest_create(_request_ptr, _client_ptr, _request_context_ptr);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlRequest$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

@@ -34,7 +34,7 @@ CEF4J_JNI_EXPORT(jobjectArray, CEF4J_PEER(CefPostData), getElements0)(JNIEnv* en
     size_t _count = s->get_element_count(s);
     cef_post_data_element_t** _arr = _count > 0 ? new cef_post_data_element_t*[_count]() : nullptr;
     s->get_elements(s, &_count, _arr);
-    auto _elemCls = env->FindClass("net/kurobako/cef4j/gen/CefPostDataElement$NativePeer");
+    auto _elemCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPostDataElement$NativePeer");
     auto _elemCtor = env->GetMethodID(_elemCls, "<init>", "(J)V");
     auto _result = env->NewObjectArray(static_cast<jsize>(_count), _elemCls, nullptr);
     for (size_t _i = 0; _i < _count; _i++) {
@@ -74,7 +74,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPostData), removeElements0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefPostData), create0)(JNIEnv* env, jclass clz) {
     auto _r = cef_post_data_create();
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/CefPostData$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPostData$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

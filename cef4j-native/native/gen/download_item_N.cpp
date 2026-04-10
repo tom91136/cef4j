@@ -47,7 +47,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getInterruptReason0)(JNIE
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
     auto _r = s->get_interrupt_reason(s);
-    auto _eCls = env->FindClass("net/kurobako/cef4j/gen/CefDownloadInterruptReason");
+    auto _eCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDownloadInterruptReason");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)Lnet/kurobako/cef4j/gen/CefDownloadInterruptReason;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));
 }
@@ -80,7 +80,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getStartTime0)(JNIEnv* en
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_start_time(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
     return _dsResult;
@@ -90,7 +90,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getEndTime0)(JNIEnv* env,
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return nullptr;
     cef_basetime_t result = s->get_end_time(s);
-    auto cls = env->FindClass("net/kurobako/cef4j/gen/CefBasetime");
+    auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
     auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
     return _dsResult;

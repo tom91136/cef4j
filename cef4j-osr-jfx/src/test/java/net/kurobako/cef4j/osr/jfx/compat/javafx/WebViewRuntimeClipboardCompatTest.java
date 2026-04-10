@@ -88,7 +88,7 @@ class WebViewRuntimeClipboardCompatTest extends WebViewRuntimeCompatTestBase {
 
     private static void selectSourceText(WebView view) throws Exception {
         focusSource(view);
-        invokeShortcut(KeyCode.A);
+        invokeShortcut(view, KeyCode.A);
         onFxThread(() -> view.getEngine()
                 .executeScript("var el = document.getElementById('src'); el.focus(); if (el.select) { el.select(); }"));
         Thread.sleep(50);
@@ -98,7 +98,7 @@ class WebViewRuntimeClipboardCompatTest extends WebViewRuntimeCompatTestBase {
             throws Exception {
         double x = region == Region.SOURCE ? SOURCE_X : TARGET_X;
         if (trigger == Trigger.KEYBOARD) {
-            invokeShortcut(action.keyCode);
+            invokeShortcut(view, action.keyCode);
         } else {
             invokeContextMenuItem(view, x, TEXT_Y, action.menuText);
         }

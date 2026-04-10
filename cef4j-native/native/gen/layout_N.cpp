@@ -15,7 +15,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefLayout), asBoxLayout0)(JNIEnv* env
     if (!s) return nullptr;
     auto _r = s->as_box_layout(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefBoxLayout$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefBoxLayout$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }
@@ -25,7 +25,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefLayout), asFillLayout0)(JNIEnv* en
     if (!s) return nullptr;
     auto _r = s->as_fill_layout(s);
     if (!_r) return nullptr;
-    auto _rCls = env->FindClass("net/kurobako/cef4j/gen/views/CefFillLayout$NativePeer");
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefFillLayout$NativePeer");
     auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
     return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
 }

@@ -34,30 +34,30 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(141) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         cef_frame_t* _p_frame = frame;
         if (_p_frame) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_frame); _b->add_ref(_b); }
-        auto j_frame_cls = env->FindClass("net/kurobako/cef4j/gen/CefFrame$NativePeer");
+        auto j_frame_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefFrame$NativePeer");
         auto j_frame_ctor = env->GetMethodID(j_frame_cls, "<init>", "(J)V");
         auto j_frame = _p_frame ? env->NewObject(j_frame_cls, j_frame_ctor, reinterpret_cast<jlong>(_p_frame)) : nullptr;
         auto j_target_url = CefStringToJString(env, target_url);
         auto j_target_frame_name = CefStringToJString(env, target_frame_name);
-        auto j_target_disposition_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowOpenDisposition");
+        auto j_target_disposition_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowOpenDisposition");
         auto j_target_disposition_from = env->GetStaticMethodID(j_target_disposition_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefWindowOpenDisposition;");
         auto j_target_disposition = env->CallStaticObjectMethod(j_target_disposition_cls, j_target_disposition_from, static_cast<jlong>(target_disposition));
-        auto j_popupFeatures_cls = env->FindClass("net/kurobako/cef4j/gen/NativePointer");
+        auto j_popupFeatures_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
         auto j_popupFeatures_ctor = env->GetMethodID(j_popupFeatures_cls, "<init>", "(J)V");
         auto j_popupFeatures = env->NewObject(j_popupFeatures_cls, j_popupFeatures_ctor, reinterpret_cast<jlong>(popupFeatures));
         auto _bv_windowInfo_window_name = CefStringToJString(env, &windowInfo->window_name);
-        auto _bv_windowInfo_bounds_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+        auto _bv_windowInfo_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto _bv_windowInfo_bounds_ctor = env->GetMethodID(_bv_windowInfo_bounds_cls, "<init>", "(IIII)V");
         auto _bv_windowInfo_bounds = env->NewObject(_bv_windowInfo_bounds_cls, _bv_windowInfo_bounds_ctor, static_cast<jint>(windowInfo->bounds.x), static_cast<jint>(windowInfo->bounds.y), static_cast<jint>(windowInfo->bounds.width), static_cast<jint>(windowInfo->bounds.height));
-        auto _bv_windowInfo_runtime_style_cls = env->FindClass("net/kurobako/cef4j/gen/CefRuntimeStyle");
+        auto _bv_windowInfo_runtime_style_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
-        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
+        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
@@ -71,7 +71,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_windowInfo_runtime_style)
     : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
-        auto j_client_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_client_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_client_ar_ctor = env->GetMethodID(j_client_ar_cls, "<init>", "(Ljava/lang/Object;)V");
         jobject j_client_init = nullptr;
         auto j_client = env->NewObject(j_client_ar_cls, j_client_ar_ctor, j_client_init);
@@ -82,52 +82,52 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_settings_cursive_font_family = CefStringToJString(env, &settings->cursive_font_family);
         auto _bv_settings_fantasy_font_family = CefStringToJString(env, &settings->fantasy_font_family);
         auto _bv_settings_default_encoding = CefStringToJString(env, &settings->default_encoding);
-        auto _bv_settings_remote_fonts_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_remote_fonts_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_remote_fonts_of = env->GetStaticMethodID(_bv_settings_remote_fonts_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_remote_fonts = env->CallStaticObjectMethod(_bv_settings_remote_fonts_cls, _bv_settings_remote_fonts_of, static_cast<jlong>(settings->remote_fonts));
-        auto _bv_settings_javascript_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_of = env->GetStaticMethodID(_bv_settings_javascript_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript = env->CallStaticObjectMethod(_bv_settings_javascript_cls, _bv_settings_javascript_of, static_cast<jlong>(settings->javascript));
-        auto _bv_settings_javascript_close_windows_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_close_windows_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_close_windows_of = env->GetStaticMethodID(_bv_settings_javascript_close_windows_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_close_windows = env->CallStaticObjectMethod(_bv_settings_javascript_close_windows_cls, _bv_settings_javascript_close_windows_of, static_cast<jlong>(settings->javascript_close_windows));
-        auto _bv_settings_javascript_access_clipboard_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_access_clipboard_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_access_clipboard_of = env->GetStaticMethodID(_bv_settings_javascript_access_clipboard_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_access_clipboard = env->CallStaticObjectMethod(_bv_settings_javascript_access_clipboard_cls, _bv_settings_javascript_access_clipboard_of, static_cast<jlong>(settings->javascript_access_clipboard));
-        auto _bv_settings_javascript_dom_paste_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_dom_paste_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_dom_paste_of = env->GetStaticMethodID(_bv_settings_javascript_dom_paste_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_dom_paste = env->CallStaticObjectMethod(_bv_settings_javascript_dom_paste_cls, _bv_settings_javascript_dom_paste_of, static_cast<jlong>(settings->javascript_dom_paste));
-        auto _bv_settings_image_loading_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_image_loading_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_image_loading_of = env->GetStaticMethodID(_bv_settings_image_loading_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_image_loading = env->CallStaticObjectMethod(_bv_settings_image_loading_cls, _bv_settings_image_loading_of, static_cast<jlong>(settings->image_loading));
-        auto _bv_settings_image_shrink_standalone_to_fit_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_image_shrink_standalone_to_fit_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_image_shrink_standalone_to_fit_of = env->GetStaticMethodID(_bv_settings_image_shrink_standalone_to_fit_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_image_shrink_standalone_to_fit = env->CallStaticObjectMethod(_bv_settings_image_shrink_standalone_to_fit_cls, _bv_settings_image_shrink_standalone_to_fit_of, static_cast<jlong>(settings->image_shrink_standalone_to_fit));
-        auto _bv_settings_text_area_resize_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_text_area_resize_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_text_area_resize_of = env->GetStaticMethodID(_bv_settings_text_area_resize_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_text_area_resize = env->CallStaticObjectMethod(_bv_settings_text_area_resize_cls, _bv_settings_text_area_resize_of, static_cast<jlong>(settings->text_area_resize));
-        auto _bv_settings_tab_to_links_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_tab_to_links_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_tab_to_links_of = env->GetStaticMethodID(_bv_settings_tab_to_links_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_tab_to_links = env->CallStaticObjectMethod(_bv_settings_tab_to_links_cls, _bv_settings_tab_to_links_of, static_cast<jlong>(settings->tab_to_links));
-        auto _bv_settings_local_storage_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_local_storage_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_local_storage_of = env->GetStaticMethodID(_bv_settings_local_storage_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_local_storage = env->CallStaticObjectMethod(_bv_settings_local_storage_cls, _bv_settings_local_storage_of, static_cast<jlong>(settings->local_storage));
-        auto _bv_settings_databases_deprecated_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_databases_deprecated_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_databases_deprecated_of = env->GetStaticMethodID(_bv_settings_databases_deprecated_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_databases_deprecated = env->CallStaticObjectMethod(_bv_settings_databases_deprecated_cls, _bv_settings_databases_deprecated_of, static_cast<jlong>(settings->databases_deprecated));
-        auto _bv_settings_webgl_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_webgl_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_webgl_of = env->GetStaticMethodID(_bv_settings_webgl_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_webgl = env->CallStaticObjectMethod(_bv_settings_webgl_cls, _bv_settings_webgl_of, static_cast<jlong>(settings->webgl));
-        auto _bv_settings_chrome_status_bubble_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_chrome_status_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_status_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_status_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_status_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_status_bubble_cls, _bv_settings_chrome_status_bubble_of, static_cast<jlong>(settings->chrome_status_bubble));
-        auto _bv_settings_chrome_zoom_bubble_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_chrome_zoom_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_zoom_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_zoom_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_zoom_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_zoom_bubble_cls, _bv_settings_chrome_zoom_bubble_of, static_cast<jlong>(settings->chrome_zoom_bubble));
-        auto _bv_settings_ax_viewport_collapse_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_ax_viewport_collapse_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
-        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
+        auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings
     ? env->NewObject(j_settings_cls, j_settings_ctor,
@@ -161,9 +161,9 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_settings_ax_viewport_collapse)
     : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
-        auto j_extra_info_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_extra_info_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_extra_info_ar_ctor = env->GetMethodID(j_extra_info_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_extra_info_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
+        auto j_extra_info_peer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
         auto j_extra_info_peer_ctor = env->GetMethodID(j_extra_info_peer_cls, "<init>", "(J)V");
         jobject j_extra_info_init = nullptr;
         if (extra_info && *extra_info) {
@@ -352,7 +352,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -369,17 +369,17 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(130) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto _bv_windowInfo_window_name = CefStringToJString(env, &windowInfo->window_name);
-        auto _bv_windowInfo_bounds_cls = env->FindClass("net/kurobako/cef4j/gen/CefRect");
+        auto _bv_windowInfo_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto _bv_windowInfo_bounds_ctor = env->GetMethodID(_bv_windowInfo_bounds_cls, "<init>", "(IIII)V");
         auto _bv_windowInfo_bounds = env->NewObject(_bv_windowInfo_bounds_cls, _bv_windowInfo_bounds_ctor, static_cast<jint>(windowInfo->bounds.x), static_cast<jint>(windowInfo->bounds.y), static_cast<jint>(windowInfo->bounds.width), static_cast<jint>(windowInfo->bounds.height));
-        auto _bv_windowInfo_runtime_style_cls = env->FindClass("net/kurobako/cef4j/gen/CefRuntimeStyle");
+        auto _bv_windowInfo_runtime_style_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>(windowInfo->runtime_style));
-        auto j_windowInfo_cls = env->FindClass("net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
+        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(Ljava/lang/String;Lnet/kurobako/cef4j/gen/CefRect;JIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
@@ -393,7 +393,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_windowInfo_runtime_style)
     : nullptr;
         if (j_windowInfo) env->SetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "size", "J"), static_cast<jlong>(windowInfo->size));
-        auto j_client_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_client_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_client_ar_ctor = env->GetMethodID(j_client_ar_cls, "<init>", "(Ljava/lang/Object;)V");
         jobject j_client_init = nullptr;
         auto j_client = env->NewObject(j_client_ar_cls, j_client_ar_ctor, j_client_init);
@@ -404,52 +404,52 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_settings_cursive_font_family = CefStringToJString(env, &settings->cursive_font_family);
         auto _bv_settings_fantasy_font_family = CefStringToJString(env, &settings->fantasy_font_family);
         auto _bv_settings_default_encoding = CefStringToJString(env, &settings->default_encoding);
-        auto _bv_settings_remote_fonts_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_remote_fonts_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_remote_fonts_of = env->GetStaticMethodID(_bv_settings_remote_fonts_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_remote_fonts = env->CallStaticObjectMethod(_bv_settings_remote_fonts_cls, _bv_settings_remote_fonts_of, static_cast<jlong>(settings->remote_fonts));
-        auto _bv_settings_javascript_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_of = env->GetStaticMethodID(_bv_settings_javascript_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript = env->CallStaticObjectMethod(_bv_settings_javascript_cls, _bv_settings_javascript_of, static_cast<jlong>(settings->javascript));
-        auto _bv_settings_javascript_close_windows_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_close_windows_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_close_windows_of = env->GetStaticMethodID(_bv_settings_javascript_close_windows_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_close_windows = env->CallStaticObjectMethod(_bv_settings_javascript_close_windows_cls, _bv_settings_javascript_close_windows_of, static_cast<jlong>(settings->javascript_close_windows));
-        auto _bv_settings_javascript_access_clipboard_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_access_clipboard_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_access_clipboard_of = env->GetStaticMethodID(_bv_settings_javascript_access_clipboard_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_access_clipboard = env->CallStaticObjectMethod(_bv_settings_javascript_access_clipboard_cls, _bv_settings_javascript_access_clipboard_of, static_cast<jlong>(settings->javascript_access_clipboard));
-        auto _bv_settings_javascript_dom_paste_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_javascript_dom_paste_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_javascript_dom_paste_of = env->GetStaticMethodID(_bv_settings_javascript_dom_paste_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_javascript_dom_paste = env->CallStaticObjectMethod(_bv_settings_javascript_dom_paste_cls, _bv_settings_javascript_dom_paste_of, static_cast<jlong>(settings->javascript_dom_paste));
-        auto _bv_settings_image_loading_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_image_loading_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_image_loading_of = env->GetStaticMethodID(_bv_settings_image_loading_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_image_loading = env->CallStaticObjectMethod(_bv_settings_image_loading_cls, _bv_settings_image_loading_of, static_cast<jlong>(settings->image_loading));
-        auto _bv_settings_image_shrink_standalone_to_fit_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_image_shrink_standalone_to_fit_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_image_shrink_standalone_to_fit_of = env->GetStaticMethodID(_bv_settings_image_shrink_standalone_to_fit_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_image_shrink_standalone_to_fit = env->CallStaticObjectMethod(_bv_settings_image_shrink_standalone_to_fit_cls, _bv_settings_image_shrink_standalone_to_fit_of, static_cast<jlong>(settings->image_shrink_standalone_to_fit));
-        auto _bv_settings_text_area_resize_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_text_area_resize_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_text_area_resize_of = env->GetStaticMethodID(_bv_settings_text_area_resize_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_text_area_resize = env->CallStaticObjectMethod(_bv_settings_text_area_resize_cls, _bv_settings_text_area_resize_of, static_cast<jlong>(settings->text_area_resize));
-        auto _bv_settings_tab_to_links_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_tab_to_links_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_tab_to_links_of = env->GetStaticMethodID(_bv_settings_tab_to_links_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_tab_to_links = env->CallStaticObjectMethod(_bv_settings_tab_to_links_cls, _bv_settings_tab_to_links_of, static_cast<jlong>(settings->tab_to_links));
-        auto _bv_settings_local_storage_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_local_storage_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_local_storage_of = env->GetStaticMethodID(_bv_settings_local_storage_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_local_storage = env->CallStaticObjectMethod(_bv_settings_local_storage_cls, _bv_settings_local_storage_of, static_cast<jlong>(settings->local_storage));
-        auto _bv_settings_databases_deprecated_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_databases_deprecated_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_databases_deprecated_of = env->GetStaticMethodID(_bv_settings_databases_deprecated_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_databases_deprecated = env->CallStaticObjectMethod(_bv_settings_databases_deprecated_cls, _bv_settings_databases_deprecated_of, static_cast<jlong>(settings->databases_deprecated));
-        auto _bv_settings_webgl_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_webgl_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_webgl_of = env->GetStaticMethodID(_bv_settings_webgl_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_webgl = env->CallStaticObjectMethod(_bv_settings_webgl_cls, _bv_settings_webgl_of, static_cast<jlong>(settings->webgl));
-        auto _bv_settings_chrome_status_bubble_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_chrome_status_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_status_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_status_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_status_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_status_bubble_cls, _bv_settings_chrome_status_bubble_of, static_cast<jlong>(settings->chrome_status_bubble));
-        auto _bv_settings_chrome_zoom_bubble_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_chrome_zoom_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_zoom_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_zoom_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_zoom_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_zoom_bubble_cls, _bv_settings_chrome_zoom_bubble_of, static_cast<jlong>(settings->chrome_zoom_bubble));
-        auto _bv_settings_ax_viewport_collapse_cls = env->FindClass("net/kurobako/cef4j/gen/CefState");
+        auto _bv_settings_ax_viewport_collapse_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>(settings->ax_viewport_collapse));
-        auto j_settings_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
+        auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
         auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings
     ? env->NewObject(j_settings_cls, j_settings_ctor,
@@ -483,9 +483,9 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_settings_ax_viewport_collapse)
     : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
-        auto j_extra_info_ar_cls = env->FindClass("java/util/concurrent/atomic/AtomicReference");
+        auto j_extra_info_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
         auto j_extra_info_ar_ctor = env->GetMethodID(j_extra_info_ar_cls, "<init>", "(Ljava/lang/Object;)V");
-        auto j_extra_info_peer_cls = env->FindClass("net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
+        auto j_extra_info_peer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDictionaryValue$NativePeer");
         auto j_extra_info_peer_ctor = env->GetMethodID(j_extra_info_peer_cls, "<init>", "(J)V");
         jobject j_extra_info_init = nullptr;
         if (extra_info && *extra_info) {
@@ -673,7 +673,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -690,7 +690,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(8) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -708,7 +708,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         if (env->PushLocalFrame(8) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
-        auto j_browser_cls = env->FindClass("net/kurobako/cef4j/gen/CefBrowser$NativePeer");
+        auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
         auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
