@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
@@ -38,5 +39,38 @@ public interface CefApp extends CefClientHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:212</a>
      */
     default void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
+    }
+
+    /**
+     * Return the handler for resource bundle events. If no handler is returned resources will be loaded from pack files. This method is called by the browser and render processes on multiple threads.
+     * <p>Definition generated from cef_app_capi.h
+     * <pre>cef_resource_bundle_handler_t* (CEF_CALLBACK* get_resource_bundle_handler)(struct _cef_app_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:222</a>
+     */
+    default Optional<CefResourceBundleHandler> getResourceBundleHandler() {
+        return Optional.empty();
+    }
+
+    /**
+     * Return the handler for functionality specific to the browser process. This method is called on multiple threads in the browser process.
+     * <p>Definition generated from cef_app_capi.h
+     * <pre>cef_browser_process_handler_t* (CEF_CALLBACK* get_browser_process_handler)(struct _cef_app_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:232</a>
+     */
+    default Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
+        return Optional.empty();
+    }
+
+    /**
+     * Return the handler for functionality specific to the render process. This method is called on the render process main thread.
+     * <p>Definition generated from cef_app_capi.h
+     * <pre>cef_render_process_handler_t* (CEF_CALLBACK* get_render_process_handler)(struct _cef_app_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:241</a>
+     */
+    default Optional<CefRenderProcessHandler> getRenderProcessHandler() {
+        return Optional.empty();
     }
 }

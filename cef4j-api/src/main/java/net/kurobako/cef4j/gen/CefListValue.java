@@ -157,6 +157,15 @@ public interface CefListValue extends CefLibraryObject {
     double getDouble(long index);
 
     /**
+     * Returns the value at the specified index as type binary. The returned value will reference existing data.
+     * <p>Definition generated from cef_values_capi.h
+     * <pre>cef_binary_value_t* (CEF_CALLBACK* get_binary)(struct _cef_list_value_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:657</a>
+     */
+    Optional<CefBinaryValue> getBinary(long index);
+
+    /**
      * Returns the value at the specified index as type dictionary. The returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_dictionary_value_t* (CEF_CALLBACK* get_dictionary)(struct _cef_list_value_t* self, size_t index);</pre>
@@ -164,6 +173,15 @@ public interface CefListValue extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:664</a>
      */
     Optional<CefDictionaryValue> getDictionary(long index);
+
+    /**
+     * Returns the value at the specified index as type list. The returned value will reference existing data and modifications to the value will modify this object.
+     * <p>Definition generated from cef_values_capi.h
+     * <pre>cef_list_value_t* (CEF_CALLBACK* get_list)(struct _cef_list_value_t* self, size_t index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:672</a>
+     */
+    Optional<CefListValue> getList(long index);
 
     /**
      * Sets the value at the specified index. Returns {@code true} if the value was set successfully. If {@code value} represents simple data then the underlying data will be copied and modifications to {@code value} will not modify this object. If {@code value} represents complex data (binary, dictionary or list) then the underlying data will be referenced and modifications to {@code value} will modify this object.
@@ -394,9 +412,21 @@ public interface CefListValue extends CefLibraryObject {
       }
 
         @Override
+      public Optional<CefBinaryValue> getBinary(long index) {
+          checkNotClosed();
+          return Optional.ofNullable(getBinary0(nativePtr, index));
+      }
+
+        @Override
       public Optional<CefDictionaryValue> getDictionary(long index) {
           checkNotClosed();
           return Optional.ofNullable(getDictionary0(nativePtr, index));
+      }
+
+        @Override
+      public Optional<CefListValue> getList(long index) {
+          checkNotClosed();
+          return Optional.ofNullable(getList0(nativePtr, index));
       }
 
         @Override
@@ -488,7 +518,11 @@ public interface CefListValue extends CefLibraryObject {
 
         static native double getDouble0(long self, long index);
 
+        static native CefBinaryValue getBinary0(long self, long index);
+
         static native CefDictionaryValue getDictionary0(long self, long index);
+
+        static native CefListValue getList0(long self, long index);
 
         static native boolean setValue0(long self, long index, CefValue value);
 

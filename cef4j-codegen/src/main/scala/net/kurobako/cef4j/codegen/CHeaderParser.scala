@@ -184,7 +184,8 @@ object CHeaderParser {
 
   private def isFnPtrLine(line: String): Boolean =
     line.contains("CEF_CALLBACK*") || line.contains("CEF_CALLBACK *") ||
-      FnPtrLineRe.findFirstIn(line).isDefined
+      FnPtrLineRe.findFirstIn(line).isDefined ||
+      line.trim.endsWith("*(") // multi-line fn ptr: return-type struct on its own line, e.g. "struct _cef_foo_t*("
 
   private val FnPtrPattern =
     """(.+?)\s*\(\s*(?:CEF_CALLBACK\s*)?\*\s*(\w+)\s*\)\s*\((.+)\)\s*;""".r

@@ -4,12 +4,14 @@
 #include "include/capi/cef_client_capi.h"
 #include "include/capi/cef_command_line_capi.h"
 #include "include/capi/cef_preference_capi.h"
+#include "include/capi/cef_request_context_handler_capi.h"
 #include "jni_util.h"
 
 #include <atomic>
 #include "jni_util.h"
 
 extern "C" cef_client_t* Create_JniCefClient(JNIEnv* env, jobject handler);
+extern "C" cef_request_context_handler_t* Create_JniCefRequestContextHandler(JNIEnv* env, jobject handler);
 
 struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
     JavaVM* jvm;
@@ -25,6 +27,7 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
         on_already_running_app_relaunch = &_on_already_running_app_relaunch;
         on_schedule_message_pump_work = &_on_schedule_message_pump_work;
         get_default_client = &_get_default_client;
+        get_default_request_context_handler = &_get_default_request_context_handler;
     }
 
     static void CEF_CALLBACK _on_register_custom_preferences(cef_browser_process_handler_t* self, cef_preferences_type_t type, struct _cef_preference_registrar_t* registrar) {
@@ -123,6 +126,29 @@ struct JniCefBrowserProcessHandler : public cef_browser_process_handler_t {
                 auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
                 auto _handlerObj = env->CallObjectMethod(jResult, _getMid);
                 nativeResult = Create_JniCefClient(env, _handlerObj);
+            }
+        }
+        env->PopLocalFrame(nullptr);
+        return nativeResult;
+    }
+
+    static cef_request_context_handler_t* CEF_CALLBACK _get_default_request_context_handler(cef_browser_process_handler_t* self) {
+        auto* h = reinterpret_cast<JniCefBrowserProcessHandler*>(self);
+        ScopedJNIEnv env(h->jvm);
+        if (env->PushLocalFrame(9) < 0) { return nullptr; }
+        auto cls = env->GetObjectClass(h->javaHandler);
+        auto mid = env->GetMethodID(cls, "getDefaultRequestContextHandler", "()Ljava/util/Optional;");
+        if (!mid) { env->PopLocalFrame(nullptr); return nullptr; }
+        auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
+        cef_request_context_handler_t* nativeResult = nullptr;
+        if (jResult) {
+            auto _optCls = FindClassCached(env, "java/util/Optional");
+            auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
+            if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
+                auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
+                auto _handlerObj = env->CallObjectMethod(jResult, _getMid);
+                nativeResult = Create_JniCefRequestContextHandler(env, _handlerObj);
             }
         }
         env->PopLocalFrame(nullptr);

@@ -814,6 +814,12 @@ public interface CefWindow extends CefPanel {
       }
 
         @Override
+      public Optional<CefView> getChildViewAt(int index) {
+          checkNotClosed();
+          return Optional.ofNullable(CefPanel.NativePeer.getChildViewAt0(nativePtr, index));
+      }
+
+        @Override
       public Optional<CefBrowserView> asBrowserView() {
           checkNotClosed();
           return Optional.ofNullable(CefView.NativePeer.asBrowserView0(nativePtr));

@@ -1,12 +1,19 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 #include <jni.h>
 #include "include/capi/cef_app_capi.h"
+#include "include/capi/cef_browser_process_handler_capi.h"
 #include "include/capi/cef_command_line_capi.h"
+#include "include/capi/cef_render_process_handler_capi.h"
+#include "include/capi/cef_resource_bundle_handler_capi.h"
 #include "include/capi/cef_scheme_capi.h"
 #include "jni_util.h"
 
 #include <atomic>
 #include "jni_util.h"
+
+extern "C" cef_resource_bundle_handler_t* Create_JniCefResourceBundleHandler(JNIEnv* env, jobject handler);
+extern "C" cef_browser_process_handler_t* Create_JniCefBrowserProcessHandler(JNIEnv* env, jobject handler);
+extern "C" cef_render_process_handler_t* Create_JniCefRenderProcessHandler(JNIEnv* env, jobject handler);
 
 struct JniCefApp : public cef_app_t {
     JavaVM* jvm;
@@ -18,6 +25,9 @@ struct JniCefApp : public cef_app_t {
         InitRefCount<JniCefApp, cef_app_t>(reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_app_t*>(this)));
         on_before_command_line_processing = &_on_before_command_line_processing;
         on_register_custom_schemes = &_on_register_custom_schemes;
+        get_resource_bundle_handler = &_get_resource_bundle_handler;
+        get_browser_process_handler = &_get_browser_process_handler;
+        get_render_process_handler = &_get_render_process_handler;
     }
 
     static void CEF_CALLBACK _on_before_command_line_processing(cef_app_t* self, const cef_string_t* process_type, struct _cef_command_line_t* command_line) {
@@ -52,6 +62,75 @@ struct JniCefApp : public cef_app_t {
         env->CallVoidMethod(h->javaHandler, mid, j_registrar);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }
         env->PopLocalFrame(nullptr);
+    }
+
+    static cef_resource_bundle_handler_t* CEF_CALLBACK _get_resource_bundle_handler(cef_app_t* self) {
+        auto* h = reinterpret_cast<JniCefApp*>(self);
+        ScopedJNIEnv env(h->jvm);
+        if (env->PushLocalFrame(9) < 0) { return nullptr; }
+        auto cls = env->GetObjectClass(h->javaHandler);
+        auto mid = env->GetMethodID(cls, "getResourceBundleHandler", "()Ljava/util/Optional;");
+        if (!mid) { env->PopLocalFrame(nullptr); return nullptr; }
+        auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
+        cef_resource_bundle_handler_t* nativeResult = nullptr;
+        if (jResult) {
+            auto _optCls = FindClassCached(env, "java/util/Optional");
+            auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
+            if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
+                auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
+                auto _handlerObj = env->CallObjectMethod(jResult, _getMid);
+                nativeResult = Create_JniCefResourceBundleHandler(env, _handlerObj);
+            }
+        }
+        env->PopLocalFrame(nullptr);
+        return nativeResult;
+    }
+
+    static cef_browser_process_handler_t* CEF_CALLBACK _get_browser_process_handler(cef_app_t* self) {
+        auto* h = reinterpret_cast<JniCefApp*>(self);
+        ScopedJNIEnv env(h->jvm);
+        if (env->PushLocalFrame(9) < 0) { return nullptr; }
+        auto cls = env->GetObjectClass(h->javaHandler);
+        auto mid = env->GetMethodID(cls, "getBrowserProcessHandler", "()Ljava/util/Optional;");
+        if (!mid) { env->PopLocalFrame(nullptr); return nullptr; }
+        auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
+        cef_browser_process_handler_t* nativeResult = nullptr;
+        if (jResult) {
+            auto _optCls = FindClassCached(env, "java/util/Optional");
+            auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
+            if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
+                auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
+                auto _handlerObj = env->CallObjectMethod(jResult, _getMid);
+                nativeResult = Create_JniCefBrowserProcessHandler(env, _handlerObj);
+            }
+        }
+        env->PopLocalFrame(nullptr);
+        return nativeResult;
+    }
+
+    static cef_render_process_handler_t* CEF_CALLBACK _get_render_process_handler(cef_app_t* self) {
+        auto* h = reinterpret_cast<JniCefApp*>(self);
+        ScopedJNIEnv env(h->jvm);
+        if (env->PushLocalFrame(9) < 0) { return nullptr; }
+        auto cls = env->GetObjectClass(h->javaHandler);
+        auto mid = env->GetMethodID(cls, "getRenderProcessHandler", "()Ljava/util/Optional;");
+        if (!mid) { env->PopLocalFrame(nullptr); return nullptr; }
+        auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+        if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return nullptr; }
+        cef_render_process_handler_t* nativeResult = nullptr;
+        if (jResult) {
+            auto _optCls = FindClassCached(env, "java/util/Optional");
+            auto _isPresentMid = env->GetMethodID(_optCls, "isPresent", "()Z");
+            if (env->CallBooleanMethod(jResult, _isPresentMid) == JNI_TRUE) {
+                auto _getMid = env->GetMethodID(_optCls, "get", "()Ljava/lang/Object;");
+                auto _handlerObj = env->CallObjectMethod(jResult, _getMid);
+                nativeResult = Create_JniCefRenderProcessHandler(env, _handlerObj);
+            }
+        }
+        env->PopLocalFrame(nullptr);
+        return nativeResult;
     }
 };
 

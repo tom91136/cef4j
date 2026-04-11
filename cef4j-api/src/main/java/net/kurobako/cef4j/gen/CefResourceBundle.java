@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
- * Class used for retrieving resources from the resource bundle (*.pak) files loaded by CEF during startup or via the CefResourceBundleHandler returned from net.kurobako.cef4j.gen.CefApp.getResourceBundleHandler(). See CefSettings for additional options related to resource bundle loading. The methods of this class may be called on any thread unless otherwise indicated.
+ * Class used for retrieving resources from the resource bundle (*.pak) files loaded by CEF during startup or via the CefResourceBundleHandler returned from {@link net.kurobako.cef4j.gen.CefApp#getResourceBundleHandler()}. See CefSettings for additional options related to resource bundle loading. The methods of this class may be called on any thread unless otherwise indicated.
  * <p>Definition generated from cef_resource_bundle_capi.h
  * <pre>typedef struct _cef_resource_bundle_t {
  *   cef_base_ref_counted_t base;

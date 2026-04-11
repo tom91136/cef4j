@@ -321,6 +321,17 @@ public interface CefV8Value extends CefLibraryObject {
     Optional<CefV8Value> getValueBykey(@Nullable String key);
 
     /**
+     * Returns the value with the specified identifier on success. Returns {@code null} if this method is called incorrectly or an exception is thrown.
+     * <p>Definition generated from cef_v8_capi.h
+     * <pre>cef_v8_value_t* (CEF_CALLBACK* get_value_byindex)(struct _cef_v8_value_t* self, int index);</pre>
+     *
+     * @param index zero-based index
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:845</a>
+     */
+    Optional<CefV8Value> getValueByindex(int index);
+
+    /**
      * Associates a value with the specified identifier and returns {@code true} on success. Returns {@code false} if this method is called incorrectly or an exception is thrown. For read-only values this method will return {@code true} even though assignment failed.
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* set_value_bykey)(struct _cef_v8_value_t* self, const cef_string_t* key, struct _cef_v8_value_t* value, cef_v8_propertyattribute_t attribute);</pre>
@@ -408,6 +419,8 @@ public interface CefV8Value extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:926</a>
      */
     int getArrayLength();
+
+    Optional<CefV8ArrayBufferReleaseCallback> getArrayBufferReleaseCallback();
 
     /**
      * Prevent the ArrayBuffer from using it's memory block by setting the length to zero. This operation cannot be undone. If the ArrayBuffer was created with CreateArrayBuffer then {@link net.kurobako.cef4j.gen.CefV8ArrayBufferReleaseCallback#releaseBuffer(NativePointer)} will be called to release the underlying buffer.
@@ -885,6 +898,12 @@ public interface CefV8Value extends CefLibraryObject {
       }
 
         @Override
+      public Optional<CefV8Value> getValueByindex(int index) {
+          checkNotClosed();
+          return Optional.ofNullable(getValueByindex0(nativePtr, index));
+      }
+
+        @Override
       public int setValueBykey(@Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute) {
           checkNotClosed();
             CefLibraryObject.requireOpen(value, "CefV8Value");
@@ -938,6 +957,12 @@ public interface CefV8Value extends CefLibraryObject {
       public int getArrayLength() {
           checkNotClosed();
           return getArrayLength0(nativePtr);
+      }
+
+        @Override
+      public Optional<CefV8ArrayBufferReleaseCallback> getArrayBufferReleaseCallback() {
+          checkNotClosed();
+          return Optional.ofNullable(getArrayBufferReleaseCallback0(nativePtr));
       }
 
         @Override
@@ -1063,6 +1088,8 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native CefV8Value getValueBykey0(long self, String key);
 
+        static native CefV8Value getValueByindex0(long self, int index);
+
         static native int setValueBykey0(long self, String key, CefV8Value value, CefV8PropertyAttribute attribute);
 
         static native int setValueByindex0(long self, int index, CefV8Value value);
@@ -1080,6 +1107,8 @@ public interface CefV8Value extends CefLibraryObject {
         static native int adjustExternallyAllocatedMemory0(long self, int changeInBytes);
 
         static native int getArrayLength0(long self);
+
+        static native CefV8ArrayBufferReleaseCallback getArrayBufferReleaseCallback0(long self);
 
         static native boolean neuterArrayBuffer0(long self);
 

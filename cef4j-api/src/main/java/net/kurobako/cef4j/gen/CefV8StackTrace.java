@@ -35,6 +35,15 @@ public interface CefV8StackTrace extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1057</a>
      */
     int getFrameCount();
+
+    /**
+     * Returns the stack frame at the specified 0-based index.
+     * <p>Definition generated from cef_v8_capi.h
+     * <pre>cef_v8_stack_frame_t* (CEF_CALLBACK* get_frame)(struct _cef_v8_stack_trace_t* self, int index);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1063</a>
+     */
+    Optional<CefV8StackFrame> getFrame(int index);
     /**
      * Returns the stack trace for the currently active context. {@code frame_limit} is the maximum number of frames that will be captured.
      * <p>Definition generated from cef_v8_capi.h
@@ -101,10 +110,18 @@ public interface CefV8StackTrace extends CefLibraryObject {
           return getFrameCount0(nativePtr);
       }
 
+        @Override
+      public Optional<CefV8StackFrame> getFrame(int index) {
+          checkNotClosed();
+          return Optional.ofNullable(getFrame0(nativePtr, index));
+      }
+
 
         static native boolean isValid0(long self);
 
         static native int getFrameCount0(long self);
+
+        static native CefV8StackFrame getFrame0(long self, int index);
 
         static native CefV8StackTrace getCurrent0(int frameLimit);
 

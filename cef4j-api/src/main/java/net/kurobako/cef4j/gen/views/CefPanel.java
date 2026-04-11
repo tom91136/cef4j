@@ -126,6 +126,17 @@ public interface CefPanel extends CefView {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:128</a>
      */
     long getChildViewCount();
+
+    /**
+     * Returns the child View at the specified {@code index}.
+     * <p>Definition generated from views/cef_panel_capi.h
+     * <pre>cef_view_t* (CEF_CALLBACK* get_child_view_at)(struct _cef_panel_t* self, int index);</pre>
+     *
+     * @param index zero-based index
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:134</a>
+     */
+    Optional<CefView> getChildViewAt(int index);
     /**
      * Create a new Panel.
      * <p>Definition generated from views/cef_panel_capi.h
@@ -248,6 +259,12 @@ public interface CefPanel extends CefView {
       public long getChildViewCount() {
           checkNotClosed();
           return getChildViewCount0(nativePtr);
+      }
+
+        @Override
+      public Optional<CefView> getChildViewAt(int index) {
+          checkNotClosed();
+          return Optional.ofNullable(getChildViewAt0(nativePtr, index));
       }
 
         @Override
@@ -586,6 +603,8 @@ public interface CefPanel extends CefView {
         static native void removeAllChildViews0(long self);
 
         static native long getChildViewCount0(long self);
+
+        static native CefView getChildViewAt0(long self, int index);
 
         static native CefPanel create0(CefPanelDelegate delegate);
 

@@ -21,6 +21,16 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefV8StackTrace), getFrameCount0)(JNIEnv* env,
     return static_cast<jint>(s->get_frame_count(s));
 }
 
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8StackTrace), getFrame0)(JNIEnv* env, jobject obj, jlong self, jint index) {
+    auto* s = reinterpret_cast<cef_v8_stack_trace_t*>(self);
+    if (!s) return nullptr;
+    auto _r = s->get_frame(s, index);
+    if (!_r) return nullptr;
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8StackFrame$NativePeer");
+    auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
+    return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
+}
+
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8StackTrace), getCurrent0)(JNIEnv* env, jclass clz, jint frame_limit) {
     auto _r = cef_v8_stack_trace_get_current(frame_limit);
     if (!_r) return nullptr;

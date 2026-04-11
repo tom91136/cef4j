@@ -133,6 +133,16 @@ CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefPanel), getChildViewCount0)(JNIEnv* 
     return static_cast<jlong>(s->get_child_view_count(s));
 }
 
+CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), getChildViewAt0)(JNIEnv* env, jobject obj, jlong self, jint index) {
+    auto* s = reinterpret_cast<cef_panel_t*>(self);
+    if (!s) return nullptr;
+    auto _r = s->get_child_view_at(s, index);
+    if (!_r) return nullptr;
+    auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefView$NativePeer");
+    auto _rCtor = env->GetMethodID(_rCls, "<init>", "(J)V");
+    return env->NewObject(_rCls, _rCtor, reinterpret_cast<jlong>(_r));
+}
+
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefPanel), create0)(JNIEnv* env, jclass clz, jobject delegate) {
     cef_panel_delegate_t* _delegate_ptr = delegate ? Create_JniCefPanelDelegate(env, delegate) : nullptr;
     auto _r = cef_panel_create(_delegate_ptr);

@@ -93,4 +93,8 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
     default Optional<CefClient> getDefaultClient() {
         return Optional.empty();
     }
+
+    default Optional<CefRequestContextHandler> getDefaultRequestContextHandler() {
+        return Optional.empty();
+    }
 }

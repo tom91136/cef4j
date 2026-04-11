@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,6 +40,19 @@ public interface CefRequestHandler extends CefClientHandler {
      */
     default boolean onOpenUrlFromTab(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String targetUrl, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture) {
         return false;
+    }
+
+    /**
+     * Called on the browser process IO thread before a resource request is initiated. The {@code browser} and {@code frame} values represent the source of the request. {@code request} represents the request contents and cannot be modified in this callback. {@code is_navigation} will be {@code true} if the resource request is a navigation. {@code is_download} will be {@code true} if the resource request is a download. {@code request_initiator} is the origin (scheme + domain) of the page that initiated the request. Set {@code disable_default_handling} to {@code true} to disable default handling of the request, in which case it will need to be handled via {@link net.kurobako.cef4j.gen.CefResourceRequestHandler#getResourceHandler(CefBrowser, CefFrame, CefRequest)} or it will be canceled. To allow the resource load to proceed with default handling return {@code null}. To specify a handler for the resource return a CefResourceRequestHandler object. If this callback returns {@code null} the same method will be called on the associated CefRequestContextHandler, if any.
+     * <p>Definition generated from cef_request_handler_capi.h
+     * <pre>cef_resource_request_handler_t* (CEF_CALLBACK* get_resource_request_handler)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_request_t* request, int is_navigation, int is_download, const cef_string_t* request_initiator, int* disable_default_handling);</pre>
+     *
+     * @param requestInitiator may be null
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:125</a>
+     */
+    default Optional<CefResourceRequestHandler> getResourceRequestHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean isNavigation, boolean isDownload, @Nullable String requestInitiator, int[] disableDefaultHandling) {
+        return Optional.empty();
     }
 
     /**
