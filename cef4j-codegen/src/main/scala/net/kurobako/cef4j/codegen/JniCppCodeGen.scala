@@ -142,7 +142,7 @@ class JniCppCodeGen(
   private def writeCppFile(outDir: Path, fileName: String, content: String): Unit = {
     val file = outDir.resolve(fileName)
     Files.createDirectories(file.getParent)
-    Files.writeString(file, content)
+    Files.writeString(file, content.replace("\r\n", "\n").replace("\r", "\n"))
   }
 
   def emitToString(decl: CefDecl.ObjectStruct, freeFunctions: List[CefDecl.FreeFunction] = Nil): String = {

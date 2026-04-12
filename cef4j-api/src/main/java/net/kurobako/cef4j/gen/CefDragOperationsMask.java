@@ -31,7 +31,7 @@ public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMas
         PRIVATE(8, "8", "DRAG_OPERATION_PRIVATE"),
         MOVE(16, "16", "DRAG_OPERATION_MOVE"),
         DELETE(32, "32", "DRAG_OPERATION_DELETE"),
-        EVERY(4294967295L, "(0x7fffffff * 2 + 1)", "DRAG_OPERATION_EVERY");
+        EVERY(0xffffffffL, "0xffffffff", "DRAG_OPERATION_EVERY");
 
         private static final Kind[] VALUES = Kind.values();
 

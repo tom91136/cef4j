@@ -71,7 +71,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>((windowInfo)->runtime_style));
         auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo$Mutable");
-        auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JIIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
+        auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JJIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
         static_cast<jint>((windowInfo)->ex_style),
@@ -79,7 +79,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         static_cast<jint>((windowInfo)->style),
         _bv_windowInfo_bounds,
         to_jlong((windowInfo)->parent_window),
-        static_cast<jint>((windowInfo)->menu),
+        to_jlong((windowInfo)->menu),
         static_cast<jint>((windowInfo)->windowless_rendering_enabled),
         static_cast<jint>((windowInfo)->shared_texture_enabled),
         static_cast<jint>((windowInfo)->external_begin_frame_enabled),
@@ -208,7 +208,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
                 (windowInfo)->bounds.height = static_cast<decltype((windowInfo)->bounds.height)>(env->GetIntField(_wbn_bounds, env->GetFieldID(_wbn_boundsc, "height", "I")));
             }
             (windowInfo)->parent_window = from_jlong<decltype((windowInfo)->parent_window)>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J")));
-            (windowInfo)->menu = static_cast<decltype((windowInfo)->menu)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "menu", "I")));
+            (windowInfo)->menu = from_jlong<decltype((windowInfo)->menu)>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "menu", "J")));
             (windowInfo)->windowless_rendering_enabled = static_cast<decltype((windowInfo)->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I")));
             (windowInfo)->shared_texture_enabled = static_cast<decltype((windowInfo)->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I")));
             (windowInfo)->external_begin_frame_enabled = static_cast<decltype((windowInfo)->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I")));
@@ -359,7 +359,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>((windowInfo)->runtime_style));
         auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo$Mutable");
-        auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JIIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
+        auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JJIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
         static_cast<jint>((windowInfo)->ex_style),
@@ -367,7 +367,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         static_cast<jint>((windowInfo)->style),
         _bv_windowInfo_bounds,
         to_jlong((windowInfo)->parent_window),
-        static_cast<jint>((windowInfo)->menu),
+        to_jlong((windowInfo)->menu),
         static_cast<jint>((windowInfo)->windowless_rendering_enabled),
         static_cast<jint>((windowInfo)->shared_texture_enabled),
         static_cast<jint>((windowInfo)->external_begin_frame_enabled),
@@ -496,7 +496,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
                 (windowInfo)->bounds.height = static_cast<decltype((windowInfo)->bounds.height)>(env->GetIntField(_wbn_bounds, env->GetFieldID(_wbn_boundsc, "height", "I")));
             }
             (windowInfo)->parent_window = from_jlong<decltype((windowInfo)->parent_window)>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "parentWindow", "J")));
-            (windowInfo)->menu = static_cast<decltype((windowInfo)->menu)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "menu", "I")));
+            (windowInfo)->menu = from_jlong<decltype((windowInfo)->menu)>(env->GetLongField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "menu", "J")));
             (windowInfo)->windowless_rendering_enabled = static_cast<decltype((windowInfo)->windowless_rendering_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "windowlessRenderingEnabled", "I")));
             (windowInfo)->shared_texture_enabled = static_cast<decltype((windowInfo)->shared_texture_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "sharedTextureEnabled", "I")));
             (windowInfo)->external_begin_frame_enabled = static_cast<decltype((windowInfo)->external_begin_frame_enabled)>(env->GetIntField(j_windowInfo, env->GetFieldID(j_windowInfo_cls, "externalBeginFrameEnabled", "I")));

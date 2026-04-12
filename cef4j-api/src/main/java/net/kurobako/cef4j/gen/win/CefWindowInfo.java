@@ -15,7 +15,7 @@ import net.kurobako.cef4j.gen.CefRuntimeStyle;
  *   int style;
  *   cef_rect_t* bounds;
  *   int64_t parent_window;
- *   int menu;
+ *   int64_t menu;
  *   int windowless_rendering_enabled;
  *   int shared_texture_enabled;
  *   int external_begin_frame_enabled;
@@ -38,7 +38,7 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
     public final int style;
     public final CefRect bounds;
     public final long parentWindow;
-    public final int menu;
+    public final long menu;
         /**
          * Set to {@code true} (1) to create the browser using windowless (off-screen) rendering. No window will be created for the browser and all rendering will occur via the CefRenderHandler interface. The {@code parent_window} value will be used to identify monitor info and to act as the parent window for dialogs, context menus, etc. If {@code parent_window} is not provided then the main screen monitor will be used and some functionality that requires a parent window may not function correctly. In order to create windowless browsers the CefSettings.windowless_rendering_enabled value must be set to {@code true}. Transparent painting is enabled by default but can be disabled by setting CefBrowserSettings.background_color to an opaque value. 
          */    public final int windowlessRenderingEnabled;
@@ -55,7 +55,7 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
          * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true}. See cef_runtime_style_t documentation for details. 
          */    public final CefRuntimeStyle runtimeStyle;
 
-    public CefWindowInfo(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, int menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+    public CefWindowInfo(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
         this.exStyle = exStyle;
         this.windowName = windowName;
         this.style = style;
@@ -119,7 +119,7 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
         public int style;
         public CefRect bounds;
         public long parentWindow;
-        public int menu;
+        public long menu;
             /**
              * Set to {@code true} (1) to create the browser using windowless (off-screen) rendering. No window will be created for the browser and all rendering will occur via the CefRenderHandler interface. The {@code parent_window} value will be used to identify monitor info and to act as the parent window for dialogs, context menus, etc. If {@code parent_window} is not provided then the main screen monitor will be used and some functionality that requires a parent window may not function correctly. In order to create windowless browsers the CefSettings.windowless_rendering_enabled value must be set to {@code true}. Transparent painting is enabled by default but can be disabled by setting CefBrowserSettings.background_color to an opaque value. 
              */        public int windowlessRenderingEnabled;
@@ -138,7 +138,7 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
 
         public Mutable() {}
 
-        public Mutable(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, int menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+        public Mutable(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
             this.exStyle = exStyle;
             this.windowName = windowName;
             this.style = style;

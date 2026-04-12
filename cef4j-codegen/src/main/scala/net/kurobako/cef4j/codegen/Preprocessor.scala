@@ -17,6 +17,17 @@ object Preprocessor {
     dir
   }
 
+  private lazy val linuxShimIncludeDir: Path = {
+    val dir = Files.createTempDirectory("cef4j-linux-shim")
+    for ((name, content) <- linuxShimHeaders) {
+      val header = dir.resolve(name)
+      Files.writeString(header, content)
+      header.toFile.deleteOnExit()
+    }
+    dir.toFile.deleteOnExit()
+    dir
+  }
+
   private lazy val macShimIncludeDir: Path = {
     val dir    = Files.createTempDirectory("cef4j-mac-shim")
     val header = dir.resolve("TargetConditionals.h")
@@ -85,6 +96,13 @@ object Preprocessor {
       |#endif
       |""".stripMargin
 
+  // Minimal POSIX header stubs so MSVC can cross-preprocess Linux/macOS CEF headers.
+  // The codegen only cares about type declarations, not actual POSIX implementations.
+  private val linuxShimHeaders: List[(String, String)] = List(
+    "unistd.h"  -> "#pragma once\n",
+    "pthread.h" -> "#pragma once\ntypedef unsigned long pthread_t;\ntypedef union { char __size[56]; long __align; } pthread_mutex_t;\n"
+  )
+
   private def hasWindowsTarget(defines: Seq[String]): Boolean =
     defines.exists(d => d == WindowsTargetDefine || d.startsWith(s"$WindowsTargetDefine="))
 
@@ -149,11 +167,38 @@ object Preprocessor {
       List(file.toString)
   }
 
-  private def msvcCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] =
+  private def msvcCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] = {
+    val hasLinux = defines.exists(d => d == "OS_LINUX" || d.startsWith("OS_LINUX="))
+    val hasMac   = defines.exists(d => d == "OS_MAC" || d.startsWith("OS_MAC="))
+    // Include platform shim dirs for headers that don't exist on the host (Windows).
+    val extraIncludes =
+      (if (hasLinux || hasMac) List(linuxShimIncludeDir) else Nil) ++
+        (if (hasMac) List(macShimIncludeDir) else Nil)
+    // MSVC always defines _WIN32 and _MSC_VER. When cross-preprocessing
+    // Linux/macOS headers, we must undefine them and define the correct target
+    // platform + compiler macros so CEF's cef_build.h resolves correctly.
+    val platformOverrides = {
+      val hasWin = defines.exists(d => d == "OS_WIN" || d.startsWith("OS_WIN="))
+      if (!hasLinux && !hasMac && !hasWin) Nil
+      else {
+        val undefs =
+          (if (!hasWin) List("/U_WIN32", "/U_WIN64", "/U_MSC_VER") else Nil) ++
+            (if (!hasMac) List("/U__APPLE__", "/U__MACH__") else Nil) ++
+            (if (!hasLinux) List("/U__linux__", "/U__linux", "/U__gnu_linux__") else Nil)
+        val defs =
+          (if (hasLinux) List("/D__linux__", "/D__linux", "/D__gnu_linux__", "/D__GNUC__=4", "/D__WCHAR_MAX__=0x7fffffff") else Nil) ++
+            (if (hasMac) List("/D__APPLE__", "/D__MACH__", "/D__GNUC__=4", "/D__WCHAR_MAX__=0x7fffffff") else Nil) ++
+            (if (hasWin) List("/D_WIN32") else Nil)
+        undefs ++ defs
+      }
+    }
     List("cl.exe", "/nologo", "/E", "/EP") ++
       defines.map(d => s"/D$d") ++
+      platformOverrides ++
+      extraIncludes.flatMap(d => List(s"/I$d")) ++
       includes.flatMap(d => List(s"/I$d")) ++
       List(file.toString)
+  }
 
   private def stripLineMarkers(src: String): String =
     src.linesIterator

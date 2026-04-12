@@ -169,16 +169,17 @@ public final class SystemBootstrap {
      * then null.
      */
     public static String getHelperPath() {
+        String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         if (extractionDir != null) {
-            Path launcher = extractionDir.resolve("cef4j_launcher");
-            if (Files.isExecutable(launcher)) {
+            Path launcher = extractionDir.resolve(launcherName);
+            if (Files.exists(launcher)) {
                 return launcher.toAbsolutePath().toString();
             }
         }
         Path libcefDir = getLibcefDir();
         if (libcefDir != null) {
-            Path launcher = libcefDir.resolve("cef4j_launcher");
-            if (Files.isExecutable(launcher)) {
+            Path launcher = libcefDir.resolve(launcherName);
+            if (Files.exists(launcher)) {
                 return launcher.toAbsolutePath().toString();
             }
         }
@@ -233,7 +234,7 @@ public final class SystemBootstrap {
             for (String lib : new String[] {
                 "libEGL.dylib", "libGLESv2.dylib", "libvk_swiftshader.dylib", "vk_swiftshader_icd.json"
             }) {
-                symlinkIfNeeded(frameworkLibs.resolve(lib), cacheDir.resolve(lib));
+                linkOrCopy(frameworkLibs.resolve(lib), cacheDir.resolve(lib));
             }
 
             // On macOS, the CEF framework must NOT be direct-linked; it is loaded dynamically via
@@ -259,11 +260,22 @@ public final class SystemBootstrap {
             } catch (Exception ignored) {
                 // xattr may not exist or quarantine may not be set; not fatal
             }
+        } else if (OS.isWindows()) {
+            // On Windows, pre-load dependencies in order so each DLL is already
+            // resident when the next one tries to import it.  The JVM does not add
+            // a DLL's directory to the search path automatically, so we must
+            // resolve every required DLL explicitly before loading libcef.dll.
+            for (String dep : new String[] {"chrome_elf.dll", "libcef.dll"}) {
+                Path depPath = cacheDir.resolve(dep);
+                if (Files.exists(depPath)) {
+                    System.load(depPath.toAbsolutePath().toString());
+                }
+            }
+            System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
         } else {
-            // On Linux/Windows, pre-load the CEF shared library so the linker resolves
+            // On Linux, pre-load the CEF shared library so the linker resolves
             // libcef4j's dependency on it before we load libcef4j itself.
-            String cefLib = OS.isWindows() ? "libcef.dll" : "libcef.so";
-            System.load(cacheDir.resolve(cefLib).toAbsolutePath().toString());
+            System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
         }
         loaded = true;
@@ -283,7 +295,7 @@ public final class SystemBootstrap {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
-                line = line.trim();
+                line = line.trim().replace('\\', '/');
                 if (line.isEmpty()) continue;
                 Path target = cacheDir.resolve(line);
                 // Skip if already extracted and non-empty
@@ -307,7 +319,7 @@ public final class SystemBootstrap {
             // On macOS, libcef4j.dylib uses @loader_path to find the framework.
             // Symlink the entire framework next to libcef4j.dylib in the cache dir.
             String framework = "Chromium Embedded Framework.framework";
-            symlinkIfNeeded(libcefDir.resolve(framework), cacheDir.resolve(framework));
+            linkOrCopy(libcefDir.resolve(framework), cacheDir.resolve(framework));
             return;
         }
 
@@ -318,15 +330,20 @@ public final class SystemBootstrap {
         if (Files.isDirectory(resourcesDir)) {
             for (String res :
                     new String[] {"icudtl.dat", "resources.pak", "chrome_100_percent.pak", "chrome_200_percent.pak"}) {
-                symlinkIfNeeded(resourcesDir.resolve(res), libcefDir.resolve(res));
+                linkOrCopy(resourcesDir.resolve(res), libcefDir.resolve(res));
             }
-            symlinkIfNeeded(resourcesDir.resolve("locales"), libcefDir.resolve("locales"));
+            linkOrCopy(resourcesDir.resolve("locales"), libcefDir.resolve("locales"));
         }
 
-        // Symlink CEF shared libraries from LIBCEF_DIR so the $ORIGIN rpath resolves
-        for (String lib :
-                new String[] {"libcef.so", "libEGL.so", "libGLESv2.so", "libvk_swiftshader.so", "libvulkan.so.1"}) {
-            symlinkIfNeeded(libcefDir.resolve(lib), cacheDir.resolve(lib));
+        // Link CEF shared libraries from LIBCEF_DIR into cache dir
+        String[] libs;
+        if (OS.isWindows()) {
+            libs = new String[] {"libcef.dll", "chrome_elf.dll", "d3dcompiler_47.dll", "vk_swiftshader.dll", "vulkan-1.dll"};
+        } else {
+            libs = new String[] {"libcef.so", "libEGL.so", "libGLESv2.so", "libvk_swiftshader.so", "libvulkan.so.1"};
+        }
+        for (String lib : libs) {
+            linkOrCopy(libcefDir.resolve(lib), cacheDir.resolve(lib));
         }
 
         // Also symlink resources into cache dir for subprocess launcher (cef4j_launcher)
@@ -338,9 +355,9 @@ public final class SystemBootstrap {
             "v8_context_snapshot.bin",
             "vk_swiftshader_icd.json"
         }) {
-            symlinkIfNeeded(libcefDir.resolve(res), cacheDir.resolve(res));
+            linkOrCopy(libcefDir.resolve(res), cacheDir.resolve(res));
         }
-        symlinkIfNeeded(libcefDir.resolve("locales"), cacheDir.resolve("locales"));
+        linkOrCopy(libcefDir.resolve("locales"), cacheDir.resolve("locales"));
     }
 
     // macOS only: calls cef_load_library() from libcef_dll_dylib.cc to dynamically load the
@@ -356,7 +373,7 @@ public final class SystemBootstrap {
         }
     }
 
-    private static void symlinkIfNeeded(Path source, Path link) throws IOException {
+    private static void linkOrCopy(Path source, Path link) throws IOException {
         if (!Files.exists(source)) return;
         if (Files.isSymbolicLink(link)) {
             // Update if target changed
@@ -366,6 +383,35 @@ public final class SystemBootstrap {
             // Real file/directory already exists - leave it alone
             return;
         }
-        Files.createSymbolicLink(link, source.toAbsolutePath());
+        // Symbolic links on Windows require developer mode or admin privileges.
+        // Fall back to a regular copy when symlink creation fails.
+        try {
+            Files.createSymbolicLink(link, source.toAbsolutePath());
+        } catch (UnsupportedOperationException | IOException e) {
+            log.debug("Symlink failed ({}), falling back to copy: {} -> {}", e.getMessage(), source, link);
+            if (Files.isDirectory(source)) {
+                copyDirectoryRecursive(source, link);
+            } else {
+                Files.copy(source, link);
+            }
+        }
+    }
+
+    private static void copyDirectoryRecursive(Path source, Path target) throws IOException {
+        Files.createDirectories(target);
+        try (java.util.stream.Stream<Path> walk = Files.walk(source)) {
+            walk.forEach(s -> {
+                try {
+                    Path dest = target.resolve(source.relativize(s));
+                    if (Files.isDirectory(s)) {
+                        Files.createDirectories(dest);
+                    } else {
+                        Files.copy(s, dest, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException ex) {
+                    throw new java.io.UncheckedIOException(ex);
+                }
+            });
+        }
     }
 }

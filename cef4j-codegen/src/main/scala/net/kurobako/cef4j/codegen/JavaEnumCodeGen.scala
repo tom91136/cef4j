@@ -19,10 +19,20 @@ object JavaEnumCodeGen {
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
+  // Regex matching a simple atom literal (no operators): decimal or hex digits only.
+  private val SimpleLiteralRe = """0[xX][0-9A-Fa-f]+[UuLl]*|[0-9]+[UuLl]*""".r
+
   private def javaExpr(rawExpr: String, evaluated: Long): String = {
     val trimmed = rawExpr.trim
-    if (JavaSafeExprRe.matches(trimmed)) trimmed
-    else s"${evaluated}L"
+    if (JavaSafeExprRe.matches(trimmed)) {
+      // Java integer literals wider than Int.MaxValue must carry an L suffix, otherwise
+      // the compiler sees a signed 32-bit overflow.  For a simple atom literal we append L;
+      // for composite expressions (operators present) we fall back to the decimal form.
+      val needsLong = evaluated > Int.MaxValue || evaluated < Int.MinValue
+      if (!needsLong) trimmed
+      else if (SimpleLiteralRe.matches(trimmed)) s"${stripCSuffix(trimmed)}L"
+      else s"${evaluated}L"
+    } else s"${evaluated}L"
   }
 
   private def stripCSuffix(token: String): String =

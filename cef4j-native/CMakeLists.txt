@@ -70,6 +70,9 @@ if(APPLE)
     # cef4j loads the CEF framework dynamically via cef_load_library() / dlopen.
     # Link only the system frameworks needed at compile/link time.
     target_link_libraries(cef4j PRIVATE "-framework Foundation" "-framework AppKit" "-ldl")
+elseif(WIN32)
+    # MSVC links against the import library (.lib), not the runtime DLL.
+    target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef.lib)
 else()
     target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
@@ -84,6 +87,13 @@ if(MSVC)
     foreach(flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_RELEASE)
         string(REPLACE "/MD" "/MT" ${flag} "${${flag}}")
     endforeach()
+    # MSVC multi-config generators output to Release/ subdirectory by default.
+    # Force all outputs to the cmake-build root so Maven copy-native-lib finds them.
+    set_target_properties(cef4j PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}"
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}"
+    )
 elseif(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "")
 elseif(UNIX)
@@ -102,6 +112,10 @@ if(APPLE)
     set_source_files_properties(${LAUNCHER_DYLIB_LOADER} PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
     target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
     target_link_libraries(cef4j_launcher PRIVATE "-framework Foundation" "-framework AppKit" "-ldl")
+elseif(WIN32)
+    add_executable(cef4j_launcher WIN32 "${CMAKE_SOURCE_DIR}/native/runtime/subprocess_main.cpp")
+    target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
+    target_link_libraries(cef4j_launcher PRIVATE ${CEF_ROOT}/Release/libcef.lib)
 else()
     add_executable(cef4j_launcher "${CMAKE_SOURCE_DIR}/native/runtime/subprocess_main.cpp")
     target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
@@ -109,6 +123,12 @@ else()
 endif()
 if(UNIX AND NOT APPLE)
     target_link_options(cef4j_launcher PRIVATE -static-libstdc++ -static-libgcc)
+endif()
+
+if(MSVC)
+    set_target_properties(cef4j_launcher PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}"
+    )
 endif()
 
 if(UNIX)

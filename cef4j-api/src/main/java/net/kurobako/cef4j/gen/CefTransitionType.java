@@ -66,11 +66,11 @@ public final class CefTransitionType implements CefEnum<CefTransitionType> {
         /** Redirects caused by JavaScript or a meta refresh tag on the page.  */
         CLIENT_REDIRECT_FLAG(0x40000000, "0x40000000", "TT_CLIENT_REDIRECT_FLAG"),
         /** Redirects sent from the server by HTTP headers.  */
-        SERVER_REDIRECT_FLAG(0x80000000, "0x80000000", "TT_SERVER_REDIRECT_FLAG"),
+        SERVER_REDIRECT_FLAG(0x80000000L, "0x80000000", "TT_SERVER_REDIRECT_FLAG"),
         /** Used to test whether a transition involves a redirect.  */
-        IS_REDIRECT_MASK(0xC0000000, "0xc0000000", "TT_IS_REDIRECT_MASK"),
+        IS_REDIRECT_MASK(0xC0000000L, "0xc0000000", "TT_IS_REDIRECT_MASK"),
         /** General mask defining the bits used for the qualifiers.  */
-        QUALIFIER_MASK(0xFFFFFF00, "0xffffff00", "TT_QUALIFIER_MASK");
+        QUALIFIER_MASK(0xFFFFFF00L, "0xffffff00", "TT_QUALIFIER_MASK");
 
         private static final Kind[] VALUES = Kind.values();
 

@@ -241,7 +241,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), showDevTools0)(JNIEnv* env, j
             _windowInfo_val.bounds.height = static_cast<decltype(_windowInfo_val.bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));
         }
         _windowInfo_val.parent_window = from_jlong<decltype(_windowInfo_val.parent_window)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "parentWindow", "J")));
-        _windowInfo_val.menu = static_cast<decltype(_windowInfo_val.menu)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "I")));
+        _windowInfo_val.menu = from_jlong<decltype(_windowInfo_val.menu)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "J")));
         _windowInfo_val.windowless_rendering_enabled = static_cast<decltype(_windowInfo_val.windowless_rendering_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "windowlessRenderingEnabled", "I")));
         _windowInfo_val.shared_texture_enabled = static_cast<decltype(_windowInfo_val.shared_texture_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "sharedTextureEnabled", "I")));
         _windowInfo_val.external_begin_frame_enabled = static_cast<decltype(_windowInfo_val.external_begin_frame_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "externalBeginFrameEnabled", "I")));
@@ -796,7 +796,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefBrowserHost), createBrowser0)(JNIEnv* env, 
         _windowInfo_val.bounds.height = static_cast<decltype(_windowInfo_val.bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));
     }
     _windowInfo_val.parent_window = from_jlong<decltype(_windowInfo_val.parent_window)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "parentWindow", "J")));
-    _windowInfo_val.menu = static_cast<decltype(_windowInfo_val.menu)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "I")));
+    _windowInfo_val.menu = from_jlong<decltype(_windowInfo_val.menu)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "J")));
     _windowInfo_val.windowless_rendering_enabled = static_cast<decltype(_windowInfo_val.windowless_rendering_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "windowlessRenderingEnabled", "I")));
     _windowInfo_val.shared_texture_enabled = static_cast<decltype(_windowInfo_val.shared_texture_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "sharedTextureEnabled", "I")));
     _windowInfo_val.external_begin_frame_enabled = static_cast<decltype(_windowInfo_val.external_begin_frame_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "externalBeginFrameEnabled", "I")));
@@ -916,7 +916,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), createBrowserSync0)(JNIEnv
         _windowInfo_val.bounds.height = static_cast<decltype(_windowInfo_val.bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));
     }
     _windowInfo_val.parent_window = from_jlong<decltype(_windowInfo_val.parent_window)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "parentWindow", "J")));
-    _windowInfo_val.menu = static_cast<decltype(_windowInfo_val.menu)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "I")));
+    _windowInfo_val.menu = from_jlong<decltype(_windowInfo_val.menu)>(env->GetLongField(windowInfo, env->GetFieldID(_windowInfo_c, "menu", "J")));
     _windowInfo_val.windowless_rendering_enabled = static_cast<decltype(_windowInfo_val.windowless_rendering_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "windowlessRenderingEnabled", "I")));
     _windowInfo_val.shared_texture_enabled = static_cast<decltype(_windowInfo_val.shared_texture_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "sharedTextureEnabled", "I")));
     _windowInfo_val.external_begin_frame_enabled = static_cast<decltype(_windowInfo_val.external_begin_frame_enabled)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "externalBeginFrameEnabled", "I")));

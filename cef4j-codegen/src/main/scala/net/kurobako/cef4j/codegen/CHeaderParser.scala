@@ -290,7 +290,9 @@ object CHeaderParser {
       case "cef_string_multimap_t"                      => CType.StringMultimap
       case "cef_window_handle_t" | "cef_cursor_handle_t" | "cef_event_handle_t"
           | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t"
-          | "cef_shared_texture_handle_t" => CType.Long
+          | "cef_shared_texture_handle_t"
+          // Windows handle types (pointer-width) that survive preprocessing as typedefs
+          | "HWND" | "HMENU" | "HCURSOR" | "HINSTANCE" | "HANDLE" => CType.Long
       case "cef_color_t"                                                           => CType.UInt
       case t if ByValueStructs.exists(g => t == s"const $g*" || t == s"$g const*") =>
         val cefName = ByValueStructs.find(g => t.contains(g)).get

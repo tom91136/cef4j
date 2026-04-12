@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * Structure representing CefExecuteProcess arguments.
  * <p>Definition generated from internal/cef_types_win.h
  * <pre>typedef struct _cef_main_args_t {
- *   int instance;
+ *   int64_t instance;
  * } cef_main_args_t;</pre>
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__win_8h.html">internal/cef_types_win.h:64</a>
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMainArgs {
 
-    public final int instance;
+    public final long instance;
 
-    public CefMainArgs(int instance) {
+    public CefMainArgs(long instance) {
         this.instance = instance;
     }
 
@@ -53,11 +53,11 @@ public final class CefMainArgs {
      */
     public static final class Mutable {
 
-        public int instance;
+        public long instance;
 
         public Mutable() {}
 
-        public Mutable(int instance) {
+        public Mutable(long instance) {
             this.instance = instance;
         }
 

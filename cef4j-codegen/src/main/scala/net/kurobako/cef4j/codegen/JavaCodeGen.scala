@@ -59,7 +59,7 @@ $body
     val dir  = if (subPackage.nonEmpty) outDir.resolve(subPackage.replace('.', '/')) else outDir
     val file = dir.resolve(s"$className.java")
     Files.createDirectories(file.getParent)
-    Files.writeString(file, content)
+    Files.writeString(file, content.replace("\r\n", "\n").replace("\r", "\n"))
   }
 
   def isOptionalReturn(fn: FnPtr): Boolean = fn.ret match {

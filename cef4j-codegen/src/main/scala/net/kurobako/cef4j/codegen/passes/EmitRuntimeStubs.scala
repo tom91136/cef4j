@@ -68,7 +68,12 @@ object EmitRuntimeStubs {
     verifySb.append("#include \"jni_util.h\"\n")
     verifySb.append("#include \"runtime_stubs.gen.h\"\n\n")
     verifySb.append("using FnPtr_ = void (*)();\n")
+    verifySb.append("#ifdef _MSC_VER\n")
+    verifySb.append("#pragma warning(disable: 4100)\n")
+    verifySb.append("static FnPtr_ runtime_stubs_verify_[] = {\n")
+    verifySb.append("#else\n")
     verifySb.append("__attribute__((used)) static FnPtr_ runtime_stubs_verify_[] = {\n")
+    verifySb.append("#endif\n")
     methods.foreach { m =>
       verifySb.append(s"    reinterpret_cast<FnPtr_>(&${jniSymbol(m)}),\n")
     }
@@ -77,8 +82,9 @@ object EmitRuntimeStubs {
     val outFile = outCpp.resolve("runtime_stubs.gen.h")
     Files.createDirectories(outFile.getParent)
 
-    Files.writeString(outCpp.resolve("runtime_stubs_verify.gen.cpp"), verifySb.toString)
-    Files.writeString(outFile, sb.toString)
+    def normalize(s: String) = s.replace("\r\n", "\n").replace("\r", "\n")
+    Files.writeString(outCpp.resolve("runtime_stubs_verify.gen.cpp"), normalize(verifySb.toString))
+    Files.writeString(outFile, normalize(sb.toString))
     println(s"  runtime stubs: ${methods.size} native methods -> ${outFile.getFileName}")
   }
 

@@ -32,6 +32,10 @@ class JniCppHandlerTrampolineGen(
     "cef_platform_thread_handle_t",
     "cef_shared_texture_handle_t",
     "HWND",
+    "HMENU",
+    "HCURSOR",
+    "HINSTANCE",
+    "HANDLE",
     "NSView*",
     "unsigned long"
   )
