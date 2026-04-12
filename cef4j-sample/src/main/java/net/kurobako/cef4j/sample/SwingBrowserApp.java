@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.*;
+import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
@@ -74,11 +75,28 @@ public final class SwingBrowserApp {
         }
         CefBrowserPanel.initialise(settings, null, extraArgs.toArray(String[]::new));
 
-        SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
+        // On macOS, Thread 0 is the AppKit main thread. invokeAndWait() from Thread 0 deadlocks
+        // because Swing window creation requires Thread 0 (via AppKit), which is blocked.
+        // Use invokeLater() so Thread 0 is free to pump the CEF message loop, which processes
+        // AppKit events (including the pending UI creation) via CFRunLoop.
+        if (OS.isMacOS()) {
+            SwingUtilities.invokeLater(SwingBrowserApp::createUI);
+        } else {
+            SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
+        }
         SigintHelper.install(SwingBrowserApp::requestShutdown);
 
-        // Block the main thread until shutdown is requested - CefBrowserPanel.terminate() must run here
-        shutdownLatch.await();
+        // Keep the main thread alive, pumping the CEF message loop until shutdown completes.
+        // On macOS, CEF uses externalMessagePump so Thread 0 must drive the loop.
+        // On other platforms, CEF manages its own loop thread; we simply wait for the latch.
+        if (OS.isMacOS()) {
+            while (shutdownLatch.getCount() > 0) {
+                Cef.INSTANCE.doMessageLoopWork();
+                Thread.sleep(10);
+            }
+        } else {
+            shutdownLatch.await();
+        }
         CefBrowserPanel.terminate();
         log.info("Exiting");
         System.exit(0);
@@ -555,13 +573,11 @@ public final class SwingBrowserApp {
                 }
             };
 
-            CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
-            windowInfo.bounds = new CefRect(0, 0, Math.max(1, surface.getWidth()), Math.max(1, surface.getHeight()));
-            windowInfo.windowlessRenderingEnabled = 1;
+            CefWindowInfo windowInfo = Cef.createWindowlessInfo(
+                    new CefRect(0, 0, Math.max(1, surface.getWidth()), Math.max(1, surface.getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(
-                    windowInfo.toImmutable(), client, initialUrl, browserSettings.toImmutable(), null, null);
+            CefBrowserHost.createBrowser(windowInfo, client, initialUrl, browserSettings.toImmutable(), null, null);
         }
 
         JComponent createTabHeader() {

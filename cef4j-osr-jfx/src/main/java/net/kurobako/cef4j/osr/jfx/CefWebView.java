@@ -198,11 +198,23 @@ public class CefWebView extends Region {
                         + requested
                         + ".");
             }
-            if (Platform.isFxApplicationThread()
+            // On macOS we use externalMessagePump=1 (caller drives the CEF loop), so it is safe
+            // to call initialise() after JavaFX has already started. On Linux/Windows we use
+            // multiThreadedMessageLoop=1, which starts internal CEF threads; those must be
+            // created before the JavaFX toolkit starts its own render infrastructure.
+            boolean fxRunning = Platform.isFxApplicationThread()
                     || Thread.getAllStackTraces().keySet().stream()
-                            .anyMatch(t -> "JavaFX Application Thread".equals(t.getName()))) {
+                            .anyMatch(t -> "JavaFX Application Thread".equals(t.getName()));
+            if (fxRunning && !OS.isMacOS()) {
                 throw new IllegalStateException(
                         "CefWebView.initialise() must be called before the JavaFX toolkit is started");
+            }
+            // On macOS with -XstartOnFirstThread, the main thread IS the FX Application Thread
+            // (they share the AppKit main thread). CEF must be initialised on this thread, so the
+            // check is skipped.  On other platforms the FX thread must not block on CEF init.
+            if (Platform.isFxApplicationThread() && !OS.isMacOS()) {
+                throw new IllegalStateException(
+                        "CefWebView.initialise() must not be called from the JavaFX Application Thread");
             }
             SystemBootstrap.load();
             Cef.INSTANCE.initialise(requested.settings.toMutable(), requested.extraArgs, appHandler);
@@ -498,14 +510,13 @@ public class CefWebView extends Region {
             if (activeSetup == null) {
                 initialise();
             }
-            CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
-            windowInfo.bounds = new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight()));
-            windowInfo.windowlessRenderingEnabled = 1;
+            CefWindowInfo windowInfo = Cef.createWindowlessInfo(
+                    new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
             // Create without an initial URL so queued load/loadContent actions define the first committed page.
-            int result = CefBrowserHost.createBrowser(
-                    windowInfo.toImmutable(), client, "", browserSettings.toImmutable(), null, null);
+            int result =
+                    CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
             if (result == 0) {
                 throw new IllegalStateException("CEF failed to create windowless browser");
             }
@@ -920,7 +931,21 @@ public class CefWebView extends Region {
         runOnFxAndWait(() -> popupEngine.set(handler.call(new CefPopupFeatures(false, false, false, true))));
         CefWebEngine createdEngine = popupEngine.get();
         if (createdEngine == null) return true;
-        createdEngine.getView().updateDetachedBounds(windowInfo.bounds, true);
+        CefRect popupBounds;
+        if (OS.isMacOS()) {
+            var wi = (net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) windowInfo;
+            wi.windowlessRenderingEnabled = 1;
+            popupBounds = wi.bounds;
+        } else if (OS.isWindows()) {
+            var wi = (net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) windowInfo;
+            wi.windowlessRenderingEnabled = 1;
+            popupBounds = wi.bounds;
+        } else {
+            var wi = (net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) windowInfo;
+            wi.windowlessRenderingEnabled = 1;
+            popupBounds = wi.bounds;
+        }
+        createdEngine.getView().updateDetachedBounds(popupBounds, true);
         clientRef.set(createdEngine.getView().getCefClient());
         return false;
     }
@@ -1018,10 +1043,19 @@ public class CefWebView extends Region {
                 settings.cachePath = cacheDir.toAbsolutePath().toString();
             }
             settings.windowlessRenderingEnabled = 1;
-            settings.externalMessagePump = 0;
-            settings.multiThreadedMessageLoop = 1;
+            if (OS.isMacOS()) {
+                settings.externalMessagePump = 1;
+                settings.multiThreadedMessageLoop = 0;
+                settings.noSandbox = 1;
+            } else {
+                settings.externalMessagePump = 0;
+                settings.multiThreadedMessageLoop = 1;
+            }
             List<String> args = new ArrayList<>();
             args.add("--disable-popup-blocking");
+            if (OS.isMacOS()) {
+                args.add("--no-sandbox");
+            }
             if (OS.isLinux()) {
                 // JavaFX still renders through X11 here, so force Chromium onto the same platform.
                 args.add("--ozone-platform=x11");

@@ -18,6 +18,8 @@
     <properties>
         <!-- PixelBuffer requires JavaFX 13+; compile against the lowest supported version -->
         <javafx.version>13.0.2</javafx.version>
+        <!-- Test-only JavaFX version; overridden to 23.0.2 on macOS to get arm64 native libs -->
+        <javafx.test.version>11</javafx.test.version>
     </properties>
 
     <dependencies>
@@ -44,7 +46,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>11</version>
+            <version>${javafx.test.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -79,14 +81,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- Default fork: javafx-only compat tests (no CEF).
+                         These tests must NOT use -XstartOnFirstThread on macOS because
+                         without CEF there is nothing to pump the AppKit runloop, and
+                         the test thread (which IS the AppKit thread) blocks in wait loops. -->
+                    <argLine>-Dignore=true</argLine>
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                     </systemPropertyVariables>
-                    <!-- Default fork: javafx-only compat tests (no CEF).
-                         CEF initialization breaks the JavaFX platform, so
-                         CefWebView tests and cef compat tests need a separate fork.
-                         Fresh JVM per test class prevents JavaFX WebKit state (timers,
-                         focus, open windows) from one test class interfering with the next. -->
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/CefWebView*.java</exclude>
@@ -98,6 +100,7 @@
                         <id>cef-tests</id>
                         <goals><goal>test</goal></goals>
                         <configuration>
+                            <argLine>${surefire.argLine}</argLine>
                             <!-- Fresh JVM per test class: CefWebView tests leave CEF
                                  state (browsers, message loop) that interferes with
                                  subsequent classes in the same fork. -->
@@ -170,10 +173,30 @@ sourceDir.eachFileRecurse { File sourceFile ->
     text = text.replaceAll("\\bWebErrorEvent\\b", "CefWebErrorEvent")
     text = text.replaceAll("\\bWebEvent\\b", "CefWebEvent")
 
-    // In the cef compat variant, ensureStarted() must initialise CEF before starting JavaFX.
+    // On macOS with -XstartOnFirstThread, cef_initialize() must run BEFORE Platform.startup()
+    // takes over the AppKit main thread.  CefWebView.initialise() cannot be called yet because
+    // CefWebView extends Node and loading it triggers Node.<clinit> which requires the toolkit.
+    // So preStartup() pre-initialises CEF directly; postStartup() then calls CefWebView.initialise()
+    // which detects CEF is already running and just records the setup state.
     text = text.replace(
-            'run them under Xvfb or Wayland.");',
-            'run them under Xvfb or Wayland.");\n        CefWebView.initialise();')
+            '    static void preStartup() {\n        // no-op; replaced in the generated CEF variant to pre-initialise CEF on macOS\n    }',
+            '    static void preStartup() {\n' +
+            '        if (OS.isMacOS()) {\n' +
+            '            net.kurobako.cef4j.SystemBootstrap.load();\n' +
+            '            net.kurobako.cef4j.gen.CefSettings.Mutable s = new net.kurobako.cef4j.gen.CefSettings.Mutable();\n' +
+            '            s.windowlessRenderingEnabled = 1;\n' +
+            '            s.externalMessagePump = 1;\n' +
+            '            s.multiThreadedMessageLoop = 0;\n' +
+            '            s.noSandbox = 1;\n' +
+            '            java.nio.file.Path cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");\n' +
+            '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
+            '            s.cachePath = cacheDir.toAbsolutePath().toString();\n' +
+            '            Cef.INSTANCE.initialise(s, java.util.List.of("--disable-popup-blocking", "--no-sandbox"));\n' +
+            '        }\n' +
+            '    }')
+    text = text.replace(
+            '    static void postStartup() {\n        // no-op; replaced in the generated CEF variant to initialise CefWebView\n    }',
+            '    static void postStartup() {\n        CefWebView.initialise();\n    }')
 
     String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
     File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)
@@ -206,4 +229,37 @@ sourceDir.eachFileRecurse { File sourceFile ->
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- macOS arm64: JavaFX 13.0.2 has no arm64 native lib in Maven Central; use 23.0.2.
+             The provided-scope deps transitively pull in javafx-*-23.0.2-mac-aarch64.jar which
+             contains both the Java classes (compile) and native .dylib files (test runtime). -->
+        <profile>
+            <id>javafx-macos-aarch64</id>
+            <activation>
+                <os>
+                    <name>Mac OS X</name>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javafx.version>23.0.2</javafx.version>
+                <javafx.test.version>23.0.2</javafx.test.version>
+            </properties>
+        </profile>
+        <!-- macOS x86_64: use 23.0.2 for test consistency with arm64. -->
+        <profile>
+            <id>javafx-macos-x86_64</id>
+            <activation>
+                <os>
+                    <name>Mac OS X</name>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <javafx.version>23.0.2</javafx.version>
+                <javafx.test.version>23.0.2</javafx.test.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -25,7 +25,7 @@ import net.kurobako.cef4j.gen.CefRuntimeStyle;
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
-public final class CefWindowInfo {
+public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
@@ -106,7 +106,7 @@ public final class CefWindowInfo {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__mac_8h.html">internal/cef_types_mac.h:91</a>
      */
-    public static final class Mutable {
+    public static final class Mutable implements net.kurobako.cef4j.gen.CefWindowInfo.Mutable {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})

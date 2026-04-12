@@ -14,7 +14,7 @@ import javax.annotation.processing.Generated;
  *   DRAG_OPERATION_PRIVATE = 8,
  *   ...
  * } cef_drag_operations_mask_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC}, {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#COPY}, {@link Kind#LINK}, {@link Kind#GENERIC}, {@link Kind#PRIVATE}, {@link Kind#MOVE}, {@link Kind#DELETE}, {@link Kind#EVERY}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
@@ -30,7 +30,8 @@ public final class CefDragOperationsMask implements CefEnum<CefDragOperationsMas
         GENERIC(4, "4", "DRAG_OPERATION_GENERIC"),
         PRIVATE(8, "8", "DRAG_OPERATION_PRIVATE"),
         MOVE(16, "16", "DRAG_OPERATION_MOVE"),
-        DELETE(32, "32", "DRAG_OPERATION_DELETE");
+        DELETE(32, "32", "DRAG_OPERATION_DELETE"),
+        EVERY(4294967295L, "(2147483647 *2U +1U)", "DRAG_OPERATION_EVERY");
 
         private static final Kind[] VALUES = Kind.values();
 

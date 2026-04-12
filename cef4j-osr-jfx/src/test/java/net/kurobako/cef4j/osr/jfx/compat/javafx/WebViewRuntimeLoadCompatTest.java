@@ -39,7 +39,8 @@ class WebViewRuntimeLoadCompatTest extends WebViewRuntimeCompatTestBase {
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                 .isTrue();
-        assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("compat-title");
+        assertThat(waitUntilOnFx(() -> "compat-title".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
     }
 
     @Test
@@ -55,7 +56,8 @@ class WebViewRuntimeLoadCompatTest extends WebViewRuntimeCompatTestBase {
                     .isTrue();
             assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                     .isTrue();
-            assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("loaded");
+            assertThat(waitUntilOnFx(() -> "loaded".equals(view.getEngine().getTitle()), 3_000))
+                    .isTrue();
         }
     }
 

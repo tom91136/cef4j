@@ -120,19 +120,25 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
             frame.setSize(800, 600);
             frame.setVisible(true);
 
-            net.kurobako.cef4j.gen.CefWindowInfo.Mutable windowInfo =
-                    new net.kurobako.cef4j.gen.CefWindowInfo.Mutable();
-            windowInfo.bounds = new net.kurobako.cef4j.gen.CefRect(
-                    0, 0, Math.max(1, panel.getWidth()), Math.max(1, panel.getHeight()));
-            windowInfo.windowlessRenderingEnabled = 1;
+            net.kurobako.cef4j.gen.CefWindowInfo windowInfo =
+                    net.kurobako.cef4j.Cef.createWindowlessInfo(new net.kurobako.cef4j.gen.CefRect(
+                            0, 0, Math.max(1, panel.getWidth()), Math.max(1, panel.getHeight())));
             net.kurobako.cef4j.gen.CefBrowserSettings.Mutable browserSettings =
                     new net.kurobako.cef4j.gen.CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
-            CefBrowserHost.createBrowser(
-                    windowInfo.toImmutable(), client, "", browserSettings.toImmutable(), null, null);
+            CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
         });
 
-        if (!ready.await(10, TimeUnit.SECONDS)) {
+        if (net.kurobako.cef4j.OS.isMacOS()) {
+            long deadline = System.currentTimeMillis() + 10_000;
+            while (ready.getCount() > 0 && System.currentTimeMillis() < deadline) {
+                net.kurobako.cef4j.Cef.INSTANCE.doMessageLoopWork();
+                Thread.sleep(5);
+            }
+            if (ready.getCount() > 0) {
+                throw new java.util.concurrent.TimeoutException("Timed out waiting for browser creation");
+            }
+        } else if (!ready.await(10, TimeUnit.SECONDS)) {
             throw new java.util.concurrent.TimeoutException("Timed out waiting for browser creation");
         }
         return panelRef.get();

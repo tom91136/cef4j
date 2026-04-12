@@ -30,7 +30,8 @@ class WebViewRuntimeDomCompatTest extends WebViewRuntimeCompatTestBase {
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                 .isTrue();
-        assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("3-Alpha");
+        assertThat(waitUntilOnFx(() -> "3-Alpha".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
     }
 
     @Test

@@ -773,7 +773,10 @@ class CefInteropTest extends CefTestBase {
     @Order(23)
     void byValueSize_pendingOnJvm_sizeofFromNative() throws Exception {
         // Entering CEF: Java-created structs show "pending" in toString (size == -1)
-        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
+        CefWindowInfo.Mutable windowInfo;
+        if (OS.isMacOS()) windowInfo = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
+        else if (OS.isWindows()) windowInfo = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
+        else windowInfo = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
         assertThat(windowInfo.toString())
                 .as("JVM-created CefWindowInfo.Mutable")
                 .contains("size=pending");

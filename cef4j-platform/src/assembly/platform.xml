@@ -17,7 +17,7 @@
             </includes>
         </fileSet>
 
-        <!-- CEF shared libraries from Release/ -->
+        <!-- CEF shared libraries from Release/ — Linux and Windows flat files -->
         <fileSet>
             <directory>${cef.dist.dir}/Release</directory>
             <outputDirectory>cef-runtime</outputDirectory>
@@ -39,7 +39,17 @@
             </includes>
         </fileSet>
 
-        <!-- Resources: icudtl.dat, .pak files, locales/ -->
+        <!-- macOS: entire CEF framework bundle from Release/ -->
+        <fileSet>
+            <directory>${cef.dist.dir}/Release</directory>
+            <outputDirectory>cef-runtime</outputDirectory>
+            <includes>
+                <include>Chromium Embedded Framework.framework/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- Resources: icudtl.dat, .pak files, locales/ — Linux and Windows only -->
+        <!-- macOS resources are embedded inside the framework bundle above -->
         <fileSet>
             <directory>${cef.dist.dir}/Resources</directory>
             <outputDirectory>cef-runtime</outputDirectory>

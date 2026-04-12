@@ -54,6 +54,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <reuseForks>false</reuseForks>
+                    <argLine>${surefire.argLine} -Djava.awt.headless=false</argLine>
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                     </systemPropertyVariables>

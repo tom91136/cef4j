@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -42,6 +43,9 @@ abstract class CefTestBase {
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 1;
         settings.multiThreadedMessageLoop = 0;
+        if (OS.isMacOS()) {
+            settings.noSandbox = 1;
+        }
 
         List<String> args = new ArrayList<>(additionalArgs);
         if (OS.isLinux()) {
@@ -50,6 +54,9 @@ abstract class CefTestBase {
             if (ozonePlatform != null && !ozonePlatform.isBlank()) {
                 args.add("--ozone-platform=" + ozonePlatform.trim());
             }
+        }
+        if (OS.isMacOS()) {
+            args.add("--no-sandbox");
         }
         String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
         if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
@@ -64,12 +71,10 @@ abstract class CefTestBase {
     }
 
     static CefBrowser createWindowlessBrowser(CefClient client, String url) {
-        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
-        windowInfo.bounds = new CefRect(0, 0, 800, 600);
-        windowInfo.windowlessRenderingEnabled = 1;
+        CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, 800, 600));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
-        return Cef.INSTANCE.createBrowser(client, url, windowInfo.toImmutable(), browserSettings.toImmutable());
+        return Cef.INSTANCE.createBrowser(client, url, windowInfo, browserSettings.toImmutable());
     }
 
     static void closeBrowser(CefBrowser browser) {
@@ -79,7 +84,7 @@ abstract class CefTestBase {
     }
 
     /** Pump CEF message loop until latch reaches zero or timeout. */
-    static boolean pumpUntil(java.util.concurrent.CountDownLatch latch, long timeoutMs) throws InterruptedException {
+    static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
             Cef.INSTANCE.doMessageLoopWork();

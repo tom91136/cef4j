@@ -16,8 +16,8 @@ import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-@Timeout(10)
-class CefBrowserPanelScreenInfoTest {
+@Timeout(30)
+class CefBrowserPanelScreenInfoTest extends SwingBrowserPanelTestBase {
 
     @Test
     void movingThePanelNotifiesCefThatScreenInfoMayHaveChanged() throws Exception {

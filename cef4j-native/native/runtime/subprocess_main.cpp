@@ -29,6 +29,11 @@
 #include "include/capi/cef_frame_capi.h"
 #include "include/cef_api_hash.h"
 
+#ifdef __APPLE__
+#include "include/wrapper/cef_library_loader.h"
+extern "C" void cef4j_fix_main_bundle_id(void);
+#endif
+
 #include <atomic>
 #include <string>
 #include <unordered_map>
@@ -796,6 +801,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 }
 #else
 int main(int argc, char* argv[]) {
+#ifdef __APPLE__
+    // Fix the bundle ID so Mach port rendezvous service names match between
+    // the browser process (JVM) and this subprocess. Must be called before
+    // cef_load_library() so Chromium's BaseBundleID() picks up the swizzled value.
+    cef4j_fix_main_bundle_id();
+
+    // On macOS, CEF must be loaded dynamically via cef_load_library() before any CEF calls.
+    // The browser process passes --framework-dir-path=<dir> to all subprocess commands.
+    {
+        const std::string prefix = "--framework-dir-path=";
+        for (int i = 1; i < argc; i++) {
+            std::string arg = argv[i];
+            if (arg.rfind(prefix, 0) == 0) {
+                std::string frameworkBinary = arg.substr(prefix.size()) + "/Chromium Embedded Framework";
+                if (!cef_load_library(frameworkBinary.c_str())) {
+                    fprintf(stderr, "[cef4j_launcher] Failed to load CEF framework: %s\n", frameworkBinary.c_str());
+                    return 1;
+                }
+                break;
+            }
+        }
+    }
+#endif
     cef_api_hash(CEF_API_VERSION, 0);
     cef_main_args_t args{};
     args.argc = argc;

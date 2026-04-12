@@ -324,7 +324,7 @@ struct JniCefRenderHandler : public cef_render_handler_t {
         static_cast<jint>((info)->extra.has_region_capture_rect),
         static_cast<jint>((info)->extra.has_source_size),
         static_cast<jint>((info)->extra.has_capture_counter));
-            auto j_info_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefAcceleratedPaintInfo");
+            auto j_info_cls = FindClassCached(env, "net/kurobako/cef4j/gen/mac/CefAcceleratedPaintInfo");
             auto j_info_ctor = env->GetMethodID(j_info_cls, "<init>", "(JLnet/kurobako/cef4j/gen/CefColorType;Lnet/kurobako/cef4j/gen/CefAcceleratedPaintInfoCommon;)V");
             j_info = env->NewObject(j_info_cls, j_info_ctor, to_jlong((info)->shared_texture_io_surface), _bv_info_format, _bv_info_extra);
             if (j_info) env->SetLongField(j_info, env->GetFieldID(j_info_cls, "size", "J"), static_cast<jlong>(info->size));

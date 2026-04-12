@@ -43,7 +43,8 @@ class WebViewRuntimeDialogCompatTest extends WebViewRuntimeCompatTestBase {
                 .isTrue();
         assertThat(waitUntil(() -> "compat-confirm".equals(receivedMessage.get()), 3_000))
                 .isTrue();
-        assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("yes");
+        assertThat(waitUntilOnFx(() -> "yes".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
     }
 
     @Test
@@ -83,7 +84,8 @@ class WebViewRuntimeDialogCompatTest extends WebViewRuntimeCompatTestBase {
         assertThat(waitUntil(() -> "compat-prompt".equals(receivedMessage.get()), 3_000))
                 .isTrue();
         assertThat(receivedDefault.get()).isEqualTo("default-val");
-        assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("user-input");
+        assertThat(waitUntilOnFx(() -> "user-input".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
     }
 
     @Test

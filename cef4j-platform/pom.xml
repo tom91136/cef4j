@@ -15,81 +15,6 @@
     <name>cef4j-platform</name>
     <description>CEF runtime binaries for ${cef.platform}</description>
 
-    <!-- OS-activated profiles so that a consumer depending on this POM
-         transitively gets the correct classified native JAR -->
-    <profiles>
-        <profile>
-            <id>linux-x86_64</id>
-            <activation>
-                <os><name>Linux</name><arch>amd64</arch></os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>linux64</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>linux-aarch64</id>
-            <activation>
-                <os><name>Linux</name><arch>aarch64</arch></os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>linuxarm64</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>macos-x86_64</id>
-            <activation>
-                <os><name>Mac OS X</name><arch>x86_64</arch></os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>macosx64</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>macos-aarch64</id>
-            <activation>
-                <os><name>Mac OS X</name><arch>aarch64</arch></os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>macosarm64</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>windows-x86_64</id>
-            <activation>
-                <os><family>windows</family></os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>windows64</classifier>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <!-- Step 1: Download + extract CEF (shared cache with cef4j-native) -->
@@ -145,7 +70,9 @@
                         <configuration>
                             <target>
                                 <mkdir dir="${project.build.directory}/file-list"/>
+                                <!-- Release files: Linux/Windows individual libs + macOS framework bundle -->
                                 <fileset id="release.files" dir="${cef.dist.dir}/Release">
+                                    <!-- Linux -->
                                     <include name="libcef.so"/>
                                     <include name="libEGL.so"/>
                                     <include name="libGLESv2.so"/>
@@ -159,8 +86,11 @@
                                     <include name="d3dcompiler_47.dll"/>
                                     <include name="vk_swiftshader.dll"/>
                                     <include name="vulkan-1.dll"/>
+                                    <!-- macOS framework bundle (recursive) -->
+                                    <include name="Chromium Embedded Framework.framework/**"/>
                                 </fileset>
-                                <fileset id="resource.files" dir="${cef.dist.dir}/Resources">
+                                <!-- Resources dir: Linux/Windows only (macOS resources are inside the framework) -->
+                                <fileset id="resource.files" dir="${cef.dist.dir}/Resources" erroronmissingdir="false">
                                     <include name="icudtl.dat"/>
                                     <include name="resources.pak"/>
                                     <include name="chrome_100_percent.pak"/>

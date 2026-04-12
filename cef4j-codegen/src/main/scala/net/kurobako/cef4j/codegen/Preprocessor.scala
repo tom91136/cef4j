@@ -80,8 +80,32 @@ object Preprocessor {
   private def unixCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] = {
     val extraIncludes =
       if (hasWindowsTarget(defines)) List(windowsShimIncludeDir) else Nil
+    // When cross-preprocessing (e.g. Linux headers on a macOS host), the host
+    // compiler's built-in platform macros (__APPLE__, __linux__, etc.) must be
+    // undefined so that CEF's platform-guarded #includes resolve correctly.
+    // Only apply when a target platform is explicitly specified via OS_* defines.
+    val platformOverrides = {
+      val hasLinux = defines.exists(d => d == "OS_LINUX" || d.startsWith("OS_LINUX="))
+      val hasMac   = defines.exists(d => d == "OS_MAC" || d.startsWith("OS_MAC="))
+      val hasWin   = defines.exists(d => d == "OS_WIN" || d.startsWith("OS_WIN="))
+      if (!hasLinux && !hasMac && !hasWin) Nil
+      else {
+        // Undefine host platform macros that don't match the target
+        val undefs =
+          (if (!hasMac) List("-U__APPLE__", "-U__MACH__") else Nil) ++
+            (if (!hasLinux) List("-U__linux__", "-U__linux", "-U__gnu_linux__") else Nil) ++
+            (if (!hasWin) List("-U_WIN32", "-U_WIN64") else Nil)
+        // Define target platform macros so cef_build.h resolves correctly
+        val defs =
+          (if (hasLinux) List("-D__linux__", "-D__linux", "-D__gnu_linux__") else Nil) ++
+            (if (hasMac) List("-D__APPLE__", "-D__MACH__") else Nil) ++
+            (if (hasWin) List("-D_WIN32") else Nil)
+        undefs ++ defs
+      }
+    }
     List("cc", "-E", "-x", "c", "-std=c11") ++
       defines.flatMap(d => List(s"-D$d")) ++
+      platformOverrides ++
       extraIncludes.flatMap(d => List("-I", d.toString)) ++
       includes.flatMap(d => List("-I", d.toString)) ++
       List(file.toString)

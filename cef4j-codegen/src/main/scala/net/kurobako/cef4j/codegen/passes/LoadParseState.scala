@@ -25,8 +25,13 @@ object LoadParseState {
     val allSubPackages = subPackages ++ platformSubPackages
 
     ParseState(
-      namingContext =
-        Naming.Context.fromCppClassNames(metadata.cppClassNames, compoundSegments, cfg.javaPackage, allSubPackages),
+      namingContext = Naming.Context.fromCppClassNames(
+        metadata.cppClassNames,
+        compoundSegments,
+        cfg.javaPackage,
+        allSubPackages,
+        platformCppMode = !cfg.emitCommonCpp && cfg.javaPlatformSubPackage.nonEmpty
+      ),
       docContext = InitialiseDocContext(cfg.cefInclude),
       handlerNames = metadata.handlerNames,
       docs = metadata.docs,

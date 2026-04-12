@@ -33,7 +33,16 @@ file(GLOB_RECURSE RUNTIME_SOURCES   "${CMAKE_SOURCE_DIR}/native/runtime/*.cpp")
 
 list(FILTER RUNTIME_SOURCES EXCLUDE REGEX "subprocess_main\\.cpp$")
 
-add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES})
+if(APPLE)
+    # On macOS, CEF is loaded dynamically via cef_load_library() (from libcef_dll_dylib.cc)
+    # instead of linking against the framework directly.
+    set(CEF_DYLIB_LOADER "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
+    set(BUNDLE_FIX_MM "${CMAKE_SOURCE_DIR}/native/runtime/bundle_fix_mac.mm")
+    add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES} ${CEF_DYLIB_LOADER} ${BUNDLE_FIX_MM})
+    set_source_files_properties(${CEF_DYLIB_LOADER} PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
+else()
+    add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES})
+endif()
 
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES
     COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter>"
@@ -57,7 +66,13 @@ target_include_directories(cef4j PRIVATE
     ${CMAKE_SOURCE_DIR}/native/gen/${CEF4J_GEN_PLATFORM_DIR}
 )
 
-target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})
+if(APPLE)
+    # cef4j loads the CEF framework dynamically via cef_load_library() / dlopen.
+    # Link only the system frameworks needed at compile/link time.
+    target_link_libraries(cef4j PRIVATE "-framework Foundation" "-framework AppKit" "-ldl")
+else()
+    target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})
+endif()
 
 target_compile_options(cef4j PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -pedantic>
@@ -77,9 +92,21 @@ elseif(UNIX)
     target_link_options(cef4j PRIVATE -Wl,--no-undefined)
 endif()
 
-add_executable(cef4j_launcher "${CMAKE_SOURCE_DIR}/native/runtime/subprocess_main.cpp")
-target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
-target_link_libraries(cef4j_launcher PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})
+if(APPLE)
+    set(LAUNCHER_DYLIB_LOADER "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
+    add_executable(cef4j_launcher
+        "${CMAKE_SOURCE_DIR}/native/runtime/subprocess_main.cpp"
+        ${LAUNCHER_DYLIB_LOADER}
+        "${CMAKE_SOURCE_DIR}/native/runtime/bundle_fix_mac.mm"
+    )
+    set_source_files_properties(${LAUNCHER_DYLIB_LOADER} PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
+    target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
+    target_link_libraries(cef4j_launcher PRIVATE "-framework Foundation" "-framework AppKit" "-ldl")
+else()
+    add_executable(cef4j_launcher "${CMAKE_SOURCE_DIR}/native/runtime/subprocess_main.cpp")
+    target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
+    target_link_libraries(cef4j_launcher PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})
+endif()
 if(UNIX AND NOT APPLE)
     target_link_options(cef4j_launcher PRIVATE -static-libstdc++ -static-libgcc)
 endif()

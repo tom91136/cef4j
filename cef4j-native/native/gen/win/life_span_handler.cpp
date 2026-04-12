@@ -70,7 +70,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>((windowInfo)->runtime_style));
-        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
+        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JIIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,
@@ -358,7 +358,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_windowInfo_runtime_style_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRuntimeStyle");
         auto _bv_windowInfo_runtime_style_of = env->GetStaticMethodID(_bv_windowInfo_runtime_style_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
         auto _bv_windowInfo_runtime_style = env->CallStaticObjectMethod(_bv_windowInfo_runtime_style_cls, _bv_windowInfo_runtime_style_of, static_cast<jlong>((windowInfo)->runtime_style));
-        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo$Mutable");
+        auto j_windowInfo_cls = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo$Mutable");
         auto j_windowInfo_ctor = env->GetMethodID(j_windowInfo_cls, "<init>", "(ILjava/lang/String;ILnet/kurobako/cef4j/gen/CefRect;JIIIIJLnet/kurobako/cef4j/gen/CefRuntimeStyle;)V");
         auto j_windowInfo = windowInfo
     ? env->NewObject(j_windowInfo_cls, j_windowInfo_ctor,

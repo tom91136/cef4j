@@ -94,6 +94,18 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>mkdir-cmake-build</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/cmake-build"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>extract-cef</id>
                         <phase>initialize</phase>
                         <goals>

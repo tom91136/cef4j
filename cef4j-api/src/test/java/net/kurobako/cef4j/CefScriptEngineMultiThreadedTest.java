@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -38,6 +39,7 @@ class CefScriptEngineMultiThreadedTest {
 
     @BeforeAll
     static void initCef() throws Exception {
+        Assumptions.assumeFalse(OS.isMacOS(), "multiThreadedMessageLoop is not supported on macOS");
         SystemBootstrap.load();
 
         Path cacheDir = Files.createTempDirectory("cef4j-mt-multi-browser-test-");
@@ -57,6 +59,10 @@ class CefScriptEngineMultiThreadedTest {
                 if (ozonePlatform != null && !ozonePlatform.isBlank()) {
                     extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
                 }
+            }
+            if (OS.isMacOS()) {
+                extraArgs.add("--no-sandbox");
+                settings.noSandbox = 1;
             }
             String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
             if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
@@ -197,13 +203,10 @@ class CefScriptEngineMultiThreadedTest {
     }
 
     private static void createBrowserAsync(CefClient client, String url) {
-        CefWindowInfo.Mutable windowInfo = new CefWindowInfo.Mutable();
-        windowInfo.bounds = new CefRect(0, 0, 800, 600);
-        windowInfo.windowlessRenderingEnabled = 1;
+        CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, 800, 600));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
-        int ok = CefBrowserHost.createBrowser(
-                windowInfo.toImmutable(), client, url, browserSettings.toImmutable(), null, null);
+        int ok = CefBrowserHost.createBrowser(windowInfo, client, url, browserSettings.toImmutable(), null, null);
         assertThat(ok).as("createBrowser should succeed").isNotEqualTo(0);
     }
 }

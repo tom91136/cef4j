@@ -7,6 +7,9 @@ import java.util.stream.Stream;
 import javafx.concurrent.Worker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.web.WebView;
+import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.OS;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -96,6 +99,11 @@ class WebViewRuntimeClipboardCompatTest extends WebViewRuntimeCompatTestBase {
 
     private static void performClipboardAction(WebView view, Region region, ClipboardAction action, Trigger trigger)
             throws Exception {
+        // CefWebView on macOS cannot trigger clipboard shortcuts via keyboard events because
+        // CEF's OSR mode lacks the NSResponder chain that macOS requires for clipboard selectors.
+        if (trigger == Trigger.KEYBOARD && OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
+            Assumptions.assumeTrue(false, "CefWebView macOS: clipboard keyboard shortcuts unsupported in OSR mode");
+        }
         double x = region == Region.SOURCE ? SOURCE_X : TARGET_X;
         if (trigger == Trigger.KEYBOARD) {
             invokeShortcut(view, action.keyCode);
@@ -123,7 +131,8 @@ class WebViewRuntimeClipboardCompatTest extends WebViewRuntimeCompatTestBase {
     }
 
     private static String titleFor(WebView view) throws Exception {
-        return onFxThread(() -> view.getEngine().getTitle());
+        String title = onFxThread(() -> view.getEngine().getTitle());
+        return title != null ? title : "";
     }
 
     private enum Trigger {

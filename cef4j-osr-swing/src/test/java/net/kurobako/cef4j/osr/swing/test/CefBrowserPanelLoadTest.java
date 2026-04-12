@@ -33,7 +33,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
 
         // CEF treats data: URL navigations as real navigations (unlike JFX WebEngine.loadContent)
         PanelState state = STATES.get(panel);
-        assertThat(state.canGoBack).isTrue();
+        assertThat(waitUntil(() -> state.canGoBack, 5_000)).isTrue();
 
         panel.getBrowser().goBack();
         assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();

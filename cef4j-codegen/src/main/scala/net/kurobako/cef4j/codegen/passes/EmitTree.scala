@@ -27,10 +27,28 @@ object EmitTree {
     )
 
     val objectDeclMap                  = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
-    val sharedPlatformInterfaceStructs = refined.decls.collect {
-      case d: CefDecl.HandlerStruct =>
-        d.fns.flatMap(_.params.collect { case Param(_, CType.ConstDataStructPtr(name), _, _) => name })
-    }.flatten.toSet
+    val sharedPlatformInterfaceStructs = {
+      // Data structs referenced as ConstDataStructPtr in handler callbacks
+      val fromHandlers = refined.decls.collect {
+        case d: CefDecl.HandlerStruct =>
+          d.fns.flatMap(_.params.collect { case Param(_, CType.ConstDataStructPtr(name), _, _) => name })
+      }.flatten.toSet
+      // Platform-specific data structs referenced by-value in object struct methods or free functions
+      // (e.g., CefWindowInfo is platform-specific but used by CefBrowserHost.createBrowserSync)
+      val byValueNames: PartialFunction[CType, String] = {
+        case CType.ByValueIn(name)  => name
+        case CType.ByValueOut(name) => name
+      }
+      val fromObjectMethods = refined.decls.collect {
+        case d: CefDecl.ObjectStruct =>
+          d.fns.flatMap(_.params.collect { case Param(_, t, _, _) if byValueNames.isDefinedAt(t) => byValueNames(t) })
+      }.flatten.filter(parseState.platformSpecificTypes.contains).toSet
+      val fromHandlerMutables = refined.decls.collect {
+        case d: CefDecl.HandlerStruct =>
+          d.fns.flatMap(_.params.collect { case Param(_, t, _, _) if byValueNames.isDefinedAt(t) => byValueNames(t) })
+      }.flatten.filter(parseState.platformSpecificTypes.contains).toSet
+      fromHandlers ++ fromObjectMethods ++ fromHandlerMutables
+    }
 
     refined.decls.foreach(emitDecl(
       _,

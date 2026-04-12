@@ -227,7 +227,7 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefBrowserHost), showDevTools0)(JNIEnv* env, j
     if (!s) return;
     cef_window_info_t _windowInfo_val = {};
     if (windowInfo) {
-        auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo");
+        auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo");
         _windowInfo_val.ex_style = static_cast<decltype(_windowInfo_val.ex_style)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "exStyle", "I")));
         jstring _rd_window_name = (jstring)env->GetObjectField(windowInfo, env->GetFieldID(_windowInfo_c, "windowName", "Ljava/lang/String;"));
         CefStringSetFromJString(env, _rd_window_name, &_windowInfo_val.window_name);
@@ -782,7 +782,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefBrowserHost), createBrowser0)(JNIEnv* env, 
     if (!windowInfo) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "windowInfo must not be null"); return 0; }
     if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return 0; }
     cef_window_info_t _windowInfo_val = {};
-    auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo");
+    auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo");
     _windowInfo_val.ex_style = static_cast<decltype(_windowInfo_val.ex_style)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "exStyle", "I")));
     jstring _rd_window_name = (jstring)env->GetObjectField(windowInfo, env->GetFieldID(_windowInfo_c, "windowName", "Ljava/lang/String;"));
     CefStringSetFromJString(env, _rd_window_name, &_windowInfo_val.window_name);
@@ -902,7 +902,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefBrowserHost), createBrowserSync0)(JNIEnv
     if (!windowInfo) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "windowInfo must not be null"); return nullptr; }
     if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_window_info_t _windowInfo_val = {};
-    auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefWindowInfo");
+    auto _windowInfo_c = FindClassCached(env, "net/kurobako/cef4j/gen/win/CefWindowInfo");
     _windowInfo_val.ex_style = static_cast<decltype(_windowInfo_val.ex_style)>(env->GetIntField(windowInfo, env->GetFieldID(_windowInfo_c, "exStyle", "I")));
     jstring _rd_window_name = (jstring)env->GetObjectField(windowInfo, env->GetFieldID(_windowInfo_c, "windowName", "Ljava/lang/String;"));
     CefStringSetFromJString(env, _rd_window_name, &_windowInfo_val.window_name);

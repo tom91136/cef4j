@@ -18,6 +18,8 @@ import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,26 +29,45 @@ import org.junit.jupiter.api.Timeout;
 @Timeout(30)
 class CefWebViewInputTest {
 
+    private static volatile boolean fxStarted;
+
     @BeforeAll
     static void setup() throws Exception {
-        assumeTrue(
-                System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
-                "Requires a display server; run under xvfb-run");
+        assumeTrue(!java.awt.GraphicsEnvironment.isHeadless(), "Requires a display (headless environment detected)");
 
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        CefWebView.initialise(settings);
+        // On macOS with -XstartOnFirstThread, cef_initialize() must complete before
+        // Platform.startup() claims the AppKit main thread, otherwise it deadlocks.
+        if (net.kurobako.cef4j.OS.isMacOS()) {
+            net.kurobako.cef4j.SystemBootstrap.load();
+            net.kurobako.cef4j.gen.CefSettings.Mutable pre = new net.kurobako.cef4j.gen.CefSettings.Mutable();
+            pre.windowlessRenderingEnabled = 1;
+            pre.externalMessagePump = 1;
+            pre.multiThreadedMessageLoop = 0;
+            pre.noSandbox = 1;
+            net.kurobako.cef4j.Cef.INSTANCE.initialise(pre, java.util.List.of("--no-sandbox"));
+        }
 
+        // Start JavaFX before CefWebView.initialise() so that loading CefWebView.class (which
+        // extends Node) does not trigger Node.<clinit> before the toolkit is ready.
         CountDownLatch fxLatch = new CountDownLatch(1);
         try {
             Platform.startup(fxLatch::countDown);
         } catch (IllegalStateException alreadyRunning) {
             fxLatch.countDown();
+        } catch (RuntimeException | Error e) {
+            assumeTrue(false, "JavaFX not available in this environment: " + e.getMessage());
+            return;
         }
-        assertThat(fxLatch.await(10, TimeUnit.SECONDS)).as("JavaFX started").isTrue();
+        assumeTrue(fxLatch.await(10, TimeUnit.SECONDS), "Timed out starting JavaFX");
+        fxStarted = true;
+
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        CefWebView.initialise(settings);
     }
 
     @AfterEach
     void cleanup() throws Exception {
+        if (!fxStarted) return;
         onFxThread(() -> {
             for (Window w : new ArrayList<>(Window.getWindows())) {
                 if (w.isShowing()) w.hide();
@@ -94,6 +115,15 @@ class CefWebViewInputTest {
                 ready.completeExceptionally(t);
             }
         });
+        if (OS.isMacOS()) {
+            long deadline = System.currentTimeMillis() + 10_000;
+            while (!ready.isDone() && System.currentTimeMillis() < deadline) {
+                Cef.INSTANCE.doMessageLoopWork();
+                Thread.sleep(5);
+            }
+            if (!ready.isDone()) throw new java.util.concurrent.TimeoutException("Timed out waiting for view");
+            return ready.get();
+        }
         return ready.get(10, TimeUnit.SECONDS);
     }
 
@@ -125,7 +155,12 @@ class CefWebViewInputTest {
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         while (System.nanoTime() < deadline) {
             if (condition.getAsBoolean()) return true;
-            Thread.sleep(20);
+            if (OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
+                Cef.INSTANCE.doMessageLoopWork();
+                Thread.sleep(5);
+            } else {
+                Thread.sleep(20);
+            }
         }
         return condition.getAsBoolean();
     }

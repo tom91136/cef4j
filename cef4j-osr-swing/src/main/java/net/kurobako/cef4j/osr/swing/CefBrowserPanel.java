@@ -38,6 +38,7 @@ import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
+import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -91,11 +92,23 @@ public class CefBrowserPanel extends JPanel {
     public static void initialise(CefSettings.Mutable settings, @Nullable CefApp appHandler, String... extraArgs) {
         if (settings == null) settings = new CefSettings.Mutable();
         settings.windowlessRenderingEnabled = 1;
-        settings.externalMessagePump = 0;
-        settings.multiThreadedMessageLoop = 1;
+        if (OS.isMacOS()) {
+            settings.externalMessagePump = 1;
+            settings.multiThreadedMessageLoop = 0;
+            settings.noSandbox = 1;
+        } else {
+            settings.externalMessagePump = 0;
+            settings.multiThreadedMessageLoop = 1;
+        }
         SystemBootstrap.load();
-        Cef.INSTANCE.initialise(
-                settings, extraArgs != null ? java.util.Arrays.asList(extraArgs) : java.util.List.of(), appHandler);
+        java.util.List<String> args = new java.util.ArrayList<>();
+        if (OS.isMacOS()) {
+            args.add("--no-sandbox");
+        }
+        if (extraArgs != null) {
+            args.addAll(java.util.Arrays.asList(extraArgs));
+        }
+        Cef.INSTANCE.initialise(settings, args, appHandler);
     }
 
     /** Terminate CEF and release all native resources. */

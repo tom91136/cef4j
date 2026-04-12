@@ -162,10 +162,13 @@ static void initClassCache(JNIEnv* env) {
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
     jvm = vm;
 
-    // Configure the CEF API version. This must happen before any CEF C API
-    // functions are called. The version determines struct layouts and which
-    // members are available.
+    // Configure the CEF API version at load time so version mismatches are caught early.
+    // On macOS, cef_api_hash() is a function-pointer stub (via libcef_dll_dylib.cc) and
+    // cannot be called here because cef_load_library() hasn't been called yet.
+    // It is called in loadCefLibrary0() after cef_load_library() initializes the stubs.
+#ifndef __APPLE__
     cef_api_hash(CEF_API_VERSION, 0);
+#endif
 
     JNIEnv* env;
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_8) != JNI_OK) {

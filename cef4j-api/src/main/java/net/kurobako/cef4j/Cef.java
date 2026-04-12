@@ -13,6 +13,7 @@ import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCommandLine;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefMainArgs;
+import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefSettings.Mutable;
 import net.kurobako.cef4j.gen.CefWindowInfo;
@@ -115,21 +116,33 @@ public enum Cef {
         }
 
         if (settings.resourcesDirPath == null) {
-            String resourcesPath = null;
+            Path baseDir = null;
             Path extDir = SystemBootstrap.getExtractionDir();
             if (extDir != null) {
-                resourcesPath = extDir.toAbsolutePath().toString();
+                baseDir = extDir;
+            } else {
+                baseDir = SystemBootstrap.getLibcefDir();
             }
-            if (resourcesPath == null) {
-                Path libcefDir = SystemBootstrap.getLibcefDir();
-                if (libcefDir != null) {
-                    resourcesPath = libcefDir.toAbsolutePath().toString();
+            if (baseDir != null) {
+                if (OS.isMacOS()) {
+                    Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
+                    // Tell CEF where the framework lives so it passes --framework-dir-path to subprocesses.
+                    if (settings.frameworkDirPath == null) {
+                        settings.frameworkDirPath =
+                                frameworkDir.toAbsolutePath().toString();
+                    }
+                    // pak files and locale data live inside the framework bundle.
+                    settings.resourcesDirPath =
+                            frameworkDir.resolve("Resources").toAbsolutePath().toString();
+                    // CEF on macOS finds locales automatically from the framework Resources dir.
+                    settings.localesDirPath = settings.resourcesDirPath;
+                } else {
+                    settings.resourcesDirPath = baseDir.toAbsolutePath().toString();
                 }
             }
-            settings.resourcesDirPath = resourcesPath;
         }
 
-        if (settings.localesDirPath == null) {
+        if (!OS.isMacOS() && settings.localesDirPath == null) {
             settings.localesDirPath = settings.resourcesDirPath != null ? settings.resourcesDirPath + "/locales" : null;
         }
         settings.disableSignalHandlers = 1;
@@ -206,6 +219,29 @@ public enum Cef {
         CefGlobals.shutdown();
         state = State.TERMINATED;
         log.info("CEF terminated");
+    }
+
+    /**
+     * Create a {@link CefWindowInfo} configured for windowless (off-screen) rendering with the given bounds. Selects
+     * the correct platform-specific implementation automatically.
+     */
+    public static CefWindowInfo createWindowlessInfo(CefRect bounds) {
+        if (OS.isMacOS()) {
+            var wi = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
+            wi.bounds = bounds;
+            wi.windowlessRenderingEnabled = 1;
+            return wi.toImmutable();
+        } else if (OS.isWindows()) {
+            var wi = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
+            wi.bounds = bounds;
+            wi.windowlessRenderingEnabled = 1;
+            return wi.toImmutable();
+        } else {
+            var wi = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
+            wi.bounds = bounds;
+            wi.windowlessRenderingEnabled = 1;
+            return wi.toImmutable();
+        }
     }
 
     /** Returns the current CEF application state. */

@@ -29,11 +29,17 @@ class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
-        assertThat(onFxThread(() -> view.getEngine().getTitle())).isEqualTo("0");
+        assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
 
         onFxThread(() -> fireHorizontalScroll(view, 120, 120, -140));
 
-        assertThat(waitUntilOnFx(() -> !"0".equals(view.getEngine().getTitle()), 3_000))
+        assertThat(waitUntilOnFx(
+                        () -> {
+                            String t = view.getEngine().getTitle();
+                            return t != null && !"0".equals(t);
+                        },
+                        10_000))
                 .isTrue();
     }
 

@@ -89,12 +89,13 @@ ${allLines.mkString("\n")}
       implementSharedType: Boolean = false
   )(using Naming.Context, DocComments.Context, Banners): String = {
     if (emitAsPlatformInterface) {
-      val rootPkg = Naming.javaPackage
-      val impls   = platformImplSubPackages.distinct.map(p => s"{@link $rootPkg.$p.$javaName}")
-      val suffix  = if (impls.nonEmpty) s"Platform-specific implementations: ${impls.mkString(", ")}." else ""
+      val rootPkg       = Naming.javaPackage
+      val impls         = platformImplSubPackages.distinct.map(p => s"{@link $rootPkg.$p.$javaName}")
+      val suffix        = if (impls.nonEmpty) s"Platform-specific implementations: ${impls.mkString(", ")}." else ""
+      val mutableNested = if (needsMutable) "\n    public interface Mutable {}\n" else ""
       return JavaCodeGen.renderJavaFile(
         declaration = s"public interface $javaName",
-        body = "",
+        body = mutableNested,
         classDoc = classDoc,
         capiSource = sourceHeader,
         cPrototype = cPrototype,
@@ -137,7 +138,7 @@ ${allLines.mkString("\n")}
     val mutableInnerClass = if (needsMutable) {
       s"""
          |
-         |${renderMutableInner(javaName, fields, classDoc, fieldDocs)}""".stripMargin
+         |${renderMutableInner(javaName, fields, classDoc, fieldDocs, implementSharedType)}""".stripMargin
     } else ""
 
     val declaration = if (implementSharedType) {
@@ -171,7 +172,8 @@ ${allLines.mkString("\n")}
       immutableName: String,
       fields: List[Field],
       classDoc: String,
-      fieldDocs: Map[String, String] = Map.empty
+      fieldDocs: Map[String, String] = Map.empty,
+      implementSharedType: Boolean = false
   )(using Naming.Context, DocComments.Context): String = {
     val userFields = fields.filterNot(isSizeField)
     val hasSize    = fields.exists(isSizeField)
@@ -197,8 +199,9 @@ ${allLines.mkString("\n")}
 
     val sizeDecl = if (hasSize) NativeSizeDecl else ""
 
+    val mutableImpl = if (implementSharedType) s" implements ${Naming.javaPackage}.$immutableName.Mutable" else ""
     s"""$mutableDoc
-    public static final class Mutable {
+    public static final class Mutable$mutableImpl {
 
 $sizeDecl$fieldDecls
 

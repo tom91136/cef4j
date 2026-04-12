@@ -73,7 +73,11 @@ object CHeaderParser {
           loop(TopState(decl :: state.decls, next))
         } else if (EnumTypedefRe.matches(line)) {
           val (decl, next) = parseEnum(lines, state.idx)
-          loop(TopState(decl :: state.decls, next))
+          val keep         = decl match {
+            case e: CefDecl.Enum => e.name.startsWith("cef_")
+            case _               => true
+          }
+          loop(TopState(if (keep) decl :: state.decls else state.decls, next))
         } else {
           loop(state.copy(idx = state.idx + 1))
         }
@@ -412,25 +416,61 @@ object CHeaderParser {
     (CefDecl.Enum(enumName, result.values.reverse), result.idx + 1)
   }
 
+  /** Strip C integer literal suffixes (U/u/L/l combinations). */
+  private def stripCSuffix(s: String): String = s.replaceAll("[UuLl]+$", "")
+
+  /** Try to parse a single numeric token (decimal, hex, with optional C suffix). */
+  private def parseNumericToken(token: String): Option[Long] = {
+    val clean = stripCSuffix(token.trim)
+    if (clean.startsWith("0x") || clean.startsWith("0X"))
+      Some(java.lang.Long.parseUnsignedLong(clean.substring(2), 16))
+    else clean.toLongOption
+  }
+
   private def parseEnumValue(expr: String, existing: List[(String, Long, String)]): Long = {
     val trimmed = expr.trim
+    // Strip outer parentheses for expressions like (2147483647 *2U +1U)
+    val unwrapped = if (trimmed.startsWith("(") && trimmed.endsWith(")"))
+      trimmed.substring(1, trimmed.length - 1).trim
+    else trimmed
+
     if (trimmed.startsWith("0x") || trimmed.startsWith("0X")) {
-      java.lang.Long.parseLong(trimmed.substring(2), 16)
+      parseNumericToken(trimmed).getOrElse(0L)
     } else if (trimmed.startsWith("-")) {
       -parseEnumValue(trimmed.substring(1), existing)
     } else {
-      trimmed.toLongOption.getOrElse {
+      // Try plain numeric (with optional C suffix)
+      parseNumericToken(trimmed).getOrElse {
         val shiftPattern = """(\w+)\s*<<\s*(\d+)""".r
-        trimmed match {
+        unwrapped match {
           case shiftPattern(base, shift) =>
             val baseVal = existing.find(_._1 == base).map(_._2).getOrElse(
               parseEnumValue(base, existing)
             )
             baseVal << shift.toInt
-          case _ if trimmed.contains("|") =>
-            trimmed.split("\\|").map(p => parseEnumValue(p.trim, existing)).reduce(_ | _)
+          case _ if unwrapped.contains("|") =>
+            unwrapped.split("\\|").map(p => parseEnumValue(p.trim, existing)).reduce(_ | _)
           case _ =>
-            existing.find(_._1 == trimmed).map(_._2).getOrElse(0L)
+            // Try evaluating as a simple arithmetic expression with +, -, * operators.
+            // This handles preprocessor expansions like (2147483647 *2U +1U).
+            val tokens = unwrapped.split("""(?<=[+\-*])|(?=[+\-*])""").map(_.trim).filter(_.nonEmpty).toList
+            def resolveToken(t: String): Option[Long] =
+              parseNumericToken(t).orElse(existing.find(_._1 == t).map(_._2))
+            tokens match {
+              case first :: rest if rest.length >= 2 && rest.length % 2 == 0 =>
+                val seed = resolveToken(first)
+                rest
+                  .grouped(2)
+                  .foldLeft(seed) {
+                    case (Some(acc), List("+", r)) => resolveToken(r).map(acc + _)
+                    case (Some(acc), List("-", r)) => resolveToken(r).map(acc - _)
+                    case (Some(acc), List("*", r)) => resolveToken(r).map(acc * _)
+                    case _                         => None
+                  }
+                  .getOrElse(existing.find(_._1 == unwrapped).map(_._2).getOrElse(0L))
+              case _ =>
+                existing.find(_._1 == unwrapped).map(_._2).getOrElse(0L)
+            }
         }
       }
     }
