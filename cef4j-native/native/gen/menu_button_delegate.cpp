@@ -29,7 +29,7 @@ struct JniCefMenuButtonDelegate : public cef_menu_button_delegate_t {
         auto j_menu_button = _p_menu_button ? env->NewObject(j_menu_button_cls, j_menu_button_ctor, reinterpret_cast<jlong>(_p_menu_button)) : nullptr;
         auto j_screen_point_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
         auto j_screen_point_ctor = env->GetMethodID(j_screen_point_cls, "<init>", "(II)V");
-        auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>(screen_point->x), static_cast<jint>(screen_point->y)) : nullptr;
+        auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>((screen_point)->x), static_cast<jint>((screen_point)->y)) : nullptr;
         cef_menu_button_pressed_lock_t* _p_button_pressed_lock = button_pressed_lock;
         if (_p_button_pressed_lock) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_button_pressed_lock); _b->add_ref(_b); }
         auto j_button_pressed_lock_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefMenuButtonPressedLock$NativePeer");

@@ -1066,7 +1066,7 @@ class CefInteropTest extends CefTestBase {
                             @Nullable String targetFrameName,
                             @Nonnull CefWindowOpenDisposition targetDisposition,
                             boolean userGesture,
-                            @Nullable NativePointer popupFeatures,
+                            @Nullable CefPopupFeatures popupFeatures,
                             @Nonnull CefWindowInfo.Mutable windowInfo,
                             @Nullable java.util.concurrent.atomic.AtomicReference<CefClient> client,
                             @Nonnull CefBrowserSettings.Mutable settings,
@@ -1138,6 +1138,73 @@ class CefInteropTest extends CefTestBase {
         assertThat(popupFired.get()).isTrue();
 
         closeBrowser(browser);
+    }
+
+    @Test
+    @Order(34)
+    void generatedSignatures_useTypedMappings() throws Exception {
+        var popupMethod = CefLifeSpanHandler.class.getMethod(
+                "onBeforePopup",
+                CefBrowser.class,
+                CefFrame.class,
+                int.class,
+                String.class,
+                String.class,
+                CefWindowOpenDisposition.class,
+                boolean.class,
+                CefPopupFeatures.class,
+                CefWindowInfo.Mutable.class,
+                AtomicReference.class,
+                CefBrowserSettings.Mutable.class,
+                AtomicReference.class,
+                int[].class);
+        assertThat(popupMethod.getParameterTypes()[7]).isEqualTo(CefPopupFeatures.class);
+
+        var cursorMethod = CefDisplayHandler.class.getMethod(
+                "onCursorChange", CefBrowser.class, long.class, CefCursorType.class, CefCursorInfo.class);
+        assertThat(cursorMethod.getParameterTypes()[3]).isEqualTo(CefCursorInfo.class);
+
+        var acceleratedPaintMethod = CefRenderHandler.class.getMethod(
+                "onAcceleratedPaint",
+                CefBrowser.class,
+                CefPaintElementType.class,
+                long.class,
+                CefRect[].class,
+                CefAcceleratedPaintInfo.class);
+        assertThat(acceleratedPaintMethod.getParameterTypes()[4]).isEqualTo(CefAcceleratedPaintInfo.class);
+    }
+
+    @Test
+    @Order(35)
+    void acceleratedPaintInfo_crossPlatformTypesImplementSharedInterface() {
+        CefAcceleratedPaintInfoCommon common = new CefAcceleratedPaintInfoCommon(
+                1L,
+                new CefSize(100, 100),
+                new CefRect(0, 0, 100, 100),
+                new CefRect(0, 0, 100, 100),
+                new CefSize(100, 100),
+                new CefRect(0, 0, 100, 100),
+                new CefRect(0, 0, 100, 100),
+                2L,
+                1,
+                1,
+                1,
+                1);
+        CefColorType colourType = CefColorType.of(CefColorType.Kind.BGRA_8888);
+
+        CefAcceleratedPaintInfo linuxInfo =
+                new net.kurobako.cef4j.gen.linux.CefAcceleratedPaintInfo(1, 0L, colourType, common);
+        CefAcceleratedPaintInfo macInfo =
+                new net.kurobako.cef4j.gen.mac.CefAcceleratedPaintInfo(123L, colourType, common);
+        CefAcceleratedPaintInfo winInfo =
+                new net.kurobako.cef4j.gen.win.CefAcceleratedPaintInfo(456L, colourType, common);
+
+        assertThat(linuxInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
+        assertThat(macInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
+        assertThat(winInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
+        assertThat(linuxInfo.getClass().getName()).contains(".gen.linux.");
+        assertThat(macInfo.getClass().getName()).contains(".gen.mac.");
+        assertThat(winInfo.getClass().getName()).contains(".gen.win.");
     }
 
     @Test

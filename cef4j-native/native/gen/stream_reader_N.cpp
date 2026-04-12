@@ -27,7 +27,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefStreamReader), seek0)(JNIEnv* env, jobject 
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefStreamReader), tell0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_stream_reader_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->tell(s));
+    return to_jlong(s->tell(s));
 }
 
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefStreamReader), eof0)(JNIEnv* env, jobject obj, jlong self) {

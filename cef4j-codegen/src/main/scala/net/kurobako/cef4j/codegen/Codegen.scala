@@ -2,6 +2,66 @@ package net.kurobako.cef4j.codegen
 
 import java.nio.file.Path
 
+enum CodegenPlatform {
+  case Linux
+  case Mac
+  case Windows
+
+  def id: String =
+    this match {
+      case Linux   => "linux"
+      case Mac     => "mac"
+      case Windows => "win"
+    }
+
+  def cefTypesHeader: String =
+    this match {
+      case Linux   => "cef_types_linux.h"
+      case Mac     => "cef_types_mac.h"
+      case Windows => "cef_types_win.h"
+    }
+
+  def osMacro: String =
+    this match {
+      case Linux   => "OS_LINUX"
+      case Mac     => "OS_MAC"
+      case Windows => "OS_WIN"
+    }
+
+  def preprocessorDefines: List[String] =
+    this match {
+      case Linux =>
+        List("OS_LINUX=1")
+      case Mac =>
+        List("OS_MAC=1")
+      case Windows =>
+        List("OS_WIN=1")
+    }
+}
+
+object CodegenPlatform {
+  def parse(value: String): Option[CodegenPlatform] =
+    value.toLowerCase match {
+      case "linux"            => Some(CodegenPlatform.Linux)
+      case "linux64"          => Some(CodegenPlatform.Linux)
+      case "linuxarm64"       => Some(CodegenPlatform.Linux)
+      case "mac" | "macos"    => Some(CodegenPlatform.Mac)
+      case "macosx64"         => Some(CodegenPlatform.Mac)
+      case "macosarm64"       => Some(CodegenPlatform.Mac)
+      case "win" | "windows"  => Some(CodegenPlatform.Windows)
+      case "windows64"        => Some(CodegenPlatform.Windows)
+      case "auto" | "current" => Some(detectCurrent)
+      case _                  => None
+    }
+
+  def detectCurrent: CodegenPlatform = {
+    val os = System.getProperty("os.name", "").toLowerCase
+    if (os.contains("win")) CodegenPlatform.Windows
+    else if (os.contains("mac")) CodegenPlatform.Mac
+    else CodegenPlatform.Linux
+  }
+}
+
 case class Config(
     cefInclude: Path,
     outCpp: Path,
@@ -9,9 +69,18 @@ case class Config(
     javaPackage: String,
     compilerId: String,
     extraCppDirs: List[String] = Nil,
-    extraCapiDirs: List[String] = Nil
+    extraCapiDirs: List[String] = Nil,
+    targetPlatform: CodegenPlatform = CodegenPlatform.detectCurrent,
+    emitJava: Boolean = true,
+    emitCommonCpp: Boolean = true,
+    emitJavaPlatformOnly: Boolean = false,
+    javaPlatformSubPackage: String = ""
 ) {
-  val outJavaPackageDir: Path = outJava.resolve(javaPackage.replace('.', '/'))
+  val outJavaPackageDir: Path         = outJava.resolve(javaPackage.replace('.', '/'))
+  val outJavaPlatformPackageDir: Path =
+    if (javaPlatformSubPackage.nonEmpty) outJavaPackageDir.resolve(javaPlatformSubPackage.replace('.', '/'))
+    else outJavaPackageDir
+  val outCppPlatformDir: Path = outCpp.resolve(targetPlatform.id)
 }
 
 case class HeaderInputs(
@@ -32,7 +101,8 @@ case class ParseState(
     enumDocs: Map[String, (String, Map[String, String])],
     classDocs: Map[String, String],
     structHeaderMap: Map[String, String],
-    structFieldDocs: Map[String, Map[String, String]]
+    structFieldDocs: Map[String, Map[String, String]],
+    platformSpecificTypes: Set[String] = Set.empty
 )
 
 case class ParsedTree(

@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefCallback;
 import net.kurobako.cef4j.gen.CefRequest;
 import net.kurobako.cef4j.gen.CefResourceHandler;
 import net.kurobako.cef4j.gen.CefResourceReadCallback;
 import net.kurobako.cef4j.gen.CefResponse;
-import net.kurobako.cef4j.gen.NativePointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,23 +74,25 @@ public final class UrlResourceHandler implements CefResourceHandler {
     }
 
     @Override
-    public boolean read(
-            @Nullable NativePointer dataOut,
-            int bytesToRead,
-            int[] bytesRead,
-            @Nullable CefResourceReadCallback callback) {
+    public boolean read(ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
         if (dataOut == null || inputStream == null) {
             bytesRead[0] = 0;
             return false;
         }
         try {
+            int bytesToRead = Math.max(0, dataOut.capacity());
+            if (bytesToRead == 0) {
+                bytesRead[0] = 0;
+                return false;
+            }
             byte[] buf = new byte[bytesToRead];
             int n = inputStream.read(buf);
             if (n <= 0) {
                 bytesRead[0] = 0;
                 return false;
             }
-            NativeMemory.putBytes(dataOut.address, buf, 0, n);
+            dataOut.clear();
+            dataOut.put(buf, 0, n);
             bytesRead[0] = n;
             return true;
         } catch (IOException e) {

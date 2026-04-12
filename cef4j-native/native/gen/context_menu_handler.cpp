@@ -165,10 +165,10 @@ struct JniCefContextMenuHandler : public cef_context_menu_handler_t {
         auto j_frame = _p_frame ? env->NewObject(j_frame_cls, j_frame_ctor, reinterpret_cast<jlong>(_p_frame)) : nullptr;
         auto j_location_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
         auto j_location_ctor = env->GetMethodID(j_location_cls, "<init>", "(II)V");
-        auto j_location = location ? env->NewObject(j_location_cls, j_location_ctor, static_cast<jint>(location->x), static_cast<jint>(location->y)) : nullptr;
+        auto j_location = location ? env->NewObject(j_location_cls, j_location_ctor, static_cast<jint>((location)->x), static_cast<jint>((location)->y)) : nullptr;
         auto j_size_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
         auto j_size_ctor = env->GetMethodID(j_size_cls, "<init>", "(II)V");
-        auto j_size = size ? env->NewObject(j_size_cls, j_size_ctor, static_cast<jint>(size->width), static_cast<jint>(size->height)) : nullptr;
+        auto j_size = size ? env->NewObject(j_size_cls, j_size_ctor, static_cast<jint>((size)->width), static_cast<jint>((size)->height)) : nullptr;
         auto j_edit_state_flags_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefQuickMenuEditStateFlags");
         auto j_edit_state_flags_from = env->GetStaticMethodID(j_edit_state_flags_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefQuickMenuEditStateFlags;");
         auto j_edit_state_flags = env->CallStaticObjectMethod(j_edit_state_flags_cls, j_edit_state_flags_from, static_cast<jlong>(edit_state_flags));

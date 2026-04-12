@@ -3,7 +3,7 @@ package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
 import java.util.Optional;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * Class that facilitates managing the browser-related tasks. The methods of this class may only be called on the UI thread.
@@ -47,7 +47,7 @@ public interface CefTaskManager extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:82</a>
      */
-    boolean getTaskInfo(long taskId, @Nullable NativePointer info);
+    boolean getTaskInfo(long taskId, @Nonnull CefTaskInfo.Mutable info);
 
     /**
      * Attempts to terminate a task with {@code task_id}. Returns {@code false} if the {@code task_id} is invalid, the call is made from an incorrect thread, or if the task cannot be terminated.
@@ -133,7 +133,7 @@ public interface CefTaskManager extends CefLibraryObject {
       }
 
         @Override
-      public boolean getTaskInfo(long taskId, @Nullable NativePointer info) {
+      public boolean getTaskInfo(long taskId, @Nonnull CefTaskInfo.Mutable info) {
           checkNotClosed();
           return getTaskInfo0(nativePtr, taskId, info);
       }
@@ -155,7 +155,7 @@ public interface CefTaskManager extends CefLibraryObject {
 
         static native long[] getTaskIdsList0(long self);
 
-        static native boolean getTaskInfo0(long self, long taskId, NativePointer info);
+        static native boolean getTaskInfo0(long self, long taskId, CefTaskInfo.Mutable info);
 
         static native boolean killTask0(long self, long taskId);
 

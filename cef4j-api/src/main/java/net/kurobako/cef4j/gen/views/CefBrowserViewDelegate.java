@@ -48,7 +48,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     }
 
     /**
-     * Called before a new popup BrowserView is created. The popup originated from {@code browser_view}. {@code settings} and {@code client} are the values returned from {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition, boolean, NativePointer, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])}. {@code is_devtools} will be {@code true} if the popup will be a DevTools browser. Return the delegate that will be used for the new popup BrowserView.
+     * Called before a new popup BrowserView is created. The popup originated from {@code browser_view}. {@code settings} and {@code client} are the values returned from {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition, boolean, CefPopupFeatures, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])}. {@code is_devtools} will be {@code true} if the popup will be a DevTools browser. Return the delegate that will be used for the new popup BrowserView.
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>cef_browser_view_delegate_t* (CEF_CALLBACK* get_delegate_for_popup_browser_view)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, const struct _cef_browser_settings_t* settings, struct _cef_client_t* client, int is_devtools);</pre>
      *

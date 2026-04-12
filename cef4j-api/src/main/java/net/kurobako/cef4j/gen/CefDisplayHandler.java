@@ -131,7 +131,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:144</a>
      */
-    default boolean onCursorChange(@Nullable CefBrowser browser, long cursor, @Nonnull CefCursorType type, @Nullable NativePointer customCursorInfo) {
+    default boolean onCursorChange(@Nullable CefBrowser browser, long cursor, @Nonnull CefCursorType type, @Nullable CefCursorInfo customCursorInfo) {
         return false;
     }
 

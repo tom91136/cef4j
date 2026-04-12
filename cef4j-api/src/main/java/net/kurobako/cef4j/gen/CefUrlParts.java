@@ -74,6 +74,11 @@ public final class CefUrlParts {
         this.fragment = fragment;
     }
 
+    /** Create a mutable copy of this instance. */
+    public Mutable toMutable() {
+        return new Mutable(this.spec, this.scheme, this.username, this.password, this.host, this.port, this.origin, this.path, this.query, this.fragment);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -99,5 +104,96 @@ public final class CefUrlParts {
     @Override
     public String toString() {
         return "CefUrlParts{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "spec=" + spec + ", " + "scheme=" + scheme + ", " + "username=" + username + ", " + "password=" + password + ", " + "host=" + host + ", " + "port=" + port + ", " + "origin=" + origin + ", " + "path=" + path + ", " + "query=" + query + ", " + "fragment=" + fragment + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefUrlParts}. URL component parts.
+     * <p>Definition generated from internal/cef_types.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:762</a>
+     */
+    public static final class Mutable {
+
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private volatile long size = -1;
+
+            /**
+             * The complete URL specification. 
+             */        public String spec;
+            /**
+             * Scheme component not including the colon (e.g., "http"). 
+             */        public String scheme;
+            /**
+             * User name component. 
+             */        public String username;
+            /**
+             * Password component. 
+             */        public String password;
+            /**
+             * Host component. This may be a hostname, an IPv4 address or an IPv6 literal surrounded by square brackets (e.g., "[2001:db8::1]"). 
+             */        public String host;
+            /**
+             * Port number component. 
+             */        public String port;
+            /**
+             * Origin contains just the scheme, host, and port from a URL. Equivalent to clearing any username and password, replacing the path with a slash, and clearing everything after that. This value will be empty for non-standard URLs. 
+             */        public String origin;
+            /**
+             * Path component including the first slash following the host. 
+             */        public String path;
+            /**
+             * Query string component (i.e., everything following the '?'). 
+             */        public String query;
+            /**
+             * Fragment (hash) identifier component (i.e., the string following the '#'). 
+             */        public String fragment;
+
+        public Mutable() {}
+
+        public Mutable(String spec, String scheme, String username, String password, String host, String port, String origin, String path, String query, String fragment) {
+            this.spec = spec;
+            this.scheme = scheme;
+            this.username = username;
+            this.password = password;
+            this.host = host;
+            this.port = port;
+            this.origin = origin;
+            this.path = path;
+            this.query = query;
+            this.fragment = fragment;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefUrlParts toImmutable() {
+            return new CefUrlParts(this.spec, this.scheme, this.username, this.password, this.host, this.port, this.origin, this.path, this.query, this.fragment);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return java.util.Objects.equals(this.spec, other.spec)
+                        && java.util.Objects.equals(this.scheme, other.scheme)
+                        && java.util.Objects.equals(this.username, other.username)
+                        && java.util.Objects.equals(this.password, other.password)
+                        && java.util.Objects.equals(this.host, other.host)
+                        && java.util.Objects.equals(this.port, other.port)
+                        && java.util.Objects.equals(this.origin, other.origin)
+                        && java.util.Objects.equals(this.path, other.path)
+                        && java.util.Objects.equals(this.query, other.query)
+                        && java.util.Objects.equals(this.fragment, other.fragment);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(spec, scheme, username, password, host, port, origin, path, query, fragment);
+        }
+
+        @Override
+        public String toString() {
+            return "CefUrlParts.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "spec=" + spec + ", " + "scheme=" + scheme + ", " + "username=" + username + ", " + "password=" + password + ", " + "host=" + host + ", " + "port=" + port + ", " + "origin=" + origin + ", " + "path=" + path + ", " + "query=" + query + ", " + "fragment=" + fragment + "}";
+        }
     }
 }

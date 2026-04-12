@@ -119,7 +119,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto j_new_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto j_new_bounds_ctor = env->GetMethodID(j_new_bounds_cls, "<init>", "(IIII)V");
-        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>(new_bounds->x), static_cast<jint>(new_bounds->y), static_cast<jint>(new_bounds->width), static_cast<jint>(new_bounds->height)) : nullptr;
+        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>((new_bounds)->x), static_cast<jint>((new_bounds)->y), static_cast<jint>((new_bounds)->width), static_cast<jint>((new_bounds)->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onWindowBoundsChanged", "(Lnet/kurobako/cef4j/gen/views/CefWindow;Lnet/kurobako/cef4j/gen/CefRect;)V");
         if (!mid) { env->PopLocalFrame(nullptr); return; }
@@ -413,19 +413,19 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
         auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
-        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
+        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>((event)->type));
         auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,
         _bv_event_type,
-        static_cast<jint>(event->modifiers),
-        static_cast<jint>(event->windows_key_code),
-        static_cast<jint>(event->native_key_code),
-        static_cast<jint>(event->is_system_key),
-        static_cast<jchar>(event->character),
-        static_cast<jchar>(event->unmodified_character),
-        static_cast<jint>(event->focus_on_editable_field))
+        static_cast<jint>((event)->modifiers),
+        static_cast<jint>((event)->windows_key_code),
+        static_cast<jint>((event)->native_key_code),
+        static_cast<jint>((event)->is_system_key),
+        static_cast<jchar>((event)->character),
+        static_cast<jchar>((event)->unmodified_character),
+        static_cast<jint>((event)->focus_on_editable_field))
     : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         auto cls = env->GetObjectClass(h->javaHandler);
@@ -471,20 +471,35 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
     static int CEF_CALLBACK _get_linux_window_properties(cef_window_delegate_t* self, struct _cef_window_t* window, struct _cef_linux_window_properties_t* properties) {
         auto* h = reinterpret_cast<JniCefWindowDelegate*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(11) < 0) { return false; }
+        if (env->PushLocalFrame(19) < 0) { return false; }
         cef_window_t* _p_window = window;
         if (_p_window) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_window); _b->add_ref(_b); }
         auto j_window_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefWindow$NativePeer");
         auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
         auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
-        auto j_properties_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
-        auto j_properties_ctor = env->GetMethodID(j_properties_cls, "<init>", "(J)V");
-        auto j_properties = env->NewObject(j_properties_cls, j_properties_ctor, reinterpret_cast<jlong>(properties));
+        auto _bv_properties_wayland_app_id = CefStringToJString(env, &(properties)->wayland_app_id);
+        auto _bv_properties_wm_class_class = CefStringToJString(env, &(properties)->wm_class_class);
+        auto _bv_properties_wm_class_name = CefStringToJString(env, &(properties)->wm_class_name);
+        auto _bv_properties_wm_role_name = CefStringToJString(env, &(properties)->wm_role_name);
+        auto j_properties_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefLinuxWindowProperties$Mutable");
+        auto j_properties_ctor = env->GetMethodID(j_properties_cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+        auto j_properties = properties ? env->NewObject(j_properties_cls, j_properties_ctor, _bv_properties_wayland_app_id, _bv_properties_wm_class_class, _bv_properties_wm_class_name, _bv_properties_wm_role_name) : nullptr;
+        if (j_properties) env->SetLongField(j_properties, env->GetFieldID(j_properties_cls, "size", "J"), static_cast<jlong>(properties->size));
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "getLinuxWindowProperties", "(Lnet/kurobako/cef4j/gen/views/CefWindow;Lnet/kurobako/cef4j/gen/NativePointer;)Z");
+        auto mid = env->GetMethodID(cls, "getLinuxWindowProperties", "(Lnet/kurobako/cef4j/gen/views/CefWindow;Lnet/kurobako/cef4j/gen/CefLinuxWindowProperties$Mutable;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_window, j_properties);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
+        if (properties && j_properties) {
+            jstring _wbn_wayland_app_id = (jstring)env->GetObjectField(j_properties, env->GetFieldID(j_properties_cls, "waylandAppId", "Ljava/lang/String;"));
+            CefStringSetFromJString(env, _wbn_wayland_app_id, &(properties)->wayland_app_id);
+            jstring _wbn_wm_class_class = (jstring)env->GetObjectField(j_properties, env->GetFieldID(j_properties_cls, "wmClassClass", "Ljava/lang/String;"));
+            CefStringSetFromJString(env, _wbn_wm_class_class, &(properties)->wm_class_class);
+            jstring _wbn_wm_class_name = (jstring)env->GetObjectField(j_properties, env->GetFieldID(j_properties_cls, "wmClassName", "Ljava/lang/String;"));
+            CefStringSetFromJString(env, _wbn_wm_class_name, &(properties)->wm_class_name);
+            jstring _wbn_wm_role_name = (jstring)env->GetObjectField(j_properties, env->GetFieldID(j_properties_cls, "wmRoleName", "Ljava/lang/String;"));
+            CefStringSetFromJString(env, _wbn_wm_role_name, &(properties)->wm_role_name);
+        }
         env->PopLocalFrame(nullptr);
         return jResult;
     }

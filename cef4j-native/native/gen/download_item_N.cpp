@@ -55,7 +55,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getInterruptReason0)(JNIE
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getCurrentSpeed0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_current_speed(s));
+    return to_jlong(s->get_current_speed(s));
 }
 
 CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefDownloadItem), getPercentComplete0)(JNIEnv* env, jobject obj, jlong self) {
@@ -67,13 +67,13 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefDownloadItem), getPercentComplete0)(JNIEnv*
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getTotalBytes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_total_bytes(s));
+    return to_jlong(s->get_total_bytes(s));
 }
 
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefDownloadItem), getReceivedBytes0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_download_item_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_received_bytes(s));
+    return to_jlong(s->get_received_bytes(s));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getStartTime0)(JNIEnv* env, jobject obj, jlong self) {
@@ -82,7 +82,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getStartTime0)(JNIEnv* en
     cef_basetime_t result = s->get_start_time(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 
@@ -92,7 +92,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDownloadItem), getEndTime0)(JNIEnv* env,
     cef_basetime_t result = s->get_end_time(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 

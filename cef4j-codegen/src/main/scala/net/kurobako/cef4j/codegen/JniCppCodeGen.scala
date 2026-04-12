@@ -37,10 +37,10 @@ class JniCppCodeGen(
 
   // JNI internal name for a CEF struct, e.g. "net/kurobako/cef4j/gen/CefBrowser"
   private def jniName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedJavaName(cefName))
+    Naming.javaInternalName(Naming.fullyQualifiedJavaNameForJniLookup(cefName))
 
   private def jniMutableName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedMutableName(cefName))
+    Naming.javaInternalName(Naming.fullyQualifiedMutableNameForJniLookup(cefName))
 
   // JNI array type info for OutPrimitivePtr: (cPrimType, jniPrim, jniMethodInfix)
   private def outPrimInfo(inner: CType): (String, String, String) = inner match {
@@ -67,12 +67,35 @@ class JniCppCodeGen(
       isOutParam: Boolean
   ): (List[String], String, List[String]) = {
     val (suffix, javaToC, freeFunc, writeBack) = strCollInfo(ct)
-    val tmp                                    = s"_${paramName}$suffix"
+    val tmp                                    = s"_$paramName$suffix"
     (
       List(s"    auto $tmp = $javaToC(env, $jniParamName);"),
       tmp,
-      if (isOutParam) List(s"    ${writeBack}(env, $tmp, $jniParamName);")
+      if (isOutParam) List(s"    $writeBack(env, $tmp, $jniParamName);")
       else List(s"    $freeFunc($tmp);")
+    )
+  }
+
+  // Convert Java List<String> -> C string array (const or mutable).
+  private def convertCStringArrayParam(
+      paramName: String,
+      jniParamName: String,
+      mutable: Boolean
+  ): (List[String], String, List[String]) = {
+    val storageVar = s"_${paramName}_storage"
+    val ptrsVar    = s"_${paramName}_ptrs"
+    val argVar     = s"_${paramName}_arr"
+    val helper     = if (mutable) "JavaListToCStringArray" else "JavaListToConstCStringArray"
+    val ptrVecT    = if (mutable) "char*" else "const char*"
+    val cArrT      = if (mutable) "char**" else "const char* const*"
+    (
+      List(
+        s"    std::vector<std::string> $storageVar;",
+        s"    std::vector<$ptrVecT> $ptrsVar;",
+        s"    $cArrT $argVar = $helper(env, $jniParamName, $storageVar, $ptrsVar);"
+      ),
+      argVar,
+      Nil
     )
   }
 
@@ -456,6 +479,8 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
     auto _eCls = FindClassCached(env, "$javaFqn");
     auto _eOf = env->GetStaticMethodID(_eCls, "of", "(J)L$javaFqn;");
     return env->CallStaticObjectMethod(_eCls, _eOf, static_cast<jlong>(_r));"""
+    case CType.Long =>
+      s"""$npeBlock$preBlock    return to_jlong($fnCall);"""
     case _ =>
       s"""$npeBlock$preBlock    return static_cast<$retJni>($fnCall);"""
   }
@@ -728,6 +753,10 @@ $convertAndReturn"""
         else List(s"    auto $tmp = JStringToCefString(env, ${p.name});")
         val post = List(s"    if ($tmp) cef_string_userfree_free($tmp);")
         (pre, tmp, post)
+      case CType.ConstCStringArray =>
+        convertCStringArrayParam(p.name, p.name, mutable = false)
+      case CType.CStringArray =>
+        convertCStringArrayParam(p.name, p.name, mutable = true)
       case CType.ObjectPtr(cefName) if handlerNames.contains(cefName) =>
         val tmp = s"_${p.name}_ptr"
         val pre = List(
@@ -742,23 +771,75 @@ $convertAndReturn"""
         val pre = List(s"    $cefName* $tmp = ${p.name} ? $extract : nullptr;", s"    if ($tmp) ${addRefExpr(tmp)}")
         (pre, tmp, Nil)
       case CType.ByValueIn(cefName) =>
-        val tmp = s"_${p.name}_val"
+        val tmp   = s"_${p.name}_val"
+        val cVar  = s"_${p.name}_c"
+        val reads = if (isOpt) {
+          List(
+            s"""    if (${p.name}) {""",
+            s"""        auto $cVar = FindClassCached(env, "${jniName(cefName)}");"""
+          ) ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"        $l") ++ List("    }")
+        } else {
+          List(s"""    auto $cVar = FindClassCached(env, "${jniName(cefName)}");""") ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"    $l")
+        }
         val pre = List(
-          s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) {""",
-          s"""        auto _c = FindClassCached(env, "${jniName(cefName)}");"""
-        ) ++
-          bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
+          s"    $cefName $tmp = {};"
+        ) ++ reads
         (pre, s"&$tmp", Nil)
       case CType.ByValueOut(cefName) =>
-        val tmp = s"_${p.name}_val"
+        val tmp   = s"_${p.name}_val"
+        val cVar  = s"_${p.name}_c"
+        val reads = if (isOpt) {
+          List(
+            s"""    if (${p.name}) {""",
+            s"""        auto $cVar = FindClassCached(env, "${jniMutableName(cefName)}");"""
+          ) ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"        $l") ++ List("    }")
+        } else {
+          List(s"""    auto $cVar = FindClassCached(env, "${jniMutableName(cefName)}");""") ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"    $l")
+        }
         val pre = List(
-          s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) {""",
-          s"""        auto _c = FindClassCached(env, "${jniMutableName(cefName)}");"""
+          s"    $cefName $tmp = {};"
+        ) ++ reads
+        val writes = if (isOpt) {
+          List(
+            s"""    if (${p.name}) {""",
+            s"""        auto $cVar = FindClassCached(env, "${jniMutableName(cefName)}");"""
+          ) ++
+            bv.bvWriteBackLines(cefName, s"&$tmp", p.name, cVar).map(l => s"        $l") ++ List("    }")
+        } else {
+          bv.bvWriteBackLines(cefName, s"&$tmp", p.name, cVar).map(l => s"    $l")
+        }
+        val post = writes
+        (pre, s"&$tmp", post)
+      case CType.ByValueArray(cefName) =>
+        val arrLen = s"_${p.name}_len"
+        val vecVar = s"_${p.name}_vec"
+        val arrVar = s"_${p.name}_arr"
+        val pre    = List(
+          s"""    jsize $arrLen = ${p.name} ? env->GetArrayLength(${p.name}) : 0;""",
+          s"""    std::vector<$cefName> $vecVar;""",
+          s"""    $cefName* $arrVar = nullptr;""",
+          s"""    if (${p.name} && $arrLen > 0) {""",
+          s"""        $vecVar.resize(static_cast<size_t>($arrLen));""",
+          s"""        auto _c = FindClassCached(env, "${jniName(cefName)}");""",
+          s"""        for (jsize _i = 0; _i < $arrLen; _i++) {""",
+          s"""            auto _elem = env->GetObjectArrayElement(${p.name}, _i);""",
+          s"""            if (_elem) {"""
         ) ++
-          bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
-        (pre, s"&$tmp", Nil)
+          bv.bvReadFromJavaLines(cefName, s"$vecVar[static_cast<size_t>(_i)]", "_elem", "_c").map(l =>
+            s"                $l"
+          ) ++
+          List(
+            s"""            }""",
+            s"""            env->DeleteLocalRef(_elem);""",
+            s"""        }""",
+            s"""        $arrVar = $vecVar.data();""",
+            s"""    }"""
+          )
+        (pre, arrVar, Nil)
       case CType.OutInt =>
         val tmp = s"_${p.name}_val"
         (
@@ -804,7 +885,35 @@ $convertAndReturn"""
             )}>(env->GetLongField(${p.name}, env->GetFieldID(env->GetObjectClass(${p.name}), "value", "J")))""",
           Nil
         )
-      case CType.Bool      => (Nil, s"static_cast<bool>(${p.name})", Nil)
+      case CType.Bool         => (Nil, s"static_cast<bool>(${p.name})", Nil)
+      case CType.OutOpaquePtr =>
+        val valVar   = s"_${p.name}_val"
+        val getVar   = s"_${p.name}_get"
+        val setVar   = s"_${p.name}_set"
+        val objVar   = s"_${p.name}_obj"
+        val npClsVar = s"_${p.name}_np_cls"
+        val npCtor   = s"_${p.name}_np_ctor"
+        val newVar   = s"_${p.name}_new"
+        val pre      = List(
+          s"""    void* $valVar = nullptr;""",
+          s"""    auto ${p.name}_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");""",
+          s"""    auto $getVar = env->GetMethodID(${p.name}_ar_cls, "get", "()Ljava/lang/Object;");""",
+          s"""    auto $setVar = env->GetMethodID(${p.name}_ar_cls, "set", "(Ljava/lang/Object;)V");""",
+          s"""    if (${p.name}) {""",
+          s"""        auto $objVar = env->CallObjectMethod(${p.name}, $getVar);""",
+          s"""        if ($objVar) $valVar = reinterpret_cast<void*>(env->GetLongField($objVar, env->GetFieldID(env->GetObjectClass($objVar), "address", "J")));""",
+          s"""    }"""
+        )
+        val post = List(
+          s"""    if (${p.name}) {""",
+          s"""        auto $npClsVar = FindClassCached(env, "${Naming.nativePointerInternalName}");""",
+          s"""        auto $npCtor = env->GetMethodID($npClsVar, "<init>", "(J)V");""",
+          s"""        auto $newVar = $valVar ? env->NewObject($npClsVar, $npCtor, to_jlong($valVar)) : nullptr;""",
+          s"""        env->CallVoidMethod(${p.name}, $setVar, $newVar);""",
+          s"""        if ($newVar) env->DeleteLocalRef($newVar);""",
+          s"""    }"""
+        )
+        (pre, s"&$valVar", post)
       case CType.OpaquePtr =>
         val ct = if (p.rawCType.nonEmpty) p.rawCType else "void*"
         (
@@ -815,13 +924,21 @@ $convertAndReturn"""
       case sc @ (CType.StringList | CType.StringMap | CType.StringMultimap) =>
         convertStringCollectionParam(p.name, p.name, sc, isOutParam)
       case CType.DataStruct(cefName) if CHeaderParser.isByValueStruct(cefName) =>
-        val tmp = s"_${p.name}_val"
+        val tmp   = s"_${p.name}_val"
+        val cVar  = s"_${p.name}_c"
+        val reads = if (isOpt) {
+          List(
+            s"""    if (${p.name}) {""",
+            s"""        auto $cVar = FindClassCached(env, "${jniName(cefName)}");"""
+          ) ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"        $l") ++ List("    }")
+        } else {
+          List(s"""    auto $cVar = FindClassCached(env, "${jniName(cefName)}");""") ++
+            bv.bvReadFromJavaLines(cefName, tmp, p.name, cVar).map(l => s"    $l")
+        }
         val pre = List(
-          s"    $cefName $tmp = {};",
-          s"""    if (${p.name}) {""",
-          s"""        auto _c = FindClassCached(env, "${jniName(cefName)}");"""
-        ) ++
-          bv.bvReadFromJavaLines(cefName, tmp, p.name, "_c").map(l => s"        $l") ++ List("    }")
+          s"    $cefName $tmp = {};"
+        ) ++ reads
         (pre, tmp, Nil)
       case _ => (Nil, p.name, Nil)
     }
@@ -852,8 +969,11 @@ $convertAndReturn"""
     case CType.Void                       => ""
     case CType.Bool                       => " JNI_FALSE"
     case CType.JString                    => " nullptr"
+    case CType.ConstCStringArray          => " nullptr"
+    case CType.CStringArray               => " nullptr"
     case CType.Ptr(_)                     => " 0"
     case CType.ObjectPtr(_)               => " nullptr"
+    case CType.OutOpaquePtr               => " nullptr"
     case CType.OpaquePtr                  => " nullptr"
     case CType.Buffer(_)                  => " nullptr"
     case CType.DataStruct(_)              => " nullptr"

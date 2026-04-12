@@ -250,33 +250,16 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), getGlobalContext0)(JNIE
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefRequestContext), createContext0)(JNIEnv* env, jclass clz, jobject settings, jobject handler) {
     if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return nullptr; }
     cef_request_context_settings_t _settings_val = {};
-    if (settings) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContextSettings");
-        jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;"));
-        if (_rd_cache_path) {
-            const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr);
-            jsize _rd_cache_path_len = env->GetStringLength(_rd_cache_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cache_path_chars), _rd_cache_path_len, &_settings_val.cache_path, 1);
-            env->ReleaseStringChars(_rd_cache_path, _rd_cache_path_chars);
-        }
-        _settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_c, "persistSessionCookies", "I")));
-        jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "acceptLanguageList", "Ljava/lang/String;"));
-        if (_rd_accept_language_list) {
-            const jchar* _rd_accept_language_list_chars = env->GetStringChars(_rd_accept_language_list, nullptr);
-            jsize _rd_accept_language_list_len = env->GetStringLength(_rd_accept_language_list);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_accept_language_list_chars), _rd_accept_language_list_len, &_settings_val.accept_language_list, 1);
-            env->ReleaseStringChars(_rd_accept_language_list, _rd_accept_language_list_chars);
-        }
-        jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cookieableSchemesList", "Ljava/lang/String;"));
-        if (_rd_cookieable_schemes_list) {
-            const jchar* _rd_cookieable_schemes_list_chars = env->GetStringChars(_rd_cookieable_schemes_list, nullptr);
-            jsize _rd_cookieable_schemes_list_len = env->GetStringLength(_rd_cookieable_schemes_list);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cookieable_schemes_list_chars), _rd_cookieable_schemes_list_len, &_settings_val.cookieable_schemes_list, 1);
-            env->ReleaseStringChars(_rd_cookieable_schemes_list, _rd_cookieable_schemes_list_chars);
-        }
-        _settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_c, "cookieableSchemesExcludeDefaults", "I")));
-        _settings_val.size = sizeof(cef_request_context_settings_t);
-    }
+    auto _settings_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRequestContextSettings");
+    jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_settings_c, "cachePath", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_cache_path, &_settings_val.cache_path);
+    _settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_settings_c, "persistSessionCookies", "I")));
+    jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_settings_c, "acceptLanguageList", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_accept_language_list, &_settings_val.accept_language_list);
+    jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_settings_c, "cookieableSchemesList", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_cookieable_schemes_list, &_settings_val.cookieable_schemes_list);
+    _settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_settings_c, "cookieableSchemesExcludeDefaults", "I")));
+    _settings_val.size = sizeof(cef_request_context_settings_t);
     cef_request_context_handler_t* _handler_ptr = handler ? Create_JniCefRequestContextHandler(env, handler) : nullptr;
     auto _r = cef_request_context_create_context(&_settings_val, _handler_ptr);
     if (!_r) return nullptr;

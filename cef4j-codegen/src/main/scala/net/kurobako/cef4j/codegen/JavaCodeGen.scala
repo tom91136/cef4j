@@ -72,7 +72,9 @@ $body
     case CType.JString | CType.Enum(_) | CType.DataStruct(_) |
         CType.ByValueIn(_) | CType.ByValueOut(_) | CType.ByValueArray(_) |
         CType.ObjectPtr(_) | CType.OutObjectPtr(_) | CType.ObjectPtrArray(_) |
-        CType.OpaquePtr | CType.PixelBuffer | CType.Buffer(_) |
+        CType.OpaquePtr | CType.OutOpaquePtr | CType.ConstDataStructPtr(_) | CType.ConstCStringArray |
+        CType.CStringArray |
+        CType.PixelBuffer | CType.Buffer(_) |
         CType.StringList | CType.StringMap | CType.StringMultimap |
         CType.CountFuncArray(_, _, _, _) => true
     case _ => false
@@ -85,7 +87,8 @@ $body
   // ~10% of nullable parameters.
   def isStrictNullCheck(ct: CType): Boolean = ct match {
     case CType.Enum(_) | CType.ByValueIn(_) | CType.ByValueOut(_) | CType.ByValueArray(_) |
-        CType.Buffer(_) | CType.PixelBuffer |
+        CType.Buffer(_) | CType.PixelBuffer | CType.ConstCStringArray | CType.CStringArray |
+        CType.OutOpaquePtr |
         CType.StringList | CType.StringMap | CType.StringMultimap => true
     case _ => false
   }

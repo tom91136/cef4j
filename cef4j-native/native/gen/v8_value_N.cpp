@@ -150,7 +150,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), getDateValue0)(JNIEnv* env, jo
     cef_basetime_t result = s->get_date_value(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 
@@ -491,10 +491,8 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDouble0)(JNIEnv* env, jc
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefV8Value), createDate0)(JNIEnv* env, jclass clz, jobject date) {
     cef_basetime_t _date_val = {};
-    if (date) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
-        _date_val.val = static_cast<decltype(_date_val.val)>(static_cast<size_t>(env->GetLongField(date, env->GetFieldID(_c, "val", "J"))));
-    }
+    auto _date_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
+    _date_val.val = from_jlong<decltype(_date_val.val)>(env->GetLongField(date, env->GetFieldID(_date_c, "val", "J")));
     auto _r = cef_v8_value_create_date(_date_val);
     if (!_r) return nullptr;
     auto _rCls = FindClassCached(env, "net/kurobako/cef4j/gen/CefV8Value$NativePeer");

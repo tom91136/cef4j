@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.codegen.passes
 
 import net.kurobako.cef4j.codegen.Banners
+import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
 import net.kurobako.cef4j.codegen.Config
 import net.kurobako.cef4j.codegen.DocComments
@@ -9,7 +10,9 @@ import net.kurobako.cef4j.codegen.JavaInterfaceCodeGen
 import net.kurobako.cef4j.codegen.JavaRecordCodeGen
 import net.kurobako.cef4j.codegen.JniCppCodeGen
 import net.kurobako.cef4j.codegen.Naming
+import net.kurobako.cef4j.codegen.Param
 import net.kurobako.cef4j.codegen.ParseState
+import net.kurobako.cef4j.codegen.PlatformSpecificity
 import net.kurobako.cef4j.codegen.RefinedTree
 
 object EmitTree {
@@ -23,13 +26,35 @@ object EmitTree {
       parseState.structHeaderMap
     )
 
-    val objectDeclMap = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
+    val objectDeclMap                  = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
+    val sharedPlatformInterfaceStructs = refined.decls.collect {
+      case d: CefDecl.HandlerStruct =>
+        d.fns.flatMap(_.params.collect { case Param(_, CType.ConstDataStructPtr(name), _, _) => name })
+    }.flatten.toSet
 
-    refined.decls.foreach(emitDecl(_, cfg, parseState, refined, jniCodeGen, objectDeclMap))
+    refined.decls.foreach(emitDecl(
+      _,
+      cfg,
+      parseState,
+      refined,
+      jniCodeGen,
+      objectDeclMap,
+      sharedPlatformInterfaceStructs
+    ))
 
     if (refined.orphanFreeFunctions.nonEmpty) {
-      JavaInterfaceCodeGen.emitGlobals(refined.orphanFreeFunctions, cfg.outJavaPackageDir, parseState.docs)
-      jniCodeGen.emitGlobals(refined.orphanFreeFunctions, cfg.outCpp)
+      val (platformOrphans, commonOrphans) = refined.orphanFreeFunctions.partition(ff =>
+        PlatformSpecificity.isPlatformSpecificFreeFunction(ff, parseState.platformSpecificTypes)
+      )
+      if (cfg.emitJava && !cfg.emitJavaPlatformOnly) {
+        JavaInterfaceCodeGen.emitGlobals(refined.orphanFreeFunctions, cfg.outJavaPackageDir, parseState.docs)
+      }
+      if (cfg.emitCommonCpp && commonOrphans.nonEmpty) {
+        jniCodeGen.emitGlobals(commonOrphans, cfg.outCpp)
+      }
+      if (platformOrphans.nonEmpty) {
+        jniCodeGen.emitGlobals(platformOrphans, cfg.outCppPlatformDir)
+      }
     }
   }
 
@@ -52,41 +77,77 @@ object EmitTree {
       parseState: ParseState,
       refined: RefinedTree,
       jniCodeGen: JniCppCodeGen,
-      objectDeclMap: Map[String, CefDecl.ObjectStruct]
+      objectDeclMap: Map[String, CefDecl.ObjectStruct],
+      sharedPlatformInterfaceStructs: Set[String]
   )(using Naming.Context, DocComments.Context, Banners): Unit =
     decl match {
       case d: CefDecl.ObjectStruct =>
-        val associatedFreeFunctions = refined.freeFunctionsByOwner.getOrElse(d.name, Nil)
-        val ancestors               = getAncestors(d, objectDeclMap)
-        jniCodeGen.emit(d, cfg.outCpp, associatedFreeFunctions)
-        JavaInterfaceCodeGen.emitObject(
-          d,
-          cfg.outJavaPackageDir,
-          parseState.docs,
-          parseState.classDocs.getOrElse(d.name, ""),
-          handlerNames = parseState.handlerNames,
-          freeFunctions = associatedFreeFunctions,
-          ancestorDecls = ancestors
+        val associatedFreeFunctions    = refined.freeFunctionsByOwner.getOrElse(d.name, Nil)
+        val ancestors                  = getAncestors(d, objectDeclMap)
+        val hasPlatformSpecificFreeFns = associatedFreeFunctions.exists(ff =>
+          PlatformSpecificity.isPlatformSpecificFreeFunction(ff, parseState.platformSpecificTypes)
         )
+        val cppOutDir =
+          if (
+            PlatformSpecificity.isPlatformSpecificDecl(
+              d,
+              parseState.platformSpecificTypes
+            ) || hasPlatformSpecificFreeFns
+          )
+            cfg.outCppPlatformDir
+          else cfg.outCpp
+        if (cppOutDir == cfg.outCppPlatformDir || cfg.emitCommonCpp) {
+          jniCodeGen.emit(d, cppOutDir, associatedFreeFunctions)
+        }
+        if (cfg.emitJava && !cfg.emitJavaPlatformOnly) {
+          JavaInterfaceCodeGen.emitObject(
+            d,
+            cfg.outJavaPackageDir,
+            parseState.docs,
+            parseState.classDocs.getOrElse(d.name, ""),
+            handlerNames = parseState.handlerNames,
+            freeFunctions = associatedFreeFunctions,
+            ancestorDecls = ancestors
+          )
+        }
       case d: CefDecl.HandlerStruct =>
-        jniCodeGen.emitHandler(d, cfg.outCpp)
-        JavaInterfaceCodeGen.emitHandler(
-          d,
-          cfg.outJavaPackageDir,
-          parseState.docs,
-          parseState.classDocs.getOrElse(d.name, ""),
-          handlerNames = parseState.handlerNames
-        )
+        val cppOutDir = if (PlatformSpecificity.isPlatformSpecificDecl(d, parseState.platformSpecificTypes))
+          cfg.outCppPlatformDir
+        else cfg.outCpp
+        if (cppOutDir == cfg.outCppPlatformDir || cfg.emitCommonCpp) {
+          jniCodeGen.emitHandler(d, cppOutDir)
+        }
+        if (cfg.emitJava && !cfg.emitJavaPlatformOnly) {
+          JavaInterfaceCodeGen.emitHandler(
+            d,
+            cfg.outJavaPackageDir,
+            parseState.docs,
+            parseState.classDocs.getOrElse(d.name, ""),
+            handlerNames = parseState.handlerNames
+          )
+        }
       case d: CefDecl.DataStruct =>
-        JavaRecordCodeGen.emit(
-          d,
-          cfg.outJavaPackageDir,
-          parseState.classDocs.getOrElse(d.name, ""),
-          needsMutable = d.needsMutable,
-          fieldDocs = parseState.structFieldDocs.getOrElse(d.name, Map.empty)
-        )
+        val isPlatformSpecific = PlatformSpecificity.isPlatformSpecificDecl(d, parseState.platformSpecificTypes)
+        if (cfg.emitJava && (!cfg.emitJavaPlatformOnly || isPlatformSpecific)) {
+          val emitAsPlatformInterface =
+            !cfg.emitJavaPlatformOnly && isPlatformSpecific && sharedPlatformInterfaceStructs.contains(d.name)
+          JavaRecordCodeGen.emit(
+            d,
+            cfg.outJavaPackageDir,
+            parseState.classDocs.getOrElse(d.name, ""),
+            needsMutable = d.needsMutable,
+            fieldDocs = parseState.structFieldDocs.getOrElse(d.name, Map.empty),
+            emitAsPlatformInterface = emitAsPlatformInterface,
+            platformImplSubPackages = if (emitAsPlatformInterface) List("linux", "mac", "win") else Nil,
+            implementSharedType =
+              cfg.emitJavaPlatformOnly && isPlatformSpecific && sharedPlatformInterfaceStructs.contains(d.name)
+          )
+        }
       case d: CefDecl.Enum =>
-        JavaEnumCodeGen.emit(d, cfg.outJavaPackageDir, sourceHeader = "cef_types.h")
+        val isPlatformSpecific = PlatformSpecificity.isPlatformSpecificDecl(d, parseState.platformSpecificTypes)
+        if (cfg.emitJava && (!cfg.emitJavaPlatformOnly || isPlatformSpecific)) {
+          JavaEnumCodeGen.emit(d, cfg.outJavaPackageDir, sourceHeader = "cef_types.h")
+        }
       case _: CefDecl.FreeFunction =>
     }
 }

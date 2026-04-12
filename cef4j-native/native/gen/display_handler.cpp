@@ -178,7 +178,7 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_new_size_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
         auto j_new_size_ctor = env->GetMethodID(j_new_size_cls, "<init>", "(II)V");
-        auto j_new_size = new_size ? env->NewObject(j_new_size_cls, j_new_size_ctor, static_cast<jint>(new_size->width), static_cast<jint>(new_size->height)) : nullptr;
+        auto j_new_size = new_size ? env->NewObject(j_new_size_cls, j_new_size_ctor, static_cast<jint>((new_size)->width), static_cast<jint>((new_size)->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAutoResize", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefSize;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
@@ -208,7 +208,7 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
     static int CEF_CALLBACK _on_cursor_change(cef_display_handler_t* self, struct _cef_browser_t* browser, cef_cursor_handle_t cursor, cef_cursor_type_t type, const cef_cursor_info_t* custom_cursor_info) {
         auto* h = reinterpret_cast<JniCefDisplayHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(14) < 0) { return false; }
+        if (env->PushLocalFrame(23) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -217,11 +217,23 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
         auto j_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCursorType");
         auto j_type_from = env->GetStaticMethodID(j_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefCursorType;");
         auto j_type = env->CallStaticObjectMethod(j_type_cls, j_type_from, static_cast<jlong>(type));
-        auto j_custom_cursor_info_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
-        auto j_custom_cursor_info_ctor = env->GetMethodID(j_custom_cursor_info_cls, "<init>", "(J)V");
-        auto j_custom_cursor_info = env->NewObject(j_custom_cursor_info_cls, j_custom_cursor_info_ctor, reinterpret_cast<jlong>(custom_cursor_info));
+        jobject j_custom_cursor_info = nullptr;
+        if (custom_cursor_info) {
+            auto _bv_custom_cursor_info_hotspot_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
+            auto _bv_custom_cursor_info_hotspot_ctor = env->GetMethodID(_bv_custom_cursor_info_hotspot_cls, "<init>", "(II)V");
+            auto _bv_custom_cursor_info_hotspot = env->NewObject(_bv_custom_cursor_info_hotspot_cls, _bv_custom_cursor_info_hotspot_ctor, static_cast<jint>((custom_cursor_info)->hotspot.x), static_cast<jint>((custom_cursor_info)->hotspot.y));
+            auto _bv_custom_cursor_info_buffer_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
+            auto _bv_custom_cursor_info_buffer_ctor = env->GetMethodID(_bv_custom_cursor_info_buffer_cls, "<init>", "(J)V");
+            auto _bv_custom_cursor_info_buffer = env->NewObject(_bv_custom_cursor_info_buffer_cls, _bv_custom_cursor_info_buffer_ctor, to_jlong((custom_cursor_info)->buffer));
+            auto _bv_custom_cursor_info_size_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+            auto _bv_custom_cursor_info_size_ctor = env->GetMethodID(_bv_custom_cursor_info_size_cls, "<init>", "(II)V");
+            auto _bv_custom_cursor_info_size = env->NewObject(_bv_custom_cursor_info_size_cls, _bv_custom_cursor_info_size_ctor, static_cast<jint>((custom_cursor_info)->size.width), static_cast<jint>((custom_cursor_info)->size.height));
+            auto j_custom_cursor_info_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefCursorInfo");
+            auto j_custom_cursor_info_ctor = env->GetMethodID(j_custom_cursor_info_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefPoint;FLnet/kurobako/cef4j/gen/NativePointer;Lnet/kurobako/cef4j/gen/CefSize;)V");
+            j_custom_cursor_info = env->NewObject(j_custom_cursor_info_cls, j_custom_cursor_info_ctor, _bv_custom_cursor_info_hotspot, static_cast<jfloat>((custom_cursor_info)->image_scale_factor), _bv_custom_cursor_info_buffer, _bv_custom_cursor_info_size);
+        }
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onCursorChange", "(Lnet/kurobako/cef4j/gen/CefBrowser;JLnet/kurobako/cef4j/gen/CefCursorType;Lnet/kurobako/cef4j/gen/NativePointer;)Z");
+        auto mid = env->GetMethodID(cls, "onCursorChange", "(Lnet/kurobako/cef4j/gen/CefBrowser;JLnet/kurobako/cef4j/gen/CefCursorType;Lnet/kurobako/cef4j/gen/CefCursorInfo;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, (jlong)(cursor), j_type, j_custom_cursor_info);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
@@ -257,7 +269,7 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_new_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto j_new_bounds_ctor = env->GetMethodID(j_new_bounds_cls, "<init>", "(IIII)V");
-        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>(new_bounds->x), static_cast<jint>(new_bounds->y), static_cast<jint>(new_bounds->width), static_cast<jint>(new_bounds->height)) : nullptr;
+        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>((new_bounds)->x), static_cast<jint>((new_bounds)->y), static_cast<jint>((new_bounds)->width), static_cast<jint>((new_bounds)->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onContentsBoundsChange", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefRect;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
@@ -278,17 +290,17 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto j_rect_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect$Mutable");
         auto j_rect_ctor = env->GetMethodID(j_rect_cls, "<init>", "(IIII)V");
-        auto j_rect = rect ? env->NewObject(j_rect_cls, j_rect_ctor, static_cast<jint>(rect->x), static_cast<jint>(rect->y), static_cast<jint>(rect->width), static_cast<jint>(rect->height)) : nullptr;
+        auto j_rect = rect ? env->NewObject(j_rect_cls, j_rect_ctor, static_cast<jint>((rect)->x), static_cast<jint>((rect)->y), static_cast<jint>((rect)->width), static_cast<jint>((rect)->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "getRootWindowScreenRect", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefRect$Mutable;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_rect);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (rect && j_rect) {
-            rect->x = static_cast<decltype(rect->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I")));
-            rect->y = static_cast<decltype(rect->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I")));
-            rect->width = static_cast<decltype(rect->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I")));
-            rect->height = static_cast<decltype(rect->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));
+            (rect)->x = static_cast<decltype((rect)->x)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "x", "I")));
+            (rect)->y = static_cast<decltype((rect)->y)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "y", "I")));
+            (rect)->width = static_cast<decltype((rect)->width)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "width", "I")));
+            (rect)->height = static_cast<decltype((rect)->height)>(env->GetIntField(j_rect, env->GetFieldID(j_rect_cls, "height", "I")));
         }
         env->PopLocalFrame(nullptr);
         return jResult;

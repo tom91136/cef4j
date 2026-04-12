@@ -323,6 +323,98 @@ cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMap) {
     return mmap;
 }
 
+const char* const* JavaListToConstCStringArray(
+    JNIEnv* env,
+    jobject jList,
+    std::vector<std::string>& storage,
+    std::vector<const char*>& ptrs
+) {
+    storage.clear();
+    ptrs.clear();
+    if (!jList) return nullptr;
+
+    jint count = env->CallIntMethod(jList, jc.listSize);
+    if (CheckJNIException(env)) return nullptr;
+    if (count <= 0) return nullptr;
+
+    storage.reserve(static_cast<size_t>(count));
+    ptrs.reserve(static_cast<size_t>(count + 1));
+
+    for (jint i = 0; i < count; i++) {
+        auto jStr = static_cast<jstring>(env->CallObjectMethod(jList, jc.listGet, i));
+        if (CheckJNIException(env)) {
+            if (jStr) env->DeleteLocalRef(jStr);
+            storage.clear();
+            ptrs.clear();
+            return nullptr;
+        }
+        if (!jStr) {
+            storage.emplace_back("");
+        } else {
+            const char* utf = env->GetStringUTFChars(jStr, nullptr);
+            if (!utf) {
+                env->DeleteLocalRef(jStr);
+                storage.clear();
+                ptrs.clear();
+                return nullptr;
+            }
+            storage.emplace_back(utf);
+            env->ReleaseStringUTFChars(jStr, utf);
+            env->DeleteLocalRef(jStr);
+        }
+        ptrs.push_back(storage.back().c_str());
+    }
+
+    ptrs.push_back(nullptr);
+    return ptrs.data();
+}
+
+char** JavaListToCStringArray(
+    JNIEnv* env,
+    jobject jList,
+    std::vector<std::string>& storage,
+    std::vector<char*>& ptrs
+) {
+    storage.clear();
+    ptrs.clear();
+    if (!jList) return nullptr;
+
+    jint count = env->CallIntMethod(jList, jc.listSize);
+    if (CheckJNIException(env)) return nullptr;
+    if (count <= 0) return nullptr;
+
+    storage.reserve(static_cast<size_t>(count));
+    ptrs.reserve(static_cast<size_t>(count + 1));
+
+    for (jint i = 0; i < count; i++) {
+        auto jStr = static_cast<jstring>(env->CallObjectMethod(jList, jc.listGet, i));
+        if (CheckJNIException(env)) {
+            if (jStr) env->DeleteLocalRef(jStr);
+            storage.clear();
+            ptrs.clear();
+            return nullptr;
+        }
+        if (!jStr) {
+            storage.emplace_back("");
+        } else {
+            const char* utf = env->GetStringUTFChars(jStr, nullptr);
+            if (!utf) {
+                env->DeleteLocalRef(jStr);
+                storage.clear();
+                ptrs.clear();
+                return nullptr;
+            }
+            storage.emplace_back(utf);
+            env->ReleaseStringUTFChars(jStr, utf);
+            env->DeleteLocalRef(jStr);
+        }
+        ptrs.push_back(const_cast<char*>(storage.back().c_str()));
+    }
+
+    ptrs.push_back(nullptr);
+    return ptrs.data();
+}
+
 // Writeback: copy CEF string collection back into existing Java collection
 
 void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject jList) {

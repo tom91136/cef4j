@@ -6,11 +6,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefLinuxWindowProperties;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.gen.CefShowState;
 import net.kurobako.cef4j.gen.CefState;
-import net.kurobako.cef4j.gen.NativePointer;
 
 /**
  * Implement this interface to handle window events. The methods of this class will be called on the browser process UI thread unless otherwise indicated.
@@ -133,7 +133,7 @@ public interface CefWindowDelegate extends CefClientHandler {
     }
 
     /**
-     * Return {@code true} if {@code window} should be created without a frame or title bar. The window will be resizable if CanResize() returns {@code true}. Use {@link net.kurobako.cef4j.gen.views.CefWindow#setDraggableRegions(long, NativePointer)} to specify draggable regions.
+     * Return {@code true} if {@code window} should be created without a frame or title bar. The window will be resizable if CanResize() returns {@code true}. Use {@link net.kurobako.cef4j.gen.views.CefWindow#setDraggableRegions(long, CefDraggableRegion[])} to specify draggable regions.
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* is_frameless)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
@@ -284,7 +284,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:282</a>
      */
-    default boolean getLinuxWindowProperties(@Nullable CefWindow window, @Nullable NativePointer properties) {
+    default boolean getLinuxWindowProperties(@Nullable CefWindow window, @Nonnull CefLinuxWindowProperties.Mutable properties) {
         return false;
     }
 }

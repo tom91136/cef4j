@@ -200,7 +200,7 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
         auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
         auto j_new_bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
         auto j_new_bounds_ctor = env->GetMethodID(j_new_bounds_cls, "<init>", "(IIII)V");
-        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>(new_bounds->x), static_cast<jint>(new_bounds->y), static_cast<jint>(new_bounds->width), static_cast<jint>(new_bounds->height)) : nullptr;
+        auto j_new_bounds = new_bounds ? env->NewObject(j_new_bounds_cls, j_new_bounds_ctor, static_cast<jint>((new_bounds)->x), static_cast<jint>((new_bounds)->y), static_cast<jint>((new_bounds)->width), static_cast<jint>((new_bounds)->height)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onLayoutChanged", "(Lnet/kurobako/cef4j/gen/views/CefView;Lnet/kurobako/cef4j/gen/CefRect;)V");
         if (!mid) { env->PopLocalFrame(nullptr); return; }

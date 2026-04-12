@@ -18,154 +18,11 @@
 #include "include/capi/cef_values_capi.h"
 #include "jni_util.h"
 
-extern "C" cef_app_t* Create_JniCefApp(JNIEnv* env, jobject handler);
 extern "C" cef_scheme_handler_factory_t* Create_JniCefSchemeHandlerFactory(JNIEnv* env, jobject handler);
 extern "C" cef_task_t* Create_JniCefTask(JNIEnv* env, jobject handler);
 extern "C" cef_completion_callback_t* Create_JniCefCompletionCallback(JNIEnv* env, jobject handler);
 extern "C" cef_end_tracing_callback_t* Create_JniCefEndTracingCallback(JNIEnv* env, jobject handler);
 extern "C" cef_v8_handler_t* Create_JniCefV8Handler(JNIEnv* env, jobject handler);
-CEF4J_JNI_EXPORT(jint, CefGlobals, executeProcess0)(JNIEnv* env, jclass clz, jobject args, jobject application, jobject windows_sandbox_info) {
-    cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
-    return static_cast<jint>(cef_execute_process(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
-}
-
-CEF4J_JNI_EXPORT(jint, CefGlobals, initialize0)(JNIEnv* env, jclass clz, jobject args, jobject settings, jobject application, jobject windows_sandbox_info) {
-    if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return 0; }
-    cef_settings_t _settings_val = {};
-    if (settings) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSettings");
-        _settings_val.no_sandbox = static_cast<decltype(_settings_val.no_sandbox)>(env->GetIntField(settings, env->GetFieldID(_c, "noSandbox", "I")));
-        jstring _rd_browser_subprocess_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "browserSubprocessPath", "Ljava/lang/String;"));
-        if (_rd_browser_subprocess_path) {
-            const jchar* _rd_browser_subprocess_path_chars = env->GetStringChars(_rd_browser_subprocess_path, nullptr);
-            jsize _rd_browser_subprocess_path_len = env->GetStringLength(_rd_browser_subprocess_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_browser_subprocess_path_chars), _rd_browser_subprocess_path_len, &_settings_val.browser_subprocess_path, 1);
-            env->ReleaseStringChars(_rd_browser_subprocess_path, _rd_browser_subprocess_path_chars);
-        }
-        jstring _rd_framework_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "frameworkDirPath", "Ljava/lang/String;"));
-        if (_rd_framework_dir_path) {
-            const jchar* _rd_framework_dir_path_chars = env->GetStringChars(_rd_framework_dir_path, nullptr);
-            jsize _rd_framework_dir_path_len = env->GetStringLength(_rd_framework_dir_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_framework_dir_path_chars), _rd_framework_dir_path_len, &_settings_val.framework_dir_path, 1);
-            env->ReleaseStringChars(_rd_framework_dir_path, _rd_framework_dir_path_chars);
-        }
-        jstring _rd_main_bundle_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "mainBundlePath", "Ljava/lang/String;"));
-        if (_rd_main_bundle_path) {
-            const jchar* _rd_main_bundle_path_chars = env->GetStringChars(_rd_main_bundle_path, nullptr);
-            jsize _rd_main_bundle_path_len = env->GetStringLength(_rd_main_bundle_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_main_bundle_path_chars), _rd_main_bundle_path_len, &_settings_val.main_bundle_path, 1);
-            env->ReleaseStringChars(_rd_main_bundle_path, _rd_main_bundle_path_chars);
-        }
-        _settings_val.multi_threaded_message_loop = static_cast<decltype(_settings_val.multi_threaded_message_loop)>(env->GetIntField(settings, env->GetFieldID(_c, "multiThreadedMessageLoop", "I")));
-        _settings_val.external_message_pump = static_cast<decltype(_settings_val.external_message_pump)>(env->GetIntField(settings, env->GetFieldID(_c, "externalMessagePump", "I")));
-        _settings_val.windowless_rendering_enabled = static_cast<decltype(_settings_val.windowless_rendering_enabled)>(env->GetIntField(settings, env->GetFieldID(_c, "windowlessRenderingEnabled", "I")));
-        _settings_val.command_line_args_disabled = static_cast<decltype(_settings_val.command_line_args_disabled)>(env->GetIntField(settings, env->GetFieldID(_c, "commandLineArgsDisabled", "I")));
-        jstring _rd_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cachePath", "Ljava/lang/String;"));
-        if (_rd_cache_path) {
-            const jchar* _rd_cache_path_chars = env->GetStringChars(_rd_cache_path, nullptr);
-            jsize _rd_cache_path_len = env->GetStringLength(_rd_cache_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cache_path_chars), _rd_cache_path_len, &_settings_val.cache_path, 1);
-            env->ReleaseStringChars(_rd_cache_path, _rd_cache_path_chars);
-        }
-        jstring _rd_root_cache_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "rootCachePath", "Ljava/lang/String;"));
-        if (_rd_root_cache_path) {
-            const jchar* _rd_root_cache_path_chars = env->GetStringChars(_rd_root_cache_path, nullptr);
-            jsize _rd_root_cache_path_len = env->GetStringLength(_rd_root_cache_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_root_cache_path_chars), _rd_root_cache_path_len, &_settings_val.root_cache_path, 1);
-            env->ReleaseStringChars(_rd_root_cache_path, _rd_root_cache_path_chars);
-        }
-        _settings_val.persist_session_cookies = static_cast<decltype(_settings_val.persist_session_cookies)>(env->GetIntField(settings, env->GetFieldID(_c, "persistSessionCookies", "I")));
-        jstring _rd_user_agent = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "userAgent", "Ljava/lang/String;"));
-        if (_rd_user_agent) {
-            const jchar* _rd_user_agent_chars = env->GetStringChars(_rd_user_agent, nullptr);
-            jsize _rd_user_agent_len = env->GetStringLength(_rd_user_agent);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_user_agent_chars), _rd_user_agent_len, &_settings_val.user_agent, 1);
-            env->ReleaseStringChars(_rd_user_agent, _rd_user_agent_chars);
-        }
-        jstring _rd_user_agent_product = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "userAgentProduct", "Ljava/lang/String;"));
-        if (_rd_user_agent_product) {
-            const jchar* _rd_user_agent_product_chars = env->GetStringChars(_rd_user_agent_product, nullptr);
-            jsize _rd_user_agent_product_len = env->GetStringLength(_rd_user_agent_product);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_user_agent_product_chars), _rd_user_agent_product_len, &_settings_val.user_agent_product, 1);
-            env->ReleaseStringChars(_rd_user_agent_product, _rd_user_agent_product_chars);
-        }
-        jstring _rd_locale = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "locale", "Ljava/lang/String;"));
-        if (_rd_locale) {
-            const jchar* _rd_locale_chars = env->GetStringChars(_rd_locale, nullptr);
-            jsize _rd_locale_len = env->GetStringLength(_rd_locale);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_locale_chars), _rd_locale_len, &_settings_val.locale, 1);
-            env->ReleaseStringChars(_rd_locale, _rd_locale_chars);
-        }
-        jstring _rd_log_file = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "logFile", "Ljava/lang/String;"));
-        if (_rd_log_file) {
-            const jchar* _rd_log_file_chars = env->GetStringChars(_rd_log_file, nullptr);
-            jsize _rd_log_file_len = env->GetStringLength(_rd_log_file);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_log_file_chars), _rd_log_file_len, &_settings_val.log_file, 1);
-            env->ReleaseStringChars(_rd_log_file, _rd_log_file_chars);
-        }
-        auto _rd_log_severity = env->GetObjectField(settings, env->GetFieldID(_c, "logSeverity", "Lnet/kurobako/cef4j/gen/CefLogSeverity;"));
-        if (_rd_log_severity) {
-            _settings_val.log_severity = static_cast<decltype(_settings_val.log_severity)>(env->GetLongField(_rd_log_severity, env->GetFieldID(env->GetObjectClass(_rd_log_severity), "value", "J")));
-        }
-        auto _rd_log_items = env->GetObjectField(settings, env->GetFieldID(_c, "logItems", "Lnet/kurobako/cef4j/gen/CefLogItems;"));
-        if (_rd_log_items) {
-            _settings_val.log_items = static_cast<decltype(_settings_val.log_items)>(env->GetLongField(_rd_log_items, env->GetFieldID(env->GetObjectClass(_rd_log_items), "value", "J")));
-        }
-        jstring _rd_javascript_flags = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "javascriptFlags", "Ljava/lang/String;"));
-        if (_rd_javascript_flags) {
-            const jchar* _rd_javascript_flags_chars = env->GetStringChars(_rd_javascript_flags, nullptr);
-            jsize _rd_javascript_flags_len = env->GetStringLength(_rd_javascript_flags);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_javascript_flags_chars), _rd_javascript_flags_len, &_settings_val.javascript_flags, 1);
-            env->ReleaseStringChars(_rd_javascript_flags, _rd_javascript_flags_chars);
-        }
-        jstring _rd_resources_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "resourcesDirPath", "Ljava/lang/String;"));
-        if (_rd_resources_dir_path) {
-            const jchar* _rd_resources_dir_path_chars = env->GetStringChars(_rd_resources_dir_path, nullptr);
-            jsize _rd_resources_dir_path_len = env->GetStringLength(_rd_resources_dir_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_resources_dir_path_chars), _rd_resources_dir_path_len, &_settings_val.resources_dir_path, 1);
-            env->ReleaseStringChars(_rd_resources_dir_path, _rd_resources_dir_path_chars);
-        }
-        jstring _rd_locales_dir_path = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "localesDirPath", "Ljava/lang/String;"));
-        if (_rd_locales_dir_path) {
-            const jchar* _rd_locales_dir_path_chars = env->GetStringChars(_rd_locales_dir_path, nullptr);
-            jsize _rd_locales_dir_path_len = env->GetStringLength(_rd_locales_dir_path);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_locales_dir_path_chars), _rd_locales_dir_path_len, &_settings_val.locales_dir_path, 1);
-            env->ReleaseStringChars(_rd_locales_dir_path, _rd_locales_dir_path_chars);
-        }
-        _settings_val.remote_debugging_port = static_cast<decltype(_settings_val.remote_debugging_port)>(env->GetIntField(settings, env->GetFieldID(_c, "remoteDebuggingPort", "I")));
-        _settings_val.uncaught_exception_stack_size = static_cast<decltype(_settings_val.uncaught_exception_stack_size)>(env->GetIntField(settings, env->GetFieldID(_c, "uncaughtExceptionStackSize", "I")));
-        _settings_val.background_color = static_cast<decltype(_settings_val.background_color)>(env->GetIntField(settings, env->GetFieldID(_c, "backgroundColor", "I")));
-        jstring _rd_accept_language_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "acceptLanguageList", "Ljava/lang/String;"));
-        if (_rd_accept_language_list) {
-            const jchar* _rd_accept_language_list_chars = env->GetStringChars(_rd_accept_language_list, nullptr);
-            jsize _rd_accept_language_list_len = env->GetStringLength(_rd_accept_language_list);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_accept_language_list_chars), _rd_accept_language_list_len, &_settings_val.accept_language_list, 1);
-            env->ReleaseStringChars(_rd_accept_language_list, _rd_accept_language_list_chars);
-        }
-        jstring _rd_cookieable_schemes_list = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "cookieableSchemesList", "Ljava/lang/String;"));
-        if (_rd_cookieable_schemes_list) {
-            const jchar* _rd_cookieable_schemes_list_chars = env->GetStringChars(_rd_cookieable_schemes_list, nullptr);
-            jsize _rd_cookieable_schemes_list_len = env->GetStringLength(_rd_cookieable_schemes_list);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_cookieable_schemes_list_chars), _rd_cookieable_schemes_list_len, &_settings_val.cookieable_schemes_list, 1);
-            env->ReleaseStringChars(_rd_cookieable_schemes_list, _rd_cookieable_schemes_list_chars);
-        }
-        _settings_val.cookieable_schemes_exclude_defaults = static_cast<decltype(_settings_val.cookieable_schemes_exclude_defaults)>(env->GetIntField(settings, env->GetFieldID(_c, "cookieableSchemesExcludeDefaults", "I")));
-        jstring _rd_chrome_policy_id = (jstring)env->GetObjectField(settings, env->GetFieldID(_c, "chromePolicyId", "Ljava/lang/String;"));
-        if (_rd_chrome_policy_id) {
-            const jchar* _rd_chrome_policy_id_chars = env->GetStringChars(_rd_chrome_policy_id, nullptr);
-            jsize _rd_chrome_policy_id_len = env->GetStringLength(_rd_chrome_policy_id);
-            cef_string_set(reinterpret_cast<const char16_t*>(_rd_chrome_policy_id_chars), _rd_chrome_policy_id_len, &_settings_val.chrome_policy_id, 1);
-            env->ReleaseStringChars(_rd_chrome_policy_id, _rd_chrome_policy_id_chars);
-        }
-        _settings_val.chrome_app_icon_id = static_cast<decltype(_settings_val.chrome_app_icon_id)>(env->GetIntField(settings, env->GetFieldID(_c, "chromeAppIconId", "I")));
-        _settings_val.disable_signal_handlers = static_cast<decltype(_settings_val.disable_signal_handlers)>(env->GetIntField(settings, env->GetFieldID(_c, "disableSignalHandlers", "I")));
-        _settings_val.use_views_default_popup = static_cast<decltype(_settings_val.use_views_default_popup)>(env->GetIntField(settings, env->GetFieldID(_c, "useViewsDefaultPopup", "I")));
-        _settings_val.size = sizeof(cef_settings_t);
-    }
-    cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
-    return static_cast<jint>(cef_initialize(reinterpret_cast<const cef_main_args_t*>(args ? env->GetLongField(args, env->GetFieldID(env->GetObjectClass(args), "address", "J")) : 0), &_settings_val, _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
-}
-
 CEF4J_JNI_EXPORT(jint, CefGlobals, getExitCode0)(JNIEnv* env, jclass clz) {
     return static_cast<jint>(cef_get_exit_code());
 }
@@ -277,13 +134,61 @@ CEF4J_JNI_EXPORT(jint, CefGlobals, resolveUrl0)(JNIEnv* env, jclass clz, jstring
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, parseUrl0)(JNIEnv* env, jclass clz, jstring url, jobject parts) {
+    if (!parts) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "parts must not be null"); return 0; }
     auto _url_str = JStringToCefString(env, url);
-    return static_cast<jint>(cef_parse_url(_url_str, reinterpret_cast<struct _cef_urlparts_t*>(parts ? env->GetLongField(parts, env->GetFieldID(env->GetObjectClass(parts), "address", "J")) : 0)));
+    cef_urlparts_t _parts_val = {};
+    auto _parts_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlParts$Mutable");
+    jstring _rd_spec = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "spec", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_spec, &_parts_val.spec);
+    jstring _rd_scheme = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "scheme", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_scheme, &_parts_val.scheme);
+    jstring _rd_username = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "username", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_username, &_parts_val.username);
+    jstring _rd_password = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "password", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_password, &_parts_val.password);
+    jstring _rd_host = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "host", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_host, &_parts_val.host);
+    jstring _rd_port = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "port", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_port, &_parts_val.port);
+    jstring _rd_origin = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "origin", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_origin, &_parts_val.origin);
+    jstring _rd_path = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "path", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_path, &_parts_val.path);
+    jstring _rd_query = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "query", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_query, &_parts_val.query);
+    jstring _rd_fragment = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "fragment", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_fragment, &_parts_val.fragment);
+    _parts_val.size = sizeof(cef_urlparts_t);
+    return static_cast<jint>(cef_parse_url(_url_str, &_parts_val));
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, createUrl0)(JNIEnv* env, jclass clz, jobject parts, jstring url) {
+    if (!parts) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "parts must not be null"); return 0; }
+    cef_urlparts_t _parts_val = {};
+    auto _parts_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefUrlParts");
+    jstring _rd_spec = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "spec", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_spec, &_parts_val.spec);
+    jstring _rd_scheme = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "scheme", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_scheme, &_parts_val.scheme);
+    jstring _rd_username = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "username", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_username, &_parts_val.username);
+    jstring _rd_password = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "password", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_password, &_parts_val.password);
+    jstring _rd_host = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "host", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_host, &_parts_val.host);
+    jstring _rd_port = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "port", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_port, &_parts_val.port);
+    jstring _rd_origin = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "origin", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_origin, &_parts_val.origin);
+    jstring _rd_path = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "path", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_path, &_parts_val.path);
+    jstring _rd_query = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "query", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_query, &_parts_val.query);
+    jstring _rd_fragment = (jstring)env->GetObjectField(parts, env->GetFieldID(_parts_c, "fragment", "Ljava/lang/String;"));
+    CefStringSetFromJString(env, _rd_fragment, &_parts_val.fragment);
+    _parts_val.size = sizeof(cef_urlparts_t);
     auto _url_str = JStringToCefString(env, url);
-    return static_cast<jint>(cef_create_url(reinterpret_cast<const struct _cef_urlparts_t*>(parts ? env->GetLongField(parts, env->GetFieldID(env->GetObjectClass(parts), "address", "J")) : 0), _url_str));
+    return static_cast<jint>(cef_create_url(&_parts_val, _url_str));
 }
 
 CEF4J_JNI_EXPORT(jstring, CefGlobals, formatUrlForSecurityDisplay0)(JNIEnv* env, jclass clz, jstring origin_url) {
@@ -422,7 +327,7 @@ CEF4J_JNI_EXPORT(jint, CefGlobals, endTracing0)(JNIEnv* env, jclass clz, jstring
 }
 
 CEF4J_JNI_EXPORT(jlong, CefGlobals, nowFromSystemTraceTime0)(JNIEnv* env, jclass clz) {
-    return static_cast<jlong>(cef_now_from_system_trace_time());
+    return to_jlong(cef_now_from_system_trace_time());
 }
 
 CEF4J_JNI_EXPORT(jint, CefGlobals, registerExtension0)(JNIEnv* env, jclass clz, jstring extension_name, jstring javascript_code, jobject handler) {

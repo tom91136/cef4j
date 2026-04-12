@@ -232,7 +232,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDragData), getImageHotspot0)(JNIEnv* env
     cef_point_t result = s->get_image_hotspot(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
     auto ctor = env->GetMethodID(cls, "<init>", "(II)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y));
     return _dsResult;
 }
 

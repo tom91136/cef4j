@@ -37,6 +37,6 @@ public interface CefDragHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
      */
-    default void onDraggableRegionsChanged(@Nullable CefBrowser browser, @Nullable CefFrame frame, long regionsCount, @Nullable NativePointer regions) {
+    default void onDraggableRegionsChanged(@Nullable CefBrowser browser, @Nullable CefFrame frame, long regionsCount, @Nonnull CefDraggableRegion[] regions) {
     }
 }

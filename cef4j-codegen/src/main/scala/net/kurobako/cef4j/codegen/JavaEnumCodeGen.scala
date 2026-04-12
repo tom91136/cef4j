@@ -13,8 +13,9 @@ object JavaEnumCodeGen {
       Banners
   ): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
-    val content  = render(javaName, decl.name, decl.values, decl.doc, decl.valueDocs, sourceHeader)
-    JavaCodeGen.writeJavaFile(outDir, javaName, content)
+    val subPkg   = summon[Naming.Context].subPackages.getOrElse(decl.name, "")
+    val content  = render(javaName, decl.name, decl.values, decl.doc, decl.valueDocs, sourceHeader, subPkg)
+    JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
   private def javaExpr(rawExpr: String, evaluated: Long): String = {
@@ -29,7 +30,8 @@ object JavaEnumCodeGen {
       values: List[(String, Long, String)],
       doc: String = "",
       valueDocs: Map[String, String] = Map.empty,
-      sourceHeader: String = ""
+      sourceHeader: String = "",
+      subPackage: String = ""
   )(using Naming.Context, DocComments.Context, Banners): String = {
     // Deduplicate enum constants and keep the first occurrence of each name.
     val deduped = values.foldLeft((Set.empty[String], List.empty[(String, Long, String)])) {
@@ -52,7 +54,7 @@ object JavaEnumCodeGen {
       }
       val expr    = javaExpr(rawExpr, v)
       val exprLit = rawExpr.replace("\\", "\\\\").replace("\"", "\\\"")
-      s"""${javadoc}        $jName($expr, "$exprLit", "$cName")"""
+      s"""$javadoc        $jName($expr, "$exprLit", "$cName")"""
     }.mkString(",\n")
 
     val cProto = DocComments.cPrototypeForEnum(cefName, deduped)
@@ -60,6 +62,11 @@ object JavaEnumCodeGen {
     // Append the "Possible values" list without running it back through doc conversion.
     val possibleValues = jNames.map(n => s"{@link Kind#$n}").mkString(", ")
     val valuesDocLine  = s"<p>Possible values: $possibleValues"
+
+    val basePkg    = Naming.javaPackage
+    val enumImport =
+      if (subPackage.nonEmpty) List(s"import $basePkg.CefEnum;")
+      else Nil
 
     JavaCodeGen.renderJavaFile(
       declaration = s"public final class $javaName implements CefEnum<$javaName>",
@@ -157,7 +164,9 @@ object JavaEnumCodeGen {
       classDocSuffix = valuesDocLine,
       capiSource = sourceHeader,
       cPrototype = cProto,
-      cppSource = sourceHeader
+      cppSource = sourceHeader,
+      imports = enumImport,
+      subPackage = subPackage
     )
   }
 }

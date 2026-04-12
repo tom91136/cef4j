@@ -2,6 +2,7 @@ package net.kurobako.cef4j.codegen
 
 import java.nio.file.Paths
 
+import net.kurobako.cef4j.codegen.CodegenPlatform
 import net.kurobako.cef4j.codegen.passes.CleanOutputDirs
 import net.kurobako.cef4j.codegen.passes.DiscoverHeaders
 import net.kurobako.cef4j.codegen.passes.EmitMarkerInterfaces
@@ -33,11 +34,20 @@ object Main {
     given docCommentContext: DocComments.Context =
       InitialiseDocComments(parseState.docContext, parsedTree, refinedTree)
 
-    CleanOutputDirs(cfg.outCpp, cfg.outJavaPackageDir)
-    EmitNativePointer(cfg.outJavaPackageDir, cfg.javaPackage)
-    EmitMarkerInterfaces(cfg.outJavaPackageDir, cfg.javaPackage)
+    CleanOutputDirs.cleanCppOutput(cfg.outCpp, cfg.outCppPlatformDir, cleanCommon = cfg.emitCommonCpp)
+    if (cfg.emitJava) {
+      if (cfg.emitJavaPlatformOnly) {
+        CleanOutputDirs(cfg.outJavaPlatformPackageDir)
+      } else {
+        CleanOutputDirs(cfg.outJavaPackageDir)
+        EmitNativePointer(cfg.outJavaPackageDir, cfg.javaPackage)
+        EmitMarkerInterfaces(cfg.outJavaPackageDir, cfg.javaPackage)
+      }
+    }
     EmitTree(cfg, parseState, refinedTree)
-    EmitRuntimeStubs(cfg.outJava, cfg.outJavaPackageDir, cfg.outCpp)
+    if (cfg.emitCommonCpp) {
+      EmitRuntimeStubs(cfg.outJava, cfg.outJavaPackageDir, cfg.outCpp)
+    }
 
     val elapsedSeconds = (System.nanoTime() - startNanos) / 1_000_000_000.0
     println(
@@ -71,6 +81,23 @@ object Main {
           cfg.copy(javaPackage = value)
         case s"--compiler=$id" =>
           cfg.copy(compilerId = id)
+        case s"--target-platform=$platform" =>
+          CodegenPlatform.parse(platform) match {
+            case Some(p) => cfg.copy(targetPlatform = p)
+            case None    =>
+              System.err.println(
+                s"Unknown target platform '$platform' (expected linux/mac/windows, linux64/macosx64/windows64, or auto)"
+              )
+              cfg
+          }
+        case s"--emit-java=$enabled" =>
+          cfg.copy(emitJava = parseBoolean(enabled))
+        case s"--emit-common-cpp=$enabled" =>
+          cfg.copy(emitCommonCpp = parseBoolean(enabled))
+        case s"--emit-java-platform-only=$enabled" =>
+          cfg.copy(emitJavaPlatformOnly = parseBoolean(enabled))
+        case s"--java-platform-subpackage=$value" =>
+          cfg.copy(javaPlatformSubPackage = value.trim)
         case s"--extra-cpp-dirs=$dirs" =>
           cfg.copy(extraCppDirs = parseDirList(dirs))
         case s"--extra-capi-dirs=$dirs" =>
@@ -83,4 +110,10 @@ object Main {
 
   private def parseDirList(value: String): List[String] =
     value.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
+
+  private def parseBoolean(value: String): Boolean =
+    value.trim.toLowerCase match {
+      case "1" | "true" | "yes" | "on" => true
+      case _                           => false
+    }
 }

@@ -41,19 +41,15 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefPrintSettings), setPrinterPrintableArea0)(J
     if (!physical_size_device_units) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "physicalSizeDeviceUnits must not be null"); return; }
     if (!printable_area_device_units) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "printableAreaDeviceUnits must not be null"); return; }
     cef_size_t _physical_size_device_units_val = {};
-    if (physical_size_device_units) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
-        _physical_size_device_units_val.width = static_cast<decltype(_physical_size_device_units_val.width)>(env->GetIntField(physical_size_device_units, env->GetFieldID(_c, "width", "I")));
-        _physical_size_device_units_val.height = static_cast<decltype(_physical_size_device_units_val.height)>(env->GetIntField(physical_size_device_units, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _physical_size_device_units_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+    _physical_size_device_units_val.width = static_cast<decltype(_physical_size_device_units_val.width)>(env->GetIntField(physical_size_device_units, env->GetFieldID(_physical_size_device_units_c, "width", "I")));
+    _physical_size_device_units_val.height = static_cast<decltype(_physical_size_device_units_val.height)>(env->GetIntField(physical_size_device_units, env->GetFieldID(_physical_size_device_units_c, "height", "I")));
     cef_rect_t _printable_area_device_units_val = {};
-    if (printable_area_device_units) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
-        _printable_area_device_units_val.x = static_cast<decltype(_printable_area_device_units_val.x)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_c, "x", "I")));
-        _printable_area_device_units_val.y = static_cast<decltype(_printable_area_device_units_val.y)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_c, "y", "I")));
-        _printable_area_device_units_val.width = static_cast<decltype(_printable_area_device_units_val.width)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_c, "width", "I")));
-        _printable_area_device_units_val.height = static_cast<decltype(_printable_area_device_units_val.height)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _printable_area_device_units_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
+    _printable_area_device_units_val.x = static_cast<decltype(_printable_area_device_units_val.x)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_printable_area_device_units_c, "x", "I")));
+    _printable_area_device_units_val.y = static_cast<decltype(_printable_area_device_units_val.y)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_printable_area_device_units_c, "y", "I")));
+    _printable_area_device_units_val.width = static_cast<decltype(_printable_area_device_units_val.width)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_printable_area_device_units_c, "width", "I")));
+    _printable_area_device_units_val.height = static_cast<decltype(_printable_area_device_units_val.height)>(env->GetIntField(printable_area_device_units, env->GetFieldID(_printable_area_device_units_c, "height", "I")));
     s->set_printer_printable_area(s, &_physical_size_device_units_val, &_printable_area_device_units_val, static_cast<bool>(landscape_needs_flip));
 }
 

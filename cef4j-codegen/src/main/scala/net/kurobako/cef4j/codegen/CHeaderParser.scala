@@ -29,7 +29,14 @@ object CHeaderParser {
       "cef_pdf_print_settings_t",
       "cef_settings_t",
       "cef_request_context_settings_t",
-      "cef_box_layout_settings_t"
+      "cef_box_layout_settings_t",
+      // Additional by-value structs that currently arrive as pointers in callbacks/APIs
+      // but are safer and more ergonomic as typed Java records.
+      "cef_main_args_t",
+      "cef_urlparts_t",
+      "cef_task_info_t",
+      "cef_linux_window_properties_t",
+      "cef_draggable_region_t"
     )
 
   def isByValueStruct(name: String): Boolean = ByValueStructs.contains(name)
@@ -37,10 +44,11 @@ object CHeaderParser {
   private def isIdentifier(value: String): Boolean =
     value.nonEmpty && value.head.isLetter && value.forall(ch => ch.isLetterOrDigit || ch == '_')
 
-  private val StructTypedefRe   = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
-  private val EnumTypedefRe     = """typedef\s+enum\s*\{""".r
-  private val StructClosingRe   = """}\s*cef_\w+_t\s*;""".r
-  private val FnPtrLineRe       = """\w\s*\*?\s*\(\s*\*\s*\w+\s*\)""".r
+  private val StructTypedefRe = """typedef\s+struct\s+_cef_\w+_t\s*\{""".r
+  private val EnumTypedefRe   = """typedef\s+enum\s*\{""".r
+  private val StructClosingRe = """}\s*cef_\w+_t\s*;""".r
+  private val FnPtrLineRe     =
+    """\w\s*\*?\s*\(\s*(?:(?:CEF_CALLBACK|__stdcall|__cdecl|WINAPI|APIENTRY)\s*)?\*\s*\w+\s*\)""".r
   private val EnumClosingRe     = """}\s*\w+\s*;""".r
   private val BaseFieldRe       = """.*cef_\w+_t\s+base\s*;.*""".r
   private val ScopedBaseRe      = """.*cef_base_scoped_t\s+base\s*;.*""".r
@@ -184,11 +192,13 @@ object CHeaderParser {
 
   private def isFnPtrLine(line: String): Boolean =
     line.contains("CEF_CALLBACK*") || line.contains("CEF_CALLBACK *") ||
+      line.contains("__stdcall*") || line.contains("__stdcall *") ||
+      line.contains("__cdecl*") || line.contains("__cdecl *") ||
       FnPtrLineRe.findFirstIn(line).isDefined ||
       line.trim.endsWith("*(") // multi-line fn ptr: return-type struct on its own line, e.g. "struct _cef_foo_t*("
 
   private val FnPtrPattern =
-    """(.+?)\s*\(\s*(?:CEF_CALLBACK\s*)?\*\s*(\w+)\s*\)\s*\((.+)\)\s*;""".r
+    """(.+?)\s*\(\s*(?:(?:CEF_CALLBACK|__stdcall|__cdecl|WINAPI|APIENTRY)\s*|__attribute__\s*\(\([^)]*\)\)\s*)?\*\s*(\w+)\s*\)\s*\((.+)\)\s*;""".r
 
   private def parseFnPtr(text: String, dataStructNames: Set[String]): Option[FnPtr] = {
     val normalized = text.replaceAll("\\s+", " ").trim
@@ -245,6 +255,10 @@ object CHeaderParser {
       .replaceAll("\\bstruct\\b", "")
       .replaceAll("\\s+", " ")
       .replaceAll("\\b_(?=cef_)", "")
+      .replaceAll("\\s*\\*\\s*", "*")
+      // Normalize intermediate const-pointer qualifiers like T* const* to T**.
+      // We only care about pointee topology for codegen classification.
+      .replaceAll("\\*const\\*", "**")
       .trim
 
     s match {
@@ -260,6 +274,8 @@ object CHeaderParser {
       case "cef_string_t"                               => CType.JString
       case "cef_string_t*" | "const cef_string_t*"      => CType.JString
       case "cef_string_userfree_t"                      => CType.JString
+      case "const char*const*" | "const char**"         => CType.ConstCStringArray
+      case "char*const*" | "char**"                     => CType.CStringArray
       case "const void*" | "void*"                      => CType.OpaquePtr
       case t if t.endsWith("**")                        => CType.Ptr(t.stripSuffix("*").trim)
       case "char16_t*" | "const char16_t*"              => CType.OpaquePtr
@@ -269,7 +285,8 @@ object CHeaderParser {
       case "cef_string_map_t"                           => CType.StringMap
       case "cef_string_multimap_t"                      => CType.StringMultimap
       case "cef_window_handle_t" | "cef_cursor_handle_t" | "cef_event_handle_t"
-          | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t" => CType.Long
+          | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t"
+          | "cef_shared_texture_handle_t" => CType.Long
       case "cef_color_t"                                                           => CType.UInt
       case t if ByValueStructs.exists(g => t == s"const $g*" || t == s"$g const*") =>
         val cefName = ByValueStructs.find(g => t.contains(g)).get
@@ -606,19 +623,23 @@ object CHeaderParser {
       s.replaceAll("\\bconst\\b", "").replaceAll("\\bstruct\\b", "").replaceAll("\\*", "")
         .stripPrefix("_").trim
 
-    def reclassifyType(ct: CType): CType = ct match {
+    def reclassifyType(ct: CType, allowConstDataStructPtr: Boolean): CType = ct match {
       case CType.Ptr(inner) =>
-        val stripped = inner.stripPrefix("const ").stripPrefix("struct ").stripPrefix("_")
-          .stripSuffix("const").trim
+        val normalized = inner.stripPrefix("struct ").stripPrefix("_").trim
+        val isConst    = normalized.startsWith("const ") || normalized.endsWith(" const")
+        val stripped   = normalized.stripPrefix("const ").stripSuffix(" const").trim
         if (stripped.endsWith("*")) {
           val bare = stripToBareName(stripped)
           if (objectStructNames.contains(bare))
             CType.OutObjectPtr(bare)
-          else CType.OpaquePtr // Treat unknown double pointers as opaque
+          else if (!isConst) CType.OutOpaquePtr
+          else CType.OpaquePtr // Const unknown double pointers stay opaque input pointers
         } else if (objectStructNames.contains(stripped))
           CType.ObjectPtr(stripped)
         else if (stripped == "void" || stripped.isEmpty)
           CType.OpaquePtr
+        else if (allowConstDataStructPtr && dataStructNames.contains(stripped) && isConst)
+          CType.ConstDataStructPtr(stripped)
         else if (dataStructNames.contains(stripped))
           CType.OpaquePtr // Data struct pointers not in ByValueStructs -> opaque for now
         else
@@ -633,14 +654,20 @@ object CHeaderParser {
       case other => other
     }
 
-    def reclassifyFn(fn: FnPtr): FnPtr =
-      fn.copy(ret = reclassifyType(fn.ret), params = fn.params.map(p => p.copy(typ = reclassifyType(p.typ))))
+    def reclassifyFn(fn: FnPtr, allowConstDataStructPtr: Boolean): FnPtr =
+      fn.copy(
+        ret = reclassifyType(fn.ret, allowConstDataStructPtr),
+        params = fn.params.map(p => p.copy(typ = reclassifyType(p.typ, allowConstDataStructPtr)))
+      )
 
     decls.map {
-      case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(reclassifyFn))
-      case d: CefDecl.HandlerStruct => d.copy(fns = d.fns.map(reclassifyFn))
+      case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = false)))
+      case d: CefDecl.HandlerStruct => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = true)))
       case d: CefDecl.FreeFunction  =>
-        d.copy(ret = reclassifyType(d.ret), params = d.params.map(p => p.copy(typ = reclassifyType(p.typ))))
+        d.copy(
+          ret = reclassifyType(d.ret, allowConstDataStructPtr = false),
+          params = d.params.map(p => p.copy(typ = reclassifyType(p.typ, allowConstDataStructPtr = false)))
+        )
       case other => other
     }
   }
@@ -682,7 +709,12 @@ object CHeaderParser {
       p.typ == CType.OpaquePtr && p.rawCType.replaceAll("\\s+", " ").trim.matches("(const )?void\\s*\\*")
 
     def findSizeParam(bufName: String, params: List[Param]): Option[String] = {
-      val lower = bufName.toLowerCase
+      val lower      = bufName.toLowerCase
+      val normalized = lower
+        .stripSuffix("_out")
+        .stripSuffix("_in")
+        .stripSuffix("_ptr")
+        .stripSuffix("_buffer")
       params.collectFirst {
         case p
             if isSizeType(p.typ) && (
@@ -690,9 +722,12 @@ object CHeaderParser {
                 p.name.toLowerCase == s"${lower}_size" ||
                 p.name.toLowerCase == s"${lower}length" ||
                 p.name.toLowerCase == s"${lower}_length" ||
-                (Set("bytes", "buffer", "data", "ptr").contains(lower) && Set(
+                p.name.toLowerCase == "bytes_to_read" ||
+                (Set("bytes", "buffer", "data", "ptr").contains(normalized) && Set(
                   "size",
-                  "length"
+                  "length",
+                  "bytes_to_read",
+                  "byte_length"
                 ).contains(p.name.toLowerCase))
             ) =>
           p.name

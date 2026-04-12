@@ -10,10 +10,10 @@ class JniCppHandlerTrampolineGen(
 )(using Naming.Context) {
 
   private def jniName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedJavaName(cefName))
+    Naming.javaInternalName(Naming.fullyQualifiedJavaNameForJniLookup(cefName))
 
   private def jniMutableName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedMutableName(cefName))
+    Naming.javaInternalName(Naming.fullyQualifiedMutableNameForJniLookup(cefName))
 
   private def isHandlerPtr(ct: CType): Boolean = ct match {
     case CType.ObjectPtr(name) => handlerNames.contains(name)
@@ -30,6 +30,7 @@ class JniCppHandlerTrampolineGen(
     "cef_event_handle_t",
     "cef_platform_thread_id_t",
     "cef_platform_thread_handle_t",
+    "cef_shared_texture_handle_t",
     "HWND",
     "NSView*",
     "unsigned long"
@@ -241,12 +242,53 @@ $callAndReturn$popAndReturn
           s"if (${p.name}) { $jniPrim _v; env->Get${jniInfix}ArrayRegion($jName, 0, 1, &_v); *${p.name} = static_cast<$cPrim>(_v); }"
         )
         (pre, jName, post)
+      case CType.OutOpaquePtr =>
+        val pre = List(
+          s"""auto ${jName}_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");""",
+          s"""auto ${jName}_ar_ctor = env->GetMethodID(${jName}_ar_cls, "<init>", "(Ljava/lang/Object;)V");""",
+          s"""auto ${jName}_np_cls = FindClassCached(env, "${Naming.nativePointerInternalName}");""",
+          s"""auto ${jName}_np_ctor = env->GetMethodID(${jName}_np_cls, "<init>", "(J)V");""",
+          s"jobject ${jName}_init = nullptr;",
+          s"if (${p.name} && *${p.name}) {",
+          s"""    ${jName}_init = env->NewObject(${jName}_np_cls, ${jName}_np_ctor, to_jlong(*${p.name}));""",
+          s"}",
+          s"""auto $jName = env->NewObject(${jName}_ar_cls, ${jName}_ar_ctor, ${jName}_init);"""
+        )
+        val post = List(
+          s"if (${p.name}) {",
+          s"""    auto ${jName}_get = env->GetMethodID(${jName}_ar_cls, "get", "()Ljava/lang/Object;");""",
+          s"    auto ${jName}_new = env->CallObjectMethod($jName, ${jName}_get);",
+          s"    if (${jName}_new && ${jName}_new != ${jName}_init) {",
+          s"""        *${p.name} = reinterpret_cast<void*>(env->GetLongField(${jName}_new, env->GetFieldID(env->GetObjectClass(${jName}_new), "address", "J")));""",
+          s"    } else if (!${jName}_new) {",
+          s"        *${p.name} = nullptr;",
+          s"    }",
+          s"}"
+        )
+        (pre, jName, post)
       case CType.OpaquePtr =>
         val pre = List(
           s"""auto ${jName}_cls = FindClassCached(env, "${Naming.nativePointerInternalName}");""",
           s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "(J)V");""",
           s"""auto $jName = env->NewObject(${jName}_cls, ${jName}_ctor, reinterpret_cast<jlong>(${p.name}));"""
         )
+        (pre, jName, Nil)
+      case CType.ConstDataStructPtr(cefName) =>
+        val javaFqn                            = jniName(cefName)
+        val (ctorSig, ctorArgsList, nestedPre) = bv.byValueCtorFromPtr(cefName, p.name)
+        val sizeSet                            = bv.bvSetNativeSize(cefName, jName, s"${jName}_cls", p.name)
+        val pre                                = List(
+          s"jobject $jName = nullptr;",
+          s"if (${p.name}) {"
+        ) ++
+          nestedPre.map(l => s"    $l") ++
+          List(
+            s"""    auto ${jName}_cls = FindClassCached(env, "$javaFqn");""",
+            s"""    auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
+            s"""    $jName = ${bv.fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList)};"""
+          ) ++
+          (if (sizeSet.nonEmpty) List(s"    $sizeSet") else Nil) ++
+          List("}")
         (pre, jName, Nil)
       case CType.Ptr(_) =>
         (Nil, s"reinterpret_cast<jlong>(${p.name})", Nil)
@@ -337,13 +379,12 @@ $callAndReturn$popAndReturn
           s"""auto $jName = ${bv.fmtNewObject(s"${jName}_cls", s"${jName}_ctor", ctorArgsList, p.name)};"""
         ) ++ (if (sizeSet.nonEmpty) List(sizeSet) else Nil)
         val post = List(s"if (${p.name} && $jName) {") ++
-          bv.bvWriteBackLines(cefName, p.name, jName, s"${jName}_cls").map(l => s"    $l") ++
+          bv.bvWriteBackToNativeLines(cefName, p.name, jName, s"${jName}_cls").map(l => s"    $l") ++
           List("}")
         (pre, jName, post)
       case CType.ByValueArray(cefName) =>
-        val javaFqn         = jniName(cefName)
-        val (ctorSig, _, _) = bv.byValueCtorFromPtr(cefName, "_dummy")
-        val countParam      = if (idx > 0) {
+        val javaFqn    = jniName(cefName)
+        val countParam = if (idx > 0) {
           val prev = allParams(idx - 1)
           if (
             (prev.typ == CType.SizeT || prev.typ == CType.Int) &&
@@ -351,15 +392,18 @@ $callAndReturn$popAndReturn
           ) Some(prev.name)
           else None
         } else None
-        val countExpr  = countParam.getOrElse("0")
-        val fieldExprs = bv.byValueArrayFieldExpr(cefName, p.name, "_i")
-        val pre        = List(
+        val countExpr                                     = countParam.getOrElse("0")
+        val (elemCtorSig, elemCtorArgs, elemNestedPreOps) = bv.byValueCtorFromPtr(cefName, s"(&${p.name}[_i])")
+        val elemSizeSet = bv.bvSetNativeSize(cefName, "_elem", s"${jName}_cls", s"(&${p.name}[_i])")
+        val pre         = List(
           s"""auto ${jName}_cls = FindClassCached(env, "$javaFqn");""",
-          s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$ctorSig");""",
+          s"""auto ${jName}_ctor = env->GetMethodID(${jName}_cls, "<init>", "$elemCtorSig");""",
           s"""jint ${jName}_len = static_cast<jint>($countExpr);""",
           s"""auto $jName = env->NewObjectArray(${jName}_len, ${jName}_cls, nullptr);""",
-          s"for (jint _i = 0; _i < ${jName}_len; _i++) {",
-          s"    auto _elem = env->NewObject(${jName}_cls, ${jName}_ctor, $fieldExprs);",
+          s"for (jint _i = 0; _i < ${jName}_len; _i++) {"
+        ) ++ elemNestedPreOps.map(l => s"    $l") ++ List(
+          s"""    auto _elem = ${bv.fmtNewObject(s"${jName}_cls", s"${jName}_ctor", elemCtorArgs)};"""
+        ) ++ (if (elemSizeSet.nonEmpty) List(s"    $elemSizeSet") else Nil) ++ List(
           s"    env->SetObjectArrayElement($jName, _i, _elem);",
           s"    env->DeleteLocalRef(_elem);",
           s"}"
@@ -402,7 +446,9 @@ $callAndReturn$popAndReturn
       p.typ match {
         case CType.ObjectPtr(_)                                        => 3
         case CType.OutObjectPtr(_)                                     => 7
+        case CType.OutOpaquePtr                                        => 9
         case CType.OpaquePtr                                           => 3
+        case CType.ConstDataStructPtr(cefName)                         => bv.byValueLocalRefs(cefName) + 3
         case CType.Enum(_)                                             => 3
         case CType.JString                                             => 1
         case CType.StringList | CType.StringMap | CType.StringMultimap => 1
@@ -419,11 +465,12 @@ $callAndReturn$popAndReturn
       }
     }.sum
     val returnRefs = fn.ret match {
-      case _ if isHandlerPtr(fn.ret) => 4
-      case CType.Enum(_)             => 1
-      case CType.ObjectPtr(_)        => 1
-      case CType.OpaquePtr           => 1
-      case _                         => 0
+      case _ if isHandlerPtr(fn.ret)   => 4
+      case CType.Enum(_)               => 1
+      case CType.ObjectPtr(_)          => 1
+      case CType.OpaquePtr             => 1
+      case CType.ConstDataStructPtr(_) => 1
+      case _                           => 0
     }
     fixed + paramRefs + returnRefs + 4
   }
@@ -442,9 +489,13 @@ $callAndReturn$popAndReturn
       s"static_cast<$name>($jniVar ? env->GetLongField($jniVar, env->GetFieldID(env->GetObjectClass($jniVar), \"value\", \"J\")) : 0)"
     case CType.ObjectPtr(name) =>
       s"""$jniVar ? reinterpret_cast<$name*>(env->GetLongField($jniVar, env->GetFieldID(env->GetObjectClass($jniVar), "nativePtr", "J"))) : nullptr"""
-    case CType.Ptr(inner) => s"reinterpret_cast<$inner*>($jniVar)"
-    case CType.OpaquePtr  =>
+    case CType.Ptr(inner)   => s"reinterpret_cast<$inner*>($jniVar)"
+    case CType.OutOpaquePtr =>
+      s"""reinterpret_cast<void**>($jniVar ? env->GetLongField($jniVar, env->GetFieldID(env->GetObjectClass($jniVar), "address", "J")) : 0)"""
+    case CType.OpaquePtr =>
       s"""reinterpret_cast<void*>($jniVar ? env->GetLongField($jniVar, env->GetFieldID(env->GetObjectClass($jniVar), "address", "J")) : 0)"""
+    case CType.ConstDataStructPtr(name) =>
+      s"static_cast<const $name*>(nullptr)"
     case CType.JString          => jniVar
     case CType.DataStruct(name) =>
       val javaFqn   = jniName(name)
@@ -467,22 +518,24 @@ $callAndReturn$popAndReturn
           case _                => v
         }
       case None => ct match {
-          case CType.Void             => ""
-          case CType.Bool             => "false"
-          case CType.Int              => "0"
-          case CType.UInt             => "0"
-          case CType.Char             => "0"
-          case CType.Long             => "0"
-          case CType.SizeT            => "0"
-          case CType.Float            => "0.0f"
-          case CType.Double           => "0.0"
-          case CType.Ptr(_)           => "nullptr"
-          case CType.ObjectPtr(_)     => "nullptr"
-          case CType.OpaquePtr        => "nullptr"
-          case CType.JString          => "nullptr"
-          case CType.Enum(_)          => "static_cast<" + Naming.cType(ct) + ">(0)"
-          case CType.DataStruct(name) => s"$name{}"
-          case _                      => "0"
+          case CType.Void                  => ""
+          case CType.Bool                  => "false"
+          case CType.Int                   => "0"
+          case CType.UInt                  => "0"
+          case CType.Char                  => "0"
+          case CType.Long                  => "0"
+          case CType.SizeT                 => "0"
+          case CType.Float                 => "0.0f"
+          case CType.Double                => "0.0"
+          case CType.Ptr(_)                => "nullptr"
+          case CType.ObjectPtr(_)          => "nullptr"
+          case CType.OutOpaquePtr          => "nullptr"
+          case CType.OpaquePtr             => "nullptr"
+          case CType.ConstDataStructPtr(_) => "nullptr"
+          case CType.JString               => "nullptr"
+          case CType.Enum(_)               => "static_cast<" + Naming.cType(ct) + ">(0)"
+          case CType.DataStruct(name)      => s"$name{}"
+          case _                           => "0"
         }
     }
   }

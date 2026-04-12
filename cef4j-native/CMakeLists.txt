@@ -18,7 +18,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-file(GLOB_RECURSE GENERATED_SOURCES "${CMAKE_SOURCE_DIR}/native/gen/*.cpp")
+if(WIN32)
+    set(CEF4J_GEN_PLATFORM_DIR "win")
+elseif(APPLE)
+    set(CEF4J_GEN_PLATFORM_DIR "mac")
+else()
+    set(CEF4J_GEN_PLATFORM_DIR "linux")
+endif()
+
+file(GLOB GENERATED_COMMON_SOURCES "${CMAKE_SOURCE_DIR}/native/gen/*.cpp")
+file(GLOB_RECURSE GENERATED_PLATFORM_SOURCES "${CMAKE_SOURCE_DIR}/native/gen/${CEF4J_GEN_PLATFORM_DIR}/*.cpp")
+set(GENERATED_SOURCES ${GENERATED_COMMON_SOURCES} ${GENERATED_PLATFORM_SOURCES})
 file(GLOB_RECURSE RUNTIME_SOURCES   "${CMAKE_SOURCE_DIR}/native/runtime/*.cpp")
 
 list(FILTER RUNTIME_SOURCES EXCLUDE REGEX "subprocess_main\\.cpp$")
@@ -44,6 +54,7 @@ target_include_directories(cef4j PRIVATE
     ${JAVA_HOME}/include/${JNI_PLATFORM_DIR}
     ${CMAKE_SOURCE_DIR}/native/runtime
     ${CMAKE_SOURCE_DIR}/native/gen
+    ${CMAKE_SOURCE_DIR}/native/gen/${CEF4J_GEN_PLATFORM_DIR}
 )
 
 target_link_libraries(cef4j PRIVATE ${CEF_ROOT}/Release/libcef${CMAKE_SHARED_LIBRARY_SUFFIX})

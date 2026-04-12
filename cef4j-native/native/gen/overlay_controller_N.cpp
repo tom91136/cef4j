@@ -66,13 +66,11 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setBounds0)(JNIEn
     if (!s) return;
     if (!bounds) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "bounds must not be null"); return; }
     cef_rect_t _bounds_val = {};
-    if (bounds) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
-        _bounds_val.x = static_cast<decltype(_bounds_val.x)>(env->GetIntField(bounds, env->GetFieldID(_c, "x", "I")));
-        _bounds_val.y = static_cast<decltype(_bounds_val.y)>(env->GetIntField(bounds, env->GetFieldID(_c, "y", "I")));
-        _bounds_val.width = static_cast<decltype(_bounds_val.width)>(env->GetIntField(bounds, env->GetFieldID(_c, "width", "I")));
-        _bounds_val.height = static_cast<decltype(_bounds_val.height)>(env->GetIntField(bounds, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _bounds_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
+    _bounds_val.x = static_cast<decltype(_bounds_val.x)>(env->GetIntField(bounds, env->GetFieldID(_bounds_c, "x", "I")));
+    _bounds_val.y = static_cast<decltype(_bounds_val.y)>(env->GetIntField(bounds, env->GetFieldID(_bounds_c, "y", "I")));
+    _bounds_val.width = static_cast<decltype(_bounds_val.width)>(env->GetIntField(bounds, env->GetFieldID(_bounds_c, "width", "I")));
+    _bounds_val.height = static_cast<decltype(_bounds_val.height)>(env->GetIntField(bounds, env->GetFieldID(_bounds_c, "height", "I")));
     s->set_bounds(s, &_bounds_val);
 }
 
@@ -82,7 +80,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getBounds0)(JN
     cef_rect_t result = s->get_bounds(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y), static_cast<jint>(((&result))->width), static_cast<jint>(((&result))->height));
     return _dsResult;
 }
 
@@ -92,7 +90,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getBoundsInScr
     cef_rect_t result = s->get_bounds_in_screen(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y), static_cast<jint>(((&result))->width), static_cast<jint>(((&result))->height));
     return _dsResult;
 }
 
@@ -101,11 +99,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setSize0)(JNIEnv*
     if (!s) return;
     if (!size) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
-    if (size) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
-        _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_c, "width", "I")));
-        _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _size_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+    _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_size_c, "width", "I")));
+    _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_size_c, "height", "I")));
     s->set_size(s, &_size_val);
 }
 
@@ -115,7 +111,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getSize0)(JNIE
     cef_size_t result = s->get_size(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
     auto ctor = env->GetMethodID(cls, "<init>", "(II)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->width), static_cast<jint>(((&result))->height));
     return _dsResult;
 }
 
@@ -124,11 +120,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setPosition0)(JNI
     if (!s) return;
     if (!position) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "position must not be null"); return; }
     cef_point_t _position_val = {};
-    if (position) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
-        _position_val.x = static_cast<decltype(_position_val.x)>(env->GetIntField(position, env->GetFieldID(_c, "x", "I")));
-        _position_val.y = static_cast<decltype(_position_val.y)>(env->GetIntField(position, env->GetFieldID(_c, "y", "I")));
-    }
+    auto _position_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
+    _position_val.x = static_cast<decltype(_position_val.x)>(env->GetIntField(position, env->GetFieldID(_position_c, "x", "I")));
+    _position_val.y = static_cast<decltype(_position_val.y)>(env->GetIntField(position, env->GetFieldID(_position_c, "y", "I")));
     s->set_position(s, &_position_val);
 }
 
@@ -138,7 +132,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getPosition0)(
     cef_point_t result = s->get_position(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
     auto ctor = env->GetMethodID(cls, "<init>", "(II)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y));
     return _dsResult;
 }
 
@@ -147,13 +141,11 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefOverlayController), setInsets0)(JNIEn
     if (!s) return;
     if (!insets) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "insets must not be null"); return; }
     cef_insets_t _insets_val = {};
-    if (insets) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefInsets");
-        _insets_val.top = static_cast<decltype(_insets_val.top)>(env->GetIntField(insets, env->GetFieldID(_c, "top", "I")));
-        _insets_val.left = static_cast<decltype(_insets_val.left)>(env->GetIntField(insets, env->GetFieldID(_c, "left", "I")));
-        _insets_val.bottom = static_cast<decltype(_insets_val.bottom)>(env->GetIntField(insets, env->GetFieldID(_c, "bottom", "I")));
-        _insets_val.right = static_cast<decltype(_insets_val.right)>(env->GetIntField(insets, env->GetFieldID(_c, "right", "I")));
-    }
+    auto _insets_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefInsets");
+    _insets_val.top = static_cast<decltype(_insets_val.top)>(env->GetIntField(insets, env->GetFieldID(_insets_c, "top", "I")));
+    _insets_val.left = static_cast<decltype(_insets_val.left)>(env->GetIntField(insets, env->GetFieldID(_insets_c, "left", "I")));
+    _insets_val.bottom = static_cast<decltype(_insets_val.bottom)>(env->GetIntField(insets, env->GetFieldID(_insets_c, "bottom", "I")));
+    _insets_val.right = static_cast<decltype(_insets_val.right)>(env->GetIntField(insets, env->GetFieldID(_insets_c, "right", "I")));
     s->set_insets(s, &_insets_val);
 }
 
@@ -163,7 +155,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefOverlayController), getInsets0)(JN
     cef_insets_t result = s->get_insets(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefInsets");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->top), static_cast<jint>((&result)->left), static_cast<jint>((&result)->bottom), static_cast<jint>((&result)->right));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->top), static_cast<jint>(((&result))->left), static_cast<jint>(((&result))->bottom), static_cast<jint>(((&result))->right));
     return _dsResult;
 }
 

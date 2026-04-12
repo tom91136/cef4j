@@ -106,11 +106,15 @@ enum CType {
   case Float
   case Double
   case JString
+  case ConstCStringArray
+  case CStringArray
   case Ptr(inner: String)
   case ObjectPtr(cefName: String)
   case OutObjectPtr(cefName: String)
+  case OutOpaquePtr
   case OutPrimitivePtr(primitiveType: CType)
   case OpaquePtr
+  case ConstDataStructPtr(cefName: String)
   case ObjectPtrArray(cefName: String)
   case OutInt
   case OutBool

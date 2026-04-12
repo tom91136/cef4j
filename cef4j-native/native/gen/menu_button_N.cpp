@@ -19,11 +19,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefMenuButton), showMenu0)(JNIEnv* env, 
     cef_menu_model_t* _menu_model_ptr = menu_model ? reinterpret_cast<cef_menu_model_t*>(env->GetLongField(menu_model, env->GetFieldID(env->GetObjectClass(menu_model), "nativePtr", "J"))) : nullptr;
     if (_menu_model_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_menu_model_ptr); _b->add_ref(_b); }
     cef_point_t _screen_point_val = {};
-    if (screen_point) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
-        _screen_point_val.x = static_cast<decltype(_screen_point_val.x)>(env->GetIntField(screen_point, env->GetFieldID(_c, "x", "I")));
-        _screen_point_val.y = static_cast<decltype(_screen_point_val.y)>(env->GetIntField(screen_point, env->GetFieldID(_c, "y", "I")));
-    }
+    auto _screen_point_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
+    _screen_point_val.x = static_cast<decltype(_screen_point_val.x)>(env->GetIntField(screen_point, env->GetFieldID(_screen_point_c, "x", "I")));
+    _screen_point_val.y = static_cast<decltype(_screen_point_val.y)>(env->GetIntField(screen_point, env->GetFieldID(_screen_point_c, "y", "I")));
     s->show_menu(s, _menu_model_ptr, &_screen_point_val, static_cast<cef_menu_anchor_position_t>(env->GetLongField(anchor_position, env->GetFieldID(env->GetObjectClass(anchor_position), "value", "J"))));
 }
 

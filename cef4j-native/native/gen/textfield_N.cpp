@@ -105,7 +105,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefTextfield), getSelectedRange0)(JNI
     cef_range_t result = s->get_selected_range(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
     auto ctor = env->GetMethodID(cls, "<init>", "(II)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->from), static_cast<jint>((&result)->to));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->from), static_cast<jint>(((&result))->to));
     return _dsResult;
 }
 
@@ -114,11 +114,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), selectRange0)(JNIEnv* env
     if (!s) return;
     if (!range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "range must not be null"); return; }
     cef_range_t _range_val = {};
-    if (range) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
-        _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_c, "from", "I")));
-        _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_c, "to", "I")));
-    }
+    auto _range_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
+    _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_range_c, "from", "I")));
+    _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_range_c, "to", "I")));
     s->select_range(s, &_range_val);
 }
 
@@ -177,11 +175,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextColor0)(JNIEnv* 
     if (!s) return;
     if (!range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "range must not be null"); return; }
     cef_range_t _range_val = {};
-    if (range) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
-        _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_c, "from", "I")));
-        _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_c, "to", "I")));
-    }
+    auto _range_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
+    _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_range_c, "from", "I")));
+    _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_range_c, "to", "I")));
     s->apply_text_color(s, color, &_range_val);
 }
 
@@ -191,11 +187,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefTextfield), applyTextStyle0)(JNIEnv* 
     if (!style) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "style must not be null"); return; }
     if (!range) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "range must not be null"); return; }
     cef_range_t _range_val = {};
-    if (range) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
-        _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_c, "from", "I")));
-        _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_c, "to", "I")));
-    }
+    auto _range_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefRange");
+    _range_val.from = static_cast<decltype(_range_val.from)>(env->GetIntField(range, env->GetFieldID(_range_c, "from", "I")));
+    _range_val.to = static_cast<decltype(_range_val.to)>(env->GetIntField(range, env->GetFieldID(_range_c, "to", "I")));
     s->apply_text_style(s, static_cast<cef_text_style_t>(env->GetLongField(style, env->GetFieldID(env->GetObjectClass(style), "value", "J"))), static_cast<bool>(add), &_range_val);
 }
 

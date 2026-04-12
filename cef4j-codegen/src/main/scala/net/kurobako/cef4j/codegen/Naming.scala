@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.codegen
 
+import scala.annotation.tailrec
+
 object Naming {
 
   case class Context(
@@ -175,9 +177,34 @@ object Naming {
   def fullyQualifiedJavaName(cefStructName: String)(using Context): String =
     s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}"
 
+  // cef_browser_t -> configured.package.CefBrowser (always root package, no sub-package)
+  def fullyQualifiedSharedJavaName(cefStructName: String)(using Context): String =
+    s"$javaPackage.${structToJavaName(cefStructName)}"
+
   // cef_rect_t -> configured.package.CefRect$Mutable (JNI internal name uses $ for inner class)
   def fullyQualifiedMutableName(cefStructName: String)(using Context): String =
     s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}$$Mutable"
+
+  private def isSyntheticPlatformSubPackage(sub: String): Boolean =
+    sub == "linux" || sub == "mac" || sub == "win"
+
+  // JNI class lookups should target shared root classes for synthetic platform
+  // sub-packages generated as compatibility mirrors.
+  def fullyQualifiedJavaNameForJniLookup(cefStructName: String)(using context: Context): String =
+    context.subPackages.get(cefStructName) match {
+      case Some(sub) if isSyntheticPlatformSubPackage(sub) =>
+        fullyQualifiedSharedJavaName(cefStructName)
+      case _ =>
+        fullyQualifiedJavaName(cefStructName)
+    }
+
+  def fullyQualifiedMutableNameForJniLookup(cefStructName: String)(using context: Context): String =
+    context.subPackages.get(cefStructName) match {
+      case Some(sub) if isSyntheticPlatformSubPackage(sub) =>
+        s"$javaPackage.${structToJavaName(cefStructName)}$$Mutable"
+      case _ =>
+        fullyQualifiedMutableName(cefStructName)
+    }
 
   private def nativePointerFqcn(using Context): String = s"$javaPackage.NativePointer"
 
@@ -228,12 +255,17 @@ object Naming {
     case CType.Float              => "float"
     case CType.Double             => "double"
     case CType.JString            => "String"
+    case CType.ConstCStringArray  => if (javadoc) "java.util.List" else "List<String>"
+    case CType.CStringArray       => if (javadoc) "java.util.List" else "List<String>"
     case CType.Ptr(_)             => "long"
     case CType.ObjectPtr(name)    => structToJavaName(name)
     case CType.OutObjectPtr(name) =>
       if (javadoc) "java.util.concurrent.atomic.AtomicReference" else s"AtomicReference<${structToJavaName(name)}>"
+    case CType.OutOpaquePtr =>
+      if (javadoc) "java.util.concurrent.atomic.AtomicReference" else "AtomicReference<NativePointer>"
     case CType.OutPrimitivePtr(inner)        => s"${javaType(inner, javadoc)}[]"
     case CType.OpaquePtr                     => "NativePointer"
+    case CType.ConstDataStructPtr(name)      => structToJavaName(name)
     case CType.ObjectPtrArray(name)          => s"${structToJavaName(name)}[]"
     case CType.OutInt                        => "int[]"
     case CType.OutBool                       => "boolean[]"
@@ -255,21 +287,26 @@ object Naming {
 
   // Collect Java imports required by a CType.
   def javaImports(ct: CType)(using Context): Set[String] = ct match {
-    case CType.OutObjectPtr(_)               => Set("java.util.concurrent.atomic.AtomicReference")
-    case CType.PixelBuffer | CType.Buffer(_) => Set("java.nio.ByteBuffer")
-    case CType.StringList                    => Set("java.util.List")
-    case CType.StringMap                     => Set("java.util.Map")
-    case CType.StringMultimap                => Set("java.util.Map", "java.util.List")
+    case CType.OutObjectPtr(_)                        => Set("java.util.concurrent.atomic.AtomicReference")
+    case CType.OutOpaquePtr                           => Set("java.util.concurrent.atomic.AtomicReference")
+    case CType.PixelBuffer | CType.Buffer(_)          => Set("java.nio.ByteBuffer")
+    case CType.ConstCStringArray | CType.CStringArray =>
+      Set("java.util.List")
+    case CType.StringList                                                 => Set("java.util.List")
+    case CType.StringMap                                                  => Set("java.util.Map")
+    case CType.StringMultimap                                             => Set("java.util.Map", "java.util.List")
     case CType.CountFuncArray(elem, _, _, _) if !isPrimitiveElement(elem) =>
       Set("java.util.List", "java.util.Arrays", "java.util.Collections")
     case _ => Set.empty
   }
 
   /** Extract CEF struct names referenced by a CType (for cross-package imports). */
+  @tailrec
   def referencedCefNames(ct: CType): List[String] = ct match {
     case CType.ObjectPtr(name)               => List(name)
     case CType.OutObjectPtr(name)            => List(name)
     case CType.ObjectPtrArray(name)          => List(name)
+    case CType.ConstDataStructPtr(name)      => List(name)
     case CType.ByValueIn(name)               => List(name)
     case CType.ByValueOut(name)              => List(name)
     case CType.ByValueArray(name)            => List(name)
@@ -303,11 +340,15 @@ object Naming {
     case CType.Float                         => "jfloat"
     case CType.Double                        => "jdouble"
     case CType.JString                       => "jstring"
+    case CType.ConstCStringArray             => "jobject"
+    case CType.CStringArray                  => "jobject"
     case CType.Ptr(_)                        => "jlong"
     case CType.ObjectPtr(_)                  => "jobject"
     case CType.OutObjectPtr(_)               => "jobject"
+    case CType.OutOpaquePtr                  => "jobject"
     case CType.OutPrimitivePtr(inner)        => s"${jniType(inner)}Array"
     case CType.OpaquePtr                     => "jobject"
+    case CType.ConstDataStructPtr(_)         => "jobject"
     case CType.ObjectPtrArray(_)             => "jobjectArray"
     case CType.OutInt                        => "jintArray"
     case CType.OutBool                       => "jbooleanArray"
@@ -336,22 +377,26 @@ object Naming {
     case CType.Float                         => "F"
     case CType.Double                        => "D"
     case CType.JString                       => "Ljava/lang/String;"
+    case CType.ConstCStringArray             => "Ljava/util/List;"
+    case CType.CStringArray                  => "Ljava/util/List;"
     case CType.Ptr(_)                        => "J"
-    case CType.ObjectPtr(name)               => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
+    case CType.ObjectPtr(name)               => s"L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
     case CType.OutObjectPtr(_)               => "Ljava/util/concurrent/atomic/AtomicReference;"
+    case CType.OutOpaquePtr                  => "Ljava/util/concurrent/atomic/AtomicReference;"
     case CType.OutPrimitivePtr(inner)        => s"[${jniSig(inner)}"
     case CType.OpaquePtr                     => s"L$nativePointerInternalName;"
-    case CType.ObjectPtrArray(name)          => s"[L${javaInternalName(fullyQualifiedJavaName(name))};"
+    case CType.ConstDataStructPtr(name)      => s"L${javaInternalName(fullyQualifiedSharedJavaName(name))};"
+    case CType.ObjectPtrArray(name)          => s"[L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
     case CType.OutInt                        => "[I"
     case CType.OutBool                       => "[Z"
-    case CType.ByValueIn(name)               => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
-    case CType.ByValueOut(name)              => s"L${javaInternalName(fullyQualifiedMutableName(name))};"
-    case CType.ByValueArray(name)            => s"[L${javaInternalName(fullyQualifiedJavaName(name))};"
+    case CType.ByValueIn(name)               => s"L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
+    case CType.ByValueOut(name)              => s"L${javaInternalName(fullyQualifiedMutableNameForJniLookup(name))};"
+    case CType.ByValueArray(name)            => s"[L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
     case CType.PixelBuffer                   => "Ljava/nio/ByteBuffer;"
     case CType.Buffer(_)                     => "Ljava/nio/ByteBuffer;"
     case CType.BufferSize(_)                 => "J" // hidden; not emitted in JNI sigs
-    case CType.Enum(name)                    => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
-    case CType.DataStruct(name)              => s"L${javaInternalName(fullyQualifiedJavaName(name))};"
+    case CType.Enum(name)                    => s"L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
+    case CType.DataStruct(name)              => s"L${javaInternalName(fullyQualifiedJavaNameForJniLookup(name))};"
     case CType.StringList                    => "Ljava/util/List;"
     case CType.StringMap                     => "Ljava/util/Map;"
     case CType.StringMultimap                => "Ljava/util/Map;"
@@ -369,11 +414,15 @@ object Naming {
     case CType.Float                         => "float"
     case CType.Double                        => "double"
     case CType.JString                       => "cef_string_t*"
+    case CType.ConstCStringArray             => "const char* const*"
+    case CType.CStringArray                  => "char**"
     case CType.Ptr(inner)                    => s"$inner*"
     case CType.ObjectPtr(name)               => s"$name*"
     case CType.OutObjectPtr(name)            => s"$name**"
+    case CType.OutOpaquePtr                  => "void**"
     case CType.OutPrimitivePtr(inner)        => s"${cType(inner)}*"
     case CType.OpaquePtr                     => "void*"
+    case CType.ConstDataStructPtr(name)      => s"const $name*"
     case CType.ObjectPtrArray(name)          => s"$name**"
     case CType.OutInt                        => "int*"
     case CType.OutBool                       => "int*"

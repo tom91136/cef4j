@@ -12,10 +12,10 @@ import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefCommandLine;
 import net.kurobako.cef4j.gen.CefGlobals;
+import net.kurobako.cef4j.gen.CefMainArgs;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefSettings.Mutable;
 import net.kurobako.cef4j.gen.CefWindowInfo;
-import net.kurobako.cef4j.gen.NativePointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,14 +155,18 @@ public enum Cef {
             };
         }
 
-        try (var args = new NativePointer.Managed(
-                createMainArgs0(OS.isWindows() ? null : extraArgs.toArray(String[]::new)), Cef::freeMainArgs0)) {
-            final var result = CefGlobals.initialize(args, settings.toImmutable(), appHandler, null);
-            if (result == 0) {
-                state = State.UNINITIALISED;
-                log.error("CefGlobals.initialize (cef_initialize) failed with error code: {}", result);
-                throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed with error code: " + result);
-            }
+        List<String> argv = List.of("cef4j");
+        if (!extraArgs.isEmpty()) {
+            argv = new java.util.ArrayList<>(1 + extraArgs.size());
+            argv.add("cef4j");
+            argv.addAll(extraArgs);
+        }
+        CefMainArgs args = new CefMainArgs(argv.size(), argv);
+        final var result = CefGlobals.initialize(args, settings.toImmutable(), appHandler, null);
+        if (result == 0) {
+            state = State.UNINITIALISED;
+            log.error("CefGlobals.initialize (cef_initialize) failed with error code: {}", result);
+            throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed with error code: " + result);
         }
 
         state = State.INITIALISED;
@@ -220,8 +224,4 @@ public enum Cef {
         checkState();
         CefGlobals.doMessageLoopWork();
     }
-
-    private static native long createMainArgs0(String[] extraArgs);
-
-    private static native void freeMainArgs0(long address);
 }

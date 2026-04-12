@@ -2,8 +2,11 @@
 
 #include <jni.h>
 #include <atomic>
+#include <cstdint>
 #include <cstddef>
 #include <string>
+#include <vector>
+#include <type_traits>
 #include "include/capi/cef_base_capi.h"
 #include "include/internal/cef_string.h"
 
@@ -82,6 +85,23 @@ inline jstring CefStringToJString(JNIEnv* env, const cef_string_t* cefStr) {
                           static_cast<jsize>(cefStr->length));
 }
 
+// Overloads that accept either cef_string_t values or pointers.
+inline jstring CefStringToJStringAuto(JNIEnv* env, const cef_string_t& cefStr) {
+    return CefStringToJString(env, &cefStr);
+}
+
+inline jstring CefStringToJStringAuto(JNIEnv* env, cef_string_t& cefStr) {
+    return CefStringToJString(env, &cefStr);
+}
+
+inline jstring CefStringToJStringAuto(JNIEnv* env, const cef_string_t* cefStr) {
+    return CefStringToJString(env, cefStr);
+}
+
+inline jstring CefStringToJStringAuto(JNIEnv* env, cef_string_t* cefStr) {
+    return CefStringToJString(env, cefStr);
+}
+
 // Convert a Java String to a cef_string_t (caller-owned).
 // Writes into `out`. Safe to call with null jStr (clears out).
 inline void JStringToCefString(JNIEnv* env, jstring jStr, cef_string_t* out) {
@@ -102,6 +122,35 @@ inline cef_string_userfree_t JStringToCefString(JNIEnv* env, jstring jStr) {
     cef_string_userfree_t s = cef_string_userfree_utf16_alloc();
     JStringToCefString(env, jStr, s);
     return s;
+}
+
+// Write a Java String into either a cef_string_t field or a cef_string_t* field.
+inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t* out) {
+    if (!out) return;
+    if (!jStr) {
+        cef_string_clear(out);
+        return;
+    }
+    const jchar* chars = env->GetStringChars(jStr, nullptr);
+    jsize len = env->GetStringLength(jStr);
+    cef_string_set(reinterpret_cast<const char16_t*>(chars), static_cast<size_t>(len), out, 1);
+    env->ReleaseStringChars(jStr, chars);
+}
+
+inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t** out) {
+    if (!out) return;
+    if (!jStr) {
+        if (*out) cef_string_clear(*out);
+        return;
+    }
+    if (!*out) {
+        *out = cef_string_userfree_utf16_alloc();
+        if (!*out) return;
+    }
+    const jchar* chars = env->GetStringChars(jStr, nullptr);
+    jsize len = env->GetStringLength(jStr);
+    cef_string_set(reinterpret_cast<const char16_t*>(chars), static_cast<size_t>(len), *out, 1);
+    env->ReleaseStringChars(jStr, chars);
 }
 
 // Reference counting helpers
@@ -155,6 +204,29 @@ inline bool CheckJNIException(JNIEnv* env) {
     return false;
 }
 
+// Wide JNI integer helpers.
+// These centralize pointer/integer <-> jlong conversion across generated code.
+template<typename T>
+inline jlong to_jlong(T value) {
+    if constexpr (std::is_pointer_v<T>) {
+        return static_cast<jlong>(reinterpret_cast<intptr_t>(value));
+    } else if constexpr (std::is_enum_v<T>) {
+        using U = std::underlying_type_t<T>;
+        return static_cast<jlong>(static_cast<U>(value));
+    } else {
+        return static_cast<jlong>(value);
+    }
+}
+
+template<typename T>
+inline T from_jlong(jlong value) {
+    if constexpr (std::is_pointer_v<T>) {
+        return reinterpret_cast<T>(static_cast<intptr_t>(value));
+    } else {
+        return static_cast<T>(value);
+    }
+}
+
 // String collection conversion - declarations only (implementations in jni_util.cpp)
 
 #include "include/internal/cef_string_list.h"
@@ -170,6 +242,20 @@ jobject CefStringMultimapToJavaMap(JNIEnv* env, cef_string_multimap_t mmap);
 cef_string_list_t JavaListToCefStringList(JNIEnv* env, jobject jList);
 cef_string_map_t JavaMapToCefStringMap(JNIEnv* env, jobject jMap);
 cef_string_multimap_t JavaMapToCefStringMultimap(JNIEnv* env, jobject jMap);
+
+// Java List<String> -> C argv-like arrays. Backing storage lives in `storage`.
+const char* const* JavaListToConstCStringArray(
+    JNIEnv* env,
+    jobject jList,
+    std::vector<std::string>& storage,
+    std::vector<const char*>& ptrs
+);
+char** JavaListToCStringArray(
+    JNIEnv* env,
+    jobject jList,
+    std::vector<std::string>& storage,
+    std::vector<char*>& ptrs
+);
 
 // Writeback: copy CEF string collection back into existing Java collection, then free CEF collection
 void CefStringListWriteBack(JNIEnv* env, cef_string_list_t list, jobject jList);

@@ -56,7 +56,7 @@ public interface CefCommandLine extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:96</a>
      */
-    void initFromArgv(int argc, @Nullable NativePointer argv);
+    void initFromArgv(int argc, @Nonnull List<String> argv);
 
     /**
      * Initialize the command line with the string returned by calling GetCommandLineW(). This method is only supported on Windows.
@@ -295,7 +295,7 @@ public interface CefCommandLine extends CefLibraryObject {
       }
 
         @Override
-      public void initFromArgv(int argc, @Nullable NativePointer argv) {
+      public void initFromArgv(int argc, @Nonnull List<String> argv) {
           checkNotClosed();
           initFromArgv0(nativePtr, argc, argv);
       }
@@ -409,7 +409,7 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native CefCommandLine copy0(long self);
 
-        static native void initFromArgv0(long self, int argc, NativePointer argv);
+        static native void initFromArgv0(long self, int argc, List<String> argv);
 
         static native void initFromString0(long self, String commandLine);
 

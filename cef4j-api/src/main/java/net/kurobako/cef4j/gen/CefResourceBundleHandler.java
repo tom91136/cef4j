@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -37,7 +38,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
      */
-    default boolean getDataResource(int resourceId, @Nullable NativePointer data, long[] dataSize) {
+    default boolean getDataResource(int resourceId, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
     }
 
@@ -48,7 +49,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
      */
-    default boolean getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nullable NativePointer data, long[] dataSize) {
+    default boolean getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
     }
 }

@@ -52,7 +52,7 @@ CEF4J_JNI_EXPORT(jstring, CEF4J_PEER(CefZipReader), getFileName0)(JNIEnv* env, j
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefZipReader), getFileSize0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_file_size(s));
+    return to_jlong(s->get_file_size(s));
 }
 
 CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), getFileLastModified0)(JNIEnv* env, jobject obj, jlong self) {
@@ -61,7 +61,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefZipReader), getFileLastModified0)(JNIEnv
     cef_basetime_t result = s->get_file_last_modified(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 
@@ -93,7 +93,7 @@ CEF4J_JNI_EXPORT(jint, CEF4J_PEER(CefZipReader), readFile0)(JNIEnv* env, jobject
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefZipReader), tell0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_zip_reader_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->tell(s));
+    return to_jlong(s->tell(s));
 }
 
 CEF4J_JNI_EXPORT(jboolean, CEF4J_PEER(CefZipReader), eof0)(JNIEnv* env, jobject obj, jlong self) {

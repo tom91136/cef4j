@@ -93,11 +93,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefLabelButton), setMinimumSize0)(JNIEnv
     if (!s) return;
     if (!size) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
-    if (size) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
-        _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_c, "width", "I")));
-        _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _size_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+    _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_size_c, "width", "I")));
+    _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_size_c, "height", "I")));
     s->set_minimum_size(s, &_size_val);
 }
 
@@ -106,11 +104,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefLabelButton), setMaximumSize0)(JNIEnv
     if (!s) return;
     if (!size) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
-    if (size) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
-        _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_c, "width", "I")));
-        _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _size_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+    _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_size_c, "width", "I")));
+    _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_size_c, "height", "I")));
     s->set_maximum_size(s, &_size_val);
 }
 

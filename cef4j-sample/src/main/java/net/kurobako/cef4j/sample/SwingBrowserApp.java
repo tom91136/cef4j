@@ -20,17 +20,18 @@ import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefCursorInfo;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefPopupFeatures;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
-import net.kurobako.cef4j.gen.NativePointer;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -402,7 +403,7 @@ public final class SwingBrowserApp {
                                 String targetFrameName,
                                 net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
                                 boolean userGesture,
-                                NativePointer popupFeatures,
+                                CefPopupFeatures popupFeatures,
                                 CefWindowInfo.Mutable windowInfo,
                                 java.util.concurrent.atomic.AtomicReference<CefClient> client,
                                 CefBrowserSettings.Mutable settings,
@@ -489,7 +490,7 @@ public final class SwingBrowserApp {
 
                         @Override
                         public boolean onCursorChange(
-                                CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
+                                CefBrowser b, long cursor, CefCursorType type, CefCursorInfo customCursorInfo) {
                             Cursor awtCursor = surface.mapCursor(type);
                             SwingUtilities.invokeLater(() -> surface.setCursor(awtCursor));
                             return true;

@@ -25,6 +25,6 @@ public interface CefMediaSinkDeviceInfoCallback extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:282</a>
      */
-    default void onMediaSinkDeviceInfo(@Nullable NativePointer deviceInfo) {
+    default void onMediaSinkDeviceInfo(@Nullable CefMediaSinkDeviceInfo deviceInfo) {
     }
 }

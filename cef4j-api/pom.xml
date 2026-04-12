@@ -46,6 +46,16 @@
             <classifier>${cef.platform}</classifier>
             <optional>true</optional>
         </dependency>
+        <!-- Build-order edge: cef4j-native generates platform-specific Java types into this module's
+             source tree. Keep this dependency so parallel reactor builds do not race API testCompile. -->
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-native</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

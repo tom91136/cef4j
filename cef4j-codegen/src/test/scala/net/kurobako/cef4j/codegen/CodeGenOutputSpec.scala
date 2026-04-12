@@ -85,6 +85,47 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assertEquals(Naming.toCamelCase("get_url"), "getUrl")
   }
 
+  test("platform specificity detects platform-bound C types in params and returns") {
+    val platformTypes = Set("cef_window_info_t")
+    assert(PlatformSpecificity.typeUsesPlatformType(CType.ByValueIn("cef_window_info_t"), platformTypes))
+    assert(PlatformSpecificity.typeUsesPlatformType(CType.DataStruct("cef_window_info_t"), platformTypes))
+    assert(PlatformSpecificity.typeUsesPlatformType(CType.Ptr("_cef_window_info_t"), platformTypes))
+    assert(
+      PlatformSpecificity.typeUsesPlatformType(
+        CType.CountFuncArray(CType.ByValueIn("cef_window_info_t"), "count_func", "count", "items"),
+        platformTypes
+      )
+    )
+    assert(!PlatformSpecificity.typeUsesPlatformType(CType.ByValueIn("cef_rect_t"), platformTypes))
+  }
+
+  test("platform specificity marks object structs that reference platform-only types") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_browser_host_t",
+      List(
+        FnPtr(
+          "create_browser",
+          CType.Int,
+          List(
+            Param("windowInfo", CType.ByValueIn("cef_window_info_t")),
+            Param("url", CType.JString)
+          )
+        )
+      )
+    )
+    assert(PlatformSpecificity.isPlatformSpecificDecl(decl, Set("cef_window_info_t")))
+    assert(!PlatformSpecificity.isPlatformSpecificDecl(decl, Set("cef_main_args_t")))
+  }
+
+  test("platform specificity marks enums present in platform type set") {
+    val decl: CefDecl.Enum = CefDecl.Enum(
+      "cef_platform_mode_t",
+      List(("CEF_PLATFORM_MODE_DEFAULT", 0L, "0"))
+    )
+    assert(PlatformSpecificity.isPlatformSpecificDecl(decl, Set("cef_platform_mode_t")))
+    assert(!PlatformSpecificity.isPlatformSpecificDecl(decl, Set("cef_window_info_t")))
+  }
+
   test("Pascal word splitting preserves V8 as a compound segment") {
     assertEquals(Naming.splitPascalWords("CefV8BackingStore"), List("Cef", "V8", "Backing", "Store"))
   }
@@ -450,6 +491,118 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(java.contains("package com.example.cef.gen;"), s"Expected configured package in:\n$java")
   }
 
+  test("Java record codegen writes platform-specific structs into configured sub-package") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen",
+      subPackages = Map("cef_window_info_t" -> "mac")
+    )
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-subpkg")
+    JavaRecordCodeGen.emit(
+      CefDecl.DataStruct(
+        "cef_window_info_t",
+        List(Field("window", CType.Ptr("void")))
+      ),
+      tmpDir
+    )
+
+    val javaPath = tmpDir.resolve("mac").resolve("CefWindowInfo.java")
+    val javaCode = java.nio.file.Files.readString(javaPath)
+    assert(javaCode.contains("package net.kurobako.cef4j.gen.mac;"), s"Expected mac sub-package in:\n$javaCode")
+  }
+
+  test("Java record codegen can emit shared platform interface with implementation links") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen"
+    )
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-platform-interface")
+    JavaRecordCodeGen.emit(
+      CefDecl.DataStruct(
+        "cef_accelerated_paint_info_t",
+        List(Field("plane_count", CType.Int))
+      ),
+      tmpDir,
+      emitAsPlatformInterface = true,
+      platformImplSubPackages = List("linux", "mac", "win")
+    )
+
+    val javaPath = tmpDir.resolve("CefAcceleratedPaintInfo.java")
+    val javaCode = java.nio.file.Files.readString(javaPath)
+    assert(
+      javaCode.contains("public interface CefAcceleratedPaintInfo"),
+      s"Expected interface declaration in:\n$javaCode"
+    )
+    assert(
+      javaCode.contains("{@link net.kurobako.cef4j.gen.linux.CefAcceleratedPaintInfo}"),
+      s"Expected linux impl link in:\n$javaCode"
+    )
+    assert(
+      javaCode.contains("{@link net.kurobako.cef4j.gen.mac.CefAcceleratedPaintInfo}"),
+      s"Expected mac impl link in:\n$javaCode"
+    )
+    assert(
+      javaCode.contains("{@link net.kurobako.cef4j.gen.win.CefAcceleratedPaintInfo}"),
+      s"Expected win impl link in:\n$javaCode"
+    )
+  }
+
+  test("Java record codegen can make sub-package implementation implement shared root type") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen",
+      subPackages = Map("cef_accelerated_paint_info_t" -> "linux")
+    )
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-platform-impl")
+    JavaRecordCodeGen.emit(
+      CefDecl.DataStruct(
+        "cef_accelerated_paint_info_t",
+        List(Field("plane_count", CType.Int))
+      ),
+      tmpDir,
+      implementSharedType = true
+    )
+
+    val javaPath = tmpDir.resolve("linux").resolve("CefAcceleratedPaintInfo.java")
+    val javaCode = java.nio.file.Files.readString(javaPath)
+    assert(
+      javaCode.contains("implements net.kurobako.cef4j.gen.CefAcceleratedPaintInfo"),
+      s"Expected shared-type implementation in:\n$javaCode"
+    )
+  }
+
+  test("Java enum codegen writes platform-specific enums into configured sub-package") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen",
+      subPackages = Map("cef_platform_mode_t" -> "win")
+    )
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-enum-subpkg")
+    JavaEnumCodeGen.emit(
+      CefDecl.Enum(
+        "cef_platform_mode_t",
+        List(("CEF_PLATFORM_MODE_DEFAULT", 0L, "0"))
+      ),
+      tmpDir
+    )
+
+    val javaPath = tmpDir.resolve("win").resolve("CefPlatformMode.java")
+    val javaCode = java.nio.file.Files.readString(javaPath)
+    assert(javaCode.contains("package net.kurobako.cef4j.gen.win;"), s"Expected win sub-package in:\n$javaCode")
+  }
+
   test("JNI symbols track configured generated package") {
     given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
 
@@ -458,6 +611,19 @@ class CodeGenOutputSpec extends munit.FunSuite {
 
     assertEquals(sym, "Java_com_example_cef_gen_CefBrowser_00024NativePeer_goBack0")
     assertEquals(Naming.nativePointerInternalName, "com/example/cef/gen/NativePointer")
+  }
+
+  test("jniSig for const data-struct pointers uses shared root package descriptor") {
+    given namingContext: Naming.Context = Naming.Context(
+      cppClassNames = Map.empty,
+      compoundSegments = Map.empty,
+      javaPackage = "net.kurobako.cef4j.gen",
+      subPackages = Map("cef_accelerated_paint_info_t" -> "linux")
+    )
+    assertEquals(
+      Naming.jniSig(CType.ConstDataStructPtr("cef_accelerated_paint_info_t")),
+      "Lnet/kurobako/cef4j/gen/CefAcceleratedPaintInfo;"
+    )
   }
 
   test("handler trampoline marshals args and calls Java method") {
@@ -556,6 +722,68 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assertEquals(
       Naming.jniSig(CType.DataStruct("cef_size_t")),
       "Lnet/kurobako/cef4j/gen/CefSize;"
+    )
+  }
+
+  test("char** argv signatures map to Java List<String>") {
+    assertEquals(
+      Naming.javaType(CType.ConstCStringArray),
+      "List<String>"
+    )
+    assertEquals(
+      Naming.jniSig(CType.ConstCStringArray),
+      "Ljava/util/List;"
+    )
+    assertEquals(
+      Naming.javaType(CType.CStringArray),
+      "List<String>"
+    )
+  }
+
+  test("parser maps argv C strings to dedicated CStringArray CTypes") {
+    val header =
+      """typedef struct _cef_command_line_t {
+        |  cef_base_ref_counted_t base;
+        |  void (CEF_CALLBACK* init_from_argv)(struct _cef_command_line_t* self, int argc, const char* const* argv);
+        |} cef_command_line_t;
+        |
+        |typedef struct _cef_main_args_t {
+        |  int argc;
+        |  char** argv;
+        |} cef_main_args_t;
+        |""".stripMargin
+
+    val decls = CHeaderParser.parse(header)
+
+    val commandLine  = decls.collectFirst { case d: CefDecl.ObjectStruct if d.name == "cef_command_line_t" => d }.get
+    val initFromArgv = commandLine.fns.find(_.name == "init_from_argv").get
+    val argvParam    = initFromArgv.params.find(_.name == "argv").get
+    assertEquals(argvParam.typ, CType.ConstCStringArray)
+
+    val mainArgs  = decls.collectFirst { case d: CefDecl.DataStruct if d.name == "cef_main_args_t" => d }.get
+    val argvField = mainArgs.fields.find(_.name == "argv").get
+    assertEquals(argvField.typ, CType.CStringArray)
+  }
+
+  test("JNI C++ codegen marshals List<String> argv via CString array helpers") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_command_line_t",
+      List(
+        FnPtr(
+          "init_from_argv",
+          CType.Void,
+          List(
+            Param("argc", CType.Int),
+            Param("argv", CType.ConstCStringArray)
+          )
+        )
+      )
+    )
+
+    val cpp = codegen.emitToString(decl)
+    assert(
+      cpp.contains("JavaListToConstCStringArray(env, argv, _argv_storage, _argv_ptrs)"),
+      s"Expected CStringArray helper conversion in:\n$cpp"
     )
   }
 

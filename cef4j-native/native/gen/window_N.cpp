@@ -41,11 +41,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), centerWindow0)(JNIEnv* env, 
     if (!s) return;
     if (!size) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "size must not be null"); return; }
     cef_size_t _size_val = {};
-    if (size) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
-        _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_c, "width", "I")));
-        _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_c, "height", "I")));
-    }
+    auto _size_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefSize");
+    _size_val.width = static_cast<decltype(_size_val.width)>(env->GetIntField(size, env->GetFieldID(_size_c, "width", "I")));
+    _size_val.height = static_cast<decltype(_size_val.height)>(env->GetIntField(size, env->GetFieldID(_size_c, "height", "I")));
     s->center_window(s, &_size_val);
 }
 
@@ -230,11 +228,9 @@ CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), showMenu0)(JNIEnv* env, jobj
     cef_menu_model_t* _menu_model_ptr = menu_model ? reinterpret_cast<cef_menu_model_t*>(env->GetLongField(menu_model, env->GetFieldID(env->GetObjectClass(menu_model), "nativePtr", "J"))) : nullptr;
     if (_menu_model_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_menu_model_ptr); _b->add_ref(_b); }
     cef_point_t _screen_point_val = {};
-    if (screen_point) {
-        auto _c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
-        _screen_point_val.x = static_cast<decltype(_screen_point_val.x)>(env->GetIntField(screen_point, env->GetFieldID(_c, "x", "I")));
-        _screen_point_val.y = static_cast<decltype(_screen_point_val.y)>(env->GetIntField(screen_point, env->GetFieldID(_c, "y", "I")));
-    }
+    auto _screen_point_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
+    _screen_point_val.x = static_cast<decltype(_screen_point_val.x)>(env->GetIntField(screen_point, env->GetFieldID(_screen_point_c, "x", "I")));
+    _screen_point_val.y = static_cast<decltype(_screen_point_val.y)>(env->GetIntField(screen_point, env->GetFieldID(_screen_point_c, "y", "I")));
     s->show_menu(s, _menu_model_ptr, &_screen_point_val, static_cast<cef_menu_anchor_position_t>(env->GetLongField(anchor_position, env->GetFieldID(env->GetObjectClass(anchor_position), "value", "J"))));
 }
 
@@ -260,20 +256,38 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefWindow), getClientAreaBoundsInScre
     cef_rect_t result = s->get_client_area_bounds_in_screen(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y), static_cast<jint>(((&result))->width), static_cast<jint>(((&result))->height));
     return _dsResult;
 }
 
-CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setDraggableRegions0)(JNIEnv* env, jobject obj, jlong self, jlong regionsCount, jobject regions) {
+CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), setDraggableRegions0)(JNIEnv* env, jobject obj, jlong self, jlong regionsCount, jobjectArray regions) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return;
-    s->set_draggable_regions(s, regionsCount, reinterpret_cast<cef_draggable_region_t const*>(regions ? env->GetLongField(regions, env->GetFieldID(env->GetObjectClass(regions), "address", "J")) : 0));
+    size_t _regions_sz = static_cast<size_t>(regionsCount);
+    cef_draggable_region_t* _regions_arr = _regions_sz > 0 ? new cef_draggable_region_t[_regions_sz]() : nullptr;
+    { auto _bvac = FindClassCached(env, "net/kurobako/cef4j/gen/CefDraggableRegion");
+    for (size_t _i = 0; _i < _regions_sz; _i++) {
+        auto _elem = env->GetObjectArrayElement(regions, _i);
+        if (_elem) {
+            auto _rd_bounds = env->GetObjectField(_elem, env->GetFieldID(_bvac, "bounds", "Lnet/kurobako/cef4j/gen/CefRect;"));
+            if (_rd_bounds) {
+                auto _rd_boundsc = env->GetObjectClass(_rd_bounds);
+                _regions_arr[_i].bounds.x = static_cast<decltype(_regions_arr[_i].bounds.x)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "x", "I")));
+                _regions_arr[_i].bounds.y = static_cast<decltype(_regions_arr[_i].bounds.y)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "y", "I")));
+                _regions_arr[_i].bounds.width = static_cast<decltype(_regions_arr[_i].bounds.width)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "width", "I")));
+                _regions_arr[_i].bounds.height = static_cast<decltype(_regions_arr[_i].bounds.height)>(env->GetIntField(_rd_bounds, env->GetFieldID(_rd_boundsc, "height", "I")));
+            }
+            _regions_arr[_i].draggable = static_cast<decltype(_regions_arr[_i].draggable)>(env->GetIntField(_elem, env->GetFieldID(_bvac, "draggable", "I")));
+        }
+    } }
+    s->set_draggable_regions(s, regionsCount, _regions_arr);
+    delete[] _regions_arr;
 }
 
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(views_CefWindow), getWindowHandle0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_window_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_window_handle(s));
+    return to_jlong(s->get_window_handle(s));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(views_CefWindow), sendKeyPress0)(JNIEnv* env, jobject obj, jlong self, jint key_code, jint event_flags) {

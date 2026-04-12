@@ -120,10 +120,8 @@ struct JniCefResourceHandler : public cef_resource_handler_t {
     static int CEF_CALLBACK _read(cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_resource_read_callback_t* callback) {
         auto* h = reinterpret_cast<JniCefResourceHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(12) < 0) { return false; }
-        auto j_data_out_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
-        auto j_data_out_ctor = env->GetMethodID(j_data_out_cls, "<init>", "(J)V");
-        auto j_data_out = env->NewObject(j_data_out_cls, j_data_out_ctor, reinterpret_cast<jlong>(data_out));
+        if (env->PushLocalFrame(10) < 0) { return false; }
+        jobject j_data_out = (bytes_to_read > 0 && data_out) ? env->NewDirectByteBuffer(static_cast<void*>(data_out), static_cast<jlong>(bytes_to_read)) : nullptr;
         jintArray j_bytes_read = env->NewIntArray(1);
         if (bytes_read) { jint _v = *bytes_read; env->SetIntArrayRegion(j_bytes_read, 0, 1, &_v); }
         cef_resource_read_callback_t* _p_callback = callback;
@@ -132,9 +130,9 @@ struct JniCefResourceHandler : public cef_resource_handler_t {
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "read", "(Lnet/kurobako/cef4j/gen/NativePointer;I[ILnet/kurobako/cef4j/gen/CefResourceReadCallback;)Z");
+        auto mid = env->GetMethodID(cls, "read", "(Ljava/nio/ByteBuffer;[ILnet/kurobako/cef4j/gen/CefResourceReadCallback;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
-        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_data_out, static_cast<jint>(bytes_to_read), j_bytes_read, j_callback);
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_data_out, j_bytes_read, j_callback);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (bytes_read) { jint _v; env->GetIntArrayRegion(j_bytes_read, 0, 1, &_v); *bytes_read = _v; }
         env->PopLocalFrame(nullptr);
@@ -144,10 +142,8 @@ struct JniCefResourceHandler : public cef_resource_handler_t {
     static int CEF_CALLBACK _read_response(cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_callback_t* callback) {
         auto* h = reinterpret_cast<JniCefResourceHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(12) < 0) { return false; }
-        auto j_data_out_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
-        auto j_data_out_ctor = env->GetMethodID(j_data_out_cls, "<init>", "(J)V");
-        auto j_data_out = env->NewObject(j_data_out_cls, j_data_out_ctor, reinterpret_cast<jlong>(data_out));
+        if (env->PushLocalFrame(10) < 0) { return false; }
+        jobject j_data_out = (bytes_to_read > 0 && data_out) ? env->NewDirectByteBuffer(static_cast<void*>(data_out), static_cast<jlong>(bytes_to_read)) : nullptr;
         jintArray j_bytes_read = env->NewIntArray(1);
         if (bytes_read) { jint _v = *bytes_read; env->SetIntArrayRegion(j_bytes_read, 0, 1, &_v); }
         cef_callback_t* _p_callback = callback;
@@ -156,9 +152,9 @@ struct JniCefResourceHandler : public cef_resource_handler_t {
         auto j_callback_ctor = env->GetMethodID(j_callback_cls, "<init>", "(J)V");
         auto j_callback = _p_callback ? env->NewObject(j_callback_cls, j_callback_ctor, reinterpret_cast<jlong>(_p_callback)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "readResponse", "(Lnet/kurobako/cef4j/gen/NativePointer;I[ILnet/kurobako/cef4j/gen/CefCallback;)Z");
+        auto mid = env->GetMethodID(cls, "readResponse", "(Ljava/nio/ByteBuffer;[ILnet/kurobako/cef4j/gen/CefCallback;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
-        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_data_out, static_cast<jint>(bytes_to_read), j_bytes_read, j_callback);
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_data_out, j_bytes_read, j_callback);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (bytes_read) { jint _v; env->GetIntArrayRegion(j_bytes_read, 0, 1, &_v); *bytes_read = _v; }
         env->PopLocalFrame(nullptr);

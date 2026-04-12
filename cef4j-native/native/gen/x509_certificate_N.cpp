@@ -45,7 +45,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidStart0)(JNIEnv
     cef_basetime_t result = s->get_valid_start(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 
@@ -55,7 +55,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefX509Certificate), getValidExpiry0)(JNIEn
     cef_basetime_t result = s->get_valid_expiry(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBasetime");
     auto ctor = env->GetMethodID(cls, "<init>", "(J)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jlong>((&result)->val));
+    auto _dsResult = env->NewObject(cls, ctor, to_jlong(((&result))->val));
     return _dsResult;
 }
 

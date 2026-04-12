@@ -23,6 +23,7 @@ import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefContextMenuHandler;
 import net.kurobako.cef4j.gen.CefContextMenuParams;
+import net.kurobako.cef4j.gen.CefCursorInfo;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDictionaryValue;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
@@ -41,6 +42,7 @@ import net.kurobako.cef4j.gen.CefMenuModel;
 import net.kurobako.cef4j.gen.CefNavigationEntry;
 import net.kurobako.cef4j.gen.CefNavigationEntryVisitor;
 import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.gen.CefPopupFeatures;
 import net.kurobako.cef4j.gen.CefProcessId;
 import net.kurobako.cef4j.gen.CefProcessMessage;
 import net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags;
@@ -51,7 +53,6 @@ import net.kurobako.cef4j.gen.CefRunQuickMenuCallback;
 import net.kurobako.cef4j.gen.CefSize;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.gen.CefWindowOpenDisposition;
-import net.kurobako.cef4j.gen.NativePointer;
 
 @SuppressWarnings("resource")
 final class CefWebViewClient implements CefClient {
@@ -100,7 +101,7 @@ final class CefWebViewClient implements CefClient {
                     String targetFrameName,
                     @Nonnull CefWindowOpenDisposition targetDisposition,
                     boolean userGesture,
-                    NativePointer popupFeatures,
+                    CefPopupFeatures popupFeatures,
                     @Nonnull CefWindowInfo.Mutable windowInfo,
                     AtomicReference<CefClient> clientRef,
                     @Nonnull CefBrowserSettings.Mutable settings,
@@ -203,7 +204,7 @@ final class CefWebViewClient implements CefClient {
 
             @Override
             public boolean onCursorChange(
-                    CefBrowser browser, long cursor, @Nonnull CefCursorType type, NativePointer customCursorInfo) {
+                    CefBrowser browser, long cursor, @Nonnull CefCursorType type, CefCursorInfo customCursorInfo) {
                 Cursor jfxCursor = view.mapCursor(type);
                 Platform.runLater(() -> view.setCursor(jfxCursor));
                 return true;

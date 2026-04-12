@@ -40,7 +40,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:56</a>
      */
-    default boolean onBeforePopup(@Nullable CefBrowser browser, @Nullable CefFrame frame, int popupId, @Nullable String targetUrl, @Nullable String targetFrameName, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture, @Nullable NativePointer popupFeatures, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] noJavascriptAccess) {
+    default boolean onBeforePopup(@Nullable CefBrowser browser, @Nullable CefFrame frame, int popupId, @Nullable String targetUrl, @Nullable String targetFrameName, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture, @Nullable CefPopupFeatures popupFeatures, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] noJavascriptAccess) {
         return false;
     }
 

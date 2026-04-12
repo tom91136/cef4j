@@ -119,7 +119,7 @@ public interface CefRenderHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:151</a>
      */
-    default void onAcceleratedPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nullable NativePointer info) {
+    default void onAcceleratedPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nullable CefAcceleratedPaintInfo info) {
     }
 
     /**

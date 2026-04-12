@@ -243,6 +243,6 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefDomNode), getElementBounds0)(JNIEnv* env
     cef_rect_t result = s->get_element_bounds(s);
     auto cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
     auto ctor = env->GetMethodID(cls, "<init>", "(IIII)V");
-    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>((&result)->x), static_cast<jint>((&result)->y), static_cast<jint>((&result)->width), static_cast<jint>((&result)->height));
+    auto _dsResult = env->NewObject(cls, ctor, static_cast<jint>(((&result))->x), static_cast<jint>(((&result))->y), static_cast<jint>(((&result))->width), static_cast<jint>(((&result))->height));
     return _dsResult;
 }

@@ -7,6 +7,7 @@
 #include "jni_util.h"
 
 #include <atomic>
+#include <vector>
 #include "jni_util.h"
 
 struct JniCefDragHandler : public cef_drag_handler_t {
@@ -50,7 +51,7 @@ struct JniCefDragHandler : public cef_drag_handler_t {
     static void CEF_CALLBACK _on_draggable_regions_changed(cef_drag_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, size_t regionsCount, cef_draggable_region_t const* regions) {
         auto* h = reinterpret_cast<JniCefDragHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(14) < 0) { return; }
+        if (env->PushLocalFrame(25) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -61,11 +62,20 @@ struct JniCefDragHandler : public cef_drag_handler_t {
         auto j_frame_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefFrame$NativePeer");
         auto j_frame_ctor = env->GetMethodID(j_frame_cls, "<init>", "(J)V");
         auto j_frame = _p_frame ? env->NewObject(j_frame_cls, j_frame_ctor, reinterpret_cast<jlong>(_p_frame)) : nullptr;
-        auto j_regions_cls = FindClassCached(env, "net/kurobako/cef4j/gen/NativePointer");
-        auto j_regions_ctor = env->GetMethodID(j_regions_cls, "<init>", "(J)V");
-        auto j_regions = env->NewObject(j_regions_cls, j_regions_ctor, reinterpret_cast<jlong>(regions));
+        auto j_regions_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefDraggableRegion");
+        auto j_regions_ctor = env->GetMethodID(j_regions_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefRect;I)V");
+        jint j_regions_len = static_cast<jint>(regionsCount);
+        auto j_regions = env->NewObjectArray(j_regions_len, j_regions_cls, nullptr);
+        for (jint _i = 0; _i < j_regions_len; _i++) {
+            auto _bv___regions__i___bounds_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefRect");
+            auto _bv___regions__i___bounds_ctor = env->GetMethodID(_bv___regions__i___bounds_cls, "<init>", "(IIII)V");
+            auto _bv___regions__i___bounds = env->NewObject(_bv___regions__i___bounds_cls, _bv___regions__i___bounds_ctor, static_cast<jint>(((&regions[_i]))->bounds.x), static_cast<jint>(((&regions[_i]))->bounds.y), static_cast<jint>(((&regions[_i]))->bounds.width), static_cast<jint>(((&regions[_i]))->bounds.height));
+            auto _elem = env->NewObject(j_regions_cls, j_regions_ctor, _bv___regions__i___bounds, static_cast<jint>(((&regions[_i]))->draggable));
+            env->SetObjectArrayElement(j_regions, _i, _elem);
+            env->DeleteLocalRef(_elem);
+        }
         auto cls = env->GetObjectClass(h->javaHandler);
-        auto mid = env->GetMethodID(cls, "onDraggableRegionsChanged", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefFrame;JLnet/kurobako/cef4j/gen/NativePointer;)V");
+        auto mid = env->GetMethodID(cls, "onDraggableRegionsChanged", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefFrame;J[Lnet/kurobako/cef4j/gen/CefDraggableRegion;)V");
         if (!mid) { env->PopLocalFrame(nullptr); return; }
         env->CallVoidMethod(h->javaHandler, mid, j_browser, j_frame, static_cast<jlong>(regionsCount), j_regions);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }

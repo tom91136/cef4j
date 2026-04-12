@@ -55,7 +55,7 @@ struct JniCefMenuModelDelegate : public cef_menu_model_delegate_t {
         auto j_menu_model = _p_menu_model ? env->NewObject(j_menu_model_cls, j_menu_model_ctor, reinterpret_cast<jlong>(_p_menu_model)) : nullptr;
         auto j_screen_point_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefPoint");
         auto j_screen_point_ctor = env->GetMethodID(j_screen_point_cls, "<init>", "(II)V");
-        auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>(screen_point->x), static_cast<jint>(screen_point->y)) : nullptr;
+        auto j_screen_point = screen_point ? env->NewObject(j_screen_point_cls, j_screen_point_ctor, static_cast<jint>((screen_point)->x), static_cast<jint>((screen_point)->y)) : nullptr;
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "mouseOutsideMenu", "(Lnet/kurobako/cef4j/gen/CefMenuModel;Lnet/kurobako/cef4j/gen/CefPoint;)V");
         if (!mid) { env->PopLocalFrame(nullptr); return; }

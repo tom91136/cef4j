@@ -33,10 +33,10 @@ struct JniCefAudioHandler : public cef_audio_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto _bv_params_channel_layout_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefChannelLayout");
         auto _bv_params_channel_layout_of = env->GetStaticMethodID(_bv_params_channel_layout_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefChannelLayout;");
-        auto _bv_params_channel_layout = env->CallStaticObjectMethod(_bv_params_channel_layout_cls, _bv_params_channel_layout_of, static_cast<jlong>(params->channel_layout));
+        auto _bv_params_channel_layout = env->CallStaticObjectMethod(_bv_params_channel_layout_cls, _bv_params_channel_layout_of, static_cast<jlong>((params)->channel_layout));
         auto j_params_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefAudioParameters$Mutable");
         auto j_params_ctor = env->GetMethodID(j_params_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefChannelLayout;II)V");
-        auto j_params = params ? env->NewObject(j_params_cls, j_params_ctor, _bv_params_channel_layout, static_cast<jint>(params->sample_rate), static_cast<jint>(params->frames_per_buffer)) : nullptr;
+        auto j_params = params ? env->NewObject(j_params_cls, j_params_ctor, _bv_params_channel_layout, static_cast<jint>((params)->sample_rate), static_cast<jint>((params)->frames_per_buffer)) : nullptr;
         if (j_params) env->SetLongField(j_params, env->GetFieldID(j_params_cls, "size", "J"), static_cast<jlong>(params->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "getAudioParameters", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefAudioParameters$Mutable;)Z");
@@ -44,12 +44,12 @@ struct JniCefAudioHandler : public cef_audio_handler_t {
         auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_params);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (params && j_params) {
-            auto _wb_channel_layout = env->GetObjectField(j_params, env->GetFieldID(j_params_cls, "channelLayout", "Lnet/kurobako/cef4j/gen/CefChannelLayout;"));
-            if (_wb_channel_layout) {
-                params->channel_layout = static_cast<decltype(params->channel_layout)>(env->GetLongField(_wb_channel_layout, env->GetFieldID(env->GetObjectClass(_wb_channel_layout), "value", "J")));
+            auto _wbn_channel_layout = env->GetObjectField(j_params, env->GetFieldID(j_params_cls, "channelLayout", "Lnet/kurobako/cef4j/gen/CefChannelLayout;"));
+            if (_wbn_channel_layout) {
+                (params)->channel_layout = static_cast<decltype((params)->channel_layout)>(env->GetLongField(_wbn_channel_layout, env->GetFieldID(env->GetObjectClass(_wbn_channel_layout), "value", "J")));
             }
-            params->sample_rate = static_cast<decltype(params->sample_rate)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "sampleRate", "I")));
-            params->frames_per_buffer = static_cast<decltype(params->frames_per_buffer)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "framesPerBuffer", "I")));
+            (params)->sample_rate = static_cast<decltype((params)->sample_rate)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "sampleRate", "I")));
+            (params)->frames_per_buffer = static_cast<decltype((params)->frames_per_buffer)>(env->GetIntField(j_params, env->GetFieldID(j_params_cls, "framesPerBuffer", "I")));
         }
         env->PopLocalFrame(nullptr);
         return jResult;
@@ -66,10 +66,10 @@ struct JniCefAudioHandler : public cef_audio_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto _bv_params_channel_layout_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefChannelLayout");
         auto _bv_params_channel_layout_of = env->GetStaticMethodID(_bv_params_channel_layout_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefChannelLayout;");
-        auto _bv_params_channel_layout = env->CallStaticObjectMethod(_bv_params_channel_layout_cls, _bv_params_channel_layout_of, static_cast<jlong>(params->channel_layout));
+        auto _bv_params_channel_layout = env->CallStaticObjectMethod(_bv_params_channel_layout_cls, _bv_params_channel_layout_of, static_cast<jlong>((params)->channel_layout));
         auto j_params_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefAudioParameters");
         auto j_params_ctor = env->GetMethodID(j_params_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefChannelLayout;II)V");
-        auto j_params = params ? env->NewObject(j_params_cls, j_params_ctor, _bv_params_channel_layout, static_cast<jint>(params->sample_rate), static_cast<jint>(params->frames_per_buffer)) : nullptr;
+        auto j_params = params ? env->NewObject(j_params_cls, j_params_ctor, _bv_params_channel_layout, static_cast<jint>((params)->sample_rate), static_cast<jint>((params)->frames_per_buffer)) : nullptr;
         if (j_params) env->SetLongField(j_params, env->GetFieldID(j_params_cls, "size", "J"), static_cast<jlong>(params->size));
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onAudioStreamStarted", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefAudioParameters;I)V");

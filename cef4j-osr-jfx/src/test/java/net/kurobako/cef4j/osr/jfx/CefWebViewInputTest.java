@@ -69,13 +69,16 @@ class CefWebViewInputTest {
 
         assertThat(waitUntil(() -> workerState(view) == Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
+        assertThat(waitUntil(() -> "start".equals(title(view)), 5_000))
+                .as("page script installed")
+                .isTrue();
 
-        onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_ENTERED, 80, 80));
+        onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_MOVED, 40, 40));
         onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_MOVED, 80, 80));
-        assertThat(waitUntil(() -> "inside".equals(title(view)), 3_000)).isTrue();
+        assertThat(waitUntil(() -> "inside".equals(title(view)), 5_000)).isTrue();
 
         onFxThread(() -> fireMouse(view, MouseEvent.MOUSE_EXITED, 805, 80));
-        assertThat(waitUntil(() -> "outside".equals(title(view)), 3_000)).isTrue();
+        assertThat(waitUntil(() -> "outside".equals(title(view)), 5_000)).isTrue();
     }
 
     private static CefWebView createAttachedView() throws Exception {

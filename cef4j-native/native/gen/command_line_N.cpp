@@ -35,7 +35,11 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefCommandLine), copy0)(JNIEnv* env, jobjec
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), initFromArgv0)(JNIEnv* env, jobject obj, jlong self, jint argc, jobject argv) {
     auto* s = reinterpret_cast<cef_command_line_t*>(self);
     if (!s) return;
-    s->init_from_argv(s, argc, reinterpret_cast<const char* const*>(argv ? env->GetLongField(argv, env->GetFieldID(env->GetObjectClass(argv), "address", "J")) : 0));
+    if (!argv) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "argv must not be null"); return; }
+    std::vector<std::string> _argv_storage;
+    std::vector<const char*> _argv_ptrs;
+    const char* const* _argv_arr = JavaListToConstCStringArray(env, argv, _argv_storage, _argv_ptrs);
+    s->init_from_argv(s, argc, _argv_arr);
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefCommandLine), initFromString0)(JNIEnv* env, jobject obj, jlong self, jstring command_line) {

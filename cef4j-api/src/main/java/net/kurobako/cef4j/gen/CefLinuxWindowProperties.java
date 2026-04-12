@@ -44,6 +44,11 @@ public final class CefLinuxWindowProperties {
         this.wmRoleName = wmRoleName;
     }
 
+    /** Create a mutable copy of this instance. */
+    public Mutable toMutable() {
+        return new Mutable(this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -63,5 +68,66 @@ public final class CefLinuxWindowProperties {
     @Override
     public String toString() {
         return "CefLinuxWindowProperties{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName=" + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
+    }
+
+    /**
+     * Mutable variant of {@link CefLinuxWindowProperties}. Linux window properties, such as X11's WM_CLASS or Wayland's app_id. Those are passed to CefWindowDelegate, so the client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the application's information (e.g., icons).
+     * <p>Definition generated from internal/cef_types.h
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:1964</a>
+     */
+    public static final class Mutable {
+
+    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private volatile long size = -1;
+
+            /**
+             * Main window's Wayland's app_id 
+             */        public String waylandAppId;
+            /**
+             * Main window's WM_CLASS_CLASS in X11 
+             */        public String wmClassClass;
+            /**
+             * Main window's WM_CLASS_NAME in X11 
+             */        public String wmClassName;
+            /**
+             * Main window's WM_WINDOW_ROLE in X11 
+             */        public String wmRoleName;
+
+        public Mutable() {}
+
+        public Mutable(String waylandAppId, String wmClassClass, String wmClassName, String wmRoleName) {
+            this.waylandAppId = waylandAppId;
+            this.wmClassClass = wmClassClass;
+            this.wmClassName = wmClassName;
+            this.wmRoleName = wmRoleName;
+        }
+
+        /** Create an immutable snapshot of this instance. */
+        public CefLinuxWindowProperties toImmutable() {
+            return new CefLinuxWindowProperties(this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Mutable)) return false;
+            Mutable other = (Mutable) obj;
+            return java.util.Objects.equals(this.waylandAppId, other.waylandAppId)
+                        && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
+                        && java.util.Objects.equals(this.wmClassName, other.wmClassName)
+                        && java.util.Objects.equals(this.wmRoleName, other.wmRoleName);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(waylandAppId, wmClassClass, wmClassName, wmRoleName);
+        }
+
+        @Override
+        public String toString() {
+            return "CefLinuxWindowProperties.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "waylandAppId=" + waylandAppId + ", " + "wmClassClass=" + wmClassClass + ", " + "wmClassName=" + wmClassName + ", " + "wmRoleName=" + wmRoleName + "}";
+        }
     }
 }

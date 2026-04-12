@@ -21,7 +21,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:50</a>
      */
-    public static int executeProcess(@Nullable NativePointer args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
+    public static int executeProcess(@Nonnull CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
       return executeProcess0(args, application, windowsSandboxInfo);
   }
 
@@ -32,7 +32,7 @@ public final class CefGlobals {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:68</a>
      */
-    public static int initialize(@Nullable NativePointer args, @Nonnull CefSettings settings, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
+    public static int initialize(@Nonnull CefMainArgs args, @Nonnull CefSettings settings, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
       return initialize0(args, settings, application, windowsSandboxInfo);
   }
 
@@ -303,11 +303,11 @@ public final class CefGlobals {
       return resolveUrl0(baseUrl, relativeUrl, resolvedUrl);
   }
 
-    public static int parseUrl(@Nullable String url, @Nullable NativePointer parts) {
+    public static int parseUrl(@Nullable String url, @Nonnull CefUrlParts.Mutable parts) {
       return parseUrl0(url, parts);
   }
 
-    public static int createUrl(@Nullable NativePointer parts, @Nullable String url) {
+    public static int createUrl(@Nonnull CefUrlParts parts, @Nullable String url) {
       return createUrl0(parts, url);
   }
 
@@ -539,9 +539,9 @@ public final class CefGlobals {
       return registerExtension0(extensionName, javascriptCode, handler);
   }
 
-    private static native int executeProcess0(NativePointer args, CefApp application, NativePointer windowsSandboxInfo);
+    private static native int executeProcess0(CefMainArgs args, CefApp application, NativePointer windowsSandboxInfo);
 
-    private static native int initialize0(NativePointer args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
+    private static native int initialize0(CefMainArgs args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
 
     private static native int getExitCode0();
 
@@ -585,9 +585,9 @@ public final class CefGlobals {
 
     private static native int resolveUrl0(String baseUrl, String relativeUrl, String resolvedUrl);
 
-    private static native int parseUrl0(String url, NativePointer parts);
+    private static native int parseUrl0(String url, CefUrlParts.Mutable parts);
 
-    private static native int createUrl0(NativePointer parts, String url);
+    private static native int createUrl0(CefUrlParts parts, String url);
 
     private static native String formatUrlForSecurityDisplay0(String originUrl);
 

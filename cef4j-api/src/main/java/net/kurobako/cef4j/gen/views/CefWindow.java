@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBoxLayoutSettings;
 import net.kurobako.cef4j.gen.CefDockingMode;
+import net.kurobako.cef4j.gen.CefDraggableRegion;
 import net.kurobako.cef4j.gen.CefImage;
 import net.kurobako.cef4j.gen.CefInsets;
 import net.kurobako.cef4j.gen.CefLibraryObject;
@@ -17,7 +18,6 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 import net.kurobako.cef4j.gen.CefSize;
-import net.kurobako.cef4j.gen.NativePointer;
 
 /**
  * A Window is a top-level Window/widget in the Views hierarchy. By default it will have a non-client area with title bar, icon and buttons that supports moving and resizing. All size and position values are in density independent pixels (DIP) unless otherwise indicated. Methods must be called on the browser process UI thread unless otherwise indicated.
@@ -329,7 +329,7 @@ public interface CefWindow extends CefPanel {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:309</a>
      */
-    void setDraggableRegions(long regionsCount, @Nullable NativePointer regions);
+    void setDraggableRegions(long regionsCount, @Nullable CefDraggableRegion[] regions);
 
     /**
      * Retrieve the platform window handle for this Window.
@@ -678,7 +678,7 @@ public interface CefWindow extends CefPanel {
       }
 
         @Override
-      public void setDraggableRegions(long regionsCount, @Nullable NativePointer regions) {
+      public void setDraggableRegions(long regionsCount, @Nullable CefDraggableRegion[] regions) {
           checkNotClosed();
           setDraggableRegions0(nativePtr, regionsCount, regions);
       }
@@ -1196,7 +1196,7 @@ public interface CefWindow extends CefPanel {
 
         static native CefRect getClientAreaBoundsInScreen0(long self);
 
-        static native void setDraggableRegions0(long self, long regionsCount, NativePointer regions);
+        static native void setDraggableRegions0(long self, long regionsCount, CefDraggableRegion[] regions);
 
         static native long getWindowHandle0(long self);
 

@@ -17,6 +17,15 @@
 
     <properties>
         <exec.skip>false</exec.skip>
+        <cef.codegen.linux.platform>linux64</cef.codegen.linux.platform>
+        <cef.codegen.macos.platform>macosx64</cef.codegen.macos.platform>
+        <cef.codegen.windows.platform>windows64</cef.codegen.windows.platform>
+        <cef.codegen.linux.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2</cef.codegen.linux.url>
+        <cef.codegen.macos.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2</cef.codegen.macos.url>
+        <cef.codegen.windows.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2</cef.codegen.windows.url>
+        <cef.codegen.linux.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal</cef.codegen.linux.dir>
+        <cef.codegen.macos.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal</cef.codegen.macos.dir>
+        <cef.codegen.windows.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal</cef.codegen.windows.dir>
     </properties>
 
     <build>
@@ -34,6 +43,45 @@
                         </goals>
                         <configuration>
                             <url>${cef.dist.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpack>false</unpack>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-cef-linux-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${cef.codegen.linux.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpack>false</unpack>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-cef-macos-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${cef.codegen.macos.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpack>false</unpack>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-cef-windows-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${cef.codegen.windows.url}</url>
                             <outputDirectory>${cef.dist.cache}</outputDirectory>
                             <unpack>false</unpack>
                             <skipCache>false</skipCache>
@@ -63,6 +111,60 @@
                             </target>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>extract-cef-linux-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <condition property="cef.codegen.linux.extracted">
+                                    <available file="${cef.codegen.linux.dir}/include/cef_version.h"/>
+                                </condition>
+                                <echo if:set="cef.codegen.linux.extracted">Linux CEF include already extracted, skipping.</echo>
+                                <untar unless:set="cef.codegen.linux.extracted"
+                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2"
+                                       dest="${cef.dist.cache}" compression="bzip2"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>extract-cef-macos-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <condition property="cef.codegen.macos.extracted">
+                                    <available file="${cef.codegen.macos.dir}/include/cef_version.h"/>
+                                </condition>
+                                <echo if:set="cef.codegen.macos.extracted">macOS CEF include already extracted, skipping.</echo>
+                                <untar unless:set="cef.codegen.macos.extracted"
+                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2"
+                                       dest="${cef.dist.cache}" compression="bzip2"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>extract-cef-windows-codegen</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                                <condition property="cef.codegen.windows.extracted">
+                                    <available file="${cef.codegen.windows.dir}/include/cef_version.h"/>
+                                </condition>
+                                <echo if:set="cef.codegen.windows.extracted">Windows CEF include already extracted, skipping.</echo>
+                                <untar unless:set="cef.codegen.windows.extracted"
+                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2"
+                                       dest="${cef.dist.cache}" compression="bzip2"/>
+                            </target>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -81,11 +183,84 @@
                             <includePluginDependencies>true</includePluginDependencies>
                             <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
                             <arguments>
-                                <argument>--cef-include=${cef.dist.dir}/include</argument>
+                                <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
                                 <argument>--out-cpp=${project.basedir}/native/gen</argument>
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-codegen-macos-platform</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.macos.dir}/include</argument>
+                                <argument>--out-cpp=${project.basedir}/native/gen</argument>
+                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--target-platform=${cef.codegen.macos.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=mac</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-codegen-windows-platform</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.windows.dir}/include</argument>
+                                <argument>--out-cpp=${project.basedir}/native/gen</argument>
+                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--target-platform=${cef.codegen.windows.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=win</argument>
+                                <argument>--extra-cpp-dirs=views</argument>
+                                <argument>--extra-capi-dirs=views</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-codegen-linux-platform-java</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.Main</mainClass>
+                            <arguments>
+                                <argument>--cef-include=${cef.codegen.linux.dir}/include</argument>
+                                <argument>--out-cpp=${project.basedir}/native/gen</argument>
+                                <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
+                                <argument>--java-package=${cef4j.generated.java.package}</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--target-platform=${cef.codegen.linux.platform}</argument>
+                                <argument>--emit-common-cpp=false</argument>
+                                <argument>--emit-java-platform-only=true</argument>
+                                <argument>--java-platform-subpackage=linux</argument>
                                 <argument>--extra-cpp-dirs=views</argument>
                                 <argument>--extra-capi-dirs=views</argument>
                             </arguments>
@@ -205,4 +380,5 @@
 
         </plugins>
     </build>
+
 </project>

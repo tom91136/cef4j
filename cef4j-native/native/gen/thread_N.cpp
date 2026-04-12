@@ -22,7 +22,7 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(CefThread), getTaskRunner0)(JNIEnv* env, jo
 CEF4J_JNI_EXPORT(jlong, CEF4J_PEER(CefThread), getPlatformThreadId0)(JNIEnv* env, jobject obj, jlong self) {
     auto* s = reinterpret_cast<cef_thread_t*>(self);
     if (!s) return 0;
-    return static_cast<jlong>(s->get_platform_thread_id(s));
+    return to_jlong(s->get_platform_thread_id(s));
 }
 
 CEF4J_JNI_EXPORT(void, CEF4J_PEER(CefThread), stop0)(JNIEnv* env, jobject obj, jlong self) {

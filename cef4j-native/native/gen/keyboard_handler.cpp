@@ -30,19 +30,19 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
-        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
+        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>((event)->type));
         auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,
         _bv_event_type,
-        static_cast<jint>(event->modifiers),
-        static_cast<jint>(event->windows_key_code),
-        static_cast<jint>(event->native_key_code),
-        static_cast<jint>(event->is_system_key),
-        static_cast<jchar>(event->character),
-        static_cast<jchar>(event->unmodified_character),
-        static_cast<jint>(event->focus_on_editable_field))
+        static_cast<jint>((event)->modifiers),
+        static_cast<jint>((event)->windows_key_code),
+        static_cast<jint>((event)->native_key_code),
+        static_cast<jint>((event)->is_system_key),
+        static_cast<jchar>((event)->character),
+        static_cast<jchar>((event)->unmodified_character),
+        static_cast<jint>((event)->focus_on_editable_field))
     : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         jintArray j_is_keyboard_shortcut = env->NewIntArray(1);
@@ -68,19 +68,19 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
         auto _bv_event_type_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEventType");
         auto _bv_event_type_of = env->GetStaticMethodID(_bv_event_type_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefKeyEventType;");
-        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>(event->type));
+        auto _bv_event_type = env->CallStaticObjectMethod(_bv_event_type_cls, _bv_event_type_of, static_cast<jlong>((event)->type));
         auto j_event_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefKeyEvent");
         auto j_event_ctor = env->GetMethodID(j_event_cls, "<init>", "(Lnet/kurobako/cef4j/gen/CefKeyEventType;IIIICCI)V");
         auto j_event = event
     ? env->NewObject(j_event_cls, j_event_ctor,
         _bv_event_type,
-        static_cast<jint>(event->modifiers),
-        static_cast<jint>(event->windows_key_code),
-        static_cast<jint>(event->native_key_code),
-        static_cast<jint>(event->is_system_key),
-        static_cast<jchar>(event->character),
-        static_cast<jchar>(event->unmodified_character),
-        static_cast<jint>(event->focus_on_editable_field))
+        static_cast<jint>((event)->modifiers),
+        static_cast<jint>((event)->windows_key_code),
+        static_cast<jint>((event)->native_key_code),
+        static_cast<jint>((event)->is_system_key),
+        static_cast<jchar>((event)->character),
+        static_cast<jchar>((event)->unmodified_character),
+        static_cast<jint>((event)->focus_on_editable_field))
     : nullptr;
         if (j_event) env->SetLongField(j_event, env->GetFieldID(j_event_cls, "size", "J"), static_cast<jlong>(event->size));
         auto cls = env->GetObjectClass(h->javaHandler);

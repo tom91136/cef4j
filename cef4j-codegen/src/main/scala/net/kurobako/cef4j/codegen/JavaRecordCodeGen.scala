@@ -18,16 +18,32 @@ object JavaRecordCodeGen {
       outDir: Path,
       classDoc: String = "",
       needsMutable: Boolean = false,
-      fieldDocs: Map[String, String] = Map.empty
+      fieldDocs: Map[String, String] = Map.empty,
+      emitAsPlatformInterface: Boolean = false,
+      platformImplSubPackages: List[String] = Nil,
+      implementSharedType: Boolean = false
   )(using
       Naming.Context,
       DocComments.Context,
       Banners
   ): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
+    val subPkg   = summon[Naming.Context].subPackages.getOrElse(decl.name, "")
     val cProto   = DocComments.cPrototypeForDataStruct(decl)
-    val content  = render(javaName, decl.fields, classDoc, needsMutable, decl.sourceHeader, cProto, fieldDocs)
-    JavaCodeGen.writeJavaFile(outDir, javaName, content)
+    val content  = render(
+      javaName,
+      decl.fields,
+      classDoc,
+      needsMutable,
+      decl.sourceHeader,
+      cProto,
+      fieldDocs,
+      subPkg,
+      emitAsPlatformInterface,
+      platformImplSubPackages,
+      implementSharedType
+    )
+    JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
   private val SectionMarkerRe = """@_section:(.+)""".r
@@ -66,14 +82,47 @@ ${allLines.mkString("\n")}
       needsMutable: Boolean = false,
       sourceHeader: String = "",
       cPrototype: String = "",
-      fieldDocs: Map[String, String] = Map.empty
+      fieldDocs: Map[String, String] = Map.empty,
+      subPackage: String = "",
+      emitAsPlatformInterface: Boolean = false,
+      platformImplSubPackages: List[String] = Nil,
+      implementSharedType: Boolean = false
   )(using Naming.Context, DocComments.Context, Banners): String = {
+    if (emitAsPlatformInterface) {
+      val rootPkg = Naming.javaPackage
+      val impls   = platformImplSubPackages.distinct.map(p => s"{@link $rootPkg.$p.$javaName}")
+      val suffix  = if (impls.nonEmpty) s"Platform-specific implementations: ${impls.mkString(", ")}." else ""
+      return JavaCodeGen.renderJavaFile(
+        declaration = s"public interface $javaName",
+        body = "",
+        classDoc = classDoc,
+        capiSource = sourceHeader,
+        cPrototype = cPrototype,
+        cppSource = sourceHeader,
+        classDocSuffix = suffix,
+        subPackage = subPackage
+      )
+    }
+
     val userFields = fields.filterNot(isSizeField)
     val hasSize    = fields.exists(isSizeField)
+    val allTypes   = fields.map(_.typ)
 
     val fieldDecls  = renderFieldDecls(userFields, fieldDocs, "    ", "    public final ")
     val ctorParams  = renderCtorParams(userFields)
     val ctorAssigns = renderCtorAssigns(userFields, "        ")
+
+    val typeImports     = allTypes.flatMap(Naming.javaImports).distinct.sorted.map(i => s"import $i;")
+    val crossPkgImports = if (subPackage.nonEmpty) {
+      val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
+      val basePkg       = Naming.javaPackage
+      val thisPkg       = s"$basePkg.$subPackage"
+      val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
+      val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
+      val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
+      (fromTypes ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
+    } else Nil
+    val allImports = (typeImports ++ crossPkgImports).distinct.sorted
 
     val toMutableMethod = if (needsMutable) {
       val args = renderThisArgs(userFields)
@@ -91,8 +140,12 @@ ${allLines.mkString("\n")}
          |${renderMutableInner(javaName, fields, classDoc, fieldDocs)}""".stripMargin
     } else ""
 
+    val declaration = if (implementSharedType) {
+      s"public final class $javaName implements ${Naming.javaPackage}.$javaName"
+    } else s"public final class $javaName"
+
     JavaCodeGen.renderJavaFile(
-      declaration = s"public final class $javaName",
+      declaration = declaration,
       body =
         s"""${if (hasSize) NativeSizeDecl else ""}$fieldDecls
 			 |
@@ -108,7 +161,9 @@ ${allLines.mkString("\n")}
       classDoc = classDoc,
       capiSource = sourceHeader,
       cPrototype = cPrototype,
-      cppSource = sourceHeader
+      cppSource = sourceHeader,
+      imports = allImports,
+      subPackage = subPackage
     )
   }
 
@@ -179,7 +234,7 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
   )(using Naming.Context, DocComments.Context): String =
     fields.map { f =>
       val doc = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
-      s"${doc}${fieldPrefix}${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
+      s"$doc$fieldPrefix${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
     }.mkString("\n")
 
   private def renderCtorParams(fields: List[Field])(using Naming.Context): String =

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nonnull;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -29,6 +30,7 @@ import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefCursorInfo;
 import net.kurobako.cef4j.gen.CefCursorType;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
 import net.kurobako.cef4j.gen.CefFrame;
@@ -38,7 +40,6 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
-import net.kurobako.cef4j.gen.NativePointer;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
@@ -60,7 +61,7 @@ final class SwingBrowserPanelTestSupport {
         final CountDownLatch browserReady = new CountDownLatch(1);
     }
 
-    static void ensureCefStarted() throws Exception {
+    static void ensureCefStarted() {
         if (started) return;
 
         Assumptions.assumeTrue(
@@ -193,7 +194,10 @@ final class SwingBrowserPanelTestSupport {
 
                         @Override
                         public boolean onCursorChange(
-                                CefBrowser b, long cursor, CefCursorType type, NativePointer customCursorInfo) {
+                                CefBrowser b,
+                                long cursor,
+                                @Nonnull CefCursorType type,
+                                CefCursorInfo customCursorInfo) {
                             java.awt.Cursor awtCursor = panel.mapCursor(type);
                             SwingUtilities.invokeLater(() -> panel.setCursor(awtCursor));
                             return true;
