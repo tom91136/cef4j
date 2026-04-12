@@ -378,6 +378,7 @@ object CHeaderParser {
   }
 
   private case class EnumState(values: List[(String, Long, String)], lastValue: Long, idx: Int)
+  private val EnumAssignRe = """^([A-Za-z_]\w*)\s*=\s*(.*)$""".r
 
   private def parseEnum(lines: Vector[String], startIdx: Int): (CefDecl, Int) = {
 
@@ -389,11 +390,14 @@ object CHeaderParser {
         val line      = lines(state.idx).trim.stripSuffix(",").trim
         val nextState = if (line.nonEmpty && !line.startsWith("//") && !line.startsWith("/*") && line != "{") {
           line match {
-            case s"$name = $expr" if isIdentifier(name.trim) =>
-              val cleanName = name.trim
-              val rawExpr   = expr.trim
-              val v         = parseEnumValue(rawExpr, state.values)
-              state.copy(values = (cleanName, v, rawExpr) :: state.values, lastValue = v)
+            case EnumAssignRe(name, expr) if isIdentifier(name.trim) =>
+              val cleanName              = name.trim
+              val parsedExpr             = expr.trim
+              val (rawExpr, consumedIdx) =
+                if (parsedExpr.nonEmpty) (parsedExpr, state.idx)
+                else nextEnumExpressionLine(lines, state.idx + 1).getOrElse(("0", state.idx))
+              val v = parseEnumValue(rawExpr, state.values)
+              state.copy(values = (cleanName, v, rawExpr) :: state.values, lastValue = v, idx = consumedIdx)
             case name if isIdentifier(name) && name.head.isUpper =>
               val v = state.lastValue + 1
               state.copy(values = (name, v, s"$v") :: state.values, lastValue = v)
@@ -414,6 +418,20 @@ object CHeaderParser {
       .getOrElse("unknown_t")
 
     (CefDecl.Enum(enumName, result.values.reverse), result.idx + 1)
+  }
+
+  private def nextEnumExpressionLine(lines: Vector[String], startIdx: Int): Option[(String, Int)] = {
+    @tailrec
+    def loop(idx: Int): Option[(String, Int)] =
+      if (idx >= lines.length || EnumClosingRe.matches(lines(idx).trim)) None
+      else {
+        val line = lines(idx).trim.stripSuffix(",").trim
+        if (line.nonEmpty && !line.startsWith("//") && !line.startsWith("/*") && line != "{")
+          Some((line, idx))
+        else loop(idx + 1)
+      }
+
+    loop(startIdx)
   }
 
   /** Strip C integer literal suffixes (U/u/L/l combinations). */

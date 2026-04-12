@@ -48,17 +48,17 @@ public final class CefTransitionType implements CefEnum<CefTransitionType> {
         KEYWORD_GENERATED(10, "10", "TT_KEYWORD_GENERATED"),
         NUM_VALUES(11, "11", "TT_NUM_VALUES"),
         /** General mask defining the bits used for the source values.  */
-        SOURCE_MASK(0xFF, "0xFF", "TT_SOURCE_MASK"),
+        SOURCE_MASK(0xFF, "0xff", "TT_SOURCE_MASK"),
         /** Qualifiers. Any of the core values above can be augmented by one or more qualifiers. These qualifiers further define the transition.  Attempted to visit a URL but was blocked.  */
-        BLOCKED_FLAG(0x00800000, "0x00800000", "TT_BLOCKED_FLAG"),
+        BLOCKED_FLAG(0x00800000, "0x800000", "TT_BLOCKED_FLAG"),
         /** Used the Forward or Back function to navigate among browsing history. Will be ORed to the transition type for the original load.  */
-        FORWARD_BACK_FLAG(0x01000000, "0x01000000", "TT_FORWARD_BACK_FLAG"),
+        FORWARD_BACK_FLAG(0x01000000, "0x1000000", "TT_FORWARD_BACK_FLAG"),
         /** Loaded a URL directly via CreateBrowser, LoadURL or LoadRequest.  */
-        DIRECT_LOAD_FLAG(0x02000000, "0x02000000", "TT_DIRECT_LOAD_FLAG"),
+        DIRECT_LOAD_FLAG(0x02000000, "0x2000000", "TT_DIRECT_LOAD_FLAG"),
         /** User is navigating to the home page. Chrome style only.  */
-        HOME_PAGE_FLAG(0x04000000, "0x04000000", "TT_HOME_PAGE_FLAG"),
+        HOME_PAGE_FLAG(0x04000000, "0x4000000", "TT_HOME_PAGE_FLAG"),
         /** The transition originated from an external application; the exact definition of this is embedder dependent. Chrome style only.  */
-        FROM_API_FLAG(0x08000000, "0x08000000", "TT_FROM_API_FLAG"),
+        FROM_API_FLAG(0x08000000, "0x8000000", "TT_FROM_API_FLAG"),
         /** The beginning of a navigation chain.  */
         CHAIN_START_FLAG(0x10000000, "0x10000000", "TT_CHAIN_START_FLAG"),
         /** The last transition in a redirect chain.  */
@@ -68,9 +68,9 @@ public final class CefTransitionType implements CefEnum<CefTransitionType> {
         /** Redirects sent from the server by HTTP headers.  */
         SERVER_REDIRECT_FLAG(0x80000000, "0x80000000", "TT_SERVER_REDIRECT_FLAG"),
         /** Used to test whether a transition involves a redirect.  */
-        IS_REDIRECT_MASK(0xC0000000, "0xC0000000", "TT_IS_REDIRECT_MASK"),
+        IS_REDIRECT_MASK(0xC0000000, "0xc0000000", "TT_IS_REDIRECT_MASK"),
         /** General mask defining the bits used for the qualifiers.  */
-        QUALIFIER_MASK(0xFFFFFF00, "0xFFFFFF00", "TT_QUALIFIER_MASK");
+        QUALIFIER_MASK(0xFFFFFF00, "0xffffff00", "TT_QUALIFIER_MASK");
 
         private static final Kind[] VALUES = Kind.values();
 

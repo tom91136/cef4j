@@ -83,4 +83,17 @@ class EnumParserSpec extends munit.FunSuite {
     val enum_ = decls.head.asInstanceOf[CefDecl.Enum]
     assertEquals(enum_.name, "cef_return_value_t")
   }
+
+  test("parses enum value when expression is split across lines") {
+    val stub                  = """typedef enum {
+      DRAG_OPERATION_DELETE = 32,
+      DRAG_OPERATION_EVERY =
+      (0x7fffffff * 2U + 1U)
+    } cef_drag_operations_mask_t;"""
+    val decls                 = CHeaderParser.parse(stub, Set.empty)
+    val enum_                 = decls.head.asInstanceOf[CefDecl.Enum]
+    val (everyVal, everyExpr) = findValue(enum_, "DRAG_OPERATION_EVERY")
+    assertEquals(everyVal, 4294967295L)
+    assertEquals(everyExpr, "(0x7fffffff * 2U + 1U)")
+  }
 }

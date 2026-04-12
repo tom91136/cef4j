@@ -6,6 +6,7 @@ object JavaEnumCodeGen {
 
   // Expressions safe to inline as Java constant expressions with no named references.
   private val JavaSafeExprRe = """^[\d\s+\-*/|&^~<>()xXaAbBcCdDeEfFlL]+$""".r
+  private val ExprTokenRe    = """0[xX][0-9A-Fa-f]+[UuLl]*|\d+[UuLl]*|<<|>>|[()+\-*/|&^~]|[A-Za-z_]\w*""".r
 
   def emit(decl: CefDecl.Enum, outDir: Path, sourceHeader: String = "")(using
       Naming.Context,
@@ -22,6 +23,44 @@ object JavaEnumCodeGen {
     val trimmed = rawExpr.trim
     if (JavaSafeExprRe.matches(trimmed)) trimmed
     else s"${evaluated}L"
+  }
+
+  private def stripCSuffix(token: String): String =
+    token.replaceAll("[UuLl]+$", "")
+
+  private def normaliseExprToken(token: String, inCompositeExpr: Boolean): String = {
+    val trimmed = token.trim
+    if (trimmed.matches("""0[xX][0-9A-Fa-f]+[UuLl]*""")) {
+      val clean = stripCSuffix(trimmed)
+      val value = java.lang.Long.parseUnsignedLong(clean.substring(2), 16)
+      s"0x${java.lang.Long.toUnsignedString(value, 16)}"
+    } else if (trimmed.matches("""\d+[UuLl]*""")) {
+      val clean = stripCSuffix(trimmed)
+      val value = java.lang.Long.parseUnsignedLong(clean, 10)
+      if (inCompositeExpr && value >= 4096) s"0x${java.lang.Long.toUnsignedString(value, 16)}" else clean
+    } else {
+      trimmed
+    }
+  }
+
+  private def canonicalExprText(rawExpr: String): String = {
+    val trimmed = rawExpr.trim
+    if (trimmed.isEmpty) trimmed
+    else {
+      val noWs            = trimmed.replaceAll("\\s+", "")
+      val tokens          = ExprTokenRe.findAllIn(trimmed).toList
+      val inCompositeExpr =
+        tokens.exists(t =>
+          t == "<<" || t == ">>" || t == "+" || t == "-" || t == "*" || t == "/" || t == "|" || t == "&" || t == "^"
+        )
+      if (tokens.isEmpty || tokens.mkString != noWs) trimmed
+      else
+        tokens
+          .map(t => normaliseExprToken(t, inCompositeExpr))
+          .mkString(" ")
+          .replaceAll("\\(\\s+", "(")
+          .replaceAll("\\s+\\)", ")")
+    }
   }
 
   private def render(
@@ -53,7 +92,7 @@ object JavaEnumCodeGen {
         case None => ""
       }
       val expr    = javaExpr(rawExpr, v)
-      val exprLit = rawExpr.replace("\\", "\\\\").replace("\"", "\\\"")
+      val exprLit = canonicalExprText(rawExpr).replace("\\", "\\\\").replace("\"", "\\\"")
       s"""$javadoc        $jName($expr, "$exprLit", "$cName")"""
     }.mkString(",\n")
 

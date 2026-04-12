@@ -34,7 +34,18 @@ object EmitRuntimeStubs {
       .toScala(List)
       .filter(p => p.toString.endsWith(".java") && !p.startsWith(generatedPackageDir))
 
-    val methods = javaFiles.flatMap(scanFile)
+    val methods = javaFiles
+      .flatMap(scanFile)
+      .sortBy(m =>
+        (
+          m.packageName,
+          m.className,
+          m.name,
+          m.params.map { case (t, n) => s"$t:$n" }.mkString(","),
+          m.returnType,
+          if (m.isStatic) "1" else "0"
+        )
+      )
     if (methods.isEmpty) return
 
     val sb = new StringBuilder

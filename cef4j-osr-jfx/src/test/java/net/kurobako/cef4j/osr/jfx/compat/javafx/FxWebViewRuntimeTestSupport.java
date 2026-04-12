@@ -400,15 +400,22 @@ final class FxWebViewRuntimeTestSupport {
 
     private static Node findMenuItemNode(String itemText) {
         List<Window> windows = Window.getWindows();
+        Node stageFallback = null;
         for (int i = windows.size() - 1; i >= 0; i--) {
             Window window = windows.get(i);
-            if (!window.isShowing() || window.getScene() == null || window instanceof Stage) continue;
+            if (!window.isShowing() || window.getScene() == null) continue;
             Node node = findNodeWithText(window.getScene().getRoot(), normalizeMenuText(itemText));
             if (node != null) {
-                return node.getParent() != null ? node.getParent() : node;
+                Node candidate = node.getParent() != null ? node.getParent() : node;
+                if (!(window instanceof Stage)) {
+                    return candidate;
+                }
+                if (stageFallback == null) {
+                    stageFallback = candidate;
+                }
             }
         }
-        return null;
+        return stageFallback;
     }
 
     private static Node findNodeWithText(Node node, String normalizedTarget) {

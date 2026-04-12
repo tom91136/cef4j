@@ -21,7 +21,7 @@ public final class CefCookiePriority implements CefEnum<CefCookiePriority> {
 
     /** Known constants for {@link CefCookiePriority}. */
     public enum Kind {
-        LOW(-1, "-1", "CEF_COOKIE_PRIORITY_LOW"),
+        LOW(-1, "- 1", "CEF_COOKIE_PRIORITY_LOW"),
         MEDIUM(0, "0", "CEF_COOKIE_PRIORITY_MEDIUM"),
         HIGH(1, "1", "CEF_COOKIE_PRIORITY_HIGH");
 

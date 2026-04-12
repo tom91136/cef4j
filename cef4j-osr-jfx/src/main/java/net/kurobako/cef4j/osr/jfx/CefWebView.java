@@ -198,20 +198,9 @@ public class CefWebView extends Region {
                         + requested
                         + ".");
             }
-            // On macOS we use externalMessagePump=1 (caller drives the CEF loop), so it is safe
-            // to call initialise() after JavaFX has already started. On Linux/Windows we use
-            // multiThreadedMessageLoop=1, which starts internal CEF threads; those must be
-            // created before the JavaFX toolkit starts its own render infrastructure.
-            boolean fxRunning = Platform.isFxApplicationThread()
-                    || Thread.getAllStackTraces().keySet().stream()
-                            .anyMatch(t -> "JavaFX Application Thread".equals(t.getName()));
-            if (fxRunning && !OS.isMacOS()) {
-                throw new IllegalStateException(
-                        "CefWebView.initialise() must be called before the JavaFX toolkit is started");
-            }
             // On macOS with -XstartOnFirstThread, the main thread IS the FX Application Thread
             // (they share the AppKit main thread). CEF must be initialised on this thread, so the
-            // check is skipped.  On other platforms the FX thread must not block on CEF init.
+            // check is skipped. On other platforms CEF init must not run on the FX thread.
             if (Platform.isFxApplicationThread() && !OS.isMacOS()) {
                 throw new IllegalStateException(
                         "CefWebView.initialise() must not be called from the JavaFX Application Thread");

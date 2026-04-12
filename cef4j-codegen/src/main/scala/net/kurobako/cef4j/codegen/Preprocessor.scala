@@ -6,11 +6,21 @@ import java.nio.file.Path
 object Preprocessor {
 
   private val WindowsTargetDefine = "OS_WIN"
+  private val MacTargetDefine     = "OS_MAC"
 
   private lazy val windowsShimIncludeDir: Path = {
     val dir    = Files.createTempDirectory("cef4j-win-shim")
     val header = dir.resolve("windows.h")
     Files.writeString(header, windowsShimHeader)
+    header.toFile.deleteOnExit()
+    dir.toFile.deleteOnExit()
+    dir
+  }
+
+  private lazy val macShimIncludeDir: Path = {
+    val dir    = Files.createTempDirectory("cef4j-mac-shim")
+    val header = dir.resolve("TargetConditionals.h")
+    Files.writeString(header, macShimHeader)
     header.toFile.deleteOnExit()
     dir.toFile.deleteOnExit()
     dir
@@ -51,8 +61,35 @@ object Preprocessor {
       |} MSG;
       |""".stripMargin
 
+  private val macShimHeader: String =
+    """#pragma once
+      |
+      |#ifndef TARGET_OS_IPHONE
+      |#define TARGET_OS_IPHONE 0
+      |#endif
+      |
+      |#ifndef TARGET_OS_MAC
+      |#define TARGET_OS_MAC 1
+      |#endif
+      |
+      |#ifndef TARGET_OS_SIMULATOR
+      |#define TARGET_OS_SIMULATOR 0
+      |#endif
+      |
+      |#ifndef TARGET_OS_TV
+      |#define TARGET_OS_TV 0
+      |#endif
+      |
+      |#ifndef TARGET_OS_WATCH
+      |#define TARGET_OS_WATCH 0
+      |#endif
+      |""".stripMargin
+
   private def hasWindowsTarget(defines: Seq[String]): Boolean =
     defines.exists(d => d == WindowsTargetDefine || d.startsWith(s"$WindowsTargetDefine="))
+
+  private def hasMacTarget(defines: Seq[String]): Boolean =
+    defines.exists(d => d == MacTargetDefine || d.startsWith(s"$MacTargetDefine="))
 
   def preprocess(
       headerFile: Path,
@@ -79,7 +116,8 @@ object Preprocessor {
 
   private def unixCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] = {
     val extraIncludes =
-      if (hasWindowsTarget(defines)) List(windowsShimIncludeDir) else Nil
+      (if (hasWindowsTarget(defines)) List(windowsShimIncludeDir) else Nil) ++
+        (if (hasMacTarget(defines)) List(macShimIncludeDir) else Nil)
     // When cross-preprocessing (e.g. Linux headers on a macOS host), the host
     // compiler's built-in platform macros (__APPLE__, __linux__, etc.) must be
     // undefined so that CEF's platform-guarded #includes resolve correctly.

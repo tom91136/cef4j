@@ -24,7 +24,7 @@ public final class CefMediaRouteConnectionState implements CefEnum<CefMediaRoute
 
     /** Known constants for {@link CefMediaRouteConnectionState}. */
     public enum Kind {
-        UNKNOWN(-1, "-1", "CEF_MRCS_UNKNOWN"),
+        UNKNOWN(-1, "- 1", "CEF_MRCS_UNKNOWN"),
         CONNECTING(0, "0", "CEF_MRCS_CONNECTING"),
         CONNECTED(1, "1", "CEF_MRCS_CONNECTED"),
         CLOSED(2, "2", "CEF_MRCS_CLOSED"),

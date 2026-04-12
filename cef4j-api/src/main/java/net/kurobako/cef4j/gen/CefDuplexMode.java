@@ -23,7 +23,7 @@ public final class CefDuplexMode implements CefEnum<CefDuplexMode> {
 
     /** Known constants for {@link CefDuplexMode}. */
     public enum Kind {
-        UNKNOWN(-1, "-1", "DUPLEX_MODE_UNKNOWN"),
+        UNKNOWN(-1, "- 1", "DUPLEX_MODE_UNKNOWN"),
         SIMPLEX(0, "0", "DUPLEX_MODE_SIMPLEX"),
         LONG_EDGE(1, "1", "DUPLEX_MODE_LONG_EDGE"),
         SHORT_EDGE(2, "2", "DUPLEX_MODE_SHORT_EDGE"),

@@ -171,6 +171,20 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(javaCode.contains("Possible values:"), s"Missing possible values list in:\n$javaCode")
   }
 
+  test("Java enum codegen canonicalises numeric expr text for cross-platform stability") {
+    val decl: CefDecl.Enum = CefDecl.Enum(
+      "cef_drag_operations_mask_t",
+      List(("DRAG_OPERATION_EVERY", 4294967295L, "(2147483647 *2U +1U)"))
+    )
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-enum-canonical")
+    JavaEnumCodeGen.emit(decl, tmpDir)
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
+    assert(
+      javaCode.contains("""EVERY(4294967295L, "(0x7fffffff * 2 + 1)", "DRAG_OPERATION_EVERY")"""),
+      s"Missing canonical numeric expr text in:\n$javaCode"
+    )
+  }
+
   test("doc comment joining removes hyphenated line-wrap artifacts") {
     // CEF headers wrap "command-\n/// line" which should become "command-line", not "command- line"
     val input =

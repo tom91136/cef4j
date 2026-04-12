@@ -8,13 +8,13 @@ import javax.annotation.processing.Generated;
  * <p>Definition generated from cef_types.h
  * <pre>typedef enum {
  *   REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE = 0,
- *   REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN = 2,
- *   REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN = 3,
- *   REFERRER_POLICY_NEVER_CLEAR_REFERRER = 4,
- *   REFERRER_POLICY_ORIGIN = 5,
+ *   REFERRER_POLICY_DEFAULT = REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+ *   REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN = 1,
+ *   REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN = 2,
+ *   REFERRER_POLICY_NEVER_CLEAR_REFERRER = 3,
  *   ...
  * } cef_referrer_policy_t;</pre>
- * <p>Possible values: {@link Kind#CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#NEVER_CLEAR_REFERRER}, {@link Kind#ORIGIN}, {@link Kind#CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#NO_REFERRER}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#DEFAULT}, {@link Kind#REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#NEVER_CLEAR_REFERRER}, {@link Kind#ORIGIN}, {@link Kind#CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#NO_REFERRER}, {@link Kind#NUM_VALUES}
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
  */
@@ -26,22 +26,23 @@ public final class CefReferrerPolicy implements CefEnum<CefReferrerPolicy> {
     public enum Kind {
         /** Clear the referrer header if the header value is HTTPS but the request destination is HTTP. This is the default behavior.  */
         CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE(0, "0", "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE"),
+        DEFAULT(0L, "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE", "REFERRER_POLICY_DEFAULT"),
         /** A slight variant on CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE: If the request destination is HTTP, an HTTPS referrer will be cleared. If the request's destination is cross-origin with the referrer (but does not downgrade), the referrer's granularity will be stripped down to an origin rather than a full URL. Same-origin requests will send the full referrer.  */
-        REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN(2, "2", "REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN"),
+        REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN(1, "1", "REFERRER_POLICY_REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN"),
         /** Strip the referrer down to an origin when the origin of the referrer is different from the destination's origin.  */
-        ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN(3, "3", "REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN"),
+        ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN(2, "2", "REFERRER_POLICY_ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN"),
         /** Never change the referrer.  */
-        NEVER_CLEAR_REFERRER(4, "4", "REFERRER_POLICY_NEVER_CLEAR_REFERRER"),
+        NEVER_CLEAR_REFERRER(3, "3", "REFERRER_POLICY_NEVER_CLEAR_REFERRER"),
         /** Strip the referrer down to the origin regardless of the redirect location.  */
-        ORIGIN(5, "5", "REFERRER_POLICY_ORIGIN"),
+        ORIGIN(4, "4", "REFERRER_POLICY_ORIGIN"),
         /** Clear the referrer when the request's referrer is cross-origin with the request's destination.  */
-        CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN(6, "6", "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN"),
+        CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN(5, "5", "REFERRER_POLICY_CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN"),
         /** Strip the referrer down to the origin, but clear it entirely if the referrer value is HTTPS and the destination is HTTP.  */
-        ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE(7, "7", "REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE"),
+        ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE(6, "6", "REFERRER_POLICY_ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE"),
         /** Always clear the referrer regardless of the request destination.  */
-        NO_REFERRER(8, "8", "REFERRER_POLICY_NO_REFERRER"),
+        NO_REFERRER(7, "7", "REFERRER_POLICY_NO_REFERRER"),
         /** Always the last value in this enumeration. */
-        NUM_VALUES(9, "9", "REFERRER_POLICY_NUM_VALUES");
+        NUM_VALUES(8, "8", "REFERRER_POLICY_NUM_VALUES");
 
         private static final Kind[] VALUES = Kind.values();
 
