@@ -22,6 +22,10 @@ object JavaEnumCodeGen {
   // Regex matching a simple atom literal (no operators): decimal or hex digits only.
   private val SimpleLiteralRe = """0[xX][0-9A-Fa-f]+[UuLl]*|[0-9]+[UuLl]*""".r
 
+  private def canonicalJavaLongLiteral(value: Long): String =
+    if (java.lang.Long.compareUnsigned(value, 0x7fffffffL) > 0) s"0x${java.lang.Long.toUnsignedString(value, 16)}L"
+    else s"${value}L"
+
   private def javaExpr(rawExpr: String, evaluated: Long): String = {
     val trimmed = rawExpr.trim
     if (JavaSafeExprRe.matches(trimmed)) {
@@ -31,8 +35,8 @@ object JavaEnumCodeGen {
       val needsLong = evaluated > Int.MaxValue || evaluated < Int.MinValue
       if (!needsLong) trimmed
       else if (SimpleLiteralRe.matches(trimmed)) s"${stripCSuffix(trimmed)}L"
-      else s"${evaluated}L"
-    } else s"${evaluated}L"
+      else canonicalJavaLongLiteral(evaluated)
+    } else canonicalJavaLongLiteral(evaluated)
   }
 
   private def stripCSuffix(token: String): String =
@@ -53,7 +57,11 @@ object JavaEnumCodeGen {
     }
   }
 
-  private def canonicalExprText(rawExpr: String): String = {
+  private def canonicalLargeLiteral(value: Long): String =
+    if (java.lang.Long.compareUnsigned(value, 0x7fffffffL) > 0) s"0x${java.lang.Long.toUnsignedString(value, 16)}"
+    else java.lang.Long.toString(value)
+
+  private def canonicalExprText(rawExpr: String, evaluated: Long): String = {
     val trimmed = rawExpr.trim
     if (trimmed.isEmpty) trimmed
     else {
@@ -63,7 +71,14 @@ object JavaEnumCodeGen {
         tokens.exists(t =>
           t == "<<" || t == ">>" || t == "+" || t == "-" || t == "*" || t == "/" || t == "|" || t == "&" || t == "^"
         )
+      val hasArithmetic = tokens.exists(t => t == "+" || t == "-" || t == "*" || t == "/")
+      val hasIdentifier = tokens.exists(_.matches("""[A-Za-z_]\w*"""))
+      val isUnaryMinus  =
+        tokens.length == 2 &&
+          tokens.head == "-" &&
+          (tokens(1).matches("""\d+[UuLl]*""") || tokens(1).matches("""0[xX][0-9A-Fa-f]+[UuLl]*"""))
       if (tokens.isEmpty || tokens.mkString != noWs) trimmed
+      else if (hasArithmetic && !hasIdentifier && !isUnaryMinus) canonicalLargeLiteral(evaluated)
       else
         tokens
           .map(t => normaliseExprToken(t, inCompositeExpr))
@@ -102,7 +117,7 @@ object JavaEnumCodeGen {
         case None => ""
       }
       val expr    = javaExpr(rawExpr, v)
-      val exprLit = canonicalExprText(rawExpr).replace("\\", "\\\\").replace("\"", "\\\"")
+      val exprLit = canonicalExprText(rawExpr, v).replace("\\", "\\\\").replace("\"", "\\\"")
       s"""$javadoc        $jName($expr, "$exprLit", "$cName")"""
     }.mkString(",\n")
 

@@ -180,7 +180,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     JavaEnumCodeGen.emit(decl, tmpDir)
     val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
     assert(
-      javaCode.contains("""EVERY(4294967295L, "(0x7fffffff * 2 + 1)", "DRAG_OPERATION_EVERY")"""),
+      javaCode.contains("""EVERY(0xffffffffL, "0xffffffff", "DRAG_OPERATION_EVERY")"""),
       s"Missing canonical numeric expr text in:\n$javaCode"
     )
   }

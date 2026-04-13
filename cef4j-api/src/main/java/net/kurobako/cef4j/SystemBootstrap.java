@@ -338,7 +338,9 @@ public final class SystemBootstrap {
         // Link CEF shared libraries from LIBCEF_DIR into cache dir
         String[] libs;
         if (OS.isWindows()) {
-            libs = new String[] {"libcef.dll", "chrome_elf.dll", "d3dcompiler_47.dll", "vk_swiftshader.dll", "vulkan-1.dll"};
+            libs = new String[] {
+                "libcef.dll", "chrome_elf.dll", "d3dcompiler_47.dll", "vk_swiftshader.dll", "vulkan-1.dll"
+            };
         } else {
             libs = new String[] {"libcef.so", "libEGL.so", "libGLESv2.so", "libvk_swiftshader.so", "libvulkan.so.1"};
         }

@@ -99,7 +99,7 @@ object Preprocessor {
   // Minimal POSIX header stubs so MSVC can cross-preprocess Linux/macOS CEF headers.
   // The codegen only cares about type declarations, not actual POSIX implementations.
   private val linuxShimHeaders: List[(String, String)] = List(
-    "unistd.h"  -> "#pragma once\n",
+    "unistd.h" -> "#pragma once\n",
     "pthread.h" -> "#pragma once\ntypedef unsigned long pthread_t;\ntypedef union { char __size[56]; long __align; } pthread_mutex_t;\n"
   )
 
@@ -186,7 +186,9 @@ object Preprocessor {
             (if (!hasMac) List("/U__APPLE__", "/U__MACH__") else Nil) ++
             (if (!hasLinux) List("/U__linux__", "/U__linux", "/U__gnu_linux__") else Nil)
         val defs =
-          (if (hasLinux) List("/D__linux__", "/D__linux", "/D__gnu_linux__", "/D__GNUC__=4", "/D__WCHAR_MAX__=0x7fffffff") else Nil) ++
+          (if (hasLinux)
+             List("/D__linux__", "/D__linux", "/D__gnu_linux__", "/D__GNUC__=4", "/D__WCHAR_MAX__=0x7fffffff")
+           else Nil) ++
             (if (hasMac) List("/D__APPLE__", "/D__MACH__", "/D__GNUC__=4", "/D__WCHAR_MAX__=0x7fffffff") else Nil) ++
             (if (hasWin) List("/D_WIN32") else Nil)
         undefs ++ defs
