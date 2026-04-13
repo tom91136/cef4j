@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -25,8 +25,6 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
-import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -62,40 +60,19 @@ final class SwingBrowserPanelTestSupport {
         final CountDownLatch browserReady = new CountDownLatch(1);
     }
 
-    static void ensureCefStarted() {
+    static void ensureCefStarted(Path tempDir) throws Exception {
         if (started) return;
 
-        // Skip when no display server is available (e.g. SSH without X-forwarding,
-        // macOS without Window Server access).  The swing pom sets -Djava.awt.headless=false
-        // which makes isHeadless() return false even without a Window Server, so we also probe
-        // the actual toolkit: getDefaultToolkit() throws AWTError on macOS without Window Server.
-        if (java.awt.GraphicsEnvironment.isHeadless()) {
-            Assumptions.assumeTrue(false, "Swing tests require a display (headless environment detected)");
-        }
-        try {
-            java.awt.Toolkit.getDefaultToolkit();
-        } catch (java.awt.AWTError e) {
-            Assumptions.assumeTrue(
-                    false, "AWT display not available (run from a GUI session, not SSH): " + e.getMessage());
-        }
+        Assumptions.assumeTrue(
+                System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
+                "Swing browser panel tests require a display server; set DISPLAY or run with: xvfb-run -a mvn test");
 
         try {
-            SystemBootstrap.load();
+            Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
             CefSettings.Mutable settings = new CefSettings.Mutable();
-            settings.windowlessRenderingEnabled = 1;
-            if (OS.isMacOS()) {
-                settings.externalMessagePump = 1;
-                settings.multiThreadedMessageLoop = 0;
-                settings.noSandbox = 1;
-            } else {
-                settings.multiThreadedMessageLoop = 1;
-                settings.noSandbox = 1;
-            }
-            List<String> extraArgs = new ArrayList<>();
-            if (OS.isMacOS()) {
-                extraArgs.add("--no-sandbox");
-            }
-            Cef.INSTANCE.initialise(settings, extraArgs);
+            settings.cachePath = cacheDir.toAbsolutePath().toString();
+            settings.noSandbox = 1;
+            CefBrowserPanel.initialise(settings);
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);
@@ -103,13 +80,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static <T> T onSwingThread(Callable<T> task) throws Exception {
-        boolean isEdt;
-        try {
-            isEdt = SwingUtilities.isEventDispatchThread();
-        } catch (java.awt.AWTError e) {
-            throw new TestAbortedException("AWT Window Server is not available: " + e.getMessage(), e);
-        }
-        if (isEdt) {
+        if (SwingUtilities.isEventDispatchThread()) {
             return task.call();
         }
         AtomicReference<T> result = new AtomicReference<>();
@@ -124,21 +95,8 @@ final class SwingBrowserPanelTestSupport {
                 latch.countDown();
             }
         });
-        if (OS.isMacOS()) {
-            long deadline = System.currentTimeMillis() + 10_000;
-            while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
-                if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-                    Cef.INSTANCE.doMessageLoopWork();
-                }
-                Thread.sleep(5);
-            }
-            if (latch.getCount() > 0) {
-                throw new TimeoutException("Timed out waiting for Swing EDT task");
-            }
-        } else {
-            if (!latch.await(10, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Timed out waiting for Swing EDT task");
-            }
+        if (!latch.await(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException("Timed out waiting for Swing EDT task");
         }
         if (error.get() != null) {
             throw new RuntimeException(error.get());
@@ -254,19 +212,8 @@ final class SwingBrowserPanelTestSupport {
 
         CefBrowserPanel panel = panelRef.get();
         PanelState state = stateRef.get();
-        if (OS.isMacOS()) {
-            long deadline = System.currentTimeMillis() + 10_000;
-            while (state.browserReady.getCount() > 0 && System.currentTimeMillis() < deadline) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            }
-            if (state.browserReady.getCount() > 0) {
-                throw new TimeoutException("Timed out waiting for CEF browser creation");
-            }
-        } else {
-            if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Timed out waiting for CEF browser creation");
-            }
+        if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException("Timed out waiting for CEF browser creation");
         }
         return panel;
     }
@@ -296,19 +243,8 @@ final class SwingBrowserPanelTestSupport {
         });
 
         CefBrowserPanel panel = panelRef.get();
-        if (OS.isMacOS()) {
-            long deadline = System.currentTimeMillis() + 10_000;
-            while (state.browserReady.getCount() > 0 && System.currentTimeMillis() < deadline) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            }
-            if (state.browserReady.getCount() > 0) {
-                throw new TimeoutException("Timed out waiting for CEF browser creation");
-            }
-        } else {
-            if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Timed out waiting for CEF browser creation");
-            }
+        if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException("Timed out waiting for CEF browser creation");
         }
         return panel;
     }
@@ -321,6 +257,13 @@ final class SwingBrowserPanelTestSupport {
             FRAMES.clear();
         });
         STATES.clear();
+    }
+
+    static void shutdownCef() {
+        if (started) {
+            CefBrowserPanel.terminate();
+            started = false;
+        }
     }
 
     static void loadUrl(CefBrowserPanel panel, String url) {
@@ -373,12 +316,7 @@ final class SwingBrowserPanelTestSupport {
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         while (System.nanoTime() < deadline) {
             if (condition.getAsBoolean()) return true;
-            if (OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            } else {
-                Thread.sleep(20);
-            }
+            Thread.sleep(20);
         }
         return condition.getAsBoolean();
     }

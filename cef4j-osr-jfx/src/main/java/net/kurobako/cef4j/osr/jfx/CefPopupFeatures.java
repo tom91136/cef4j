@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.osr.jfx;
 
-/** JavaFX-style popup feature flags without depending on {@code javafx-web}. */
+/** JavaFX WebView-compatiable popup feature flags without depending on {@code javafx-web}. */
+@SuppressWarnings("unused")
 public final class CefPopupFeatures {
     private final boolean menu;
     private final boolean status;

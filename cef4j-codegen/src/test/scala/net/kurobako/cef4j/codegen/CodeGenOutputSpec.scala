@@ -153,7 +153,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
       javaCode.contains("public final class CefResourceType implements CefEnum<CefResourceType>"),
       s"Missing class decl in:\n$javaCode"
     )
-    // Inner Kind enum holds the constants with stripped prefix
     assert(
       javaCode.contains("""MAIN_FRAME(0, "0", "RT_MAIN_FRAME")"""),
       s"Missing stripped constant in Kind enum:\n$javaCode"
@@ -186,7 +185,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
   }
 
   test("doc comment joining removes hyphenated line-wrap artifacts") {
-    // CEF headers wrap "command-\n/// line" which should become "command-line", not "command- line"
     val input =
       "Specify NULL or 0 to get the recommended\ndefault values. Many settings can be configured using command-\nline switches."
     val result = DocComments.convertCefDoc(input)
@@ -250,7 +248,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
       classDoc = "A scroll view.\n@_cefsrc:views/cef_scroll_view.h:10"
     )
 
-    // Doxygen URLs use only the filename, not the directory path
     assert(
       result.contains("cef__scroll__view_8h.html"),
       s"Expected filename-only Doxygen URL in:\n$result"
@@ -655,14 +652,10 @@ class CodeGenOutputSpec extends munit.FunSuite {
       )
     )
     val cpp = codegen.emitHandlerToString(decl)
-    // Should call GetMethodID with correct name and signature
     assert(cpp.contains("\"onTitleChange\""), s"Missing method name in:\n$cpp")
     assert(cpp.contains("\"(JLjava/lang/String;)V\""), s"Missing JNI sig in:\n$cpp")
-    // Should convert string param
     assert(cpp.contains("CefStringToJString(env, title)"), s"Missing string conversion in:\n$cpp")
-    // Should call Java void method
     assert(cpp.contains("CallVoidMethod"), s"Missing CallVoidMethod in:\n$cpp")
-    // Should use PushLocalFrame/PopLocalFrame
     assert(cpp.contains("PushLocalFrame"), s"Missing PushLocalFrame in:\n$cpp")
     assert(cpp.contains("PopLocalFrame"), s"Missing PopLocalFrame in:\n$cpp")
   }
@@ -704,10 +697,8 @@ class CodeGenOutputSpec extends munit.FunSuite {
       )
     )
     val cpp = codegen.emitHandlerToString(decl)
-    // Pre-call: create arrays and set initial values
     assert(cpp.contains("NewIntArray(1)"), s"Missing NewIntArray in:\n$cpp")
     assert(cpp.contains("SetIntArrayRegion"), s"Missing SetIntArrayRegion in:\n$cpp")
-    // Post-call: read back values
     assert(cpp.contains("GetIntArrayRegion"), s"Missing GetIntArrayRegion in:\n$cpp")
   }
 
@@ -829,13 +820,12 @@ class CodeGenOutputSpec extends munit.FunSuite {
   }
 
   test("C int return recovered to bool produces boolean Java method and correct JNI marshalling") {
-    // Simulate a handler where C API uses int but C++ uses bool (e.g. getLocalizedString)
     val handlerDecl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
       "cef_resource_bundle_handler_t",
       List(
         FnPtr(
           "get_localized_string",
-          CType.Bool, // recovered from CType.Int via CppMethodTypeInfo
+          CType.Bool,
           List(
             Param("string_id", CType.Int),
             Param("string", CType.JString)
@@ -844,7 +834,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
       )
     )
 
-    // Verify Java interface emits boolean return type
     given namingContext: Naming.Context   = Naming.Context.empty
     given docContext: DocComments.Context = DocComments.Context.empty
     val tmpDir                            = java.nio.file.Files.createTempDirectory("codegen-test")
@@ -855,17 +844,14 @@ class CodeGenOutputSpec extends munit.FunSuite {
       s"Expected boolean return type in Java interface:\n$javaCode"
     )
 
-    // Verify handler trampoline calls CallBooleanMethod and uses Z signature
     val cpp = codegen.emitHandlerToString(handlerDecl)
     assert(cpp.contains("CallBooleanMethod"), s"Expected CallBooleanMethod in trampoline:\n$cpp")
     assert(
       cpp.contains("\"Z\"") || cpp.contains("Z)") || cpp.contains(")Z\""),
       s"Expected Z (boolean) in JNI signature:\n$cpp"
     )
-    // The C callback returns int, jboolean implicitly promotes
     assert(cpp.contains("return jResult;"), s"Expected direct return of jboolean result:\n$cpp")
 
-    // Also verify an ObjectStruct with Bool return works on the NativePeer JNI side
     val objectDecl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
       "cef_window_t",
       List(FnPtr("is_closed", CType.Bool, Nil))
@@ -883,7 +869,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
       List(
         FnPtr(
           "get_localized_string",
-          CType.Int, // C API type - should be recovered to Bool
+          CType.Int,
           List(Param("string_id", CType.Int), Param("string", CType.JString))
         )
       )
@@ -926,7 +912,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
   }
 
   test("type recovery uses class-qualified lookup to avoid cross-class collisions") {
-    // Two classes have SetVisible with different return types
     val menuModelDecl = CefDecl.ObjectStruct(
       "cef_menu_model_t",
       List(FnPtr("set_visible", CType.Int, List(Param("command_id", CType.Int), Param("visible", CType.Int))))
@@ -935,8 +920,6 @@ class CodeGenOutputSpec extends munit.FunSuite {
       "cef_view_t",
       List(FnPtr("set_visible", CType.Int, List(Param("visible", CType.Int))))
     )
-    // CefMenuModel::SetVisible returns bool, CefView::SetVisible returns void
-    // Without qualified lookup, last-writer-wins would make one of them wrong
     val cppTypeInfo = Map(
       "CefMenuModel::SetVisible" -> CppMethodTypeInfo("bool", Map("command_id" -> "int", "visible" -> "bool")),
       "CefView::SetVisible"      -> CppMethodTypeInfo("void", Map("visible" -> "bool")),
@@ -966,14 +949,12 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
     val refined = passes.RefineTree(parsed, parseState)
 
-    // CefMenuModel::setVisible should be Bool (from qualified lookup), not Int (from unqualified void)
     val menuModelFn = refined.decls.head match {
       case o: CefDecl.ObjectStruct => o.fns.head
       case _                       => fail("Expected ObjectStruct for menu model")
     }
     assertEquals(menuModelFn.ret, CType.Bool, "CefMenuModel.setVisible should recover to Bool via qualified lookup")
 
-    // CefView::setVisible should stay Int (void doesn't promote)
     val viewFn = refined.decls(1) match {
       case o: CefDecl.ObjectStruct => o.fns.head
       case _                       => fail("Expected ObjectStruct for view")
@@ -1022,18 +1003,13 @@ class CodeGenOutputSpec extends munit.FunSuite {
       List(FnPtr("get_render_handler", CType.Ptr("_cef_render_handler_t"), Nil))
     )
     val cpp = handlerCodegen.emitHandlerToString(decl)
-    // JNI sig should reference Optional, not J
     assert(cpp.contains("\"()Ljava/util/Optional;\""), s"Missing Optional JNI sig in:\n$cpp")
-    // Should unwrap Optional via isPresent/get
     assert(cpp.contains("isPresent"), s"Missing isPresent in:\n$cpp")
-    // Should call factory function
     assert(cpp.contains("Create_JniCefRenderHandler(env,"), s"Missing factory call in:\n$cpp")
-    // Should forward-declare factory
     assert(
       cpp.contains("extern \"C\" cef_render_handler_t* Create_JniCefRenderHandler"),
       s"Missing factory forward declaration in:\n$cpp"
     )
-    // Should NOT add_ref (factory creates with refCount=1)
     assert(!cpp.contains("add_ref"), s"Unexpected add_ref in:\n$cpp")
   }
 }

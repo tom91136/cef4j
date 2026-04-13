@@ -1,8 +1,11 @@
 package net.kurobako.cef4j.sample;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -47,10 +50,11 @@ public final class JfxBrowserApp {
     }
 
     public static class JfxApp extends Application {
-        private static final String DEFAULT_URL = "https://microsoft.github.io/monaco-editor/";
+        private static final String DEFAULT_URL = "https://codepen.io/rcyou/pen/QEObEZ";
 
         @Override
         public void start(Stage stage) throws IOException {
+            installNoopJavaFxSystemClipboard();
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);
             stage.setHeight(800);
@@ -134,6 +138,53 @@ public final class JfxBrowserApp {
             });
             stage.setScene(scene);
             stage.show();
+        }
+
+        private static void installNoopJavaFxSystemClipboard() {
+            try {
+                javafx.scene.input.Clipboard systemClipboard = javafx.scene.input.Clipboard.getSystemClipboard();
+                Class<?> tkClipboardClass = Class.forName("com.sun.javafx.tk.TKClipboard");
+                Object noopClipboard = Proxy.newProxyInstance(
+                        tkClipboardClass.getClassLoader(), new Class<?>[] {tkClipboardClass}, (proxy, method, args) -> {
+                            if (method.getDeclaringClass() == Object.class) {
+                                switch (method.getName()) {
+                                    case "toString":
+                                        return "NoopTkClipboardProxy";
+                                    case "hashCode":
+                                        return Integer.valueOf(System.identityHashCode(proxy));
+                                    case "equals":
+                                        return Boolean.valueOf(
+                                                proxy == (args != null && args.length > 0 ? args[0] : null));
+                                    default:
+                                        return null;
+                                }
+                            }
+                            switch (method.getName()) {
+                                case "getContentTypes":
+                                case "getTransferModes":
+                                    return Collections.emptySet();
+                                case "putContent":
+                                case "hasContent":
+                                    return Boolean.FALSE;
+                                case "getContent":
+                                case "getDragView":
+                                case "setDragView":
+                                case "setDragViewOffsetX":
+                                case "setDragViewOffsetY":
+                                    return null;
+                                case "getDragViewOffsetX":
+                                case "getDragViewOffsetY":
+                                    return 0.0;
+                                default:
+                                    return null;
+                            }
+                        });
+                Field peerField = javafx.scene.input.Clipboard.class.getDeclaredField("peer");
+                peerField.setAccessible(true);
+                peerField.set(systemClipboard, noopClipboard);
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                System.err.println("[cef4j] Failed to install no-op JavaFX system clipboard: " + e.getMessage());
+            }
         }
 
         private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {

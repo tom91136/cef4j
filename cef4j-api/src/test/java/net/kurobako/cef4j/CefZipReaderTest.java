@@ -18,10 +18,6 @@ import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Integration tests for {@link CefZipReader}, parameterised over file-backed and callback-backed
- * {@link CefStreamReader} factories.
- */
 class CefZipReaderTest extends CefTestBase {
 
     static Stream<Named<BiFunction<byte[], Path, CefStreamReader>>> streamFactories() {
@@ -58,8 +54,6 @@ class CefZipReaderTest extends CefTestBase {
     }
 
     private static String readEntryFully(CefZipReader zr) {
-        // N_ReadFile writes directly to the ByteBuffer's native memory via GetDirectBufferAddress;
-        // the Java position is not advanced. Read from absolute offset 0 after each call.
         ByteBuffer buf = ByteBuffer.allocateDirect(256);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int read;
@@ -128,7 +122,7 @@ class CefZipReaderTest extends CefTestBase {
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFile("second.txt", true)).isTrue();
             assertThat(zr.getFileName()).hasValue("second.txt");
-            assertThat(zr.getFileSize()).isEqualTo(3L); // "two".length
+            assertThat(zr.getFileSize()).isEqualTo(3L);
 
             assertThat(zr.openFile(null)).isTrue();
             assertThat(readEntryFully(zr)).isEqualTo("two");

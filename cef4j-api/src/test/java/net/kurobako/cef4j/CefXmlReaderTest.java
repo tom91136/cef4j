@@ -16,13 +16,8 @@ import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Integration tests for {@link CefXmlReader}, parameterised over file-backed and callback-backed
- * {@link CefStreamReader} factories.
- */
 class CefXmlReaderTest extends CefTestBase {
 
-    // XML fixtures
     private static final String SIMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<root>\n"
             + "  <item id=\"1\">first</item>\n"
@@ -63,8 +58,6 @@ class CefXmlReaderTest extends CefTestBase {
 
         @Override
         public long read(ByteBuffer ptr, long n) {
-            // The JNI layer wraps exactly 'size' bytes (one element) into the ByteBuffer.
-            // We can only fill one complete element per call; return 1 on success, 0 at EOF.
             if (ptr == null || n <= 0) return 0;
             int elementSize = ptr.capacity();
             if (elementSize <= 0 || data.length - pos < elementSize) return 0;
@@ -204,7 +197,6 @@ class CefXmlReaderTest extends CefTestBase {
                 }
             }
 
-            // 4 elements (root, item, item, empty); root at depth 0, items at depth 1
             assertThat(elementLines).hasSize(4);
             assertThat(elementLines).allSatisfy(l -> assertThat(l).isGreaterThan(0));
             assertThat(maxDepth).isGreaterThanOrEqualTo(1);

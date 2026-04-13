@@ -7,10 +7,6 @@ import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * Tests that multiple CefBrowserPanel instances can coexist and independently load content. Mirrors the JFX
- * CefWebViewMultiBrowserTest.
- */
 @Timeout(30)
 class CefBrowserPanelMultiBrowserTest extends SwingBrowserPanelTestBase {
 

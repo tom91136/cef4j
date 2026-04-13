@@ -22,13 +22,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Tests that creating multiple browsers works correctly with {@code multiThreadedMessageLoop=1}.
- *
- * <p>This mode mirrors how {@code CefWebView} runs - CEF manages its own message loop thread rather than the caller
- * pumping messages manually. Each browser should be independently usable for IPC eval.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefScriptEngineMultiThreadedTest {
 
@@ -38,12 +33,11 @@ class CefScriptEngineMultiThreadedTest {
     private static CefBrowser browserB;
 
     @BeforeAll
-    static void initCef() throws Exception {
+    static void initCef(@TempDir Path tempDir) throws Exception {
         Assumptions.assumeFalse(OS.isMacOS(), "multiThreadedMessageLoop is not supported on macOS");
         SystemBootstrap.load();
 
-        Path cacheDir = Files.createTempDirectory("cef4j-mt-multi-browser-test-");
-        cacheDir.toFile().deleteOnExit();
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
 
         if (Cef.INSTANCE.getState() == Cef.State.UNINITIALISED) {
             CefSettings.Mutable settings = new CefSettings.Mutable();
@@ -76,7 +70,6 @@ class CefScriptEngineMultiThreadedTest {
             Cef.INSTANCE.initialise(settings, extraArgs);
         }
 
-        // Create browser A, load a data: URL, wait for it to be ready
         engineA = new CefScriptEngine(
                 () -> browserA != null ? browserA.getMainFrame().orElse(null) : null);
         CompletableFuture<CefBrowser> browserAFuture = new CompletableFuture<>();
@@ -90,7 +83,6 @@ class CefScriptEngineMultiThreadedTest {
         browserA.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlA));
         loadedA.get(10, TimeUnit.SECONDS);
 
-        // Create browser B, load a data: URL, wait for it to be ready
         engineB = new CefScriptEngine(
                 () -> browserB != null ? browserB.getMainFrame().orElse(null) : null);
         CompletableFuture<CefBrowser> browserBFuture = new CompletableFuture<>();
@@ -112,10 +104,6 @@ class CefScriptEngineMultiThreadedTest {
         if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
         if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
     }
-
-    // -----------------------------------------------------------------------
-    // Tests
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(1)
@@ -147,10 +135,6 @@ class CefScriptEngineMultiThreadedTest {
         assertThat(fA.get(5, TimeUnit.SECONDS)).isEqualTo("\"hello\"");
         assertThat(fB.get(5, TimeUnit.SECONDS)).isEqualTo("\"world\"");
     }
-
-    // -----------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------
 
     private static String dataUrl(String html) {
         String encoded = URLEncoder.encode(html, StandardCharsets.UTF_8).replace("+", "%20");

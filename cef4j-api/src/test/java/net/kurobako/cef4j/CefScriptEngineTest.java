@@ -16,14 +16,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-/**
- * Integration tests for {@link CefScriptEngine} - the IPC-based JavaScript eval relay.
- *
- * <p>Tests exercise the full round-trip: Java -> CefProcessMessage IPC -> renderer subprocess (V8 eval) -> IPC -> Java
- * CompletableFuture completion.
- *
- * <p>Both JSON mode (serialized results) and handle mode (opaque V8 references) are covered.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefScriptEngineTest extends CefTestBase {
 
@@ -89,10 +81,6 @@ class CefScriptEngineTest extends CefTestBase {
             browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
     }
-
-    // -----------------------------------------------------------------------
-    // JSON mode: evaluate()
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(1)
@@ -188,13 +176,8 @@ class CefScriptEngineTest extends CefTestBase {
     @Order(14)
     void eval_unicodeString() throws Exception {
         String result = pumpAndGet(evaluator.evaluate("'\\u00e9\\u00e8\\u00ea'"), 5_000);
-        // JSON should contain the actual unicode chars
         assertThat(result).contains("é");
     }
-
-    // -----------------------------------------------------------------------
-    // Error handling
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(20)
@@ -231,18 +214,12 @@ class CefScriptEngineTest extends CefTestBase {
         assertPumpedExceptionally(future, 5_000, "Cannot read");
     }
 
-    // -----------------------------------------------------------------------
-    // Handle mode: evaluateHandle()
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(30)
     void handle_evalAndGetProperty() throws Exception {
-        // Create an object, get a handle to it
         int handle = pumpAndGet(evaluator.evaluateHandle("({name: 'test', value: 42})"), 5_000);
         assertThat(handle).isGreaterThan(0);
 
-        // Get properties via handle
         CefScriptEngine.Result nameResult = pumpAndGet(evaluator.getProperty(handle, "name", false), 5_000);
         assertThat(nameResult.isJson()).isTrue();
         assertThat(nameResult.json()).isEqualTo("\"test\"");
@@ -371,10 +348,6 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(result.error()).contains("handle not found");
     }
 
-    // -----------------------------------------------------------------------
-    // Complex values and edge cases
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(40)
     void eval_arrayOfObjects() throws Exception {
@@ -385,7 +358,6 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(41)
     void eval_dateToJson() throws Exception {
-        // Date.toJSON() produces an ISO string
         String result = pumpAndGet(evaluator.evaluate("new Date('2025-01-15T00:00:00.000Z')"), 5_000);
         assertThat(result).isEqualTo("\"2025-01-15T00:00:00.000Z\"");
     }
@@ -393,7 +365,6 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(42)
     void eval_regexToJson() throws Exception {
-        // RegExp has no toJSON, JSON.stringify returns {}
         String result = pumpAndGet(evaluator.evaluate("/abc/g"), 5_000);
         assertThat(result).isEqualTo("{}");
     }
@@ -401,7 +372,6 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(43)
     void eval_mapDoesNotSerialize() throws Exception {
-        // Map is not JSON-serializable by default
         String result = pumpAndGet(evaluator.evaluate("new Map([['a',1]])"), 5_000);
         assertThat(result).isEqualTo("{}");
     }
@@ -428,10 +398,6 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(result).isEqualTo("42");
     }
 
-    // -----------------------------------------------------------------------
-    // Global state and mutation
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(50)
     void eval_setGlobalVariable_thenRead() throws Exception {
@@ -456,10 +422,8 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.evaluate("window.__counter = {n: 0}"), 5_000);
         int handle = pumpAndGet(evaluator.evaluateHandle("window.__counter"), 5_000);
 
-        // Increment via setProperty
         pumpAndGet(evaluator.setProperty(handle, "n", "5"), 5_000);
 
-        // Verify via both handle and eval
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, "n", false), 5_000);
         assertThat(result.json()).isEqualTo("5");
 
@@ -468,10 +432,6 @@ class CefScriptEngineTest extends CefTestBase {
 
         evaluator.release(handle);
     }
-
-    // -----------------------------------------------------------------------
-    // Method calls with various argument types
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(60)
@@ -511,14 +471,9 @@ class CefScriptEngineTest extends CefTestBase {
         evaluator.release(handle);
     }
 
-    // -----------------------------------------------------------------------
-    // Chained handle operations (simulate real-world usage)
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(70)
     void handle_chainedOperations() throws Exception {
-        // Create a builder-like object
         pumpAndGet(
                 evaluator.evaluate("window.__Builder = function() {"
                         + "  this.items = [];"
@@ -529,18 +484,15 @@ class CefScriptEngineTest extends CefTestBase {
 
         int handle = pumpAndGet(evaluator.evaluateHandle("new window.__Builder()"), 5_000);
 
-        // Chain calls - each returns 'this' so we get a handle back
         CefScriptEngine.Result r1 = pumpAndGet(evaluator.call(handle, "add", "[\"a\"]", true), 5_000);
         assertThat(r1.isHandle()).isTrue();
 
-        // Use handle mode for chained calls (natural usage pattern)
         CefScriptEngine.Result r2 = pumpAndGet(evaluator.call(r1.handle(), "add", "[\"b\"]", true), 5_000);
         assertThat(r2.isHandle()).isTrue();
 
         CefScriptEngine.Result r3 = pumpAndGet(evaluator.call(handle, "add", "[\"c\"]", true), 5_000);
         assertThat(r3.isHandle()).isTrue();
 
-        // Final result call returns a plain array - use JSON mode
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "result", "[]", false), 5_000);
         assertThat(result.isJson())
                 .as("result() should return JSON, got: " + result)
@@ -556,35 +508,26 @@ class CefScriptEngineTest extends CefTestBase {
     @Test
     @Order(71)
     void handle_accessDomDocument() throws Exception {
-        // Get a handle to document
         int docHandle = pumpAndGet(evaluator.evaluateHandle("document"), 5_000);
         assertThat(docHandle).isGreaterThan(0);
 
-        // Get document.title (about:blank has empty title)
         CefScriptEngine.Result titleResult = pumpAndGet(evaluator.getProperty(docHandle, "title", false), 5_000);
         assertThat(titleResult.isJson()).isTrue();
         assertThat(titleResult.json()).isEqualTo("\"\"");
 
-        // Call document.createElement
         CefScriptEngine.Result elemResult =
                 pumpAndGet(evaluator.call(docHandle, "createElement", "[\"div\"]", true), 5_000);
         assertThat(elemResult.isHandle()).isTrue();
         int divHandle = elemResult.handle();
 
-        // Set innerHTML on the created element
         pumpAndGet(evaluator.setProperty(divHandle, "innerHTML", "\"<span>test</span>\""), 5_000);
 
-        // Read back innerHTML
         CefScriptEngine.Result htmlResult = pumpAndGet(evaluator.getProperty(divHandle, "innerHTML", false), 5_000);
         assertThat(htmlResult.json()).isEqualTo("\"<span>test</span>\"");
 
         evaluator.release(divHandle);
         evaluator.release(docHandle);
     }
-
-    // -----------------------------------------------------------------------
-    // Multiple concurrent evaluations
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(80)
@@ -593,7 +536,6 @@ class CefScriptEngineTest extends CefTestBase {
         CompletableFuture<String> f2 = evaluator.evaluate("2 + 2");
         CompletableFuture<String> f3 = evaluator.evaluate("3 + 3");
 
-        // Pump until all complete
         pumpUntilAllDone(5_000, f1, f2, f3);
 
         assertThat(f1.get()).isEqualTo("2");
@@ -617,10 +559,6 @@ class CefScriptEngineTest extends CefTestBase {
         evaluator.release(handleFuture.get());
     }
 
-    // -----------------------------------------------------------------------
-    // Callbacks: createCallback()
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(90)
     void callback_invokedWithHandleArgs() throws Exception {
@@ -628,7 +566,6 @@ class CefScriptEngineTest extends CefTestBase {
         int cbHandle = pumpAndGet(evaluator.createCallback(received::complete), 5_000);
         assertThat(cbHandle).isGreaterThan(0);
 
-        // Invoke the callback with two args via the invoke API
         pumpAndGet(evaluator.invoke(cbHandle, "[42, \"hello\"]", false), 5_000);
 
         pumpUntilDone(received, 5_000);
@@ -721,17 +658,12 @@ class CefScriptEngineTest extends CefTestBase {
         evaluator.release(cbHandle);
     }
 
-    // -----------------------------------------------------------------------
-    // dispose() behavior
-    // -----------------------------------------------------------------------
-
     @Test
     @Order(99)
     void terminate_cancelsPendingFutures() {
         CefScriptEngine disposable =
                 new CefScriptEngine(() -> browser.getMainFrame().orElse(null));
 
-        // We don't wire this engine to receive messages, so futures stay pending
         CompletableFuture<String> pending1 = disposable.evaluate("1");
         CompletableFuture<String> pending2 = disposable.evaluate("2");
 
@@ -743,10 +675,6 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(pending1).isCompletedExceptionally();
         assertThat(pending2).isCompletedExceptionally();
     }
-
-    // -----------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------
 
     private static <T> T pumpAndGet(CompletableFuture<T> future, long timeoutMs) throws Exception {
         long deadline = System.currentTimeMillis() + timeoutMs;

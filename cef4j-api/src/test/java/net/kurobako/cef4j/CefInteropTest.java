@@ -25,21 +25,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-/**
- * Headless (OSR) integration tests for JNI-CEF interop.
- *
- * <p>These tests exercise the full native call chain: Java -> JNI -> CEF C API -> callbacks -> JNI -> Java. CEF runs in
- * off-screen rendering mode with no display surface required.
- *
- * <p>Requires:
- *
- * <ul>
- *   <li>{@code -Djava.library.path=<dir containing libcef4j.so>}
- *   <li>{@code -Dcef4j.cef.path=<CEF binary distribution root>} (for subprocess helper)
- * </ul>
- *
- * <p>If the native library is not available, all tests are skipped via assumption.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefInteropTest extends CefTestBase {
 
@@ -103,7 +88,6 @@ class CefInteropTest extends CefTestBase {
                 .as("onLoadEnd should fire within 10s")
                 .isTrue();
 
-        // about:blank loads with status 0 (no HTTP involved) or 200
         assertThat(httpStatus.get()).as("HTTP status for about:blank").isIn(0, 200);
 
         closeBrowser(browser);
@@ -464,10 +448,8 @@ class CefInteropTest extends CefTestBase {
         assertThat(dict.getDouble("key5")).isCloseTo(3.14, org.assertj.core.data.Offset.offset(0.001));
         assertThat(dict.getType("key4")).isEqualTo(CefValueType.of(CefValueType.Kind.NULL));
 
-        // isSame
         assertThat(dict.isSame(dict)).isTrue();
 
-        // getKeys populates a string list
         List<String> keys = new ArrayList<>();
         assertThat(dict.getKeys(keys)).isTrue();
         assertThat(keys).containsExactlyInAnyOrder("key1", "key2", "key3", "key4", "key5");
@@ -479,7 +461,6 @@ class CefInteropTest extends CefTestBase {
         CefValue val = CefValue.create().orElseThrow();
         assertThat(val.isValid()).isTrue();
 
-        // Initially null
         assertThat(val.getType()).isEqualTo(CefValueType.of(CefValueType.Kind.NULL));
 
         val.setBool(true);
@@ -539,7 +520,6 @@ class CefInteropTest extends CefTestBase {
         req.setMethod("POST");
         assertThat(req.getMethod()).hasValue("POST");
 
-        // Header map round-trip
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("application/json"));
         headers.put("Accept", List.of("text/html", "application/json"));
@@ -576,21 +556,17 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(14)
     void globals_stringUtilities() {
-        // MIME type lookup
         assertThat(CefGlobals.getMimeType("html")).hasValue("text/html");
         assertThat(CefGlobals.getMimeType("json")).hasValue("application/json");
         assertThat(CefGlobals.getMimeType("png")).hasValue("image/png");
 
-        // Extensions for MIME type (populates a list)
         List<String> extensions = new ArrayList<>();
         CefGlobals.getExtensionsForMimeType("text/html", extensions);
         assertThat(extensions).contains("html");
 
-        // URI encode
         assertThat(CefGlobals.uriencode("hello world", 0)).hasValue("hello%20world");
         assertThat(CefGlobals.uriencode("hello world", 1)).hasValue("hello+world");
 
-        // Base64 encode
         byte[] data = "Hello, CEF!".getBytes(StandardCharsets.UTF_8);
         ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
         buf.put(data);
@@ -601,16 +577,13 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(15)
     void globals_currentlyOnThread() {
-        // We're on the UI thread (same thread as cef_initialize)
         assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI))).isEqualTo(1);
-        // We're NOT on the IO thread
         assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.IO))).isEqualTo(0);
     }
 
     @Test
     @Order(16)
     void staticFactory_waitableEvent() {
-        // Manual reset, initially unsignaled
         CefWaitableEvent event = CefWaitableEvent.create(0, 0).orElseThrow();
         assertThat(event.isSignaled()).isFalse();
 
@@ -620,10 +593,8 @@ class CefInteropTest extends CefTestBase {
         event.reset();
         assertThat(event.isSignaled()).isFalse();
 
-        // Auto-reset, initially signaled
         CefWaitableEvent autoEvent = CefWaitableEvent.create(1, 1).orElseThrow();
         assertThat(autoEvent.isSignaled()).isTrue();
-        // timedWait consumes the signal on auto-reset
         autoEvent.timedWait(0);
         assertThat(autoEvent.isSignaled()).isFalse();
     }
@@ -635,10 +606,8 @@ class CefInteropTest extends CefTestBase {
         assertThat(ctx.isGlobal()).isTrue();
         assertThat(ctx.isSame(ctx)).isTrue();
 
-        // cachePath returns Optional<String>
         Optional<String> cachePath = ctx.getCachePath();
-        // Global context may or may not have a cache path
-        assertThat(cachePath).isNotNull(); // Optional itself is non-null
+        assertThat(cachePath).isNotNull();
     }
 
     @Test
@@ -646,7 +615,6 @@ class CefInteropTest extends CefTestBase {
     void nestedDictionaryAndList() {
         CefDictionaryValue outer = CefDictionaryValue.create().orElseThrow();
 
-        // Nested dictionary
         CefDictionaryValue inner = CefDictionaryValue.create().orElseThrow();
         inner.setString("nested", "value");
         outer.setDictionary("child", inner);
@@ -655,7 +623,6 @@ class CefInteropTest extends CefTestBase {
         CefDictionaryValue retrieved = outer.getDictionary("child").orElseThrow();
         assertThat(retrieved.getString("nested")).hasValue("value");
 
-        // List value
         CefListValue list = CefListValue.create().orElseThrow();
         assertThat(list.isValid()).isTrue();
         assertThat(list.setSize(3)).isTrue();
@@ -679,27 +646,21 @@ class CefInteropTest extends CefTestBase {
         CefDictionaryValue d1 = CefDictionaryValue.create().orElseThrow();
         CefDictionaryValue d2 = CefDictionaryValue.create().orElseThrow();
 
-        // isSame with two different dicts
         assertThat(d1.isSame(d2)).isFalse();
-        // Argument d2 must still be valid after being passed as ObjectPtr
         assertThat(d2.isValid()).isTrue();
         assertThat(d2.getSize()).isEqualTo(0);
 
-        // isSame with self
         assertThat(d1.isSame(d1)).isTrue();
         assertThat(d1.isValid()).isTrue();
 
-        // isEqual with two different (but empty) dicts
         assertThat(d1.isEqual(d2)).isTrue();
         assertThat(d1.isValid()).isTrue();
         assertThat(d2.isValid()).isTrue();
 
-        // Make dicts differ, then check isEqual again
         d1.setInt("x", 1);
         assertThat(d1.isEqual(d2)).isFalse();
         assertThat(d2.isValid()).isTrue();
 
-        // Both dicts must survive close without crash
         d1.close();
         d2.close();
     }
@@ -709,24 +670,18 @@ class CefInteropTest extends CefTestBase {
     void objectPtr_setters_preserveArgValidity() {
         CefDictionaryValue parent = CefDictionaryValue.create().orElseThrow();
 
-        // setDictionary: child is passed as ObjectPtr
         CefDictionaryValue child = CefDictionaryValue.create().orElseThrow();
         child.setString("k", "v");
         parent.setDictionary("d", child);
-        // child may become owned by parent, but the pointer should still be valid
-        // (CEF may copy if already owned, but our ref should survive)
 
-        // setList: list is passed as ObjectPtr
         CefListValue list = CefListValue.create().orElseThrow();
         list.setSize(1);
         list.setString(0, "item");
         parent.setList("l", list);
 
-        // Verify parent has both
         assertThat(parent.getType("d")).isEqualTo(CefValueType.of(CefValueType.Kind.DICTIONARY));
         assertThat(parent.getType("l")).isEqualTo(CefValueType.of(CefValueType.Kind.LIST));
 
-        // Close parent without crash
         parent.close();
     }
 
@@ -740,16 +695,13 @@ class CefInteropTest extends CefTestBase {
         CefDictionaryValue copy = original.copy(false).orElseThrow();
         assertThat(copy.isValid()).isTrue();
 
-        // Copy is equal but not same
         assertThat(original.isEqual(copy)).isTrue();
         assertThat(original.isSame(copy)).isFalse();
 
-        // Mutating copy doesn't affect original
         copy.setString("c", "3");
         assertThat(original.hasKey("c")).isFalse();
         assertThat(original.isEqual(copy)).isFalse();
 
-        // Both survive close
         copy.close();
         original.close();
     }
@@ -761,7 +713,6 @@ class CefInteropTest extends CefTestBase {
         CefDictionaryValue dict = CefDictionaryValue.create().orElseThrow();
         dict.setString("inside", "value");
 
-        // setDictionary passes dict as ObjectPtr to CefValue
         val.setDictionary(dict);
         assertThat(val.getType()).isEqualTo(CefValueType.of(CefValueType.Kind.DICTIONARY));
 
@@ -772,7 +723,6 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(23)
     void byValueSize_pendingOnJvm_sizeofFromNative() throws Exception {
-        // Entering CEF: Java-created structs show "pending" in toString (size == -1)
         CefWindowInfo.Mutable windowInfo;
         if (OS.isMacOS()) windowInfo = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
         else if (OS.isWindows()) windowInfo = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
@@ -790,7 +740,6 @@ class CefInteropTest extends CefTestBase {
                 new CefKeyEvent(CefKeyEventType.of(CefKeyEventType.Kind.KEYDOWN), 0, 65, 0, 0, 'A', 'A', 0);
         assertThat(jvmKeyEvent.toString()).as("JVM-created CefKeyEvent").contains("size=pending");
 
-        // Browser creation succeeds despite size being pending, proving JNI sets sizeof
         CountDownLatch createdLatch = new CountDownLatch(1);
         CountDownLatch loadLatch = new CountDownLatch(1);
         AtomicReference<CefKeyEvent> capturedEvent = new AtomicReference<>();
@@ -840,7 +789,6 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(createdLatch, 10_000)).as("browser created").isTrue();
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
 
-        // Leaving CEF: send a key event and capture it back via keyboard handler
         var host = browser.getHost().orElseThrow();
         host.setFocus(true);
         host.sendKeyEvent(new net.kurobako.cef4j.gen.CefKeyEvent(
@@ -884,7 +832,6 @@ class CefInteropTest extends CefTestBase {
         out.get(result);
         assertThat(new String(result, StandardCharsets.UTF_8)).isEqualTo("Hello, binary!");
 
-        // copy() returns a distinct but equal value
         CefBinaryValue copy = bin.copy().orElseThrow();
         assertThat(copy.isEqual(bin)).isTrue();
         assertThat(copy.isSame(bin)).isFalse();
@@ -924,13 +871,11 @@ class CefInteropTest extends CefTestBase {
         args.setString(0, "arg0");
         args.setInt(1, 99);
 
-        // Read back through the message's argument list
         CefListValue args2 = msg.getArgumentList().orElseThrow();
         assertThat(args2.getSize()).isEqualTo(2);
         assertThat(args2.getValue(0).orElseThrow().getString()).hasValue("arg0");
         assertThat(args2.getValue(1).orElseThrow().getInt()).isEqualTo(99);
 
-        // copy preserves the argument list
         CefProcessMessage copy = msg.copy().orElseThrow();
         assertThat(copy.getName()).hasValue("test-msg");
         CefListValue copyArgs = copy.getArgumentList().orElseThrow();
@@ -993,7 +938,6 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(paintLatch, 15_000)).as("onPaint should fire").isTrue();
         assertThat(screenInfoCalled.get()).as("getScreenInfo was called").isTrue();
 
-        // Verify CEF passed the mutable struct correctly (nested CefRect fields survived the boundary)
         CefScreenInfo.Mutable info = captured.get();
         assertThat(info).isNotNull();
         assertThat(info.deviceScaleFactor).isEqualTo(2.0f);
@@ -1013,9 +957,7 @@ class CefInteropTest extends CefTestBase {
         assertThat(dict.isValid()).isTrue();
 
         dict.close();
-        // Second close must not crash (Cleaner.Cleanable.clean() is idempotent)
         dict.close();
-        // Methods on a closed peer throw IllegalStateException instead of crashing the JVM
         assertThatThrownBy(dict::isValid).isInstanceOf(IllegalStateException.class);
     }
 
@@ -1029,7 +971,6 @@ class CefInteropTest extends CefTestBase {
         CefBinaryValue val1 = CefBinaryValue.create(buf1).orElseThrow();
         CefBinaryValue val2 = CefBinaryValue.create(buf2).orElseThrow();
         val2.close();
-        // val2.nativePtr is non-zero but freed; C++ reads it via GetLongField and calls add_ref on garbage
         assertThatThrownBy(() -> val1.isSame(val2)).isInstanceOf(IllegalStateException.class);
         val1.close();
     }
@@ -1039,7 +980,6 @@ class CefInteropTest extends CefTestBase {
     void heapByteBuffer_throwsIllegalArgument() {
         ByteBuffer heap = ByteBuffer.allocate(10);
         heap.put("test".getBytes(StandardCharsets.UTF_8));
-        // Codegen emits a guard: GetDirectBufferAddress returns null for heap buffers
         assertThatThrownBy(() -> CefBinaryValue.create(heap))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("direct");
@@ -1048,9 +988,6 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(33)
     void onBeforePopup_firesWithoutCrash() throws Exception {
-        // Regression test for JNI local reference overflow in _on_before_popup.
-        // The generated C++ code creates ~100+ local JNI refs but PushLocalFrame(97)
-        // is too small, causing FindClass to return null and SIGSEGV on GetMethodID.
         CountDownLatch loadLatch = new CountDownLatch(1);
         CountDownLatch paintLatch = new CountDownLatch(1);
         CountDownLatch popupLatch = new CountDownLatch(1);
@@ -1077,7 +1014,7 @@ class CefInteropTest extends CefTestBase {
                             int[] noJavascriptAccess) {
                         popupFired.set(true);
                         popupLatch.countDown();
-                        return true; // cancel the popup
+                        return true;
                     }
                 });
             }
@@ -1118,8 +1055,6 @@ class CefInteropTest extends CefTestBase {
             }
         };
 
-        // Load a page with a link that opens a popup via target=_blank.
-        // Use sendMouseClickEvent for a real user gesture so CEF doesn't block the popup.
         String html = "<html><body style='margin:0'><a id='link' href='about:blank' target='_blank'"
                 + " style='display:block;width:200px;height:200px;background:blue;'>open</a></body></html>";
         String dataUrl = "data:text/html;base64,"
@@ -1128,7 +1063,6 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
         assertThat(pumpUntil(paintLatch, 10_000)).as("first paint").isTrue();
 
-        // Click the link at (50, 25) - inside the 200x200 anchor element
         CefBrowserHost host = browser.getHost().orElseThrow();
         CefMouseEvent mouseEvent = new CefMouseEvent(50, 25, 0);
         CefMouseButtonType left = CefMouseButtonType.of(CefMouseButtonType.Kind.LEFT);
@@ -1217,15 +1151,10 @@ class CefInteropTest extends CefTestBase {
         CefDictionaryValue inner = CefDictionaryValue.create().orElseThrow();
         inner.setString("k", "v");
         inner.close();
-        // inner.nativePtr is stale; C++ unwraps it and passes to cef_dictionary_value_t::set_dictionary
         assertThatThrownBy(() -> outer.setDictionary("nested", inner)).isInstanceOf(IllegalStateException.class);
         outer.close();
     }
 
-    /**
-     * Minimal render handler that provides a fixed viewport size. Required for all OSR browsers - CEF queries
-     * getViewRect to know the render target size.
-     */
     static class MinimalRenderHandler implements CefRenderHandler {
         private final int width;
         private final int height;

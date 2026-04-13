@@ -12,18 +12,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-/**
- * Headless integration tests for the CEF Views framework.
- *
- * <p>These tests exercise the generated Views JNI bindings (CefWindow, CefPanel, CefBrowserView, etc.) using CEF's
- * headless ozone platform so no display server is required.
- *
- * <p>Shares the same CEF process as {@link CefInteropTest} - CEF is initialised once per JVM fork.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefViewsInteropTest extends CefTestBase {
-
-    // -- Panel --
 
     @Test
     @Order(1)
@@ -50,7 +40,6 @@ class CefViewsInteropTest extends CefTestBase {
     @Order(3)
     void panel_setBoxLayout() {
         try (CefPanel panel = CefPanel.create(null).orElseThrow()) {
-            // setToBoxLayout may return empty on some platforms; verify no crash
             Optional<CefBoxLayout> layout = panel.setToBoxLayout(new CefBoxLayoutSettings.Mutable().toImmutable());
             if (layout.isPresent()) {
                 assertThat(panel.getLayout())
@@ -59,8 +48,6 @@ class CefViewsInteropTest extends CefTestBase {
             }
         }
     }
-
-    // -- BrowserView --
 
     @Test
     @Order(20)
@@ -78,7 +65,6 @@ class CefViewsInteropTest extends CefTestBase {
             pumpFor(500);
 
             Optional<CefBrowser> browser = bv.getBrowser();
-            // Browser may not be created until the view is added to a window
             browser.ifPresent(cefBrowser ->
                     assertThat(cefBrowser.isValid()).as("browser isValid").isTrue());
 
@@ -98,8 +84,6 @@ class CefViewsInteropTest extends CefTestBase {
             assertThat(style).as("runtime style").isNotNull();
         }
     }
-
-    // -- Window --
 
     @Test
     @Order(30)
@@ -146,7 +130,6 @@ class CefViewsInteropTest extends CefTestBase {
             pumpUntil(createdLatch, 5_000);
 
             assertThat(window.isClosed()).as("isClosed after creation").isFalse();
-            // These may vary on headless but should not crash
             window.isMaximized();
             window.isMinimized();
             window.isFullscreen();
@@ -200,8 +183,6 @@ class CefViewsInteropTest extends CefTestBase {
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
             pumpUntil(createdLatch, 5_000);
 
-            // canResize is queried by CEF when the window is created/shown.
-            // On headless it may or may not be called, so just verify no crash.
             window.cefClose();
         }
     }
@@ -220,7 +201,6 @@ class CefViewsInteropTest extends CefTestBase {
         try (CefWindow window = CefWindow.createTopLevel(delegate).orElseThrow()) {
             pumpUntil(createdLatch, 5_000);
 
-            // On headless, display may or may not be available
             Optional<CefDisplay> display = window.getDisplay();
             display.ifPresent(cefDisplay -> assertThat(cefDisplay.getDeviceScaleFactor())
                     .as("scale factor")
@@ -230,12 +210,9 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    // -- LabelButton --
-
     @Test
     @Order(50)
     void labelButton_createAndGetText() {
-        // LabelButton creation may return empty in headless/no-Views-context environments
         Optional<CefLabelButton> optBtn = CefLabelButton.create(null, "Click me");
         if (optBtn.isEmpty()) return;
 
@@ -258,8 +235,6 @@ class CefViewsInteropTest extends CefTestBase {
             assertThat(btn.asMenuButton()).as("labelButton.asMenuButton()").isEmpty();
         }
     }
-
-    // -- Textfield --
 
     @Test
     @Order(55)
@@ -287,8 +262,6 @@ class CefViewsInteropTest extends CefTestBase {
             tf.setReadOnly(true);
             assertThat(tf.isReadOnly()).as("after setReadOnly(true)").isTrue();
 
-            // setPasswordInput may not take effect on a detached textfield in headless mode;
-            // just verify the round-trip doesn't crash
             tf.setPasswordInput(true);
             tf.isPasswordInput();
         }
@@ -309,8 +282,6 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    // -- Display --
-
     @Test
     @Order(60)
     void display_getCountDoesNotCrash() {
@@ -321,7 +292,6 @@ class CefViewsInteropTest extends CefTestBase {
     @Test
     @Order(61)
     void display_getPrimary() {
-        // On headless, primary display may or may not be available
         Optional<CefDisplay> primary = CefDisplay.getPrimary();
         if (primary.isPresent()) {
             try (CefDisplay display = primary.get()) {
@@ -332,12 +302,9 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    // -- MenuButton --
-
     @Test
     @Order(70)
     void menuButton_createDoesNotCrash() {
-        // MenuButton creation may return empty in headless/no-Views-context environments
         Optional<CefMenuButton> optBtn = CefMenuButton.create(null, "Menu");
         if (optBtn.isEmpty()) return;
 
@@ -345,8 +312,6 @@ class CefViewsInteropTest extends CefTestBase {
             assertThat(btn).isNotNull();
         }
     }
-
-    // Helpers
 
     private static void pumpFor(long durationMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + durationMs;

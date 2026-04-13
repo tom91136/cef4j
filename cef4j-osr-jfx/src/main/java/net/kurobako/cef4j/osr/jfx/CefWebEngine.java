@@ -27,11 +27,12 @@ import net.kurobako.cef4j.CefScriptEngine;
 import org.w3c.dom.Document;
 
 /**
- * JavaFX-style engine facade backed by a {@link CefWebView}.
+ * JavaFX WebView-compatiable engine facade backed by a {@link CefWebView}.
  *
  * <p>The API intentionally tracks the most common {@code WebEngine} entry points first. Callers that need full CEF
  * control can drop down to the owning {@link CefWebView}.
  */
+@SuppressWarnings("unused")
 public final class CefWebEngine {
     private final CefWebView view;
     private final CefWebHistory history;
@@ -108,6 +109,12 @@ public final class CefWebEngine {
         view.reload();
     }
 
+    /**
+     * This method exists to provide feature parity with JavaFX's WebEngine; however, CEF does not implement LiveConnect
+     * so it is not generally possible to return a JS proxy object. See {@link #evaluateScriptAsync(String)} for a safer
+     * alternative.
+     */
+    @Deprecated
     public Object executeScript(String script) {
         view.executeScript(script);
         return null;

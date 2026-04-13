@@ -2,7 +2,8 @@ package net.kurobako.cef4j.osr.jfx;
 
 import javafx.event.EventType;
 
-/** JavaFX-style web error event without depending on {@code javafx-web}. */
+/** JavaFX WebView-compatiable web error event without depending on {@code javafx-web}. */
+@SuppressWarnings("unused")
 public final class CefWebErrorEvent extends CefWebEvent<String> {
     private static final long serialVersionUID = 1L;
 

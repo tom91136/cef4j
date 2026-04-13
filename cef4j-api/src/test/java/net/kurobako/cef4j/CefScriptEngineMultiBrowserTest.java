@@ -20,13 +20,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-/**
- * Tests that {@link CefScriptEngine} works correctly when multiple browsers coexist in the same renderer process.
- *
- * <p>The renderer subprocess must track V8 contexts per-frame rather than using a single global. These tests create two
- * browsers, navigate them to data: URLs (triggering context create/release cycles), and verify that eval works on both
- * independently.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
@@ -39,7 +32,6 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     static void initCef() throws Exception {
         initCef(List.of("--renderer-process-limit=1", "--process-per-site"));
 
-        // Create browser A with data: URL
         engineA = new CefScriptEngine(
                 () -> browserA != null ? browserA.getMainFrame().orElse(null) : null);
         AtomicInteger loadCountA = new AtomicInteger();
@@ -49,12 +41,10 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         browserA = createWindowlessBrowser(clientA, "about:blank");
         assertThat(pumpUntil(createdA, 10_000)).as("browser A created").isTrue();
 
-        // Navigate A to a data: URL (triggers context release + create)
         String dataUrlA = dataUrl("<html><body>A</body></html>");
         browserA.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlA));
         assertThat(pumpUntil(loadedA, 10_000)).as("browser A data loaded").isTrue();
 
-        // Create browser B with data: URL
         engineB = new CefScriptEngine(
                 () -> browserB != null ? browserB.getMainFrame().orElse(null) : null);
         AtomicInteger loadCountB = new AtomicInteger();
@@ -64,7 +54,6 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         browserB = createWindowlessBrowser(clientB, "about:blank");
         assertThat(pumpUntil(createdB, 10_000)).as("browser B created").isTrue();
 
-        // Navigate B to a data: URL (triggers context release + create)
         String dataUrlB = dataUrl("<html><body>B</body></html>");
         browserB.getMainFrame().ifPresent(f -> f.loadUrl(dataUrlB));
         assertThat(pumpUntil(loadedB, 10_000)).as("browser B data loaded").isTrue();
@@ -77,10 +66,6 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
         if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
     }
-
-    // -----------------------------------------------------------------------
-    // Tests
-    // -----------------------------------------------------------------------
 
     @Test
     @Order(1)
@@ -144,24 +129,18 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         browserB.getHost().ifPresent(host -> host.closeBrowser(true));
         engineB.dispose();
 
-        // Give CEF time to process the close
         long deadline = System.currentTimeMillis() + 2_000;
         while (System.currentTimeMillis() < deadline) {
             Cef.INSTANCE.doMessageLoopWork();
             Thread.sleep(16);
         }
 
-        // Browser A should still work
         String result = pumpAndGet(engineA.evaluate("42"), 5_000);
         assertThat(result).isEqualTo("42");
 
         browserB = null;
         engineB = null;
     }
-
-    // -----------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------
 
     private static String dataUrl(String html) {
         String encoded = URLEncoder.encode(html, StandardCharsets.UTF_8).replace("+", "%20");

@@ -98,11 +98,9 @@ class WebViewRuntimeVisualCompatTest extends WebViewRuntimeCompatTestBase {
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
             List<Boolean> visibilityEvents = new CopyOnWriteArrayList<>();
-            AtomicReference<WebView> popupRef = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 WebView popupView = new WebView();
-                popupRef.set(popupView);
                 popupView.getEngine().setOnVisibilityChanged(event -> visibilityEvents.add(event.getData()));
                 return popupView.getEngine();
             }));

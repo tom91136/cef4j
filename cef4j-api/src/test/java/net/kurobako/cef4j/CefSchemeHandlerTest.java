@@ -22,62 +22,51 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-/**
- * Integration tests for the CEF classpath: scheme handler bridge. Verifies that CEF can load resources via the
- * {@code classpath:} URL scheme, which is bridged to Java's URL system by {@link UrlSchemeHandlerFactory} and
- * {@link UrlResourceHandler}.
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefSchemeHandlerTest extends CefTestBase {
 
     @BeforeAll
     static void initCef() throws Exception {
-        // Register a classpath: URLStreamHandler so java.net.URL can resolve classpath: URLs.
-        // This mirrors what ClasspathStreamHandler.register() does in typedwebfx-core.
-        try {
-            URL.setURLStreamHandlerFactory(protocol -> {
-                if ("classpath".equals(protocol)) {
-                    return new URLStreamHandler() {
-                        @Override
-                        protected URLConnection openConnection(URL u) {
-                            return new URLConnection(u) {
-                                private InputStream stream;
+        URL.setURLStreamHandlerFactory(protocol -> {
+            if ("classpath".equals(protocol)) {
+                return new URLStreamHandler() {
+                    @Override
+                    protected URLConnection openConnection(URL u) {
+                        return new URLConnection(u) {
+                            private InputStream stream;
 
-                                @Override
-                                public void connect() throws IOException {
-                                    String path = u.getPath();
-                                    stream = CefSchemeHandlerTest.class.getResourceAsStream(path);
-                                    if (stream == null) {
-                                        throw new IOException("Resource not found: " + path);
-                                    }
-                                    connected = true;
+                            @Override
+                            public void connect() throws IOException {
+                                String path = u.getPath();
+                                stream = CefSchemeHandlerTest.class.getResourceAsStream(path);
+                                if (stream == null) {
+                                    throw new IOException("Resource not found: " + path);
                                 }
+                                connected = true;
+                            }
 
-                                @Override
-                                public InputStream getInputStream() throws IOException {
-                                    if (!connected) connect();
-                                    return stream;
-                                }
+                            @Override
+                            public InputStream getInputStream() throws IOException {
+                                if (!connected) connect();
+                                return stream;
+                            }
 
-                                @Override
-                                public String getContentType() {
-                                    String path = url.getPath().toLowerCase();
-                                    if (path.endsWith(".html")) return "text/html";
-                                    if (path.endsWith(".js")) return "text/javascript";
-                                    if (path.endsWith(".css")) return "text/css";
-                                    return "application/octet-stream";
-                                }
-                            };
-                        }
-                    };
-                }
-                return null;
-            });
-        } catch (Error alreadySet) {
-            // Factory already registered (e.g. CefInteropTest ran first in the same fork)
-        }
+                            @Override
+                            public String getContentType() {
+                                String path = url.getPath().toLowerCase();
+                                if (path.endsWith(".html")) return "text/html";
+                                if (path.endsWith(".js")) return "text/javascript";
+                                if (path.endsWith(".css")) return "text/css";
+                                return "application/octet-stream";
+                            }
+                        };
+                    }
+                };
+            }
+            return null;
+        });
 
-        CefApp appHandler = new CefApp() {
+        CefTestBase.initCef(List.of(), new CefApp() {
             @Override
             public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
                 if (registrar != null) {
@@ -87,15 +76,12 @@ class CefSchemeHandlerTest extends CefTestBase {
                     registrar.addCustomScheme("classpath", options);
                 }
             }
-        };
-        CefTestBase.initCef(List.of(), appHandler);
+        });
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
     }
 
     @AfterAll
-    static void shutdownCef() {
-        // Don't dispose - other test classes may need CEF in the same fork.
-    }
+    static void shutdownCef() {}
 
     @Test
     @Order(1)
@@ -110,18 +96,18 @@ class CefSchemeHandlerTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                         httpStatus.set(httpStatusCode);
                         loadLatch.countDown();
                     }
 
                     @Override
                     public void onLoadError(
-                            @Nonnull CefBrowser browser,
-                            @Nonnull CefFrame frame,
+                            CefBrowser browser,
+                            CefFrame frame,
                             @Nonnull CefErrorCode errorCode,
-                            @Nonnull String errorText,
-                            @Nonnull String failedUrl) {
+                            String errorText,
+                            String failedUrl) {
                         loadErrorText.set("error=" + errorCode + " text=" + errorText + " url=" + failedUrl);
                         loadLatch.countDown();
                     }
@@ -132,7 +118,7 @@ class CefSchemeHandlerTest extends CefTestBase {
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(@Nonnull CefBrowser browser, @Nonnull String title) {
+                    public void onTitleChange(CefBrowser browser, String title) {
                         pageTitle.set(title);
                     }
                 });
@@ -160,25 +146,23 @@ class CefSchemeHandlerTest extends CefTestBase {
     @Order(2)
     void classpathScheme_returns404ForMissingResource() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
-        AtomicReference<CefErrorCode> loadError = new AtomicReference<>();
 
         CefClient client = new CefClient() {
             @Override
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                         loadLatch.countDown();
                     }
 
                     @Override
                     public void onLoadError(
-                            @Nonnull CefBrowser browser,
-                            @Nonnull CefFrame frame,
+                            CefBrowser browser,
+                            CefFrame frame,
                             @Nonnull CefErrorCode errorCode,
-                            @Nonnull String errorText,
-                            @Nonnull String failedUrl) {
-                        loadError.set(errorCode);
+                            String errorText,
+                            String failedUrl) {
                         loadLatch.countDown();
                     }
                 });

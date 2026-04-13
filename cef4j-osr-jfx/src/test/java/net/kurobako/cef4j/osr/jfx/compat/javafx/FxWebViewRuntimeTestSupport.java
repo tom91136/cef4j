@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -46,6 +48,7 @@ import org.opentest4j.TestAbortedException;
 
 final class FxWebViewRuntimeTestSupport {
     private static volatile boolean started;
+    private static volatile Path cefCachePath;
     private static final CopyOnWriteArrayList<Stage> STAGES = new CopyOnWriteArrayList<>();
 
     private FxWebViewRuntimeTestSupport() {}
@@ -54,18 +57,9 @@ final class FxWebViewRuntimeTestSupport {
         if (started) return;
 
         Assumptions.assumeTrue(
-                System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null || OS.isMacOS(),
-                "Runtime WebView compatibility tests require a display server; run them under Xvfb or Wayland.");
-
-        // Platform.startup() hangs when there is no display server (e.g. SSH without
-        // X-forwarding, or macOS without Window Server access).  isHeadless() detects this
-        // reliably even when java.awt.headless is not explicitly set.
-        Assumptions.assumeFalse(
-                java.awt.GraphicsEnvironment.isHeadless(),
-                "UI tests require a display (headless environment detected)");
-
+                System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
+                "Runtime WebView compatibility tests require a display server; set DISPLAY or run with: xvfb-run -a mvn test");
         preStartup();
-
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<Throwable> error = new AtomicReference<>();
         try {
@@ -86,11 +80,9 @@ final class FxWebViewRuntimeTestSupport {
         } catch (IllegalStateException alreadyStarted) {
             started = true;
             return;
-        } catch (RuntimeException | Error e) {
-            throw new TestAbortedException("JavaFX not available in this environment: " + e.getMessage(), e);
         }
         if (!latch.await(10, TimeUnit.SECONDS)) {
-            throw new TestAbortedException("Timed out starting JavaFX platform");
+            throw new TimeoutException("Timed out starting JavaFX platform");
         }
         if (error.get() != null) {
             throw new RuntimeException("Failed to start JavaFX platform", error.get());
@@ -98,14 +90,23 @@ final class FxWebViewRuntimeTestSupport {
         postStartup();
     }
 
-    /** Called before Platform.startup(). No-op in the JavaFX-only variant. */
-    static void preStartup() {
-        // no-op; replaced in the generated CEF variant to pre-initialise CEF on macOS
+    static void preStartup() {}
+
+    static void postStartup() {}
+
+    static void shutdownCefHarness() {}
+
+    static void setCefCachePath(Path cachePath) {
+        cefCachePath = cachePath;
     }
 
-    /** Called once after JavaFX has successfully started. No-op in the JavaFX-only variant. */
-    static void postStartup() {
-        // no-op; replaced in the generated CEF variant to initialise CefWebView
+    static Path getCefCachePath() {
+        return cefCachePath;
+    }
+
+    @SuppressWarnings("unused")
+    private static boolean keepCefCompatTypesReachable() {
+        return OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED;
     }
 
     static <T> T onFxThread(Callable<T> task) throws Exception {
@@ -125,14 +126,7 @@ final class FxWebViewRuntimeTestSupport {
                 latch.countDown();
             }
         });
-        // On macOS, pump the CEF message loop while waiting so that CEF events are processed.
-        if (OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
-            while (!latch.await(5, TimeUnit.MILLISECONDS)) {
-                if (System.nanoTime() > deadline) throw new TimeoutException("Timed out waiting for JavaFX task");
-                Cef.INSTANCE.doMessageLoopWork();
-            }
-        } else if (!latch.await(10, TimeUnit.SECONDS)) {
+        if (!latch.await(10, TimeUnit.SECONDS)) {
             throw new TimeoutException("Timed out waiting for JavaFX task");
         }
         if (error.get() != null) {
@@ -185,13 +179,7 @@ final class FxWebViewRuntimeTestSupport {
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         while (System.nanoTime() < deadline) {
             if (condition.getAsBoolean()) return true;
-            // On macOS, CEF uses externalMessagePump; the caller must drive the loop.
-            if (OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            } else {
-                Thread.sleep(20);
-            }
+            Thread.sleep(20);
         }
         return condition.getAsBoolean();
     }
@@ -208,20 +196,39 @@ final class FxWebViewRuntimeTestSupport {
                 timeoutMillis);
     }
 
+    static boolean waitUntilFiringOnFx(Callable<Boolean> condition, long timeoutMillis, Runnable fxAction)
+            throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        while (System.nanoTime() < deadline) {
+            onFxThread(fxAction);
+            long pollEnd = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(100);
+            while (System.nanoTime() < pollEnd) {
+                if (Boolean.TRUE.equals(onFxThread(condition))) return true;
+                Thread.sleep(10);
+            }
+        }
+        return Boolean.TRUE.equals(onFxThread(condition));
+    }
+
     static boolean waitForWorkerState(WebEngine engine, Worker.State state, long timeoutMillis) throws Exception {
         return waitUntilOnFx(() -> engine.getLoadWorker().getState() == state, timeoutMillis);
     }
 
     static void setClipboardText(String text) throws Exception {
+        String value = text != null ? text : "";
         onFxThread(() -> {
             ClipboardContent content = new ClipboardContent();
-            content.putString(text);
+            content.putString(value);
             Clipboard.getSystemClipboard().setContent(content);
         });
     }
 
     static String getClipboardText() throws Exception {
         return onFxThread(() -> Clipboard.getSystemClipboard().getString());
+    }
+
+    static boolean isCefCompatHarness() {
+        return FxWebViewRuntimeTestSupport.class.getPackageName().endsWith(".compat.cef");
     }
 
     static void leftClick(WebView view, double x, double y) throws Exception {
@@ -232,60 +239,110 @@ final class FxWebViewRuntimeTestSupport {
         click(view, x, y, MouseButton.SECONDARY);
     }
 
+    static void dragSelect(WebView view, double startX, double startY, double endX, double endY) throws Exception {
+        onFxThread(() -> {
+            focusView(view);
+            Point2D start = screenPoint(view, startX, startY);
+            Point2D end = screenPoint(view, endX, endY);
+            fireMouseEvent(
+                    view, MouseEvent.MOUSE_MOVED, startX, startY, start.getX(), start.getY(), MouseButton.NONE, false);
+            fireMouseEvent(
+                    view,
+                    MouseEvent.MOUSE_PRESSED,
+                    startX,
+                    startY,
+                    start.getX(),
+                    start.getY(),
+                    MouseButton.PRIMARY,
+                    false);
+            int steps = 8;
+            for (int i = 1; i <= steps; i++) {
+                double t = i / (double) steps;
+                double x = startX + ((endX - startX) * t);
+                double y = startY + ((endY - startY) * t);
+                Point2D point = screenPoint(view, x, y);
+                fireMouseEvent(
+                        view, MouseEvent.MOUSE_DRAGGED, x, y, point.getX(), point.getY(), MouseButton.PRIMARY, false);
+            }
+            fireMouseEvent(
+                    view, MouseEvent.MOUSE_RELEASED, endX, endY, end.getX(), end.getY(), MouseButton.PRIMARY, false);
+        });
+        Thread.sleep(100);
+    }
+
     static void invokeShortcut(WebView view, KeyCode key) throws Exception {
         onFxThread(() -> {
-            if (view.getScene() != null && view.getScene().getWindow() != null) {
-                if (view.getScene().getWindow() instanceof Stage) {
-                    ((Stage) view.getScene().getWindow()).toFront();
-                }
-                view.getScene().getWindow().requestFocus();
-            }
-            view.requestFocus();
-            boolean meta = OS.isMacOS();
-            KeyCode modKey = meta ? KeyCode.META : KeyCode.CONTROL;
-            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", modKey, false, !meta, meta);
-            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", key, false, !meta, meta);
-            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", key, false, !meta, meta);
-            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", modKey, false, false, false);
+            focusView(view);
+            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", KeyCode.CONTROL, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_PRESSED, "", key, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", key, false, true);
+            fireKeyEvent(view, KeyEvent.KEY_RELEASED, "", KeyCode.CONTROL, false, false);
         });
-        // When CEF is running with externalMessagePump, sleep alone won't let CEF process
-        // the key event.  Pump the message loop so the clipboard operation completes.
-        if (OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
-            for (int i = 0; i < 20; i++) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(5);
-            }
-        } else {
-            Thread.sleep(75);
-        }
+        Thread.sleep(75);
     }
 
-    static void invokeContextMenuItem(WebView view, double x, double y, String itemText) throws Exception {
-        // On macOS, JavaFX WebView shows native NSMenu context menus which are not part of the
-        // JavaFX scene graph and cannot be discovered or interacted with programmatically.
-        Assumptions.assumeTrue(
-                !OS.isMacOS(), "Context menu automation requires JavaFX popups; macOS uses native NSMenu");
-        TimeoutException lastError = null;
-        for (int attempt = 0; attempt < 3; attempt++) {
+    static String title(WebView view) throws Exception {
+        String value = onFxThread(() -> view.getEngine().getTitle());
+        return value != null ? value : "";
+    }
+
+    static String evalToString(WebView view, String script) throws Exception {
+        Object value = onFxThread(() -> view.getEngine().executeScript(script));
+        return value != null ? value.toString() : "";
+    }
+
+    static void fireScroll(WebView view, double x, double y, double deltaX, double deltaY) {
+        view.fireEvent(new ScrollEvent(
+                ScrollEvent.SCROLL,
+                x,
+                y,
+                x,
+                y,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                deltaX,
+                deltaY,
+                deltaX,
+                deltaY,
+                ScrollEvent.HorizontalTextScrollUnits.NONE,
+                0,
+                ScrollEvent.VerticalTextScrollUnits.NONE,
+                0,
+                0,
+                new PickResult(view, x, y)));
+    }
+
+    static void typeText(WebView view, KeyCode keyCode, String typedText) throws Exception {
+        onFxThread(() -> {
+            view.fireEvent(
+                    new KeyEvent(KeyEvent.KEY_PRESSED, "", keyCode.getName(), keyCode, false, false, false, false));
+            view.fireEvent(new KeyEvent(
+                    KeyEvent.KEY_TYPED, typedText, typedText, KeyCode.UNDEFINED, false, false, false, false));
+            view.fireEvent(
+                    new KeyEvent(KeyEvent.KEY_RELEASED, "", keyCode.getName(), keyCode, false, false, false, false));
+        });
+        Thread.sleep(75);
+    }
+
+    static boolean tryInvokeContextMenuItem(
+            WebView view, double x, double y, String itemText, int maxAttempts, long visibleTimeoutMillis)
+            throws Exception {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
             rightClick(view, x, y);
-            try {
-                assertMenuItemVisible(itemText, 1_000);
-                Boolean activated = onFxThread(() -> activateMenuItem(itemText));
-                if (Boolean.TRUE.equals(activated)) {
-                    Thread.sleep(75);
-                    return;
-                }
-            } catch (TimeoutException e) {
-                lastError = e;
+            if (!waitUntilOnFx(() -> findMenuItemNode(itemText) != null, visibleTimeoutMillis)) {
+                continue;
+            }
+            Boolean activated = onFxThread(() -> activateMenuItem(itemText));
+            if (Boolean.TRUE.equals(activated)) {
+                Thread.sleep(75);
+                return true;
             }
         }
-        throw lastError != null ? lastError : new TimeoutException("Context menu item not found: " + itemText);
-    }
-
-    static void assertMenuItemVisible(String itemText, long timeoutMillis) throws Exception {
-        if (!waitUntilOnFx(() -> findMenuItemNode(itemText) != null, timeoutMillis)) {
-            throw new TimeoutException("Timed out waiting for context menu item: " + itemText);
-        }
+        return false;
     }
 
     static LocalTestServer startServer(Map<String, String> routes) throws IOException {
@@ -370,13 +427,8 @@ final class FxWebViewRuntimeTestSupport {
     private static void click(WebView view, double x, double y, MouseButton button) throws Exception {
         onFxThread(() -> {
             Point2D point = screenPoint(view, x, y);
-            if (view.getScene() != null && view.getScene().getWindow() != null) {
-                if (view.getScene().getWindow() instanceof Stage) {
-                    ((Stage) view.getScene().getWindow()).toFront();
-                }
-                view.getScene().getWindow().requestFocus();
-            }
-            view.requestFocus();
+            focusView(view);
+            fireMouseEvent(view, MouseEvent.MOUSE_MOVED, x, y, point.getX(), point.getY(), MouseButton.NONE, false);
             if (button == MouseButton.SECONDARY) {
                 fireMouseEvent(view, MouseEvent.MOUSE_PRESSED, x, y, point.getX(), point.getY(), button, false);
                 fireMouseEvent(view, MouseEvent.MOUSE_RELEASED, x, y, point.getX(), point.getY(), button, true);
@@ -472,6 +524,7 @@ final class FxWebViewRuntimeTestSupport {
             double screenY,
             MouseButton button,
             boolean popupTrigger) {
+        boolean buttonDown = type == MouseEvent.MOUSE_PRESSED || type == MouseEvent.MOUSE_DRAGGED;
         node.fireEvent(new MouseEvent(
                 type,
                 x,
@@ -484,9 +537,9 @@ final class FxWebViewRuntimeTestSupport {
                 false,
                 false,
                 false,
-                button == MouseButton.PRIMARY,
-                button == MouseButton.MIDDLE,
-                button == MouseButton.SECONDARY,
+                buttonDown && button == MouseButton.PRIMARY,
+                buttonDown && button == MouseButton.MIDDLE,
+                buttonDown && button == MouseButton.SECONDARY,
                 false,
                 popupTrigger,
                 false,
@@ -499,9 +552,21 @@ final class FxWebViewRuntimeTestSupport {
             String character,
             KeyCode code,
             boolean shift,
-            boolean control,
-            boolean meta) {
-        view.fireEvent(new KeyEvent(type, character, code.getName(), code, shift, control, false, meta));
+            boolean control) {
+        view.fireEvent(new KeyEvent(type, character, code.getName(), code, shift, control, false, false));
+    }
+
+    private static void focusView(WebView view) {
+        if (view.getScene() == null || view.getScene().getWindow() == null) {
+            view.requestFocus();
+            return;
+        }
+        Window window = view.getScene().getWindow();
+        if (window instanceof Stage) {
+            ((Stage) window).toFront();
+        }
+        window.requestFocus();
+        view.requestFocus();
     }
 
     private static Point2D screenPoint(WebView view, double x, double y) {

@@ -174,8 +174,8 @@ public enum Cef {
             argv.add("cef4j");
             argv.addAll(extraArgs);
         }
-        CefMainArgs args = new CefMainArgs(argv.size(), argv);
-        final var result = CefGlobals.initialize(args, settings.toImmutable(), appHandler, null);
+        final int result =
+                CefGlobals.initialize(new CefMainArgs(argv.size(), argv), settings.toImmutable(), appHandler, null);
         if (result == 0) {
             state = State.UNINITIALISED;
             log.error("CefGlobals.initialize (cef_initialize) failed with error code: {}", result);

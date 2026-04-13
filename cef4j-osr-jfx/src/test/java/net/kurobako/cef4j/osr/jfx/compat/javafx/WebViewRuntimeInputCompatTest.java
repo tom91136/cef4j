@@ -4,14 +4,39 @@ import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSuppo
 import static org.assertj.core.api.Assertions.assertThat;
 
 import javafx.concurrent.Worker;
-import javafx.scene.input.PickResult;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.web.WebView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
+
+    @Test
+    void keyboardInputWorksAfterEveryClick() throws Exception {
+        WebView view = createAttachedWebView();
+
+        onFxThread(() -> view.getEngine()
+                .loadContent("<html><body style='margin:0'>"
+                        + "<input id='field' style='position:absolute;left:0;top:0;width:100%;height:100%;font-size:24px'/>"
+                        + "<script>"
+                        + "const field = document.getElementById('field');"
+                        + "document.title = '';"
+                        + "field.addEventListener('input', function(){ document.title = field.value; });"
+                        + "</script>"
+                        + "</body></html>"));
+
+        assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
+                .isTrue();
+
+        for (int i = 1; i <= 4; i++) {
+            leftClick(view, 120, 120);
+            typeText(view, javafx.scene.input.KeyCode.A, "a");
+            String expected = "a".repeat(i);
+            assertThat(waitUntilOnFx(() -> expected.equals(title(view)), 2_000))
+                    .as("keyboard input after click #%s", i)
+                    .isTrue();
+        }
+    }
 
     @Test
     void horizontalScrollEventsReachThePage() throws Exception {
@@ -29,42 +54,37 @@ class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
-        assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
-                .isTrue();
+        assertThat(title(view)).isEqualTo("0");
 
-        onFxThread(() -> fireHorizontalScroll(view, 120, 120, -140));
-
-        assertThat(waitUntilOnFx(
-                        () -> {
-                            String t = view.getEngine().getTitle();
-                            return t != null && !"0".equals(t);
-                        },
-                        10_000))
+        assertThat(waitUntilFiringOnFx(
+                        () -> !"0".equals(view.getEngine().getTitle()),
+                        3_000,
+                        () -> fireScroll(view, 120, 120, -140, 0)))
                 .isTrue();
     }
 
-    private static void fireHorizontalScroll(WebView view, double x, double y, double deltaX) {
-        view.fireEvent(new ScrollEvent(
-                ScrollEvent.SCROLL,
-                x,
-                y,
-                x,
-                y,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                deltaX,
-                0,
-                deltaX,
-                0,
-                ScrollEvent.HorizontalTextScrollUnits.NONE,
-                0,
-                ScrollEvent.VerticalTextScrollUnits.NONE,
-                0,
-                0,
-                new PickResult(view, x, y)));
+    @Test
+    void verticalScrollEventsReachThePage() throws Exception {
+        WebView view = createAttachedWebView();
+
+        onFxThread(() -> view.getEngine()
+                .loadContent("<html><body>"
+                        + "<script>"
+                        + "document.title = '0';"
+                        + "window.addEventListener('wheel', function(e) {"
+                        + "  document.title = String(Math.round(e.deltaY));"
+                        + "}, { passive: true });"
+                        + "</script>"
+                        + "</body></html>"));
+
+        assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
+                .isTrue();
+        assertThat(title(view)).isEqualTo("0");
+
+        assertThat(waitUntilFiringOnFx(
+                        () -> !"0".equals(view.getEngine().getTitle()),
+                        3_000,
+                        () -> fireScroll(view, 120, 120, 0, 160)))
+                .isTrue();
     }
 }

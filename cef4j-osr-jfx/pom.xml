@@ -66,6 +66,11 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -178,8 +183,7 @@ sourceDir.eachFileRecurse { File sourceFile ->
     // CefWebView extends Node and loading it triggers Node.<clinit> which requires the toolkit.
     // So preStartup() pre-initialises CEF directly; postStartup() then calls CefWebView.initialise()
     // which detects CEF is already running and just records the setup state.
-    text = text.replace(
-            '    static void preStartup() {\n        // no-op; replaced in the generated CEF variant to pre-initialise CEF on macOS\n    }',
+    String preStartupReplacement =
             '    static void preStartup() {\n' +
             '        if (OS.isMacOS()) {\n' +
             '            net.kurobako.cef4j.SystemBootstrap.load();\n' +
@@ -188,15 +192,31 @@ sourceDir.eachFileRecurse { File sourceFile ->
             '            s.externalMessagePump = 1;\n' +
             '            s.multiThreadedMessageLoop = 0;\n' +
             '            s.noSandbox = 1;\n' +
-            '            java.nio.file.Path cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");\n' +
+            '            java.nio.file.Path cacheDir = getCefCachePath();\n' +
+            '            if (cacheDir == null) {\n' +
+            '                cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");\n' +
+            '            }\n' +
             '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
             '            s.cachePath = cacheDir.toAbsolutePath().toString();\n' +
             '            Cef.INSTANCE.initialise(s, java.util.List.of("--disable-popup-blocking", "--no-sandbox"));\n' +
             '        }\n' +
-            '    }')
-    text = text.replace(
-            '    static void postStartup() {\n        // no-op; replaced in the generated CEF variant to initialise CefWebView\n    }',
-            '    static void postStartup() {\n        CefWebView.initialise();\n    }')
+            '    }'
+    text = text.replaceFirst('(?ms)^\\s*static void preStartup\\(\\)\\s*\\{[^}]*\\}', preStartupReplacement)
+
+    String postStartupReplacement =
+            '    static void postStartup() {\n' +
+            '        net.kurobako.cef4j.gen.CefSettings.Mutable settings = new net.kurobako.cef4j.gen.CefSettings.Mutable();\n' +
+            '        java.nio.file.Path cacheDir = getCefCachePath();\n' +
+            '        if (cacheDir != null) {\n' +
+            '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
+            '            settings.cachePath = cacheDir.toAbsolutePath().toString();\n' +
+            '        }\n' +
+            '        CefWebView.initialise(settings);\n' +
+            '    }'
+    text = text.replaceFirst('(?ms)^\\s*static void postStartup\\(\\)\\s*\\{[^}]*\\}', postStartupReplacement)
+
+    String shutdownCefHarnessReplacement = '    static void shutdownCefHarness() {\n        CefWebView.terminate();\n    }'
+    text = text.replaceFirst('(?ms)^\\s*static void shutdownCefHarness\\(\\)\\s*\\{[^}]*\\}', shutdownCefHarnessReplacement)
 
     String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
     File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)

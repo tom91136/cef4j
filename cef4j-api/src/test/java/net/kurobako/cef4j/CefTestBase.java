@@ -13,14 +13,11 @@ import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Shared CEF initialization for API-layer tests running in external-message-pump mode.
- *
- * <p>All test classes that need CEF initialized with {@code externalMessagePump=1} should extend this class. CEF
- * initialization happens once per JVM fork (the singleton returns early if already initialised).
- */
 abstract class CefTestBase {
+    @TempDir
+    static Path tempDir;
 
     @BeforeAll
     static void initCef() throws Exception {
@@ -33,10 +30,13 @@ abstract class CefTestBase {
 
     static void initCef(List<String> additionalArgs, CefApp appHandler) throws Exception {
         SystemBootstrap.load();
-        if (Cef.INSTANCE.getState() != Cef.State.UNINITIALISED) return;
+        Cef.State state = Cef.INSTANCE.getState();
+        if (state == Cef.State.INITIALISED) return;
+        if (state == Cef.State.SHUTTING_DOWN || state == Cef.State.TERMINATED) {
+            throw new IllegalStateException("CEF is not re-initialisable in this JVM once shutdown has begun");
+        }
 
-        Path cacheDir = Files.createTempDirectory("cef4j-test-cache-");
-        cacheDir.toFile().deleteOnExit();
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
@@ -83,7 +83,6 @@ abstract class CefTestBase {
         }
     }
 
-    /** Pump CEF message loop until latch reaches zero or timeout. */
     static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {

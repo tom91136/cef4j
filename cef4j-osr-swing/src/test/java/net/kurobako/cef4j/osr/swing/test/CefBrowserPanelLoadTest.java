@@ -31,9 +31,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
         loadContent(panel, "<html><head><title>two</title></head><body>two</body></html>");
         assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-        // CEF treats data: URL navigations as real navigations (unlike JFX WebEngine.loadContent)
-        PanelState state = STATES.get(panel);
-        assertThat(waitUntil(() -> state.canGoBack, 5_000)).isTrue();
+        assertThat(waitUntil(() -> STATES.get(panel).canGoBack, 5_000)).isTrue();
 
         panel.getBrowser().goBack();
         assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
@@ -123,5 +121,46 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
                     .isTrue();
             assertThat(getLocation(panel)).isEqualTo(server.url("/final"));
         }
+    }
+
+    @Test
+    void iframeNavigationDoesNotOverwriteTopLevelLocation() throws Exception {
+        try (LocalTestServer server = startServer(Map.of(
+                "/host",
+                        "<html><head><title>host-start</title></head><body>"
+                                + "<iframe src='/child'></iframe>"
+                                + "</body></html>",
+                "/child",
+                        "<html><body><script>"
+                                + "parent.document.title = 'child-ready';"
+                                + "</script></body></html>"))) {
+            CefBrowserPanel panel = createAttachedPanel();
+            String hostUrl = server.url("/host");
+
+            loadUrl(panel, hostUrl);
+
+            assertThat(waitUntil(() -> "child-ready".equals(getTitle(panel)), 5_000))
+                    .isTrue();
+            assertThat(getLocation(panel)).isEqualTo(hostUrl);
+        }
+    }
+
+    @Test
+    void iframeLoadErrorsDoNotLeaveTopLevelLoadStuck() throws Exception {
+        CefBrowserPanel panel = createAttachedPanel();
+
+        loadContent(
+                panel,
+                "<html><head><title>host-start</title></head><body>"
+                        + "<iframe src='http://127.0.0.1:9/unreachable' "
+                        + "onerror=\"parent.document.title='iframe-error'\">"
+                        + "</iframe>"
+                        + "<script>setTimeout(function(){ document.title = 'host-stable'; }, 150);</script>"
+                        + "</body></html>");
+
+        assertThat(waitUntil(() -> "host-stable".equals(getTitle(panel)), 5_000))
+                .isTrue();
+        Thread.sleep(300);
+        assertThat(isLoading(panel)).isFalse();
     }
 }

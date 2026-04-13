@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
@@ -124,7 +125,7 @@ public class CefWebView extends Region {
         int maxW = 1;
         int maxH = 1;
         for (Screen screen : Screen.getScreens()) {
-            javafx.geometry.Rectangle2D bounds = screen.getBounds();
+            Rectangle2D bounds = screen.getBounds();
             double scale = Math.max(screen.getOutputScaleX(), screen.getOutputScaleY());
             int pw = (int) Math.ceil(bounds.getWidth() * scale);
             int ph = (int) Math.ceil(bounds.getHeight() * scale);
@@ -145,9 +146,9 @@ public class CefWebView extends Region {
         setOnMouseDragged(this::handleMouseMoved);
         setOnMouseExited(this::handleMouseExited);
         setOnScroll(this::handleScroll);
-        setOnKeyPressed(this::handleKeyPressed);
-        setOnKeyReleased(this::handleKeyReleased);
-        setOnKeyTyped(this::handleKeyTyped);
+        addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
+        addEventFilter(KeyEvent.KEY_RELEASED, this::handleKeyReleased);
+        addEventFilter(KeyEvent.KEY_TYPED, this::handleKeyTyped);
 
         focusedProperty().addListener((obs, was, is) -> {
             if (is) {
@@ -256,73 +257,52 @@ public class CefWebView extends Region {
         return zoom;
     }
 
-    /**
-     * Forces immediate browser creation.
-     *
-     * @throws IllegalStateException if the view is not attached to a showing window
-     */
-    public void createImmediately() {
-        maybeCreateBrowser(true);
-    }
-
     /** Navigates to the given URL. */
     public void load(String url) {
         engine.updateLocation(url);
-        runWhenBrowserReady(false, current -> {
-            current.loadUrl(engine.getLocation());
+        runWithBrowser(false, current -> {
+            current.getMainFrame().ifPresent(frame -> frame.loadUrl(engine.getLocation()));
             requestViewRefresh(false);
         });
     }
 
     /** Reloads the current page if the browser exists. */
     public void reload() {
-        runWhenBrowserReady(false, current -> {
-            CefBrowser b = current.getBrowser();
-            if (b != null) {
-                b.reload();
-                requestViewRefresh(false);
-            }
+        runWithBrowser(false, current -> {
+            current.reload();
+            requestViewRefresh(false);
         });
     }
 
     /** Stops the current load if the browser exists. */
     public void stop() {
-        runWhenBrowserReady(false, current -> {
-            CefBrowser b = current.getBrowser();
-            if (b != null) {
-                b.stopLoad();
-                requestViewRefresh(false);
-            }
+        runWithBrowser(false, current -> {
+            current.stopLoad();
+            requestViewRefresh(false);
         });
     }
 
     /** Navigates back if the browser exists. */
     public void goBack() {
-        runWhenBrowserReady(false, current -> {
-            CefBrowser b = current.getBrowser();
-            if (b != null) {
-                b.goBack();
-                requestViewRefresh(false);
-            }
+        runWithBrowser(false, current -> {
+            current.goBack();
+            requestViewRefresh(false);
         });
     }
 
     /** Navigates forward if the browser exists. */
     public void goForward() {
-        runWhenBrowserReady(false, current -> {
-            CefBrowser b = current.getBrowser();
-            if (b != null) {
-                b.goForward();
-                requestViewRefresh(false);
-            }
+        runWithBrowser(false, current -> {
+            current.goForward();
+            requestViewRefresh(false);
         });
     }
 
     /** Executes JavaScript in the main frame if JavaScript is enabled. */
     public void executeScript(String script) {
         if (!engine.isJavaScriptEnabled()) return;
-        runWhenBrowserReady(
-                false, current -> current.executeJavaScript(script == null ? "" : script, engine.getLocation(), 0));
+        runWithBrowser(false, current -> current.getMainFrame()
+                .ifPresent(frame -> frame.executeJavaScript(script == null ? "" : script, engine.getLocation(), 0)));
     }
 
     /** Releases this view's native browser and associated resources. */
@@ -362,19 +342,14 @@ public class CefWebView extends Region {
         return new CefRenderHandler() {
             @Override
             public boolean getRootScreenRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
-                javafx.geometry.Bounds bounds = localToScreen(getBoundsInLocal());
-                if (bounds == null) {
-                    Rectangle2D fallback = detachedBounds;
-                    rect.x = (int) Math.round(fallback.getMinX());
-                    rect.y = (int) Math.round(fallback.getMinY());
-                    rect.width = Math.max(1, (int) Math.round(fallback.getWidth()));
-                    rect.height = Math.max(1, (int) Math.round(fallback.getHeight()));
-                    return true;
-                }
-                rect.x = (int) Math.round(bounds.getMinX());
-                rect.y = (int) Math.round(bounds.getMinY());
-                rect.width = Math.max(1, (int) Math.round(bounds.getWidth()));
-                rect.height = Math.max(1, (int) Math.round(bounds.getHeight()));
+                Bounds bounds = localToScreen(getBoundsInLocal());
+                Rectangle2D resolved = bounds != null
+                        ? new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())
+                        : detachedBounds;
+                rect.x = (int) Math.round(resolved.getMinX());
+                rect.y = (int) Math.round(resolved.getMinY());
+                rect.width = Math.max(1, (int) Math.round(resolved.getWidth()));
+                rect.height = Math.max(1, (int) Math.round(resolved.getHeight()));
                 return true;
             }
 
@@ -394,8 +369,8 @@ public class CefWebView extends Region {
                 screenInfo.deviceScaleFactor = (float) scale;
                 screenInfo.depth = 32;
                 screenInfo.depthPerComponent = 8;
-                javafx.geometry.Rectangle2D bounds = screen.getBounds();
-                javafx.geometry.Rectangle2D available = screen.getVisualBounds();
+                Rectangle2D bounds = screen.getBounds();
+                Rectangle2D available = screen.getVisualBounds();
                 screenInfo.rect = new CefRect(
                         (int) Math.round(bounds.getMinX() * scale),
                         (int) Math.round(bounds.getMinY() * scale),
@@ -474,7 +449,9 @@ public class CefWebView extends Region {
             public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 BrowserHandle br = CefWebView.this.browser;
                 if (br != null) {
-                    br.executeJavaScript(scrollbarScript, "", 0);
+                    br.getBrowser()
+                            .getMainFrame()
+                            .ifPresent(mainFrame -> mainFrame.executeJavaScript(scrollbarScript, "", 0));
                 }
             }
         };
@@ -543,7 +520,8 @@ public class CefWebView extends Region {
     }
 
     private void onResize() {
-        detachedBounds = new Rectangle2D(detachedBounds.getMinX(), detachedBounds.getMinY(), getWidth(), getHeight());
+        Rectangle2D current = detachedBounds;
+        detachedBounds = new Rectangle2D(current.getMinX(), current.getMinY(), getWidth(), getHeight());
         frameBuffer.resetBackPressure();
         Platform.runLater(() -> engine.fireResized(new Rectangle2D(0, 0, getWidth(), getHeight())));
         requestViewRefresh(true);
@@ -591,27 +569,21 @@ public class CefWebView extends Region {
     }
 
     void applyZoom(double zoomFactor) {
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                double effectiveZoom = Math.max(zoomFactor, 0.01);
-                h.setZoomLevel(Math.log(effectiveZoom) / Math.log(1.2));
-                h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
-            }
+        runWithBrowserHost(false, host -> {
+            double effectiveZoom = Math.max(zoomFactor, 0.01);
+            host.setZoomLevel(Math.log(effectiveZoom) / Math.log(1.2));
+            host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
         });
     }
 
     void requestViewRefresh(boolean screenInfoChanged) {
         frameBuffer.resetBackPressure();
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                if (screenInfoChanged) {
-                    h.notifyScreenInfoChanged();
-                    h.wasResized();
-                }
-                h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+        runWithBrowserHost(false, host -> {
+            if (screenInfoChanged) {
+                host.notifyScreenInfoChanged();
+                host.wasResized();
             }
+            host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
         });
     }
 
@@ -637,10 +609,14 @@ public class CefWebView extends Region {
             case MOVE:
                 return Cursor.MOVE;
             case NORTHRESIZE:
+            case NORTHSOUTHRESIZE:
+            case ROWRESIZE:
                 return Cursor.N_RESIZE;
             case SOUTHRESIZE:
                 return Cursor.S_RESIZE;
             case EASTRESIZE:
+            case EASTWESTRESIZE:
+            case COLUMNRESIZE:
                 return Cursor.E_RESIZE;
             case WESTRESIZE:
                 return Cursor.W_RESIZE;
@@ -652,19 +628,13 @@ public class CefWebView extends Region {
                 return Cursor.SE_RESIZE;
             case SOUTHWESTRESIZE:
                 return Cursor.SW_RESIZE;
-            case NORTHSOUTHRESIZE:
-            case ROWRESIZE:
-                return Cursor.N_RESIZE;
-            case EASTWESTRESIZE:
-            case COLUMNRESIZE:
-                return Cursor.E_RESIZE;
             default:
                 return Cursor.DEFAULT;
         }
     }
 
     Screen currentScreen() {
-        javafx.geometry.Bounds bounds = localToScreen(getBoundsInLocal());
+        Bounds bounds = localToScreen(getBoundsInLocal());
         if (bounds != null) {
             List<Screen> screens = Screen.getScreensForRectangle(
                     bounds.getMinX(),
@@ -711,25 +681,20 @@ public class CefWebView extends Region {
         if (!mouseUp) {
             hideContextMenu();
             requestFocus();
+            runWithBrowserHost(false, host -> host.setFocus(true));
         }
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendMouseClickEvent(
-                        new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
-                        CefMouseButtonType.of(cefButton(e)),
-                        mouseUp,
-                        e.getClickCount());
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendMouseClickEvent(
+                    new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)),
+                    CefMouseButtonType.of(cefButton(e)),
+                    mouseUp,
+                    e.getClickCount());
         });
     }
 
     private void handleMouseMoved(MouseEvent e) {
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), false);
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), false);
         });
     }
 
@@ -739,11 +704,8 @@ public class CefWebView extends Region {
 
     private void handleMouseExited(MouseEvent e) {
         if (popupSurface.containsScreenPoint(e.getScreenX(), e.getScreenY())) return;
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), true);
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendMouseMoveEvent(new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e)), true);
         });
     }
 
@@ -754,17 +716,14 @@ public class CefWebView extends Region {
             e.consume();
             return;
         }
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendMouseWheelEvent(
-                        new CefMouseEvent(
-                                (int) e.getX(),
-                                (int) e.getY(),
-                                baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown())),
-                        (int) e.getDeltaX(),
-                        (int) e.getDeltaY());
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendMouseWheelEvent(
+                    new CefMouseEvent(
+                            (int) e.getX(),
+                            (int) e.getY(),
+                            baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown())),
+                    (int) e.getDeltaX(),
+                    (int) e.getDeltaY());
         });
     }
 
@@ -786,10 +745,8 @@ public class CefWebView extends Region {
         }
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h == null) return;
-            h.sendKeyEvent(new CefKeyEvent(
+        runWithBrowserHost(false, host -> {
+            host.sendKeyEvent(new CefKeyEvent(
                     CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN),
                     mods,
                     keyCode,
@@ -806,31 +763,17 @@ public class CefWebView extends Region {
         if (text == null || text.isEmpty() || KeyEvent.CHAR_UNDEFINED.equals(text)) return;
         char c = text.charAt(0);
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendKeyEvent(new CefKeyEvent(
-                        CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, (int) c, (int) c, 0, c, c, 0));
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendKeyEvent(new CefKeyEvent(CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, c, c, 0, c, c, 0));
         });
     }
 
     private void handleKeyReleased(KeyEvent e) {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
-        runWhenBrowserReady(false, current -> {
-            CefBrowserHost h = current.getHost();
-            if (h != null) {
-                h.sendKeyEvent(new CefKeyEvent(
-                        CefKeyEventType.of(CefKeyEventType.Kind.KEYUP),
-                        mods,
-                        keyCode,
-                        keyCode,
-                        0,
-                        (char) 0,
-                        (char) 0,
-                        0));
-            }
+        runWithBrowserHost(false, host -> {
+            host.sendKeyEvent(new CefKeyEvent(
+                    CefKeyEventType.of(CefKeyEventType.Kind.KEYUP), mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         });
     }
 
@@ -856,6 +799,10 @@ public class CefWebView extends Region {
             CefBrowserHost host = current.getHost();
             if (host != null) action.accept(host);
         });
+    }
+
+    void runWithBrowser(boolean failIfUnavailable, Consumer<CefBrowser> action) {
+        runWhenBrowserReady(failIfUnavailable, current -> action.accept(current.getBrowser()));
     }
 
     static int cefButton(MouseEvent e) {
@@ -921,18 +868,21 @@ public class CefWebView extends Region {
         CefWebEngine createdEngine = popupEngine.get();
         if (createdEngine == null) return true;
         CefRect popupBounds;
-        if (OS.isMacOS()) {
+        if (windowInfo instanceof net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
             popupBounds = wi.bounds;
-        } else if (OS.isWindows()) {
+        } else if (windowInfo instanceof net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
             popupBounds = wi.bounds;
-        } else {
+        } else if (windowInfo instanceof net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
             popupBounds = wi.bounds;
+        } else {
+            throw new IllegalStateException(
+                    "Unsupported platform: " + windowInfo.getClass().getName());
         }
         createdEngine.getView().updateDetachedBounds(popupBounds, true);
         clientRef.set(createdEngine.getView().getCefClient());
@@ -993,14 +943,6 @@ public class CefWebView extends Region {
 
         private CefBrowserHost getHost() {
             return browser.getHost().orElse(null);
-        }
-
-        private void loadUrl(String url) {
-            browser.getMainFrame().ifPresent(frame -> frame.loadUrl(url));
-        }
-
-        private void executeJavaScript(String code, String scriptUrl, int startLine) {
-            browser.getMainFrame().ifPresent(frame -> frame.executeJavaScript(code, scriptUrl, startLine));
         }
 
         private void close(boolean force) {
