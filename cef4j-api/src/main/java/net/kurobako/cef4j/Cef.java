@@ -3,6 +3,8 @@ package net.kurobako.cef4j;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefApp;
@@ -21,17 +23,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Singleton managing the CEF lifecycle: configuration, initialization, message pump, and shutdown.
+ * Singleton managing the CEF lifecycle: configuration, initialization, message loop, and shutdown.
  *
- * <p>CEF requires that {@code cef_initialize}, {@code cef_do_message_loop_work}, {@code cef_shutdown}, and browser
- * creation all happen on the same thread (the "CEF UI thread"). When {@code externalMessagePump} is true, the caller is
- * responsible for driving the message loop by calling {@link #doMessageLoopWork()} periodically on the thread that
- * called {@link #initialise(Mutable, List)}}.
+ * <p>When {@code externalMessagePump} is false (the default for OSR components), CEF's message loop runs on an internal
+ * daemon thread. The caller simply calls {@link #initialise(Mutable, List, CefApp)} (which blocks until CEF is ready)
+ * and later {@link #terminate()} (which can be called from any thread).
+ *
+ * <p>When {@code externalMessagePump} is true, the caller is responsible for driving the message loop by calling
+ * {@link #doMessageLoopWork()} periodically on the thread that called {@link #initialise(Mutable, List, CefApp)}.
  *
  * <p>Usage:
  *
  * <pre>{@code
- * Cef.INSTANCE.initialise(settings, args);
+ * Cef.INSTANCE.initialise(settings, args, null);
+ * // ... use CEF ...
+ * Cef.INSTANCE.terminate();
  * }</pre>
  *
  * <p>CEF cannot be re-initialized after {@link #terminate()}.
@@ -56,6 +62,8 @@ public enum Cef {
 
     private volatile State state = State.UNINITIALISED;
     private volatile Thread initThread = null;
+    private volatile boolean daemonManaged = false;
+    private volatile CountDownLatch shutdownLatch;
 
     private void checkState() {
         if (state != State.INITIALISED)
@@ -68,35 +76,51 @@ public enum Cef {
     }
 
     /**
-     * Initialise CEF on the current thread. All subsequent CEF lifecycle calls ({@link #terminate()},
-     * {@link #doMessageLoopWork()}, etc.) must be made on the same thread. Safe to call multiple times - subsequent
-     * calls are no-ops if CEF is already initialised. Re-initialising after {@link #terminate()} is not supported per
-     * CEF design.
+     * Initialise CEF. Safe to call multiple times - subsequent calls are no-ops if CEF is already initialised.
+     * Re-initialising after {@link #terminate()} is not supported per CEF design.
+     *
+     * <p>When {@code externalMessagePump} is false (the default), a daemon thread is created to run CEF's message loop.
+     * This method blocks until initialisation completes, then returns. When {@code externalMessagePump} is true, the
+     * caller must drive the message loop by calling {@link #doMessageLoopWork()} on the same thread.
      *
      * <p>If using {@code CefWebView}, prefer {@code CefWebView.initialise()} which calls this internally. If a
      * higher-level library (e.g. {@code CefMonacoPane}) provides its own {@code initialise()}, call that first - it
      * configures custom schemes and handlers before calling through to this method. Less-specific initialisations that
      * follow are no-ops since CEF is already running.
      *
+     * <p>If {@code appHandler} is null, a default handler is used that only handles Windows command-line processing.
+     * When a non-null {@code appHandler} is provided, the default Windows {@code extraArgs} command-line processing is
+     * not applied — your handler is responsible for implementing {@link CefApp#onBeforeCommandLineProcessing} if
+     * needed.
+     *
      * @throws IllegalStateException if CEF has been terminated
+     * @throws IllegalArgumentException if settings contain unsupported options (see {@link #initialiseUnsafe} to
+     *     bypass)
      */
-    public synchronized void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
-        initialise(settings, extraArgs, null);
+    public synchronized void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        validateSettings(settings);
+        initialiseInternal(settings, extraArgs, appHandler);
     }
 
     /**
-     * Initialise CEF with a custom {@link CefApp} handler.
-     *
-     * <p>If {@code appHandler} is null, a default handler is used that only handles Windows command-line processing.
-     * Use this overload when you need to register custom schemes via {@link CefApp#onRegisterCustomSchemes}.
-     *
-     * <p>Note: when a non-null {@code appHandler} is provided, the default Windows {@code extraArgs} command-line
-     * processing is not applied - your handler is responsible for implementing
-     * {@link CefApp#onBeforeCommandLineProcessing} if needed.
-     *
-     * @throws IllegalStateException if CEF has been shut down
+     * Initialise CEF without validating settings. Use this only if you know what you are doing — certain configurations
+     * (e.g. {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
      */
-    public synchronized void initialise(
+    public synchronized void initialiseUnsafe(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        initialiseInternal(settings, extraArgs, appHandler);
+    }
+
+    private static void validateSettings(CefSettings.Mutable settings) {
+        if (OS.isMacOS() && settings.multiThreadedMessageLoop != 0) {
+            throw new IllegalArgumentException("multiThreadedMessageLoop is not supported on macOS. "
+                    + "Use externalMessagePump=0 (daemon thread) or externalMessagePump=1 (manual pump) instead. "
+                    + "Call initialiseUnsafe() to bypass this check.");
+        }
+    }
+
+    private synchronized void initialiseInternal(
             @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(extraArgs);
@@ -126,15 +150,12 @@ public enum Cef {
             if (baseDir != null) {
                 if (OS.isMacOS()) {
                     Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
-                    // Tell CEF where the framework lives so it passes --framework-dir-path to subprocesses.
                     if (settings.frameworkDirPath == null) {
                         settings.frameworkDirPath =
                                 frameworkDir.toAbsolutePath().toString();
                     }
-                    // pak files and locale data live inside the framework bundle.
                     settings.resourcesDirPath =
                             frameworkDir.resolve("Resources").toAbsolutePath().toString();
-                    // CEF on macOS finds locales automatically from the framework Resources dir.
                     settings.localesDirPath = settings.resourcesDirPath;
                 } else {
                     settings.resourcesDirPath = baseDir.toAbsolutePath().toString();
@@ -147,10 +168,12 @@ public enum Cef {
         }
         settings.disableSignalHandlers = 1;
 
-        log.debug(
-                "CEF config: cachePath= subprocess={}, resources={}",
-                settings.browserSubprocessPath,
-                settings.resourcesDirPath);
+        // Sandbox is not supported in JVM-based CEF embeddings: the subprocess helper is a
+        // separate executable and sandbox initialisation requires same-process control that the
+        // JVM cannot provide. See JCEF context.cpp and CEF sandbox_setup docs.
+        settings.noSandbox = 1;
+
+        log.debug("CEF config: subprocess={}, resources={}", settings.browserSubprocessPath, settings.resourcesDirPath);
 
         if (appHandler == null) {
             appHandler = new CefApp() {
@@ -168,22 +191,85 @@ public enum Cef {
             };
         }
 
-        List<String> argv = List.of("cef4j");
-        if (!extraArgs.isEmpty()) {
-            argv = new java.util.ArrayList<>(1 + extraArgs.size());
-            argv.add("cef4j");
-            argv.addAll(extraArgs);
-        }
-        final int result =
-                CefGlobals.initialize(new CefMainArgs(argv.size(), argv), settings.toImmutable(), appHandler, null);
-        if (result == 0) {
-            state = State.UNINITIALISED;
-            log.error("CefGlobals.initialize (cef_initialize) failed with error code: {}", result);
-            throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed with error code: " + result);
+        java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
+        argv.add("cef4j");
+        argv.addAll(extraArgs);
+        if (!argv.contains("--no-sandbox")) {
+            argv.add("--no-sandbox");
         }
 
-        state = State.INITIALISED;
-        initThread = Thread.currentThread();
+        boolean useExternalPump = settings.externalMessagePump != 0;
+
+        if (useExternalPump) {
+            // Legacy path: caller manages the message loop via doMessageLoopWork().
+            final int result =
+                    CefGlobals.initialize(new CefMainArgs(argv.size(), argv), settings.toImmutable(), appHandler, null);
+            if (result == 0) {
+                log.error("CefGlobals.initialize (cef_initialize) failed");
+                throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
+            }
+            state = State.INITIALISED;
+            initThread = Thread.currentThread();
+            daemonManaged = false;
+        } else {
+            // Daemon thread path: CEF init + message loop run on a dedicated thread.
+            CountDownLatch initLatch = new CountDownLatch(1);
+            AtomicReference<Throwable> initError = new AtomicReference<>();
+            CountDownLatch sdLatch = new CountDownLatch(1);
+            this.shutdownLatch = sdLatch;
+
+            final CefSettings finalSettings = settings.toImmutable();
+            final CefApp finalAppHandler = appHandler;
+            final List<String> finalArgv = List.copyOf(argv);
+
+            Thread daemon = new Thread(
+                    () -> {
+                        try {
+                            int result = CefGlobals.initialize(
+                                    new CefMainArgs(finalArgv.size(), finalArgv), finalSettings, finalAppHandler, null);
+                            if (result == 0) {
+                                initError.set(new RuntimeException("CefGlobals.initialize (cef_initialize) failed"));
+                                return;
+                            }
+                            log.info("CEF initialized on daemon thread");
+                            initLatch.countDown();
+
+                            CefGlobals.runMessageLoop();
+
+                            log.info("CEF message loop exited, shutting down");
+                            int released = NativeCleaner.INSTANCE.releaseAll();
+                            log.info("Released {} outstanding NativePeers before shutdown", released);
+                            CefGlobals.shutdown();
+                            log.info("CEF terminated");
+                        } catch (Throwable t) {
+                            initError.compareAndSet(null, t);
+                        } finally {
+                            initLatch.countDown();
+                            sdLatch.countDown();
+                        }
+                    },
+                    "cef4j-message-loop");
+            daemon.setDaemon(true);
+            daemon.start();
+
+            try {
+                initLatch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted waiting for CEF initialization", e);
+            }
+
+            Throwable error = initError.get();
+            if (error != null) {
+                state = State.UNINITIALISED;
+                throw (error instanceof RuntimeException) ? (RuntimeException) error : new RuntimeException(error);
+            }
+
+            state = State.INITIALISED;
+            initThread = daemon;
+            daemonManaged = true;
+        }
+
         log.info("CEF initialized");
     }
 
@@ -200,23 +286,39 @@ public enum Cef {
     }
 
     /**
-     * Shut down CEF cleanly. Must be called on the same thread that called {@link #initialise(Mutable, List)} when
-     * using the external message pump (single-threaded mode). Safe to call multiple times - subsequent calls are
-     * no-ops.
+     * Shut down CEF cleanly. Can be called from any thread. Safe to call multiple times - subsequent calls are no-ops.
+     *
+     * <p>When the daemon thread manages the message loop, this method signals the loop to exit and waits for shutdown
+     * to complete. When using the external message pump, this must be called on the init thread.
      *
      * <p>As per CEF design, after this call, CEF cannot be re-initialised in the same process (i.e. JVM). The singleton
      * remains accessible but all operations will throw {@link IllegalStateException}.
      */
     public synchronized void terminate() {
         if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
-        checkState();
 
         state = State.SHUTTING_DOWN;
         log.info("CEF shutting down");
 
-        int released = NativeCleaner.INSTANCE.releaseAll();
-        log.info("Released {} outstanding NativePeers before shutdown", released);
-        CefGlobals.shutdown();
+        if (daemonManaged) {
+            // Signal the daemon thread's runMessageLoop() to return; cleanup runs there.
+            CefGlobals.quitMessageLoop();
+            try {
+                if (shutdownLatch != null) {
+                    shutdownLatch.await();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.warn("Interrupted waiting for CEF shutdown");
+            }
+        } else {
+            // External message pump path: cleanup runs on the calling thread.
+            checkState();
+            int released = NativeCleaner.INSTANCE.releaseAll();
+            log.info("Released {} outstanding NativePeers before shutdown", released);
+            CefGlobals.shutdown();
+        }
+
         state = State.TERMINATED;
         log.info("CEF terminated");
     }
@@ -251,8 +353,8 @@ public enum Cef {
 
     /**
      * Perform a single iteration of CEF message loop work. Must be called on the same thread that called
-     * {@link #initialise(Mutable, List)}}. This is only needed if {@link #initialise(Mutable, List)} is configured with
-     * {@link CefSettings#externalMessagePump} set to true.
+     * {@link #initialise(Mutable, List, CefApp)}}. This is only needed if {@link #initialise(Mutable, List, CefApp)} is
+     * configured with {@link CefSettings#externalMessagePump} set to true.
      *
      * @see CefGlobals#doMessageLoopWork()
      */

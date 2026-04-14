@@ -10,6 +10,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -81,7 +82,7 @@ class CefWebViewSchemeTest {
                 .toAbsolutePath()
                 .toString();
 
-        CefWebView.initialise(settings, new CefApp() {
+        CefWebView.initialise(settings, List.of(), new CefApp() {
             @Override
             public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
                 if (registrar != null) {

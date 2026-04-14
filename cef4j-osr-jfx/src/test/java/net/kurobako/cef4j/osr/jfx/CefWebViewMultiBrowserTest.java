@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -31,7 +32,7 @@ class CefWebViewMultiBrowserTest {
         settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
-        CefWebView.initialise(settings);
+        CefWebView.initialise(settings, List.of(), null);
         startJavaFx();
     }
 

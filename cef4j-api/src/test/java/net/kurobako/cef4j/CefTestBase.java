@@ -43,20 +43,13 @@ abstract class CefTestBase {
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 1;
         settings.multiThreadedMessageLoop = 0;
-        if (OS.isMacOS()) {
-            settings.noSandbox = 1;
-        }
 
         List<String> args = new ArrayList<>(additionalArgs);
         if (OS.isLinux()) {
-            args.add("--no-sandbox");
             String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
             if (ozonePlatform != null && !ozonePlatform.isBlank()) {
                 args.add("--ozone-platform=" + ozonePlatform.trim());
             }
-        }
-        if (OS.isMacOS()) {
-            args.add("--no-sandbox");
         }
         String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
         if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {

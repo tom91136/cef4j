@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
@@ -14,7 +15,6 @@ import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefDisplayHandler;
 import net.kurobako.cef4j.gen.CefFrame;
-import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefKeyEvent;
 import net.kurobako.cef4j.gen.CefKeyEventType;
 import net.kurobako.cef4j.gen.CefLoadHandler;
@@ -91,7 +91,9 @@ public final class ViewsBrowserApp {
     // Vertical box layout settings (default axis alignment)
     private static final CefBoxLayoutSettings VBOX = new CefBoxLayoutSettings(0, 0, 0, null, 0, null, null, 0, 0);
 
-    // All mutable state is accessed only on the CEF UI thread (= main thread in single-threaded mode)
+    private static final CountDownLatch shutdownLatch = new CountDownLatch(1);
+
+    // All mutable state is accessed only on the CEF UI thread (the daemon message-loop thread)
     private CefWindow window;
     private CefPanel mainPanel;
     private CefPanel tabBar;
@@ -478,7 +480,6 @@ public final class ViewsBrowserApp {
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
-        settings.noSandbox = 1;
         settings.windowlessRenderingEnabled = 0;
         settings.multiThreadedMessageLoop = 0;
         settings.externalMessagePump = 0;
@@ -489,7 +490,7 @@ public final class ViewsBrowserApp {
             extraArgs.add("--no-zygote");
         }
 
-        Cef.INSTANCE.initialise(settings, extraArgs);
+        Cef.INSTANCE.initialise(settings, extraArgs, null);
 
         ViewsBrowserApp app = new ViewsBrowserApp();
 
@@ -536,8 +537,8 @@ public final class ViewsBrowserApp {
 
             @Override
             public void onWindowDestroyed(@Nullable CefWindow window) {
-                log.info("Window destroyed - quitting message loop");
-                CefGlobals.quitMessageLoop();
+                log.info("Window destroyed");
+                shutdownLatch.countDown();
             }
 
             @Override
@@ -569,12 +570,12 @@ public final class ViewsBrowserApp {
         CefWindow.createTopLevel(windowDelegate)
                 .orElseThrow(() -> new RuntimeException("Failed to create top-level CefWindow"));
 
-        SigintHelper.install(CefGlobals::quitMessageLoop);
+        SigintHelper.install(shutdownLatch::countDown);
 
-        log.info("Running CEF message loop");
-        CefGlobals.runMessageLoop();
+        log.info("Waiting for window close");
+        shutdownLatch.await();
 
-        log.info("Message loop exited - shutting down CEF");
+        log.info("Shutting down CEF");
         Cef.INSTANCE.terminate();
         log.info("Exiting");
         System.exit(0);

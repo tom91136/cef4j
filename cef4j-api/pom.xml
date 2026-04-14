@@ -85,6 +85,7 @@
                     <excludes>
                         <exclude>**/CefScriptEngineMultiThreadedTest.java</exclude>
                         <exclude>**/CefSchemeHandlerTest.java</exclude>
+                        <exclude>**/CefDaemonRenderTest.java</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -95,6 +96,16 @@
                             <excludes combine.self="override"/>
                             <includes>
                                 <include>**/CefSchemeHandlerTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>daemon-render-tests</id>
+                        <goals><goal>test</goal></goals>
+                        <configuration>
+                            <excludes combine.self="override"/>
+                            <includes>
+                                <include>**/CefDaemonRenderTest.java</include>
                             </includes>
                         </configuration>
                     </execution>

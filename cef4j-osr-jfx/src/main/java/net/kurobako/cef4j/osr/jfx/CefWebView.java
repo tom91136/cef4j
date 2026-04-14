@@ -174,21 +174,15 @@ public class CefWebView extends Region {
         cleanable = CLEANER.register(this, browserCleanup);
     }
 
-    public static void initialise() {
-        initialise(new CefSettings.Mutable());
-    }
-
-    /** Initialise CEF with the given settings. */
-    public static void initialise(CefSettings.Mutable settings, String... extraArgs) {
-        initialise(settings, null, extraArgs);
-    }
-
     /**
      * Initialise CEF for off-screen rendering with an optional custom {@link CefApp} handler.
      *
      * @throws IllegalStateException if the JavaFX toolkit is already running, or if CEF was terminated
      */
-    public static void initialise(CefSettings.Mutable settings, CefApp appHandler, String... extraArgs) {
+    public static void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(extraArgs);
         SetupState requested = SetupState.of(settings, extraArgs);
         synchronized (SETUP_LOCK) {
             if (activeSetup != null && activeSetup.equals(requested)) return;
@@ -199,10 +193,7 @@ public class CefWebView extends Region {
                         + requested
                         + ".");
             }
-            // On macOS with -XstartOnFirstThread, the main thread IS the FX Application Thread
-            // (they share the AppKit main thread). CEF must be initialised on this thread, so the
-            // check is skipped. On other platforms CEF init must not run on the FX thread.
-            if (Platform.isFxApplicationThread() && !OS.isMacOS()) {
+            if (Platform.isFxApplicationThread()) {
                 throw new IllegalStateException(
                         "CefWebView.initialise() must not be called from the JavaFX Application Thread");
             }
@@ -474,7 +465,7 @@ public class CefWebView extends Region {
         browserCreationPosted = true;
         try {
             if (activeSetup == null) {
-                initialise();
+                initialise(new CefSettings.Mutable(), List.of(), null);
             }
             CefWindowInfo windowInfo = Cef.createWindowlessInfo(
                     new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
@@ -962,8 +953,7 @@ public class CefWebView extends Region {
             this.extraArgs = extraArgs;
         }
 
-        private static SetupState of(CefSettings.Mutable requestedSettings, String... requestedExtraArgs) {
-            CefSettings.Mutable settings = (requestedSettings != null ? requestedSettings : new CefSettings.Mutable());
+        private static SetupState of(CefSettings.Mutable settings, List<String> requestedExtraArgs) {
             if (settings.cachePath == null) {
                 Path cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
                 try {
@@ -974,32 +964,15 @@ public class CefWebView extends Region {
                 settings.cachePath = cacheDir.toAbsolutePath().toString();
             }
             settings.windowlessRenderingEnabled = 1;
-            if (OS.isMacOS()) {
-                settings.externalMessagePump = 1;
-                settings.multiThreadedMessageLoop = 0;
-                settings.noSandbox = 1;
-            } else {
-                settings.externalMessagePump = 0;
-                settings.multiThreadedMessageLoop = 1;
-            }
+            settings.externalMessagePump = 0;
+            settings.multiThreadedMessageLoop = 0;
             List<String> args = new ArrayList<>();
             args.add("--disable-popup-blocking");
-            if (OS.isMacOS()) {
-                args.add("--no-sandbox");
-            }
             if (OS.isLinux()) {
                 // JavaFX still renders through X11 here, so force Chromium onto the same platform.
                 args.add("--ozone-platform=x11");
             }
-            if (requestedExtraArgs != null) {
-                for (String requestedExtraArg : requestedExtraArgs) {
-                    if (requestedExtraArg == null) continue;
-                    String trimmed = requestedExtraArg.trim();
-                    if (!trimmed.isEmpty()) {
-                        args.add(trimmed);
-                    }
-                }
-            }
+            args.addAll(requestedExtraArgs);
             return new SetupState(settings.toImmutable(), List.copyOf(args));
         }
 

@@ -53,6 +53,35 @@ public final class SwingBrowserApp {
 
     public static void main(String[] args) throws Exception {
         log.info("cef4j Swing Browser starting");
+
+        Path cacheDir = Files.createTempDirectory("cef4j-swing-");
+        cacheDir.toFile().deleteOnExit();
+
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        List<String> extraArgs = new ArrayList<>();
+        if (OS.isLinux()) {
+            extraArgs.add("--ozone-platform=x11");
+            extraArgs.add("--no-zygote");
+        }
+        CefBrowserPanel.initialise(settings, extraArgs, null);
+
+        // On macOS, invokeAndWait deadlocks when Java's main thread is Thread 0 (-XstartOnFirstThread)
+        // because AppKit event processing requires Thread 0 to be free. Use invokeLater on macOS so
+        // the main thread can proceed to the latch, keeping Thread 0 available for AppKit.
+        if (OS.isMacOS()) {
+            SwingUtilities.invokeLater(SwingBrowserApp::createUI);
+        } else {
+            SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
+        }
+        SigintHelper.install(SwingBrowserApp::requestShutdown);
+        shutdownLatch.await();
+        CefBrowserPanel.terminate();
+        log.info("Exiting");
+        System.exit(0);
+    }
+
+    private static void createUI() {
         com.formdev.flatlaf.FlatLightLaf.setup();
 
         float userScale = com.formdev.flatlaf.util.UIScale.getUserScaleFactor();
@@ -62,47 +91,6 @@ public final class SwingBrowserApp {
                         .getDefaultConfiguration());
         log.info("Display scaling - system: {}, user: {}", systemScale, userScale);
 
-        Path cacheDir = Files.createTempDirectory("cef4j-swing-");
-        cacheDir.toFile().deleteOnExit();
-
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = cacheDir.toAbsolutePath().toString();
-        settings.noSandbox = 1;
-        List<String> extraArgs = new ArrayList<>();
-        if (OS.isLinux()) {
-            extraArgs.add("--ozone-platform=x11");
-            extraArgs.add("--no-zygote");
-        }
-        CefBrowserPanel.initialise(settings, null, extraArgs.toArray(String[]::new));
-
-        // On macOS, Thread 0 is the AppKit main thread. invokeAndWait() from Thread 0 deadlocks
-        // because Swing window creation requires Thread 0 (via AppKit), which is blocked.
-        // Use invokeLater() so Thread 0 is free to pump the CEF message loop, which processes
-        // AppKit events (including the pending UI creation) via CFRunLoop.
-        if (OS.isMacOS()) {
-            SwingUtilities.invokeLater(SwingBrowserApp::createUI);
-        } else {
-            SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
-        }
-        SigintHelper.install(SwingBrowserApp::requestShutdown);
-
-        // Keep the main thread alive, pumping the CEF message loop until shutdown completes.
-        // On macOS, CEF uses externalMessagePump so Thread 0 must drive the loop.
-        // On other platforms, CEF manages its own loop thread; we simply wait for the latch.
-        if (OS.isMacOS()) {
-            while (shutdownLatch.getCount() > 0) {
-                Cef.INSTANCE.doMessageLoopWork();
-                Thread.sleep(10);
-            }
-        } else {
-            shutdownLatch.await();
-        }
-        CefBrowserPanel.terminate();
-        log.info("Exiting");
-        System.exit(0);
-    }
-
-    private static void createUI() {
         window = new JFrame("cef4j Browser (Swing)");
         window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         window.setSize(1280, 800);

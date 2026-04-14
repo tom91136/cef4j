@@ -6,6 +6,7 @@ import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -37,7 +38,7 @@ public final class JfxBrowserApp {
     public static void main(String[] args) throws IOException {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = createCacheDir().toAbsolutePath().toString();
-        CefWebView.initialise(settings);
+        CefWebView.initialise(settings, List.of(), null);
         SigintHelper.install(() -> {
             if (Platform.isFxApplicationThread()) {
                 Platform.exit();
@@ -186,6 +187,9 @@ public final class JfxBrowserApp {
                 System.err.println("[cef4j] Failed to install no-op JavaFX system clipboard: " + e.getMessage());
             }
         }
+
+        @Override
+        public void stop() {}
 
         private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {
             BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);

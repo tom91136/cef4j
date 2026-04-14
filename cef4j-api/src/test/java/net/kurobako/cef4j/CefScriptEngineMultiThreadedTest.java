@@ -48,15 +48,10 @@ class CefScriptEngineMultiThreadedTest {
 
             List<String> extraArgs = new ArrayList<>();
             if (OS.isLinux()) {
-                extraArgs.add("--no-sandbox");
                 String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
                 if (ozonePlatform != null && !ozonePlatform.isBlank()) {
                     extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
                 }
-            }
-            if (OS.isMacOS()) {
-                extraArgs.add("--no-sandbox");
-                settings.noSandbox = 1;
             }
             String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
             if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
@@ -67,7 +62,7 @@ class CefScriptEngineMultiThreadedTest {
                     }
                 }
             }
-            Cef.INSTANCE.initialise(settings, extraArgs);
+            Cef.INSTANCE.initialiseUnsafe(settings, extraArgs, null);
         }
 
         engineA = new CefScriptEngine(

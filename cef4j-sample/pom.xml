@@ -16,9 +16,12 @@
     <description>Sample Swing and JavaFX browsers using cef4j</description>
 
     <properties>
-        <javafx.version>19.0.2.1</javafx.version>
+        <javafx.version>26</javafx.version>
         <exec.skip>false</exec.skip>
         <exec.mainClass>net.kurobako.cef4j.sample.SwingBrowserApp</exec.mainClass>
+        <!-- macOS Swing/AWT requires the JVM to run on Thread 0 for AppKit compatibility.
+             Set via -Dexec.extraJvmArg=-XstartOnFirstThread or use the macos profile below. -->
+        <exec.extraJvmArg>-Dignore=true</exec.extraJvmArg>
     </properties>
 
     <dependencies>
@@ -82,7 +85,32 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <!-- exec:exec launches a separate JVM process. This is required on macOS
+                         because exec:java runs main() on a worker thread, not Thread 0 (the
+                         AppKit main thread), which deadlocks both JavaFX and CEF. -->
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>${exec.extraJvmArg}</argument>
+                        <argument>--enable-native-access=ALL-UNNAMED</argument>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>${exec.mainClass}</argument>
+                    </arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>macos</id>
+            <activation>
+                <os><family>mac</family></os>
+            </activation>
+            <properties>
+                <exec.extraJvmArg>-XstartOnFirstThread</exec.extraJvmArg>
+            </properties>
+        </profile>
+    </profiles>
 </project>

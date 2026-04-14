@@ -28,6 +28,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +40,6 @@ import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
-import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -70,45 +71,20 @@ public class CefBrowserPanel extends JPanel {
     private transient BufferedImage osrPopupImage;
     private transient BufferedImage lastPaintedImage;
 
-    /** Initialise CEF with default settings. */
-    public static void initialise() {
-        initialise(new CefSettings.Mutable());
-    }
-
-    /**
-     * Initialise CEF for Swing off-screen rendering.
-     *
-     * @throws IllegalStateException if CEF has been terminated
-     */
-    public static void initialise(CefSettings.Mutable settings, String... extraArgs) {
-        initialise(settings, null, extraArgs);
-    }
-
     /**
      * Initialise CEF for Swing off-screen rendering with an optional custom {@link CefApp} handler.
      *
      * @throws IllegalStateException if CEF has been terminated
      */
-    public static void initialise(CefSettings.Mutable settings, @Nullable CefApp appHandler, String... extraArgs) {
-        if (settings == null) settings = new CefSettings.Mutable();
+    public static void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(extraArgs);
         settings.windowlessRenderingEnabled = 1;
-        if (OS.isMacOS()) {
-            settings.externalMessagePump = 1;
-            settings.multiThreadedMessageLoop = 0;
-            settings.noSandbox = 1;
-        } else {
-            settings.externalMessagePump = 0;
-            settings.multiThreadedMessageLoop = 1;
-        }
+        settings.externalMessagePump = 0;
+        settings.multiThreadedMessageLoop = 0;
         SystemBootstrap.load();
-        java.util.List<String> args = new java.util.ArrayList<>();
-        if (OS.isMacOS()) {
-            args.add("--no-sandbox");
-        }
-        if (extraArgs != null) {
-            args.addAll(java.util.Arrays.asList(extraArgs));
-        }
-        Cef.INSTANCE.initialise(settings, args, appHandler);
+        Cef.INSTANCE.initialise(settings, extraArgs, appHandler);
     }
 
     /** Terminate CEF and release all native resources. */

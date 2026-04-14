@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -71,8 +72,7 @@ final class SwingBrowserPanelTestSupport {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = cacheDir.toAbsolutePath().toString();
-            settings.noSandbox = 1;
-            CefBrowserPanel.initialise(settings);
+            CefBrowserPanel.initialise(settings, List.of(), null);
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);

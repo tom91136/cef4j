@@ -198,7 +198,7 @@ sourceDir.eachFileRecurse { File sourceFile ->
             '            }\n' +
             '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
             '            s.cachePath = cacheDir.toAbsolutePath().toString();\n' +
-            '            Cef.INSTANCE.initialise(s, java.util.List.of("--disable-popup-blocking", "--no-sandbox"));\n' +
+            '            Cef.INSTANCE.initialise(s, java.util.List.of("--disable-popup-blocking"), null);\n' +
             '        }\n' +
             '    }'
     text = text.replaceFirst('(?ms)^\\s*static void preStartup\\(\\)\\s*\\{[^}]*\\}', preStartupReplacement)
@@ -211,7 +211,7 @@ sourceDir.eachFileRecurse { File sourceFile ->
             '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
             '            settings.cachePath = cacheDir.toAbsolutePath().toString();\n' +
             '        }\n' +
-            '        CefWebView.initialise(settings);\n' +
+            '        CefWebView.initialise(settings, java.util.List.of(), null);\n' +
             '    }'
     text = text.replaceFirst('(?ms)^\\s*static void postStartup\\(\\)\\s*\\{[^}]*\\}', postStartupReplacement)
 

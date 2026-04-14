@@ -796,8 +796,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     cef_api_hash(CEF_API_VERSION, 0);
     cef_main_args_t args{};
     args.instance = hInstance;
-    SubprocessApp app;
-    return cef_execute_process(&args, &app, nullptr);
+    auto* app = new SubprocessApp();
+    return cef_execute_process(&args, app, nullptr);
 }
 #else
 int main(int argc, char* argv[]) {
@@ -828,7 +828,10 @@ int main(int argc, char* argv[]) {
     cef_main_args_t args{};
     args.argc = argc;
     args.argv = argv;
-    SubprocessApp app;
-    return cef_execute_process(&args, &app, nullptr);
+    // Heap-allocate so the release lambda's delete is safe.
+    // If CEF drops the last ref during cef_execute_process, it's deleted properly.
+    // If not, it leaks — acceptable since the process is about to exit.
+    auto* app = new SubprocessApp();
+    return cef_execute_process(&args, app, nullptr);
 }
 #endif
