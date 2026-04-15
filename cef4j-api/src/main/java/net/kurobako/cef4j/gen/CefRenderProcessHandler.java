@@ -116,4 +116,72 @@ public interface CefRenderProcessHandler extends CefClientHandler {
     default boolean onProcessMessageReceived(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefRenderProcessHandler {
+        private final java.util.List<CefRenderProcessHandler> delegates;
+
+        public Delegating(java.util.List<CefRenderProcessHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onWebKitInitialized() {
+            for (CefRenderProcessHandler d : delegates) d.onWebKitInitialized();
+        }
+
+        @Override
+        public void onBrowserCreated(@Nullable CefBrowser browser, @Nullable CefDictionaryValue extraInfo) {
+            for (CefRenderProcessHandler d : delegates) d.onBrowserCreated(browser, extraInfo);
+        }
+
+        @Override
+        public void onBrowserDestroyed(@Nullable CefBrowser browser) {
+            for (CefRenderProcessHandler d : delegates) d.onBrowserDestroyed(browser);
+        }
+
+        @Override
+        public Optional<CefLoadHandler> getLoadHandler() {
+            java.util.ArrayList<CefLoadHandler> collected = new java.util.ArrayList<>();
+            for (CefRenderProcessHandler d : delegates) d.getLoadHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefLoadHandler.Delegating(collected));
+        }
+
+        @Override
+        public void onContextCreated(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
+            for (CefRenderProcessHandler d : delegates) d.onContextCreated(browser, frame, context);
+        }
+
+        @Override
+        public void onContextReleased(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
+            for (CefRenderProcessHandler d : delegates) d.onContextReleased(browser, frame, context);
+        }
+
+        @Override
+        public void onUncaughtException(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context, @Nullable CefV8Exception exception, @Nullable CefV8StackTrace stackTrace) {
+            for (CefRenderProcessHandler d : delegates) d.onUncaughtException(browser, frame, context, exception, stackTrace);
+        }
+
+        @Override
+        public void onFocusedNodeChanged(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefDomNode node) {
+            for (CefRenderProcessHandler d : delegates) d.onFocusedNodeChanged(browser, frame, node);
+        }
+
+        @Override
+        public boolean onProcessMessageReceived(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+            for (CefRenderProcessHandler d : delegates) {
+                if (d.onProcessMessageReceived(browser, frame, sourceProcess, message)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

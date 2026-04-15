@@ -31,4 +31,24 @@ public interface CefMediaRouteCreateCallback extends CefClientHandler {
      */
     default void onMediaRouteCreateFinished(@Nonnull CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefMediaRouteCreateCallback {
+        private final java.util.List<CefMediaRouteCreateCallback> delegates;
+
+        public Delegating(java.util.List<CefMediaRouteCreateCallback> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onMediaRouteCreateFinished(@Nonnull CefMediaRouteCreateResult result, @Nullable String error, @Nullable CefMediaRoute route) {
+            for (CefMediaRouteCreateCallback d : delegates) d.onMediaRouteCreateFinished(result, error, route);
+        }
+    }
+
 }

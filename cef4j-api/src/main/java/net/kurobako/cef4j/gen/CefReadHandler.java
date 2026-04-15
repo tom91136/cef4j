@@ -77,4 +77,52 @@ public interface CefReadHandler extends CefClientHandler {
     default boolean mayBlock() {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefReadHandler {
+        private final java.util.List<CefReadHandler> delegates;
+
+        public Delegating(java.util.List<CefReadHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public long read(@Nonnull ByteBuffer ptr, long n) {
+            if (!delegates.isEmpty()) return delegates.get(0).read(ptr, n);
+            return 0L;
+        }
+
+        @Override
+        public int seek(long offset, int whence) {
+            if (!delegates.isEmpty()) return delegates.get(0).seek(offset, whence);
+            return 0;
+        }
+
+        @Override
+        public long tell() {
+            if (!delegates.isEmpty()) return delegates.get(0).tell();
+            return 0L;
+        }
+
+        @Override
+        public int eof() {
+            if (!delegates.isEmpty()) return delegates.get(0).eof();
+            return 0;
+        }
+
+        @Override
+        public boolean mayBlock() {
+            for (CefReadHandler d : delegates) {
+                if (d.mayBlock()) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

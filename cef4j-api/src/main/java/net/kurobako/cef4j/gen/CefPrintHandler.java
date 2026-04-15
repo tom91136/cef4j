@@ -80,4 +80,58 @@ public interface CefPrintHandler extends CefClientHandler {
     default CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
         return null;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefPrintHandler {
+        private final java.util.List<CefPrintHandler> delegates;
+
+        public Delegating(java.util.List<CefPrintHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onPrintStart(@Nullable CefBrowser browser) {
+            for (CefPrintHandler d : delegates) d.onPrintStart(browser);
+        }
+
+        @Override
+        public void onPrintSettings(@Nullable CefBrowser browser, @Nullable CefPrintSettings settings, boolean getDefaults) {
+            for (CefPrintHandler d : delegates) d.onPrintSettings(browser, settings, getDefaults);
+        }
+
+        @Override
+        public boolean onPrintDialog(@Nullable CefBrowser browser, boolean hasSelection, @Nullable CefPrintDialogCallback callback) {
+            for (CefPrintHandler d : delegates) {
+                if (d.onPrintDialog(browser, hasSelection, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onPrintJob(@Nullable CefBrowser browser, @Nullable String documentName, @Nullable String pdfFilePath, @Nullable CefPrintJobCallback callback) {
+            for (CefPrintHandler d : delegates) {
+                if (d.onPrintJob(browser, documentName, pdfFilePath, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onPrintReset(@Nullable CefBrowser browser) {
+            for (CefPrintHandler d : delegates) d.onPrintReset(browser);
+        }
+
+        @Override
+        public CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
+            if (!delegates.isEmpty()) return delegates.get(0).getPdfPaperSize(browser, deviceUnitsPerInch);
+            return null;
+        }
+    }
+
 }

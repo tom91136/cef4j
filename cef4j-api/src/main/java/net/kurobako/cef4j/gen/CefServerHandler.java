@@ -102,4 +102,59 @@ public interface CefServerHandler extends CefClientHandler {
      */
     default void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefServerHandler {
+        private final java.util.List<CefServerHandler> delegates;
+
+        public Delegating(java.util.List<CefServerHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onServerCreated(@Nullable CefServer server) {
+            for (CefServerHandler d : delegates) d.onServerCreated(server);
+        }
+
+        @Override
+        public void onServerDestroyed(@Nullable CefServer server) {
+            for (CefServerHandler d : delegates) d.onServerDestroyed(server);
+        }
+
+        @Override
+        public void onClientConnected(@Nullable CefServer server, int connectionId) {
+            for (CefServerHandler d : delegates) d.onClientConnected(server, connectionId);
+        }
+
+        @Override
+        public void onClientDisconnected(@Nullable CefServer server, int connectionId) {
+            for (CefServerHandler d : delegates) d.onClientDisconnected(server, connectionId);
+        }
+
+        @Override
+        public void onHttpRequest(@Nullable CefServer server, int connectionId, @Nullable String clientAddress, @Nullable CefRequest request) {
+            for (CefServerHandler d : delegates) d.onHttpRequest(server, connectionId, clientAddress, request);
+        }
+
+        @Override
+        public void onWebSocketRequest(@Nullable CefServer server, int connectionId, @Nullable String clientAddress, @Nullable CefRequest request, @Nullable CefCallback callback) {
+            for (CefServerHandler d : delegates) d.onWebSocketRequest(server, connectionId, clientAddress, request, callback);
+        }
+
+        @Override
+        public void onWebSocketConnected(@Nullable CefServer server, int connectionId) {
+            for (CefServerHandler d : delegates) d.onWebSocketConnected(server, connectionId);
+        }
+
+        @Override
+        public void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {
+            for (CefServerHandler d : delegates) d.onWebSocketMessage(server, connectionId, data);
+        }
+    }
+
 }

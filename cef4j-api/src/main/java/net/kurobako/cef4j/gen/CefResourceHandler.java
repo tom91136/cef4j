@@ -104,4 +104,74 @@ public interface CefResourceHandler extends CefClientHandler {
      */
     default void cancel() {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefResourceHandler {
+        private final java.util.List<CefResourceHandler> delegates;
+
+        public Delegating(java.util.List<CefResourceHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
+            for (CefResourceHandler d : delegates) {
+                if (d.open(request, handleRequest, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
+            for (CefResourceHandler d : delegates) {
+                if (d.processRequest(request, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void getResponseHeaders(@Nullable CefResponse response, long[] responseLength, @Nullable String redirectUrl) {
+            for (CefResourceHandler d : delegates) d.getResponseHeaders(response, responseLength, redirectUrl);
+        }
+
+        @Override
+        public boolean skip(long bytesToSkip, long[] bytesSkipped, @Nullable CefResourceSkipCallback callback) {
+            for (CefResourceHandler d : delegates) {
+                if (d.skip(bytesToSkip, bytesSkipped, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean read(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
+            for (CefResourceHandler d : delegates) {
+                if (d.read(dataOut, bytesRead, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean readResponse(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
+            for (CefResourceHandler d : delegates) {
+                if (d.readResponse(dataOut, bytesRead, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void cancel() {
+            for (CefResourceHandler d : delegates) d.cancel();
+        }
+    }
+
 }

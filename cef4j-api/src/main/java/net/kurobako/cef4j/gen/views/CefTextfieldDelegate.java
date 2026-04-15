@@ -41,4 +41,33 @@ public interface CefTextfieldDelegate extends CefClientHandler {
      */
     default void onAfterUserAction(@Nullable CefTextfield textfield) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefTextfieldDelegate {
+        private final java.util.List<CefTextfieldDelegate> delegates;
+
+        public Delegating(java.util.List<CefTextfieldDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onKeyEvent(@Nullable CefTextfield textfield, @Nonnull CefKeyEvent event) {
+            for (CefTextfieldDelegate d : delegates) {
+                if (d.onKeyEvent(textfield, event)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onAfterUserAction(@Nullable CefTextfield textfield) {
+            for (CefTextfieldDelegate d : delegates) d.onAfterUserAction(textfield);
+        }
+    }
+
 }

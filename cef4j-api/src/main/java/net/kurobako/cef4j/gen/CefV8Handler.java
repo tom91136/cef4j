@@ -29,4 +29,28 @@ public interface CefV8Handler extends CefClientHandler {
     default boolean execute(@Nullable String name, @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefV8Handler {
+        private final java.util.List<CefV8Handler> delegates;
+
+        public Delegating(java.util.List<CefV8Handler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean execute(@Nullable String name, @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
+            for (CefV8Handler d : delegates) {
+                if (d.execute(name, object, argumentsCount, arguments, retval, exception)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

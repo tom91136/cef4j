@@ -30,4 +30,24 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
      */
     default void onMenuButtonPressed(@Nullable CefMenuButton menuButton, @Nonnull CefPoint screenPoint, @Nullable CefMenuButtonPressedLock buttonPressedLock) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefMenuButtonDelegate {
+        private final java.util.List<CefMenuButtonDelegate> delegates;
+
+        public Delegating(java.util.List<CefMenuButtonDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onMenuButtonPressed(@Nullable CefMenuButton menuButton, @Nonnull CefPoint screenPoint, @Nullable CefMenuButtonPressedLock buttonPressedLock) {
+            for (CefMenuButtonDelegate d : delegates) d.onMenuButtonPressed(menuButton, screenPoint, buttonPressedLock);
+        }
+    }
+
 }

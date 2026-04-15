@@ -25,6 +25,7 @@ Thumbs.db
 *.exe
 *.o
 *.obj
+cef4j-api/src/main/resources/native/*/
 
 # CEF distribution
 .cef-dist/

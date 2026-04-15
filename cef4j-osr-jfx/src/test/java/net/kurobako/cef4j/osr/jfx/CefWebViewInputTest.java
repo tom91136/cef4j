@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javafx.concurrent.Worker;
@@ -16,7 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.Cef;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,22 +29,22 @@ class CefWebViewInputTest {
     @BeforeAll
     static void setup(@TempDir Path tempDir) throws Exception {
         assumeDisplayServer();
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
-        CefWebView.initialise(settings, List.of(), null);
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
         startJavaFx();
-    }
-
-    @AfterAll
-    static void shutdownCef() {
-        CefWebView.terminate();
     }
 
     @AfterEach
     void cleanup() throws Exception {
         closeAllWindows();
+    }
+
+    @AfterAll
+    static void shutdownCef() {
+        Cef.INSTANCE.terminate();
     }
 
     @Test

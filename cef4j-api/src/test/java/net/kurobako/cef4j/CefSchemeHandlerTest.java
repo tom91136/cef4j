@@ -66,7 +66,7 @@ class CefSchemeHandlerTest extends CefTestBase {
             return null;
         });
 
-        CefTestBase.initCef(List.of(), new CefApp() {
+        Cef.INSTANCE.addAppHandler(new CefApp() {
             @Override
             public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
                 if (registrar != null) {
@@ -77,6 +77,7 @@ class CefSchemeHandlerTest extends CefTestBase {
                 }
             }
         });
+        CefTestBase.initCef(List.of());
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
     }
 

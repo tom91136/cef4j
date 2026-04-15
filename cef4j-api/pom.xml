@@ -40,6 +40,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
             <version>${project.version}</version>
@@ -78,44 +88,31 @@
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                     </systemPropertyVariables>
-                    <!-- Exclude multi-threaded-message-loop tests from the default fork;
-                         they initialise CEF with multiThreadedMessageLoop=1 which is
-                         incompatible with the external-message-pump mode used by the
-                         other test classes (CEF cannot be re-initialised). -->
+                    <!-- Tests in this list need their own JVM because they initialise CEF with
+                         incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)
+                         and CEF cannot be re-initialised once started. The default fork shares CEF
+                         across compatible tests; the isolated execution below gives each of these a
+                         fresh JVM via reuseForks=false + forkCount=1. -->
                     <excludes>
                         <exclude>**/CefScriptEngineMultiThreadedTest.java</exclude>
                         <exclude>**/CefSchemeHandlerTest.java</exclude>
                         <exclude>**/CefDaemonRenderTest.java</exclude>
+                        <exclude>**/CefAppDelegatingTest.java</exclude>
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>scheme-handler-tests</id>
+                        <id>isolated-cef-tests</id>
                         <goals><goal>test</goal></goals>
                         <configuration>
+                            <reuseForks>false</reuseForks>
+                            <forkCount>1</forkCount>
                             <excludes combine.self="override"/>
                             <includes>
                                 <include>**/CefSchemeHandlerTest.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>daemon-render-tests</id>
-                        <goals><goal>test</goal></goals>
-                        <configuration>
-                            <excludes combine.self="override"/>
-                            <includes>
                                 <include>**/CefDaemonRenderTest.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>multi-threaded-message-loop-tests</id>
-                        <goals><goal>test</goal></goals>
-                        <configuration>
-                            <excludes combine.self="override"/>
-                            <includes>
                                 <include>**/CefScriptEngineMultiThreadedTest.java</include>
+                                <include>**/CefAppDelegatingTest.java</include>
                             </includes>
                         </configuration>
                     </execution>

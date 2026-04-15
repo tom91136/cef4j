@@ -43,4 +43,33 @@ public interface CefRequestContextHandler extends CefClientHandler {
     default Optional<CefResourceRequestHandler> getResourceRequestHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean isNavigation, boolean isDownload, @Nullable String requestInitiator, int[] disableDefaultHandling) {
         return Optional.empty();
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefRequestContextHandler {
+        private final java.util.List<CefRequestContextHandler> delegates;
+
+        public Delegating(java.util.List<CefRequestContextHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onRequestContextInitialized(@Nullable CefRequestContext requestContext) {
+            for (CefRequestContextHandler d : delegates) d.onRequestContextInitialized(requestContext);
+        }
+
+        @Override
+        public Optional<CefResourceRequestHandler> getResourceRequestHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean isNavigation, boolean isDownload, @Nullable String requestInitiator, int[] disableDefaultHandling) {
+            java.util.ArrayList<CefResourceRequestHandler> collected = new java.util.ArrayList<>();
+            for (CefRequestContextHandler d : delegates) d.getResourceRequestHandler(browser, frame, request, isNavigation, isDownload, requestInitiator, disableDefaultHandling).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefResourceRequestHandler.Delegating(collected));
+        }
+    }
+
 }

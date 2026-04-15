@@ -30,7 +30,9 @@
 
     <build>
         <plugins>
-            <!-- Step 1: Download + extract CEF binary distribution (cached in .cef-dist/) -->
+            <!-- Step 1: Download + extract CEF binary distribution (cached in .cef-dist/).
+                 unpackWhenChanged=true extracts only on first download or when the tarball changes;
+                 this replaces the prior ant <untar>/<condition> guard dance. -->
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
@@ -44,7 +46,7 @@
                         <configuration>
                             <url>${cef.dist.url}</url>
                             <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpack>false</unpack>
+                            <unpackWhenChanged>true</unpackWhenChanged>
                             <skipCache>false</skipCache>
                         </configuration>
                     </execution>
@@ -57,7 +59,7 @@
                         <configuration>
                             <url>${cef.codegen.linux.url}</url>
                             <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpack>false</unpack>
+                            <unpackWhenChanged>true</unpackWhenChanged>
                             <skipCache>false</skipCache>
                         </configuration>
                     </execution>
@@ -70,7 +72,7 @@
                         <configuration>
                             <url>${cef.codegen.macos.url}</url>
                             <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpack>false</unpack>
+                            <unpackWhenChanged>true</unpackWhenChanged>
                             <skipCache>false</skipCache>
                         </configuration>
                     </execution>
@@ -83,7 +85,7 @@
                         <configuration>
                             <url>${cef.codegen.windows.url}</url>
                             <outputDirectory>${cef.dist.cache}</outputDirectory>
-                            <unpack>false</unpack>
+                            <unpackWhenChanged>true</unpackWhenChanged>
                             <skipCache>false</skipCache>
                         </configuration>
                     </execution>
@@ -102,78 +104,6 @@
                         <configuration>
                             <target>
                                 <mkdir dir="${project.build.directory}/cmake-build"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>extract-cef</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                                <condition property="cef.already.extracted">
-                                    <available file="${cef.dist.dir}/include/cef_version.h"/>
-                                </condition>
-                                <echo if:set="cef.already.extracted">CEF distribution already extracted, skipping.</echo>
-                                <untar unless:set="cef.already.extracted"
-                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2"
-                                       dest="${cef.dist.cache}" compression="bzip2"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>extract-cef-linux-codegen</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                                <condition property="cef.codegen.linux.extracted">
-                                    <available file="${cef.codegen.linux.dir}/include/cef_version.h"/>
-                                </condition>
-                                <echo if:set="cef.codegen.linux.extracted">Linux CEF include already extracted, skipping.</echo>
-                                <untar unless:set="cef.codegen.linux.extracted"
-                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.linux.platform}_minimal.tar.bz2"
-                                       dest="${cef.dist.cache}" compression="bzip2"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>extract-cef-macos-codegen</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                                <condition property="cef.codegen.macos.extracted">
-                                    <available file="${cef.codegen.macos.dir}/include/cef_version.h"/>
-                                </condition>
-                                <echo if:set="cef.codegen.macos.extracted">macOS CEF include already extracted, skipping.</echo>
-                                <untar unless:set="cef.codegen.macos.extracted"
-                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.macos.platform}_minimal.tar.bz2"
-                                       dest="${cef.dist.cache}" compression="bzip2"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>extract-cef-windows-codegen</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                                <condition property="cef.codegen.windows.extracted">
-                                    <available file="${cef.codegen.windows.dir}/include/cef_version.h"/>
-                                </condition>
-                                <echo if:set="cef.codegen.windows.extracted">Windows CEF include already extracted, skipping.</echo>
-                                <untar unless:set="cef.codegen.windows.extracted"
-                                       src="${cef.dist.cache}/cef_binary_${cef.version}_${cef.codegen.windows.platform}_minimal.tar.bz2"
-                                       dest="${cef.dist.cache}" compression="bzip2"/>
                             </target>
                         </configuration>
                     </execution>

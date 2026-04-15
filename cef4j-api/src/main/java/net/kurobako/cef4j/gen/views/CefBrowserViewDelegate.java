@@ -142,4 +142,95 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     default boolean allowPictureInPictureWithoutUserActivation(@Nullable CefBrowserView browserView) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefBrowserViewDelegate {
+        private final java.util.List<CefBrowserViewDelegate> delegates;
+
+        public Delegating(java.util.List<CefBrowserViewDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onBrowserCreated(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
+            for (CefBrowserViewDelegate d : delegates) d.onBrowserCreated(browserView, browser);
+        }
+
+        @Override
+        public void onBrowserDestroyed(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
+            for (CefBrowserViewDelegate d : delegates) d.onBrowserDestroyed(browserView, browser);
+        }
+
+        @Override
+        public Optional<CefBrowserViewDelegate> getDelegateForPopupBrowserView(@Nullable CefBrowserView browserView, @Nonnull CefBrowserSettings settings, @Nullable CefClient client, boolean isDevtools) {
+            java.util.ArrayList<CefBrowserViewDelegate> collected = new java.util.ArrayList<>();
+            for (CefBrowserViewDelegate d : delegates) d.getDelegateForPopupBrowserView(browserView, settings, client, isDevtools).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefBrowserViewDelegate.Delegating(collected));
+        }
+
+        @Override
+        public boolean onPopupBrowserViewCreated(@Nullable CefBrowserView browserView, @Nullable CefBrowserView popupBrowserView, boolean isDevtools) {
+            for (CefBrowserViewDelegate d : delegates) {
+                if (d.onPopupBrowserViewCreated(browserView, popupBrowserView, isDevtools)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
+            if (!delegates.isEmpty()) return delegates.get(0).getChromeToolbarType(browserView);
+            return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
+        }
+
+        @Override
+        public boolean useFramelessWindowForPictureInPicture(@Nullable CefBrowserView browserView) {
+            for (CefBrowserViewDelegate d : delegates) {
+                if (d.useFramelessWindowForPictureInPicture(browserView)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onGestureCommand(@Nullable CefBrowserView browserView, @Nonnull CefGestureCommand gestureCommand) {
+            for (CefBrowserViewDelegate d : delegates) {
+                if (d.onGestureCommand(browserView, gestureCommand)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public CefRuntimeStyle getBrowserRuntimeStyle() {
+            if (!delegates.isEmpty()) return delegates.get(0).getBrowserRuntimeStyle();
+            return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
+        }
+
+        @Override
+        public boolean allowMoveForPictureInPicture(@Nullable CefBrowserView browserView) {
+            for (CefBrowserViewDelegate d : delegates) {
+                if (d.allowMoveForPictureInPicture(browserView)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean allowPictureInPictureWithoutUserActivation(@Nullable CefBrowserView browserView) {
+            for (CefBrowserViewDelegate d : delegates) {
+                if (d.allowPictureInPictureWithoutUserActivation(browserView)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -18,13 +17,13 @@ import javafx.concurrent.Worker.State;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.UrlSchemeHandlerFactory;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefSchemeOptions;
 import net.kurobako.cef4j.gen.CefSchemeRegistrar;
-import net.kurobako.cef4j.gen.CefSettings;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -77,12 +76,7 @@ class CefWebViewSchemeTest {
             return null;
         });
 
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
-                .toAbsolutePath()
-                .toString();
-
-        CefWebView.initialise(settings, List.of(), new CefApp() {
+        Cef.INSTANCE.addAppHandler(new CefApp() {
             @Override
             public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
                 if (registrar != null) {
@@ -94,6 +88,12 @@ class CefWebViewSchemeTest {
             }
         });
 
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
+                .toAbsolutePath()
+                .toString();
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+
         startJavaFx();
 
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
@@ -102,7 +102,7 @@ class CefWebViewSchemeTest {
     @AfterAll
     static void cleanup() throws Exception {
         closeAllWindows();
-        CefWebView.terminate();
+        Cef.INSTANCE.terminate();
     }
 
     @Test

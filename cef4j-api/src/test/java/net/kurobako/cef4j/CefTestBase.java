@@ -5,30 +5,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 
 abstract class CefTestBase {
     @TempDir
     static Path tempDir;
 
-    @BeforeAll
-    static void initCef() throws Exception {
-        initCef(List.of(), null);
-    }
-
     static void initCef(List<String> additionalArgs) throws Exception {
-        initCef(additionalArgs, null);
-    }
-
-    static void initCef(List<String> additionalArgs, CefApp appHandler) throws Exception {
         SystemBootstrap.load();
         Cef.State state = Cef.INSTANCE.getState();
         if (state == Cef.State.INITIALISED) return;
@@ -60,7 +49,7 @@ abstract class CefTestBase {
                 }
             }
         }
-        Cef.INSTANCE.initialise(settings, args, appHandler);
+        Cef.INSTANCE.initialise(settings, args);
     }
 
     static CefBrowser createWindowlessBrowser(CefClient client, String url) {

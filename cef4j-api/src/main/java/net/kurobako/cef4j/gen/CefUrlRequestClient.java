@@ -75,4 +75,48 @@ public interface CefUrlRequestClient extends CefClientHandler {
     default boolean getAuthCredentials(boolean isProxy, @Nullable String host, int port, @Nullable String realm, @Nullable String scheme, @Nullable CefAuthCallback callback) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefUrlRequestClient {
+        private final java.util.List<CefUrlRequestClient> delegates;
+
+        public Delegating(java.util.List<CefUrlRequestClient> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onRequestComplete(@Nullable CefUrlRequest request) {
+            for (CefUrlRequestClient d : delegates) d.onRequestComplete(request);
+        }
+
+        @Override
+        public void onUploadProgress(@Nullable CefUrlRequest request, long current, long total) {
+            for (CefUrlRequestClient d : delegates) d.onUploadProgress(request, current, total);
+        }
+
+        @Override
+        public void onDownloadProgress(@Nullable CefUrlRequest request, long current, long total) {
+            for (CefUrlRequestClient d : delegates) d.onDownloadProgress(request, current, total);
+        }
+
+        @Override
+        public void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {
+            for (CefUrlRequestClient d : delegates) d.onDownloadData(request, data);
+        }
+
+        @Override
+        public boolean getAuthCredentials(boolean isProxy, @Nullable String host, int port, @Nullable String realm, @Nullable String scheme, @Nullable CefAuthCallback callback) {
+            for (CefUrlRequestClient d : delegates) {
+                if (d.getAuthCredentials(isProxy, host, port, realm, scheme, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

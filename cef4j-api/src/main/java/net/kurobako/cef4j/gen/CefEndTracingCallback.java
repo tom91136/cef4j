@@ -27,4 +27,24 @@ public interface CefEndTracingCallback extends CefClientHandler {
      */
     default void onEndTracingComplete(@Nullable String tracingFile) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefEndTracingCallback {
+        private final java.util.List<CefEndTracingCallback> delegates;
+
+        public Delegating(java.util.List<CefEndTracingCallback> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onEndTracingComplete(@Nullable String tracingFile) {
+            for (CefEndTracingCallback d : delegates) d.onEndTracingComplete(tracingFile);
+        }
+    }
+
 }

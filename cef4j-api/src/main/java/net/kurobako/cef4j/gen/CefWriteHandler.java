@@ -77,4 +77,52 @@ public interface CefWriteHandler extends CefClientHandler {
     default boolean mayBlock() {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefWriteHandler {
+        private final java.util.List<CefWriteHandler> delegates;
+
+        public Delegating(java.util.List<CefWriteHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public long write(@Nonnull ByteBuffer ptr, long n) {
+            if (!delegates.isEmpty()) return delegates.get(0).write(ptr, n);
+            return 0L;
+        }
+
+        @Override
+        public int seek(long offset, int whence) {
+            if (!delegates.isEmpty()) return delegates.get(0).seek(offset, whence);
+            return 0;
+        }
+
+        @Override
+        public long tell() {
+            if (!delegates.isEmpty()) return delegates.get(0).tell();
+            return 0L;
+        }
+
+        @Override
+        public int flush() {
+            if (!delegates.isEmpty()) return delegates.get(0).flush();
+            return 0;
+        }
+
+        @Override
+        public boolean mayBlock() {
+            for (CefWriteHandler d : delegates) {
+                if (d.mayBlock()) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

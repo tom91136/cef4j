@@ -52,4 +52,46 @@ public interface CefResourceBundleHandler extends CefClientHandler {
     default boolean getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefResourceBundleHandler {
+        private final java.util.List<CefResourceBundleHandler> delegates;
+
+        public Delegating(java.util.List<CefResourceBundleHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean getLocalizedString(int stringId, @Nullable String string) {
+            for (CefResourceBundleHandler d : delegates) {
+                if (d.getLocalizedString(stringId, string)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean getDataResource(int resourceId, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
+            for (CefResourceBundleHandler d : delegates) {
+                if (d.getDataResource(resourceId, data, dataSize)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
+            for (CefResourceBundleHandler d : delegates) {
+                if (d.getDataResourceForScale(resourceId, scaleFactor, data, dataSize)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

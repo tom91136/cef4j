@@ -29,4 +29,24 @@ public interface CefDownloadImageCallback extends CefClientHandler {
      */
     default void onDownloadImageFinished(@Nullable String imageUrl, int httpStatusCode, @Nullable CefImage image) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefDownloadImageCallback {
+        private final java.util.List<CefDownloadImageCallback> delegates;
+
+        public Delegating(java.util.List<CefDownloadImageCallback> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onDownloadImageFinished(@Nullable String imageUrl, int httpStatusCode, @Nullable CefImage image) {
+            for (CefDownloadImageCallback d : delegates) d.onDownloadImageFinished(imageUrl, httpStatusCode, image);
+        }
+    }
+
 }

@@ -29,4 +29,24 @@ public interface CefStringVisitor extends CefClientHandler {
      */
     default void visit(@Nullable String string) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefStringVisitor {
+        private final java.util.List<CefStringVisitor> delegates;
+
+        public Delegating(java.util.List<CefStringVisitor> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void visit(@Nullable String string) {
+            for (CefStringVisitor d : delegates) d.visit(string);
+        }
+    }
+
 }

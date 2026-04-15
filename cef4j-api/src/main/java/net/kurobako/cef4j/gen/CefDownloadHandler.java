@@ -49,4 +49,42 @@ public interface CefDownloadHandler extends CefClientHandler {
      */
     default void onDownloadUpdated(@Nullable CefBrowser browser, @Nullable CefDownloadItem downloadItem, @Nullable CefDownloadItemCallback callback) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefDownloadHandler {
+        private final java.util.List<CefDownloadHandler> delegates;
+
+        public Delegating(java.util.List<CefDownloadHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean canDownload(@Nullable CefBrowser browser, @Nullable String url, @Nullable String requestMethod) {
+            for (CefDownloadHandler d : delegates) {
+                if (d.canDownload(browser, url, requestMethod)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onBeforeDownload(@Nullable CefBrowser browser, @Nullable CefDownloadItem downloadItem, @Nullable String suggestedName, @Nullable CefBeforeDownloadCallback callback) {
+            for (CefDownloadHandler d : delegates) {
+                if (d.onBeforeDownload(browser, downloadItem, suggestedName, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onDownloadUpdated(@Nullable CefBrowser browser, @Nullable CefDownloadItem downloadItem, @Nullable CefDownloadItemCallback callback) {
+            for (CefDownloadHandler d : delegates) d.onDownloadUpdated(browser, downloadItem, callback);
+        }
+    }
+
 }

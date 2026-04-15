@@ -2,11 +2,13 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.gen.views.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefViewsInteropTest extends CefTestBase {
+
+    @BeforeAll
+    static void initCef() throws Exception {
+        CefTestBase.initCef(List.of());
+    }
 
     @Test
     @Order(1)

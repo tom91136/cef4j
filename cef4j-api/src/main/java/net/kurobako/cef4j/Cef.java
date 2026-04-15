@@ -1,8 +1,11 @@
 package net.kurobako.cef4j;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -26,16 +29,21 @@ import org.slf4j.LoggerFactory;
  * Singleton managing the CEF lifecycle: configuration, initialization, message loop, and shutdown.
  *
  * <p>When {@code externalMessagePump} is false (the default for OSR components), CEF's message loop runs on an internal
- * daemon thread. The caller simply calls {@link #initialise(Mutable, List, CefApp)} (which blocks until CEF is ready)
- * and later {@link #terminate()} (which can be called from any thread).
+ * daemon thread. The caller simply calls {@link #initialise(Mutable, List)} (which blocks until CEF is ready) and later
+ * {@link #terminate()} (which can be called from any thread).
  *
  * <p>When {@code externalMessagePump} is true, the caller is responsible for driving the message loop by calling
- * {@link #doMessageLoopWork()} periodically on the thread that called {@link #initialise(Mutable, List, CefApp)}.
+ * {@link #doMessageLoopWork()} periodically on the thread that called {@link #initialise(Mutable, List)}.
+ *
+ * <p>Register {@link CefApp} handlers (e.g. for custom schemes) via {@link #addAppHandler(CefApp)} before calling
+ * {@link #initialise(Mutable, List)} or creating any browser view. Registrations are thread-safe and compose: all
+ * registered handlers are invoked via a generated delegating wrapper.
  *
  * <p>Usage:
  *
  * <pre>{@code
- * Cef.INSTANCE.initialise(settings, args, null);
+ * Cef.INSTANCE.addAppHandler(new CefApp() { ... });
+ * Cef.INSTANCE.initialise(settings, args);
  * // ... use CEF ...
  * Cef.INSTANCE.terminate();
  * }</pre>
@@ -58,12 +66,75 @@ public enum Cef {
         TERMINATED
     }
 
+    /**
+     * Mutable launch configuration: a {@link CefSettings.Mutable} the caller can tweak and the argv list passed to CEF.
+     *
+     * <p>Obtained from {@link #osrLaunchArgs()} pre-populated with defaults suitable for off-screen rendering UI
+     * embeddings (JavaFX, Swing). Both the {@code settings} object and the {@code args} list are mutable - callers may
+     * adjust before passing to {@link #initialise(CefSettings.Mutable, List)}.
+     */
+    public static final class LaunchArgs {
+        private final CefSettings.Mutable settings;
+        private final List<String> args;
+
+        public LaunchArgs(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> args) {
+            this.settings = Objects.requireNonNull(settings, "settings");
+            this.args = Objects.requireNonNull(args, "args");
+        }
+
+        @Nonnull
+        public CefSettings.Mutable settings() {
+            return settings;
+        }
+
+        @Nonnull
+        public List<String> args() {
+            return args;
+        }
+    }
+
+    /**
+     * Returns a fresh {@link LaunchArgs} configured for OSR UI embeddings (Swing, JavaFX).
+     *
+     * <p>Encodes the platform-specific message-loop mode that avoids conflicts with the host UI toolkit:
+     *
+     * <ul>
+     *   <li>macOS: {@code externalMessagePump=1} - AppKit owns the main thread; CEF work is pumped by the host.
+     *   <li>Linux: {@code multiThreadedMessageLoop=1} plus {@code --ozone-platform=x11} - Glass-GTK3 owns the process
+     *       GDK default display; CEF must run its own UI thread rather than a daemon-wrapped loop.
+     *   <li>Windows: both loop modes off - CEF runs on an internal daemon thread managed by cef4j.
+     * </ul>
+     *
+     * <p>Always sets {@code windowlessRenderingEnabled=1} and adds {@code --disable-popup-blocking}. Callers typically
+     * set {@code cachePath} and any extra args before passing to {@link #initialise(CefSettings.Mutable, List)}.
+     */
+    public static LaunchArgs osrLaunchArgs() {
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.windowlessRenderingEnabled = 1;
+        if (OS.isMacOS()) {
+            settings.externalMessagePump = 1;
+            settings.multiThreadedMessageLoop = 0;
+        } else if (OS.isLinux()) {
+            settings.externalMessagePump = 0;
+            settings.multiThreadedMessageLoop = 1;
+        } else {
+            settings.externalMessagePump = 0;
+            settings.multiThreadedMessageLoop = 0;
+        }
+        List<String> args = new ArrayList<>();
+        args.add("--disable-popup-blocking");
+        if (OS.isLinux()) args.add("--ozone-platform=x11");
+        return new LaunchArgs(settings, args);
+    }
+
     private static final Logger log = LoggerFactory.getLogger(Cef.class);
 
     private volatile State state = State.UNINITIALISED;
     private volatile Thread initThread = null;
     private volatile boolean daemonManaged = false;
     private volatile CountDownLatch shutdownLatch;
+    private volatile CefSettings activeSettings;
+    private final CopyOnWriteArrayList<CefApp> appHandlers = new CopyOnWriteArrayList<>();
 
     private void checkState() {
         if (state != State.INITIALISED)
@@ -76,6 +147,31 @@ public enum Cef {
     }
 
     /**
+     * Register a {@link CefApp} handler. Must be called before CEF is initialised (either explicitly via
+     * {@link #initialise(Mutable, List)} or implicitly via first browser view creation).
+     *
+     * <p>Multiple handlers may be registered; all receive each callback in registration order via a generated
+     * delegating wrapper.
+     *
+     * @throws IllegalStateException if CEF is already initialised
+     */
+    public void addAppHandler(@Nonnull CefApp handler) {
+        Objects.requireNonNull(handler, "handler");
+        if (state != State.UNINITIALISED) {
+            throw new IllegalStateException(
+                    "CEF is already initialized -- register handlers before calling initialise() or creating any browser view. State="
+                            + state);
+        }
+        appHandlers.addIfAbsent(handler);
+    }
+
+    /** Unregister a previously-added {@link CefApp} handler. No-op if not registered. Safe to call at any time. */
+    public void removeAppHandler(@Nonnull CefApp handler) {
+        Objects.requireNonNull(handler, "handler");
+        appHandlers.remove(handler);
+    }
+
+    /**
      * Initialise CEF. Safe to call multiple times - subsequent calls are no-ops if CEF is already initialised.
      * Re-initialising after {@link #terminate()} is not supported per CEF design.
      *
@@ -83,33 +179,24 @@ public enum Cef {
      * This method blocks until initialisation completes, then returns. When {@code externalMessagePump} is true, the
      * caller must drive the message loop by calling {@link #doMessageLoopWork()} on the same thread.
      *
-     * <p>If using {@code CefWebView}, prefer {@code CefWebView.initialise()} which calls this internally. If a
-     * higher-level library (e.g. {@code CefMonacoPane}) provides its own {@code initialise()}, call that first - it
-     * configures custom schemes and handlers before calling through to this method. Less-specific initialisations that
-     * follow are no-ops since CEF is already running.
-     *
-     * <p>If {@code appHandler} is null, a default handler is used that only handles Windows command-line processing.
-     * When a non-null {@code appHandler} is provided, the default Windows {@code extraArgs} command-line processing is
-     * not applied — your handler is responsible for implementing {@link CefApp#onBeforeCommandLineProcessing} if
-     * needed.
+     * <p>Register {@link CefApp} handlers via {@link #addAppHandler(CefApp)} before this call. If no handlers are
+     * registered, a default handler is installed that forwards {@code extraArgs} as command-line switches on Windows.
      *
      * @throws IllegalStateException if CEF has been terminated
      * @throws IllegalArgumentException if settings contain unsupported options (see {@link #initialiseUnsafe} to
      *     bypass)
      */
-    public synchronized void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+    public synchronized void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
         validateSettings(settings);
-        initialiseInternal(settings, extraArgs, appHandler);
+        initialiseInternal(settings, extraArgs);
     }
 
     /**
      * Initialise CEF without validating settings. Use this only if you know what you are doing — certain configurations
      * (e.g. {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
      */
-    public synchronized void initialiseUnsafe(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
-        initialiseInternal(settings, extraArgs, appHandler);
+    public synchronized void initialiseUnsafe(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+        initialiseInternal(settings, extraArgs);
     }
 
     private static void validateSettings(CefSettings.Mutable settings) {
@@ -121,7 +208,7 @@ public enum Cef {
     }
 
     private synchronized void initialiseInternal(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(extraArgs);
         if (state == State.INITIALISED) return;
@@ -175,21 +262,7 @@ public enum Cef {
 
         log.debug("CEF config: subprocess={}, resources={}", settings.browserSubprocessPath, settings.resourcesDirPath);
 
-        if (appHandler == null) {
-            appHandler = new CefApp() {
-                @Override
-                public void onBeforeCommandLineProcessing(
-                        @Nullable String processType, @Nullable CefCommandLine commandLine) {
-                    if (OS.isWindows() && commandLine != null && (processType == null || processType.isEmpty())) {
-                        for (String arg : extraArgs) {
-                            if (arg != null && !arg.isEmpty()) {
-                                commandLine.appendSwitch(arg.startsWith("--") ? arg.substring(2) : arg);
-                            }
-                        }
-                    }
-                }
-            };
-        }
+        CefApp appHandler = buildAppHandler(extraArgs);
 
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
         argv.add("cef4j");
@@ -199,15 +272,21 @@ public enum Cef {
         }
 
         boolean useExternalPump = settings.externalMessagePump != 0;
+        boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
 
-        if (useExternalPump) {
-            // Legacy path: caller manages the message loop via doMessageLoopWork().
-            final int result =
-                    CefGlobals.initialize(new CefMainArgs(argv.size(), argv), settings.toImmutable(), appHandler, null);
+        if (useExternalPump || useMultiThreadedLoop) {
+            // External pump: caller drives the loop via doMessageLoopWork().
+            // Multi-threaded loop: CEF spawns its own UI thread internally.
+            // In both cases cef_initialize() must be followed by neither runMessageLoop() nor a
+            // daemon-thread wrapper - runMessageLoop() is invalid under multiThreadedMessageLoop
+            // and forking from a multithreaded JVM corrupts child-process FD inheritance.
+            CefSettings immutable = settings.toImmutable();
+            final int result = CefGlobals.initialize(new CefMainArgs(argv.size(), argv), immutable, appHandler, null);
             if (result == 0) {
                 log.error("CefGlobals.initialize (cef_initialize) failed");
                 throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
             }
+            activeSettings = immutable;
             state = State.INITIALISED;
             initThread = Thread.currentThread();
             daemonManaged = false;
@@ -238,7 +317,8 @@ public enum Cef {
 
                             log.info("CEF message loop exited, shutting down");
                             int released = NativeCleaner.INSTANCE.releaseAll();
-                            log.info("Released {} outstanding NativePeers before shutdown", released);
+                            log.info(
+                                    "Released {} outstanding NativePeers from daemon thread before shutdown", released);
                             CefGlobals.shutdown();
                             log.info("CEF terminated");
                         } catch (Throwable t) {
@@ -265,12 +345,36 @@ public enum Cef {
                 throw (error instanceof RuntimeException) ? (RuntimeException) error : new RuntimeException(error);
             }
 
+            activeSettings = finalSettings;
             state = State.INITIALISED;
             initThread = daemon;
             daemonManaged = true;
         }
 
         log.info("CEF initialized");
+    }
+
+    private CefApp buildAppHandler(List<String> extraArgs) {
+        CefApp windowsArgsHandler = new CefApp() {
+            @Override
+            public void onBeforeCommandLineProcessing(
+                    @Nullable String processType, @Nullable CefCommandLine commandLine) {
+                if (OS.isWindows() && commandLine != null && (processType == null || processType.isEmpty())) {
+                    for (String arg : extraArgs) {
+                        if (arg != null && !arg.isEmpty()) {
+                            commandLine.appendSwitch(arg.startsWith("--") ? arg.substring(2) : arg);
+                        }
+                    }
+                }
+            }
+        };
+        if (appHandlers.isEmpty()) {
+            return windowsArgsHandler;
+        }
+        java.util.ArrayList<CefApp> composed = new java.util.ArrayList<>(appHandlers.size() + 1);
+        composed.add(windowsArgsHandler);
+        composed.addAll(appHandlers);
+        return new CefApp.Delegating(List.copyOf(composed));
     }
 
     /**
@@ -297,6 +401,12 @@ public enum Cef {
     public synchronized void terminate() {
         if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
 
+        if (!daemonManaged && Thread.currentThread() != initThread) {
+            throw new IllegalStateException(
+                    "terminate() must be called on the init thread for non-daemon-managed CEF: current="
+                            + Thread.currentThread() + ", cef=" + initThread);
+        }
+
         state = State.SHUTTING_DOWN;
         log.info("CEF shutting down");
 
@@ -312,8 +422,7 @@ public enum Cef {
                 log.warn("Interrupted waiting for CEF shutdown");
             }
         } else {
-            // External message pump path: cleanup runs on the calling thread.
-            checkState();
+            // External message pump / multithreaded loop path: clean-up runs on the calling thread.
             int released = NativeCleaner.INSTANCE.releaseAll();
             log.info("Released {} outstanding NativePeers before shutdown", released);
             CefGlobals.shutdown();
@@ -352,9 +461,17 @@ public enum Cef {
     }
 
     /**
+     * Returns the settings CEF was initialized with, or {@link Optional#empty()} if CEF has not yet been initialised.
+     * Used by lazy-init paths to validate compatibility before adding a new browser view.
+     */
+    public Optional<CefSettings> getActiveSettings() {
+        return Optional.ofNullable(activeSettings);
+    }
+
+    /**
      * Perform a single iteration of CEF message loop work. Must be called on the same thread that called
-     * {@link #initialise(Mutable, List, CefApp)}}. This is only needed if {@link #initialise(Mutable, List, CefApp)} is
-     * configured with {@link CefSettings#externalMessagePump} set to true.
+     * {@link #initialise(Mutable, List)}}. This is only needed if {@link #initialise(Mutable, List)} is configured with
+     * {@link CefSettings#externalMessagePump} set to true.
      *
      * @see CefGlobals#doMessageLoopWork()
      */

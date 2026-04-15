@@ -228,4 +228,190 @@ public interface CefClient extends CefClientHandler {
     default boolean onProcessMessageReceived(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefClient {
+        private final java.util.List<CefClient> delegates;
+
+        public Delegating(java.util.List<CefClient> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public Optional<CefAudioHandler> getAudioHandler() {
+            java.util.ArrayList<CefAudioHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getAudioHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefAudioHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefCommandHandler> getCommandHandler() {
+            java.util.ArrayList<CefCommandHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getCommandHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefCommandHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefContextMenuHandler> getContextMenuHandler() {
+            java.util.ArrayList<CefContextMenuHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getContextMenuHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefContextMenuHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefDialogHandler> getDialogHandler() {
+            java.util.ArrayList<CefDialogHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getDialogHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefDialogHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefDisplayHandler> getDisplayHandler() {
+            java.util.ArrayList<CefDisplayHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getDisplayHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefDisplayHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefDownloadHandler> getDownloadHandler() {
+            java.util.ArrayList<CefDownloadHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getDownloadHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefDownloadHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefDragHandler> getDragHandler() {
+            java.util.ArrayList<CefDragHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getDragHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefDragHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefFindHandler> getFindHandler() {
+            java.util.ArrayList<CefFindHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getFindHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefFindHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefFocusHandler> getFocusHandler() {
+            java.util.ArrayList<CefFocusHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getFocusHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefFocusHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefFrameHandler> getFrameHandler() {
+            java.util.ArrayList<CefFrameHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getFrameHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefFrameHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefPermissionHandler> getPermissionHandler() {
+            java.util.ArrayList<CefPermissionHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getPermissionHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefPermissionHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefJsDialogHandler> getJsDialogHandler() {
+            java.util.ArrayList<CefJsDialogHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getJsDialogHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefJsDialogHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefKeyboardHandler> getKeyboardHandler() {
+            java.util.ArrayList<CefKeyboardHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getKeyboardHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefKeyboardHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
+            java.util.ArrayList<CefLifeSpanHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getLifeSpanHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefLifeSpanHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefLoadHandler> getLoadHandler() {
+            java.util.ArrayList<CefLoadHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getLoadHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefLoadHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefPrintHandler> getPrintHandler() {
+            java.util.ArrayList<CefPrintHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getPrintHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefPrintHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefRenderHandler> getRenderHandler() {
+            java.util.ArrayList<CefRenderHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getRenderHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefRenderHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefRequestHandler> getRequestHandler() {
+            java.util.ArrayList<CefRequestHandler> collected = new java.util.ArrayList<>();
+            for (CefClient d : delegates) d.getRequestHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefRequestHandler.Delegating(collected));
+        }
+
+        @Override
+        public boolean onProcessMessageReceived(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
+            for (CefClient d : delegates) {
+                if (d.onProcessMessageReceived(browser, frame, sourceProcess, message)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

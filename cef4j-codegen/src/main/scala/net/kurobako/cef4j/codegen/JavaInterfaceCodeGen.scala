@@ -117,6 +117,10 @@ object JavaInterfaceCodeGen {
 
     val nativePeerSection = if (nativePeerBody.nonEmpty) s"\n$nativePeerBody\n" else ""
 
+    val delegatingSection = if (!isObject && fns.nonEmpty) {
+      "\n" + renderDelegatingClass(javaName, fns, handlerNames) + "\n"
+    } else ""
+
     // Check if free functions need additional imports
     val ffHasNullable = hasNullableFreeFunctionParams(freeFunctions)
     val ffHasNonnull  = hasNonnullFreeFunctionParams(freeFunctions)
@@ -164,7 +168,7 @@ object JavaInterfaceCodeGen {
     val structProto = if (cefStructName.nonEmpty) DocComments.cPrototypeForStruct(cefStructName, hasBase = true) else ""
     JavaCodeGen.renderJavaFile(
       declaration = s"public interface $javaName$extendsClause",
-      body = s"$methods$staticMethodsSection$nativePeerSection",
+      body = s"$methods$staticMethodsSection$nativePeerSection$delegatingSection",
       imports = allImports,
       classDoc = classDoc,
       capiSource = sourceHeader,
@@ -273,6 +277,76 @@ ${allLines.mkString("\n")}
       imports = imports
     )
   }
+
+  private def renderDelegatingClass(
+      javaName: String,
+      fns: List[FnPtr],
+      handlerNames: Set[String]
+  )(using Naming.Context, DocComments.Context): String = {
+    val methods = fns.map(fn => renderDelegatingMethod(fn, javaName, handlerNames)).mkString("\n\n")
+    s"""    /**
+       |     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+       |     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+       |     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+       |     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+       |     * delegate's value.
+       |     */
+       |    class Delegating implements $javaName {
+       |        private final java.util.List<$javaName> delegates;
+       |
+       |        public Delegating(java.util.List<$javaName> delegates) {
+       |            this.delegates = java.util.List.copyOf(delegates);
+       |        }
+       |
+       |$methods
+       |    }""".stripMargin
+  }
+
+  private def renderDelegatingMethod(
+      fn: FnPtr,
+      javaName: String,
+      handlerNames: Set[String]
+  )(using Naming.Context, DocComments.Context): String = {
+    val methodName = Naming.javaMethodName(fn)
+    val retType    = methodReturnType(fn, isObject = false, handlerNames)
+    val shape      = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, Some(retType))
+    val args       = shape.argsExpr
+    val paramsDecl = shape.paramsDecl
+
+    val body: String = fn.ret match {
+      case CType.Void =>
+        s"            for ($javaName d : delegates) d.$methodName($args);"
+      case CType.Bool =>
+        val defaultStmt = reindentDefaultReturn(defaultMethodReturn(fn, handlerNames))
+        s"""            for ($javaName d : delegates) {
+           |                if (d.$methodName($args)) return true;
+           |            }
+           |            if (!delegates.isEmpty()) return false;$defaultStmt""".stripMargin
+      case r if isHandlerPtrReturn(r, handlerNames) =>
+        val handlerType = handlerPtrJavaType(r)
+        s"""            java.util.ArrayList<$handlerType> collected = new java.util.ArrayList<>();
+           |            for ($javaName d : delegates) d.$methodName($args).ifPresent(collected::add);
+           |            return collected.isEmpty()
+           |                    ? Optional.empty()
+           |                    : Optional.of(new $handlerType.Delegating(collected));""".stripMargin
+      case _ =>
+        val defaultStmt = reindentDefaultReturn(defaultMethodReturn(fn, handlerNames))
+        if (defaultStmt.isEmpty) {
+          s"            if (!delegates.isEmpty()) delegates.get(0).$methodName($args);"
+        } else {
+          s"            if (!delegates.isEmpty()) return delegates.get(0).$methodName($args);$defaultStmt"
+        }
+    }
+
+    s"""        @Override
+       |        public ${shape.retType} $methodName($paramsDecl) {
+       |$body
+       |        }""".stripMargin
+  }
+
+  /** Normalise a default return snippet (produced for 8-space indent) to the 12-space indent used inside Delegating. */
+  private def reindentDefaultReturn(snippet: String): String =
+    if (snippet.isEmpty) snippet else snippet.replace("\n        ", "\n            ")
 
   private def renderInterfaceMethod(
       fn: FnPtr,

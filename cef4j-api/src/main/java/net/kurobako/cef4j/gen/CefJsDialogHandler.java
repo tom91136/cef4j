@@ -66,4 +66,47 @@ public interface CefJsDialogHandler extends CefClientHandler {
      */
     default void onDialogClosed(@Nullable CefBrowser browser) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefJsDialogHandler {
+        private final java.util.List<CefJsDialogHandler> delegates;
+
+        public Delegating(java.util.List<CefJsDialogHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onJsDialog(@Nullable CefBrowser browser, @Nullable String originUrl, @Nonnull CefJsDialogType dialogType, @Nullable String messageText, @Nullable String defaultPromptText, @Nullable CefJsDialogCallback callback, int[] suppressMessage) {
+            for (CefJsDialogHandler d : delegates) {
+                if (d.onJsDialog(browser, originUrl, dialogType, messageText, defaultPromptText, callback, suppressMessage)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onBeforeUnloadDialog(@Nullable CefBrowser browser, @Nullable String messageText, boolean isReload, @Nullable CefJsDialogCallback callback) {
+            for (CefJsDialogHandler d : delegates) {
+                if (d.onBeforeUnloadDialog(browser, messageText, isReload, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onResetDialogState(@Nullable CefBrowser browser) {
+            for (CefJsDialogHandler d : delegates) d.onResetDialogState(browser);
+        }
+
+        @Override
+        public void onDialogClosed(@Nullable CefBrowser browser) {
+            for (CefJsDialogHandler d : delegates) d.onDialogClosed(browser);
+        }
+    }
+
 }

@@ -97,4 +97,66 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
     default Optional<CefRequestContextHandler> getDefaultRequestContextHandler() {
         return Optional.empty();
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefBrowserProcessHandler {
+        private final java.util.List<CefBrowserProcessHandler> delegates;
+
+        public Delegating(java.util.List<CefBrowserProcessHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onRegisterCustomPreferences(@Nonnull CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {
+            for (CefBrowserProcessHandler d : delegates) d.onRegisterCustomPreferences(type, registrar);
+        }
+
+        @Override
+        public void onContextInitialized() {
+            for (CefBrowserProcessHandler d : delegates) d.onContextInitialized();
+        }
+
+        @Override
+        public void onBeforeChildProcessLaunch(@Nullable CefCommandLine commandLine) {
+            for (CefBrowserProcessHandler d : delegates) d.onBeforeChildProcessLaunch(commandLine);
+        }
+
+        @Override
+        public boolean onAlreadyRunningAppRelaunch(@Nullable CefCommandLine commandLine, @Nullable String currentDirectory) {
+            for (CefBrowserProcessHandler d : delegates) {
+                if (d.onAlreadyRunningAppRelaunch(commandLine, currentDirectory)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onScheduleMessagePumpWork(long delayMs) {
+            for (CefBrowserProcessHandler d : delegates) d.onScheduleMessagePumpWork(delayMs);
+        }
+
+        @Override
+        public Optional<CefClient> getDefaultClient() {
+            java.util.ArrayList<CefClient> collected = new java.util.ArrayList<>();
+            for (CefBrowserProcessHandler d : delegates) d.getDefaultClient().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefClient.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefRequestContextHandler> getDefaultRequestContextHandler() {
+            java.util.ArrayList<CefRequestContextHandler> collected = new java.util.ArrayList<>();
+            for (CefBrowserProcessHandler d : delegates) d.getDefaultRequestContextHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefRequestContextHandler.Delegating(collected));
+        }
+    }
+
 }

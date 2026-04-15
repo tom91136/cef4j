@@ -209,4 +209,124 @@ public interface CefRenderHandler extends CefClientHandler {
      */
     default void onVirtualKeyboardRequested(@Nullable CefBrowser browser, @Nonnull CefTextInputMode inputMode) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefRenderHandler {
+        private final java.util.List<CefRenderHandler> delegates;
+
+        public Delegating(java.util.List<CefRenderHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public Optional<CefAccessibilityHandler> getAccessibilityHandler() {
+            java.util.ArrayList<CefAccessibilityHandler> collected = new java.util.ArrayList<>();
+            for (CefRenderHandler d : delegates) d.getAccessibilityHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefAccessibilityHandler.Delegating(collected));
+        }
+
+        @Override
+        public boolean getRootScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+            for (CefRenderHandler d : delegates) {
+                if (d.getRootScreenRect(browser, rect)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+            for (CefRenderHandler d : delegates) d.getViewRect(browser, rect);
+        }
+
+        @Override
+        public boolean getScreenPoint(@Nullable CefBrowser browser, int viewX, int viewY, int[] screenX, int[] screenY) {
+            for (CefRenderHandler d : delegates) {
+                if (d.getScreenPoint(browser, viewX, viewY, screenX, screenY)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean getScreenInfo(@Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
+            for (CefRenderHandler d : delegates) {
+                if (d.getScreenInfo(browser, screenInfo)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onPopupShow(@Nullable CefBrowser browser, boolean show) {
+            for (CefRenderHandler d : delegates) d.onPopupShow(browser, show);
+        }
+
+        @Override
+        public void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {
+            for (CefRenderHandler d : delegates) d.onPopupSize(browser, rect);
+        }
+
+        @Override
+        public void onPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nonnull ByteBuffer buffer, int width, int height) {
+            for (CefRenderHandler d : delegates) d.onPaint(browser, type, dirtyRectsCount, dirtyRects, buffer, width, height);
+        }
+
+        @Override
+        public void onAcceleratedPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nullable CefAcceleratedPaintInfo info) {
+            for (CefRenderHandler d : delegates) d.onAcceleratedPaint(browser, type, dirtyRectsCount, dirtyRects, info);
+        }
+
+        @Override
+        public void getTouchHandleSize(@Nullable CefBrowser browser, @Nonnull CefHorizontalAlignment orientation, @Nonnull CefSize.Mutable size) {
+            for (CefRenderHandler d : delegates) d.getTouchHandleSize(browser, orientation, size);
+        }
+
+        @Override
+        public void onTouchHandleStateChanged(@Nullable CefBrowser browser, @Nonnull CefTouchHandleState state) {
+            for (CefRenderHandler d : delegates) d.onTouchHandleStateChanged(browser, state);
+        }
+
+        @Override
+        public boolean startDragging(@Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask allowedOps, int x, int y) {
+            for (CefRenderHandler d : delegates) {
+                if (d.startDragging(browser, dragData, allowedOps, x, y)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void updateDragCursor(@Nullable CefBrowser browser, @Nonnull CefDragOperationsMask operation) {
+            for (CefRenderHandler d : delegates) d.updateDragCursor(browser, operation);
+        }
+
+        @Override
+        public void onScrollOffsetChanged(@Nullable CefBrowser browser, double x, double y) {
+            for (CefRenderHandler d : delegates) d.onScrollOffsetChanged(browser, x, y);
+        }
+
+        @Override
+        public void onImeCompositionRangeChanged(@Nullable CefBrowser browser, @Nonnull CefRange selectedRange, long characterBoundsCount, @Nonnull CefRect[] characterBounds) {
+            for (CefRenderHandler d : delegates) d.onImeCompositionRangeChanged(browser, selectedRange, characterBoundsCount, characterBounds);
+        }
+
+        @Override
+        public void onTextSelectionChanged(@Nullable CefBrowser browser, @Nullable String selectedText, @Nullable CefRange selectedRange) {
+            for (CefRenderHandler d : delegates) d.onTextSelectionChanged(browser, selectedText, selectedRange);
+        }
+
+        @Override
+        public void onVirtualKeyboardRequested(@Nullable CefBrowser browser, @Nonnull CefTextInputMode inputMode) {
+            for (CefRenderHandler d : delegates) d.onVirtualKeyboardRequested(browser, inputMode);
+        }
+    }
+
 }

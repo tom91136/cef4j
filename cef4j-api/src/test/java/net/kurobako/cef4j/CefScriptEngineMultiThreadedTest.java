@@ -62,7 +62,7 @@ class CefScriptEngineMultiThreadedTest {
                     }
                 }
             }
-            Cef.INSTANCE.initialiseUnsafe(settings, extraArgs, null);
+            Cef.INSTANCE.initialiseUnsafe(settings, extraArgs);
         }
 
         engineA = new CefScriptEngine(
@@ -98,6 +98,12 @@ class CefScriptEngineMultiThreadedTest {
         if (engineB != null) engineB.dispose();
         if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
         if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
+        // Shut down CEF synchronously so the internal threads release the cache files before
+        // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
+        // as a synthetic extra test.
+        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
+            Cef.INSTANCE.terminate();
+        }
     }
 
     @Test

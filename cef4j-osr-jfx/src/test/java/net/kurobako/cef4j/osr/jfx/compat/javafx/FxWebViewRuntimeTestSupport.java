@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
+import net.kurobako.cef4j.SystemBootstrap;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -90,11 +92,40 @@ final class FxWebViewRuntimeTestSupport {
         postStartup();
     }
 
-    static void preStartup() {}
+    // On macOS with -XstartOnFirstThread, cef_initialize() must run BEFORE Platform.startup() takes
+    // over the AppKit main thread, so we pre-initialise there. Elsewhere it runs after startup.
+    static void preStartup() {
+        if (!isCefCompatHarness()) return;
+        if (OS.isMacOS()) {
+            SystemBootstrap.load();
+            initialiseCef();
+        }
+    }
 
-    static void postStartup() {}
+    static void postStartup() {
+        if (!isCefCompatHarness()) return;
+        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) return;
+        initialiseCef();
+    }
 
-    static void shutdownCefHarness() {}
+    static void shutdownCefHarness() {
+        if (!isCefCompatHarness()) return;
+        Cef.INSTANCE.terminate();
+    }
+
+    private static void initialiseCef() {
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        Path cacheDir = cefCachePath;
+        if (cacheDir == null) {
+            cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
+        }
+        try {
+            Files.createDirectories(cacheDir);
+        } catch (IOException ignored) {
+        }
+        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+    }
 
     static void setCefCachePath(Path cachePath) {
         cefCachePath = cachePath;
@@ -102,11 +133,6 @@ final class FxWebViewRuntimeTestSupport {
 
     static Path getCefCachePath() {
         return cefCachePath;
-    }
-
-    @SuppressWarnings("unused")
-    private static boolean keepCefCompatTypesReachable() {
-        return OS.isMacOS() && Cef.INSTANCE.getState() == Cef.State.INITIALISED;
     }
 
     static <T> T onFxThread(Callable<T> task) throws Exception {

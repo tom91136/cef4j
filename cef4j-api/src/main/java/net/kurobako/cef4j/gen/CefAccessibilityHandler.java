@@ -37,4 +37,29 @@ public interface CefAccessibilityHandler extends CefClientHandler {
      */
     default void onAccessibilityLocationChange(@Nullable CefValue value) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefAccessibilityHandler {
+        private final java.util.List<CefAccessibilityHandler> delegates;
+
+        public Delegating(java.util.List<CefAccessibilityHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onAccessibilityTreeChange(@Nullable CefValue value) {
+            for (CefAccessibilityHandler d : delegates) d.onAccessibilityTreeChange(value);
+        }
+
+        @Override
+        public void onAccessibilityLocationChange(@Nullable CefValue value) {
+            for (CefAccessibilityHandler d : delegates) d.onAccessibilityLocationChange(value);
+        }
+    }
+
 }

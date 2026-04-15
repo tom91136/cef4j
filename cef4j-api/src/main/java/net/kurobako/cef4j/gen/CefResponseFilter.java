@@ -57,4 +57,34 @@ public interface CefResponseFilter extends CefClientHandler {
     default CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
         return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefResponseFilter {
+        private final java.util.List<CefResponseFilter> delegates;
+
+        public Delegating(java.util.List<CefResponseFilter> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean initFilter() {
+            for (CefResponseFilter d : delegates) {
+                if (d.initFilter()) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+            if (!delegates.isEmpty()) return delegates.get(0).filter(dataIn, dataInRead, dataOut, dataOutWritten);
+            return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
+        }
+    }
+
 }

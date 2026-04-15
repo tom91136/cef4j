@@ -69,4 +69,48 @@ public interface CefAudioHandler extends CefClientHandler {
      */
     default void onAudioStreamError(@Nullable CefBrowser browser, @Nullable String message) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefAudioHandler {
+        private final java.util.List<CefAudioHandler> delegates;
+
+        public Delegating(java.util.List<CefAudioHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean getAudioParameters(@Nullable CefBrowser browser, @Nonnull CefAudioParameters.Mutable params) {
+            for (CefAudioHandler d : delegates) {
+                if (d.getAudioParameters(browser, params)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onAudioStreamStarted(@Nullable CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {
+            for (CefAudioHandler d : delegates) d.onAudioStreamStarted(browser, params, channels);
+        }
+
+        @Override
+        public void onAudioStreamPacket(@Nullable CefBrowser browser, @Nullable NativePointer data, int frames, long pts) {
+            for (CefAudioHandler d : delegates) d.onAudioStreamPacket(browser, data, frames, pts);
+        }
+
+        @Override
+        public void onAudioStreamStopped(@Nullable CefBrowser browser) {
+            for (CefAudioHandler d : delegates) d.onAudioStreamStopped(browser);
+        }
+
+        @Override
+        public void onAudioStreamError(@Nullable CefBrowser browser, @Nullable String message) {
+            for (CefAudioHandler d : delegates) d.onAudioStreamError(browser, message);
+        }
+    }
+
 }

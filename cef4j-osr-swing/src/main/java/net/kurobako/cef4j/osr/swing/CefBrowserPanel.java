@@ -29,7 +29,6 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,7 +40,6 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
 import net.kurobako.cef4j.SystemBootstrap;
-import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefCursorType;
@@ -72,24 +70,34 @@ public class CefBrowserPanel extends JPanel {
     private transient BufferedImage lastPaintedImage;
 
     /**
-     * Initialise CEF for Swing off-screen rendering with an optional custom {@link CefApp} handler.
-     *
-     * @throws IllegalStateException if CEF has been terminated
+     * Lazily initialise CEF with Swing OSR defaults if it has not already been initialised. Callers that need custom
+     * settings should call {@link Cef#initialise(CefSettings.Mutable, List)} directly before creating any panel.
      */
-    public static void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
-        Objects.requireNonNull(settings);
-        Objects.requireNonNull(extraArgs);
-        settings.windowlessRenderingEnabled = 1;
-        settings.externalMessagePump = 0;
-        settings.multiThreadedMessageLoop = 0;
+    public static synchronized void ensureCefInitialised() {
+        Cef.State state = Cef.INSTANCE.getState();
+        if (state == Cef.State.INITIALISED) {
+            Cef.INSTANCE
+                    .getActiveSettings()
+                    .filter(s -> s.windowlessRenderingEnabled == 0)
+                    .ifPresent(s -> {
+                        throw new IllegalStateException(
+                                "CEF is already initialised without windowlessRenderingEnabled; CefBrowserPanel needs OSR mode");
+                    });
+            return;
+        }
+        if (state == Cef.State.SHUTTING_DOWN || state == Cef.State.TERMINATED) {
+            throw new IllegalStateException("CEF has been shut down and cannot be reinitialised in this JVM");
+        }
         SystemBootstrap.load();
-        Cef.INSTANCE.initialise(settings, extraArgs, appHandler);
-    }
-
-    /** Terminate CEF and release all native resources. */
-    public static void terminate() {
-        Cef.INSTANCE.terminate();
+        java.nio.file.Path cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-swing-cache");
+        try {
+            java.nio.file.Files.createDirectories(cacheDir);
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
     }
 
     public CefBrowserPanel() {
@@ -276,6 +284,12 @@ public class CefBrowserPanel extends JPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        ensureCefInitialised();
     }
 
     private CefBrowserHost host() {

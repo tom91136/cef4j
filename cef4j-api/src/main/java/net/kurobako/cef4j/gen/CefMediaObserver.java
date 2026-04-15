@@ -62,4 +62,39 @@ public interface CefMediaObserver extends CefClientHandler {
      */
     default void onRouteMessageReceived(@Nullable CefMediaRoute route, @Nonnull ByteBuffer message) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefMediaObserver {
+        private final java.util.List<CefMediaObserver> delegates;
+
+        public Delegating(java.util.List<CefMediaObserver> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onSinks(long sinksCount, @Nullable CefMediaSink[] sinks) {
+            for (CefMediaObserver d : delegates) d.onSinks(sinksCount, sinks);
+        }
+
+        @Override
+        public void onRoutes(long routesCount, @Nullable CefMediaRoute[] routes) {
+            for (CefMediaObserver d : delegates) d.onRoutes(routesCount, routes);
+        }
+
+        @Override
+        public void onRouteStateChanged(@Nullable CefMediaRoute route, @Nonnull CefMediaRouteConnectionState state) {
+            for (CefMediaObserver d : delegates) d.onRouteStateChanged(route, state);
+        }
+
+        @Override
+        public void onRouteMessageReceived(@Nullable CefMediaRoute route, @Nonnull ByteBuffer message) {
+            for (CefMediaObserver d : delegates) d.onRouteMessageReceived(route, message);
+        }
+    }
+
 }

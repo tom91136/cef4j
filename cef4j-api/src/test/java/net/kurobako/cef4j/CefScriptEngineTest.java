@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -24,7 +25,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     @BeforeAll
     static void initCef() throws Exception {
-        CefTestBase.initCef();
+        CefTestBase.initCef(List.of());
 
         evaluator = new CefScriptEngine(
                 () -> browser != null ? browser.getMainFrame().orElse(null) : null);

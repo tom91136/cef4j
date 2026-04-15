@@ -49,4 +49,38 @@ public interface CefFocusHandler extends CefClientHandler {
      */
     default void onGotFocus(@Nullable CefBrowser browser) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefFocusHandler {
+        private final java.util.List<CefFocusHandler> delegates;
+
+        public Delegating(java.util.List<CefFocusHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onTakeFocus(@Nullable CefBrowser browser, boolean next) {
+            for (CefFocusHandler d : delegates) d.onTakeFocus(browser, next);
+        }
+
+        @Override
+        public boolean onSetFocus(@Nullable CefBrowser browser, @Nonnull CefFocusSource source) {
+            for (CefFocusHandler d : delegates) {
+                if (d.onSetFocus(browser, source)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onGotFocus(@Nullable CefBrowser browser) {
+            for (CefFocusHandler d : delegates) d.onGotFocus(browser);
+        }
+    }
+
 }

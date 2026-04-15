@@ -36,4 +36,28 @@ public interface CefDialogHandler extends CefClientHandler {
     default boolean onFileDialog(@Nullable CefBrowser browser, @Nonnull CefFileDialogMode mode, @Nullable String title, @Nullable String defaultFilePath, @Nullable List<String> acceptFilters, @Nullable List<String> acceptExtensions, @Nullable List<String> acceptDescriptions, @Nullable CefFileDialogCallback callback) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefDialogHandler {
+        private final java.util.List<CefDialogHandler> delegates;
+
+        public Delegating(java.util.List<CefDialogHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onFileDialog(@Nullable CefBrowser browser, @Nonnull CefFileDialogMode mode, @Nullable String title, @Nullable String defaultFilePath, @Nullable List<String> acceptFilters, @Nullable List<String> acceptExtensions, @Nullable List<String> acceptDescriptions, @Nullable CefFileDialogCallback callback) {
+            for (CefDialogHandler d : delegates) {
+                if (d.onFileDialog(browser, mode, title, defaultFilePath, acceptFilters, acceptExtensions, acceptDescriptions, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

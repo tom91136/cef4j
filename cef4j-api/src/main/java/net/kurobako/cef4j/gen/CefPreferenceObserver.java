@@ -27,4 +27,24 @@ public interface CefPreferenceObserver extends CefClientHandler {
      */
     default void onPreferenceChanged(@Nullable String name) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefPreferenceObserver {
+        private final java.util.List<CefPreferenceObserver> delegates;
+
+        public Delegating(java.util.List<CefPreferenceObserver> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onPreferenceChanged(@Nullable String name) {
+            for (CefPreferenceObserver d : delegates) d.onPreferenceChanged(name);
+        }
+    }
+
 }

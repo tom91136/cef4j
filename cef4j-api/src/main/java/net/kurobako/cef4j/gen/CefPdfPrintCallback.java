@@ -29,4 +29,24 @@ public interface CefPdfPrintCallback extends CefClientHandler {
      */
     default void onPdfPrintFinished(@Nullable String path, boolean ok) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefPdfPrintCallback {
+        private final java.util.List<CefPdfPrintCallback> delegates;
+
+        public Delegating(java.util.List<CefPdfPrintCallback> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onPdfPrintFinished(@Nullable String path, boolean ok) {
+            for (CefPdfPrintCallback d : delegates) d.onPdfPrintFinished(path, ok);
+        }
+    }
+
 }

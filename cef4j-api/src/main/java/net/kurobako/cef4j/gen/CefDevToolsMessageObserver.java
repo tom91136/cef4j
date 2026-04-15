@@ -81,4 +81,48 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      */
     default void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefDevToolsMessageObserver {
+        private final java.util.List<CefDevToolsMessageObserver> delegates;
+
+        public Delegating(java.util.List<CefDevToolsMessageObserver> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
+            for (CefDevToolsMessageObserver d : delegates) {
+                if (d.onDevToolsMessage(browser, message)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onDevToolsMethodResult(@Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
+            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsMethodResult(browser, messageId, success, result);
+        }
+
+        @Override
+        public void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
+            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsEvent(browser, method, params);
+        }
+
+        @Override
+        public void onDevToolsAgentAttached(@Nullable CefBrowser browser) {
+            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentAttached(browser);
+        }
+
+        @Override
+        public void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
+            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentDetached(browser);
+        }
+    }
+
 }

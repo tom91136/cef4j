@@ -124,106 +124,44 @@
                 <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <version>2.1.1</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>generate-cef-compat-tests</id>
                         <phase>generate-test-sources</phase>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                            <source><![CDATA[
-import java.nio.charset.StandardCharsets
-
-File sourceDir = new File(project.basedir, "src/test/java/net/kurobako/cef4j/osr/jfx/compat/javafx")
-File targetDir = new File(project.build.directory, "generated-test-sources/cef-compat")
-if (!sourceDir.isDirectory()) {
-    return
-}
-if (targetDir.exists()) {
-    targetDir.deleteDir()
-}
-targetDir.mkdirs()
-sourceDir.eachFileRecurse { File sourceFile ->
-    if (!sourceFile.name.endsWith(".java")) {
-        return
-    }
-    String text = sourceFile.getText("UTF-8")
-    text = text.replace("package net.kurobako.cef4j.osr.jfx.compat.javafx;",
-            "package net.kurobako.cef4j.osr.jfx.compat.cef;")
-    text = text.replace("import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;",
-            "import static net.kurobako.cef4j.osr.jfx.compat.cef.FxWebViewRuntimeTestSupport.*;")
-    text = text.replace("import javafx.scene.web.WebView;",
-            "import net.kurobako.cef4j.osr.jfx.CefWebView;")
-    text = text.replace("import javafx.scene.web.WebEngine;",
-            "import net.kurobako.cef4j.osr.jfx.CefWebEngine;")
-    text = text.replace("import javafx.scene.web.WebHistory;",
-            "import net.kurobako.cef4j.osr.jfx.CefWebHistory;")
-    text = text.replace("import javafx.scene.web.PopupFeatures;",
-            "import net.kurobako.cef4j.osr.jfx.CefPopupFeatures;")
-    text = text.replace("import javafx.scene.web.PromptData;",
-            "import net.kurobako.cef4j.osr.jfx.CefPromptData;")
-    text = text.replace("import javafx.scene.web.WebErrorEvent;",
-            "import net.kurobako.cef4j.osr.jfx.CefWebErrorEvent;")
-    text = text.replace("import javafx.scene.web.WebEvent;",
-            "import net.kurobako.cef4j.osr.jfx.CefWebEvent;")
-    text = text.replaceAll("\\bWebView\\b", "CefWebView")
-    text = text.replaceAll("\\bWebEngine\\b", "CefWebEngine")
-    text = text.replaceAll("\\bWebHistory\\b", "CefWebHistory")
-    text = text.replaceAll("\\bPopupFeatures\\b", "CefPopupFeatures")
-    text = text.replaceAll("\\bPromptData\\b", "CefPromptData")
-    text = text.replaceAll("\\bWebErrorEvent\\b", "CefWebErrorEvent")
-    text = text.replaceAll("\\bWebEvent\\b", "CefWebEvent")
-
-    // On macOS with -XstartOnFirstThread, cef_initialize() must run BEFORE Platform.startup()
-    // takes over the AppKit main thread.  CefWebView.initialise() cannot be called yet because
-    // CefWebView extends Node and loading it triggers Node.<clinit> which requires the toolkit.
-    // So preStartup() pre-initialises CEF directly; postStartup() then calls CefWebView.initialise()
-    // which detects CEF is already running and just records the setup state.
-    String preStartupReplacement =
-            '    static void preStartup() {\n' +
-            '        if (OS.isMacOS()) {\n' +
-            '            net.kurobako.cef4j.SystemBootstrap.load();\n' +
-            '            net.kurobako.cef4j.gen.CefSettings.Mutable s = new net.kurobako.cef4j.gen.CefSettings.Mutable();\n' +
-            '            s.windowlessRenderingEnabled = 1;\n' +
-            '            s.externalMessagePump = 1;\n' +
-            '            s.multiThreadedMessageLoop = 0;\n' +
-            '            s.noSandbox = 1;\n' +
-            '            java.nio.file.Path cacheDir = getCefCachePath();\n' +
-            '            if (cacheDir == null) {\n' +
-            '                cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");\n' +
-            '            }\n' +
-            '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
-            '            s.cachePath = cacheDir.toAbsolutePath().toString();\n' +
-            '            Cef.INSTANCE.initialise(s, java.util.List.of("--disable-popup-blocking"), null);\n' +
-            '        }\n' +
-            '    }'
-    text = text.replaceFirst('(?ms)^\\s*static void preStartup\\(\\)\\s*\\{[^}]*\\}', preStartupReplacement)
-
-    String postStartupReplacement =
-            '    static void postStartup() {\n' +
-            '        net.kurobako.cef4j.gen.CefSettings.Mutable settings = new net.kurobako.cef4j.gen.CefSettings.Mutable();\n' +
-            '        java.nio.file.Path cacheDir = getCefCachePath();\n' +
-            '        if (cacheDir != null) {\n' +
-            '            try { java.nio.file.Files.createDirectories(cacheDir); } catch (java.io.IOException ignored) {}\n' +
-            '            settings.cachePath = cacheDir.toAbsolutePath().toString();\n' +
-            '        }\n' +
-            '        CefWebView.initialise(settings, java.util.List.of(), null);\n' +
-            '    }'
-    text = text.replaceFirst('(?ms)^\\s*static void postStartup\\(\\)\\s*\\{[^}]*\\}', postStartupReplacement)
-
-    String shutdownCefHarnessReplacement = '    static void shutdownCefHarness() {\n        CefWebView.terminate();\n    }'
-    text = text.replaceFirst('(?ms)^\\s*static void shutdownCefHarness\\(\\)\\s*\\{[^}]*\\}', shutdownCefHarnessReplacement)
-
-    String relative = sourceDir.toPath().relativize(sourceFile.toPath()).toString()
-    File outFile = new File(targetDir, "net/kurobako/cef4j/osr/jfx/compat/cef/" + relative)
-    outFile.parentFile.mkdirs()
-    outFile.write(text, "UTF-8")
-}
-                            ]]></source>
+                            <target>
+                                <property name="compat.src" value="${project.basedir}/src/test/java/net/kurobako/cef4j/osr/jfx/compat/javafx"/>
+                                <property name="compat.out" value="${project.build.directory}/generated-test-sources/cef-compat/net/kurobako/cef4j/osr/jfx/compat/cef"/>
+                                <delete dir="${compat.out}" quiet="true"/>
+                                <copy todir="${compat.out}" overwrite="true">
+                                    <fileset dir="${compat.src}" includes="**/*.java"/>
+                                    <filterchain>
+                                        <tokenfilter>
+                                            <replacestring from="package net.kurobako.cef4j.osr.jfx.compat.javafx;" to="package net.kurobako.cef4j.osr.jfx.compat.cef;"/>
+                                            <replacestring from="import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSupport.*;" to="import static net.kurobako.cef4j.osr.jfx.compat.cef.FxWebViewRuntimeTestSupport.*;"/>
+                                            <replacestring from="import javafx.scene.web.WebView;" to="import net.kurobako.cef4j.osr.jfx.CefWebView;"/>
+                                            <replacestring from="import javafx.scene.web.WebEngine;" to="import net.kurobako.cef4j.osr.jfx.CefWebEngine;"/>
+                                            <replacestring from="import javafx.scene.web.WebHistory;" to="import net.kurobako.cef4j.osr.jfx.CefWebHistory;"/>
+                                            <replacestring from="import javafx.scene.web.PopupFeatures;" to="import net.kurobako.cef4j.osr.jfx.CefPopupFeatures;"/>
+                                            <replacestring from="import javafx.scene.web.PromptData;" to="import net.kurobako.cef4j.osr.jfx.CefPromptData;"/>
+                                            <replacestring from="import javafx.scene.web.WebErrorEvent;" to="import net.kurobako.cef4j.osr.jfx.CefWebErrorEvent;"/>
+                                            <replacestring from="import javafx.scene.web.WebEvent;" to="import net.kurobako.cef4j.osr.jfx.CefWebEvent;"/>
+                                            <replaceregex pattern="\bWebView\b" replace="CefWebView" flags="g"/>
+                                            <replaceregex pattern="\bWebEngine\b" replace="CefWebEngine" flags="g"/>
+                                            <replaceregex pattern="\bWebHistory\b" replace="CefWebHistory" flags="g"/>
+                                            <replaceregex pattern="\bPopupFeatures\b" replace="CefPopupFeatures" flags="g"/>
+                                            <replaceregex pattern="\bPromptData\b" replace="CefPromptData" flags="g"/>
+                                            <replaceregex pattern="\bWebErrorEvent\b" replace="CefWebErrorEvent" flags="g"/>
+                                            <replaceregex pattern="\bWebEvent\b" replace="CefWebEvent" flags="g"/>
+                                        </tokenfilter>
+                                    </filterchain>
+                                </copy>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

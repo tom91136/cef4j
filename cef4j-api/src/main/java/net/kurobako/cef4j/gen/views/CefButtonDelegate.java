@@ -38,4 +38,29 @@ public interface CefButtonDelegate extends CefClientHandler {
      */
     default void onButtonStateChanged(@Nullable CefButton button) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefButtonDelegate {
+        private final java.util.List<CefButtonDelegate> delegates;
+
+        public Delegating(java.util.List<CefButtonDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onButtonPressed(@Nullable CefButton button) {
+            for (CefButtonDelegate d : delegates) d.onButtonPressed(button);
+        }
+
+        @Override
+        public void onButtonStateChanged(@Nullable CefButton button) {
+            for (CefButtonDelegate d : delegates) d.onButtonStateChanged(button);
+        }
+    }
+
 }

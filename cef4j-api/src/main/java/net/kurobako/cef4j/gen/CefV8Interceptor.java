@@ -66,4 +66,43 @@ public interface CefV8Interceptor extends CefClientHandler {
     default int setByindex(int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
         return 0;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefV8Interceptor {
+        private final java.util.List<CefV8Interceptor> delegates;
+
+        public Delegating(java.util.List<CefV8Interceptor> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public int getByname(@Nullable String name, @Nullable CefV8Value object, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
+            if (!delegates.isEmpty()) return delegates.get(0).getByname(name, object, retval, exception);
+            return 0;
+        }
+
+        @Override
+        public int getByindex(int index, @Nullable CefV8Value object, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
+            if (!delegates.isEmpty()) return delegates.get(0).getByindex(index, object, retval, exception);
+            return 0;
+        }
+
+        @Override
+        public int setByname(@Nullable String name, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
+            if (!delegates.isEmpty()) return delegates.get(0).setByname(name, object, value, exception);
+            return 0;
+        }
+
+        @Override
+        public int setByindex(int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
+            if (!delegates.isEmpty()) return delegates.get(0).setByindex(index, object, value, exception);
+            return 0;
+        }
+    }
+
 }

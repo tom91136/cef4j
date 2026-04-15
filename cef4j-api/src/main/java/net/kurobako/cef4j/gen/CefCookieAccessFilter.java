@@ -46,4 +46,37 @@ public interface CefCookieAccessFilter extends CefClientHandler {
     default boolean canSaveCookie(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response, @Nonnull CefCookie cookie) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefCookieAccessFilter {
+        private final java.util.List<CefCookieAccessFilter> delegates;
+
+        public Delegating(java.util.List<CefCookieAccessFilter> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean canSendCookie(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nonnull CefCookie cookie) {
+            for (CefCookieAccessFilter d : delegates) {
+                if (d.canSendCookie(browser, frame, request, cookie)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean canSaveCookie(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response, @Nonnull CefCookie cookie) {
+            for (CefCookieAccessFilter d : delegates) {
+                if (d.canSaveCookie(browser, frame, request, response, cookie)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

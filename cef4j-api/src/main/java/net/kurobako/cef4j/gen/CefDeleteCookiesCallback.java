@@ -26,4 +26,24 @@ public interface CefDeleteCookiesCallback extends CefClientHandler {
      */
     default void onComplete(int numDeleted) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefDeleteCookiesCallback {
+        private final java.util.List<CefDeleteCookiesCallback> delegates;
+
+        public Delegating(java.util.List<CefDeleteCookiesCallback> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onComplete(int numDeleted) {
+            for (CefDeleteCookiesCallback d : delegates) d.onComplete(numDeleted);
+        }
+    }
+
 }

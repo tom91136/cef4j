@@ -141,4 +141,102 @@ public interface CefRequestHandler extends CefClientHandler {
      */
     default void onDocumentAvailableInMainFrame(@Nullable CefBrowser browser) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefRequestHandler {
+        private final java.util.List<CefRequestHandler> delegates;
+
+        public Delegating(java.util.List<CefRequestHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onBeforeBrowse(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean userGesture, boolean isRedirect) {
+            for (CefRequestHandler d : delegates) {
+                if (d.onBeforeBrowse(browser, frame, request, userGesture, isRedirect)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onOpenUrlFromTab(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String targetUrl, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture) {
+            for (CefRequestHandler d : delegates) {
+                if (d.onOpenUrlFromTab(browser, frame, targetUrl, targetDisposition, userGesture)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public Optional<CefResourceRequestHandler> getResourceRequestHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean isNavigation, boolean isDownload, @Nullable String requestInitiator, int[] disableDefaultHandling) {
+            java.util.ArrayList<CefResourceRequestHandler> collected = new java.util.ArrayList<>();
+            for (CefRequestHandler d : delegates) d.getResourceRequestHandler(browser, frame, request, isNavigation, isDownload, requestInitiator, disableDefaultHandling).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefResourceRequestHandler.Delegating(collected));
+        }
+
+        @Override
+        public boolean getAuthCredentials(@Nullable CefBrowser browser, @Nullable String originUrl, boolean isProxy, @Nullable String host, int port, @Nullable String realm, @Nullable String scheme, @Nullable CefAuthCallback callback) {
+            for (CefRequestHandler d : delegates) {
+                if (d.getAuthCredentials(browser, originUrl, isProxy, host, port, realm, scheme, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onCertificateError(@Nullable CefBrowser browser, @Nonnull CefErrorCode certError, @Nullable String requestUrl, @Nullable CefSslInfo sslInfo, @Nullable CefCallback callback) {
+            for (CefRequestHandler d : delegates) {
+                if (d.onCertificateError(browser, certError, requestUrl, sslInfo, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onSelectClientCertificate(@Nullable CefBrowser browser, boolean isProxy, @Nullable String host, int port, long certificatesCount, @Nullable CefX509Certificate[] certificates, @Nullable CefSelectClientCertificateCallback callback) {
+            for (CefRequestHandler d : delegates) {
+                if (d.onSelectClientCertificate(browser, isProxy, host, port, certificatesCount, certificates, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onRenderViewReady(@Nullable CefBrowser browser) {
+            for (CefRequestHandler d : delegates) d.onRenderViewReady(browser);
+        }
+
+        @Override
+        public boolean onRenderProcessUnresponsive(@Nullable CefBrowser browser, @Nullable CefUnresponsiveProcessCallback callback) {
+            for (CefRequestHandler d : delegates) {
+                if (d.onRenderProcessUnresponsive(browser, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onRenderProcessResponsive(@Nullable CefBrowser browser) {
+            for (CefRequestHandler d : delegates) d.onRenderProcessResponsive(browser);
+        }
+
+        @Override
+        public void onRenderProcessTerminated(@Nullable CefBrowser browser, @Nonnull CefTerminationStatus status, int errorCode, @Nullable String errorString) {
+            for (CefRequestHandler d : delegates) d.onRenderProcessTerminated(browser, status, errorCode, errorString);
+        }
+
+        @Override
+        public void onDocumentAvailableInMainFrame(@Nullable CefBrowser browser) {
+            for (CefRequestHandler d : delegates) d.onDocumentAvailableInMainFrame(browser);
+        }
+    }
+
 }

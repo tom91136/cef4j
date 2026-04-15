@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
@@ -13,8 +12,8 @@ import javafx.concurrent.Worker.State;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
-import net.kurobako.cef4j.gen.CefSettings;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,18 +27,18 @@ class CefWebViewMultiBrowserTest {
     static void setup(@TempDir Path tempDir) throws Exception {
         assumeDisplayServer();
 
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
-        CefWebView.initialise(settings, List.of(), null);
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
         startJavaFx();
     }
 
     @AfterAll
     static void cleanup() throws Exception {
         closeAllWindows();
-        CefWebView.terminate();
+        Cef.INSTANCE.terminate();
     }
 
     private static CefScriptEngine createAndLoad(String bodyContent) throws Exception {

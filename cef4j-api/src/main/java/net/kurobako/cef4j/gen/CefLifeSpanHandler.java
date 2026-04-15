@@ -116,4 +116,57 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      */
     default void onBeforeClose(@Nullable CefBrowser browser) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefLifeSpanHandler {
+        private final java.util.List<CefLifeSpanHandler> delegates;
+
+        public Delegating(java.util.List<CefLifeSpanHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onBeforePopup(@Nullable CefBrowser browser, @Nullable CefFrame frame, int popupId, @Nullable String targetUrl, @Nullable String targetFrameName, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture, @Nullable CefPopupFeatures popupFeatures, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] noJavascriptAccess) {
+            for (CefLifeSpanHandler d : delegates) {
+                if (d.onBeforePopup(browser, frame, popupId, targetUrl, targetFrameName, targetDisposition, userGesture, popupFeatures, windowInfo, client, settings, extraInfo, noJavascriptAccess)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onBeforePopupAborted(@Nullable CefBrowser browser, int popupId) {
+            for (CefLifeSpanHandler d : delegates) d.onBeforePopupAborted(browser, popupId);
+        }
+
+        @Override
+        public void onBeforeDevToolsPopup(@Nullable CefBrowser browser, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] useDefaultWindow) {
+            for (CefLifeSpanHandler d : delegates) d.onBeforeDevToolsPopup(browser, windowInfo, client, settings, extraInfo, useDefaultWindow);
+        }
+
+        @Override
+        public void onAfterCreated(@Nullable CefBrowser browser) {
+            for (CefLifeSpanHandler d : delegates) d.onAfterCreated(browser);
+        }
+
+        @Override
+        public boolean doClose(@Nullable CefBrowser browser) {
+            for (CefLifeSpanHandler d : delegates) {
+                if (d.doClose(browser)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onBeforeClose(@Nullable CefBrowser browser) {
+            for (CefLifeSpanHandler d : delegates) d.onBeforeClose(browser);
+        }
+    }
+
 }

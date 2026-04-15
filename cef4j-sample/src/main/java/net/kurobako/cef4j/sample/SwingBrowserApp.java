@@ -31,7 +31,6 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefPopupFeatures;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
-import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.slf4j.Logger;
@@ -57,14 +56,9 @@ public final class SwingBrowserApp {
         Path cacheDir = Files.createTempDirectory("cef4j-swing-");
         cacheDir.toFile().deleteOnExit();
 
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = cacheDir.toAbsolutePath().toString();
-        List<String> extraArgs = new ArrayList<>();
-        if (OS.isLinux()) {
-            extraArgs.add("--ozone-platform=x11");
-            extraArgs.add("--no-zygote");
-        }
-        CefBrowserPanel.initialise(settings, extraArgs, null);
+        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        Cef.INSTANCE.initialise(launch.settings(), launch.args());
 
         // On macOS, invokeAndWait deadlocks when Java's main thread is Thread 0 (-XstartOnFirstThread)
         // because AppKit event processing requires Thread 0 to be free. Use invokeLater on macOS so
@@ -76,7 +70,7 @@ public final class SwingBrowserApp {
         }
         SigintHelper.install(SwingBrowserApp::requestShutdown);
         shutdownLatch.await();
-        CefBrowserPanel.terminate();
+        Cef.INSTANCE.terminate();
         log.info("Exiting");
         System.exit(0);
     }
@@ -225,7 +219,7 @@ public final class SwingBrowserApp {
                 }
             }
             window.dispose();
-            // Signal the main thread to proceed with CefBrowserPanel.terminate()
+            // Signal the main thread to proceed with Cef.INSTANCE.terminate()
             shutdownLatch.countDown();
         };
         if (SwingUtilities.isEventDispatchThread()) {

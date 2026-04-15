@@ -40,4 +40,37 @@ public interface CefKeyboardHandler extends CefClientHandler {
     default boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefKeyboardHandler {
+        private final java.util.List<CefKeyboardHandler> delegates;
+
+        public Delegating(java.util.List<CefKeyboardHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onPreKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent, int[] isKeyboardShortcut) {
+            for (CefKeyboardHandler d : delegates) {
+                if (d.onPreKeyEvent(browser, event, osEvent, isKeyboardShortcut)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+            for (CefKeyboardHandler d : delegates) {
+                if (d.onKeyEvent(browser, event, osEvent)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

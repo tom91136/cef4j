@@ -141,4 +141,78 @@ public interface CefViewDelegate extends CefClientHandler {
      */
     default void onThemeChanged(@Nullable CefView view) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefViewDelegate {
+        private final java.util.List<CefViewDelegate> delegates;
+
+        public Delegating(java.util.List<CefViewDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public CefSize getPreferredSize(@Nullable CefView view) {
+            if (!delegates.isEmpty()) return delegates.get(0).getPreferredSize(view);
+            return null;
+        }
+
+        @Override
+        public CefSize getMinimumSize(@Nullable CefView view) {
+            if (!delegates.isEmpty()) return delegates.get(0).getMinimumSize(view);
+            return null;
+        }
+
+        @Override
+        public CefSize getMaximumSize(@Nullable CefView view) {
+            if (!delegates.isEmpty()) return delegates.get(0).getMaximumSize(view);
+            return null;
+        }
+
+        @Override
+        public int getHeightForWidth(@Nullable CefView view, int width) {
+            if (!delegates.isEmpty()) return delegates.get(0).getHeightForWidth(view, width);
+            return 0;
+        }
+
+        @Override
+        public void onParentViewChanged(@Nullable CefView view, boolean added, @Nullable CefView parent) {
+            for (CefViewDelegate d : delegates) d.onParentViewChanged(view, added, parent);
+        }
+
+        @Override
+        public void onChildViewChanged(@Nullable CefView view, boolean added, @Nullable CefView child) {
+            for (CefViewDelegate d : delegates) d.onChildViewChanged(view, added, child);
+        }
+
+        @Override
+        public void onWindowChanged(@Nullable CefView view, boolean added) {
+            for (CefViewDelegate d : delegates) d.onWindowChanged(view, added);
+        }
+
+        @Override
+        public void onLayoutChanged(@Nullable CefView view, @Nonnull CefRect newBounds) {
+            for (CefViewDelegate d : delegates) d.onLayoutChanged(view, newBounds);
+        }
+
+        @Override
+        public void onFocus(@Nullable CefView view) {
+            for (CefViewDelegate d : delegates) d.onFocus(view);
+        }
+
+        @Override
+        public void onBlur(@Nullable CefView view) {
+            for (CefViewDelegate d : delegates) d.onBlur(view);
+        }
+
+        @Override
+        public void onThemeChanged(@Nullable CefView view) {
+            for (CefViewDelegate d : delegates) d.onThemeChanged(view);
+        }
+    }
+
 }

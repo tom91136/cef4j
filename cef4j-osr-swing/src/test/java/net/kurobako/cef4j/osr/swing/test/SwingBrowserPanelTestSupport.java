@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -38,7 +37,6 @@ import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
-import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Assumptions;
@@ -70,9 +68,9 @@ final class SwingBrowserPanelTestSupport {
 
         try {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
-            CefSettings.Mutable settings = new CefSettings.Mutable();
-            settings.cachePath = cacheDir.toAbsolutePath().toString();
-            CefBrowserPanel.initialise(settings, List.of(), null);
+            Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+            launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+            Cef.INSTANCE.initialise(launch.settings(), launch.args());
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);
@@ -260,10 +258,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static void shutdownCef() {
-        if (started) {
-            CefBrowserPanel.terminate();
-            started = false;
-        }
+        Cef.INSTANCE.terminate();
     }
 
     static void loadUrl(CefBrowserPanel panel, String url) {

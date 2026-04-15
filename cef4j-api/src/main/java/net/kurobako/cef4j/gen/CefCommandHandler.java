@@ -73,4 +73,64 @@ public interface CefCommandHandler extends CefClientHandler {
     default boolean isChromeToolbarButtonVisible(@Nonnull CefChromeToolbarButtonType buttonType) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefCommandHandler {
+        private final java.util.List<CefCommandHandler> delegates;
+
+        public Delegating(java.util.List<CefCommandHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onChromeCommand(@Nullable CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
+            for (CefCommandHandler d : delegates) {
+                if (d.onChromeCommand(browser, commandId, disposition)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean isChromeAppMenuItemVisible(@Nullable CefBrowser browser, int commandId) {
+            for (CefCommandHandler d : delegates) {
+                if (d.isChromeAppMenuItemVisible(browser, commandId)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean isChromeAppMenuItemEnabled(@Nullable CefBrowser browser, int commandId) {
+            for (CefCommandHandler d : delegates) {
+                if (d.isChromeAppMenuItemEnabled(browser, commandId)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean isChromePageActionIconVisible(@Nonnull CefChromePageActionIconType iconType) {
+            for (CefCommandHandler d : delegates) {
+                if (d.isChromePageActionIconVisible(iconType)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean isChromeToolbarButtonVisible(@Nonnull CefChromeToolbarButtonType buttonType) {
+            for (CefCommandHandler d : delegates) {
+                if (d.isChromeToolbarButtonVisible(buttonType)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

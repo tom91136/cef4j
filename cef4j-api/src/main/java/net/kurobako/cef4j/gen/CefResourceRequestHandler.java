@@ -132,4 +132,76 @@ public interface CefResourceRequestHandler extends CefClientHandler {
      */
     default void onProtocolExecution(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, int[] allowOsExecution) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefResourceRequestHandler {
+        private final java.util.List<CefResourceRequestHandler> delegates;
+
+        public Delegating(java.util.List<CefResourceRequestHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public Optional<CefCookieAccessFilter> getCookieAccessFilter(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request) {
+            java.util.ArrayList<CefCookieAccessFilter> collected = new java.util.ArrayList<>();
+            for (CefResourceRequestHandler d : delegates) d.getCookieAccessFilter(browser, frame, request).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefCookieAccessFilter.Delegating(collected));
+        }
+
+        @Override
+        public CefReturnValue onBeforeResourceLoad(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefCallback callback) {
+            if (!delegates.isEmpty()) return delegates.get(0).onBeforeResourceLoad(browser, frame, request, callback);
+            return CefReturnValue.of(net.kurobako.cef4j.gen.CefReturnValue.Kind.CONTINUE);
+        }
+
+        @Override
+        public Optional<CefResourceHandler> getResourceHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request) {
+            java.util.ArrayList<CefResourceHandler> collected = new java.util.ArrayList<>();
+            for (CefResourceRequestHandler d : delegates) d.getResourceHandler(browser, frame, request).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefResourceHandler.Delegating(collected));
+        }
+
+        @Override
+        public void onResourceRedirect(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response, @Nullable String newUrl) {
+            for (CefResourceRequestHandler d : delegates) d.onResourceRedirect(browser, frame, request, response, newUrl);
+        }
+
+        @Override
+        public boolean onResourceResponse(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response) {
+            for (CefResourceRequestHandler d : delegates) {
+                if (d.onResourceResponse(browser, frame, request, response)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public Optional<CefResponseFilter> getResourceResponseFilter(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response) {
+            java.util.ArrayList<CefResponseFilter> collected = new java.util.ArrayList<>();
+            for (CefResourceRequestHandler d : delegates) d.getResourceResponseFilter(browser, frame, request, response).ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefResponseFilter.Delegating(collected));
+        }
+
+        @Override
+        public void onResourceLoadComplete(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response, @Nonnull CefUrlRequestStatus status, long receivedContentLength) {
+            for (CefResourceRequestHandler d : delegates) d.onResourceLoadComplete(browser, frame, request, response, status, receivedContentLength);
+        }
+
+        @Override
+        public void onProtocolExecution(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, int[] allowOsExecution) {
+            for (CefResourceRequestHandler d : delegates) d.onProtocolExecution(browser, frame, request, allowOsExecution);
+        }
+    }
+
 }

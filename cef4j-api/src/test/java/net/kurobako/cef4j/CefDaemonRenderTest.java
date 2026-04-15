@@ -63,7 +63,7 @@ class CefDaemonRenderTest {
                 args.add("--ozone-platform=" + ozonePlatform.trim());
             }
         }
-        Cef.INSTANCE.initialise(settings, args, null);
+        Cef.INSTANCE.initialise(settings, args);
     }
 
     @AfterAll

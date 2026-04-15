@@ -16,7 +16,7 @@
     <description>Sample Swing and JavaFX browsers using cef4j</description>
 
     <properties>
-        <javafx.version>26</javafx.version>
+        <javafx.version>19.0.2.1</javafx.version>
         <exec.skip>false</exec.skip>
         <exec.mainClass>net.kurobako.cef4j.sample.SwingBrowserApp</exec.mainClass>
         <!-- macOS Swing/AWT requires the JVM to run on Thread 0 for AppKit compatibility.

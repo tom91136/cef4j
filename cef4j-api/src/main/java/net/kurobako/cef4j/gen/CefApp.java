@@ -73,4 +73,56 @@ public interface CefApp extends CefClientHandler {
     default Optional<CefRenderProcessHandler> getRenderProcessHandler() {
         return Optional.empty();
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefApp {
+        private final java.util.List<CefApp> delegates;
+
+        public Delegating(java.util.List<CefApp> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onBeforeCommandLineProcessing(@Nullable String processType, @Nullable CefCommandLine commandLine) {
+            for (CefApp d : delegates) d.onBeforeCommandLineProcessing(processType, commandLine);
+        }
+
+        @Override
+        public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
+            for (CefApp d : delegates) d.onRegisterCustomSchemes(registrar);
+        }
+
+        @Override
+        public Optional<CefResourceBundleHandler> getResourceBundleHandler() {
+            java.util.ArrayList<CefResourceBundleHandler> collected = new java.util.ArrayList<>();
+            for (CefApp d : delegates) d.getResourceBundleHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefResourceBundleHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
+            java.util.ArrayList<CefBrowserProcessHandler> collected = new java.util.ArrayList<>();
+            for (CefApp d : delegates) d.getBrowserProcessHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefBrowserProcessHandler.Delegating(collected));
+        }
+
+        @Override
+        public Optional<CefRenderProcessHandler> getRenderProcessHandler() {
+            java.util.ArrayList<CefRenderProcessHandler> collected = new java.util.ArrayList<>();
+            for (CefApp d : delegates) d.getRenderProcessHandler().ifPresent(collected::add);
+            return collected.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(new CefRenderProcessHandler.Delegating(collected));
+        }
+    }
+
 }

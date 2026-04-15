@@ -490,7 +490,7 @@ public final class ViewsBrowserApp {
             extraArgs.add("--no-zygote");
         }
 
-        Cef.INSTANCE.initialise(settings, extraArgs, null);
+        Cef.INSTANCE.initialise(settings, extraArgs);
 
         ViewsBrowserApp app = new ViewsBrowserApp();
 

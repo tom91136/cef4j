@@ -28,4 +28,28 @@ public interface CefNavigationEntryVisitor extends CefClientHandler {
     default boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefNavigationEntryVisitor {
+        private final java.util.List<CefNavigationEntryVisitor> delegates;
+
+        public Delegating(java.util.List<CefNavigationEntryVisitor> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
+            for (CefNavigationEntryVisitor d : delegates) {
+                if (d.visit(entry, current, index, total)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }

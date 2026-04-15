@@ -14,11 +14,17 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import net.kurobako.cef4j.gen.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class CefZipReaderTest extends CefTestBase {
+
+    @BeforeAll
+    static void initCef() throws Exception {
+        CefTestBase.initCef(List.of());
+    }
 
     static Stream<Named<BiFunction<byte[], Path, CefStreamReader>>> streamFactories() {
         return Stream.of(Named.of("file", CefZipReaderTest::createFileFactory), Named.of("data", (data, tmpDir) -> {

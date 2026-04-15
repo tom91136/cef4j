@@ -50,4 +50,42 @@ public interface CefPermissionHandler extends CefClientHandler {
      */
     default void onDismissPermissionPrompt(@Nullable CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefPermissionHandler {
+        private final java.util.List<CefPermissionHandler> delegates;
+
+        public Delegating(java.util.List<CefPermissionHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public boolean onRequestMediaAccessPermission(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String requestingOrigin, int requestedPermissions, @Nullable CefMediaAccessCallback callback) {
+            for (CefPermissionHandler d : delegates) {
+                if (d.onRequestMediaAccessPermission(browser, frame, requestingOrigin, requestedPermissions, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onShowPermissionPrompt(@Nullable CefBrowser browser, long promptId, @Nullable String requestingOrigin, int requestedPermissions, @Nullable CefPermissionPromptCallback callback) {
+            for (CefPermissionHandler d : delegates) {
+                if (d.onShowPermissionPrompt(browser, promptId, requestingOrigin, requestedPermissions, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onDismissPermissionPrompt(@Nullable CefBrowser browser, long promptId, @Nonnull CefPermissionRequestResult result) {
+            for (CefPermissionHandler d : delegates) d.onDismissPermissionPrompt(browser, promptId, result);
+        }
+    }
+
 }

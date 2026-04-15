@@ -92,4 +92,70 @@ public interface CefContextMenuHandler extends CefClientHandler {
      */
     default void onQuickMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefContextMenuHandler {
+        private final java.util.List<CefContextMenuHandler> delegates;
+
+        public Delegating(java.util.List<CefContextMenuHandler> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onBeforeContextMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, @Nullable CefMenuModel model) {
+            for (CefContextMenuHandler d : delegates) d.onBeforeContextMenu(browser, frame, params, model);
+        }
+
+        @Override
+        public boolean runContextMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, @Nullable CefMenuModel model, @Nullable CefRunContextMenuCallback callback) {
+            for (CefContextMenuHandler d : delegates) {
+                if (d.runContextMenu(browser, frame, params, model, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onContextMenuCommand(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, int commandId, @Nonnull CefEventFlags eventFlags) {
+            for (CefContextMenuHandler d : delegates) {
+                if (d.onContextMenuCommand(browser, frame, params, commandId, eventFlags)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onContextMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
+            for (CefContextMenuHandler d : delegates) d.onContextMenuDismissed(browser, frame);
+        }
+
+        @Override
+        public boolean runQuickMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefPoint location, @Nonnull CefSize size, @Nonnull CefQuickMenuEditStateFlags editStateFlags, @Nullable CefRunQuickMenuCallback callback) {
+            for (CefContextMenuHandler d : delegates) {
+                if (d.runQuickMenu(browser, frame, location, size, editStateFlags, callback)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public boolean onQuickMenuCommand(@Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
+            for (CefContextMenuHandler d : delegates) {
+                if (d.onQuickMenuCommand(browser, frame, commandId, eventFlags)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+
+        @Override
+        public void onQuickMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
+            for (CefContextMenuHandler d : delegates) d.onQuickMenuDismissed(browser, frame);
+        }
+    }
+
 }

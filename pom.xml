@@ -30,6 +30,7 @@
         <slf4j.version>2.0.16</slf4j.version>
         <junit.jupiter.version>5.11.4</junit.jupiter.version>
         <assertj.version>3.27.7</assertj.version>
+        <mockito.version>5.14.2</mockito.version>
         <javafx.version>11.0.2</javafx.version>
         <flatlaf.version>3.6</flatlaf.version>
         <palantir.java.format.version>2.72.0</palantir.java.format.version>
@@ -99,6 +100,18 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -278,9 +291,12 @@
                         <!-- Cap the forked JVM so a hung test can't block the build indefinitely -->
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
-                            <!-- JUnit 5 per-test timeout (also picked up by IDEs) -->
+                            <!-- JUnit 5 per-test timeout (also picked up by IDEs).
+                                 Lifecycle gets extra budget so @AfterAll can run Cef.terminate()
+                                 cleanly; CEF shutdown closes all outstanding browsers which can
+                                 take a few seconds each. -->
                             <junit.jupiter.execution.timeout.default>10 s</junit.jupiter.execution.timeout.default>
-                            <junit.jupiter.execution.timeout.lifecycle.method.default>10 s</junit.jupiter.execution.timeout.lifecycle.method.default>
+                            <junit.jupiter.execution.timeout.lifecycle.method.default>30 s</junit.jupiter.execution.timeout.lifecycle.method.default>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -331,7 +347,7 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.8.1</version>
+                    <version>1.10.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>

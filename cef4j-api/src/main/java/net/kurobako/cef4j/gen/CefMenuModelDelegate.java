@@ -89,4 +89,58 @@ public interface CefMenuModelDelegate extends CefClientHandler {
     default boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
         return false;
     }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
+     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
+     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
+     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+     * delegate's value.
+     */
+    class Delegating implements CefMenuModelDelegate {
+        private final java.util.List<CefMenuModelDelegate> delegates;
+
+        public Delegating(java.util.List<CefMenuModelDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void executeCommand(@Nullable CefMenuModel menuModel, int commandId, @Nonnull CefEventFlags eventFlags) {
+            for (CefMenuModelDelegate d : delegates) d.executeCommand(menuModel, commandId, eventFlags);
+        }
+
+        @Override
+        public void mouseOutsideMenu(@Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint) {
+            for (CefMenuModelDelegate d : delegates) d.mouseOutsideMenu(menuModel, screenPoint);
+        }
+
+        @Override
+        public void unhandledOpenSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
+            for (CefMenuModelDelegate d : delegates) d.unhandledOpenSubmenu(menuModel, isRtl);
+        }
+
+        @Override
+        public void unhandledCloseSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
+            for (CefMenuModelDelegate d : delegates) d.unhandledCloseSubmenu(menuModel, isRtl);
+        }
+
+        @Override
+        public void menuWillShow(@Nullable CefMenuModel menuModel) {
+            for (CefMenuModelDelegate d : delegates) d.menuWillShow(menuModel);
+        }
+
+        @Override
+        public void menuClosed(@Nullable CefMenuModel menuModel) {
+            for (CefMenuModelDelegate d : delegates) d.menuClosed(menuModel);
+        }
+
+        @Override
+        public boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
+            for (CefMenuModelDelegate d : delegates) {
+                if (d.formatLabel(menuModel, label)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+
 }
