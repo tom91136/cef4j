@@ -35,12 +35,14 @@ stderr pipe, the SLF4J daemon reader thread has nothing to capture.
 Normal CEF output (WARNING, ERROR) does go to stderr and appears in SLF4J.
 
 The crash signal handler in `stderr_redirect.cpp` catches SIGTRAP/SIGABRT and
-emits a hint pointing to `chrome_debug.log` on the original stderr, so you'll
-see this in surefire output:
+prints the crash notice with the exact `chrome_debug.log` path (if the cache
+directory was set) plus a native backtrace on macOS/Linux:
 
 ```
-[cef4j] Native crash detected. Check chrome_debug.log in the CEF user-data directory for details.
-[cef4j] Hint: find /tmp -name chrome_debug.log -mmin 1
+[cef4j] Native crash detected. CEF log: /tmp/cef4j-cache/chrome_debug.log
+[cef4j] Native backtrace:
+0   libcef4j.dylib  0x...  crashHandler + 123
+...
 ```
 
 ## Step 2: Disable the Stderr Redirect
@@ -56,9 +58,9 @@ System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
 System.load(cacheDir.resolve("libcef4j.so").toAbsolutePath().toString());
 ```
 
-Or, if using surefire, add `-Dcef4j.noStderrRedirect=true` and check for it in
-a modified `SystemBootstrap` flow. The simplest approach is a standalone
-reproducer (see Step 3).
+Or, if using surefire, add `-Dcef4j.disableStderrRedirect=true` — `NativeStderr.install()`
+honours this flag and leaves native stderr unredirected. The simplest approach for
+hard-to-reproduce crashes is a standalone reproducer (see Step 3).
 
 ## Step 3: Create a Standalone Reproducer
 

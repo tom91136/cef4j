@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.*;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -31,6 +30,7 @@ import net.kurobako.cef4j.gen.CefPoint;
 import net.kurobako.cef4j.gen.CefPopupFeatures;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.slf4j.Logger;
@@ -49,6 +49,7 @@ public final class SwingBrowserApp {
     private static JPanel newTabPlaceholder;
     private static JLabel statusLabel;
     private static JProgressBar progressBar;
+    private static boolean creatingTab;
 
     public static void main(String[] args) throws Exception {
         log.info("cef4j Swing Browser starting");
@@ -56,23 +57,20 @@ public final class SwingBrowserApp {
         Path cacheDir = Files.createTempDirectory("cef4j-swing-");
         cacheDir.toFile().deleteOnExit();
 
-        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        CefBrowserPanel.initialise(settings, List.of(), null);
 
-        // On macOS, invokeAndWait deadlocks when Java's main thread is Thread 0 (-XstartOnFirstThread)
-        // because AppKit event processing requires Thread 0 to be free. Use invokeLater on macOS so
-        // the main thread can proceed to the latch, keeping Thread 0 available for AppKit.
-        if (OS.isMacOS()) {
-            SwingUtilities.invokeLater(SwingBrowserApp::createUI);
-        } else {
-            SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
-        }
+        SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
         SigintHelper.install(SwingBrowserApp::requestShutdown);
         shutdownLatch.await();
-        Cef.INSTANCE.terminate();
+        CefBrowserPanel.terminate();
         log.info("Exiting");
-        System.exit(0);
+        // halt() instead of exit(): on macOS, System.exit() triggers JVM teardown
+        // which drains the CFRunLoop and fires CEF's registered observers after
+        // the message loop has stopped, causing a CHECK failure.  halt() does an
+        // immediate _exit() that avoids this.
+        Runtime.getRuntime().halt(0);
     }
 
     private static void createUI() {
@@ -88,6 +86,7 @@ public final class SwingBrowserApp {
         window = new JFrame("cef4j Browser (Swing)");
         window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         window.setSize(1280, 800);
+        window.setLocationRelativeTo(null);
 
         statusLabel = new JLabel(" ");
         statusLabel.setBorder(BorderFactory.createCompoundBorder(
@@ -109,7 +108,7 @@ public final class SwingBrowserApp {
 
         tabbedPane.addChangeListener(e -> {
             if (tabbedPane.getSelectedComponent() == newTabPlaceholder) {
-                SwingUtilities.invokeLater(() -> createTab(DEFAULT_URL));
+                createTab(DEFAULT_URL);
                 return;
             }
             BrowserTab tab = selectedTab();
@@ -165,6 +164,8 @@ public final class SwingBrowserApp {
 
         createTab(DEFAULT_URL);
         window.setVisible(true);
+        window.toFront();
+        window.requestFocus();
     }
 
     private static BrowserTab selectedTab() {
@@ -173,12 +174,18 @@ public final class SwingBrowserApp {
     }
 
     private static void createTab(String url) {
-        BrowserTab tab = new BrowserTab(url);
-        int insertAt = tabbedPane.indexOfComponent(newTabPlaceholder);
-        if (insertAt < 0) insertAt = tabbedPane.getTabCount();
-        tabbedPane.insertTab("New Tab", null, tab, null, insertAt);
-        tabbedPane.setTabComponentAt(insertAt, tab.createTabHeader());
-        tabbedPane.setSelectedComponent(tab);
+        if (creatingTab) return;
+        creatingTab = true;
+        try {
+            BrowserTab tab = new BrowserTab(url);
+            int insertAt = tabbedPane.indexOfComponent(newTabPlaceholder);
+            if (insertAt < 0) insertAt = tabbedPane.getTabCount();
+            tabbedPane.insertTab("New Tab", null, tab, null, insertAt);
+            tabbedPane.setTabComponentAt(insertAt, tab.createTabHeader());
+            tabbedPane.setSelectedComponent(tab);
+        } finally {
+            creatingTab = false;
+        }
     }
 
     private static void closeSelectedTab() {

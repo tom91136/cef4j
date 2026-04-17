@@ -47,7 +47,7 @@
         <native.compiler.id/>
         <cef4j.generated.java.package>net.kurobako.cef4j.gen</cef4j.generated.java.package>
 
-        <!-- Extra JVM args for Surefire; macOS profiles override this with -XstartOnFirstThread -->
+        <!-- Extra JVM args for Surefire; empty by default. Override via -Dsurefire.argLine=... if needed. -->
         <surefire.argLine/>
     </properties>
 
@@ -182,8 +182,6 @@
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosx64_minimal.tar.bz2</cef.dist.url>
                 <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>clang</native.compiler.id>
-                <!-- CEF on macOS requires initialization on the main thread (Thread 0). -->
-                <surefire.argLine>-XstartOnFirstThread</surefire.argLine>
             </properties>
         </profile>
         <profile>
@@ -199,8 +197,6 @@
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosarm64_minimal.tar.bz2</cef.dist.url>
                 <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>clang</native.compiler.id>
-                <!-- CEF on macOS requires initialization on the main thread (Thread 0). -->
-                <surefire.argLine>-XstartOnFirstThread</surefire.argLine>
             </properties>
         </profile>
         <profile>
@@ -285,8 +281,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.5</version>
                     <configuration>
-                        <!-- macOS profiles set surefire.argLine to -XstartOnFirstThread so CEF
-                             initialises on Thread 0 (the AppKit main thread). Empty on other OSes. -->
+                        <!-- Empty by default; opt-in via -Dsurefire.argLine=... for ad-hoc overrides. -->
                         <argLine>${surefire.argLine}</argLine>
                         <!-- Cap the forked JVM so a hung test can't block the build indefinitely -->
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>

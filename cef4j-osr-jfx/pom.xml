@@ -86,13 +86,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- Default fork: javafx-only compat tests (no CEF).
-                         These tests must NOT use -XstartOnFirstThread on macOS because
-                         without CEF there is nothing to pump the AppKit runloop, and
-                         the test thread (which IS the AppKit thread) blocks in wait loops. -->
-                    <argLine>-Dignore=true</argLine>
+                    <!-- Default fork: javafx-only compat tests (no CEF). Surefire defaults
+                         java.awt.headless=true; JavaFX needs a real display to start. -->
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
+                        <cef4j.disableStderrRedirect>true</cef4j.disableStderrRedirect>
+                        <java.awt.headless>false</java.awt.headless>
                     </systemPropertyVariables>
                     <reuseForks>false</reuseForks>
                     <excludes>
@@ -105,7 +104,6 @@
                         <id>cef-tests</id>
                         <goals><goal>test</goal></goals>
                         <configuration>
-                            <argLine>${surefire.argLine}</argLine>
                             <!-- Fresh JVM per test class: CefWebView tests leave CEF
                                  state (browsers, message loop) that interferes with
                                  subsequent classes in the same fork. -->

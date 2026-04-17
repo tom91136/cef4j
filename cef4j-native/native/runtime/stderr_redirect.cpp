@@ -9,27 +9,58 @@
 #include "jni_util.h"
 #include "runtime_stubs.gen.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #if !defined(_WIN32)
 #include <signal.h>
 #include <unistd.h>
+#if defined(__APPLE__) || defined(__linux__)
+#include <execinfo.h>
+#include <fcntl.h>
+#endif
 
 // Saved fd for the crash handler to write diagnostics to original stderr.
 static int origStderrFd = -1;
+// Set from Java after cef_initialize to hold the exact chrome_debug.log path.
+static char crashLogPath[4096] = {0};
 
 static void crashHandler(int sig) {
     if (origStderrFd >= 0) {
         // CEF's LOG(FATAL) writes to chrome_debug.log but NOT to stderr, so
-        // the redirected pipe is empty at this point. Emit a hint on the
-        // original stderr so the user knows where to look.
-        const char msg[] =
-            "\n[cef4j] Native crash detected. "
-            "Check chrome_debug.log in the CEF user-data directory for details.\n"
-            "[cef4j] Hint: find /tmp -name chrome_debug.log -mmin 1\n";
-        write(origStderrFd, msg, sizeof(msg) - 1);
+        // the redirected pipe is empty at this point. Write the crash notice
+        // and backtrace to the original stderr.
+        if (crashLogPath[0] != '\0') {
+            const char prefix[] = "\n[cef4j] Native crash detected. CEF log: ";
+            write(origStderrFd, prefix, sizeof(prefix) - 1);
+            write(origStderrFd, crashLogPath, strlen(crashLogPath));
+            write(origStderrFd, "\n", 1);
+        } else {
+            const char msg[] =
+                "\n[cef4j] Native crash detected. "
+                "Check chrome_debug.log in the CEF cache directory for details.\n";
+            write(origStderrFd, msg, sizeof(msg) - 1);
+        }
+
+#if defined(__APPLE__) || defined(__linux__)
+        const char btMsg[] = "[cef4j] Native backtrace:\n";
+        write(origStderrFd, btMsg, sizeof(btMsg) - 1);
+        void* frames[64];
+        int count = backtrace(frames, 64);
+        backtrace_symbols_fd(frames, count, origStderrFd);
+#endif
     }
     // Re-raise with default handler so the process terminates normally.
     signal(sig, SIG_DFL);
     raise(sig);
+}
+
+CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass, jstring jpath) {
+    const char* path = env->GetStringUTFChars(jpath, nullptr);
+    if (path) {
+        snprintf(crashLogPath, sizeof(crashLogPath), "%s", path);
+        env->ReleaseStringUTFChars(jpath, path);
+    }
 }
 
 static jobject makeFdObject(JNIEnv* env, int fd) {
@@ -93,28 +124,45 @@ CEF4J_JNI_EXPORT_RT(jobjectArray, NativeStderr, redirectStderr0)(JNIEnv* env, jc
 
 // Saved handle for the crash handler to write to original stderr.
 static HANDLE origStderrHandle = INVALID_HANDLE_VALUE;
+// Set from Java after cef_initialize to hold the exact chrome_debug.log path.
+static char crashLogPath[4096] = {0};
 
-static LONG WINAPI crashExceptionFilter(EXCEPTION_POINTERS* ep) {
-    if (origStderrHandle != INVALID_HANDLE_VALUE) {
+static void writeCrashMessage(const char* suffix) {
+    if (origStderrHandle == INVALID_HANDLE_VALUE) return;
+    DWORD written;
+    if (crashLogPath[0] != '\0') {
+        const char prefix[] = "\n[cef4j] Native crash detected";
+        WriteFile(origStderrHandle, prefix, sizeof(prefix) - 1, &written, NULL);
+        if (suffix) WriteFile(origStderrHandle, suffix, (DWORD)strlen(suffix), &written, NULL);
+        const char mid[] = ". CEF log: ";
+        WriteFile(origStderrHandle, mid, sizeof(mid) - 1, &written, NULL);
+        WriteFile(origStderrHandle, crashLogPath, (DWORD)strlen(crashLogPath), &written, NULL);
+        WriteFile(origStderrHandle, "\n", 1, &written, NULL);
+    } else {
         const char msg[] =
             "\n[cef4j] Native crash detected. "
-            "Check chrome_debug.log in the CEF user-data directory for details.\n";
-        DWORD written;
+            "Check chrome_debug.log in the CEF cache directory for details.\n";
         WriteFile(origStderrHandle, msg, sizeof(msg) - 1, &written, NULL);
     }
+}
+
+static LONG WINAPI crashExceptionFilter(EXCEPTION_POINTERS* ep) {
+    writeCrashMessage(NULL);
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
 static void crashSignalHandler(int sig) {
-    if (origStderrHandle != INVALID_HANDLE_VALUE) {
-        const char msg[] =
-            "\n[cef4j] Native crash detected (SIGABRT). "
-            "Check chrome_debug.log in the CEF user-data directory for details.\n";
-        DWORD written;
-        WriteFile(origStderrHandle, msg, sizeof(msg) - 1, &written, NULL);
-    }
+    writeCrashMessage(" (SIGABRT)");
     signal(sig, SIG_DFL);
     raise(sig);
+}
+
+CEF4J_JNI_EXPORT_RT(void, NativeStderr, setCrashLogPath0)(JNIEnv* env, jclass, jstring jpath) {
+    const char* path = env->GetStringUTFChars(jpath, nullptr);
+    if (path) {
+        snprintf(crashLogPath, sizeof(crashLogPath), "%s", path);
+        env->ReleaseStringUTFChars(jpath, path);
+    }
 }
 
 static jobject makeFdObject(JNIEnv* env, int fd) {

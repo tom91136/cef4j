@@ -1,6 +1,9 @@
 package net.kurobako.cef4j.sample;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -18,12 +21,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.osr.jfx.CefWebView;
 
 public final class JfxBrowserApp {
 
+    private static Path createCacheDir() throws IOException {
+        Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
+        cacheDir.toFile().deleteOnExit();
+        return cacheDir;
+    }
+
     public static void main(String[] args) throws IOException {
+        CefSettings.Mutable settings = new CefSettings.Mutable();
+        settings.cachePath = createCacheDir().toAbsolutePath().toString();
+        CefWebView.initialise(settings, List.of(), null);
         SigintHelper.install(() -> {
             if (Platform.isFxApplicationThread()) {
                 Platform.exit();
@@ -32,14 +44,17 @@ public final class JfxBrowserApp {
             }
         });
         Application.launch(JfxApp.class, args);
-        Cef.INSTANCE.terminate();
+        CefWebView.terminate();
+        // halt() instead of normal return: on macOS, JVM teardown fires CEF's
+        // CFRunLoop observers after the message loop has stopped, causing a crash.
+        Runtime.getRuntime().halt(0);
     }
 
     public static class JfxApp extends Application {
         private static final String DEFAULT_URL = "https://codepen.io/rcyou/pen/QEObEZ";
 
         @Override
-        public void start(Stage stage) throws IOException {
+        public void start(Stage stage) {
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);
             stage.setHeight(800);

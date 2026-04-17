@@ -28,7 +28,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +42,7 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
 import net.kurobako.cef4j.SystemBootstrap;
+import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefCursorType;
@@ -69,38 +72,81 @@ public class CefBrowserPanel extends JPanel {
     private transient BufferedImage osrPopupImage;
     private transient BufferedImage lastPaintedImage;
 
+    // Cached screen location, updated on the EDT. Read by CEF render handler callbacks
+    // which may run on the AppKit main thread where acquiring AWTTreeLock can deadlock
+    // against the EDT during window realisation.
+    private volatile int cachedScreenX;
+    private volatile int cachedScreenY;
+    private volatile boolean screenLocationValid;
+
     /**
-     * Lazily initialise CEF with Swing OSR defaults if it has not already been initialised. Callers that need custom
-     * settings should call {@link Cef#initialise(CefSettings.Mutable, List)} directly before creating any panel.
+     * Initialise CEF for off-screen rendering. Must be called before constructing any {@link CefBrowserPanel},
+     * typically from the {@code main} thread before AWT is initialised.
+     *
+     * <p>OSR-required settings ({@code windowlessRenderingEnabled=1}, the platform-appropriate message-loop mode, and
+     * {@code --disable-popup-blocking} / {@code --ozone-platform=x11} on Linux) are stamped onto {@code settings} /
+     * prepended to {@code extraArgs} by {@link Cef#osrLaunchArgs()}. Any other fields on {@code settings} (e.g.
+     * {@code cachePath}) are preserved.
+     *
+     * @param settings caller-provided settings; OSR fields will be overwritten
+     * @param extraArgs additional CEF command-line args; OSR defaults are prepended
+     * @param appHandler optional {@link CefApp} handler; if non-null it is registered via
+     *     {@link Cef#addAppHandler(CefApp)} before initialisation
+     * @throws IllegalStateException if CEF has been terminated
      */
-    public static synchronized void ensureCefInitialised() {
-        Cef.State state = Cef.INSTANCE.getState();
-        if (state == Cef.State.INITIALISED) {
-            Cef.INSTANCE
-                    .getActiveSettings()
-                    .filter(s -> s.windowlessRenderingEnabled == 0)
-                    .ifPresent(s -> {
-                        throw new IllegalStateException(
-                                "CEF is already initialised without windowlessRenderingEnabled; CefBrowserPanel needs OSR mode");
-                    });
+    public static synchronized void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(extraArgs, "extraArgs");
+        // Note: we intentionally do NOT call SwingUtilities.isEventDispatchThread() here.
+        // On macOS without -XstartOnFirstThread, that call triggers AWT initialisation which
+        // blocks until [NSApp run] is running on Thread 0.  CEF must initialise first (starting
+        // [NSApp run] via cef_run_message_loop on Thread 0) so that AWT's [AWTStarter starter:]
+        // sees NSApp is already running and completes immediately.
+        Cef.State cefState = Cef.INSTANCE.getState();
+        if (cefState == Cef.State.INITIALISED) {
+            requireOsrInitialised();
             return;
         }
-        if (state == Cef.State.SHUTTING_DOWN || state == Cef.State.TERMINATED) {
-            throw new IllegalStateException("CEF has been shut down and cannot be reinitialised in this JVM");
-        }
         SystemBootstrap.load();
-        java.nio.file.Path cacheDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"), "cef4j-swing-cache");
-        try {
-            java.nio.file.Files.createDirectories(cacheDir);
-        } catch (java.io.IOException e) {
-            throw new java.io.UncheckedIOException(e);
+        Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
+        CefSettings.Mutable osrDefaults = defaults.settings();
+        settings.windowlessRenderingEnabled = osrDefaults.windowlessRenderingEnabled;
+        settings.externalMessagePump = osrDefaults.externalMessagePump;
+        settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
+        List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
+        combinedArgs.addAll(defaults.args());
+        combinedArgs.addAll(extraArgs);
+        if (appHandler != null) {
+            Cef.INSTANCE.addAppHandler(appHandler);
         }
-        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+        Cef.INSTANCE.initialise(settings, combinedArgs);
+    }
+
+    /** Terminate CEF. See {@link Cef#terminate()}. */
+    public static void terminate() {
+        Cef.INSTANCE.terminate();
+    }
+
+    private static void requireOsrInitialised() {
+        Cef.State state = Cef.INSTANCE.getState();
+        if (state != Cef.State.INITIALISED) {
+            throw new IllegalStateException(
+                    "CEF must be initialised for off-screen rendering before creating a CefBrowserPanel.\n"
+                            + "Call CefBrowserPanel.initialise(settings, args, handler) before constructing any panel.\n");
+        }
+        Cef.INSTANCE
+                .getActiveSettings()
+                .filter(s -> s.windowlessRenderingEnabled == 0)
+                .ifPresent(s -> {
+                    throw new IllegalStateException(
+                            "CEF was initialised without windowlessRenderingEnabled=1. CefBrowserPanel requires OSR mode.\n"
+                                    + "Use Cef.osrLaunchArgs() or CefBrowserPanel.initialise() instead.\n");
+                });
     }
 
     public CefBrowserPanel() {
+        requireOsrInitialised();
         int maxW = 1, maxH = 1;
         for (GraphicsDevice dev :
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
@@ -262,34 +308,35 @@ public class CefBrowserPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                updateScreenLocation();
                 refreshView(false);
             }
 
             @Override
             public void componentMoved(ComponentEvent e) {
+                updateScreenLocation();
                 refreshView(true);
             }
         });
         addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
             @Override
             public void ancestorMoved(HierarchyEvent e) {
+                updateScreenLocation();
                 refreshView(true);
             }
         });
 
         addHierarchyListener(e -> {
-            if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0) {
+            long flags = e.getChangeFlags();
+            if ((flags & (HierarchyEvent.SHOWING_CHANGED | HierarchyEvent.PARENT_CHANGED)) != 0) {
+                updateScreenLocation();
+            }
+            if ((flags & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0) {
                 if (!isDisplayable()) {
                     release();
                 }
             }
         });
-    }
-
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        ensureCefInitialised();
     }
 
     private CefBrowserHost host() {
@@ -308,21 +355,37 @@ public class CefBrowserPanel extends JPanel {
         h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
     }
 
+    /**
+     * Refreshes the cached screen location. Must be called on the EDT — it acquires the AWTTreeLock via
+     * {@link #getLocationOnScreen()}. The cached coordinates are read lock-free by CEF render-handler callbacks that
+     * may run on the AppKit main thread.
+     */
+    private void updateScreenLocation() {
+        if (isShowing()) {
+            try {
+                Point loc = getLocationOnScreen();
+                cachedScreenX = loc.x;
+                cachedScreenY = loc.y;
+                screenLocationValid = true;
+                return;
+            } catch (java.awt.IllegalComponentStateException ignored) {
+                // fall through
+            }
+        }
+        screenLocationValid = false;
+    }
+
     /** Creates the render handler used to paint this panel. */
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
             public boolean getRootScreenRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
-                try {
-                    Point loc = getLocationOnScreen();
-                    rect.x = loc.x;
-                    rect.y = loc.y;
-                    rect.width = Math.max(1, getWidth());
-                    rect.height = Math.max(1, getHeight());
-                    return true;
-                } catch (java.awt.IllegalComponentStateException e) {
-                    return false;
-                }
+                if (!screenLocationValid) return false;
+                rect.x = cachedScreenX;
+                rect.y = cachedScreenY;
+                rect.width = Math.max(1, getWidth());
+                rect.height = Math.max(1, getHeight());
+                return true;
             }
 
             @Override
@@ -335,14 +398,10 @@ public class CefBrowserPanel extends JPanel {
 
             @Override
             public boolean getScreenPoint(@Nullable CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
-                try {
-                    Point loc = getLocationOnScreen();
-                    screenX[0] = loc.x + viewX;
-                    screenY[0] = loc.y + viewY;
-                    return true;
-                } catch (java.awt.IllegalComponentStateException e) {
-                    return false;
-                }
+                if (!screenLocationValid) return false;
+                screenX[0] = cachedScreenX + viewX;
+                screenY[0] = cachedScreenY + viewY;
+                return true;
             }
 
             @Override

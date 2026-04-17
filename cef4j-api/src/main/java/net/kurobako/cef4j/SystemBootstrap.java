@@ -366,6 +366,43 @@ public final class SystemBootstrap {
     // CEF framework via dlopen before cef_initialize() is called.
     private static native boolean loadCefLibrary0(String frameworkBinaryPath);
 
+    // macOS only: dispatch a single block onto Thread 0 via dispatch_async that runs
+    // initRunnable (cef_initialize), then cef_run_message_loop(), then cleanupRunnable
+    // (NativeCleaner + cef_shutdown).  Blocks the caller until init completes (semaphore).
+    static native void initAndRunOnMainThread0(Runnable initRunnable, Runnable cleanupRunnable);
+
+    // macOS only: dispatch {@code runnable.run()} onto Thread 0 (the AppKit main thread) via
+    // {@code dispatch_sync(dispatch_get_main_queue())}. If the calling thread is already Thread 0
+    // (e.g. JVM launched with {@code -XstartOnFirstThread}), the runnable is invoked directly.
+    // Exceptions thrown from the runnable are logged but not propagated.
+    static native void dispatchToMainThreadSync0(Runnable runnable);
+
+    // macOS only: calls cef_quit_message_loop() + [NSApp stop:] to cause
+    // cef_run_message_loop() to return, then waits for the dispatch block to finish.
+    static native void quitAndWaitMainThreadMessageLoop0();
+
+    /**
+     * macOS only: initialise CEF, run the message loop, and run cleanup — all on Thread 0 in a single GCD block. See
+     * {@link #initAndRunOnMainThread0(Runnable, Runnable)}.
+     */
+    public static void initAndRunOnMainThread(Runnable initRunnable, Runnable cleanupRunnable) {
+        if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
+        initAndRunOnMainThread0(initRunnable, cleanupRunnable);
+    }
+
+    /** macOS only. See {@link #dispatchToMainThreadSync0(Runnable)}. */
+    public static void dispatchToMainThreadSync(Runnable runnable) {
+        if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
+        if (!loaded) load();
+        dispatchToMainThreadSync0(runnable);
+    }
+
+    /** macOS only. See {@link #quitAndWaitMainThreadMessageLoop0()}. */
+    public static void quitAndWaitMainThreadMessageLoop() {
+        if (!OS.isMacOS()) throw new UnsupportedOperationException("macOS only");
+        quitAndWaitMainThreadMessageLoop0();
+    }
+
     private static void extractResource(String resourcePath, Path target) throws IOException {
         try (InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (in == null) {

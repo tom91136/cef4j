@@ -1,12 +1,9 @@
 package net.kurobako.cef4j.osr.jfx;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -41,6 +38,7 @@ import net.kurobako.cef4j.CefFrameBuffer;
 import net.kurobako.cef4j.CefInputEventFlags;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.SystemBootstrap;
+import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -56,6 +54,7 @@ import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefScreenInfo;
+import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 
 /** JavaFX off-screen rendering view backed by a CEF browser. */
@@ -111,7 +110,78 @@ public class CefWebView extends Region {
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
 
+    /** Number of view (non-popup) paints delivered to this view; package-private for tests. */
+    volatile long framesPainted;
+
+    /**
+     * Initialise CEF for off-screen rendering. Must be called before
+     * {@link javafx.application.Application#launch(Class, String...)}, typically from the {@code main} thread before
+     * JavaFX is initialised.
+     *
+     * <p>OSR-required settings ({@code windowlessRenderingEnabled=1}, the platform-appropriate message-loop mode, and
+     * {@code --disable-popup-blocking} / {@code --ozone-platform=x11} on Linux) are stamped onto {@code settings} /
+     * prepended to {@code extraArgs} by {@link Cef#osrLaunchArgs()}. Any other fields on {@code settings} (e.g.
+     * {@code cachePath}) are preserved.
+     *
+     * @param settings caller-provided settings; OSR fields will be overwritten
+     * @param extraArgs additional CEF command-line args; OSR defaults are prepended
+     * @param appHandler optional {@link CefApp} handler; if non-null it is registered via
+     *     {@link Cef#addAppHandler(CefApp)} before initialisation
+     * @throws IllegalStateException if CEF has been terminated
+     */
+    public static synchronized void initialise(
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(extraArgs, "extraArgs");
+        // Note: we intentionally do NOT call Platform.isFxApplicationThread() here.
+        // On macOS without -XstartOnFirstThread, that call triggers JavaFX/Glass initialisation
+        // which blocks until [NSApp run] is running on Thread 0.  CEF must initialise first.
+        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
+            // Already up - just validate it's configured for OSR.
+            requireOsrInitialised();
+            return;
+        }
+        SystemBootstrap.load();
+        Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
+        CefSettings.Mutable osrDefaults = defaults.settings();
+        settings.windowlessRenderingEnabled = osrDefaults.windowlessRenderingEnabled;
+        settings.externalMessagePump = osrDefaults.externalMessagePump;
+        settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
+        List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
+        combinedArgs.addAll(defaults.args());
+        combinedArgs.addAll(extraArgs);
+        if (appHandler != null) {
+            Cef.INSTANCE.addAppHandler(appHandler);
+        }
+        Cef.INSTANCE.initialise(settings, combinedArgs);
+    }
+
+    /** Terminate CEF. See {@link Cef#terminate()}. */
+    public static void terminate() {
+        Cef.INSTANCE.terminate();
+    }
+
+    private static void requireOsrInitialised() {
+        Cef.State state = Cef.INSTANCE.getState();
+        if (state != Cef.State.INITIALISED) {
+            throw new IllegalStateException(
+                    "CEF must be initialised for off-screen rendering before creating a CefWebView.\n"
+                            + "Add this before Application.launch():\n\n"
+                            + "    Cef.LaunchArgs launch = Cef.osrLaunchArgs();\n"
+                            + "    Cef.INSTANCE.initialise(launch.settings(), launch.args());\n");
+        }
+        Cef.INSTANCE
+                .getActiveSettings()
+                .filter(s -> s.windowlessRenderingEnabled == 0)
+                .ifPresent(s -> {
+                    throw new IllegalStateException(
+                            "CEF was initialised without windowlessRenderingEnabled=1. CefWebView requires OSR mode.\n"
+                                    + "Use Cef.osrLaunchArgs() when calling Cef.INSTANCE.initialise().\n");
+                });
+    }
+
     public CefWebView() {
+        requireOsrInitialised();
         int maxW = 1;
         int maxH = 1;
         for (Screen screen : Screen.getScreens()) {
@@ -162,37 +232,6 @@ public class CefWebView extends Region {
             maybeCreateBrowser(false);
         });
         cleanable = CLEANER.register(this, browserCleanup);
-    }
-
-    private static synchronized void ensureCefInitialised() {
-        Cef.State state = Cef.INSTANCE.getState();
-        if (state == Cef.State.INITIALISED) {
-            Cef.INSTANCE
-                    .getActiveSettings()
-                    .filter(s -> s.windowlessRenderingEnabled == 0)
-                    .ifPresent(s -> {
-                        throw new IllegalStateException(
-                                "CEF is already initialised without windowlessRenderingEnabled; CefWebView needs OSR mode");
-                    });
-            return;
-        }
-        if (state == Cef.State.SHUTTING_DOWN || state == Cef.State.TERMINATED) {
-            throw new IllegalStateException("CEF has been shut down and cannot be reinitialised in this JVM");
-        }
-        if (Platform.isFxApplicationThread()) {
-            throw new IllegalStateException(
-                    "CefWebView cannot lazy-initialise CEF from the JavaFX Application Thread; call Cef.INSTANCE.initialise() before Application.launch()");
-        }
-        SystemBootstrap.load();
-        Path cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
-        try {
-            Files.createDirectories(cacheDir);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        Cef.INSTANCE.initialise(launch.settings(), launch.args());
     }
 
     public CefWebEngine getEngine() {
@@ -408,6 +447,7 @@ public class CefWebView extends Region {
                     Platform.runLater(() -> popupSurface.blit(px, width, height));
                 } else {
                     if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
+                        framesPainted++;
                         Platform.runLater(() -> blitFrame(width, height));
                     }
                 }
@@ -448,7 +488,6 @@ public class CefWebView extends Region {
         if (browser != null || browserCreationPosted || browserCreated) return;
         browserCreationPosted = true;
         try {
-            ensureCefInitialised();
             CefWindowInfo windowInfo = Cef.createWindowlessInfo(
                     new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
             CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();

@@ -30,6 +30,10 @@ final class NativeStderr {
      */
     static synchronized void install() {
         if (installed) return;
+        if (Boolean.getBoolean("cef4j.disableStderrRedirect")) {
+            log.debug("Stderr redirect disabled via -Dcef4j.disableStderrRedirect=true");
+            return;
+        }
 
         Object[] result = redirectStderr0();
         if (result == null) {
@@ -65,5 +69,17 @@ final class NativeStderr {
         installed = true;
     }
 
+    /**
+     * Tell the native crash handler the exact path to chrome_debug.log so crash messages include it. Call after
+     * {@code cef_initialize} once the cache path is known.
+     */
+    static void setCrashLogPath(String cachePath) {
+        if (!installed || cachePath == null || cachePath.isEmpty()) return;
+        String sep = cachePath.endsWith("/") || cachePath.endsWith("\\") ? "" : System.getProperty("file.separator");
+        setCrashLogPath0(cachePath + sep + "chrome_debug.log");
+    }
+
     private static native Object[] redirectStderr0();
+
+    private static native void setCrashLogPath0(String path);
 }

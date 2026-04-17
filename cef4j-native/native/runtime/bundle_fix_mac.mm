@@ -24,6 +24,7 @@
 //   "cef4j.MachPortRendezvousServer.<pid>"
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <objc/runtime.h>
 
@@ -40,6 +41,42 @@
     return [self cef4j_bundleIdentifier];
 }
 @end
+
+// Force-stop [NSApp run] by calling [NSApp stop:] and posting a dummy event to
+// wake the run loop.  Used as a fallback when cef_quit_message_loop()'s internal
+// task runner cannot deliver the quit task (e.g. because AWT/Glass event sources
+// interfere with CEF's CFRunLoop sources).
+extern "C" void cef4j_stop_nsapp(void) {
+    NSApplication* app = [NSApplication sharedApplication];
+    [app stop:nil];
+    // [NSApp stop:] only takes effect after the current event finishes and the
+    // run loop dequeues the next event.  Post a dummy event to ensure there IS
+    // a next event to dequeue.
+    NSEvent* dummy = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                        location:NSZeroPoint
+                                   modifierFlags:0
+                                       timestamp:0
+                                    windowNumber:0
+                                         context:nil
+                                         subtype:0
+                                           data1:0
+                                           data2:0];
+    [app postEvent:dummy atStart:YES];
+}
+
+// Bring the Java process to the foreground.  Called via dispatch_after from
+// the init block so the activation happens after [NSApp run] is servicing
+// events and after the caller has had time to create AWT/JFX windows.
+extern "C" void cef4j_activate_app(void) {
+    NSApplication* app = [NSApplication sharedApplication];
+    // Ensure we're a regular app that can own the menubar and appear in Dock.
+    // Without this, a bare JVM process may have NSApplicationActivationPolicyProhibited
+    // and activateIgnoringOtherApps: will be silently ignored.
+    if ([app activationPolicy] != NSApplicationActivationPolicyRegular) {
+        [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+    }
+    [app activateIgnoringOtherApps:YES];
+}
 
 extern "C" void cef4j_fix_main_bundle_id(void) {
     static bool applied = false;

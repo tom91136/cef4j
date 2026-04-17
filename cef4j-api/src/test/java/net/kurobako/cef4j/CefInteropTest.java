@@ -577,7 +577,14 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(15)
     void globals_currentlyOnThread() {
-        assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI))).isEqualTo(1);
+        if (OS.isMacOS()) {
+            // macOS native pump: the test thread is not the CEF UI thread (Thread 0 is).
+            assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI)))
+                    .isEqualTo(0);
+        } else {
+            assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI)))
+                    .isEqualTo(1);
+        }
         assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.IO))).isEqualTo(0);
     }
 

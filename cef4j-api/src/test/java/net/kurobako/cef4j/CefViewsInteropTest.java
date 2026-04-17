@@ -13,7 +13,13 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+// CEF Views API methods must be called on the UI thread. On macOS with the native message pump,
+// the UI thread is Thread 0 (not the test thread), and these synchronous factory methods return
+// null when called from a non-UI thread.
+@DisabledOnOs(OS.MAC)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefViewsInteropTest extends CefTestBase {
 

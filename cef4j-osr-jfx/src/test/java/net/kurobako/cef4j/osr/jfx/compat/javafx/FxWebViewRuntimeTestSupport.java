@@ -43,8 +43,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
-import net.kurobako.cef4j.SystemBootstrap;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -61,7 +59,6 @@ final class FxWebViewRuntimeTestSupport {
         Assumptions.assumeTrue(
                 System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
                 "Runtime WebView compatibility tests require a display server; set DISPLAY or run with: xvfb-run -a mvn test");
-        preStartup();
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<Throwable> error = new AtomicReference<>();
         try {
@@ -90,16 +87,6 @@ final class FxWebViewRuntimeTestSupport {
             throw new RuntimeException("Failed to start JavaFX platform", error.get());
         }
         postStartup();
-    }
-
-    // On macOS with -XstartOnFirstThread, cef_initialize() must run BEFORE Platform.startup() takes
-    // over the AppKit main thread, so we pre-initialise there. Elsewhere it runs after startup.
-    static void preStartup() {
-        if (!isCefCompatHarness()) return;
-        if (OS.isMacOS()) {
-            SystemBootstrap.load();
-            initialiseCef();
-        }
     }
 
     static void postStartup() {

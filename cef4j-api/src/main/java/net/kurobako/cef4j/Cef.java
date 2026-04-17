@@ -28,12 +28,20 @@ import org.slf4j.LoggerFactory;
 /**
  * Singleton managing the CEF lifecycle: configuration, initialization, message loop, and shutdown.
  *
- * <p>When {@code externalMessagePump} is false (the default for OSR components), CEF's message loop runs on an internal
- * daemon thread. The caller simply calls {@link #initialise(Mutable, List)} (which blocks until CEF is ready) and later
- * {@link #terminate()} (which can be called from any thread).
+ * <p>The message-loop thread is chosen per platform by {@link #osrLaunchArgs()} and honoured automatically by
+ * {@link #initialise(Mutable, List)}:
  *
- * <p>When {@code externalMessagePump} is true, the caller is responsible for driving the message loop by calling
- * {@link #doMessageLoopWork()} periodically on the thread that called {@link #initialise(Mutable, List)}.
+ * <ul>
+ *   <li><b>macOS</b> — {@code cef_initialize()} is dispatched onto Thread 0 (the AppKit main thread) via GCD with
+ *       {@code externalMessagePump=1}. A CFRunLoop timer on Thread 0 calls {@code cef_do_message_loop_work()} at ~60
+ *       Hz, coexisting with AWT/Glass event handling. No {@code -XstartOnFirstThread} is required. {@link #terminate()}
+ *       dispatches cleanup ({@code cef_shutdown}) to Thread 0 via GCD.
+ *   <li><b>Linux</b> — {@code multiThreadedMessageLoop=1}. CEF runs its own UI thread internally.
+ *   <li><b>Windows</b> — CEF runs on a daemon thread created by {@code initialise()}.
+ * </ul>
+ *
+ * <p>When {@code externalMessagePump} is explicitly set by the caller (advanced use), cef4j skips the internal
+ * lifecycle and the caller must drive the loop via {@link #doMessageLoopWork()} on the init thread.
  *
  * <p>Register {@link CefApp} handlers (e.g. for custom schemes) via {@link #addAppHandler(CefApp)} before calling
  * {@link #initialise(Mutable, List)} or creating any browser view. Registrations are thread-safe and compose: all
@@ -99,7 +107,11 @@ public enum Cef {
      * <p>Encodes the platform-specific message-loop mode that avoids conflicts with the host UI toolkit:
      *
      * <ul>
-     *   <li>macOS: {@code externalMessagePump=1} - AppKit owns the main thread; CEF work is pumped by the host.
+     *   <li>macOS: both loop modes off - {@link #initialiseInternal} forces {@code externalMessagePump=1} and
+     *       dispatches {@code cef_initialize()} onto Thread 0 (the AppKit main thread) via GCD, then installs a
+     *       CFRunLoop timer that calls {@code cef_do_message_loop_work()} at ~60 Hz on Thread 0. This avoids claiming
+     *       {@code [NSApp run]} (which conflicts with AWT/Glass) while satisfying CEF's requirement that UI callbacks
+     *       land on the same thread that called {@code cef_initialize()}. No {@code -XstartOnFirstThread} is required.
      *   <li>Linux: {@code multiThreadedMessageLoop=1} plus {@code --ozone-platform=x11} - Glass-GTK3 owns the process
      *       GDK default display; CEF must run its own UI thread rather than a daemon-wrapped loop.
      *   <li>Windows: both loop modes off - CEF runs on an internal daemon thread managed by cef4j.
@@ -111,13 +123,12 @@ public enum Cef {
     public static LaunchArgs osrLaunchArgs() {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.windowlessRenderingEnabled = 1;
-        if (OS.isMacOS()) {
-            settings.externalMessagePump = 1;
-            settings.multiThreadedMessageLoop = 0;
-        } else if (OS.isLinux()) {
+        if (OS.isLinux()) {
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
         } else {
+            // macOS: cef4j dispatches init + message loop onto Thread 0 via GCD.
+            // Windows: CEF runs on a daemon thread managed by cef4j.
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;
         }
@@ -132,6 +143,7 @@ public enum Cef {
     private volatile State state = State.UNINITIALISED;
     private volatile Thread initThread = null;
     private volatile boolean daemonManaged = false;
+    private volatile boolean macOsManaged = false;
     private volatile CountDownLatch shutdownLatch;
     private volatile CefSettings activeSettings;
     private final CopyOnWriteArrayList<CefApp> appHandlers = new CopyOnWriteArrayList<>();
@@ -202,7 +214,8 @@ public enum Cef {
     private static void validateSettings(CefSettings.Mutable settings) {
         if (OS.isMacOS() && settings.multiThreadedMessageLoop != 0) {
             throw new IllegalArgumentException("multiThreadedMessageLoop is not supported on macOS. "
-                    + "Use externalMessagePump=0 (daemon thread) or externalMessagePump=1 (manual pump) instead. "
+                    + "Leave both externalMessagePump and multiThreadedMessageLoop at 0 and cef4j will "
+                    + "dispatch cef_initialize()/cef_run_message_loop() onto Thread 0 internally. "
                     + "Call initialiseUnsafe() to bypass this check.");
         }
     }
@@ -290,6 +303,46 @@ public enum Cef {
             state = State.INITIALISED;
             initThread = Thread.currentThread();
             daemonManaged = false;
+        } else if (OS.isMacOS()) {
+            // macOS path: dispatch cef_initialize() + cef_run_message_loop() + cleanup onto
+            // Thread 0 (the AppKit main thread) in a single dispatch_async block.
+            // cef_run_message_loop() calls [NSApp run] which becomes the event loop for Thread 0.
+            // terminate() calls cef_quit_message_loop() + [NSApp stop:] and waits for the
+            // dispatch block to finish via a semaphore.
+            final CefSettings finalSettings = settings.toImmutable();
+            final CefApp finalAppHandler = appHandler;
+            final List<String> finalArgv = List.copyOf(argv);
+            final AtomicReference<Throwable> initError = new AtomicReference<>();
+            final int[] result = new int[1];
+            SystemBootstrap.initAndRunOnMainThread(
+                    () -> {
+                        try {
+                            result[0] = CefGlobals.initialize(
+                                    new CefMainArgs(finalArgv.size(), finalArgv), finalSettings, finalAppHandler, null);
+                        } catch (Throwable t) {
+                            initError.set(t);
+                        }
+                    },
+                    () -> {
+                        // Runs on Thread 0 after cef_run_message_loop() returns.
+                        int released = NativeCleaner.INSTANCE.releaseAll();
+                        log.info("Released {} outstanding NativePeers before shutdown", released);
+                    });
+            Throwable err = initError.get();
+            if (err != null) {
+                state = State.UNINITIALISED;
+                throw (err instanceof RuntimeException) ? (RuntimeException) err : new RuntimeException(err);
+            }
+            if (result[0] == 0) {
+                state = State.UNINITIALISED;
+                log.error("CefGlobals.initialize (cef_initialize) failed");
+                throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
+            }
+            activeSettings = finalSettings;
+            state = State.INITIALISED;
+            initThread = Thread.currentThread();
+            daemonManaged = false;
+            macOsManaged = true;
         } else {
             // Daemon thread path: CEF init + message loop run on a dedicated thread.
             CountDownLatch initLatch = new CountDownLatch(1);
@@ -352,6 +405,9 @@ public enum Cef {
         }
 
         log.info("CEF initialized");
+        if (activeSettings != null && activeSettings.cachePath != null) {
+            NativeStderr.setCrashLogPath(activeSettings.cachePath);
+        }
     }
 
     private CefApp buildAppHandler(List<String> extraArgs) {
@@ -395,22 +451,42 @@ public enum Cef {
      * <p>When the daemon thread manages the message loop, this method signals the loop to exit and waits for shutdown
      * to complete. When using the external message pump, this must be called on the init thread.
      *
+     * <p><b>macOS:</b> after this method returns, the caller should terminate the JVM via
+     * {@code Runtime.getRuntime().halt(0)} rather than {@code System.exit(0)} or normal return. CEF's CFRunLoop
+     * observers remain registered (because {@code cef_shutdown()} is skipped due to async browser close) and normal JVM
+     * teardown would fire them, causing a CHECK failure. The native side parks Thread 0 for up to 5 seconds as a safety
+     * net; if the JVM hasn't halted by then, it calls {@code _exit(0)}.
+     *
      * <p>As per CEF design, after this call, CEF cannot be re-initialised in the same process (i.e. JVM). The singleton
      * remains accessible but all operations will throw {@link IllegalStateException}.
      */
-    public synchronized void terminate() {
-        if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
+    public void terminate() {
+        // Transition to SHUTTING_DOWN under the monitor, then release it before blocking calls.
+        // Holding the monitor during dispatch_sync/semaphore_wait would deadlock if Thread 0
+        // (or the daemon thread) tries to enter any synchronized Cef method during shutdown.
+        boolean isMacOs;
+        boolean isDaemon;
+        synchronized (this) {
+            if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
 
-        if (!daemonManaged && Thread.currentThread() != initThread) {
-            throw new IllegalStateException(
-                    "terminate() must be called on the init thread for non-daemon-managed CEF: current="
-                            + Thread.currentThread() + ", cef=" + initThread);
+            if (!daemonManaged && !macOsManaged && Thread.currentThread() != initThread) {
+                throw new IllegalStateException(
+                        "terminate() must be called on the init thread for non-daemon-managed CEF: current="
+                                + Thread.currentThread() + ", cef=" + initThread);
+            }
+
+            state = State.SHUTTING_DOWN;
+            isMacOs = macOsManaged;
+            isDaemon = daemonManaged;
         }
-
-        state = State.SHUTTING_DOWN;
         log.info("CEF shutting down");
 
-        if (daemonManaged) {
+        if (isMacOs) {
+            // Quit the message loop (cef_quit_message_loop + cef4j_stop_nsapp) and
+            // wait for the dispatch block to finish cleanup (NativeCleaner.releaseAll).
+            // cef_shutdown() is skipped — see terminate() javadoc.
+            SystemBootstrap.quitAndWaitMainThreadMessageLoop();
+        } else if (isDaemon) {
             // Signal the daemon thread's runMessageLoop() to return; cleanup runs there.
             CefGlobals.quitMessageLoop();
             try {
@@ -428,7 +504,9 @@ public enum Cef {
             CefGlobals.shutdown();
         }
 
-        state = State.TERMINATED;
+        synchronized (this) {
+            state = State.TERMINATED;
+        }
         log.info("CEF terminated");
     }
 

@@ -19,9 +19,12 @@ This matters because:
 
 ### `-XstartOnFirstThread`
 
-The JVM flag `-XstartOnFirstThread` makes Java main run on Thread 0. This works for
-CEF initialization but deadlocks with `Application.launch()` because JavaFX also needs
-Thread 0. It is useful for test processes (surefire forks) where JavaFX is not involved.
+The JVM flag `-XstartOnFirstThread` makes Java main run on Thread 0. It is **not needed**
+by cef4j: the daemon-thread solution below decouples CEF from Thread 0 entirely, and
+JavaFX `Application.launch()` / Swing both handle AppKit bootstrap themselves. The flag
+is also actively harmful for `Application.launch()` (deadlocks because JavaFX also wants
+to own Thread 0) and for `Platform.startup()` under JUnit (enters a nested `NSApp.run()`
+that never returns). cef4j's build sets the flag nowhere.
 
 ### Daemon Thread Solution
 
@@ -105,10 +108,15 @@ The process exits immediately after, so the leak is inconsequential.
 
 ## Test Infrastructure
 
-- **`-XstartOnFirstThread`**: Required for surefire forks that initialize CEF on macOS.
-  Set via `surefire.argLine` in the parent pom's macOS profile.
+- **No `-XstartOnFirstThread`**: The daemon-thread CEF lifecycle removes the need for it.
+  Surefire forks run with default flags on all platforms.
 - **Headless detection**: UI tests (Swing/JFX) require macOS Window Server access.
   `GraphicsEnvironment.isHeadless()` and `Toolkit.getDefaultToolkit()` detect SSH/CI
-  environments. Tests skip gracefully via JUnit `assumeTrue` rather than hanging.
+  environments. Tests skip gracefully via JUnit `assumeTrue` rather than hanging. Note
+  that surefire defaults `java.awt.headless=true` in forks; the cef-tests executions
+  explicitly override this to `false`.
 - **`Platform.startup()` in tests**: JavaFX tests use `Platform.startup()` (non-blocking)
   rather than `Application.launch()` (blocking) to avoid taking over the test thread.
+  On macOS this is incompatible with JUnit regardless of `-XstartOnFirstThread`
+  (nested `NSApp.run()` with the flag, AppKit crash without it), so `CefWebViewRenderTest`
+  is gated off on macOS and covered instead by the `JfxBrowserApp` sample.

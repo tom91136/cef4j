@@ -578,6 +578,7 @@ public final class ViewsBrowserApp {
         log.info("Shutting down CEF");
         Cef.INSTANCE.terminate();
         log.info("Exiting");
-        System.exit(0);
+        // halt() instead of exit(): see Cef.terminate() javadoc for macOS rationale.
+        Runtime.getRuntime().halt(0);
     }
 }

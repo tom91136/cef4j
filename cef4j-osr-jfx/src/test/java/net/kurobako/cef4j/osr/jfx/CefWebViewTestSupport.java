@@ -11,14 +11,19 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javafx.application.Platform;
 import javafx.stage.Window;
+import net.kurobako.cef4j.OS;
 
 final class CefWebViewTestSupport {
     private CefWebViewTestSupport() {}
 
     static void assumeDisplayServer() {
-        assumeTrue(
-                System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
-                "Requires a display server; run under xvfb-run");
+        if (OS.isMacOS()) {
+            assumeTrue(!java.awt.GraphicsEnvironment.isHeadless(), "Requires a display server");
+        } else {
+            assumeTrue(
+                    System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null,
+                    "Requires a display server; run under xvfb-run");
+        }
     }
 
     static void startJavaFx() throws Exception {
@@ -34,12 +39,16 @@ final class CefWebViewTestSupport {
     }
 
     static void closeAllWindows() throws Exception {
-        onFxThread(() -> {
-            for (Window window : new ArrayList<>(Window.getWindows())) {
-                if (window.isShowing()) window.hide();
-            }
-            return null;
-        });
+        try {
+            onFxThread(() -> {
+                for (Window window : new ArrayList<>(Window.getWindows())) {
+                    if (window.isShowing()) window.hide();
+                }
+                return null;
+            });
+        } catch (IllegalStateException e) {
+            // Toolkit not initialized — @BeforeAll was skipped, nothing to clean up
+        }
     }
 
     static <T> T onFxThread(Callable<T> task) throws Exception {

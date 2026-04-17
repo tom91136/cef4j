@@ -4,10 +4,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.gen.CefBrowser;
+import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.gen.CefClient;
+import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
@@ -30,8 +35,15 @@ abstract class CefTestBase {
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 1;
-        settings.externalMessagePump = 1;
-        settings.multiThreadedMessageLoop = 0;
+        if (OS.isMacOS()) {
+            // macOS: use daemon thread path (externalMessagePump=0). externalMessagePump=1
+            // crashes with SIGTRAP on macOS.
+            settings.externalMessagePump = 0;
+            settings.multiThreadedMessageLoop = 0;
+        } else {
+            settings.externalMessagePump = 1;
+            settings.multiThreadedMessageLoop = 0;
+        }
 
         List<String> args = new ArrayList<>(additionalArgs);
         if (OS.isLinux()) {
@@ -56,6 +68,36 @@ abstract class CefTestBase {
         CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, 800, 600));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
         browserSettings.windowlessFrameRate = 60;
+        if (OS.isMacOS()) {
+            // macOS daemon thread: createBrowserSync requires the CEF thread (daemon), but tests
+            // run on the test thread. Use async createBrowser and intercept via onAfterCreated.
+            CountDownLatch created = new CountDownLatch(1);
+            AtomicReference<CefBrowser> ref = new AtomicReference<>();
+            CefClient interceptor = new CefClient() {
+                @Override
+                public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
+                    return Optional.of(new CefLifeSpanHandler() {
+                        @Override
+                        public void onAfterCreated(CefBrowser browser) {
+                            ref.compareAndSet(null, browser);
+                            created.countDown();
+                        }
+                    });
+                }
+            };
+            CefClient composite = new CefClient.Delegating(List.of(interceptor, client));
+            int ok =
+                    CefBrowserHost.createBrowser(windowInfo, composite, url, browserSettings.toImmutable(), null, null);
+            if (ok == 0) throw new RuntimeException("createBrowser failed");
+            try {
+                if (!created.await(10, TimeUnit.SECONDS)) {
+                    throw new RuntimeException("Timed out waiting for browser creation on macOS");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return ref.get();
+        }
         return Cef.INSTANCE.createBrowser(client, url, windowInfo, browserSettings.toImmutable());
     }
 
@@ -66,6 +108,10 @@ abstract class CefTestBase {
     }
 
     static boolean pumpUntil(CountDownLatch latch, long timeoutMs) throws InterruptedException {
+        if (OS.isMacOS()) {
+            // macOS daemon thread: message loop runs on daemon thread, just wait on the latch.
+            return latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+        }
         long deadline = System.currentTimeMillis() + timeoutMs;
         while (latch.getCount() > 0 && System.currentTimeMillis() < deadline) {
             Cef.INSTANCE.doMessageLoopWork();
