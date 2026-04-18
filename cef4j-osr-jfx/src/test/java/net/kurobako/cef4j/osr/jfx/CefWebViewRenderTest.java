@@ -16,7 +16,6 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefSettings;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -100,11 +99,6 @@ class CefWebViewRenderTest {
             closeAllWindows();
             CefWebView.terminate();
         }
-    }
-
-    @AfterEach
-    void cleanup() throws Exception {
-        closeAllWindows();
     }
 
     @BeforeAll
