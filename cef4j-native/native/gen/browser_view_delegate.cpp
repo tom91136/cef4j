@@ -78,7 +78,7 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
     static cef_browser_view_delegate_t* CEF_CALLBACK _get_delegate_for_popup_browser_view(cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, const struct _cef_browser_settings_t* settings, struct _cef_client_t* client, int is_devtools) {
         auto* h = reinterpret_cast<JniCefBrowserViewDelegate*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(70) < 0) { return nullptr; }
+        if (env->PushLocalFrame(67) < 0) { return nullptr; }
         cef_browser_view_t* _p_browser_view = browser_view;
         if (_p_browser_view) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser_view); _b->add_ref(_b); }
         auto j_browser_view_cls = FindClassCached(env, "net/kurobako/cef4j/gen/views/CefBrowserView$NativePeer");
@@ -133,11 +133,8 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
         auto _bv_settings_chrome_zoom_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_zoom_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_zoom_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_zoom_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_zoom_bubble_cls, _bv_settings_chrome_zoom_bubble_of, static_cast<jlong>((settings)->chrome_zoom_bubble));
-        auto _bv_settings_ax_viewport_collapse_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
-        auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
-        auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>((settings)->ax_viewport_collapse));
         auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings");
-        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
+        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings
     ? env->NewObject(j_settings_cls, j_settings_ctor,
         static_cast<jint>((settings)->windowless_frame_rate),
@@ -166,8 +163,7 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
         _bv_settings_webgl,
         static_cast<jint>((settings)->background_color),
         _bv_settings_chrome_status_bubble,
-        _bv_settings_chrome_zoom_bubble,
-        _bv_settings_ax_viewport_collapse)
+        _bv_settings_chrome_zoom_bubble)
     : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
         cef_client_t* _p_client = client;

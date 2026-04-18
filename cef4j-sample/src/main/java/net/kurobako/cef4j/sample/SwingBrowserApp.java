@@ -401,7 +401,6 @@ public final class SwingBrowserApp {
                             });
                         }
 
-                        @Override
                         public boolean onBeforePopup(
                                 CefBrowser b,
                                 CefFrame frame,
@@ -417,6 +416,27 @@ public final class SwingBrowserApp {
                                 java.util.concurrent.atomic.AtomicReference<net.kurobako.cef4j.gen.CefDictionaryValue>
                                         extraInfo,
                                 int[] noJavascriptAccess) {
+                            return onBeforePopupCompat(targetUrl);
+                        }
+
+                        public boolean onBeforePopup(
+                                CefBrowser b,
+                                CefFrame frame,
+                                String targetUrl,
+                                String targetFrameName,
+                                net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
+                                boolean userGesture,
+                                CefPopupFeatures popupFeatures,
+                                CefWindowInfo.Mutable windowInfo,
+                                java.util.concurrent.atomic.AtomicReference<CefClient> client,
+                                CefBrowserSettings.Mutable settings,
+                                java.util.concurrent.atomic.AtomicReference<net.kurobako.cef4j.gen.CefDictionaryValue>
+                                        extraInfo,
+                                int[] noJavascriptAccess) {
+                            return onBeforePopupCompat(targetUrl);
+                        }
+
+                        private boolean onBeforePopupCompat(String targetUrl) {
                             SwingUtilities.invokeLater(() -> createTab(targetUrl != null ? targetUrl : "about:blank"));
                             return true;
                         }
@@ -495,9 +515,17 @@ public final class SwingBrowserApp {
                             });
                         }
 
-                        @Override
                         public boolean onCursorChange(
                                 CefBrowser b, long cursor, CefCursorType type, CefCursorInfo customCursorInfo) {
+                            return onCursorChangeCompat(type);
+                        }
+
+                        public boolean onCursorChange(
+                                CefBrowser b, int cursor, CefCursorType type, CefCursorInfo customCursorInfo) {
+                            return onCursorChangeCompat(type);
+                        }
+
+                        private boolean onCursorChangeCompat(CefCursorType type) {
                             Cursor awtCursor = surface.mapCursor(type);
                             SwingUtilities.invokeLater(() -> surface.setCursor(awtCursor));
                             return true;

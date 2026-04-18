@@ -81,6 +81,8 @@ object Main {
           cfg.copy(javaPackage = value)
         case s"--compiler=$id" =>
           cfg.copy(compilerId = id)
+        case s"--cef-api-version=$value" =>
+          cfg.copy(cefApiVersionRaw = Some(value))
         case s"--target-platform=$platform" =>
           CodegenPlatform.parse(platform) match {
             case Some(p) => cfg.copy(targetPlatform = p)

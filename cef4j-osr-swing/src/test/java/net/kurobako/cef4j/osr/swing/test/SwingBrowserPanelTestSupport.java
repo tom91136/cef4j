@@ -187,12 +187,23 @@ final class SwingBrowserPanelTestSupport {
                             state.location = url != null ? url : "";
                         }
 
-                        @Override
                         public boolean onCursorChange(
                                 CefBrowser b,
                                 long cursor,
                                 @Nonnull CefCursorType type,
                                 CefCursorInfo customCursorInfo) {
+                            return updateCursor(type);
+                        }
+
+                        public boolean onCursorChange(
+                                CefBrowser b,
+                                int cursor,
+                                @Nonnull CefCursorType type,
+                                CefCursorInfo customCursorInfo) {
+                            return updateCursor(type);
+                        }
+
+                        private boolean updateCursor(@Nonnull CefCursorType type) {
                             java.awt.Cursor awtCursor = panel.mapCursor(type);
                             SwingUtilities.invokeLater(() -> panel.setCursor(awtCursor));
                             return true;

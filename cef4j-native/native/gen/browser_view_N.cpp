@@ -133,10 +133,6 @@ CEF4J_JNI_EXPORT(jobject, CEF4J_PEER(views_CefBrowserView), create0)(JNIEnv* env
     if (_rd_chrome_zoom_bubble) {
         _settings_val.chrome_zoom_bubble = static_cast<decltype(_settings_val.chrome_zoom_bubble)>(env->GetLongField(_rd_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_rd_chrome_zoom_bubble), "value", "J")));
     }
-    auto _rd_ax_viewport_collapse = env->GetObjectField(settings, env->GetFieldID(_settings_c, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;"));
-    if (_rd_ax_viewport_collapse) {
-        _settings_val.ax_viewport_collapse = static_cast<decltype(_settings_val.ax_viewport_collapse)>(env->GetLongField(_rd_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_rd_ax_viewport_collapse), "value", "J")));
-    }
     _settings_val.size = sizeof(cef_browser_settings_t);
     cef_dictionary_value_t* _extra_info_ptr = extra_info ? reinterpret_cast<cef_dictionary_value_t*>(env->GetLongField(extra_info, env->GetFieldID(env->GetObjectClass(extra_info), "nativePtr", "J"))) : nullptr;
     if (_extra_info_ptr) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_extra_info_ptr); _b->add_ref(_b); }

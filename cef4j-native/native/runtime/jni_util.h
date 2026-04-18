@@ -9,6 +9,7 @@
 #include <type_traits>
 #include "include/capi/cef_base_capi.h"
 #include "include/internal/cef_string.h"
+#include "cef_compat.h"
 
 // JNI export signature macros.
 // These encode the mangled JNI symbol so hand-written and generated C++ can
@@ -111,7 +112,7 @@ inline void JStringToCefString(JNIEnv* env, jstring jStr, cef_string_t* out) {
     }
     const jchar* chars = env->GetStringChars(jStr, nullptr);
     jsize len = env->GetStringLength(jStr);
-    cef_string_utf16_set(reinterpret_cast<const char16_t*>(chars),
+    cef_string_utf16_set(reinterpret_cast<const cef4j_char_t*>(chars),
                          static_cast<size_t>(len), out, /*copy=*/1);
     env->ReleaseStringChars(jStr, chars);
 }
@@ -133,7 +134,7 @@ inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t* out
     }
     const jchar* chars = env->GetStringChars(jStr, nullptr);
     jsize len = env->GetStringLength(jStr);
-    cef_string_set(reinterpret_cast<const char16_t*>(chars), static_cast<size_t>(len), out, 1);
+    cef_string_set(reinterpret_cast<const cef4j_char_t*>(chars), static_cast<size_t>(len), out, 1);
     env->ReleaseStringChars(jStr, chars);
 }
 
@@ -149,7 +150,7 @@ inline void CefStringSetFromJString(JNIEnv* env, jstring jStr, cef_string_t** ou
     }
     const jchar* chars = env->GetStringChars(jStr, nullptr);
     jsize len = env->GetStringLength(jStr);
-    cef_string_set(reinterpret_cast<const char16_t*>(chars), static_cast<size_t>(len), *out, 1);
+    cef_string_set(reinterpret_cast<const cef4j_char_t*>(chars), static_cast<size_t>(len), *out, 1);
     env->ReleaseStringChars(jStr, chars);
 }
 

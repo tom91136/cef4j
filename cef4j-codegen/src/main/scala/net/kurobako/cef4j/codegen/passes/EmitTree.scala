@@ -17,16 +17,7 @@ import net.kurobako.cef4j.codegen.RefinedTree
 
 object EmitTree {
   def apply(cfg: Config, parseState: ParseState, refined: RefinedTree)(using DocComments.Context, Banners): Unit = {
-    given Naming.Context = parseState.namingContext
-
-    val jniCodeGen = new JniCppCodeGen(
-      refined.dataStructMap,
-      parseState.handlerNames,
-      refined.scopedNames,
-      parseState.structHeaderMap
-    )
-
-    val objectDeclMap                  = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
+    val objectDeclMap = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
     val sharedPlatformInterfaceStructs = {
       // Data structs referenced as ConstDataStructPtr in handler callbacks
       val fromHandlers = refined.decls.collect {
@@ -49,6 +40,14 @@ object EmitTree {
       }.flatten.filter(parseState.platformSpecificTypes.contains).toSet
       fromHandlers ++ fromObjectMethods ++ fromHandlerMutables
     }
+    given Naming.Context = parseState.namingContext.copy(platformInterfaceTypes = sharedPlatformInterfaceStructs)
+
+    val jniCodeGen = new JniCppCodeGen(
+      refined.dataStructMap,
+      parseState.handlerNames,
+      refined.scopedNames,
+      parseState.structHeaderMap
+    )
 
     refined.decls.foreach(emitDecl(
       _,

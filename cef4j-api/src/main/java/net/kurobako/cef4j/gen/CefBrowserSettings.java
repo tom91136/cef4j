@@ -35,7 +35,6 @@ import javax.annotation.processing.Generated;
  *   unsigned int background_color;
  *   cef_state_t chrome_status_bubble;
  *   cef_state_t chrome_zoom_bubble;
- *   cef_state_t ax_viewport_collapse;
  * } cef_browser_settings_t;</pre>
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">internal/cef_types.h:571</a>
@@ -143,11 +142,8 @@ public final class CefBrowserSettings {
         /**
          * Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. 
          */    public final CefState chromeZoomBubble;
-        /**
-         * Controls whether CDP accessibility tree serialization collapses off-screen nodes. When enabled, off-screen landmarks and headings are serialized as summaries (role + name only) and other off-screen nodes are pruned. This reduces snapshot size for AI agents using Playwright ariaSnapshot(). WARNING: This collapses the CDP accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected  -  they use a separate code path. Can also be configured at runtime using {@link net.kurobako.cef4j.gen.CefBrowserHost#setAxViewportCollapse(boolean)}. 
-         */    public final CefState axViewportCollapse;
 
-    public CefBrowserSettings(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble, CefState axViewportCollapse) {
+    public CefBrowserSettings(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble) {
         this.windowlessFrameRate = windowlessFrameRate;
         this.standardFontFamily = standardFontFamily;
         this.fixedFontFamily = fixedFontFamily;
@@ -175,12 +171,11 @@ public final class CefBrowserSettings {
         this.backgroundColor = backgroundColor;
         this.chromeStatusBubble = chromeStatusBubble;
         this.chromeZoomBubble = chromeZoomBubble;
-        this.axViewportCollapse = axViewportCollapse;
     }
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.windowlessFrameRate, this.standardFontFamily, this.fixedFontFamily, this.serifFontFamily, this.sansSerifFontFamily, this.cursiveFontFamily, this.fantasyFontFamily, this.defaultFontSize, this.defaultFixedFontSize, this.minimumFontSize, this.minimumLogicalFontSize, this.defaultEncoding, this.remoteFonts, this.javascript, this.javascriptCloseWindows, this.javascriptAccessClipboard, this.javascriptDomPaste, this.imageLoading, this.imageShrinkStandaloneToFit, this.textAreaResize, this.tabToLinks, this.localStorage, this.databasesDeprecated, this.webgl, this.backgroundColor, this.chromeStatusBubble, this.chromeZoomBubble, this.axViewportCollapse);
+        return new Mutable(this.windowlessFrameRate, this.standardFontFamily, this.fixedFontFamily, this.serifFontFamily, this.sansSerifFontFamily, this.cursiveFontFamily, this.fantasyFontFamily, this.defaultFontSize, this.defaultFixedFontSize, this.minimumFontSize, this.minimumLogicalFontSize, this.defaultEncoding, this.remoteFonts, this.javascript, this.javascriptCloseWindows, this.javascriptAccessClipboard, this.javascriptDomPaste, this.imageLoading, this.imageShrinkStandaloneToFit, this.textAreaResize, this.tabToLinks, this.localStorage, this.databasesDeprecated, this.webgl, this.backgroundColor, this.chromeStatusBubble, this.chromeZoomBubble);
     }
 
     @Override
@@ -214,18 +209,17 @@ public final class CefBrowserSettings {
                     && java.util.Objects.equals(this.webgl, other.webgl)
                     && this.backgroundColor == other.backgroundColor
                     && java.util.Objects.equals(this.chromeStatusBubble, other.chromeStatusBubble)
-                    && java.util.Objects.equals(this.chromeZoomBubble, other.chromeZoomBubble)
-                    && java.util.Objects.equals(this.axViewportCollapse, other.axViewportCollapse);
+                    && java.util.Objects.equals(this.chromeZoomBubble, other.chromeZoomBubble);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(windowlessFrameRate, standardFontFamily, fixedFontFamily, serifFontFamily, sansSerifFontFamily, cursiveFontFamily, fantasyFontFamily, defaultFontSize, defaultFixedFontSize, minimumFontSize, minimumLogicalFontSize, defaultEncoding, remoteFonts, javascript, javascriptCloseWindows, javascriptAccessClipboard, javascriptDomPaste, imageLoading, imageShrinkStandaloneToFit, textAreaResize, tabToLinks, localStorage, databasesDeprecated, webgl, backgroundColor, chromeStatusBubble, chromeZoomBubble, axViewportCollapse);
+        return java.util.Objects.hash(windowlessFrameRate, standardFontFamily, fixedFontFamily, serifFontFamily, sansSerifFontFamily, cursiveFontFamily, fantasyFontFamily, defaultFontSize, defaultFixedFontSize, minimumFontSize, minimumLogicalFontSize, defaultEncoding, remoteFonts, javascript, javascriptCloseWindows, javascriptAccessClipboard, javascriptDomPaste, imageLoading, imageShrinkStandaloneToFit, textAreaResize, tabToLinks, localStorage, databasesDeprecated, webgl, backgroundColor, chromeStatusBubble, chromeZoomBubble);
     }
 
     @Override
     public String toString() {
-        return "CefBrowserSettings{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "windowlessFrameRate=" + windowlessFrameRate + ", " + "standardFontFamily=" + standardFontFamily + ", " + "fixedFontFamily=" + fixedFontFamily + ", " + "serifFontFamily=" + serifFontFamily + ", " + "sansSerifFontFamily=" + sansSerifFontFamily + ", " + "cursiveFontFamily=" + cursiveFontFamily + ", " + "fantasyFontFamily=" + fantasyFontFamily + ", " + "defaultFontSize=" + defaultFontSize + ", " + "defaultFixedFontSize=" + defaultFixedFontSize + ", " + "minimumFontSize=" + minimumFontSize + ", " + "minimumLogicalFontSize=" + minimumLogicalFontSize + ", " + "defaultEncoding=" + defaultEncoding + ", " + "remoteFonts=" + remoteFonts + ", " + "javascript=" + javascript + ", " + "javascriptCloseWindows=" + javascriptCloseWindows + ", " + "javascriptAccessClipboard=" + javascriptAccessClipboard + ", " + "javascriptDomPaste=" + javascriptDomPaste + ", " + "imageLoading=" + imageLoading + ", " + "imageShrinkStandaloneToFit=" + imageShrinkStandaloneToFit + ", " + "textAreaResize=" + textAreaResize + ", " + "tabToLinks=" + tabToLinks + ", " + "localStorage=" + localStorage + ", " + "databasesDeprecated=" + databasesDeprecated + ", " + "webgl=" + webgl + ", " + "backgroundColor=" + backgroundColor + ", " + "chromeStatusBubble=" + chromeStatusBubble + ", " + "chromeZoomBubble=" + chromeZoomBubble + ", " + "axViewportCollapse=" + axViewportCollapse + "}";
+        return "CefBrowserSettings{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "windowlessFrameRate=" + windowlessFrameRate + ", " + "standardFontFamily=" + standardFontFamily + ", " + "fixedFontFamily=" + fixedFontFamily + ", " + "serifFontFamily=" + serifFontFamily + ", " + "sansSerifFontFamily=" + sansSerifFontFamily + ", " + "cursiveFontFamily=" + cursiveFontFamily + ", " + "fantasyFontFamily=" + fantasyFontFamily + ", " + "defaultFontSize=" + defaultFontSize + ", " + "defaultFixedFontSize=" + defaultFixedFontSize + ", " + "minimumFontSize=" + minimumFontSize + ", " + "minimumLogicalFontSize=" + minimumLogicalFontSize + ", " + "defaultEncoding=" + defaultEncoding + ", " + "remoteFonts=" + remoteFonts + ", " + "javascript=" + javascript + ", " + "javascriptCloseWindows=" + javascriptCloseWindows + ", " + "javascriptAccessClipboard=" + javascriptAccessClipboard + ", " + "javascriptDomPaste=" + javascriptDomPaste + ", " + "imageLoading=" + imageLoading + ", " + "imageShrinkStandaloneToFit=" + imageShrinkStandaloneToFit + ", " + "textAreaResize=" + textAreaResize + ", " + "tabToLinks=" + tabToLinks + ", " + "localStorage=" + localStorage + ", " + "databasesDeprecated=" + databasesDeprecated + ", " + "webgl=" + webgl + ", " + "backgroundColor=" + backgroundColor + ", " + "chromeStatusBubble=" + chromeStatusBubble + ", " + "chromeZoomBubble=" + chromeZoomBubble + "}";
     }
 
     /**
@@ -335,13 +329,10 @@ public final class CefBrowserSettings {
             /**
              * Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. 
              */        public CefState chromeZoomBubble;
-            /**
-             * Controls whether CDP accessibility tree serialization collapses off-screen nodes. When enabled, off-screen landmarks and headings are serialized as summaries (role + name only) and other off-screen nodes are pruned. This reduces snapshot size for AI agents using Playwright ariaSnapshot(). WARNING: This collapses the CDP accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected  -  they use a separate code path. Can also be configured at runtime using {@link net.kurobako.cef4j.gen.CefBrowserHost#setAxViewportCollapse(boolean)}. 
-             */        public CefState axViewportCollapse;
 
         public Mutable() {}
 
-        public Mutable(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble, CefState axViewportCollapse) {
+        public Mutable(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble) {
             this.windowlessFrameRate = windowlessFrameRate;
             this.standardFontFamily = standardFontFamily;
             this.fixedFontFamily = fixedFontFamily;
@@ -369,12 +360,11 @@ public final class CefBrowserSettings {
             this.backgroundColor = backgroundColor;
             this.chromeStatusBubble = chromeStatusBubble;
             this.chromeZoomBubble = chromeZoomBubble;
-            this.axViewportCollapse = axViewportCollapse;
         }
 
         /** Create an immutable snapshot of this instance. */
         public CefBrowserSettings toImmutable() {
-            return new CefBrowserSettings(this.windowlessFrameRate, this.standardFontFamily, this.fixedFontFamily, this.serifFontFamily, this.sansSerifFontFamily, this.cursiveFontFamily, this.fantasyFontFamily, this.defaultFontSize, this.defaultFixedFontSize, this.minimumFontSize, this.minimumLogicalFontSize, this.defaultEncoding, this.remoteFonts, this.javascript, this.javascriptCloseWindows, this.javascriptAccessClipboard, this.javascriptDomPaste, this.imageLoading, this.imageShrinkStandaloneToFit, this.textAreaResize, this.tabToLinks, this.localStorage, this.databasesDeprecated, this.webgl, this.backgroundColor, this.chromeStatusBubble, this.chromeZoomBubble, this.axViewportCollapse);
+            return new CefBrowserSettings(this.windowlessFrameRate, this.standardFontFamily, this.fixedFontFamily, this.serifFontFamily, this.sansSerifFontFamily, this.cursiveFontFamily, this.fantasyFontFamily, this.defaultFontSize, this.defaultFixedFontSize, this.minimumFontSize, this.minimumLogicalFontSize, this.defaultEncoding, this.remoteFonts, this.javascript, this.javascriptCloseWindows, this.javascriptAccessClipboard, this.javascriptDomPaste, this.imageLoading, this.imageShrinkStandaloneToFit, this.textAreaResize, this.tabToLinks, this.localStorage, this.databasesDeprecated, this.webgl, this.backgroundColor, this.chromeStatusBubble, this.chromeZoomBubble);
         }
 
         @Override
@@ -408,18 +398,17 @@ public final class CefBrowserSettings {
                         && java.util.Objects.equals(this.webgl, other.webgl)
                         && this.backgroundColor == other.backgroundColor
                         && java.util.Objects.equals(this.chromeStatusBubble, other.chromeStatusBubble)
-                        && java.util.Objects.equals(this.chromeZoomBubble, other.chromeZoomBubble)
-                        && java.util.Objects.equals(this.axViewportCollapse, other.axViewportCollapse);
+                        && java.util.Objects.equals(this.chromeZoomBubble, other.chromeZoomBubble);
         }
 
         @Override
         public int hashCode() {
-            return java.util.Objects.hash(windowlessFrameRate, standardFontFamily, fixedFontFamily, serifFontFamily, sansSerifFontFamily, cursiveFontFamily, fantasyFontFamily, defaultFontSize, defaultFixedFontSize, minimumFontSize, minimumLogicalFontSize, defaultEncoding, remoteFonts, javascript, javascriptCloseWindows, javascriptAccessClipboard, javascriptDomPaste, imageLoading, imageShrinkStandaloneToFit, textAreaResize, tabToLinks, localStorage, databasesDeprecated, webgl, backgroundColor, chromeStatusBubble, chromeZoomBubble, axViewportCollapse);
+            return java.util.Objects.hash(windowlessFrameRate, standardFontFamily, fixedFontFamily, serifFontFamily, sansSerifFontFamily, cursiveFontFamily, fantasyFontFamily, defaultFontSize, defaultFixedFontSize, minimumFontSize, minimumLogicalFontSize, defaultEncoding, remoteFonts, javascript, javascriptCloseWindows, javascriptAccessClipboard, javascriptDomPaste, imageLoading, imageShrinkStandaloneToFit, textAreaResize, tabToLinks, localStorage, databasesDeprecated, webgl, backgroundColor, chromeStatusBubble, chromeZoomBubble);
         }
 
         @Override
         public String toString() {
-            return "CefBrowserSettings.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "windowlessFrameRate=" + windowlessFrameRate + ", " + "standardFontFamily=" + standardFontFamily + ", " + "fixedFontFamily=" + fixedFontFamily + ", " + "serifFontFamily=" + serifFontFamily + ", " + "sansSerifFontFamily=" + sansSerifFontFamily + ", " + "cursiveFontFamily=" + cursiveFontFamily + ", " + "fantasyFontFamily=" + fantasyFontFamily + ", " + "defaultFontSize=" + defaultFontSize + ", " + "defaultFixedFontSize=" + defaultFixedFontSize + ", " + "minimumFontSize=" + minimumFontSize + ", " + "minimumLogicalFontSize=" + minimumLogicalFontSize + ", " + "defaultEncoding=" + defaultEncoding + ", " + "remoteFonts=" + remoteFonts + ", " + "javascript=" + javascript + ", " + "javascriptCloseWindows=" + javascriptCloseWindows + ", " + "javascriptAccessClipboard=" + javascriptAccessClipboard + ", " + "javascriptDomPaste=" + javascriptDomPaste + ", " + "imageLoading=" + imageLoading + ", " + "imageShrinkStandaloneToFit=" + imageShrinkStandaloneToFit + ", " + "textAreaResize=" + textAreaResize + ", " + "tabToLinks=" + tabToLinks + ", " + "localStorage=" + localStorage + ", " + "databasesDeprecated=" + databasesDeprecated + ", " + "webgl=" + webgl + ", " + "backgroundColor=" + backgroundColor + ", " + "chromeStatusBubble=" + chromeStatusBubble + ", " + "chromeZoomBubble=" + chromeZoomBubble + ", " + "axViewportCollapse=" + axViewportCollapse + "}";
+            return "CefBrowserSettings.Mutable{" + "size=" + (size == -1 ? "pending" : Long.toString(size)) + ", " + "windowlessFrameRate=" + windowlessFrameRate + ", " + "standardFontFamily=" + standardFontFamily + ", " + "fixedFontFamily=" + fixedFontFamily + ", " + "serifFontFamily=" + serifFontFamily + ", " + "sansSerifFontFamily=" + sansSerifFontFamily + ", " + "cursiveFontFamily=" + cursiveFontFamily + ", " + "fantasyFontFamily=" + fantasyFontFamily + ", " + "defaultFontSize=" + defaultFontSize + ", " + "defaultFixedFontSize=" + defaultFixedFontSize + ", " + "minimumFontSize=" + minimumFontSize + ", " + "minimumLogicalFontSize=" + minimumLogicalFontSize + ", " + "defaultEncoding=" + defaultEncoding + ", " + "remoteFonts=" + remoteFonts + ", " + "javascript=" + javascript + ", " + "javascriptCloseWindows=" + javascriptCloseWindows + ", " + "javascriptAccessClipboard=" + javascriptAccessClipboard + ", " + "javascriptDomPaste=" + javascriptDomPaste + ", " + "imageLoading=" + imageLoading + ", " + "imageShrinkStandaloneToFit=" + imageShrinkStandaloneToFit + ", " + "textAreaResize=" + textAreaResize + ", " + "tabToLinks=" + tabToLinks + ", " + "localStorage=" + localStorage + ", " + "databasesDeprecated=" + databasesDeprecated + ", " + "webgl=" + webgl + ", " + "backgroundColor=" + backgroundColor + ", " + "chromeStatusBubble=" + chromeStatusBubble + ", " + "chromeZoomBubble=" + chromeZoomBubble + "}";
         }
     }
 }

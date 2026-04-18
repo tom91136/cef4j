@@ -9,7 +9,8 @@ object Naming {
       compoundSegments: Map[String, List[String]],
       javaPackage: String,
       subPackages: Map[String, String] = Map.empty,
-      platformCppMode: Boolean = false
+      platformCppMode: Boolean = false,
+      platformInterfaceTypes: Set[String] = Set.empty
   )
 
   object Context {
@@ -20,14 +21,16 @@ object Naming {
         compoundSegments: Map[String, List[String]],
         javaPackage: String,
         subPackages: Map[String, String] = Map.empty,
-        platformCppMode: Boolean = false
+        platformCppMode: Boolean = false,
+        platformInterfaceTypes: Set[String] = Set.empty
     ): Context =
       Context(
         cppClassNames = names,
         compoundSegments = compoundSegments.map { case (k, words) => k -> words.map(titleCase) },
         javaPackage = javaPackage,
         subPackages = subPackages,
-        platformCppMode = platformCppMode
+        platformCppMode = platformCppMode,
+        platformInterfaceTypes = platformInterfaceTypes
       )
   }
 
@@ -192,11 +195,15 @@ object Naming {
     sub == "linux" || sub == "mac" || sub == "win"
 
   // JNI class lookups: when generating platform-specific C++ (platformCppMode),
-  // use the actual platform-qualified class. When generating common C++, use the
-  // shared root class for synthetic platform sub-packages.
+  // use the actual platform-qualified class only for types whose shared root is
+  // a marker interface implemented by platform-specific records. For duplicated
+  // concrete DTOs like CefMainArgs, always use the shared root class because the
+  // public Java API passes that root type into JNI.
   def fullyQualifiedJavaNameForJniLookup(cefStructName: String)(using context: Context): String =
     context.subPackages.get(cefStructName) match {
-      case Some(sub) if !context.platformCppMode && isSyntheticPlatformSubPackage(sub) =>
+      case Some(sub)
+          if isSyntheticPlatformSubPackage(sub) && (!context.platformCppMode || !context.platformInterfaceTypes
+            .contains(cefStructName)) =>
         fullyQualifiedSharedJavaName(cefStructName)
       case _ =>
         fullyQualifiedJavaName(cefStructName)
@@ -204,7 +211,9 @@ object Naming {
 
   def fullyQualifiedMutableNameForJniLookup(cefStructName: String)(using context: Context): String =
     context.subPackages.get(cefStructName) match {
-      case Some(sub) if !context.platformCppMode && isSyntheticPlatformSubPackage(sub) =>
+      case Some(sub)
+          if isSyntheticPlatformSubPackage(sub) && (!context.platformCppMode || !context.platformInterfaceTypes
+            .contains(cefStructName)) =>
         s"$javaPackage.${structToJavaName(cefStructName)}$$Mutable"
       case _ =>
         fullyQualifiedMutableName(cefStructName)
@@ -412,7 +421,7 @@ object Naming {
     case CType.Bool                          => "int"
     case CType.Int                           => "int"
     case CType.UInt                          => "unsigned int"
-    case CType.Char                          => "char16_t"
+    case CType.Char                          => "cef4j_char_t"
     case CType.Long                          => "int64_t"
     case CType.SizeT                         => "size_t"
     case CType.Float                         => "float"

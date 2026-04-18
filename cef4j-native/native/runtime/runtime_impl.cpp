@@ -2,6 +2,7 @@
 
 #include "jni_util.h"
 #include "runtime_stubs.gen.h"
+#include "cef_compat.h"
 
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
@@ -46,7 +47,7 @@ CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jcl
     int ok = cef_load_library(path);
     env->ReleaseStringUTFChars(frameworkBinaryPath, path);
     if (!ok) return JNI_FALSE;
-    cef_api_hash(CEF_API_VERSION, 0);
+    cef4j_verify_api_hash();
     return JNI_TRUE;
 #else
     (void)env; (void)frameworkBinaryPath;

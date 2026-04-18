@@ -167,7 +167,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
     // cannot be called here because cef_load_library() hasn't been called yet.
     // It is called in loadCefLibrary0() after cef_load_library() initializes the stubs.
 #ifndef __APPLE__
-    cef_api_hash(CEF_API_VERSION, 0);
+    cef4j_verify_api_hash();
 #endif
 
     JNIEnv* env;

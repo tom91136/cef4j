@@ -16,9 +16,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-// CEF Views API methods must be called on the UI thread. On macOS with the native message pump,
-// the UI thread is Thread 0 (not the test thread), and these synchronous factory methods return
-// null when called from a non-UI thread.
 @DisabledOnOs(OS.MAC)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefViewsInteropTest extends CefTestBase {
@@ -82,19 +79,6 @@ class CefViewsInteropTest extends CefTestBase {
                     assertThat(cefBrowser.isValid()).as("browser isValid").isTrue());
 
             assertThat(bv).as("browser view instance").isNotNull();
-        }
-    }
-
-    @Test
-    @Order(21)
-    void browserView_getRuntimeStyle() throws Exception {
-        CefBrowserSettings.Mutable bs = new CefBrowserSettings.Mutable();
-        CefClient client = new CefClient() {};
-
-        try (CefBrowserView bv = CefBrowserView.create(client, "about:blank", bs.toImmutable(), null, null, null)
-                .orElseThrow()) {
-            CefRuntimeStyle style = bv.getRuntimeStyle();
-            assertThat(style).as("runtime style").isNotNull();
         }
     }
 

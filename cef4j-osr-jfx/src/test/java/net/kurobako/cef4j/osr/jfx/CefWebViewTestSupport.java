@@ -26,6 +26,22 @@ final class CefWebViewTestSupport {
         }
     }
 
+    static int cefApiVersion() {
+        String apiVersion = System.getProperty("cef.api.version");
+        if (apiVersion != null && !apiVersion.isBlank()) {
+            return Integer.parseInt(apiVersion.trim());
+        }
+        String cefVersion = System.getProperty("cef.version");
+        if (cefVersion != null && !cefVersion.isBlank()) {
+            int plus = cefVersion.indexOf('+');
+            String major = plus >= 0 ? cefVersion.substring(0, plus) : cefVersion;
+            int dot = major.indexOf('.');
+            if (dot >= 0) major = major.substring(0, dot);
+            return Integer.parseInt(major);
+        }
+        return 146;
+    }
+
     static void startJavaFx() throws Exception {
         CountDownLatch fxLatch = new CountDownLatch(1);
         try {

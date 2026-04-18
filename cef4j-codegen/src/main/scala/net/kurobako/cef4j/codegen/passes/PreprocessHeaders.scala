@@ -13,7 +13,7 @@ object PreprocessHeaders {
         header,
         List(headerInputs.cefRoot),
         cfg.compilerId,
-        cfg.targetPlatform.preprocessorDefines
+        cfg.preprocessorDefines
       )
     }
 }

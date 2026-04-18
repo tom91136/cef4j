@@ -427,13 +427,13 @@ public final class ViewsBrowserApp {
         mainLayout.setFlexForView(contentPanel, 1);
 
         // Register keyboard accelerators
-        win.setAccelerator(CMD_NEW_TAB, VK_T, false, true, false, true); // Ctrl+T
-        win.setAccelerator(CMD_CLOSE_TAB, VK_W, false, true, false, true); // Ctrl+W
-        win.setAccelerator(CMD_RELOAD, VK_F5, false, false, false, true); // F5
-        win.setAccelerator(CMD_DEVTOOLS, VK_F12, false, false, false, true); // F12
-        win.setAccelerator(CMD_BACK, VK_LEFT, false, false, true, true); // Alt+Left
-        win.setAccelerator(CMD_FORWARD, VK_RIGHT, false, false, true, true); // Alt+Right
-        win.setAccelerator(CMD_FOCUS_URL, VK_L, false, true, false, true); // Ctrl+L
+        setAcceleratorCompat(win, CMD_NEW_TAB, VK_T, false, true, false, true); // Ctrl+T
+        setAcceleratorCompat(win, CMD_CLOSE_TAB, VK_W, false, true, false, true); // Ctrl+W
+        setAcceleratorCompat(win, CMD_RELOAD, VK_F5, false, false, false, true); // F5
+        setAcceleratorCompat(win, CMD_DEVTOOLS, VK_F12, false, false, false, true); // F12
+        setAcceleratorCompat(win, CMD_BACK, VK_LEFT, false, false, true, true); // Alt+Left
+        setAcceleratorCompat(win, CMD_FORWARD, VK_RIGHT, false, false, true, true); // Alt+Right
+        setAcceleratorCompat(win, CMD_FOCUS_URL, VK_L, false, true, false, true); // Ctrl+L
 
         // Add main panel to window
         win.setToFillLayout();
@@ -445,6 +445,47 @@ public final class ViewsBrowserApp {
         openNewTab(DEFAULT_URL);
 
         win.show();
+    }
+
+    private static void setAcceleratorCompat(
+            CefWindow win,
+            int commandId,
+            int keyCode,
+            boolean shiftPressed,
+            boolean ctrlPressed,
+            boolean altPressed,
+            boolean highPriority) {
+        try {
+            win.getClass()
+                    .getMethod(
+                            "setAccelerator",
+                            int.class,
+                            int.class,
+                            boolean.class,
+                            boolean.class,
+                            boolean.class,
+                            boolean.class)
+                    .invoke(win, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority);
+            return;
+        } catch (NoSuchMethodException ignored) {
+            // Pre-133 CEF exposes the older 5-argument variant without the high-priority flag.
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to invoke CefWindow#setAccelerator", e);
+        }
+
+        try {
+            win.getClass()
+                    .getMethod(
+                            "setAccelerator",
+                            int.class,
+                            int.class,
+                            boolean.class,
+                            boolean.class,
+                            boolean.class)
+                    .invoke(win, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to invoke legacy CefWindow#setAccelerator", e);
+        }
     }
 
     // ---- Navigation helpers ----

@@ -27,7 +27,7 @@
 #include "include/capi/cef_v8_capi.h"
 #include "include/capi/cef_process_message_capi.h"
 #include "include/capi/cef_frame_capi.h"
-#include "include/cef_api_hash.h"
+#include "cef_compat.h"
 
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
@@ -169,7 +169,7 @@ private:
 // ---------------------------------------------------------------------------
 
 struct FrameState {
-    cef_v8_context_t* context = nullptr;
+    cef4j_v8_context_t* context = nullptr;
     std::unordered_set<int> handles;
 
     ~FrameState() {
@@ -186,8 +186,12 @@ static cef_frame_t* g_currentFrame = nullptr;  // set during on_process_message_
 
 static std::string frameId(cef_frame_t* frame) {
     if (!frame) return {};
+#if CEF_VERSION_MAJOR < 133
+    return std::to_string(frame->get_identifier(frame));
+#else
     auto id = ScopedCefString::take(frame->get_identifier(frame));
     return id.toUtf8();
+#endif
 }
 
 static std::string handlePropName(int id) {
@@ -196,7 +200,7 @@ static std::string handlePropName(int id) {
 
 // Store a V8 value as a handle. Requires V8 context to be entered.
 // Returns the handle ID. The value is stored on the global object.
-static int storeHandle(cef_v8_context_t* ctx, cef_v8_value_t* value, const std::string& fid) {
+static int storeHandle(cef4j_v8_context_t* ctx, cef4j_v8_value_t* value, const std::string& fid) {
     if (!value || !ctx) return -1;
     int id = g_nextHandle.fetch_add(1, std::memory_order_relaxed);
     auto* global = ctx->get_global(ctx);
@@ -209,14 +213,14 @@ static int storeHandle(cef_v8_context_t* ctx, cef_v8_value_t* value, const std::
 
 // Release a handle. Removes the global property and erases from the set.
 // Requires V8 context to be entered.
-static void releaseHandle(cef_v8_context_t* ctx, int id, const std::string& fid) {
+static void releaseHandle(cef4j_v8_context_t* ctx, int id, const std::string& fid) {
     if (ctx) {
         auto* global = ctx->get_global(ctx);
         if (global) {
             std::string code = "delete " + handlePropName(id);
             ScopedCefString codeStr(code);
-            cef_v8_value_t* unused = nullptr;
-            cef_v8_exception_t* unused_exc = nullptr;
+            cef4j_v8_value_t* unused = nullptr;
+            cef4j_v8_exception_t* unused_exc = nullptr;
             ctx->eval(ctx, codeStr.get(), nullptr, 0, &unused, &unused_exc);
         }
     }
@@ -245,7 +249,7 @@ static constexpr int TYPE_ERROR  = 3;
 
 // JSON.stringify a V8 value by evaluating it in the current context.
 // Returns the JSON string, or empty string on failure.
-static std::string jsonStringify(cef_v8_context_t* ctx, cef_v8_value_t* value) {
+static std::string jsonStringify(cef4j_v8_context_t* ctx, cef4j_v8_value_t* value) {
     // Store value as a property on the global, stringify it, then remove it.
     auto* global = ctx->get_global(ctx);
     if (!global) return {};
@@ -254,14 +258,14 @@ static std::string jsonStringify(cef_v8_context_t* ctx, cef_v8_value_t* value) {
     global->set_value_bykey(global, propName.get(), value, static_cast<cef_v8_propertyattribute_t>(0));
 
     ScopedCefString code("JSON.stringify(__cef4j_tmp)");
-    cef_v8_value_t* retval = nullptr;
-    cef_v8_exception_t* exc = nullptr;
+    cef4j_v8_value_t* retval = nullptr;
+    cef4j_v8_exception_t* exc = nullptr;
     int ok = ctx->eval(ctx, code.get(), nullptr, 0, &retval, &exc);
 
     // Clean up temp property
     ScopedCefString undefinedCode("delete __cef4j_tmp");
-    cef_v8_value_t* unused = nullptr;
-    cef_v8_exception_t* unused_exc = nullptr;
+    cef4j_v8_value_t* unused = nullptr;
+    cef4j_v8_exception_t* unused_exc = nullptr;
     ctx->eval(ctx, undefinedCode.get(), nullptr, 0, &unused, &unused_exc);
 
     if (!ok || !retval) return {};
@@ -329,11 +333,11 @@ static std::string listGetString(cef_list_value_t* list, size_t index) {
 
 // Evaluate expression or return V8 value depending on mode.
 // mode: 0 = return JSON, 1 = return handle
-static void evalAndReply(cef_frame_t* frame, cef_v8_context_t* ctx, int reqId,
+static void evalAndReply(cef_frame_t* frame, cef4j_v8_context_t* ctx, int reqId,
                          const std::string& expression, int mode, const std::string& fid) {
     ScopedCefString code(expression);
-    cef_v8_value_t* retval = nullptr;
-    cef_v8_exception_t* exc = nullptr;
+    cef4j_v8_value_t* retval = nullptr;
+    cef4j_v8_exception_t* exc = nullptr;
     int ok = ctx->eval(ctx, code.get(), nullptr, 0, &retval, &exc);
 
     if (!ok || !retval) {
@@ -371,7 +375,7 @@ static void evalAndReply(cef_frame_t* frame, cef_v8_context_t* ctx, int reqId,
 
 // Acquire the V8 context for a given frame. Returns nullptr if not available.
 // Caller must release when done (via CefScopedPtr or manual release).
-static cef_v8_context_t* acquireContext(const std::string& fid) {
+static cef4j_v8_context_t* acquireContext(const std::string& fid) {
     auto it = g_frames.find(fid);
     if (it == g_frames.end() || !it->second.context) return nullptr;
     auto* ctx = it->second.context;
@@ -391,7 +395,7 @@ static void handleEval(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
     evalAndReply(frame, ctx, reqId, expression, mode, fid);
     ctx->exit(ctx);
@@ -409,7 +413,7 @@ static void handleGet(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
 
     auto fit = g_frames.find(fid);
@@ -437,7 +441,7 @@ static void handleSet(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
 
     auto fit = g_frames.find(fid);
@@ -450,8 +454,8 @@ static void handleSet(cef_frame_t* frame, cef_list_value_t* args) {
     // Set via eval using the handle's global property name
     std::string expr = handlePropName(handleId) + "['" + key + "'] = (" + valueJson + ")";
     ScopedCefString code(expr);
-    cef_v8_value_t* retval = nullptr;
-    cef_v8_exception_t* exc = nullptr;
+    cef4j_v8_value_t* retval = nullptr;
+    cef4j_v8_exception_t* exc = nullptr;
     int ok = ctx->eval(ctx, code.get(), nullptr, 0, &retval, &exc);
 
     if (!ok) {
@@ -481,7 +485,7 @@ static void handleCall(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
 
     auto fit = g_frames.find(fid);
@@ -511,7 +515,7 @@ static void handleInvoke(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
 
     auto fit = g_frames.find(fid);
@@ -534,7 +538,7 @@ static void handleRelease(cef_frame_t* frame, cef_list_value_t* args) {
     auto fid = frameId(frame);
     auto* ctx = acquireContext(fid);
     if (ctx) {
-        CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+        CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
         ctx->enter(ctx);
         releaseHandle(ctx, handleId, fid);
         ctx->exit(ctx);
@@ -552,23 +556,23 @@ static void handleRelease(cef_frame_t* frame, cef_list_value_t* args) {
 // ---------------------------------------------------------------------------
 
 // V8 function handler that fires a "cef4j:cb" message when JS calls the function.
-struct CallbackHandler : public cef_v8_handler_t {
+struct CallbackHandler : public cef4j_v8_handler_t {
     std::atomic<int> refCount{1};
     int callbackId;
 
-    explicit CallbackHandler(int cbId) : cef_v8_handler_t{}, callbackId(cbId) {
-        InitSubprocessRefCount<CallbackHandler, cef_v8_handler_t>(
+    explicit CallbackHandler(int cbId) : cef4j_v8_handler_t{}, callbackId(cbId) {
+        InitSubprocessRefCount<CallbackHandler, cef4j_v8_handler_t>(
             reinterpret_cast<cef_base_ref_counted_t*>(this));
         execute = _execute;
     }
 
     static int CEF_CALLBACK _execute(
-            cef_v8_handler_t* self,
+            cef4j_v8_handler_t* self,
             const cef_string_t* /*name*/,
-            cef_v8_value_t* /*object*/,
+            cef4j_v8_value_t* /*object*/,
             size_t argumentsCount,
-            cef_v8_value_t* const* arguments,
-            cef_v8_value_t** retval,
+            cef4j_v8_value_t* const* arguments,
+            cef4j_v8_value_t** retval,
             cef_string_t* /*exception*/) {
         auto* handler = reinterpret_cast<CallbackHandler*>(self);
 
@@ -578,7 +582,7 @@ struct CallbackHandler : public cef_v8_handler_t {
 
         auto fid = frameId(frame);
         auto fit = g_frames.find(fid);
-        cef_v8_context_t* ctx = (fit != g_frames.end()) ? fit->second.context : nullptr;
+        cef4j_v8_context_t* ctx = (fit != g_frames.end()) ? fit->second.context : nullptr;
 
         // Store each argument as a V8 handle so Java can interact with them
         // via getProperty/call/release. This preserves live object references
@@ -608,7 +612,7 @@ struct CallbackHandler : public cef_v8_handler_t {
         }
 
         // Return undefined to JS
-        *retval = cef_v8_value_create_undefined();
+        *retval = cef4j_v8_create_undefined();
         return 1;
     }
 };
@@ -623,12 +627,12 @@ static void handleCreateCallback(cef_frame_t* frame, cef_list_value_t* args) {
         sendError(frame, reqId, "no V8 context available");
         return;
     }
-    CefScopedPtr<cef_v8_context_t> ctxGuard(ctx);
+    CefScopedPtr<cef4j_v8_context_t> ctxGuard(ctx);
     ctx->enter(ctx);
 
     auto* handler = new CallbackHandler(callbackId);
     ScopedCefString fnName("__cef4j_cb_" + std::to_string(callbackId));
-    auto* fn = cef_v8_value_create_function(fnName.get(), handler);
+    auto* fn = cef4j_v8_create_function(fnName.get(), handler);
     // Don't release handler - cef_v8_value_create_function may not add_ref internally
 
     if (!fn) {
@@ -664,7 +668,7 @@ struct EvalHandler : public cef_render_process_handler_t {
             cef_render_process_handler_t* /*self*/,
             cef_browser_t* /*browser*/,
             cef_frame_t* frame,
-            cef_v8_context_t* context) {
+            cef4j_v8_context_t* context) {
         auto fid = frameId(frame);
         auto& state = g_frames[fid];
         // Release old context if present (e.g. navigation within the same frame)
@@ -684,7 +688,7 @@ struct EvalHandler : public cef_render_process_handler_t {
             cef_render_process_handler_t* /*self*/,
             cef_browser_t* /*browser*/,
             cef_frame_t* frame,
-            cef_v8_context_t* /*context*/) {
+            cef4j_v8_context_t* /*context*/) {
         auto fid = frameId(frame);
         // Erase the entire frame state - handles become invalid with the context.
         g_frames.erase(fid);
@@ -793,7 +797,7 @@ struct SubprocessApp : public cef_app_t {
 #if defined(_WIN32)
 #include <windows.h>
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
-    cef_api_hash(CEF_API_VERSION, 0);
+    cef4j_verify_api_hash();
     cef_main_args_t args{};
     args.instance = hInstance;
     auto* app = new SubprocessApp();
@@ -824,7 +828,7 @@ int main(int argc, char* argv[]) {
         }
     }
 #endif
-    cef_api_hash(CEF_API_VERSION, 0);
+    cef4j_verify_api_hash();
     cef_main_args_t args{};
     args.argc = argc;
     args.argv = argv;

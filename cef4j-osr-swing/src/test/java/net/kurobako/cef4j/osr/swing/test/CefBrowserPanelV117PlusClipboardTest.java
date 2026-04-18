@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Timeout(40)
-class CefBrowserPanelClipboardTest extends SwingBrowserPanelTestBase {
+class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     private static final int REPEAT_COUNT = 5;
     private static final double SOURCE_X = 180;
     private static final double TARGET_X = 620;

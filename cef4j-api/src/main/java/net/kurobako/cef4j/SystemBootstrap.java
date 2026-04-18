@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,8 +194,18 @@ public final class SystemBootstrap {
         String resourceBase = "native/" + platform + "/";
         log.debug("Detected platform: {}, native lib: {}", platform, libName);
 
-        // Extract to a persistent cache dir to avoid re-extraction
-        Path cacheDir = Paths.get(System.getProperty("java.io.tmpdir"), "cef4j-cache", platform);
+        Path libcefDir = getLibcefDir();
+        boolean useLinkedRuntime = libcefDir != null;
+        boolean platformJarAvailable = isPlatformJarAvailable();
+        if (!useLinkedRuntime && !platformJarAvailable) {
+            throw new IOException("CEF runtime not found: cef4j-platform jar not on classpath,"
+                    + " LIBCEF_DIR env var not set, -Dcef4j.libcef.dir system property not set");
+        }
+        if (useLinkedRuntime && !Files.isDirectory(libcefDir)) {
+            throw new IOException("LIBCEF_DIR is not a directory: " + libcefDir);
+        }
+
+        Path cacheDir = resolveExtractionCacheDir(platform, libName, resourceBase, libcefDir, platformJarAvailable);
         log.debug("Extraction cache dir: {}", cacheDir);
         Files.createDirectories(cacheDir);
 
@@ -204,22 +216,12 @@ public final class SystemBootstrap {
         extractResource(resourceBase + launcherName, launcher);
         launcher.toFile().setExecutable(true);
 
-        if (isPlatformJarAvailable()) {
-            log.debug("CEF runtime found in platform jar, extracting");
-            extractPlatformRuntime(cacheDir);
-        } else {
-            log.debug("cef4j-platform jar not on classpath, checking LIBCEF_DIR");
-            // Fallback: symlink from LIBCEF_DIR
-            Path libcefDir = getLibcefDir();
-            if (libcefDir == null) {
-                throw new IOException("CEF runtime not found: cef4j-platform jar not on classpath,"
-                        + " LIBCEF_DIR env var not set, -Dcef4j.libcef.dir system property not set");
-            }
-            if (!Files.isDirectory(libcefDir)) {
-                throw new IOException("LIBCEF_DIR is not a directory: " + libcefDir);
-            }
+        if (useLinkedRuntime) {
             log.debug("Linking CEF runtime from LIBCEF_DIR: {}", libcefDir);
             linkCefRuntime(libcefDir, cacheDir);
+        } else {
+            log.debug("CEF runtime found in platform jar, extracting");
+            extractPlatformRuntime(cacheDir);
         }
 
         extractionDir = cacheDir;
@@ -280,6 +282,44 @@ public final class SystemBootstrap {
         }
         loaded = true;
         log.info("Loaded cef4j native library from classpath extraction: {}", cacheDir);
+    }
+
+    private static Path resolveExtractionCacheDir(
+            String platform, String libName, String resourceBase, Path libcefDir, boolean platformJarAvailable)
+            throws IOException {
+        Path baseDir = Paths.get(System.getProperty("java.io.tmpdir"), "cef4j-cache", platform);
+        Files.createDirectories(baseDir);
+        return baseDir.resolve(
+                computeExtractionCacheKey(platform, libName, resourceBase, libcefDir, platformJarAvailable));
+    }
+
+    private static String computeExtractionCacheKey(
+            String platform, String libName, String resourceBase, Path libcefDir, boolean platformJarAvailable)
+            throws IOException {
+        MessageDigest digest = newSha256Digest();
+        updateDigestFromResource(digest, resourceBase + libName);
+        updateDigestFromResource(digest, resourceBase + (OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher"));
+        updateDigestWithString(digest, platform);
+        if (platformJarAvailable) {
+            updateDigestFromResource(digest, "cef-runtime/file-list.txt");
+            updateDigestFromResource(digest, platformRuntimeFingerprintResource());
+        } else {
+            Path resolvedLibcefDir = libcefDir.toRealPath();
+            updateDigestWithString(digest, resolvedLibcefDir.toString());
+            Path runtimeBinary = resolvedLibcefDir.resolve(platformRuntimeBinaryName());
+            if (Files.exists(runtimeBinary)) {
+                updateDigestWithString(digest, Long.toString(Files.size(runtimeBinary)));
+                updateDigestWithString(
+                        digest,
+                        Long.toString(Files.getLastModifiedTime(runtimeBinary).toMillis()));
+            }
+        }
+        StringBuilder out = new StringBuilder();
+        byte[] bytes = digest.digest();
+        for (int i = 0; i < 8; i++) {
+            out.append(String.format("%02x", bytes[i]));
+        }
+        return out.toString();
     }
 
     private static boolean isPlatformJarAvailable() {
@@ -409,6 +449,43 @@ public final class SystemBootstrap {
                 throw new IOException("Resource not found on classpath: " + resourcePath);
             }
             Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private static void updateDigestFromResource(MessageDigest digest, String resourcePath) throws IOException {
+        try (InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (in == null) {
+                throw new IOException("Resource not found on classpath: " + resourcePath);
+            }
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                digest.update(buffer, 0, read);
+            }
+        }
+    }
+
+    private static void updateDigestWithString(MessageDigest digest, String value) {
+        digest.update(value.getBytes(StandardCharsets.UTF_8));
+        digest.update((byte) 0);
+    }
+
+    private static String platformRuntimeFingerprintResource() {
+        if (OS.isMacOS()) {
+            return "cef-runtime/Chromium Embedded Framework.framework/Chromium Embedded Framework";
+        }
+        return "cef-runtime/" + platformRuntimeBinaryName();
+    }
+
+    private static String platformRuntimeBinaryName() {
+        return OS.isWindows() ? "libcef.dll" : "libcef.so";
+    }
+
+    private static MessageDigest newSha256Digest() {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 digest unavailable", e);
         }
     }
 

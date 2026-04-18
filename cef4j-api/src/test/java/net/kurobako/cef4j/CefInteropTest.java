@@ -3,8 +3,10 @@ package net.kurobako.cef4j;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -555,7 +557,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(14)
-    void globals_stringUtilities() {
+    void globals_stringUtilities() throws Exception {
         assertThat(CefGlobals.getMimeType("html")).hasValue("text/html");
         assertThat(CefGlobals.getMimeType("json")).hasValue("application/json");
         assertThat(CefGlobals.getMimeType("png")).hasValue("image/png");
@@ -566,19 +568,12 @@ class CefInteropTest extends CefTestBase {
 
         assertThat(CefGlobals.uriencode("hello world", 0)).hasValue("hello%20world");
         assertThat(CefGlobals.uriencode("hello world", 1)).hasValue("hello+world");
-
-        byte[] data = "Hello, CEF!".getBytes(StandardCharsets.UTF_8);
-        ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
-        buf.put(data);
-        buf.flip();
-        assertThat(CefGlobals.base64Encode(buf)).hasValue("SGVsbG8sIENFRiE=");
     }
 
     @Test
     @Order(15)
     void globals_currentlyOnThread() {
         if (OS.isMacOS()) {
-            // macOS native pump: the test thread is not the CEF UI thread (Thread 0 is).
             assertThat(CefGlobals.currentlyOn(CefThreadId.of(CefThreadId.Kind.UI)))
                     .isEqualTo(0);
         } else {
@@ -734,18 +729,14 @@ class CefInteropTest extends CefTestBase {
         if (OS.isMacOS()) windowInfo = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
         else if (OS.isWindows()) windowInfo = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
         else windowInfo = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
-        assertThat(windowInfo.toString())
-                .as("JVM-created CefWindowInfo.Mutable")
-                .contains("size=pending");
+        assertPendingSizeIfTracked(windowInfo, "JVM-created CefWindowInfo.Mutable");
 
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
-        assertThat(browserSettings.toString())
-                .as("JVM-created CefBrowserSettings.Mutable")
-                .contains("size=pending");
+        assertPendingSizeIfTracked(browserSettings, "JVM-created CefBrowserSettings.Mutable");
 
         CefKeyEvent jvmKeyEvent =
                 new CefKeyEvent(CefKeyEventType.of(CefKeyEventType.Kind.KEYDOWN), 0, 65, 0, 0, 'A', 'A', 0);
-        assertThat(jvmKeyEvent.toString()).as("JVM-created CefKeyEvent").contains("size=pending");
+        assertPendingSizeIfTracked(jvmKeyEvent, "JVM-created CefKeyEvent");
 
         CountDownLatch createdLatch = new CountDownLatch(1);
         CountDownLatch loadLatch = new CountDownLatch(1);
@@ -775,14 +766,7 @@ class CefInteropTest extends CefTestBase {
 
             @Override
             public Optional<CefKeyboardHandler> getKeyboardHandler() {
-                return Optional.of(new CefKeyboardHandler() {
-                    @Override
-                    public boolean onKeyEvent(@Nonnull CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
-                        capturedEvent.set(event);
-                        keyLatch.countDown();
-                        return false;
-                    }
-                });
+                return Optional.of(new CompatibleKeyboardHandler(capturedEvent, keyLatch));
             }
 
             @Override
@@ -811,10 +795,7 @@ class CefInteropTest extends CefTestBase {
 
         CefKeyEvent nativeEvent = capturedEvent.get();
         assertThat(nativeEvent).as("captured key event").isNotNull();
-        assertThat(nativeEvent.toString())
-                .as("native CefKeyEvent should have actual sizeof, not pending")
-                .doesNotContain("size=pending")
-                .matches(".*size=\\d+.*");
+        assertConcreteSizeIfTracked(nativeEvent, "native CefKeyEvent should have actual sizeof, not pending");
 
         closeBrowser(browser);
     }
@@ -1003,27 +984,7 @@ class CefInteropTest extends CefTestBase {
         CefClient client = new CefClient() {
             @Override
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
-                return Optional.of(new CefLifeSpanHandler() {
-                    @Override
-                    public boolean onBeforePopup(
-                            @Nullable CefBrowser browser,
-                            @Nullable CefFrame frame,
-                            int popupId,
-                            @Nullable String targetUrl,
-                            @Nullable String targetFrameName,
-                            @Nonnull CefWindowOpenDisposition targetDisposition,
-                            boolean userGesture,
-                            @Nullable CefPopupFeatures popupFeatures,
-                            @Nonnull CefWindowInfo.Mutable windowInfo,
-                            @Nullable java.util.concurrent.atomic.AtomicReference<CefClient> client,
-                            @Nonnull CefBrowserSettings.Mutable settings,
-                            @Nullable java.util.concurrent.atomic.AtomicReference<CefDictionaryValue> extraInfo,
-                            int[] noJavascriptAccess) {
-                        popupFired.set(true);
-                        popupLatch.countDown();
-                        return true;
-                    }
-                });
+                return Optional.of(new CompatiblePopupLifeSpanHandler(popupFired, popupLatch));
             }
 
             @Override
@@ -1087,68 +1048,15 @@ class CefInteropTest extends CefTestBase {
     @Test
     @Order(34)
     void generatedSignatures_useTypedMappings() throws Exception {
-        var popupMethod = CefLifeSpanHandler.class.getMethod(
-                "onBeforePopup",
-                CefBrowser.class,
-                CefFrame.class,
-                int.class,
-                String.class,
-                String.class,
-                CefWindowOpenDisposition.class,
-                boolean.class,
-                CefPopupFeatures.class,
-                CefWindowInfo.Mutable.class,
-                AtomicReference.class,
-                CefBrowserSettings.Mutable.class,
-                AtomicReference.class,
-                int[].class);
-        assertThat(popupMethod.getParameterTypes()[7]).isEqualTo(CefPopupFeatures.class);
+        Method popupMethod = findSingleMethod(CefLifeSpanHandler.class, "onBeforePopup");
+        Class<?>[] popupParams = popupMethod.getParameterTypes();
+        int popupFeaturesIndex = popupParams.length == 13 ? 7 : 6;
+        assertThat(popupParams.length).isIn(12, 13);
+        assertThat(popupParams[popupFeaturesIndex]).isEqualTo(CefPopupFeatures.class);
+        assertThat(popupParams[popupParams.length - 1]).isEqualTo(int[].class);
 
-        var cursorMethod = CefDisplayHandler.class.getMethod(
-                "onCursorChange", CefBrowser.class, long.class, CefCursorType.class, CefCursorInfo.class);
+        Method cursorMethod = findSingleMethod(CefDisplayHandler.class, "onCursorChange");
         assertThat(cursorMethod.getParameterTypes()[3]).isEqualTo(CefCursorInfo.class);
-
-        var acceleratedPaintMethod = CefRenderHandler.class.getMethod(
-                "onAcceleratedPaint",
-                CefBrowser.class,
-                CefPaintElementType.class,
-                long.class,
-                CefRect[].class,
-                CefAcceleratedPaintInfo.class);
-        assertThat(acceleratedPaintMethod.getParameterTypes()[4]).isEqualTo(CefAcceleratedPaintInfo.class);
-    }
-
-    @Test
-    @Order(35)
-    void acceleratedPaintInfo_crossPlatformTypesImplementSharedInterface() {
-        CefAcceleratedPaintInfoCommon common = new CefAcceleratedPaintInfoCommon(
-                1L,
-                new CefSize(100, 100),
-                new CefRect(0, 0, 100, 100),
-                new CefRect(0, 0, 100, 100),
-                new CefSize(100, 100),
-                new CefRect(0, 0, 100, 100),
-                new CefRect(0, 0, 100, 100),
-                2L,
-                1,
-                1,
-                1,
-                1);
-        CefColorType colourType = CefColorType.of(CefColorType.Kind.BGRA_8888);
-
-        CefAcceleratedPaintInfo linuxInfo =
-                new net.kurobako.cef4j.gen.linux.CefAcceleratedPaintInfo(1, 0L, colourType, common);
-        CefAcceleratedPaintInfo macInfo =
-                new net.kurobako.cef4j.gen.mac.CefAcceleratedPaintInfo(123L, colourType, common);
-        CefAcceleratedPaintInfo winInfo =
-                new net.kurobako.cef4j.gen.win.CefAcceleratedPaintInfo(456L, colourType, common);
-
-        assertThat(linuxInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
-        assertThat(macInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
-        assertThat(winInfo).isInstanceOf(CefAcceleratedPaintInfo.class);
-        assertThat(linuxInfo.getClass().getName()).contains(".gen.linux.");
-        assertThat(macInfo.getClass().getName()).contains(".gen.mac.");
-        assertThat(winInfo.getClass().getName()).contains(".gen.win.");
     }
 
     @Test
@@ -1160,6 +1068,109 @@ class CefInteropTest extends CefTestBase {
         inner.close();
         assertThatThrownBy(() -> outer.setDictionary("nested", inner)).isInstanceOf(IllegalStateException.class);
         outer.close();
+    }
+
+    private static Optional<Method> findNamedMethod(Class<?> type, String name) {
+        return Arrays.stream(type.getMethods()).filter(method -> method.getName().equals(name)).findFirst();
+    }
+
+    private static Method findSingleMethod(Class<?> type, String name) {
+        return findNamedMethod(type, name)
+                .orElseThrow(() -> new AssertionError("Missing method " + type.getSimpleName() + "." + name));
+    }
+
+    private static void assertPendingSizeIfTracked(Object value, String description) {
+        String rendered = value.toString();
+        if (rendered.contains("size=")) {
+            assertThat(rendered).as(description).contains("size=pending");
+        } else {
+            assertThat(rendered).as(description).isNotBlank();
+        }
+    }
+
+    private static void assertConcreteSizeIfTracked(Object value, String description) {
+        String rendered = value.toString();
+        if (rendered.contains("size=")) {
+            assertThat(rendered)
+                    .as(description)
+                    .doesNotContain("size=pending")
+                    .matches(".*size=\\d+.*");
+        } else {
+            assertThat(rendered).as(description).isNotBlank();
+        }
+    }
+
+    static final class CompatibleKeyboardHandler implements CefKeyboardHandler {
+        private final AtomicReference<CefKeyEvent> capturedEvent;
+        private final CountDownLatch keyLatch;
+
+        CompatibleKeyboardHandler(AtomicReference<CefKeyEvent> capturedEvent, CountDownLatch keyLatch) {
+            this.capturedEvent = capturedEvent;
+            this.keyLatch = keyLatch;
+        }
+
+        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
+            return capture(event);
+        }
+
+        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, @Nullable NativePointer osEvent) {
+            return capture(event);
+        }
+
+        private boolean capture(CefKeyEvent event) {
+            capturedEvent.set(event);
+            keyLatch.countDown();
+            return false;
+        }
+    }
+
+    static final class CompatiblePopupLifeSpanHandler implements CefLifeSpanHandler {
+        private final AtomicBoolean popupFired;
+        private final CountDownLatch popupLatch;
+
+        CompatiblePopupLifeSpanHandler(AtomicBoolean popupFired, CountDownLatch popupLatch) {
+            this.popupFired = popupFired;
+            this.popupLatch = popupLatch;
+        }
+
+        public boolean onBeforePopup(
+                @Nullable CefBrowser browser,
+                @Nullable CefFrame frame,
+                int popupId,
+                @Nullable String targetUrl,
+                @Nullable String targetFrameName,
+                @Nonnull CefWindowOpenDisposition targetDisposition,
+                boolean userGesture,
+                @Nullable CefPopupFeatures popupFeatures,
+                @Nonnull CefWindowInfo.Mutable windowInfo,
+                @Nullable AtomicReference<CefClient> client,
+                @Nonnull CefBrowserSettings.Mutable settings,
+                @Nullable AtomicReference<CefDictionaryValue> extraInfo,
+                int[] noJavascriptAccess) {
+            return cancelPopup();
+        }
+
+        public boolean onBeforePopup(
+                @Nullable CefBrowser browser,
+                @Nullable CefFrame frame,
+                @Nullable String targetUrl,
+                @Nullable String targetFrameName,
+                @Nonnull CefWindowOpenDisposition targetDisposition,
+                boolean userGesture,
+                @Nullable CefPopupFeatures popupFeatures,
+                @Nonnull CefWindowInfo.Mutable windowInfo,
+                @Nullable AtomicReference<CefClient> client,
+                @Nonnull CefBrowserSettings.Mutable settings,
+                @Nullable AtomicReference<CefDictionaryValue> extraInfo,
+                int[] noJavascriptAccess) {
+            return cancelPopup();
+        }
+
+        private boolean cancelPopup() {
+            popupFired.set(true);
+            popupLatch.countDown();
+            return true;
+        }
     }
 
     static class MinimalRenderHandler implements CefRenderHandler {

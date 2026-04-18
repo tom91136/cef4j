@@ -31,7 +31,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
     static int CEF_CALLBACK _on_before_popup(cef_life_span_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, int popup_id, const cef_string_t* target_url, const cef_string_t* target_frame_name, cef_window_open_disposition_t target_disposition, int user_gesture, const cef_popup_features_t* popupFeatures, struct _cef_window_info_t* windowInfo, struct _cef_client_t** client, struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t** extra_info, int* no_javascript_access) {
         auto* h = reinterpret_cast<JniCefLifeSpanHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(141) < 0) { return false; }
+        if (env->PushLocalFrame(136) < 0) { return false; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -137,11 +137,8 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_settings_chrome_zoom_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_zoom_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_zoom_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_zoom_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_zoom_bubble_cls, _bv_settings_chrome_zoom_bubble_of, static_cast<jlong>((settings)->chrome_zoom_bubble));
-        auto _bv_settings_ax_viewport_collapse_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
-        auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
-        auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>((settings)->ax_viewport_collapse));
         auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
-        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
+        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings
     ? env->NewObject(j_settings_cls, j_settings_ctor,
         static_cast<jint>((settings)->windowless_frame_rate),
@@ -170,8 +167,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_settings_webgl,
         static_cast<jint>((settings)->background_color),
         _bv_settings_chrome_status_bubble,
-        _bv_settings_chrome_zoom_bubble,
-        _bv_settings_ax_viewport_collapse)
+        _bv_settings_chrome_zoom_bubble)
     : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
         auto j_extra_info_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
@@ -298,10 +294,6 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
             if (_wbn_chrome_zoom_bubble) {
                 (settings)->chrome_zoom_bubble = static_cast<decltype((settings)->chrome_zoom_bubble)>(env->GetLongField(_wbn_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wbn_chrome_zoom_bubble), "value", "J")));
             }
-            auto _wbn_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;"));
-            if (_wbn_ax_viewport_collapse) {
-                (settings)->ax_viewport_collapse = static_cast<decltype((settings)->ax_viewport_collapse)>(env->GetLongField(_wbn_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wbn_ax_viewport_collapse), "value", "J")));
-            }
         }
         if (extra_info) {
             auto j_extra_info_get = env->GetMethodID(j_extra_info_ar_cls, "get", "()Ljava/lang/Object;");
@@ -339,7 +331,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
     static void CEF_CALLBACK _on_before_dev_tools_popup(cef_life_span_handler_t* self, struct _cef_browser_t* browser, struct _cef_window_info_t* windowInfo, struct _cef_client_t** client, struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t** extra_info, int* use_default_window) {
         auto* h = reinterpret_cast<JniCefLifeSpanHandler*>(self);
         ScopedJNIEnv env(h->jvm);
-        if (env->PushLocalFrame(130) < 0) { return; }
+        if (env->PushLocalFrame(125) < 0) { return; }
         cef_browser_t* _p_browser = browser;
         if (_p_browser) { auto* _b = reinterpret_cast<cef_base_ref_counted_t*>(_p_browser); _b->add_ref(_b); }
         auto j_browser_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowser$NativePeer");
@@ -419,11 +411,8 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         auto _bv_settings_chrome_zoom_bubble_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
         auto _bv_settings_chrome_zoom_bubble_of = env->GetStaticMethodID(_bv_settings_chrome_zoom_bubble_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
         auto _bv_settings_chrome_zoom_bubble = env->CallStaticObjectMethod(_bv_settings_chrome_zoom_bubble_cls, _bv_settings_chrome_zoom_bubble_of, static_cast<jlong>((settings)->chrome_zoom_bubble));
-        auto _bv_settings_ax_viewport_collapse_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefState");
-        auto _bv_settings_ax_viewport_collapse_of = env->GetStaticMethodID(_bv_settings_ax_viewport_collapse_cls, "of", "(J)Lnet/kurobako/cef4j/gen/CefState;");
-        auto _bv_settings_ax_viewport_collapse = env->CallStaticObjectMethod(_bv_settings_ax_viewport_collapse_cls, _bv_settings_ax_viewport_collapse_of, static_cast<jlong>((settings)->ax_viewport_collapse));
         auto j_settings_cls = FindClassCached(env, "net/kurobako/cef4j/gen/CefBrowserSettings$Mutable");
-        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
+        auto j_settings_ctor = env->GetMethodID(j_settings_cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;ILnet/kurobako/cef4j/gen/CefState;Lnet/kurobako/cef4j/gen/CefState;)V");
         auto j_settings = settings
     ? env->NewObject(j_settings_cls, j_settings_ctor,
         static_cast<jint>((settings)->windowless_frame_rate),
@@ -452,8 +441,7 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
         _bv_settings_webgl,
         static_cast<jint>((settings)->background_color),
         _bv_settings_chrome_status_bubble,
-        _bv_settings_chrome_zoom_bubble,
-        _bv_settings_ax_viewport_collapse)
+        _bv_settings_chrome_zoom_bubble)
     : nullptr;
         if (j_settings) env->SetLongField(j_settings, env->GetFieldID(j_settings_cls, "size", "J"), static_cast<jlong>(settings->size));
         auto j_extra_info_ar_cls = FindClassCached(env, "java/util/concurrent/atomic/AtomicReference");
@@ -579,10 +567,6 @@ struct JniCefLifeSpanHandler : public cef_life_span_handler_t {
             auto _wbn_chrome_zoom_bubble = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "chromeZoomBubble", "Lnet/kurobako/cef4j/gen/CefState;"));
             if (_wbn_chrome_zoom_bubble) {
                 (settings)->chrome_zoom_bubble = static_cast<decltype((settings)->chrome_zoom_bubble)>(env->GetLongField(_wbn_chrome_zoom_bubble, env->GetFieldID(env->GetObjectClass(_wbn_chrome_zoom_bubble), "value", "J")));
-            }
-            auto _wbn_ax_viewport_collapse = env->GetObjectField(j_settings, env->GetFieldID(j_settings_cls, "axViewportCollapse", "Lnet/kurobako/cef4j/gen/CefState;"));
-            if (_wbn_ax_viewport_collapse) {
-                (settings)->ax_viewport_collapse = static_cast<decltype((settings)->ax_viewport_collapse)>(env->GetLongField(_wbn_ax_viewport_collapse, env->GetFieldID(env->GetObjectClass(_wbn_ax_viewport_collapse), "value", "J")));
             }
         }
         if (extra_info) {

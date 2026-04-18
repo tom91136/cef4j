@@ -130,6 +130,7 @@
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.api.version}</argument>
                                 <argument>--target-platform=${cef.codegen.linux.platform}</argument>
                                 <argument>--extra-cpp-dirs=views</argument>
                                 <argument>--extra-capi-dirs=views</argument>
@@ -151,6 +152,7 @@
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.api.version}</argument>
                                 <argument>--target-platform=${cef.codegen.macos.platform}</argument>
                                 <argument>--emit-common-cpp=false</argument>
                                 <argument>--emit-java-platform-only=true</argument>
@@ -175,6 +177,7 @@
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.api.version}</argument>
                                 <argument>--target-platform=${cef.codegen.windows.platform}</argument>
                                 <argument>--emit-common-cpp=false</argument>
                                 <argument>--emit-java-platform-only=true</argument>
@@ -199,6 +202,7 @@
                                 <argument>--out-java=${project.basedir}/../cef4j-api/src/main/java</argument>
                                 <argument>--java-package=${cef4j.generated.java.package}</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.api.version}</argument>
                                 <argument>--target-platform=${cef.codegen.linux.platform}</argument>
                                 <argument>--emit-common-cpp=false</argument>
                                 <argument>--emit-java-platform-only=true</argument>
@@ -222,6 +226,7 @@
                                 <argument>-G${cmake.generator}</argument>
                                 <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
                                 <argument>-DJAVA_HOME=${java.home}</argument>
+                                <argument>-DCEF4J_API_VERSION_RAW=${cef.api.version}</argument>
                                 <argument>-DCMAKE_BUILD_TYPE=Release</argument>
                                 <argument>-DCMAKE_CXX_STANDARD=17</argument>
                                 <argument>-DCMAKE_CXX_STANDARD_REQUIRED=ON</argument>
@@ -263,7 +268,7 @@
                 <executions>
                     <execution>
                         <id>copy-native-lib</id>
-                        <phase>package</phase>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>

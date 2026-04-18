@@ -19,12 +19,23 @@ case class HeaderMetadataIndex(
 }
 
 object HeaderMetadataIndex {
-  private val CppClassDeclRe      = """class\s+(\w+)\s*:""".r
-  private val CppMethodRe         = """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r
-  private val NonVirtualMethodRe  = """[\w:<>]+\s+(\w+)\s*\(""".r
-  private val CamelCaseSplitRe    = """([a-z])([A-Z])""".r
-  private val DigitUpperSplitRe   = """([0-9])([A-Z])""".r
-  private val StructTypedefNameRe = """typedef\s+struct\s+_(\w+)\s*\{""".r
+  private val CppClassDeclRe                                    = """class\s+(\w+)\s*:""".r
+  private val CppMethodRe                                       = """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r
+  private val NonVirtualMethodRe                                = """[\w:<>]+\s+(\w+)\s*\(""".r
+  private val CamelCaseSplitRe                                  = """([a-z])([A-Z])""".r
+  private val DigitUpperSplitRe                                 = """([0-9])([A-Z])""".r
+  private val StructTypedefNameRe                               = """typedef\s+struct\s+_(\w+)\s*\{""".r
+  private val LegacyCppToCapiAliases: Map[String, List[String]] = Map(
+    "CefV8Accessor"                   -> List("cef_v8accessor_t"),
+    "CefV8ArrayBufferReleaseCallback" -> List("cef_v8array_buffer_release_callback_t"),
+    "CefV8Context"                    -> List("cef_v8context_t"),
+    "CefV8Exception"                  -> List("cef_v8exception_t"),
+    "CefV8Handler"                    -> List("cef_v8handler_t"),
+    "CefV8Interceptor"                -> List("cef_v8interceptor_t"),
+    "CefV8StackFrame"                 -> List("cef_v8stack_frame_t"),
+    "CefV8StackTrace"                 -> List("cef_v8stack_trace_t"),
+    "CefV8Value"                      -> List("cef_v8value_t")
+  )
 
   def apply(
       cefIncludeDir: Path,
@@ -292,12 +303,8 @@ object HeaderMetadataIndex {
   private def parseCppClassNames(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, String] = {
     val fromClasses = cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val content = Files.readString(header)
-      CppClassDeclRe.findAllMatchIn(content).map { m =>
-        val cppName  = m.group(1)
-        val capiName = cppNameToCapiName(cppName)
-        capiName -> cppName
-      }
-    }
+      CppClassDeclRe.findAllMatchIn(content).flatMap(m => cppClassMappings(m.group(1)))
+    }.toList
 
     val wrappersFile = cefIncludeDir.resolve("internal/cef_types_wrappers.h")
     val fromWrappers = if (Files.exists(wrappersFile)) {
@@ -305,10 +312,7 @@ object HeaderMetadataIndex {
       val classInherits = """class\s+(Cef\w+)\s*:\s*public\s+(cef_\w+_t)""".r
         .findAllMatchIn(content).map(m => m.group(2) -> m.group(1)).toList
       val usingAliases = """using\s+(Cef\w+)\s*=\s*\w+<\w+>""".r
-        .findAllMatchIn(content).map { m =>
-          val cppName = m.group(1)
-          cppNameToCapiName(cppName) -> cppName
-        }.toList
+        .findAllMatchIn(content).flatMap(m => cppClassMappings(m.group(1))).toList
       classInherits ++ usingAliases
     } else Nil
 
@@ -565,6 +569,9 @@ object HeaderMetadataIndex {
 
   private def cppNameToCapiName(cppName: String): String =
     s"${DigitUpperSplitRe.replaceAllIn(CamelCaseSplitRe.replaceAllIn(cppName, "$1_$2"), "$1_$2").toLowerCase}_t"
+
+  private def cppClassMappings(cppName: String): List[(String, String)] =
+    (cppNameToCapiName(cppName) :: LegacyCppToCapiAliases.getOrElse(cppName, Nil)).distinct.map(_ -> cppName)
 
   private def alignCompoundSegments(
       capiWords: List[String],

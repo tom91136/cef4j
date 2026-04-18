@@ -71,6 +71,42 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bucket-v144-plus-tests</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="cef4j.test.v144plus.excludes"
+                                           value="__never__"
+                                           else="**/CefV144Plus*.java">
+                                    <matches string="${cef.api.version}"
+                                             pattern="^(144|14[5-9]|1[5-9][0-9]|[2-9][0-9]{2,})$"/>
+                                </condition>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <testExcludes>
+                        <testExclude>${cef4j.test.v144plus.excludes}</testExclude>
+                    </testExcludes>
+                    <testIncrementalExcludes>
+                        <testIncrementalExclude>${cef4j.test.v144plus.excludes}</testIncrementalExclude>
+                    </testIncrementalExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <configuration>
@@ -98,6 +134,7 @@
                         <exclude>**/CefSchemeHandlerTest.java</exclude>
                         <exclude>**/CefDaemonRenderTest.java</exclude>
                         <exclude>**/CefAppDelegatingTest.java</exclude>
+                        <exclude>**/CefV144PlusViewsInteropTest.java</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -113,6 +150,7 @@
                                 <include>**/CefDaemonRenderTest.java</include>
                                 <include>**/CefScriptEngineMultiThreadedTest.java</include>
                                 <include>**/CefAppDelegatingTest.java</include>
+                                <include>**/CefV144PlusViewsInteropTest.java</include>
                             </includes>
                         </configuration>
                     </execution>

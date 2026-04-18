@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Timeout(30)
-class WebViewRuntimeClipboardCompatTest extends WebViewRuntimeCompatTestBase {
+class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTestBase {
     private static final int CEF_REPEAT_COUNT = 5;
     private static final int JFX_REPEAT_COUNT = 1;
     private static final long MENU_VISIBLE_TIMEOUT_MS = 450;

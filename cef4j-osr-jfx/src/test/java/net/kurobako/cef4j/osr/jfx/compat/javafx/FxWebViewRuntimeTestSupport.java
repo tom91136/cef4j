@@ -244,6 +244,28 @@ final class FxWebViewRuntimeTestSupport {
         return FxWebViewRuntimeTestSupport.class.getPackageName().endsWith(".compat.cef");
     }
 
+    static int cefApiVersion() {
+        String apiVersion = System.getProperty("cef.api.version");
+        if (apiVersion != null && !apiVersion.isBlank()) {
+            return Integer.parseInt(apiVersion.trim());
+        }
+        String cefVersion = System.getProperty("cef.version");
+        if (cefVersion != null && !cefVersion.isBlank()) {
+            int plus = cefVersion.indexOf('+');
+            String major = plus >= 0 ? cefVersion.substring(0, plus) : cefVersion;
+            int dot = major.indexOf('.');
+            if (dot >= 0) major = major.substring(0, dot);
+            return Integer.parseInt(major);
+        }
+        return 146;
+    }
+
+    static void assumeCefCompatStressSuiteSupported(String suiteName) {
+        Assumptions.assumeTrue(
+                !isCefCompatHarness() || cefApiVersion() > 116,
+                suiteName + " crashes the native runtime on CEF <= 116");
+    }
+
     static void leftClick(WebView view, double x, double y) throws Exception {
         click(view, x, y, MouseButton.PRIMARY);
     }

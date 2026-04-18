@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
-class CefWebViewInputTest {
+class CefWebViewV117PlusInputTest {
 
     @BeforeAll
     static void setup(@TempDir Path tempDir) throws Exception {

@@ -13,8 +13,8 @@ import javax.annotation.processing.Generated;
  *   int windows_key_code;
  *   int native_key_code;
  *   int is_system_key;
- *   char16_t character;
- *   char16_t unmodified_character;
+ *   cef4j_char_t character;
+ *   cef4j_char_t unmodified_character;
  *   int focus_on_editable_field;
  * } cef_key_event_t;</pre>
  *

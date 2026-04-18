@@ -484,7 +484,7 @@ $callAndReturn$popAndReturn
     case CType.Bool       => s"static_cast<bool>($jniVar)"
     case CType.Int        => s"static_cast<int>($jniVar)"
     case CType.UInt       => s"static_cast<unsigned int>($jniVar)"
-    case CType.Char       => s"static_cast<char16_t>($jniVar)"
+    case CType.Char       => s"static_cast<cef4j_char_t>($jniVar)"
     case CType.Long       => s"static_cast<int64_t>($jniVar)"
     case CType.SizeT      => s"static_cast<size_t>($jniVar)"
     case CType.Float      => s"static_cast<float>($jniVar)"

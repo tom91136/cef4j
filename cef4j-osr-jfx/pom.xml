@@ -80,6 +80,12 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>11</release>
+                    <testExcludes>
+                        <testExclude>${cef4j.test.v117plus.excludes}</testExclude>
+                    </testExcludes>
+                    <testIncrementalExcludes>
+                        <testIncrementalExclude>${cef4j.test.v117plus.excludes}</testIncrementalExclude>
+                    </testIncrementalExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -125,6 +131,24 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>bucket-v117-plus-tests</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="cef4j.test.v117plus.excludes"
+                                           value="__never__"
+                                           else="**/*V117Plus*.java">
+                                    <matches string="${cef.api.version}"
+                                             pattern="^(11[7-9]|1[2-9][0-9]|[2-9][0-9]{2,})$"/>
+                                </condition>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>generate-cef-compat-tests</id>
                         <phase>generate-test-sources</phase>

@@ -92,7 +92,6 @@ final class CefWebViewClient implements CefClient {
                 refreshHistoryFromBrowser(browser);
             }
 
-            @Override
             public boolean onBeforePopup(
                     CefBrowser browser,
                     CefFrame frame,
@@ -107,12 +106,33 @@ final class CefWebViewClient implements CefClient {
                     @Nonnull CefBrowserSettings.Mutable settings,
                     AtomicReference<CefDictionaryValue> extraInfo,
                     int[] noJavascriptAccess) {
-                return view.handleBeforePopup(windowInfo, clientRef);
+                return handleBeforePopup(windowInfo, clientRef);
+            }
+
+            public boolean onBeforePopup(
+                    CefBrowser browser,
+                    CefFrame frame,
+                    String targetUrl,
+                    String targetFrameName,
+                    @Nonnull CefWindowOpenDisposition targetDisposition,
+                    boolean userGesture,
+                    CefPopupFeatures popupFeatures,
+                    @Nonnull CefWindowInfo.Mutable windowInfo,
+                    AtomicReference<CefClient> clientRef,
+                    @Nonnull CefBrowserSettings.Mutable settings,
+                    AtomicReference<CefDictionaryValue> extraInfo,
+                    int[] noJavascriptAccess) {
+                return handleBeforePopup(windowInfo, clientRef);
             }
 
             @Override
             public void onBeforeClose(CefBrowser browser) {
                 view.onBeforeBrowserClose();
+            }
+
+            private boolean handleBeforePopup(
+                    @Nonnull CefWindowInfo.Mutable windowInfo, AtomicReference<CefClient> clientRef) {
+                return view.handleBeforePopup(windowInfo, clientRef);
             }
         });
     }
@@ -195,16 +215,23 @@ final class CefWebViewClient implements CefClient {
                 return false;
             }
 
-            @Override
             public boolean onContentsBoundsChange(CefBrowser browser, @Nonnull CefRect newBounds) {
                 view.updateDetachedBounds(newBounds, true);
                 view.requestViewRefresh(true);
                 return true;
             }
 
-            @Override
             public boolean onCursorChange(
                     CefBrowser browser, long cursor, @Nonnull CefCursorType type, CefCursorInfo customCursorInfo) {
+                return updateCursor(type);
+            }
+
+            public boolean onCursorChange(
+                    CefBrowser browser, int cursor, @Nonnull CefCursorType type, CefCursorInfo customCursorInfo) {
+                return updateCursor(type);
+            }
+
+            private boolean updateCursor(@Nonnull CefCursorType type) {
                 Cursor jfxCursor = view.mapCursor(type);
                 Platform.runLater(() -> view.setCursor(jfxCursor));
                 return true;

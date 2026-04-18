@@ -11,11 +11,11 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Test;
 
 @Timeout(30)
-class WebViewRuntimePopupCompatTest extends WebViewRuntimeCompatTestBase {
+class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase {
 
     @Test
     void createPopupHandlerReceivesPopupFeaturesOnWindowOpen() throws Exception {

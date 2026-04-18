@@ -680,16 +680,6 @@ public interface CefBrowserHost extends CefLibraryObject {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     CefRuntimeStyle getRuntimeStyle();
-
-    /**
-     * Enable or disable CDP accessibility tree viewport collapse for this browser. When enabled, off-screen landmarks and headings are serialized as summaries and other off-screen nodes are pruned. Overrides the CefBrowserSettings.ax_viewport_collapse value. If called on the UI thread the change will be applied immediately. Otherwise, the change will be applied asynchronously on the UI thread. WARNING: This collapses the CDP accessibility tree and disables CDP dynamic tree updates (nodesUpdated events). The DevTools Accessibility panel will show an incomplete tree. Platform screen readers (NVDA, JAWS, VoiceOver) are unaffected  -  they use a separate code path.
-     * <p>Added in CEF API version experimental.
-     * <p>Definition generated from cef_browser_capi.h
-     * <pre>void (CEF_CALLBACK* set_ax_viewport_collapse)(struct _cef_browser_host_t* self, int enabled);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1077</a>
-     */
-    void setAxViewportCollapse(boolean enabled);
     /**
      * Create a new browser using the window parameters specified by {@code windowInfo}. All values will be copied internally and the actual window (if any) will be created on the UI thread. If {@code request_context} is empty the global request context will be used. This method can be called on any browser process thread and will not block. The optional {@code extra_info} parameter provides an opportunity to specify extra information specific to the created browser that will be passed to {@link net.kurobako.cef4j.gen.CefRenderProcessHandler#onBrowserCreated(CefBrowser, CefDictionaryValue)} in the render process.
      * <p>Definition generated from cef_browser_capi.h
@@ -1176,12 +1166,6 @@ public interface CefBrowserHost extends CefLibraryObject {
           return getRuntimeStyle0(nativePtr);
       }
 
-        @Override
-      public void setAxViewportCollapse(boolean enabled) {
-          checkNotClosed();
-          setAxViewportCollapse0(nativePtr, enabled);
-      }
-
 
         static native CefBrowser getBrowser0(long self);
 
@@ -1318,8 +1302,6 @@ public interface CefBrowserHost extends CefLibraryObject {
         static native boolean isRenderProcessUnresponsive0(long self);
 
         static native CefRuntimeStyle getRuntimeStyle0(long self);
-
-        static native void setAxViewportCollapse0(long self, boolean enabled);
 
         static native int createBrowser0(CefWindowInfo windowInfo, CefClient client, String url, CefBrowserSettings settings, CefDictionaryValue extraInfo, CefRequestContext requestContext);
         static native CefBrowser createBrowserSync0(CefWindowInfo windowInfo, CefClient client, String url, CefBrowserSettings settings, CefDictionaryValue extraInfo, CefRequestContext requestContext);

@@ -266,7 +266,7 @@ public enum Cef {
         if (!OS.isMacOS() && settings.localesDirPath == null) {
             settings.localesDirPath = settings.resourcesDirPath != null ? settings.resourcesDirPath + "/locales" : null;
         }
-        settings.disableSignalHandlers = 1;
+        setOptionalIntSetting(settings, "disableSignalHandlers", 1);
 
         // Sandbox is not supported in JVM-based CEF embeddings: the subprocess helper is a
         // separate executable and sandbox initialisation requires same-process control that the
@@ -280,8 +280,11 @@ public enum Cef {
         java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
         argv.add("cef4j");
         argv.addAll(extraArgs);
-        if (!argv.contains("--no-sandbox")) {
-            argv.add("--no-sandbox");
+        addArgIfMissing(argv, "--no-sandbox");
+        if (OS.isLinux()) {
+            addArgIfMissing(argv, "--disable-setuid-sandbox");
+            addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
+            addArgIfMissing(argv, "--disable-gpu-sandbox");
         }
 
         boolean useExternalPump = settings.externalMessagePump != 0;
@@ -433,6 +436,12 @@ public enum Cef {
         return new CefApp.Delegating(List.copyOf(composed));
     }
 
+    private static void addArgIfMissing(List<String> args, String arg) {
+        if (!args.contains(arg)) {
+            args.add(arg);
+        }
+    }
+
     /**
      * Create a new browser synchronously. Must be called on the same thread that called {@link #initialise} and only
      * while CEF is in the {@link State#INITIALISED} state.
@@ -556,5 +565,16 @@ public enum Cef {
     public void doMessageLoopWork() {
         checkState();
         CefGlobals.doMessageLoopWork();
+    }
+
+    private static void setOptionalIntSetting(CefSettings.Mutable settings, String fieldName, int value) {
+        try {
+            var field = settings.getClass().getField(fieldName);
+            field.setInt(settings, value);
+        } catch (NoSuchFieldException ignored) {
+            // Older generated settings structs may not expose newer optional fields.
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Unable to set CEF setting: " + fieldName, e);
+        }
     }
 }

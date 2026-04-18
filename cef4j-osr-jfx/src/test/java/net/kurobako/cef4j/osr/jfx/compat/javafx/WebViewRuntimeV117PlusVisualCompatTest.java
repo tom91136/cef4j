@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
-class WebViewRuntimeVisualCompatTest extends WebViewRuntimeCompatTestBase {
+class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBase {
 
     @Test
     void popupDelayedResizeToUpdatesGeometry() throws Exception {
