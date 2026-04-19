@@ -28,15 +28,48 @@ class JniCppHandlerTrampolineGen(
     "HINSTANCE",
     "HANDLE",
     "NSView*",
+    "XEvent*",
     "unsigned long"
   )
 
+  // Platform handle typedefs are #define'd in older CEF versions (pre-133) and
+  // expand to platform-specific types during preprocessing (e.g. unsigned long
+  // on Linux X11, void* on macOS).  The generated trampolines must use the
+  // portable typedef name so they compile on all platforms.  This map reverses
+  // the expansion for known platform-resolved raw types.
+  private val PlatformHandlePortableType: Map[String, String] = Map(
+    "cef_cursor_handle_t"          -> "cef_cursor_handle_t",
+    "cef_event_handle_t"           -> "cef_event_handle_t",
+    "cef_window_handle_t"          -> "cef_window_handle_t",
+    "cef_platform_thread_id_t"     -> "cef_platform_thread_id_t",
+    "cef_platform_thread_handle_t" -> "cef_platform_thread_handle_t",
+    "cef_shared_texture_handle_t"  -> "cef_shared_texture_handle_t"
+  )
+
+  /** If rawCType is already a portable typedef, return it. Otherwise, if it is a known platform expansion, look up the
+    * portable name by matching the parameter name against CEF conventions.
+    */
+  private def portableCType(p: Param): Option[String] = {
+    val raw = p.rawCType.trim
+    PlatformHandlePortableType.get(raw).orElse {
+      if (!PlatformHandleTypes.contains(raw)) None
+      else
+        p.name match {
+          case "cursor"   => Some("cef_cursor_handle_t")
+          case "os_event" => Some("cef_event_handle_t")
+          case _          => None // not a known handler callback handle param
+        }
+    }
+  }
+
   def renderHandlerTrampoline(structName: String, fn: FnPtr, wrapperName: String): String = {
     val cParams = (s"$structName* self" :: fn.params.map { p =>
-      val cType = if (p.rawCType.nonEmpty) p.rawCType
-      else {
-        val baseType = Naming.cType(p.typ)
-        if (p.isConst && !baseType.startsWith("const ")) s"const $baseType" else baseType
+      val cType = portableCType(p).getOrElse {
+        if (p.rawCType.nonEmpty) p.rawCType
+        else {
+          val baseType = Naming.cType(p.typ)
+          if (p.isConst && !baseType.startsWith("const ")) s"const $baseType" else baseType
+        }
       }
       s"$cType ${p.name}"
     }).mkString(", ")
@@ -301,6 +334,11 @@ $callAndReturn$popAndReturn
         (List(s"auto $jName = CefStringToJString(env, ${p.name});"), jName, Nil)
       case CType.Bool =>
         (Nil, s"static_cast<jboolean>(${p.name})", Nil)
+      case _ if portableCType(p).isDefined =>
+        // Platform handle — underlying type varies (void*, unsigned long, HCURSOR) so
+        // use a C-style cast that handles both pointers and integers. The Java side is
+        // `long` (J), so we must widen to jlong to avoid truncating 64-bit pointers.
+        (Nil, s"(jlong)(intptr_t)(${p.name})", Nil)
       case CType.Int | CType.UInt =>
         (Nil, s"static_cast<jint>(${p.name})", Nil)
       case CType.Char =>

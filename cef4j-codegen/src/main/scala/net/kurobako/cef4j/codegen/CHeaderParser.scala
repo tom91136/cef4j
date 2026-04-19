@@ -266,28 +266,28 @@ object CHeaderParser {
       .trim
 
     s match {
-      case "void"                                       => CType.Void
-      case "int"                                        => CType.Int
-      case "unsigned int" | "uint32_t"                  => CType.UInt
-      case "int64_t" | "int64" | "long long"            => CType.Long
-      case "uint64_t" | "uint64" | "unsigned long long" => CType.Long
-      case "size_t"                                     => CType.SizeT
-      case "char16_t" | "char16"                        => CType.Char
-      case "float"                                      => CType.Float
-      case "double"                                     => CType.Double
-      case "cef_string_t"                               => CType.JString
-      case "cef_string_t*" | "const cef_string_t*"      => CType.JString
-      case "cef_string_userfree_t"                      => CType.JString
-      case "const char*const*" | "const char**"         => CType.ConstCStringArray
-      case "char*const*" | "char**"                     => CType.CStringArray
-      case "const void*" | "void*"                      => CType.OpaquePtr
-      case t if t.endsWith("**")                        => CType.Ptr(t.stripSuffix("*").trim)
-      case "char16_t*" | "const char16_t*"              => CType.OpaquePtr
-      case "char*" | "const char*"                      => CType.OpaquePtr
-      case "wchar_t*" | "const wchar_t*"                => CType.OpaquePtr
-      case "cef_string_list_t"                          => CType.StringList
-      case "cef_string_map_t"                           => CType.StringMap
-      case "cef_string_multimap_t"                      => CType.StringMultimap
+      case "void"                                                         => CType.Void
+      case "int"                                                          => CType.Int
+      case "unsigned int" | "uint32_t"                                    => CType.UInt
+      case "int64_t" | "int64" | "long long"                              => CType.Long
+      case "uint64_t" | "uint64" | "unsigned long long" | "unsigned long" => CType.Long
+      case "size_t"                                                       => CType.SizeT
+      case "char16_t" | "char16"                                          => CType.Char
+      case "float"                                                        => CType.Float
+      case "double"                                                       => CType.Double
+      case "cef_string_t"                                                 => CType.JString
+      case "cef_string_t*" | "const cef_string_t*"                        => CType.JString
+      case "cef_string_userfree_t"                                        => CType.JString
+      case "const char*const*" | "const char**"                           => CType.ConstCStringArray
+      case "char*const*" | "char**"                                       => CType.CStringArray
+      case "const void*" | "void*"                                        => CType.OpaquePtr
+      case t if t.endsWith("**")                                          => CType.Ptr(t.stripSuffix("*").trim)
+      case "char16_t*" | "const char16_t*"                                => CType.OpaquePtr
+      case "char*" | "const char*"                                        => CType.OpaquePtr
+      case "wchar_t*" | "const wchar_t*"                                  => CType.OpaquePtr
+      case "cef_string_list_t"                                            => CType.StringList
+      case "cef_string_map_t"                                             => CType.StringMap
+      case "cef_string_multimap_t"                                        => CType.StringMultimap
       case "cef_window_handle_t" | "cef_cursor_handle_t" | "cef_event_handle_t"
           | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t"
           | "cef_shared_texture_handle_t"

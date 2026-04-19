@@ -19,6 +19,8 @@
         <github.repo>cef4j</github.repo>
 
         <cef.version>146.0.9+g3ca6a87+chromium-146.0.7680.165</cef.version>
+        <!-- Derived automatically from cef.version by build-helper-maven-plugin below.
+             Kept here as a fallback for IDE resolution; the plugin always overrides it. -->
         <cef.api.version>146</cef.api.version>
         <cef.dist.cache>${maven.multiModuleProjectDirectory}/.cef-dist</cef.dist.cache>
         <cef.dist.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal</cef.dist.dir>
@@ -277,6 +279,27 @@
 
     <build>
         <plugins>
+            <!-- Derive cef.api.version (major version number) from cef.version so that
+                 -Dcef.version=116... automatically sets cef.api.version=116 everywhere. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>derive-cef-api-version</id>
+                        <phase>initialize</phase>
+                        <goals><goal>regex-property</goal></goals>
+                        <configuration>
+                            <name>cef.api.version</name>
+                            <value>${cef.version}</value>
+                            <regex>^(\d+)\..*</regex>
+                            <replacement>$1</replacement>
+                            <failIfNoMatch>true</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

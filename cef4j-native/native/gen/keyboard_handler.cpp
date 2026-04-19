@@ -50,7 +50,7 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onPreKeyEvent", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefKeyEvent;J[I)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
-        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_event, (jlong)(os_event), j_is_keyboard_shortcut);
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_event, (jlong)(intptr_t)(os_event), j_is_keyboard_shortcut);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         if (is_keyboard_shortcut) { jint _v; env->GetIntArrayRegion(j_is_keyboard_shortcut, 0, 1, &_v); *is_keyboard_shortcut = _v; }
         env->PopLocalFrame(nullptr);
@@ -86,7 +86,7 @@ struct JniCefKeyboardHandler : public cef_keyboard_handler_t {
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onKeyEvent", "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefKeyEvent;J)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
-        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_event, (jlong)(os_event));
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, j_event, (jlong)(intptr_t)(os_event));
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         env->PopLocalFrame(nullptr);
         return jResult;

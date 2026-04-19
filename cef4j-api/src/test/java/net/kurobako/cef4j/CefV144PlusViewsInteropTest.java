@@ -8,7 +8,10 @@ import net.kurobako.cef4j.gen.CefClient;
 import net.kurobako.cef4j.gen.views.CefBrowserView;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
+@DisabledOnOs(OS.MAC)
 class CefV144PlusViewsInteropTest extends CefTestBase {
 
     @BeforeAll

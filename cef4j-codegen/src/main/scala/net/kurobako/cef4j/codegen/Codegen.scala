@@ -89,11 +89,20 @@ case class Config(
 }
 
 object Config {
+
+  /** Extract and normalise a CEF API version.
+    *
+    * Accepts either a bare major version number ("146") or a full CEF version string
+    * ("146.0.9+g3ca6a87+chromium-146.0.7680.165"). In both cases, the major version is extracted and multiplied by 100
+    * (e.g. 146 → 14600) to match CEF's internal `CEF_API_VERSION_NNNNN` naming convention.
+    */
   def normaliseCefApiVersion(raw: String): String = {
     val trimmed = raw.trim
-    require(trimmed.matches("^[0-9]+$"), s"CEF API version must be numeric: $raw")
-    val value = BigInt(trimmed)
-    if (value >= 133 && value < 1000) (value * 100).toString else trimmed
+    // Accept full version string: extract major version from "NNN.x.y+..."
+    val majorStr = if (trimmed.contains(".")) trimmed.takeWhile(_.isDigit) else trimmed
+    require(majorStr.matches("^[0-9]+$"), s"CEF API version must be numeric or a version string: $raw")
+    val value = BigInt(majorStr)
+    if (value >= 133 && value < 1000) (value * 100).toString else majorStr
   }
 }
 

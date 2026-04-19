@@ -18,10 +18,14 @@ import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 abstract class CefTestBase {
-    @TempDir
+    // CleanupMode.NEVER: CEF holds files in the cache dir open until JVM exit (cef_shutdown
+    // is skipped on macOS, see MACOS_PORTING_NOTES.md), so JUnit's auto-cleanup throws
+    // DirectoryNotEmptyException at @AfterAll time. The OS cleans /tmp eventually.
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init") // Populated by JUnit @TempDir before @Test methods run.
     static Path tempDir;
 

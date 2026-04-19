@@ -235,7 +235,7 @@ struct JniCefDisplayHandler : public cef_display_handler_t {
         auto cls = env->GetObjectClass(h->javaHandler);
         auto mid = env->GetMethodID(cls, "onCursorChange", "(Lnet/kurobako/cef4j/gen/CefBrowser;JLnet/kurobako/cef4j/gen/CefCursorType;Lnet/kurobako/cef4j/gen/CefCursorInfo;)Z");
         if (!mid) { env->PopLocalFrame(nullptr); return false; }
-        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, (jlong)(cursor), j_type, j_custom_cursor_info);
+        auto jResult = env->CallBooleanMethod(h->javaHandler, mid, j_browser, (jlong)(intptr_t)(cursor), j_type, j_custom_cursor_info);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return false; }
         env->PopLocalFrame(nullptr);
         return jResult;
