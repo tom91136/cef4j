@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen.win;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 
@@ -34,9 +35,9 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
     private volatile long size = -1;
 
     public final int exStyle;
-    public final String windowName;
+    public final @Nullable String windowName;
     public final int style;
-    public final CefRect bounds;
+    public final @Nullable CefRect bounds;
     public final long parentWindow;
     public final long menu;
         /**
@@ -53,9 +54,9 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
          */    public final long window;
         /**
          * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true}. See cef_runtime_style_t documentation for details. 
-         */    public final CefRuntimeStyle runtimeStyle;
+         */    public final @Nullable CefRuntimeStyle runtimeStyle;
 
-    public CefWindowInfo(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+    public CefWindowInfo(int exStyle, @Nullable String windowName, int style, @Nullable CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, @Nullable CefRuntimeStyle runtimeStyle) {
         this.exStyle = exStyle;
         this.windowName = windowName;
         this.style = style;
@@ -115,9 +116,9 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
     private volatile long size = -1;
 
         public int exStyle;
-        public String windowName;
+        public @Nullable String windowName;
         public int style;
-        public CefRect bounds;
+        public @Nullable CefRect bounds;
         public long parentWindow;
         public long menu;
             /**
@@ -134,11 +135,11 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
              */        public long window;
             /**
              * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true}. See cef_runtime_style_t documentation for details. 
-             */        public CefRuntimeStyle runtimeStyle;
+             */        public @Nullable CefRuntimeStyle runtimeStyle;
 
         public Mutable() {}
 
-        public Mutable(int exStyle, String windowName, int style, CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+        public Mutable(int exStyle, @Nullable String windowName, int style, @Nullable CefRect bounds, long parentWindow, long menu, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, @Nullable CefRuntimeStyle runtimeStyle) {
             this.exStyle = exStyle;
             this.windowName = windowName;
             this.style = style;

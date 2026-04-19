@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen.linux;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 
@@ -32,10 +33,10 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
 
         /**
          * The initial title of the window, to be set when the window is created. Some layout managers (e.g., Compiz) can look at the window title in order to decide where to place the window when it is created. When this attribute is not empty, the window title will be set before the window is mapped to the dispay. Otherwise the title will be initially empty. 
-         */    public final String windowName;
+         */    public final @Nullable String windowName;
         /**
          * Initial window bounds. 
-         */    public final CefRect bounds;
+         */    public final @Nullable CefRect bounds;
         /**
          * Pointer for the parent window. 
          */    public final long parentWindow;
@@ -53,9 +54,9 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
          */    public final long window;
         /**
          * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true}. See cef_runtime_style_t documentation for details. 
-         */    public final CefRuntimeStyle runtimeStyle;
+         */    public final @Nullable CefRuntimeStyle runtimeStyle;
 
-    public CefWindowInfo(String windowName, CefRect bounds, long parentWindow, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+    public CefWindowInfo(@Nullable String windowName, @Nullable CefRect bounds, long parentWindow, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, @Nullable CefRuntimeStyle runtimeStyle) {
         this.windowName = windowName;
         this.bounds = bounds;
         this.parentWindow = parentWindow;
@@ -110,10 +111,10 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
 
             /**
              * The initial title of the window, to be set when the window is created. Some layout managers (e.g., Compiz) can look at the window title in order to decide where to place the window when it is created. When this attribute is not empty, the window title will be set before the window is mapped to the dispay. Otherwise the title will be initially empty. 
-             */        public String windowName;
+             */        public @Nullable String windowName;
             /**
              * Initial window bounds. 
-             */        public CefRect bounds;
+             */        public @Nullable CefRect bounds;
             /**
              * Pointer for the parent window. 
              */        public long parentWindow;
@@ -131,11 +132,11 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
              */        public long window;
             /**
              * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true}. See cef_runtime_style_t documentation for details. 
-             */        public CefRuntimeStyle runtimeStyle;
+             */        public @Nullable CefRuntimeStyle runtimeStyle;
 
         public Mutable() {}
 
-        public Mutable(String windowName, CefRect bounds, long parentWindow, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, CefRuntimeStyle runtimeStyle) {
+        public Mutable(@Nullable String windowName, @Nullable CefRect bounds, long parentWindow, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long window, @Nullable CefRuntimeStyle runtimeStyle) {
             this.windowName = windowName;
             this.bounds = bounds;
             this.parentWindow = parentWindow;

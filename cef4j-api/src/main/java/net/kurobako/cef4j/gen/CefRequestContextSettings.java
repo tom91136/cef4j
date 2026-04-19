@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Request context initialization settings. Specify {@code null} or 0 to get the recommended default values.
@@ -27,19 +28,19 @@ public final class CefRequestContextSettings {
 
         /**
          * The directory where cache data for this request context will be stored on disk. If this value is non-empty then it must be an absolute path that is either equal to or a child directory of CefSettings.root_cache_path. If this value is empty then browsers will be created in "incognito mode" where in-memory caches are used for storage and no profile-specific data is persisted to disk (installation-specific data will still be persisted in root_cache_path). HTML5 databases such as localStorage will only persist across sessions if a cache path is specified. To share the global browser cache and related configuration set this value to match the CefSettings.cache_path value. 
-         */    public final String cachePath;
+         */    public final @Nullable String cachePath;
         /**
          * To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to {@code true} (1). Session cookies are generally intended to be transient and most Web browsers do not persist them. Can be set globally using the CefSettings.persist_session_cookies value. This value will be ignored if {@code cache_path} is empty or if it matches the CefSettings.cache_path value. 
          */    public final int persistSessionCookies;
         /**
          * Comma delimited ordered list of language codes without any whitespace that will be used in the "Accept-Language" HTTP request header and "navigator.language" JS attribute. Can be set globally using the CefSettings.accept_language_list value. If all values are empty then "en-US,en" will be used. This value will be ignored if {@code cache_path} matches the CefSettings.cache_path value. 
-         */    public final String acceptLanguageList;
+         */    public final @Nullable String acceptLanguageList;
         /**
          * Comma delimited list of schemes supported by the associated CefCookieManager. If {@code cookieable_schemes_exclude_defaults} is {@code false} (0) the default schemes ("http", "https", "ws" and "wss") will also be supported. Not specifying a {@code cookieable_schemes_list} value and setting {@code cookieable_schemes_exclude_defaults} to {@code true} (1) will disable all loading and saving of cookies. These values will be ignored if {@code cache_path} matches the CefSettings.cache_path value. 
-         */    public final String cookieableSchemesList;
+         */    public final @Nullable String cookieableSchemesList;
     public final int cookieableSchemesExcludeDefaults;
 
-    public CefRequestContextSettings(String cachePath, int persistSessionCookies, String acceptLanguageList, String cookieableSchemesList, int cookieableSchemesExcludeDefaults) {
+    public CefRequestContextSettings(@Nullable String cachePath, int persistSessionCookies, @Nullable String acceptLanguageList, @Nullable String cookieableSchemesList, int cookieableSchemesExcludeDefaults) {
         this.cachePath = cachePath;
         this.persistSessionCookies = persistSessionCookies;
         this.acceptLanguageList = acceptLanguageList;
@@ -88,21 +89,21 @@ public final class CefRequestContextSettings {
 
             /**
              * The directory where cache data for this request context will be stored on disk. If this value is non-empty then it must be an absolute path that is either equal to or a child directory of CefSettings.root_cache_path. If this value is empty then browsers will be created in "incognito mode" where in-memory caches are used for storage and no profile-specific data is persisted to disk (installation-specific data will still be persisted in root_cache_path). HTML5 databases such as localStorage will only persist across sessions if a cache path is specified. To share the global browser cache and related configuration set this value to match the CefSettings.cache_path value. 
-             */        public String cachePath;
+             */        public @Nullable String cachePath;
             /**
              * To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to {@code true} (1). Session cookies are generally intended to be transient and most Web browsers do not persist them. Can be set globally using the CefSettings.persist_session_cookies value. This value will be ignored if {@code cache_path} is empty or if it matches the CefSettings.cache_path value. 
              */        public int persistSessionCookies;
             /**
              * Comma delimited ordered list of language codes without any whitespace that will be used in the "Accept-Language" HTTP request header and "navigator.language" JS attribute. Can be set globally using the CefSettings.accept_language_list value. If all values are empty then "en-US,en" will be used. This value will be ignored if {@code cache_path} matches the CefSettings.cache_path value. 
-             */        public String acceptLanguageList;
+             */        public @Nullable String acceptLanguageList;
             /**
              * Comma delimited list of schemes supported by the associated CefCookieManager. If {@code cookieable_schemes_exclude_defaults} is {@code false} (0) the default schemes ("http", "https", "ws" and "wss") will also be supported. Not specifying a {@code cookieable_schemes_list} value and setting {@code cookieable_schemes_exclude_defaults} to {@code true} (1) will disable all loading and saving of cookies. These values will be ignored if {@code cache_path} matches the CefSettings.cache_path value. 
-             */        public String cookieableSchemesList;
+             */        public @Nullable String cookieableSchemesList;
         public int cookieableSchemesExcludeDefaults;
 
         public Mutable() {}
 
-        public Mutable(String cachePath, int persistSessionCookies, String acceptLanguageList, String cookieableSchemesList, int cookieableSchemesExcludeDefaults) {
+        public Mutable(@Nullable String cachePath, int persistSessionCookies, @Nullable String acceptLanguageList, @Nullable String cookieableSchemesList, int cookieableSchemesExcludeDefaults) {
             this.cachePath = cachePath;
             this.persistSessionCookies = persistSessionCookies;
             this.acceptLanguageList = acceptLanguageList;

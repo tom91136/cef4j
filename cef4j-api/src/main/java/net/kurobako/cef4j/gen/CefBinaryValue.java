@@ -79,7 +79,7 @@ public interface CefBinaryValue extends CefLibraryObject {
 
     /**
      * Read up to {@code buffer_size} number of bytes into {@code buffer}. Reading begins at the specified byte {@code data_offset}. Returns the number of bytes read.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code bufferSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code buffer_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_values_capi.h
      * <pre>size_t (CEF_CALLBACK* get_data)(struct _cef_binary_value_t* self, void* buffer, size_t buffer_size, size_t data_offset);</pre>
      *
@@ -208,9 +208,9 @@ public interface CefBinaryValue extends CefLibraryObject {
 
         static native boolean isOwned0(long self);
 
-        static native boolean isSame0(long self, CefBinaryValue that);
+        static native boolean isSame0(long self, @Nullable CefBinaryValue that);
 
-        static native boolean isEqual0(long self, CefBinaryValue that);
+        static native boolean isEqual0(long self, @Nullable CefBinaryValue that);
 
         static native CefBinaryValue copy0(long self);
 
@@ -218,10 +218,10 @@ public interface CefBinaryValue extends CefLibraryObject {
 
         static native long getSize0(long self);
 
-        static native long getData0(long self, ByteBuffer buffer, long dataOffset);
+        static native long getData0(long self, @Nonnull ByteBuffer buffer, long dataOffset);
 
-        static native CefBinaryValue base64Decode0(String data);
-        static native CefBinaryValue create0(ByteBuffer data);
+        static native CefBinaryValue base64Decode0(@Nullable String data);
+        static native CefBinaryValue create0(@Nonnull ByteBuffer data);
 
         @Override
         public boolean equals(Object obj) {

@@ -473,13 +473,13 @@ public interface CefDomNode extends CefLibraryObject {
 
         static native CefDomFormControlType getFormControlElementType0(long self);
 
-        static native boolean isSame0(long self, CefDomNode that);
+        static native boolean isSame0(long self, @Nullable CefDomNode that);
 
         static native String getName0(long self);
 
         static native String getValue0(long self);
 
-        static native boolean setValue0(long self, String value);
+        static native boolean setValue0(long self, @Nullable String value);
 
         static native String getAsMarkup0(long self);
 
@@ -501,13 +501,13 @@ public interface CefDomNode extends CefLibraryObject {
 
         static native boolean hasElementAttributes0(long self);
 
-        static native boolean hasElementAttribute0(long self, String attrName);
+        static native boolean hasElementAttribute0(long self, @Nullable String attrName);
 
-        static native String getElementAttribute0(long self, String attrName);
+        static native String getElementAttribute0(long self, @Nullable String attrName);
 
-        static native void getElementAttributes0(long self, Map<String, String> attrMap);
+        static native void getElementAttributes0(long self, @Nonnull Map<String, String> attrMap);
 
-        static native boolean setElementAttribute0(long self, String attrName, String value);
+        static native boolean setElementAttribute0(long self, @Nullable String attrName, @Nullable String value);
 
         static native String getElementInnerText0(long self);
 

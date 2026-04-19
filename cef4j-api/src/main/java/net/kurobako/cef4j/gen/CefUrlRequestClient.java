@@ -52,7 +52,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
 
     /**
      * Called when some part of the response is read. {@code data} contains the current bytes received since the last call. This method will not be called if the UR_FLAG_NO_DOWNLOAD_DATA flag is set on the request.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataLength} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_length} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>void (CEF_CALLBACK* on_download_data)(struct _cef_urlrequest_client_t* self, struct _cef_urlrequest_t* request, const void* data, size_t data_length);</pre>
      *

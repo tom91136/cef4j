@@ -1,6 +1,10 @@
 package net.kurobako.cef4j.codegen
 
 import JniCppByValueCodeGen.*
+import JniNaming.addRefExpr
+import JniNaming.jniMutableName
+import JniNaming.jniName
+import JniNaming.outPrimInfo
 
 // Generates C++ trampoline functions for handler structs (Java -> native callbacks).
 class JniCppHandlerTrampolineGen(
@@ -9,20 +13,7 @@ class JniCppHandlerTrampolineGen(
     bv: JniCppByValueCodeGen
 )(using Naming.Context) {
 
-  private def jniName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedJavaNameForJniLookup(cefName))
-
-  private def jniMutableName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedMutableNameForJniLookup(cefName))
-
-  private def isHandlerPtr(ct: CType): Boolean = ct match {
-    case CType.ObjectPtr(name) => handlerNames.contains(name)
-    case CType.Ptr(inner)      => handlerNames.contains(inner.stripPrefix("_"))
-    case _                     => false
-  }
-
-  private def addRefExpr(ptr: String): String =
-    s"{ auto* _b = reinterpret_cast<cef_base_ref_counted_t*>($ptr); _b->add_ref(_b); }"
+  private def isHandlerPtr(ct: CType): Boolean = JniNaming.isHandlerPtr(ct, handlerNames)
 
   private val PlatformHandleTypes = Set(
     "cef_window_handle_t",
@@ -39,13 +30,6 @@ class JniCppHandlerTrampolineGen(
     "NSView*",
     "unsigned long"
   )
-
-  private def outPrimInfo(inner: CType): (String, String, String) = inner match {
-    case CType.Long | CType.SizeT => (Naming.cType(inner), "jlong", "Long")
-    case CType.Float              => ("float", "jfloat", "Float")
-    case CType.Double             => ("double", "jdouble", "Double")
-    case _                        => (Naming.cType(inner), "jint", "Int")
-  }
 
   def renderHandlerTrampoline(structName: String, fn: FnPtr, wrapperName: String): String = {
     val cParams = (s"$structName* self" :: fn.params.map { p =>

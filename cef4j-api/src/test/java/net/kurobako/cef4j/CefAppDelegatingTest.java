@@ -106,6 +106,7 @@ class CefAppDelegatingTest {
     }
 
     @Test
+    @SuppressWarnings("NullAway")
     void nullHandler_isRejected() {
         assertThatThrownBy(() -> Cef.INSTANCE.addAppHandler(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> Cef.INSTANCE.removeAppHandler(null)).isInstanceOf(NullPointerException.class);

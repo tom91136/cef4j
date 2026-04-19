@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 public interface CefFindHandler extends CefClientHandler {
 
     /**
-     * Called to report find results returned by {@link net.kurobako.cef4j.gen.CefBrowserHost#find(String, boolean, boolean, boolean)}. {@code identifer} is a unique incremental identifier for the currently active search, {@code count} is the number of matches currently identified, {@code selectionRect} is the location of where the match was found (in window coordinates), {@code activeMatchOrdinal} is the current position in the search results, and {@code finalUpdate} is {@code true} if this is the last find notification.
+     * Called to report find results returned by {@link net.kurobako.cef4j.gen.CefBrowserHost#find(String, boolean, boolean, boolean)}. {@code identifier} is a unique incremental identifier for the currently active search, {@code count} is the number of matches currently identified, {@code selectionRect} is the location of where the match was found (in window coordinates), {@code activeMatchOrdinal} is the current position in the search results, and {@code finalUpdate} is {@code true} if this is the last find notification.
      * <p>Definition generated from cef_find_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_find_result)(struct _cef_find_handler_t* self, struct _cef_browser_t* browser, int identifier, int count, const cef_rect_t* selectionRect, int activeMatchOrdinal, int finalUpdate);</pre>
      *

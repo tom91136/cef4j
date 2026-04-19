@@ -15,6 +15,8 @@ object EmitMarkerInterfaces {
       s"""$banner
 package $javaPackage;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 $importLine
 
 /**
@@ -38,7 +40,7 @@ public interface CefLibraryObject extends AutoCloseable {
 
     default boolean peerIsClosed() { return false; }
 
-    static void requireOpen(CefLibraryObject obj, String name) {
+    static void requireOpen(@Nullable CefLibraryObject obj, @Nonnull String name) {
         if (obj != null && obj.peerIsClosed()) {
             throw new IllegalStateException(name + " argument has been closed");
         }

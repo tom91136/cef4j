@@ -477,15 +477,15 @@ public interface CefButton extends CefView {
 
         static native CefLabelButton asLabelButton0(long self);
 
-        static native void setState0(long self, CefButtonState state);
+        static native void setState0(long self, @Nonnull CefButtonState state);
 
         static native CefButtonState getState0(long self);
 
         static native void setInkDropEnabled0(long self, boolean enabled);
 
-        static native void setTooltipText0(long self, String tooltipText);
+        static native void setTooltipText0(long self, @Nullable String tooltipText);
 
-        static native void setAccessibleName0(long self, String name);
+        static native void setAccessibleName0(long self, @Nullable String name);
 
 
         @Override

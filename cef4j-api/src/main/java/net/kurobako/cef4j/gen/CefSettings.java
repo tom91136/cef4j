@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Initialization settings. Specify {@code null} or 0 to get the recommended default values. Many of these and other settings can also configured using command-line switches.
@@ -55,13 +56,13 @@ public final class CefSettings {
          */    public final int noSandbox;
         /**
          * The path to a separate executable that will be launched for sub-processes. If this value is empty on Windows or Linux then the main process executable will be used. If this value is empty on macOS then a helper executable must exist at "Contents/Frameworks/&lt;app&gt; Helper.app/Contents/MacOS/&lt;app&gt; Helper" in the top-level app bundle. See the comments on CefExecuteProcess() for details. If this value is non-empty then it must be an absolute path. Also configurable using the "browser-subprocess-path" command-line switch. 
-         */    public final String browserSubprocessPath;
+         */    public final @Nullable String browserSubprocessPath;
         /**
          * The path to the CEF framework directory on macOS. If this value is empty then the framework must exist at "Contents/Frameworks/Chromium Embedded Framework.framework" in the top-level app bundle. If this value is non-empty then it must be an absolute path. Also configurable using the "framework-dir-path" command-line switch. 
-         */    public final String frameworkDirPath;
+         */    public final @Nullable String frameworkDirPath;
         /**
          * The path to the main bundle on macOS. If this value is empty then it defaults to the top-level app bundle. If this value is non-empty then it must be an absolute path. Also configurable using the "main-bundle-path" command-line switch. 
-         */    public final String mainBundlePath;
+         */    public final @Nullable String mainBundlePath;
         /**
          * Set to {@code true} (1) to have the browser process message loop run in a separate thread. If {@code false} (0) then the CefDoMessageLoopWork() function must be called from your application message loop. This option is only supported on Windows and Linux. 
          */    public final int multiThreadedMessageLoop;
@@ -76,40 +77,40 @@ public final class CefSettings {
          */    public final int commandLineArgsDisabled;
         /**
          * The directory where data for the global browser cache will be stored on disk. If this value is non-empty then it must be an absolute path that is either equal to or a child directory of CefSettings.root_cache_path. If this value is empty then browsers will be created in "incognito mode" where in-memory caches are used for storage and no profile-specific data is persisted to disk (installation-specific data will still be persisted in root_cache_path). HTML5 databases such as localStorage will only persist across sessions if a cache path is specified. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.cache_path value. Any child directory value will be ignored and the "default" profile (also a child directory) will be used instead. 
-         */    public final String cachePath;
+         */    public final @Nullable String cachePath;
         /**
          * The root directory for installation-specific data and the parent directory for profile-specific data. All CefSettings.cache_path and CefRequestContextSettings.cache_path values must have this parent directory in common. If this value is empty and CefSettings.cache_path is non-empty then it will default to the CefSettings.cache_path value. Any non-empty value must be an absolute path. If both values are empty then the default platform-specific directory will be used ("~/.config/cef_user_data" directory on Linux, "~/Library/Application Support/CEF/User Data" directory on MacOS, "AppData\Local\CEF\User Data" directory under the user profile directory on Windows). Use of the default directory is not recommended in production applications (see below).  Multiple application instances writing to the same root_cache_path directory could result in data corruption. A process singleton lock based on the root_cache_path value is therefore used to protect against this. This singleton behavior applies to all CEF-based applications using version 120 or newer. You should customize root_cache_path for your application and implement CefBrowserProcessHandler:: OnAlreadyRunningAppRelaunch, which will then be called on any app relaunch with the same root_cache_path value.  Failure to set the root_cache_path value correctly may result in startup crashes or other unexpected behaviors (for example, the sandbox blocking read/write access to certain files). 
-         */    public final String rootCachePath;
+         */    public final @Nullable String rootCachePath;
         /**
          * To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to {@code true} (1). Session cookies are generally intended to be transient and most Web browsers do not persist them. A {@code cache_path} value must also be specified to enable this feature. Also configurable using the "persist-session-cookies" command-line switch. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.persist_session_cookies value. 
          */    public final int persistSessionCookies;
         /**
          * Value that will be returned as the User-Agent HTTP header. If empty the default User-Agent string will be used. Also configurable using the "user-agent" command-line switch. 
-         */    public final String userAgent;
+         */    public final @Nullable String userAgent;
         /**
          * Value that will be inserted as the product portion of the default User-Agent string. If empty the Chromium product version will be used. If {@code userAgent} is specified this value will be ignored. Also configurable using the "user-agent-product" command-line switch. 
-         */    public final String userAgentProduct;
+         */    public final @Nullable String userAgentProduct;
         /**
          * The locale string that will be passed to WebKit. If empty the default locale of "en-US" will be used. This value is ignored on Linux where locale is determined using environment variable parsing with the precedence order: LANGUAGE, LC_ALL, LC_MESSAGES and LANG. Also configurable using the "lang" command-line switch. 
-         */    public final String locale;
+         */    public final @Nullable String locale;
         /**
          * The directory and file name to use for the debug log. If empty a default log file name and location will be used. On Windows and Linux a "debug.log" file will be written in the main executable directory. On MacOS a "~/Library/Logs/[app name]_debug.log" file will be written where [app name] is the name of the main app executable. Also configurable using the "log-file" command-line switch. 
-         */    public final String logFile;
+         */    public final @Nullable String logFile;
         /**
          * The log severity. Only messages of this severity level or higher will be logged. When set to DISABLE no messages will be written to the log file, but FATAL messages will still be output to stderr. Also configurable using the "log-severity" command-line switch with a value of "verbose", "info", "warning", "error", "fatal" or "disable". 
-         */    public final CefLogSeverity logSeverity;
+         */    public final @Nullable CefLogSeverity logSeverity;
         /**
          * The log items prepended to each log line. If not set the default log items will be used. Also configurable using the "log-items" command-line switch with a value of "none" for no log items, or a comma-delimited list of values "pid", "tid", "timestamp" or "tickcount" for custom log items. 
-         */    public final CefLogItems logItems;
+         */    public final @Nullable CefLogItems logItems;
         /**
          * Custom flags that will be used when initializing the V8 JavaScript engine. The consequences of using custom flags may not be well tested. Also configurable using the "js-flags" command-line switch. 
-         */    public final String javascriptFlags;
+         */    public final @Nullable String javascriptFlags;
         /**
          * The fully qualified path for the resources directory. If this value is empty the *.pak files must be located in the module directory on Windows/Linux or the app bundle Resources directory on MacOS. If this value is non-empty then it must be an absolute path. Also configurable using the "resources-dir-path" command-line switch. 
-         */    public final String resourcesDirPath;
+         */    public final @Nullable String resourcesDirPath;
         /**
          * The fully qualified path for the locales directory. If this value is empty the locales directory must be located in the module directory. If this value is non-empty then it must be an absolute path. This value is ignored on MacOS where pack files are always loaded from the app bundle Resources directory. Also configurable using the "locales-dir-path" command-line switch. 
-         */    public final String localesDirPath;
+         */    public final @Nullable String localesDirPath;
         /**
          * Set to a value between 1024 and 65535 to enable remote debugging on the specified port. Also configurable using the "remote-debugging-port" command-line switch. Specifying 0 via the command-line switch will result in the selection of an ephemeral port and the port number will be printed as part of the WebSocket endpoint URL to stderr. If a cache directory path is provided the port will also be written to the &lt;cache-dir&gt;/DevToolsActivePort file. Remote debugging can be accessed by loading the chrome://inspect page in Google Chrome. Port numbers 9222 and 9229 are discoverable by default. Other port numbers may need to be configured via "Discover network targets" on the Devices tab. 
          */    public final int remoteDebuggingPort;
@@ -121,14 +122,14 @@ public final class CefSettings {
          */    public final int backgroundColor;
         /**
          * Comma delimited ordered list of language codes without any whitespace that will be used in the "Accept-Language" HTTP request header and "navigator.language" JS attribute. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.accept_language_list value. 
-         */    public final String acceptLanguageList;
+         */    public final @Nullable String acceptLanguageList;
         /**
          * Comma delimited list of schemes supported by the associated CefCookieManager. If {@code cookieable_schemes_exclude_defaults} is {@code false} (0) the default schemes ("http", "https", "ws" and "wss") will also be supported. Not specifying a {@code cookieable_schemes_list} value and setting {@code cookieable_schemes_exclude_defaults} to {@code true} (1) will disable all loading and saving of cookies. These settings will only impact the global CefRequestContext. Individual CefRequestContext instances can be configured via the CefRequestContextSettings.cookieable_schemes_list and CefRequestContextSettings.cookieable_schemes_exclude_defaults values. 
-         */    public final String cookieableSchemesList;
+         */    public final @Nullable String cookieableSchemesList;
     public final int cookieableSchemesExcludeDefaults;
         /**
          * Specify an ID to enable Chrome policy management via Platform and OS-user policies. On Windows, this is a registry key like "SOFTWARE\\Policies\\Google\\Chrome". On MacOS, this is a bundle ID like "com.google.Chrome". On Linux, this is an absolute directory path like "/etc/opt/chrome/policies". Only supported with Chrome style. See <a href="https://support.google.com/chrome/a/answer/9037717">https://support.google.com/chrome/a/answer/9037717</a> for details.  Chrome Browser Cloud Management integration, when enabled via the "enable-chrome-browser-cloud-management" command-line flag, will also use the specified ID. See <a href="https://support.google.com/chrome/a/answer/9116814">https://support.google.com/chrome/a/answer/9116814</a> for details. 
-         */    public final String chromePolicyId;
+         */    public final @Nullable String chromePolicyId;
         /**
          * Specify an ID for an ICON resource that can be loaded from the main executable and used when creating default Chrome windows such as DevTools and Task Manager. If unspecified the default Chromium ICON (IDR_MAINFRAME [101]) will be loaded from libcef.dll. Only supported with Chrome style on Windows. 
          */    public final int chromeAppIconId;
@@ -139,7 +140,7 @@ public final class CefSettings {
          * If {@code true} use a Views (bare-bones) window instead of a Chrome UI window when creating default popups for Chrome style native-hosted (non-Views) browsers. This applies when {@link net.kurobako.cef4j.gen.CefLifeSpanHandler#onBeforePopup(CefBrowser, CefFrame, int, String, String, CefWindowOpenDisposition, boolean, CefPopupFeatures, CefWindowInfo.Mutable, java.util.concurrent.atomic.AtomicReference, CefBrowserSettings.Mutable, java.util.concurrent.atomic.AtomicReference, int[])} has not been implemented to provide parent window information for the new popup. 
          */    public final int useViewsDefaultPopup;
 
-    public CefSettings(int noSandbox, String browserSubprocessPath, String frameworkDirPath, String mainBundlePath, int multiThreadedMessageLoop, int externalMessagePump, int windowlessRenderingEnabled, int commandLineArgsDisabled, String cachePath, String rootCachePath, int persistSessionCookies, String userAgent, String userAgentProduct, String locale, String logFile, CefLogSeverity logSeverity, CefLogItems logItems, String javascriptFlags, String resourcesDirPath, String localesDirPath, int remoteDebuggingPort, int uncaughtExceptionStackSize, int backgroundColor, String acceptLanguageList, String cookieableSchemesList, int cookieableSchemesExcludeDefaults, String chromePolicyId, int chromeAppIconId, int disableSignalHandlers, int useViewsDefaultPopup) {
+    public CefSettings(int noSandbox, @Nullable String browserSubprocessPath, @Nullable String frameworkDirPath, @Nullable String mainBundlePath, int multiThreadedMessageLoop, int externalMessagePump, int windowlessRenderingEnabled, int commandLineArgsDisabled, @Nullable String cachePath, @Nullable String rootCachePath, int persistSessionCookies, @Nullable String userAgent, @Nullable String userAgentProduct, @Nullable String locale, @Nullable String logFile, @Nullable CefLogSeverity logSeverity, @Nullable CefLogItems logItems, @Nullable String javascriptFlags, @Nullable String resourcesDirPath, @Nullable String localesDirPath, int remoteDebuggingPort, int uncaughtExceptionStackSize, int backgroundColor, @Nullable String acceptLanguageList, @Nullable String cookieableSchemesList, int cookieableSchemesExcludeDefaults, @Nullable String chromePolicyId, int chromeAppIconId, int disableSignalHandlers, int useViewsDefaultPopup) {
         this.noSandbox = noSandbox;
         this.browserSubprocessPath = browserSubprocessPath;
         this.frameworkDirPath = frameworkDirPath;
@@ -241,13 +242,13 @@ public final class CefSettings {
              */        public int noSandbox;
             /**
              * The path to a separate executable that will be launched for sub-processes. If this value is empty on Windows or Linux then the main process executable will be used. If this value is empty on macOS then a helper executable must exist at "Contents/Frameworks/&lt;app&gt; Helper.app/Contents/MacOS/&lt;app&gt; Helper" in the top-level app bundle. See the comments on CefExecuteProcess() for details. If this value is non-empty then it must be an absolute path. Also configurable using the "browser-subprocess-path" command-line switch. 
-             */        public String browserSubprocessPath;
+             */        public @Nullable String browserSubprocessPath;
             /**
              * The path to the CEF framework directory on macOS. If this value is empty then the framework must exist at "Contents/Frameworks/Chromium Embedded Framework.framework" in the top-level app bundle. If this value is non-empty then it must be an absolute path. Also configurable using the "framework-dir-path" command-line switch. 
-             */        public String frameworkDirPath;
+             */        public @Nullable String frameworkDirPath;
             /**
              * The path to the main bundle on macOS. If this value is empty then it defaults to the top-level app bundle. If this value is non-empty then it must be an absolute path. Also configurable using the "main-bundle-path" command-line switch. 
-             */        public String mainBundlePath;
+             */        public @Nullable String mainBundlePath;
             /**
              * Set to {@code true} (1) to have the browser process message loop run in a separate thread. If {@code false} (0) then the CefDoMessageLoopWork() function must be called from your application message loop. This option is only supported on Windows and Linux. 
              */        public int multiThreadedMessageLoop;
@@ -262,40 +263,40 @@ public final class CefSettings {
              */        public int commandLineArgsDisabled;
             /**
              * The directory where data for the global browser cache will be stored on disk. If this value is non-empty then it must be an absolute path that is either equal to or a child directory of CefSettings.root_cache_path. If this value is empty then browsers will be created in "incognito mode" where in-memory caches are used for storage and no profile-specific data is persisted to disk (installation-specific data will still be persisted in root_cache_path). HTML5 databases such as localStorage will only persist across sessions if a cache path is specified. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.cache_path value. Any child directory value will be ignored and the "default" profile (also a child directory) will be used instead. 
-             */        public String cachePath;
+             */        public @Nullable String cachePath;
             /**
              * The root directory for installation-specific data and the parent directory for profile-specific data. All CefSettings.cache_path and CefRequestContextSettings.cache_path values must have this parent directory in common. If this value is empty and CefSettings.cache_path is non-empty then it will default to the CefSettings.cache_path value. Any non-empty value must be an absolute path. If both values are empty then the default platform-specific directory will be used ("~/.config/cef_user_data" directory on Linux, "~/Library/Application Support/CEF/User Data" directory on MacOS, "AppData\Local\CEF\User Data" directory under the user profile directory on Windows). Use of the default directory is not recommended in production applications (see below).  Multiple application instances writing to the same root_cache_path directory could result in data corruption. A process singleton lock based on the root_cache_path value is therefore used to protect against this. This singleton behavior applies to all CEF-based applications using version 120 or newer. You should customize root_cache_path for your application and implement CefBrowserProcessHandler:: OnAlreadyRunningAppRelaunch, which will then be called on any app relaunch with the same root_cache_path value.  Failure to set the root_cache_path value correctly may result in startup crashes or other unexpected behaviors (for example, the sandbox blocking read/write access to certain files). 
-             */        public String rootCachePath;
+             */        public @Nullable String rootCachePath;
             /**
              * To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to {@code true} (1). Session cookies are generally intended to be transient and most Web browsers do not persist them. A {@code cache_path} value must also be specified to enable this feature. Also configurable using the "persist-session-cookies" command-line switch. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.persist_session_cookies value. 
              */        public int persistSessionCookies;
             /**
              * Value that will be returned as the User-Agent HTTP header. If empty the default User-Agent string will be used. Also configurable using the "user-agent" command-line switch. 
-             */        public String userAgent;
+             */        public @Nullable String userAgent;
             /**
              * Value that will be inserted as the product portion of the default User-Agent string. If empty the Chromium product version will be used. If {@code userAgent} is specified this value will be ignored. Also configurable using the "user-agent-product" command-line switch. 
-             */        public String userAgentProduct;
+             */        public @Nullable String userAgentProduct;
             /**
              * The locale string that will be passed to WebKit. If empty the default locale of "en-US" will be used. This value is ignored on Linux where locale is determined using environment variable parsing with the precedence order: LANGUAGE, LC_ALL, LC_MESSAGES and LANG. Also configurable using the "lang" command-line switch. 
-             */        public String locale;
+             */        public @Nullable String locale;
             /**
              * The directory and file name to use for the debug log. If empty a default log file name and location will be used. On Windows and Linux a "debug.log" file will be written in the main executable directory. On MacOS a "~/Library/Logs/[app name]_debug.log" file will be written where [app name] is the name of the main app executable. Also configurable using the "log-file" command-line switch. 
-             */        public String logFile;
+             */        public @Nullable String logFile;
             /**
              * The log severity. Only messages of this severity level or higher will be logged. When set to DISABLE no messages will be written to the log file, but FATAL messages will still be output to stderr. Also configurable using the "log-severity" command-line switch with a value of "verbose", "info", "warning", "error", "fatal" or "disable". 
-             */        public CefLogSeverity logSeverity;
+             */        public @Nullable CefLogSeverity logSeverity;
             /**
              * The log items prepended to each log line. If not set the default log items will be used. Also configurable using the "log-items" command-line switch with a value of "none" for no log items, or a comma-delimited list of values "pid", "tid", "timestamp" or "tickcount" for custom log items. 
-             */        public CefLogItems logItems;
+             */        public @Nullable CefLogItems logItems;
             /**
              * Custom flags that will be used when initializing the V8 JavaScript engine. The consequences of using custom flags may not be well tested. Also configurable using the "js-flags" command-line switch. 
-             */        public String javascriptFlags;
+             */        public @Nullable String javascriptFlags;
             /**
              * The fully qualified path for the resources directory. If this value is empty the *.pak files must be located in the module directory on Windows/Linux or the app bundle Resources directory on MacOS. If this value is non-empty then it must be an absolute path. Also configurable using the "resources-dir-path" command-line switch. 
-             */        public String resourcesDirPath;
+             */        public @Nullable String resourcesDirPath;
             /**
              * The fully qualified path for the locales directory. If this value is empty the locales directory must be located in the module directory. If this value is non-empty then it must be an absolute path. This value is ignored on MacOS where pack files are always loaded from the app bundle Resources directory. Also configurable using the "locales-dir-path" command-line switch. 
-             */        public String localesDirPath;
+             */        public @Nullable String localesDirPath;
             /**
              * Set to a value between 1024 and 65535 to enable remote debugging on the specified port. Also configurable using the "remote-debugging-port" command-line switch. Specifying 0 via the command-line switch will result in the selection of an ephemeral port and the port number will be printed as part of the WebSocket endpoint URL to stderr. If a cache directory path is provided the port will also be written to the &lt;cache-dir&gt;/DevToolsActivePort file. Remote debugging can be accessed by loading the chrome://inspect page in Google Chrome. Port numbers 9222 and 9229 are discoverable by default. Other port numbers may need to be configured via "Discover network targets" on the Devices tab. 
              */        public int remoteDebuggingPort;
@@ -307,14 +308,14 @@ public final class CefSettings {
              */        public int backgroundColor;
             /**
              * Comma delimited ordered list of language codes without any whitespace that will be used in the "Accept-Language" HTTP request header and "navigator.language" JS attribute. Can be overridden for individual CefRequestContext instances via the CefRequestContextSettings.accept_language_list value. 
-             */        public String acceptLanguageList;
+             */        public @Nullable String acceptLanguageList;
             /**
              * Comma delimited list of schemes supported by the associated CefCookieManager. If {@code cookieable_schemes_exclude_defaults} is {@code false} (0) the default schemes ("http", "https", "ws" and "wss") will also be supported. Not specifying a {@code cookieable_schemes_list} value and setting {@code cookieable_schemes_exclude_defaults} to {@code true} (1) will disable all loading and saving of cookies. These settings will only impact the global CefRequestContext. Individual CefRequestContext instances can be configured via the CefRequestContextSettings.cookieable_schemes_list and CefRequestContextSettings.cookieable_schemes_exclude_defaults values. 
-             */        public String cookieableSchemesList;
+             */        public @Nullable String cookieableSchemesList;
         public int cookieableSchemesExcludeDefaults;
             /**
              * Specify an ID to enable Chrome policy management via Platform and OS-user policies. On Windows, this is a registry key like "SOFTWARE\\Policies\\Google\\Chrome". On MacOS, this is a bundle ID like "com.google.Chrome". On Linux, this is an absolute directory path like "/etc/opt/chrome/policies". Only supported with Chrome style. See <a href="https://support.google.com/chrome/a/answer/9037717">https://support.google.com/chrome/a/answer/9037717</a> for details.  Chrome Browser Cloud Management integration, when enabled via the "enable-chrome-browser-cloud-management" command-line flag, will also use the specified ID. See <a href="https://support.google.com/chrome/a/answer/9116814">https://support.google.com/chrome/a/answer/9116814</a> for details. 
-             */        public String chromePolicyId;
+             */        public @Nullable String chromePolicyId;
             /**
              * Specify an ID for an ICON resource that can be loaded from the main executable and used when creating default Chrome windows such as DevTools and Task Manager. If unspecified the default Chromium ICON (IDR_MAINFRAME [101]) will be loaded from libcef.dll. Only supported with Chrome style on Windows. 
              */        public int chromeAppIconId;
@@ -327,7 +328,7 @@ public final class CefSettings {
 
         public Mutable() {}
 
-        public Mutable(int noSandbox, String browserSubprocessPath, String frameworkDirPath, String mainBundlePath, int multiThreadedMessageLoop, int externalMessagePump, int windowlessRenderingEnabled, int commandLineArgsDisabled, String cachePath, String rootCachePath, int persistSessionCookies, String userAgent, String userAgentProduct, String locale, String logFile, CefLogSeverity logSeverity, CefLogItems logItems, String javascriptFlags, String resourcesDirPath, String localesDirPath, int remoteDebuggingPort, int uncaughtExceptionStackSize, int backgroundColor, String acceptLanguageList, String cookieableSchemesList, int cookieableSchemesExcludeDefaults, String chromePolicyId, int chromeAppIconId, int disableSignalHandlers, int useViewsDefaultPopup) {
+        public Mutable(int noSandbox, @Nullable String browserSubprocessPath, @Nullable String frameworkDirPath, @Nullable String mainBundlePath, int multiThreadedMessageLoop, int externalMessagePump, int windowlessRenderingEnabled, int commandLineArgsDisabled, @Nullable String cachePath, @Nullable String rootCachePath, int persistSessionCookies, @Nullable String userAgent, @Nullable String userAgentProduct, @Nullable String locale, @Nullable String logFile, @Nullable CefLogSeverity logSeverity, @Nullable CefLogItems logItems, @Nullable String javascriptFlags, @Nullable String resourcesDirPath, @Nullable String localesDirPath, int remoteDebuggingPort, int uncaughtExceptionStackSize, int backgroundColor, @Nullable String acceptLanguageList, @Nullable String cookieableSchemesList, int cookieableSchemesExcludeDefaults, @Nullable String chromePolicyId, int chromeAppIconId, int disableSignalHandlers, int useViewsDefaultPopup) {
             this.noSandbox = noSandbox;
             this.browserSubprocessPath = browserSubprocessPath;
             this.frameworkDirPath = frameworkDirPath;

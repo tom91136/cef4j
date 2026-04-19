@@ -77,7 +77,7 @@ public interface CefPrintHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:131</a>
      */
-    default CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
+    default @Nullable CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
         return null;
     }
     /**
@@ -128,7 +128,7 @@ public interface CefPrintHandler extends CefClientHandler {
         }
 
         @Override
-        public CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
+        public @Nullable CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
             if (!delegates.isEmpty()) return delegates.get(0).getPdfPaperSize(browser, deviceUnitsPerInch);
             return null;
         }

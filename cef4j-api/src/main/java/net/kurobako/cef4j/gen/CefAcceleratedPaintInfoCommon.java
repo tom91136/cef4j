@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure containing shared texture common metadata. For documentation on each field, please refer to src/media/base/video_frame_metadata.h for actual details.
@@ -37,22 +38,22 @@ public final class CefAcceleratedPaintInfoCommon {
          */    public final long timestamp;
         /**
          * The full dimensions of the video frame. 
-         */    public final CefSize codedSize;
+         */    public final @Nullable CefSize codedSize;
         /**
          * The visible area of the video frame. 
-         */    public final CefRect visibleRect;
+         */    public final @Nullable CefRect visibleRect;
         /**
          * The region of the video frame that capturer would like to populate. 
-         */    public final CefRect contentRect;
+         */    public final @Nullable CefRect contentRect;
         /**
          * Full size of the source frame. 
-         */    public final CefSize sourceSize;
+         */    public final @Nullable CefSize sourceSize;
         /**
          * Updated area of frame, can be considered as the `dirty` area. 
-         */    public final CefRect captureUpdateRect;
+         */    public final @Nullable CefRect captureUpdateRect;
         /**
          * May reflects where the frame's contents originate from if region capture is used internally. 
-         */    public final CefRect regionCaptureRect;
+         */    public final @Nullable CefRect regionCaptureRect;
         /**
          * The increamental counter of the frame. 
          */    public final long captureCounter;
@@ -69,7 +70,7 @@ public final class CefAcceleratedPaintInfoCommon {
          * Optional flag of capture_counter 
          */    public final int hasCaptureCounter;
 
-    public CefAcceleratedPaintInfoCommon(long timestamp, CefSize codedSize, CefRect visibleRect, CefRect contentRect, CefSize sourceSize, CefRect captureUpdateRect, CefRect regionCaptureRect, long captureCounter, int hasCaptureUpdateRect, int hasRegionCaptureRect, int hasSourceSize, int hasCaptureCounter) {
+    public CefAcceleratedPaintInfoCommon(long timestamp, @Nullable CefSize codedSize, @Nullable CefRect visibleRect, @Nullable CefRect contentRect, @Nullable CefSize sourceSize, @Nullable CefRect captureUpdateRect, @Nullable CefRect regionCaptureRect, long captureCounter, int hasCaptureUpdateRect, int hasRegionCaptureRect, int hasSourceSize, int hasCaptureCounter) {
         this.timestamp = timestamp;
         this.codedSize = codedSize;
         this.visibleRect = visibleRect;

@@ -209,7 +209,7 @@ public interface CefUrlRequest extends CefLibraryObject {
 
         static native void cancel0(long self);
 
-        static native CefUrlRequest create0(CefRequest request, CefUrlRequestClient client, CefRequestContext requestContext);
+        static native CefUrlRequest create0(@Nullable CefRequest request, @Nullable CefUrlRequestClient client, @Nullable CefRequestContext requestContext);
 
         @Override
         public boolean equals(Object obj) {

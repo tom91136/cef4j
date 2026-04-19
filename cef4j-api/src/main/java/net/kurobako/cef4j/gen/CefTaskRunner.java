@@ -161,18 +161,18 @@ public interface CefTaskRunner extends CefLibraryObject {
       }
 
 
-        static native boolean isSame0(long self, CefTaskRunner that);
+        static native boolean isSame0(long self, @Nullable CefTaskRunner that);
 
         static native boolean belongsToCurrentThread0(long self);
 
-        static native boolean belongsToThread0(long self, CefThreadId threadId);
+        static native boolean belongsToThread0(long self, @Nonnull CefThreadId threadId);
 
-        static native boolean postTask0(long self, CefTask task);
+        static native boolean postTask0(long self, @Nullable CefTask task);
 
-        static native boolean postDelayedTask0(long self, CefTask task, long delayMs);
+        static native boolean postDelayedTask0(long self, @Nullable CefTask task, long delayMs);
 
         static native CefTaskRunner getForCurrentThread0();
-        static native CefTaskRunner getForThread0(CefThreadId threadId);
+        static native CefTaskRunner getForThread0(@Nonnull CefThreadId threadId);
 
         @Override
         public boolean equals(Object obj) {

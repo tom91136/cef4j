@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing PDF print settings. These values match the parameters supported by the DevTools Page.printToPDF function. See <a href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF">https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF</a>
@@ -55,7 +56,7 @@ public final class CefPdfPrintSettings {
          */    public final int preferCssPageSize;
         /**
          * Margin type. 
-         */    public final CefPdfPrintMarginType marginType;
+         */    public final @Nullable CefPdfPrintMarginType marginType;
         /**
          * Margins in inches. Only used if {@code margin_type} is set to PDF_PRINT_MARGIN_CUSTOM. 
          */    public final double marginTop;
@@ -64,16 +65,16 @@ public final class CefPdfPrintSettings {
     public final double marginLeft;
         /**
          * Paper ranges to print, one based, e.g., '1-5, 8, 11-13'. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end. 
-         */    public final String pageRanges;
+         */    public final @Nullable String pageRanges;
         /**
          * Set to {@code true} (1) to display the header and/or footer. Modify {@code header_template} and/or {@code footer_template} to customize the display. 
          */    public final int displayHeaderFooter;
         /**
          * HTML template for the print header. Only displayed if {@code display_header_footer} is {@code true} (1). Should be valid HTML markup with the following classes used to inject printing values into them:  - date: formatted print date - title: document title - url: document location - pageNumber: current page number - totalPages: total pages in the document  For example, "&lt;span class=title&gt;&lt;/span&gt;" would generate a span containing the title. 
-         */    public final String headerTemplate;
+         */    public final @Nullable String headerTemplate;
         /**
          * HTML template for the print footer. Only displayed if {@code display_header_footer} is {@code true} (1). Uses the same format as {@code header_template}. 
-         */    public final String footerTemplate;
+         */    public final @Nullable String footerTemplate;
         /**
          * Set to {@code true} (1) to generate tagged (accessible) PDF. 
          */    public final int generateTaggedPdf;
@@ -81,7 +82,7 @@ public final class CefPdfPrintSettings {
          * Set to {@code true} (1) to generate a document outline. 
          */    public final int generateDocumentOutline;
 
-    public CefPdfPrintSettings(int landscape, int printBackground, double scale, double paperWidth, double paperHeight, int preferCssPageSize, CefPdfPrintMarginType marginType, double marginTop, double marginRight, double marginBottom, double marginLeft, String pageRanges, int displayHeaderFooter, String headerTemplate, String footerTemplate, int generateTaggedPdf, int generateDocumentOutline) {
+    public CefPdfPrintSettings(int landscape, int printBackground, double scale, double paperWidth, double paperHeight, int preferCssPageSize, @Nullable CefPdfPrintMarginType marginType, double marginTop, double marginRight, double marginBottom, double marginLeft, @Nullable String pageRanges, int displayHeaderFooter, @Nullable String headerTemplate, @Nullable String footerTemplate, int generateTaggedPdf, int generateDocumentOutline) {
         this.landscape = landscape;
         this.printBackground = printBackground;
         this.scale = scale;
@@ -170,7 +171,7 @@ public final class CefPdfPrintSettings {
              */        public int preferCssPageSize;
             /**
              * Margin type. 
-             */        public CefPdfPrintMarginType marginType;
+             */        public @Nullable CefPdfPrintMarginType marginType;
             /**
              * Margins in inches. Only used if {@code margin_type} is set to PDF_PRINT_MARGIN_CUSTOM. 
              */        public double marginTop;
@@ -179,16 +180,16 @@ public final class CefPdfPrintSettings {
         public double marginLeft;
             /**
              * Paper ranges to print, one based, e.g., '1-5, 8, 11-13'. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end. 
-             */        public String pageRanges;
+             */        public @Nullable String pageRanges;
             /**
              * Set to {@code true} (1) to display the header and/or footer. Modify {@code header_template} and/or {@code footer_template} to customize the display. 
              */        public int displayHeaderFooter;
             /**
              * HTML template for the print header. Only displayed if {@code display_header_footer} is {@code true} (1). Should be valid HTML markup with the following classes used to inject printing values into them:  - date: formatted print date - title: document title - url: document location - pageNumber: current page number - totalPages: total pages in the document  For example, "&lt;span class=title&gt;&lt;/span&gt;" would generate a span containing the title. 
-             */        public String headerTemplate;
+             */        public @Nullable String headerTemplate;
             /**
              * HTML template for the print footer. Only displayed if {@code display_header_footer} is {@code true} (1). Uses the same format as {@code header_template}. 
-             */        public String footerTemplate;
+             */        public @Nullable String footerTemplate;
             /**
              * Set to {@code true} (1) to generate tagged (accessible) PDF. 
              */        public int generateTaggedPdf;
@@ -198,7 +199,7 @@ public final class CefPdfPrintSettings {
 
         public Mutable() {}
 
-        public Mutable(int landscape, int printBackground, double scale, double paperWidth, double paperHeight, int preferCssPageSize, CefPdfPrintMarginType marginType, double marginTop, double marginRight, double marginBottom, double marginLeft, String pageRanges, int displayHeaderFooter, String headerTemplate, String footerTemplate, int generateTaggedPdf, int generateDocumentOutline) {
+        public Mutable(int landscape, int printBackground, double scale, double paperWidth, double paperHeight, int preferCssPageSize, @Nullable CefPdfPrintMarginType marginType, double marginTop, double marginRight, double marginBottom, double marginLeft, @Nullable String pageRanges, int displayHeaderFooter, @Nullable String headerTemplate, @Nullable String footerTemplate, int generateTaggedPdf, int generateDocumentOutline) {
             this.landscape = landscape;
             this.printBackground = printBackground;
             this.scale = scale;

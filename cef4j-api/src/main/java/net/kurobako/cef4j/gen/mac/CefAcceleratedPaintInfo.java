@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen.mac;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefAcceleratedPaintInfoCommon;
 import net.kurobako.cef4j.gen.CefColorType;
 
@@ -30,12 +31,12 @@ public final class CefAcceleratedPaintInfo implements net.kurobako.cef4j.gen.Cef
          */    public final long sharedTextureIoSurface;
         /**
          * The pixel format of the texture. 
-         */    public final CefColorType format;
+         */    public final @Nullable CefColorType format;
         /**
          * The extra common info. 
-         */    public final CefAcceleratedPaintInfoCommon extra;
+         */    public final @Nullable CefAcceleratedPaintInfoCommon extra;
 
-    public CefAcceleratedPaintInfo(long sharedTextureIoSurface, CefColorType format, CefAcceleratedPaintInfoCommon extra) {
+    public CefAcceleratedPaintInfo(long sharedTextureIoSurface, @Nullable CefColorType format, @Nullable CefAcceleratedPaintInfoCommon extra) {
         this.sharedTextureIoSurface = sharedTextureIoSurface;
         this.format = format;
         this.extra = extra;

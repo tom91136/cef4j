@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing keyboard event information.
@@ -30,7 +31,7 @@ public final class CefKeyEvent {
 
         /**
          * The type of keyboard event. 
-         */    public final CefKeyEventType type;
+         */    public final @Nullable CefKeyEventType type;
         /**
          * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
          */    public final int modifiers;
@@ -53,7 +54,7 @@ public final class CefKeyEvent {
          * True if the focus is currently on an editable field on the page. This is useful for determining if standard key events should be intercepted. 
          */    public final int focusOnEditableField;
 
-    public CefKeyEvent(CefKeyEventType type, int modifiers, int windowsKeyCode, int nativeKeyCode, int isSystemKey, char character, char unmodifiedCharacter, int focusOnEditableField) {
+    public CefKeyEvent(@Nullable CefKeyEventType type, int modifiers, int windowsKeyCode, int nativeKeyCode, int isSystemKey, char character, char unmodifiedCharacter, int focusOnEditableField) {
         this.type = type;
         this.modifiers = modifiers;
         this.windowsKeyCode = windowsKeyCode;
@@ -79,8 +80,8 @@ public final class CefKeyEvent {
                     && this.windowsKeyCode == other.windowsKeyCode
                     && this.nativeKeyCode == other.nativeKeyCode
                     && this.isSystemKey == other.isSystemKey
-                    && java.util.Objects.equals(this.character, other.character)
-                    && java.util.Objects.equals(this.unmodifiedCharacter, other.unmodifiedCharacter)
+                    && this.character == other.character
+                    && this.unmodifiedCharacter == other.unmodifiedCharacter
                     && this.focusOnEditableField == other.focusOnEditableField;
     }
 
@@ -108,7 +109,7 @@ public final class CefKeyEvent {
 
             /**
              * The type of keyboard event. 
-             */        public CefKeyEventType type;
+             */        public @Nullable CefKeyEventType type;
             /**
              * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
              */        public int modifiers;
@@ -133,7 +134,7 @@ public final class CefKeyEvent {
 
         public Mutable() {}
 
-        public Mutable(CefKeyEventType type, int modifiers, int windowsKeyCode, int nativeKeyCode, int isSystemKey, char character, char unmodifiedCharacter, int focusOnEditableField) {
+        public Mutable(@Nullable CefKeyEventType type, int modifiers, int windowsKeyCode, int nativeKeyCode, int isSystemKey, char character, char unmodifiedCharacter, int focusOnEditableField) {
             this.type = type;
             this.modifiers = modifiers;
             this.windowsKeyCode = windowsKeyCode;
@@ -159,8 +160,8 @@ public final class CefKeyEvent {
                         && this.windowsKeyCode == other.windowsKeyCode
                         && this.nativeKeyCode == other.nativeKeyCode
                         && this.isSystemKey == other.isSystemKey
-                        && java.util.Objects.equals(this.character, other.character)
-                        && java.util.Objects.equals(this.unmodifiedCharacter, other.unmodifiedCharacter)
+                        && this.character == other.character
+                        && this.unmodifiedCharacter == other.unmodifiedCharacter
                         && this.focusOnEditableField == other.focusOnEditableField;
         }
 

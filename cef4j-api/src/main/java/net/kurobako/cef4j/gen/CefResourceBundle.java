@@ -122,7 +122,7 @@ public interface CefResourceBundle extends CefLibraryObject {
 
         static native CefBinaryValue getDataResource0(long self, int resourceId);
 
-        static native CefBinaryValue getDataResourceForScale0(long self, int resourceId, CefScaleFactor scaleFactor);
+        static native CefBinaryValue getDataResourceForScale0(long self, int resourceId, @Nonnull CefScaleFactor scaleFactor);
 
         static native CefResourceBundle getGlobal0();
 

@@ -539,9 +539,9 @@ public final class CefGlobals {
       return registerExtension0(extensionName, javascriptCode, handler);
   }
 
-    private static native int executeProcess0(CefMainArgs args, CefApp application, NativePointer windowsSandboxInfo);
+    private static native int executeProcess0(@Nonnull CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo);
 
-    private static native int initialize0(CefMainArgs args, CefSettings settings, CefApp application, NativePointer windowsSandboxInfo);
+    private static native int initialize0(@Nonnull CefMainArgs args, @Nonnull CefSettings settings, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo);
 
     private static native int getExitCode0();
 
@@ -557,73 +557,73 @@ public final class CefGlobals {
 
     private static native int crashReportingEnabled0();
 
-    private static native void setCrashKeyValue0(String key, String value);
+    private static native void setCrashKeyValue0(@Nullable String key, @Nullable String value);
 
-    private static native int createDirectory0(String fullPath);
+    private static native int createDirectory0(@Nullable String fullPath);
 
-    private static native int getTempDirectory0(String tempDir);
+    private static native int getTempDirectory0(@Nullable String tempDir);
 
-    private static native int createNewTempDirectory0(String prefix, String newTempPath);
+    private static native int createNewTempDirectory0(@Nullable String prefix, @Nullable String newTempPath);
 
-    private static native int createTempDirectoryInDirectory0(String baseDir, String prefix, String newDir);
+    private static native int createTempDirectoryInDirectory0(@Nullable String baseDir, @Nullable String prefix, @Nullable String newDir);
 
-    private static native int directoryExists0(String path);
+    private static native int directoryExists0(@Nullable String path);
 
-    private static native int deleteFile0(String path, int recursive);
+    private static native int deleteFile0(@Nullable String path, int recursive);
 
-    private static native int zipDirectory0(String srcDir, String destFile, int includeHiddenFiles);
+    private static native int zipDirectory0(@Nullable String srcDir, @Nullable String destFile, int includeHiddenFiles);
 
-    private static native void loadCrlsetsFile0(String path);
+    private static native void loadCrlsetsFile0(@Nullable String path);
 
     private static native int isRtl0();
 
-    private static native int addCrossOriginWhitelistEntry0(String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
+    private static native int addCrossOriginWhitelistEntry0(@Nullable String sourceOrigin, @Nullable String targetProtocol, @Nullable String targetDomain, int allowTargetSubdomains);
 
-    private static native int removeCrossOriginWhitelistEntry0(String sourceOrigin, String targetProtocol, String targetDomain, int allowTargetSubdomains);
+    private static native int removeCrossOriginWhitelistEntry0(@Nullable String sourceOrigin, @Nullable String targetProtocol, @Nullable String targetDomain, int allowTargetSubdomains);
 
     private static native int clearCrossOriginWhitelist0();
 
-    private static native int resolveUrl0(String baseUrl, String relativeUrl, String resolvedUrl);
+    private static native int resolveUrl0(@Nullable String baseUrl, @Nullable String relativeUrl, @Nullable String resolvedUrl);
 
-    private static native int parseUrl0(String url, CefUrlParts.Mutable parts);
+    private static native int parseUrl0(@Nullable String url, @Nonnull CefUrlParts.Mutable parts);
 
-    private static native int createUrl0(CefUrlParts parts, String url);
+    private static native int createUrl0(@Nonnull CefUrlParts parts, @Nullable String url);
 
-    private static native String formatUrlForSecurityDisplay0(String originUrl);
+    private static native String formatUrlForSecurityDisplay0(@Nullable String originUrl);
 
-    private static native String getMimeType0(String extension);
+    private static native String getMimeType0(@Nullable String extension);
 
-    private static native void getExtensionsForMimeType0(String mimeType, List<String> extensions);
+    private static native void getExtensionsForMimeType0(@Nullable String mimeType, @Nonnull List<String> extensions);
 
-    private static native String base64Encode0(ByteBuffer data);
+    private static native String base64Encode0(@Nonnull ByteBuffer data);
 
-    private static native String uriencode0(String text, int usePlus);
+    private static native String uriencode0(@Nullable String text, int usePlus);
 
-    private static native String uridecode0(String text, int convertToUtf8, CefUriUnescapeRule unescapeRule);
+    private static native String uridecode0(@Nullable String text, int convertToUtf8, @Nonnull CefUriUnescapeRule unescapeRule);
 
-    private static native String writeJson0(CefValue node, CefJsonWriterOptions options);
+    private static native String writeJson0(@Nullable CefValue node, @Nonnull CefJsonWriterOptions options);
 
-    private static native int getPath0(CefPathKey key, String path);
+    private static native int getPath0(@Nonnull CefPathKey key, @Nullable String path);
 
-    private static native int launchProcess0(CefCommandLine commandLine);
+    private static native int launchProcess0(@Nullable CefCommandLine commandLine);
 
-    private static native boolean registerSchemeHandlerFactory0(String schemeName, String domainName, CefSchemeHandlerFactory factory);
+    private static native boolean registerSchemeHandlerFactory0(@Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory);
 
     private static native boolean clearSchemeHandlerFactories0();
 
-    private static native int isCertStatusError0(CefCertStatus status);
+    private static native int isCertStatusError0(@Nonnull CefCertStatus status);
 
-    private static native int currentlyOn0(CefThreadId threadId);
+    private static native int currentlyOn0(@Nonnull CefThreadId threadId);
 
-    private static native boolean postTask0(CefThreadId threadId, CefTask task);
+    private static native boolean postTask0(@Nonnull CefThreadId threadId, @Nullable CefTask task);
 
-    private static native boolean postDelayedTask0(CefThreadId threadId, CefTask task, long delayMs);
+    private static native boolean postDelayedTask0(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs);
 
-    private static native int beginTracing0(String categories, CefCompletionCallback callback);
+    private static native int beginTracing0(@Nullable String categories, @Nullable CefCompletionCallback callback);
 
-    private static native int endTracing0(String tracingFile, CefEndTracingCallback callback);
+    private static native int endTracing0(@Nullable String tracingFile, @Nullable CefEndTracingCallback callback);
 
     private static native long nowFromSystemTraceTime0();
 
-    private static native int registerExtension0(String extensionName, String javascriptCode, CefV8Handler handler);
+    private static native int registerExtension0(@Nullable String extensionName, @Nullable String javascriptCode, @Nullable CefV8Handler handler);
 }

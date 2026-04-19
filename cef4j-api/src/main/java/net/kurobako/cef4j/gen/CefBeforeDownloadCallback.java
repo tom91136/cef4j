@@ -78,7 +78,7 @@ public interface CefBeforeDownloadCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, String downloadPath, int showDialog);
+        static native void cont0(long self, @Nullable String downloadPath, int showDialog);
 
 
         @Override

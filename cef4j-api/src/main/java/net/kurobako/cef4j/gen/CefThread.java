@@ -144,7 +144,7 @@ public interface CefThread extends CefLibraryObject {
 
         static native boolean isRunning0(long self);
 
-        static native CefThread create0(String displayName, CefThreadPriority priority, CefMessageLoopType messageLoopType, int stoppable, CefComInitMode comInitMode);
+        static native CefThread create0(@Nullable String displayName, @Nonnull CefThreadPriority priority, @Nonnull CefMessageLoopType messageLoopType, int stoppable, @Nonnull CefComInitMode comInitMode);
 
         @Override
         public boolean equals(Object obj) {

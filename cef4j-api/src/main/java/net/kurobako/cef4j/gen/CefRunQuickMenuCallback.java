@@ -91,7 +91,7 @@ public interface CefRunQuickMenuCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, int commandId, CefEventFlags eventFlags);
+        static native void cont0(long self, int commandId, @Nonnull CefEventFlags eventFlags);
 
         static native void cancel0(long self);
 

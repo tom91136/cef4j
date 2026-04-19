@@ -10,7 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-/** JavaFX WebView-compatiable history facade for {@link CefWebEngine}. */
+/** JavaFX WebView-compatible history facade for {@link CefWebEngine}. */
 @SuppressWarnings("unused")
 public final class CefWebHistory {
     private final CefWebView view;

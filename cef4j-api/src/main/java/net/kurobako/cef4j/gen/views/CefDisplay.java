@@ -255,9 +255,9 @@ public interface CefDisplay extends CefLibraryObject {
 
         static native float getDeviceScaleFactor0(long self);
 
-        static native void convertPointToPixels0(long self, CefPoint.Mutable point);
+        static native void convertPointToPixels0(long self, @Nonnull CefPoint.Mutable point);
 
-        static native void convertPointFromPixels0(long self, CefPoint.Mutable point);
+        static native void convertPointFromPixels0(long self, @Nonnull CefPoint.Mutable point);
 
         static native CefRect getBounds0(long self);
 
@@ -266,14 +266,14 @@ public interface CefDisplay extends CefLibraryObject {
         static native int getRotation0(long self);
 
         static native CefDisplay getPrimary0();
-        static native CefDisplay getNearestPoint0(CefPoint point, int inputPixelCoords);
-        static native CefDisplay getMatchingBounds0(CefRect bounds, int inputPixelCoords);
+        static native CefDisplay getNearestPoint0(@Nonnull CefPoint point, int inputPixelCoords);
+        static native CefDisplay getMatchingBounds0(@Nonnull CefRect bounds, int inputPixelCoords);
         static native long getCount0();
         static native CefDisplay[] getAlls0();
-        static native CefPoint convertScreenPointToPixels0(CefPoint point);
-        static native CefPoint convertScreenPointFromPixels0(CefPoint point);
-        static native CefRect convertScreenRectToPixels0(CefRect rect);
-        static native CefRect convertScreenRectFromPixels0(CefRect rect);
+        static native CefPoint convertScreenPointToPixels0(@Nonnull CefPoint point);
+        static native CefPoint convertScreenPointFromPixels0(@Nonnull CefPoint point);
+        static native CefRect convertScreenRectToPixels0(@Nonnull CefRect rect);
+        static native CefRect convertScreenRectFromPixels0(@Nonnull CefRect rect);
 
         @Override
         public boolean equals(Object obj) {

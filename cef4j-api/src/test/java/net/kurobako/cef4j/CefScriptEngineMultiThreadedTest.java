@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.AfterAll;
@@ -55,12 +54,11 @@ class CefScriptEngineMultiThreadedTest {
             }
             String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
             if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
-                for (String arg : extraArgsProperty.split(",")) {
-                    String trimmed = arg.trim();
-                    if (!trimmed.isEmpty()) {
-                        extraArgs.add(trimmed);
-                    }
-                }
+                java.util.regex.Pattern.compile(",")
+                        .splitAsStream(extraArgsProperty)
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .forEach(extraArgs::add);
             }
             Cef.INSTANCE.initialiseUnsafe(settings, extraArgs);
         }
@@ -153,7 +151,7 @@ class CefScriptEngineMultiThreadedTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser b) {
+                    public void onAfterCreated(@Nullable CefBrowser b) {
                         browserFuture.complete(b);
                     }
                 });
@@ -163,7 +161,7 @@ class CefScriptEngineMultiThreadedTest {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser b, @Nonnull CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(@Nullable CefBrowser b, @Nullable CefFrame frame, int httpStatusCode) {
                         if (loadCount.incrementAndGet() >= targetLoadCount) {
                             loaded.complete(null);
                         }
@@ -180,8 +178,9 @@ class CefScriptEngineMultiThreadedTest {
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b,
                     @Nullable CefFrame frame,
-                    @Nonnull CefProcessId sourceProcess,
+                    @Nullable CefProcessId sourceProcess,
                     @Nullable CefProcessMessage message) {
+                if (b == null || frame == null || sourceProcess == null || message == null) return false;
                 return engine.handleMessage(b, frame, sourceProcess, message);
             }
         };

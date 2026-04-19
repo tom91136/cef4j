@@ -869,7 +869,7 @@ public interface CefView extends CefLibraryObject {
 
         static native boolean isAttached0(long self);
 
-        static native boolean isSame0(long self, CefView that);
+        static native boolean isSame0(long self, @Nullable CefView that);
 
         static native CefViewDelegate getDelegate0(long self);
 
@@ -887,21 +887,21 @@ public interface CefView extends CefLibraryObject {
 
         static native CefView getViewForId0(long self, int id);
 
-        static native void setBounds0(long self, CefRect bounds);
+        static native void setBounds0(long self, @Nonnull CefRect bounds);
 
         static native CefRect getBounds0(long self);
 
         static native CefRect getBoundsInScreen0(long self);
 
-        static native void setSize0(long self, CefSize size);
+        static native void setSize0(long self, @Nonnull CefSize size);
 
         static native CefSize getSize0(long self);
 
-        static native void setPosition0(long self, CefPoint position);
+        static native void setPosition0(long self, @Nonnull CefPoint position);
 
         static native CefPoint getPosition0(long self);
 
-        static native void setInsets0(long self, CefInsets insets);
+        static native void setInsets0(long self, @Nonnull CefInsets insets);
 
         static native CefInsets getInsets0(long self);
 
@@ -943,17 +943,17 @@ public interface CefView extends CefLibraryObject {
 
         static native int getThemeColor0(long self, int colorId);
 
-        static native boolean convertPointToScreen0(long self, CefPoint.Mutable point);
+        static native boolean convertPointToScreen0(long self, @Nonnull CefPoint.Mutable point);
 
-        static native boolean convertPointFromScreen0(long self, CefPoint.Mutable point);
+        static native boolean convertPointFromScreen0(long self, @Nonnull CefPoint.Mutable point);
 
-        static native boolean convertPointToWindow0(long self, CefPoint.Mutable point);
+        static native boolean convertPointToWindow0(long self, @Nonnull CefPoint.Mutable point);
 
-        static native boolean convertPointFromWindow0(long self, CefPoint.Mutable point);
+        static native boolean convertPointFromWindow0(long self, @Nonnull CefPoint.Mutable point);
 
-        static native boolean convertPointToView0(long self, CefView view, CefPoint.Mutable point);
+        static native boolean convertPointToView0(long self, @Nullable CefView view, @Nonnull CefPoint.Mutable point);
 
-        static native boolean convertPointFromView0(long self, CefView view, CefPoint.Mutable point);
+        static native boolean convertPointFromView0(long self, @Nullable CefView view, @Nonnull CefPoint.Mutable point);
 
 
         @Override

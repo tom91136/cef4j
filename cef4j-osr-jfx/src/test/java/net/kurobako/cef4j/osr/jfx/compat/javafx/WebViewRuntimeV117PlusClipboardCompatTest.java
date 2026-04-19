@@ -7,12 +7,14 @@ import java.util.stream.Stream;
 import javafx.concurrent.Worker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.web.WebView;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Timeout(30)
+@SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated; tests exercise JFX parity
 class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTestBase {
     private static final int CEF_REPEAT_COUNT = 5;
     private static final int JFX_REPEAT_COUNT = 1;
@@ -66,7 +68,7 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
         onFxThread(() -> view.getEngine().loadContent(clipboardPageHtml(layout)));
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
-        assertThat(waitUntilOnFx(() -> titleFor(view).equals(SAMPLE_TEXT + "|"), 3_000))
+        assertThat(waitUntilOnFx(() -> (SAMPLE_TEXT + "|").equals(titleFor(view)), 3_000))
                 .isTrue();
         return view;
     }
@@ -106,7 +108,7 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
                         + "if (src) { src.value = '" + text + "'; }"
                         + "if (dst) { dst.value = ''; }"
                         + "if (window.__syncTitle) { window.__syncTitle(); }"));
-        assertThat(waitUntilOnFx(() -> titleFor(view).equals(text + "|"), 2_000))
+        assertThat(waitUntilOnFx(() -> (text + "|").equals(titleFor(view)), 2_000))
                 .isTrue();
     }
 
@@ -144,6 +146,7 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
         Thread.sleep(50);
     }
 
+    @Nullable
     private static String titleFor(WebView view) throws Exception {
         return onFxThread(() -> view.getEngine().getTitle());
     }

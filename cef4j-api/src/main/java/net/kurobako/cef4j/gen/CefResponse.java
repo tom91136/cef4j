@@ -347,7 +347,7 @@ public interface CefResponse extends CefLibraryObject {
 
         static native CefErrorCode getError0(long self);
 
-        static native void setError0(long self, CefErrorCode error);
+        static native void setError0(long self, @Nonnull CefErrorCode error);
 
         static native int getStatus0(long self);
 
@@ -355,27 +355,27 @@ public interface CefResponse extends CefLibraryObject {
 
         static native String getStatusText0(long self);
 
-        static native void setStatusText0(long self, String statusText);
+        static native void setStatusText0(long self, @Nullable String statusText);
 
         static native String getMimeType0(long self);
 
-        static native void setMimeType0(long self, String mimeType);
+        static native void setMimeType0(long self, @Nullable String mimeType);
 
         static native String getCharset0(long self);
 
-        static native void setCharset0(long self, String charset);
+        static native void setCharset0(long self, @Nullable String charset);
 
-        static native String getHeaderByName0(long self, String name);
+        static native String getHeaderByName0(long self, @Nullable String name);
 
-        static native void setHeaderByName0(long self, String name, String value, boolean overwrite);
+        static native void setHeaderByName0(long self, @Nullable String name, @Nullable String value, boolean overwrite);
 
-        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native void getHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
 
-        static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native void setHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
 
         static native String getUrl0(long self);
 
-        static native void setUrl0(long self, String url);
+        static native void setUrl0(long self, @Nullable String url);
 
         static native CefResponse create0();
 

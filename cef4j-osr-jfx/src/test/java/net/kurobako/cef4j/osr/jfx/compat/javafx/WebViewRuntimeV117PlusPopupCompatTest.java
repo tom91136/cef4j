@@ -4,6 +4,7 @@ import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSuppo
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
@@ -11,8 +12,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase {
@@ -166,7 +167,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             onFxThread(() -> view.getEngine().load(server.url("/opener")));
 
             assertThat(waitUntil(() -> popupBounds.get() != null, 8_000)).isTrue();
-            Rectangle2D bounds = popupBounds.get();
+            Rectangle2D bounds = Objects.requireNonNull(popupBounds.get(), "popupBounds");
             assertThat(bounds.getWidth()).isBetween(350.0, 450.0);
             assertThat(bounds.getHeight()).isBetween(250.0, 350.0);
         }
@@ -194,7 +195,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             onFxThread(() -> view.getEngine().load(server.url("/opener")));
 
             assertThat(waitUntil(() -> popupBounds.get() != null, 8_000)).isTrue();
-            Rectangle2D bounds = popupBounds.get();
+            Rectangle2D bounds = Objects.requireNonNull(popupBounds.get(), "popupBounds");
             assertThat(bounds.getWidth()).isBetween(100.0, 200.0);
             assertThat(bounds.getHeight()).isBetween(50.0, 150.0);
         }
@@ -227,7 +228,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                             },
                             8_000))
                     .isTrue();
-            Rectangle2D bounds = latestBounds.get();
+            Rectangle2D bounds = Objects.requireNonNull(latestBounds.get(), "latestBounds");
             assertThat(bounds.getWidth()).isBetween(450.0, 550.0);
             assertThat(bounds.getHeight()).isBetween(350.0, 450.0);
         }

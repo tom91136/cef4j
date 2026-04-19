@@ -61,12 +61,18 @@ import net.kurobako.cef4j.gen.CefWindowInfo;
 @SuppressWarnings({"this-escape", "resource"})
 public class CefWebView extends Region {
     private static final Cleaner CLEANER = Cleaner.create();
+    private static final CefKeyEventType KEY_RAWKEYDOWN = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
+    private static final CefKeyEventType KEY_CHAR = CefKeyEventType.of(CefKeyEventType.Kind.CHAR);
+    private static final CefKeyEventType KEY_KEYUP = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
+    private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
 
     private final ImageView imageView = new ImageView();
     private final CefFrameBuffer<int[]> frameBuffer;
     final CefWebEngine engine = new CefWebEngine(this);
-    final CefScriptEngine scriptEngine = new CefScriptEngine(
-            () -> getBrowser() != null ? getBrowser().getMainFrame().orElse(null) : null);
+    final CefScriptEngine scriptEngine = new CefScriptEngine(() -> {
+        CefBrowser b = getBrowser();
+        return b != null ? b.getMainFrame().orElse(null) : null;
+    });
     private final CefClient client = new CefWebViewClient(this);
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
         if (isShowing) {
@@ -84,8 +90,7 @@ public class CefWebView extends Region {
     private final ChangeListener<Boolean> windowFocusedListener = (obs, wasFocused, isFocused) -> {
         if (!isFocused) {
             hidePopupOverlay();
-            CefBrowserHost h = host();
-            if (h != null) h.setFocus(false);
+            ifHostPresent(h -> h.setFocus(false));
         }
     };
     private final DoubleProperty zoom = new SimpleDoubleProperty(this, "zoom", 1.0) {
@@ -94,24 +99,36 @@ public class CefWebView extends Region {
             applyZoom(get());
         }
     };
+
+    @Nullable
     private volatile BrowserHandle browser;
+
     private final BrowserCleanupAction browserCleanup = new BrowserCleanupAction();
     private final Cleaner.Cleanable cleanable;
+
+    @Nullable
     ContextMenu activeContextMenu;
+
+    @Nullable
     private IntBuffer pixelBuf;
+
+    @Nullable
     private PixelBuffer<IntBuffer> pixelBuffer;
-    private WritableImage writableImage;
+
     private int bufWidth;
     private int bufHeight;
     private final CefWebViewPopupSurface popupSurface = new CefWebViewPopupSurface(this);
+
+    @Nullable
     volatile CefRect popupRect;
+
     private volatile boolean browserCreationPosted;
     private volatile boolean browserCreated;
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
 
     /** Number of view (non-popup) paints delivered to this view; package-private for tests. */
-    volatile long framesPainted;
+    final java.util.concurrent.atomic.LongAdder framesPainted = new java.util.concurrent.atomic.LongAdder();
 
     /**
      * Initialise CEF for off-screen rendering. Must be called before
@@ -212,11 +229,10 @@ public class CefWebView extends Region {
 
         focusedProperty().addListener((obs, was, is) -> {
             if (is) {
-                CefBrowserHost h = host();
-                if (h != null) h.setFocus(true);
+                ifHostPresent(h -> h.setFocus(true));
             } else {
                 // Let window focus loss drive host focus changes; doing it here closes compositor popups too early.
-                hidePopupOverlay();
+                popupSurface.hide();
             }
         });
         widthProperty().addListener((obs, oldV, newV) -> onResize());
@@ -247,12 +263,14 @@ public class CefWebView extends Region {
     }
 
     /** Returns the underlying browser instance, or {@code null} if it does not exist yet. */
+    @Nullable
     public CefBrowser getBrowser() {
         BrowserHandle current = browser;
         return current != null ? current.getBrowser() : null;
     }
 
     /** Returns the underlying browser host, or {@code null} if it does not exist yet. */
+    @Nullable
     public CefBrowserHost getBrowserHost() {
         BrowserHandle current = browser;
         return current != null ? current.getHost() : null;
@@ -316,7 +334,8 @@ public class CefWebView extends Region {
     public void executeScript(String script) {
         if (!engine.isJavaScriptEnabled()) return;
         runWithBrowser(false, current -> current.getMainFrame()
-                .ifPresent(frame -> frame.executeJavaScript(script == null ? "" : script, engine.getLocation(), 0)));
+                .ifPresent(frame ->
+                        frame.executeJavaScript(Objects.requireNonNullElse(script, ""), engine.getLocation(), 0)));
     }
 
     /** Releases this view's native browser and associated resources. */
@@ -330,7 +349,6 @@ public class CefWebView extends Region {
         imageView.setImage(null);
         pixelBuf = null;
         pixelBuffer = null;
-        writableImage = null;
         var scene = getScene();
         if (scene != null) {
             scene.windowProperty().removeListener(sceneWindowListener);
@@ -355,7 +373,7 @@ public class CefWebView extends Region {
     public CefRenderHandler createRenderHandler() {
         return new CefRenderHandler() {
             @Override
-            public boolean getRootScreenRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public boolean getRootScreenRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
                 Bounds bounds = localToScreen(getBoundsInLocal());
                 Rectangle2D resolved = bounds != null
                         ? new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())
@@ -368,7 +386,7 @@ public class CefWebView extends Region {
             }
 
             @Override
-            public void getViewRect(CefBrowser b, @Nonnull CefRect.Mutable rect) {
+            public void getViewRect(@Nullable CefBrowser b, @Nonnull CefRect.Mutable rect) {
                 Rectangle2D bounds = detachedBounds;
                 rect.x = 0;
                 rect.y = 0;
@@ -377,7 +395,7 @@ public class CefWebView extends Region {
             }
 
             @Override
-            public boolean getScreenInfo(CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
+            public boolean getScreenInfo(@Nullable CefBrowser b, @Nonnull CefScreenInfo.Mutable screenInfo) {
                 Screen screen = currentScreen();
                 var scale = currentScaleFactor(screen);
                 screenInfo.deviceScaleFactor = (float) scale;
@@ -399,7 +417,7 @@ public class CefWebView extends Region {
             }
 
             @Override
-            public boolean getScreenPoint(CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
+            public boolean getScreenPoint(@Nullable CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
                 javafx.geometry.Point2D point = localToScreen(viewX, viewY);
                 if (point != null) {
                     screenX[0] = (int) Math.round(point.getX());
@@ -430,7 +448,7 @@ public class CefWebView extends Region {
 
             @Override
             public void onPaint(
-                    CefBrowser b,
+                    @Nullable CefBrowser b,
                     @Nonnull CefPaintElementType type,
                     long dirtyRectsCount,
                     @Nonnull CefRect[] dirtyRects,
@@ -447,7 +465,7 @@ public class CefWebView extends Region {
                     Platform.runLater(() -> popupSurface.blit(px, width, height));
                 } else {
                     if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
-                        framesPainted++;
+                        framesPainted.increment();
                         Platform.runLater(() -> blitFrame(width, height));
                     }
                 }
@@ -461,7 +479,7 @@ public class CefWebView extends Region {
         String scrollbarScript = ScrollbarTheme.injectScript(scrollbarCss);
         return new CefLoadHandler() {
             @Override
-            public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+            public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                 BrowserHandle br = CefWebView.this.browser;
                 if (br != null) {
                     br.getBrowser()
@@ -504,28 +522,37 @@ public class CefWebView extends Region {
         }
     }
 
+    @Nullable
     private CefBrowserHost host() {
         BrowserHandle current = browser;
         return current != null ? current.getHost() : null;
+    }
+
+    private void ifHostPresent(Consumer<CefBrowserHost> action) {
+        CefBrowserHost h = host();
+        if (h != null) action.accept(h);
     }
 
     private void blitFrame(int width, int height) {
         int[] pixels = frameBuffer.consume();
         if (pixels == null) return;
 
-        if (pixelBuffer == null || bufWidth != width || bufHeight != height) {
+        IntBuffer buf = pixelBuf;
+        PixelBuffer<IntBuffer> pb = pixelBuffer;
+        if (pb == null || buf == null || bufWidth != width || bufHeight != height) {
             bufWidth = width;
             bufHeight = height;
-            pixelBuf = IntBuffer.allocate(width * height);
-            pixelBuffer = new PixelBuffer<>(width, height, pixelBuf, PixelFormat.getIntArgbPreInstance());
-            writableImage = new WritableImage(pixelBuffer);
-            imageView.setImage(writableImage);
+            buf = IntBuffer.allocate(width * height);
+            pb = new PixelBuffer<>(width, height, buf, PixelFormat.getIntArgbPreInstance());
+            pixelBuf = buf;
+            pixelBuffer = pb;
+            imageView.setImage(new WritableImage(pb));
         }
-        System.arraycopy(pixels, 0, pixelBuf.array(), 0, width * height);
-        pixelBuffer.updateBuffer(pb -> null);
+        System.arraycopy(pixels, 0, buf.array(), 0, width * height);
+        pb.updateBuffer(ignored -> null);
         var scale = currentScaleFactor(currentScreen());
-        int expectedW = (int) Math.max(1.0, Math.round(getWidth() * scale));
-        int expectedH = (int) Math.max(1.0, Math.round(getHeight() * scale));
+        int expectedW = (int) Math.max(1, Math.round(getWidth() * scale));
+        int expectedH = (int) Math.max(1, Math.round(getHeight() * scale));
         if (width != expectedW || height != expectedH) {
             requestViewRefresh(true);
         }
@@ -584,7 +611,7 @@ public class CefWebView extends Region {
         runWithBrowserHost(false, host -> {
             double effectiveZoom = Math.max(zoomFactor, 0.01);
             host.setZoomLevel(Math.log(effectiveZoom) / Math.log(1.2));
-            host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+            host.invalidate(PAINT_VIEW);
         });
     }
 
@@ -595,7 +622,7 @@ public class CefWebView extends Region {
                 host.notifyScreenInfoChanged();
                 host.wasResized();
             }
-            host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+            host.invalidate(PAINT_VIEW);
         });
     }
 
@@ -758,15 +785,7 @@ public class CefWebView extends Region {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
         runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(
-                    CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN),
-                    mods,
-                    keyCode,
-                    keyCode,
-                    0,
-                    (char) 0,
-                    (char) 0,
-                    0));
+            host.sendKeyEvent(new CefKeyEvent(KEY_RAWKEYDOWN, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         });
     }
 
@@ -776,7 +795,7 @@ public class CefWebView extends Region {
         char c = text.charAt(0);
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, c, c, 0, c, c, 0));
+            host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, c, c, 0, c, c, 0));
         });
     }
 
@@ -784,8 +803,7 @@ public class CefWebView extends Region {
         int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
         int keyCode = e.getCode().getCode();
         runWithBrowserHost(false, host -> {
-            host.sendKeyEvent(new CefKeyEvent(
-                    CefKeyEventType.of(CefKeyEventType.Kind.KEYUP), mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
+            host.sendKeyEvent(new CefKeyEvent(KEY_KEYUP, mods, keyCode, keyCode, 0, (char) 0, (char) 0, 0));
         });
     }
 
@@ -846,20 +864,21 @@ public class CefWebView extends Region {
     void restoreBrowserFocus() {
         Platform.runLater(() -> {
             requestFocus();
-            CefBrowserHost h = host();
-            if (h != null) h.setFocus(true);
+            ifHostPresent(h -> h.setFocus(true));
         });
     }
 
-    void onBrowserCreated(CefBrowser browser) {
+    void onBrowserCreated(@Nullable CefBrowser browser) {
+        if (browser == null) return;
         BrowserHandle created = new BrowserHandle(browser);
         if (this.browser == null) {
             this.browser = created;
             browserCleanup.browser = created;
         }
+        BrowserHandle current = Objects.requireNonNull(this.browser);
         Consumer<BrowserHandle> action;
         while ((action = pendingBrowserActions.poll()) != null) {
-            action.accept(this.browser);
+            action.accept(current);
         }
         Platform.runLater(() -> {
             requestFocus();
@@ -872,7 +891,9 @@ public class CefWebView extends Region {
         });
     }
 
-    boolean handleBeforePopup(@Nonnull CefWindowInfo.Mutable windowInfo, AtomicReference<CefClient> clientRef) {
+    boolean handleBeforePopup(
+            @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> clientRef) {
+        if (clientRef == null) return true;
         javafx.util.Callback<CefPopupFeatures, CefWebEngine> handler = engine.getCreatePopupHandler();
         if (handler == null) return true;
         final AtomicReference<CefWebEngine> popupEngine = new AtomicReference<>();
@@ -932,6 +953,7 @@ public class CefWebView extends Region {
     }
 
     private static final class BrowserCleanupAction implements Runnable {
+        @Nullable
         volatile BrowserHandle browser;
 
         @Override
@@ -953,6 +975,7 @@ public class CefWebView extends Region {
             return browser;
         }
 
+        @Nullable
         private CefBrowserHost getHost() {
             return browser.getHost().orElse(null);
         }

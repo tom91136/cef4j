@@ -480,8 +480,8 @@ public interface CefBrowserView extends CefView {
 
         static native CefRuntimeStyle getRuntimeStyle0(long self);
 
-        static native CefBrowserView create0(CefClient client, String url, CefBrowserSettings settings, CefDictionaryValue extraInfo, CefRequestContext requestContext, CefBrowserViewDelegate delegate);
-        static native CefBrowserView getForBrowser0(CefBrowser browser);
+        static native CefBrowserView create0(@Nullable CefClient client, @Nullable String url, @Nonnull CefBrowserSettings settings, @Nullable CefDictionaryValue extraInfo, @Nullable CefRequestContext requestContext, @Nullable CefBrowserViewDelegate delegate);
+        static native CefBrowserView getForBrowser0(@Nullable CefBrowser browser);
 
         @Override
         public boolean equals(Object obj) {

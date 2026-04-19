@@ -926,23 +926,23 @@ public interface CefMenuModel extends CefLibraryObject {
 
         static native boolean addSeparator0(long self);
 
-        static native boolean addItem0(long self, int commandId, String label);
+        static native boolean addItem0(long self, int commandId, @Nullable String label);
 
-        static native boolean addCheckItem0(long self, int commandId, String label);
+        static native boolean addCheckItem0(long self, int commandId, @Nullable String label);
 
-        static native boolean addRadioItem0(long self, int commandId, String label, int groupId);
+        static native boolean addRadioItem0(long self, int commandId, @Nullable String label, int groupId);
 
-        static native CefMenuModel addSubMenu0(long self, int commandId, String label);
+        static native CefMenuModel addSubMenu0(long self, int commandId, @Nullable String label);
 
         static native boolean insertSeparatorAt0(long self, long index);
 
-        static native boolean insertItemAt0(long self, long index, int commandId, String label);
+        static native boolean insertItemAt0(long self, long index, int commandId, @Nullable String label);
 
-        static native boolean insertCheckItemAt0(long self, long index, int commandId, String label);
+        static native boolean insertCheckItemAt0(long self, long index, int commandId, @Nullable String label);
 
-        static native boolean insertRadioItemAt0(long self, long index, int commandId, String label, int groupId);
+        static native boolean insertRadioItemAt0(long self, long index, int commandId, @Nullable String label, int groupId);
 
-        static native CefMenuModel insertSubMenuAt0(long self, long index, int commandId, String label);
+        static native CefMenuModel insertSubMenuAt0(long self, long index, int commandId, @Nullable String label);
 
         static native boolean remove0(long self, int commandId);
 
@@ -956,9 +956,9 @@ public interface CefMenuModel extends CefLibraryObject {
 
         static native String getLabel0(long self, int commandId);
 
-        static native boolean setLabel0(long self, int commandId, String label);
+        static native boolean setLabel0(long self, int commandId, @Nullable String label);
 
-        static native boolean setLabelAt0(long self, long index, String label);
+        static native boolean setLabelAt0(long self, long index, @Nullable String label);
 
         static native CefMenuItemType getType0(long self, int commandId);
 
@@ -1014,19 +1014,19 @@ public interface CefMenuModel extends CefLibraryObject {
 
         static native boolean getAcceleratorAt0(long self, long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
-        static native boolean setColor0(long self, int commandId, CefMenuColorType colorType, int color);
+        static native boolean setColor0(long self, int commandId, @Nonnull CefMenuColorType colorType, int color);
 
-        static native boolean setColorAt0(long self, int index, CefMenuColorType colorType, int color);
+        static native boolean setColorAt0(long self, int index, @Nonnull CefMenuColorType colorType, int color);
 
-        static native boolean getColor0(long self, int commandId, CefMenuColorType colorType, int[] color);
+        static native boolean getColor0(long self, int commandId, @Nonnull CefMenuColorType colorType, int[] color);
 
-        static native boolean getColorAt0(long self, int index, CefMenuColorType colorType, int[] color);
+        static native boolean getColorAt0(long self, int index, @Nonnull CefMenuColorType colorType, int[] color);
 
-        static native boolean setFontList0(long self, int commandId, String fontList);
+        static native boolean setFontList0(long self, int commandId, @Nullable String fontList);
 
-        static native boolean setFontListAt0(long self, int index, String fontList);
+        static native boolean setFontListAt0(long self, int index, @Nullable String fontList);
 
-        static native CefMenuModel create0(CefMenuModelDelegate delegate);
+        static native CefMenuModel create0(@Nullable CefMenuModelDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

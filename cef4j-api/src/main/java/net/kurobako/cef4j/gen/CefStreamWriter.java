@@ -165,7 +165,7 @@ public interface CefStreamWriter extends CefLibraryObject {
       }
 
 
-        static native long write0(long self, ByteBuffer ptr, long n);
+        static native long write0(long self, @Nonnull ByteBuffer ptr, long n);
 
         static native int seek0(long self, long offset, int whence);
 
@@ -175,8 +175,8 @@ public interface CefStreamWriter extends CefLibraryObject {
 
         static native boolean mayBlock0(long self);
 
-        static native CefStreamWriter createForFile0(String fileName);
-        static native CefStreamWriter createForHandler0(CefWriteHandler handler);
+        static native CefStreamWriter createForFile0(@Nullable String fileName);
+        static native CefStreamWriter createForHandler0(@Nullable CefWriteHandler handler);
 
         @Override
         public boolean equals(Object obj) {

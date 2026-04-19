@@ -112,9 +112,9 @@ public interface CefBoxLayout extends CefLayout {
           return CefLayout.NativePeer.isValid0(nativePtr);
       }
 
-        static native void setFlexForView0(long self, CefView view, int flex);
+        static native void setFlexForView0(long self, @Nullable CefView view, int flex);
 
-        static native void clearFlexForView0(long self, CefView view);
+        static native void clearFlexForView0(long self, @Nullable CefView view);
 
 
         @Override

@@ -490,15 +490,15 @@ public interface CefFrame extends CefLibraryObject {
 
         static native void viewSource0(long self);
 
-        static native void getSource0(long self, CefStringVisitor visitor);
+        static native void getSource0(long self, @Nullable CefStringVisitor visitor);
 
-        static native void getText0(long self, CefStringVisitor visitor);
+        static native void getText0(long self, @Nullable CefStringVisitor visitor);
 
-        static native void loadRequest0(long self, CefRequest request);
+        static native void loadRequest0(long self, @Nullable CefRequest request);
 
-        static native void loadUrl0(long self, String url);
+        static native void loadUrl0(long self, @Nullable String url);
 
-        static native void executeJavaScript0(long self, String code, String scriptUrl, int startLine);
+        static native void executeJavaScript0(long self, @Nullable String code, @Nullable String scriptUrl, int startLine);
 
         static native boolean isMain0(long self);
 
@@ -516,11 +516,11 @@ public interface CefFrame extends CefLibraryObject {
 
         static native CefV8Context getV8Context0(long self);
 
-        static native void visitDom0(long self, CefDomVisitor visitor);
+        static native void visitDom0(long self, @Nullable CefDomVisitor visitor);
 
-        static native CefUrlRequest createUrlRequest0(long self, CefRequest request, CefUrlRequestClient client);
+        static native CefUrlRequest createUrlRequest0(long self, @Nullable CefRequest request, @Nullable CefUrlRequestClient client);
 
-        static native void sendProcessMessage0(long self, CefProcessId targetProcess, CefProcessMessage message);
+        static native void sendProcessMessage0(long self, @Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message);
 
 
         @Override

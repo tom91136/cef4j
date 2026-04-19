@@ -92,7 +92,7 @@ public interface CefPrintDialogCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, CefPrintSettings settings);
+        static native void cont0(long self, @Nullable CefPrintSettings settings);
 
         static native void cancel0(long self);
 

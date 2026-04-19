@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Linux window properties, such as X11's WM_CLASS or Wayland's app_id. Those are passed to CefWindowDelegate, so the client can set them for the CefWindow's top-level. Thus, allowing window managers to correctly display the application's information (e.g., icons).
@@ -26,18 +27,18 @@ public final class CefLinuxWindowProperties {
 
         /**
          * Main window's Wayland's app_id 
-         */    public final String waylandAppId;
+         */    public final @Nullable String waylandAppId;
         /**
          * Main window's WM_CLASS_CLASS in X11 
-         */    public final String wmClassClass;
+         */    public final @Nullable String wmClassClass;
         /**
          * Main window's WM_CLASS_NAME in X11 
-         */    public final String wmClassName;
+         */    public final @Nullable String wmClassName;
         /**
          * Main window's WM_WINDOW_ROLE in X11 
-         */    public final String wmRoleName;
+         */    public final @Nullable String wmRoleName;
 
-    public CefLinuxWindowProperties(String waylandAppId, String wmClassClass, String wmClassName, String wmRoleName) {
+    public CefLinuxWindowProperties(@Nullable String waylandAppId, @Nullable String wmClassClass, @Nullable String wmClassName, @Nullable String wmRoleName) {
         this.waylandAppId = waylandAppId;
         this.wmClassClass = wmClassClass;
         this.wmClassName = wmClassName;
@@ -84,20 +85,20 @@ public final class CefLinuxWindowProperties {
 
             /**
              * Main window's Wayland's app_id 
-             */        public String waylandAppId;
+             */        public @Nullable String waylandAppId;
             /**
              * Main window's WM_CLASS_CLASS in X11 
-             */        public String wmClassClass;
+             */        public @Nullable String wmClassClass;
             /**
              * Main window's WM_CLASS_NAME in X11 
-             */        public String wmClassName;
+             */        public @Nullable String wmClassName;
             /**
              * Main window's WM_WINDOW_ROLE in X11 
-             */        public String wmRoleName;
+             */        public @Nullable String wmRoleName;
 
         public Mutable() {}
 
-        public Mutable(String waylandAppId, String wmClassClass, String wmClassName, String wmRoleName) {
+        public Mutable(@Nullable String waylandAppId, @Nullable String wmClassClass, @Nullable String wmClassName, @Nullable String wmRoleName) {
             this.waylandAppId = waylandAppId;
             this.wmClassClass = wmClassClass;
             this.wmClassName = wmClassName;

@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing touch event information.
@@ -48,15 +49,15 @@ public final class CefTouchEvent {
          */    public final float pressure;
         /**
          * The state of the touch point. Touches begin with one {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#PRESSED} event followed by zero or more {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#MOVED} events and finally one {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#RELEASED} or {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#CANCELLED} event. Events not respecting this order will be ignored. 
-         */    public final CefTouchEventType type;
+         */    public final @Nullable CefTouchEventType type;
         /**
          * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
          */    public final int modifiers;
         /**
          * The device type that caused the event. 
-         */    public final CefPointerType pointerType;
+         */    public final @Nullable CefPointerType pointerType;
 
-    public CefTouchEvent(int id, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, CefTouchEventType type, int modifiers, CefPointerType pointerType) {
+    public CefTouchEvent(int id, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, @Nullable CefTouchEventType type, int modifiers, @Nullable CefPointerType pointerType) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -132,17 +133,17 @@ public final class CefTouchEvent {
              */        public float pressure;
             /**
              * The state of the touch point. Touches begin with one {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#PRESSED} event followed by zero or more {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#MOVED} events and finally one {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#RELEASED} or {@link net.kurobako.cef4j.gen.CefTouchEventType.Kind#CANCELLED} event. Events not respecting this order will be ignored. 
-             */        public CefTouchEventType type;
+             */        public @Nullable CefTouchEventType type;
             /**
              * Bit flags describing any pressed modifier keys. See cef_event_flags_t for values. 
              */        public int modifiers;
             /**
              * The device type that caused the event. 
-             */        public CefPointerType pointerType;
+             */        public @Nullable CefPointerType pointerType;
 
         public Mutable() {}
 
-        public Mutable(int id, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, CefTouchEventType type, int modifiers, CefPointerType pointerType) {
+        public Mutable(int id, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, @Nullable CefTouchEventType type, int modifiers, @Nullable CefPointerType pointerType) {
             this.id = id;
             this.x = x;
             this.y = y;

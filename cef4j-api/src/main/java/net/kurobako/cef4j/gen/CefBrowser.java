@@ -404,7 +404,7 @@ public interface CefBrowser extends CefLibraryObject {
 
         static native int getIdentifier0(long self);
 
-        static native boolean isSame0(long self, CefBrowser that);
+        static native boolean isSame0(long self, @Nullable CefBrowser that);
 
         static native boolean isPopup0(long self);
 
@@ -414,15 +414,15 @@ public interface CefBrowser extends CefLibraryObject {
 
         static native CefFrame getFocusedFrame0(long self);
 
-        static native CefFrame getFrameByIdentifier0(long self, String identifier);
+        static native CefFrame getFrameByIdentifier0(long self, @Nullable String identifier);
 
-        static native CefFrame getFrameByName0(long self, String name);
+        static native CefFrame getFrameByName0(long self, @Nullable String name);
 
         static native long getFrameCount0(long self);
 
-        static native void getFrameIdentifiers0(long self, List<String> identifiers);
+        static native void getFrameIdentifiers0(long self, @Nonnull List<String> identifiers);
 
-        static native void getFrameNames0(long self, List<String> names);
+        static native void getFrameNames0(long self, @Nonnull List<String> names);
 
 
         @Override

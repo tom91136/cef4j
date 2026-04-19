@@ -21,9 +21,9 @@ class CefV144PlusViewsInteropTest extends CefTestBase {
         CefBrowserSettings.Mutable settings = new CefBrowserSettings.Mutable();
         CefClient client = new CefClient() {};
 
-        try (CefBrowserView browserView =
-                CefBrowserView.create(client, "about:blank", settings.toImmutable(), null, null, null)
-                        .orElseThrow()) {
+        try (CefBrowserView browserView = CefBrowserView.create(
+                        client, "about:blank", settings.toImmutable(), null, null, null)
+                .orElseThrow()) {
             pumpFor(500);
             assertThat(browserView.getRuntimeStyle()).isNotNull();
         }

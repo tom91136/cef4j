@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
@@ -22,17 +23,17 @@ public final class CefTouchHandleState {
          */    public final int enabled;
         /**
          * Orientation state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIENTATION}. 
-         */    public final CefHorizontalAlignment orientation;
+         */    public final @Nullable CefHorizontalAlignment orientation;
     public final int mirrorVertical;
     public final int mirrorHorizontal;
         /**
          * Origin state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIGIN}. 
-         */    public final CefPoint origin;
+         */    public final @Nullable CefPoint origin;
         /**
          * Alpha state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ALPHA}. 
          */    public final float alpha;
 
-    public CefTouchHandleState(int touchHandleId, int flags, int enabled, CefHorizontalAlignment orientation, int mirrorVertical, int mirrorHorizontal, CefPoint origin, float alpha) {
+    public CefTouchHandleState(int touchHandleId, int flags, int enabled, @Nullable CefHorizontalAlignment orientation, int mirrorVertical, int mirrorHorizontal, @Nullable CefPoint origin, float alpha) {
         this.touchHandleId = touchHandleId;
         this.flags = flags;
         this.enabled = enabled;
@@ -93,19 +94,19 @@ public final class CefTouchHandleState {
              */        public int enabled;
             /**
              * Orientation state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIENTATION}. 
-             */        public CefHorizontalAlignment orientation;
+             */        public @Nullable CefHorizontalAlignment orientation;
         public int mirrorVertical;
         public int mirrorHorizontal;
             /**
              * Origin state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ORIGIN}. 
-             */        public CefPoint origin;
+             */        public @Nullable CefPoint origin;
             /**
              * Alpha state. Only set if {@code flags} contains {@link net.kurobako.cef4j.gen.CefTouchHandleStateFlags.Kind#ALPHA}. 
              */        public float alpha;
 
         public Mutable() {}
 
-        public Mutable(int touchHandleId, int flags, int enabled, CefHorizontalAlignment orientation, int mirrorVertical, int mirrorHorizontal, CefPoint origin, float alpha) {
+        public Mutable(int touchHandleId, int flags, int enabled, @Nullable CefHorizontalAlignment orientation, int mirrorVertical, int mirrorHorizontal, @Nullable CefPoint origin, float alpha) {
             this.touchHandleId = touchHandleId;
             this.flags = flags;
             this.enabled = enabled;

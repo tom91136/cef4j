@@ -9,6 +9,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -116,7 +117,11 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     }
 
     private static void performClipboardAction(
-            CefBrowserPanel panel, Region region, ClipboardAction action, Trigger trigger) throws Exception {
+            CefBrowserPanel panel,
+            @SuppressWarnings("UnusedVariable") Region region,
+            ClipboardAction action,
+            Trigger trigger)
+            throws Exception {
         if (trigger == Trigger.KEYBOARD) {
             invokeShortcut(panel, action.keyCode);
             return;
@@ -132,7 +137,9 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
         focusElement(panel, layout, false, TARGET_X);
     }
 
-    private static void focusElement(CefBrowserPanel panel, Layout layout, boolean source, double x) throws Exception {
+    private static void focusElement(
+            CefBrowserPanel panel, @SuppressWarnings("UnusedVariable") Layout layout, boolean source, double x)
+            throws Exception {
         leftClick(panel, x, TEXT_Y);
         executeJavaScript(
                 panel,
@@ -203,8 +210,7 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     }
 
     private static void invokeFrameClipboardAction(CefBrowserPanel panel, ClipboardAction action) throws Exception {
-        CefBrowser browser = panel.getBrowser();
-        assertThat(browser).isNotNull();
+        CefBrowser browser = Objects.requireNonNull(panel.getBrowser(), "browser");
         CefFrame frame =
                 browser.getFocusedFrame().orElseGet(() -> browser.getMainFrame().orElse(null));
         assertThat(frame).isNotNull();

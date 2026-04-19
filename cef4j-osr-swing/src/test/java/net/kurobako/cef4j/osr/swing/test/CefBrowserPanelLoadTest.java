@@ -4,6 +4,7 @@ import static net.kurobako.cef4j.osr.swing.test.SwingBrowserPanelTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.Objects;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -31,9 +32,10 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
         loadContent(panel, "<html><head><title>two</title></head><body>two</body></html>");
         assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-        assertThat(waitUntil(() -> STATES.get(panel).canGoBack, 5_000)).isTrue();
+        assertThat(waitUntil(() -> Objects.requireNonNull(STATES.get(panel)).canGoBack, 5_000))
+                .isTrue();
 
-        panel.getBrowser().goBack();
+        Objects.requireNonNull(panel.getBrowser()).goBack();
         assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
     }
 
@@ -64,7 +66,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             loadUrl(panel, server.url("/two"));
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-            panel.getBrowser().goBack();
+            Objects.requireNonNull(panel.getBrowser()).goBack();
             assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
         }
     }
@@ -82,10 +84,10 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             loadUrl(panel, server.url("/two"));
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-            panel.getBrowser().goBack();
+            Objects.requireNonNull(panel.getBrowser()).goBack();
             assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
 
-            panel.getBrowser().goForward();
+            Objects.requireNonNull(panel.getBrowser()).goForward();
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
         }
     }
@@ -144,5 +146,4 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             assertThat(getLocation(panel)).isEqualTo(hostUrl);
         }
     }
-
 }

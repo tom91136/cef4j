@@ -41,7 +41,7 @@ public interface CefImage extends CefLibraryObject {
 
     /**
      * Add a bitmap image representation for {@code scale_factor}. Only 32-bit RGBA/BGRA formats are supported. {@code pixel_width} and {@code pixel_height} are the bitmap representation size in pixel coordinates. {@code pixel_data} is the array of pixel data and should be {@code pixel_width} x {@code pixel_height} x 4 bytes in size. {@code color_type} and {@code alpha_type} values specify the pixel format.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code pixelDataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code pixel_data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* add_bitmap)(struct _cef_image_t* self, float scale_factor, int pixel_width, int pixel_height, cef_color_type_t color_type, cef_alpha_type_t alpha_type, const void* pixel_data, size_t pixel_data_size);</pre>
      *
@@ -53,7 +53,7 @@ public interface CefImage extends CefLibraryObject {
 
     /**
      * Add a PNG image representation for {@code scale_factor}. {@code png_data} is the image data of size {@code png_data_size}. Any alpha transparency in the PNG data will be maintained.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code pngDataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code png_data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* add_png)(struct _cef_image_t* self, float scale_factor, const void* png_data, size_t png_data_size);</pre>
      *
@@ -65,7 +65,7 @@ public interface CefImage extends CefLibraryObject {
 
     /**
      * Create a JPEG image representation for {@code scale_factor}. {@code jpeg_data} is the image data of size {@code jpeg_data_size}. The JPEG format does not support transparency so the alpha byte will be set to 0xFF for all pixels.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code jpegDataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code jpeg_data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* add_jpeg)(struct _cef_image_t* self, float scale_factor, const void* jpeg_data, size_t jpeg_data_size);</pre>
      *
@@ -282,13 +282,13 @@ public interface CefImage extends CefLibraryObject {
 
         static native boolean isEmpty0(long self);
 
-        static native boolean isSame0(long self, CefImage that);
+        static native boolean isSame0(long self, @Nullable CefImage that);
 
-        static native boolean addBitmap0(long self, float scaleFactor, int pixelWidth, int pixelHeight, CefColorType colorType, CefAlphaType alphaType, ByteBuffer pixelData);
+        static native boolean addBitmap0(long self, float scaleFactor, int pixelWidth, int pixelHeight, @Nonnull CefColorType colorType, @Nonnull CefAlphaType alphaType, @Nonnull ByteBuffer pixelData);
 
-        static native boolean addPng0(long self, float scaleFactor, ByteBuffer pngData);
+        static native boolean addPng0(long self, float scaleFactor, @Nonnull ByteBuffer pngData);
 
-        static native boolean addJpeg0(long self, float scaleFactor, ByteBuffer jpegData);
+        static native boolean addJpeg0(long self, float scaleFactor, @Nonnull ByteBuffer jpegData);
 
         static native long getWidth0(long self);
 
@@ -300,7 +300,7 @@ public interface CefImage extends CefLibraryObject {
 
         static native boolean getRepresentationInfo0(long self, float scaleFactor, float[] actualScaleFactor, int[] pixelWidth, int[] pixelHeight);
 
-        static native CefBinaryValue getAsBitmap0(long self, float scaleFactor, CefColorType colorType, CefAlphaType alphaType, int[] pixelWidth, int[] pixelHeight);
+        static native CefBinaryValue getAsBitmap0(long self, float scaleFactor, @Nonnull CefColorType colorType, @Nonnull CefAlphaType alphaType, int[] pixelWidth, int[] pixelHeight);
 
         static native CefBinaryValue getAsPng0(long self, float scaleFactor, boolean withTransparency, int[] pixelWidth, int[] pixelHeight);
 

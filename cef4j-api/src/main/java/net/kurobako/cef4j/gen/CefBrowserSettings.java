@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Browser initialization settings. Specify {@code null} or 0 to get the recommended default values. The consequences of using custom values may not be well tested. Many of these and other settings can also configured using command-line switches.
@@ -53,22 +54,22 @@ public final class CefBrowserSettings {
         /**
          * Font settings. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String standardFontFamily;
+         */    public final @Nullable String standardFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String fixedFontFamily;
+         */    public final @Nullable String fixedFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String serifFontFamily;
+         */    public final @Nullable String serifFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String sansSerifFontFamily;
+         */    public final @Nullable String sansSerifFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String cursiveFontFamily;
+         */    public final @Nullable String cursiveFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String fantasyFontFamily;
+         */    public final @Nullable String fantasyFontFamily;
         /**
          * <p><i>values that map to WebPreferences settings</i>
          */    public final int defaultFontSize;
@@ -84,66 +85,66 @@ public final class CefBrowserSettings {
         /**
          * Default encoding for Web content. If empty "ISO-8859-1" will be used. Also configurable using the "default-encoding" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final String defaultEncoding;
+         */    public final @Nullable String defaultEncoding;
         /**
          * Controls the loading of fonts from remote sources. Also configurable using the "disable-remote-fonts" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState remoteFonts;
+         */    public final @Nullable CefState remoteFonts;
         /**
          * Controls whether JavaScript can be executed. Also configurable using the "disable-javascript" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState javascript;
+         */    public final @Nullable CefState javascript;
         /**
          * Controls whether JavaScript can be used to close windows that were not opened via JavaScript. JavaScript can still be used to close windows that were opened via JavaScript or that have no back/forward history. Also configurable using the "disable-javascript-close-windows" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState javascriptCloseWindows;
+         */    public final @Nullable CefState javascriptCloseWindows;
         /**
          * Controls whether JavaScript can access the clipboard. Also configurable using the "disable-javascript-access-clipboard" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState javascriptAccessClipboard;
+         */    public final @Nullable CefState javascriptAccessClipboard;
         /**
          * Controls whether DOM pasting is supported in the editor via execCommand("paste"). The {@code javascript_access_clipboard} setting must also be enabled. Also configurable using the "disable-javascript-dom-paste" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState javascriptDomPaste;
+         */    public final @Nullable CefState javascriptDomPaste;
         /**
          * Controls whether image URLs will be loaded from the network. A cached image will still be rendered if requested. Also configurable using the "disable-image-loading" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState imageLoading;
+         */    public final @Nullable CefState imageLoading;
         /**
          * Controls whether standalone images will be shrunk to fit the page. Also configurable using the "image-shrink-standalone-to-fit" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState imageShrinkStandaloneToFit;
+         */    public final @Nullable CefState imageShrinkStandaloneToFit;
         /**
          * Controls whether text areas can be resized. Also configurable using the "disable-text-area-resize" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState textAreaResize;
+         */    public final @Nullable CefState textAreaResize;
         /**
          * Controls whether the tab key can advance focus to links. Also configurable using the "disable-tab-to-links" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState tabToLinks;
+         */    public final @Nullable CefState tabToLinks;
         /**
          * Controls whether local storage can be used. Also configurable using the "disable-local-storage" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState localStorage;
+         */    public final @Nullable CefState localStorage;
         /**
          * Controls whether databases can be used. Also configurable using the "disable-databases" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState databasesDeprecated;
+         */    public final @Nullable CefState databasesDeprecated;
         /**
          * Controls whether WebGL can be used. Note that WebGL requires hardware support and may not work on all systems even when enabled. Also configurable using the "disable-webgl" command-line switch. 
          * <p><i>values that map to WebPreferences settings</i>
-         */    public final CefState webgl;
+         */    public final @Nullable CefState webgl;
         /**
          * Background color used for the browser before a document is loaded and when no document color is specified. The alpha component must be either fully opaque (0xFF) or fully transparent (0x00). If the alpha component is fully opaque then the RGB components will be used as the background color. If the alpha component is fully transparent for a windowed browser then the CefSettings.background_color value will be used. If the alpha component is fully transparent for a windowless (off-screen) browser then transparent painting will be enabled. 
          */    public final int backgroundColor;
         /**
          * Controls whether the Chrome status bubble will be used. Only supported with Chrome style. For details about the status bubble see <a href="https://www.chromium.org/user-experience/status-bubble/">https://www.chromium.org/user-experience/status-bubble/</a> 
-         */    public final CefState chromeStatusBubble;
+         */    public final @Nullable CefState chromeStatusBubble;
         /**
          * Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. 
-         */    public final CefState chromeZoomBubble;
+         */    public final @Nullable CefState chromeZoomBubble;
 
-    public CefBrowserSettings(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble) {
+    public CefBrowserSettings(int windowlessFrameRate, @Nullable String standardFontFamily, @Nullable String fixedFontFamily, @Nullable String serifFontFamily, @Nullable String sansSerifFontFamily, @Nullable String cursiveFontFamily, @Nullable String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, @Nullable String defaultEncoding, @Nullable CefState remoteFonts, @Nullable CefState javascript, @Nullable CefState javascriptCloseWindows, @Nullable CefState javascriptAccessClipboard, @Nullable CefState javascriptDomPaste, @Nullable CefState imageLoading, @Nullable CefState imageShrinkStandaloneToFit, @Nullable CefState textAreaResize, @Nullable CefState tabToLinks, @Nullable CefState localStorage, @Nullable CefState databasesDeprecated, @Nullable CefState webgl, int backgroundColor, @Nullable CefState chromeStatusBubble, @Nullable CefState chromeZoomBubble) {
         this.windowlessFrameRate = windowlessFrameRate;
         this.standardFontFamily = standardFontFamily;
         this.fixedFontFamily = fixedFontFamily;
@@ -240,22 +241,22 @@ public final class CefBrowserSettings {
             /**
              * Font settings. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String standardFontFamily;
+             */        public @Nullable String standardFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String fixedFontFamily;
+             */        public @Nullable String fixedFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String serifFontFamily;
+             */        public @Nullable String serifFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String sansSerifFontFamily;
+             */        public @Nullable String sansSerifFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String cursiveFontFamily;
+             */        public @Nullable String cursiveFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String fantasyFontFamily;
+             */        public @Nullable String fantasyFontFamily;
             /**
              * <p><i>values that map to WebPreferences settings</i>
              */        public int defaultFontSize;
@@ -271,68 +272,68 @@ public final class CefBrowserSettings {
             /**
              * Default encoding for Web content. If empty "ISO-8859-1" will be used. Also configurable using the "default-encoding" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public String defaultEncoding;
+             */        public @Nullable String defaultEncoding;
             /**
              * Controls the loading of fonts from remote sources. Also configurable using the "disable-remote-fonts" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState remoteFonts;
+             */        public @Nullable CefState remoteFonts;
             /**
              * Controls whether JavaScript can be executed. Also configurable using the "disable-javascript" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState javascript;
+             */        public @Nullable CefState javascript;
             /**
              * Controls whether JavaScript can be used to close windows that were not opened via JavaScript. JavaScript can still be used to close windows that were opened via JavaScript or that have no back/forward history. Also configurable using the "disable-javascript-close-windows" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState javascriptCloseWindows;
+             */        public @Nullable CefState javascriptCloseWindows;
             /**
              * Controls whether JavaScript can access the clipboard. Also configurable using the "disable-javascript-access-clipboard" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState javascriptAccessClipboard;
+             */        public @Nullable CefState javascriptAccessClipboard;
             /**
              * Controls whether DOM pasting is supported in the editor via execCommand("paste"). The {@code javascript_access_clipboard} setting must also be enabled. Also configurable using the "disable-javascript-dom-paste" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState javascriptDomPaste;
+             */        public @Nullable CefState javascriptDomPaste;
             /**
              * Controls whether image URLs will be loaded from the network. A cached image will still be rendered if requested. Also configurable using the "disable-image-loading" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState imageLoading;
+             */        public @Nullable CefState imageLoading;
             /**
              * Controls whether standalone images will be shrunk to fit the page. Also configurable using the "image-shrink-standalone-to-fit" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState imageShrinkStandaloneToFit;
+             */        public @Nullable CefState imageShrinkStandaloneToFit;
             /**
              * Controls whether text areas can be resized. Also configurable using the "disable-text-area-resize" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState textAreaResize;
+             */        public @Nullable CefState textAreaResize;
             /**
              * Controls whether the tab key can advance focus to links. Also configurable using the "disable-tab-to-links" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState tabToLinks;
+             */        public @Nullable CefState tabToLinks;
             /**
              * Controls whether local storage can be used. Also configurable using the "disable-local-storage" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState localStorage;
+             */        public @Nullable CefState localStorage;
             /**
              * Controls whether databases can be used. Also configurable using the "disable-databases" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState databasesDeprecated;
+             */        public @Nullable CefState databasesDeprecated;
             /**
              * Controls whether WebGL can be used. Note that WebGL requires hardware support and may not work on all systems even when enabled. Also configurable using the "disable-webgl" command-line switch. 
              * <p><i>values that map to WebPreferences settings</i>
-             */        public CefState webgl;
+             */        public @Nullable CefState webgl;
             /**
              * Background color used for the browser before a document is loaded and when no document color is specified. The alpha component must be either fully opaque (0xFF) or fully transparent (0x00). If the alpha component is fully opaque then the RGB components will be used as the background color. If the alpha component is fully transparent for a windowed browser then the CefSettings.background_color value will be used. If the alpha component is fully transparent for a windowless (off-screen) browser then transparent painting will be enabled. 
              */        public int backgroundColor;
             /**
              * Controls whether the Chrome status bubble will be used. Only supported with Chrome style. For details about the status bubble see <a href="https://www.chromium.org/user-experience/status-bubble/">https://www.chromium.org/user-experience/status-bubble/</a> 
-             */        public CefState chromeStatusBubble;
+             */        public @Nullable CefState chromeStatusBubble;
             /**
              * Controls whether the Chrome zoom bubble will be shown when zooming. Only supported with Chrome style. 
-             */        public CefState chromeZoomBubble;
+             */        public @Nullable CefState chromeZoomBubble;
 
         public Mutable() {}
 
-        public Mutable(int windowlessFrameRate, String standardFontFamily, String fixedFontFamily, String serifFontFamily, String sansSerifFontFamily, String cursiveFontFamily, String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, String defaultEncoding, CefState remoteFonts, CefState javascript, CefState javascriptCloseWindows, CefState javascriptAccessClipboard, CefState javascriptDomPaste, CefState imageLoading, CefState imageShrinkStandaloneToFit, CefState textAreaResize, CefState tabToLinks, CefState localStorage, CefState databasesDeprecated, CefState webgl, int backgroundColor, CefState chromeStatusBubble, CefState chromeZoomBubble) {
+        public Mutable(int windowlessFrameRate, @Nullable String standardFontFamily, @Nullable String fixedFontFamily, @Nullable String serifFontFamily, @Nullable String sansSerifFontFamily, @Nullable String cursiveFontFamily, @Nullable String fantasyFontFamily, int defaultFontSize, int defaultFixedFontSize, int minimumFontSize, int minimumLogicalFontSize, @Nullable String defaultEncoding, @Nullable CefState remoteFonts, @Nullable CefState javascript, @Nullable CefState javascriptCloseWindows, @Nullable CefState javascriptAccessClipboard, @Nullable CefState javascriptDomPaste, @Nullable CefState imageLoading, @Nullable CefState imageShrinkStandaloneToFit, @Nullable CefState textAreaResize, @Nullable CefState tabToLinks, @Nullable CefState localStorage, @Nullable CefState databasesDeprecated, @Nullable CefState webgl, int backgroundColor, @Nullable CefState chromeStatusBubble, @Nullable CefState chromeZoomBubble) {
             this.windowlessFrameRate = windowlessFrameRate;
             this.standardFontFamily = standardFontFamily;
             this.fixedFontFamily = fixedFontFamily;

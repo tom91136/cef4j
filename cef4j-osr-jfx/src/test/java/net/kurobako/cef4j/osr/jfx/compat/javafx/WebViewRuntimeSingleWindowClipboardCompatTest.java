@@ -9,6 +9,7 @@ import javafx.scene.web.WebView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+@SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated; tests exercise JFX parity
 class WebViewRuntimeSingleWindowClipboardCompatTest extends WebViewRuntimeCompatTestBase {
     private static final int SOURCE_X = 120;
     private static final int SOURCE_BASE_Y = 80;

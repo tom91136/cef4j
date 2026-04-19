@@ -532,11 +532,11 @@ public interface CefMenuButton extends CefLabelButton {
           return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
       }
 
-        static native void showMenu0(long self, CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition);
+        static native void showMenu0(long self, @Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint, @Nonnull CefMenuAnchorPosition anchorPosition);
 
         static native void triggerMenu0(long self);
 
-        static native CefMenuButton create0(CefMenuButtonDelegate delegate, String text);
+        static native CefMenuButton create0(@Nullable CefMenuButtonDelegate delegate, @Nullable String text);
 
         @Override
         public boolean equals(Object obj) {

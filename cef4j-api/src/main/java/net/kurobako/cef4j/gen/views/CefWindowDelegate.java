@@ -77,7 +77,7 @@ public interface CefWindowDelegate extends CefClientHandler {
     }
 
     /**
-     * Called when {@code window} is transitioning to or from fullscreen mode. On MacOS the transition occurs asynchronously with {@code is_competed} set to {@code false} when the transition starts and {@code true} after the transition completes. On other platforms the transition occurs synchronously with {@code is_completed} set to {@code true} after the transition completes. With Alloy style you must also implement {@link net.kurobako.cef4j.gen.CefDisplayHandler#onFullscreenModeChange(CefBrowser, boolean)} to handle fullscreen transitions initiated by browser content.
+     * Called when {@code window} is transitioning to or from fullscreen mode. On MacOS the transition occurs asynchronously with {@code is_completed} set to {@code false} when the transition starts and {@code true} after the transition completes. On other platforms the transition occurs synchronously with {@code is_completed} set to {@code true} after the transition completes. With Alloy style you must also implement {@link net.kurobako.cef4j.gen.CefDisplayHandler#onFullscreenModeChange(CefBrowser, boolean)} to handle fullscreen transitions initiated by browser content.
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_fullscreen_transition)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int is_completed);</pre>
      *
@@ -93,7 +93,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:100</a>
      */
-    default CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
+    default @Nullable CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
         return null;
     }
 
@@ -115,7 +115,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:128</a>
      */
-    default CefRect getInitialBounds(@Nullable CefWindow window) {
+    default @Nullable CefRect getInitialBounds(@Nullable CefWindow window) {
         return null;
     }
 
@@ -128,7 +128,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:141</a>
      */
-    default CefShowState getInitialShowState(@Nullable CefWindow window) {
+    default @Nullable CefShowState getInitialShowState(@Nullable CefWindow window) {
         return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
     }
 
@@ -176,7 +176,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:179</a>
      */
-    default CefState acceptsFirstMouse(@Nullable CefWindow window) {
+    default @Nullable CefState acceptsFirstMouse(@Nullable CefWindow window) {
         return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
     }
 
@@ -273,7 +273,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:273</a>
      */
-    default CefRuntimeStyle getWindowRuntimeStyle() {
+    default @Nullable CefRuntimeStyle getWindowRuntimeStyle() {
         return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
     }
 
@@ -332,7 +332,7 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
+        public @Nullable CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
             if (!delegates.isEmpty()) return delegates.get(0).getParentWindow(window, isMenu, canActivateMenu);
             return null;
         }
@@ -347,13 +347,13 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefRect getInitialBounds(@Nullable CefWindow window) {
+        public @Nullable CefRect getInitialBounds(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).getInitialBounds(window);
             return null;
         }
 
         @Override
-        public CefShowState getInitialShowState(@Nullable CefWindow window) {
+        public @Nullable CefShowState getInitialShowState(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).getInitialShowState(window);
             return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
         }
@@ -386,7 +386,7 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefState acceptsFirstMouse(@Nullable CefWindow window) {
+        public @Nullable CefState acceptsFirstMouse(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).acceptsFirstMouse(window);
             return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
         }
@@ -451,7 +451,7 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefRuntimeStyle getWindowRuntimeStyle() {
+        public @Nullable CefRuntimeStyle getWindowRuntimeStyle() {
             if (!delegates.isEmpty()) return delegates.get(0).getWindowRuntimeStyle();
             return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
         }

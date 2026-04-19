@@ -79,7 +79,7 @@ public interface CefSelectClientCertificateCallback extends CefLibraryObject {
       }
 
 
-        static native void select0(long self, CefX509Certificate cert);
+        static native void select0(long self, @Nullable CefX509Certificate cert);
 
 
         @Override

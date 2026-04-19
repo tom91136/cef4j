@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -69,13 +70,15 @@ class CefWebViewRenderTest {
         try {
             startJavaFx();
 
-            CefWebView view = onFxThread(() -> {
-                CefWebView v = new CefWebView();
-                Stage stage = new Stage();
-                stage.setScene(new Scene(new StackPane(v), 400, 300));
-                stage.show();
-                return v;
-            });
+            CefWebView view = Objects.requireNonNull(
+                    onFxThread(() -> {
+                        CefWebView v = new CefWebView();
+                        Stage stage = new Stage();
+                        stage.setScene(new Scene(new StackPane(v), 400, 300));
+                        stage.show();
+                        return v;
+                    }),
+                    "view");
             try {
                 onFxThread(() -> view.getEngine()
                         .loadContent(
@@ -89,7 +92,7 @@ class CefWebViewRenderTest {
                         .as("page load should succeed")
                         .isTrue();
 
-                assertThat(waitUntil(() -> view.framesPainted > 0, 10_000))
+                assertThat(waitUntil(() -> view.framesPainted.sum() > 0, 10_000))
                         .as("CefWebView should have received at least one paint (framesPainted > 0)")
                         .isTrue();
             } finally {
@@ -111,14 +114,6 @@ class CefWebViewRenderTest {
         // Ensure CEF is terminated even if the second test fails mid-flight.
         if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
-        }
-    }
-
-    private static <T> T onFxThreadUnchecked(java.util.concurrent.Callable<T> task) {
-        try {
-            return onFxThread(task);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }

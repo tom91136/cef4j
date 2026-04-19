@@ -885,11 +885,11 @@ public interface CefTextfield extends CefView {
 
         static native String getText0(long self);
 
-        static native void setText0(long self, String text);
+        static native void setText0(long self, @Nullable String text);
 
-        static native void appendText0(long self, String text);
+        static native void appendText0(long self, @Nullable String text);
 
-        static native void insertOrReplaceText0(long self, String text);
+        static native void insertOrReplaceText0(long self, @Nullable String text);
 
         static native boolean hasSelection0(long self);
 
@@ -901,7 +901,7 @@ public interface CefTextfield extends CefView {
 
         static native CefRange getSelectedRange0(long self);
 
-        static native void selectRange0(long self, CefRange range);
+        static native void selectRange0(long self, @Nonnull CefRange range);
 
         static native long getCursorPosition0(long self);
 
@@ -917,27 +917,27 @@ public interface CefTextfield extends CefView {
 
         static native int getSelectionBackgroundColor0(long self);
 
-        static native void setFontList0(long self, String fontList);
+        static native void setFontList0(long self, @Nullable String fontList);
 
-        static native void applyTextColor0(long self, int color, CefRange range);
+        static native void applyTextColor0(long self, int color, @Nonnull CefRange range);
 
-        static native void applyTextStyle0(long self, CefTextStyle style, boolean add, CefRange range);
+        static native void applyTextStyle0(long self, @Nonnull CefTextStyle style, boolean add, @Nonnull CefRange range);
 
-        static native boolean isCommandEnabled0(long self, CefTextFieldCommands commandId);
+        static native boolean isCommandEnabled0(long self, @Nonnull CefTextFieldCommands commandId);
 
-        static native void executeCommand0(long self, CefTextFieldCommands commandId);
+        static native void executeCommand0(long self, @Nonnull CefTextFieldCommands commandId);
 
         static native void clearEditHistory0(long self);
 
-        static native void setPlaceholderText0(long self, String text);
+        static native void setPlaceholderText0(long self, @Nullable String text);
 
         static native String getPlaceholderText0(long self);
 
         static native void setPlaceholderTextColor0(long self, int color);
 
-        static native void setAccessibleName0(long self, String name);
+        static native void setAccessibleName0(long self, @Nullable String name);
 
-        static native CefTextfield create0(CefTextfieldDelegate delegate);
+        static native CefTextfield create0(@Nullable CefTextfieldDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

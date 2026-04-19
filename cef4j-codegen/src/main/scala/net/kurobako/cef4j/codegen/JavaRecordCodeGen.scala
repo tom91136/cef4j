@@ -113,7 +113,8 @@ ${allLines.mkString("\n")}
     val ctorParams  = renderCtorParams(userFields)
     val ctorAssigns = renderCtorAssigns(userFields, "        ")
 
-    val typeImports     = allTypes.flatMap(Naming.javaImports).distinct.sorted.map(i => s"import $i;")
+    val nullableImport = if (userFields.exists(f => !isPrimitive(f.typ))) List("javax.annotation.Nullable") else Nil
+    val typeImports = (allTypes.flatMap(Naming.javaImports) ++ nullableImport).distinct.sorted.map(i => s"import $i;")
     val crossPkgImports = if (subPackage.nonEmpty) {
       val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
       val basePkg       = Naming.javaPackage
@@ -225,8 +226,9 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
   }
 
   private def isPrimitive(typ: CType): Boolean = typ match {
-    case CType.Bool | CType.Int | CType.UInt | CType.Long | CType.SizeT | CType.Float | CType.Double => true
-    case _                                                                                           => false
+    case CType.Bool | CType.Int | CType.UInt | CType.Char | CType.Long | CType.SizeT | CType.Float | CType.Double =>
+      true
+    case _ => false
   }
 
   private def renderFieldDecls(
@@ -236,12 +238,16 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
       fieldPrefix: String
   )(using Naming.Context, DocComments.Context): String =
     fields.map { f =>
-      val doc = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
-      s"$doc$fieldPrefix${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
+      val doc    = indentDoc(renderFieldDoc(f.name, fieldDocs), docIndent)
+      val prefix = if (isPrimitive(f.typ)) fieldPrefix else s"$fieldPrefix@Nullable "
+      s"$doc$prefix${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)};"
     }.mkString("\n")
 
   private def renderCtorParams(fields: List[Field])(using Naming.Context): String =
-    fields.map(f => s"${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}").mkString(", ")
+    fields.map { f =>
+      val ann = if (isPrimitive(f.typ)) "" else "@Nullable "
+      s"$ann${Naming.javaType(f.typ)} ${Naming.toCamelCase(f.name)}"
+    }.mkString(", ")
 
   private def renderCtorAssigns(fields: List[Field], indent: String)(using Naming.Context): String =
     fields.map { f =>

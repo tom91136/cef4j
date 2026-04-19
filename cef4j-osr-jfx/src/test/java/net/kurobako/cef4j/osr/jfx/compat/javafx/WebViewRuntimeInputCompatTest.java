@@ -37,5 +37,4 @@ class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
                     .isTrue();
         }
     }
-
 }

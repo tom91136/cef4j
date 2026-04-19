@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing cursor information. {@code buffer} will be {@code size.width}*{@code size.height}*4 bytes in size and represents a BGRA image with an upper-left origin.
@@ -19,12 +20,12 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefCursorInfo {
 
-    public final CefPoint hotspot;
+    public final @Nullable CefPoint hotspot;
     public final float imageScaleFactor;
-    public final NativePointer buffer;
-    public final CefSize size;
+    public final @Nullable NativePointer buffer;
+    public final @Nullable CefSize size;
 
-    public CefCursorInfo(CefPoint hotspot, float imageScaleFactor, NativePointer buffer, CefSize size) {
+    public CefCursorInfo(@Nullable CefPoint hotspot, float imageScaleFactor, @Nullable NativePointer buffer, @Nullable CefSize size) {
         this.hotspot = hotspot;
         this.imageScaleFactor = imageScaleFactor;
         this.buffer = buffer;

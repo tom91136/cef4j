@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing task information provided by CefTaskManager.
@@ -34,13 +35,13 @@ public final class CefTaskInfo {
          */    public final long id;
         /**
          * The task type.
-         */    public final CefTaskType type;
+         */    public final @Nullable CefTaskType type;
         /**
          * Set to {@code true} (1) if the task is killable.
          */    public final int isKillable;
         /**
          * The task title.
-         */    public final String title;
+         */    public final @Nullable String title;
         /**
          * The CPU usage of the process on which the task is running. The value is in the range zero to number_of_processors * 100%.
          */    public final double cpuUsage;
@@ -57,7 +58,7 @@ public final class CefTaskInfo {
          * Set to {@code true} (1) if this task process' GPU resource count is inflated because it is counting other processes' resources (e.g, the GPU process has this value set to {@code true} because it is the aggregate of all processes).
          */    public final int isGpuMemoryInflated;
 
-    public CefTaskInfo(long id, CefTaskType type, int isKillable, String title, double cpuUsage, int numberOfProcessors, long memory, long gpuMemory, int isGpuMemoryInflated) {
+    public CefTaskInfo(long id, @Nullable CefTaskType type, int isKillable, @Nullable String title, double cpuUsage, int numberOfProcessors, long memory, long gpuMemory, int isGpuMemoryInflated) {
         this.id = id;
         this.type = type;
         this.isKillable = isKillable;
@@ -117,13 +118,13 @@ public final class CefTaskInfo {
              */        public long id;
             /**
              * The task type.
-             */        public CefTaskType type;
+             */        public @Nullable CefTaskType type;
             /**
              * Set to {@code true} (1) if the task is killable.
              */        public int isKillable;
             /**
              * The task title.
-             */        public String title;
+             */        public @Nullable String title;
             /**
              * The CPU usage of the process on which the task is running. The value is in the range zero to number_of_processors * 100%.
              */        public double cpuUsage;
@@ -142,7 +143,7 @@ public final class CefTaskInfo {
 
         public Mutable() {}
 
-        public Mutable(long id, CefTaskType type, int isKillable, String title, double cpuUsage, int numberOfProcessors, long memory, long gpuMemory, int isGpuMemoryInflated) {
+        public Mutable(long id, @Nullable CefTaskType type, int isKillable, @Nullable String title, double cpuUsage, int numberOfProcessors, long memory, long gpuMemory, int isGpuMemoryInflated) {
             this.id = id;
             this.type = type;
             this.isKillable = isKillable;

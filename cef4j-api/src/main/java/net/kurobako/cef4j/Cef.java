@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>CEF cannot be re-initialized after {@link #terminate()}.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ImmutableEnumChecker"})
 public enum Cef {
     INSTANCE;
 
@@ -87,7 +87,7 @@ public enum Cef {
 
         public LaunchArgs(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> args) {
             this.settings = Objects.requireNonNull(settings, "settings");
-            this.args = Objects.requireNonNull(args, "args");
+            this.args = List.copyOf(Objects.requireNonNull(args, "args"));
         }
 
         @Nonnull
@@ -141,11 +141,11 @@ public enum Cef {
     private static final Logger log = LoggerFactory.getLogger(Cef.class);
 
     private volatile State state = State.UNINITIALISED;
-    private volatile Thread initThread = null;
+    private volatile @Nullable Thread initThread = null;
     private volatile boolean daemonManaged = false;
     private volatile boolean macOsManaged = false;
-    private volatile CountDownLatch shutdownLatch;
-    private volatile CefSettings activeSettings;
+    private volatile @Nullable CountDownLatch shutdownLatch;
+    private volatile @Nullable CefSettings activeSettings;
     private final CopyOnWriteArrayList<CefApp> appHandlers = new CopyOnWriteArrayList<>();
 
     private void checkState() {

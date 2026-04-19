@@ -81,7 +81,7 @@ case class Config(
   val outJavaPlatformPackageDir: Path =
     if (javaPlatformSubPackage.nonEmpty) outJavaPackageDir.resolve(javaPlatformSubPackage.replace('.', '/'))
     else outJavaPackageDir
-  val outCppPlatformDir: Path = outCpp.resolve(targetPlatform.id)
+  val outCppPlatformDir: Path           = outCpp.resolve(targetPlatform.id)
   val preprocessorDefines: List[String] =
     targetPlatform.preprocessorDefines ++ cefApiVersionRaw.toList.map { raw =>
       s"CEF_API_VERSION=${Config.normaliseCefApiVersion(raw)}"
@@ -92,7 +92,7 @@ object Config {
   def normaliseCefApiVersion(raw: String): String = {
     val trimmed = raw.trim
     require(trimmed.matches("^[0-9]+$"), s"CEF API version must be numeric: $raw")
-    val value   = BigInt(trimmed)
+    val value = BigInt(trimmed)
     if (value >= 133 && value < 1000) (value * 100).toString else trimmed
   }
 }

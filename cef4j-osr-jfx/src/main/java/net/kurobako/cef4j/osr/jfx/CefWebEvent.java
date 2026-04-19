@@ -4,7 +4,7 @@ import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;
 
-/** JavaFX WebView-compatiable web event without depending on {@code javafx-web}. */
+/** JavaFX WebView-compatible web event without depending on {@code javafx-web}. */
 @SuppressWarnings("unused")
 public class CefWebEvent<T> extends Event {
     private static final long serialVersionUID = 1L;

@@ -3,10 +3,12 @@ package net.kurobako.cef4j.osr.swing.test;
 import static net.kurobako.cef4j.osr.swing.test.SwingBrowserPanelTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
@@ -58,7 +60,8 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                 public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                     return Optional.of(new CefLifeSpanHandler() {
                         @Override
-                        public void onAfterCreated(CefBrowser b) {
+                        public void onAfterCreated(@Nullable CefBrowser b) {
+                            if (b == null) return;
                             SwingUtilities.invokeLater(() -> {
                                 panel.setBrowser(b);
                                 state.browserReady.countDown();
@@ -72,7 +75,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                     return Optional.of(new CefLoadHandler() {
                         @Override
                         public void onLoadingStateChange(
-                                CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                                @Nullable CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                             state.loading = isLoading;
                             if (!isLoading) state.loadEnded = true;
                         }
@@ -83,13 +86,14 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                 public Optional<CefDisplayHandler> getDisplayHandler() {
                     return Optional.of(new CefDisplayHandler() {
                         @Override
-                        public void onTitleChange(CefBrowser b, String title) {
-                            state.title = title != null ? title : "";
+                        public void onTitleChange(@Nullable CefBrowser b, @Nullable String title) {
+                            state.title = Objects.requireNonNullElse(title, "");
                         }
 
                         @Override
-                        public void onAddressChange(CefBrowser b, CefFrame f, String url) {
-                            state.location = url != null ? url : "";
+                        public void onAddressChange(
+                                @Nullable CefBrowser b, @Nullable CefFrame f, @Nullable String url) {
+                            state.location = Objects.requireNonNullElse(url, "");
                         }
                     });
                 }
@@ -99,15 +103,20 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                     return Optional.of(new CefJsDialogHandler() {
                         @Override
                         public boolean onJsDialog(
-                                CefBrowser browser,
-                                String originUrl,
-                                CefJsDialogType dialogType,
-                                String messageText,
-                                String defaultPromptText,
-                                CefJsDialogCallback callback,
-                                int[] suppressMessage) {
+                                @Nullable CefBrowser browser,
+                                @Nullable String originUrl,
+                                @Nullable CefJsDialogType dialogType,
+                                @Nullable String messageText,
+                                @Nullable String defaultPromptText,
+                                @Nullable CefJsDialogCallback callback,
+                                @Nullable int[] suppressMessage) {
+                            if (dialogType == null || callback == null) return false;
                             return handler.handle(
-                                    dialogType, messageText, defaultPromptText, callback, suppressMessage);
+                                    dialogType,
+                                    Objects.requireNonNullElse(messageText, ""),
+                                    Objects.requireNonNullElse(defaultPromptText, ""),
+                                    callback,
+                                    suppressMessage != null ? suppressMessage : new int[1]);
                         }
                     });
                 }
@@ -141,7 +150,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
         } else if (!ready.await(10, TimeUnit.SECONDS)) {
             throw new java.util.concurrent.TimeoutException("Timed out waiting for browser creation");
         }
-        return panelRef.get();
+        return Objects.requireNonNull(panelRef.get(), "panel not created");
     }
 
     @Test

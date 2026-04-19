@@ -17,6 +17,7 @@ import javafx.concurrent.Worker.State;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.UrlSchemeHandlerFactory;
@@ -43,6 +44,7 @@ class CefWebViewSchemeTest {
                     @Override
                     protected URLConnection openConnection(URL u) {
                         return new URLConnection(u) {
+                            @Nullable
                             private InputStream stream;
 
                             @Override
@@ -58,12 +60,14 @@ class CefWebViewSchemeTest {
                             @Override
                             public InputStream getInputStream() throws IOException {
                                 if (!connected) connect();
-                                return stream;
+                                InputStream s = stream;
+                                if (s == null) throw new IOException("Stream not connected");
+                                return s;
                             }
 
                             @Override
                             public String getContentType() {
-                                String path = url.getPath().toLowerCase();
+                                String path = url.getPath().toLowerCase(java.util.Locale.ROOT);
                                 if (path.endsWith(".html")) return "text/html";
                                 if (path.endsWith(".js")) return "text/javascript";
                                 if (path.endsWith(".css")) return "text/css";
@@ -78,7 +82,7 @@ class CefWebViewSchemeTest {
 
         Cef.INSTANCE.addAppHandler(new CefApp() {
             @Override
-            public void onRegisterCustomSchemes(CefSchemeRegistrar registrar) {
+            public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
                 if (registrar != null) {
                     int options = (int) (CefSchemeOptions.Kind.SECURE.value
                             | CefSchemeOptions.Kind.CORS_ENABLED.value

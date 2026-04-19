@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.lang.reflect.Proxy;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -64,6 +65,7 @@ class CefBrowserPanelScreenInfoTest extends SwingBrowserPanelTestBase {
         }
     }
 
+    @SuppressWarnings("NullAway")
     private static CefBrowser proxyBrowser(CefBrowserHost host) {
         return (CefBrowser) Proxy.newProxyInstance(
                 CefBrowser.class.getClassLoader(), new Class<?>[] {CefBrowser.class}, (proxy, method, args) -> {
@@ -74,6 +76,7 @@ class CefBrowserPanelScreenInfoTest extends SwingBrowserPanelTestBase {
                 });
     }
 
+    @SuppressWarnings("NullAway")
     private static CefBrowserHost proxyHost(AtomicInteger screenInfoNotifications, AtomicInteger resizeNotifications) {
         return (CefBrowserHost) Proxy.newProxyInstance(
                 CefBrowserHost.class.getClassLoader(), new Class<?>[] {CefBrowserHost.class}, (proxy, method, args) -> {
@@ -92,6 +95,7 @@ class CefBrowserPanelScreenInfoTest extends SwingBrowserPanelTestBase {
                 });
     }
 
+    @Nullable
     private static Object defaultValue(Class<?> type) {
         if (type == Void.TYPE) return null;
         if (type == Boolean.TYPE) return false;

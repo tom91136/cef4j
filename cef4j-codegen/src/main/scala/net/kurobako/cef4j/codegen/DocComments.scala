@@ -114,7 +114,38 @@ object DocComments {
     }
   }
 
-  private val PipeRefRe       = """\|([^|]+)\|""".r
+  private val PipeRefRe = """\|([^|]+)\|""".r
+
+  // Correct typos in |pipeRefs| where the referenced name is one Levenshtein edit away from an actual
+  // parameter name. CEF headers occasionally contain typos (e.g. |identifer| for identifier) that would
+  // otherwise trip Error Prone's InvalidParam check on the emitted {@code ...} javadoc reference.
+  private def correctPipeRefTypos(text: String, paramNames: List[String]): String =
+    if (paramNames.isEmpty) text
+    else PipeRefRe.replaceAllIn(
+      text,
+      m => {
+        val ref       = m.group(1)
+        val corrected = paramNames.find(p => p != ref && levenshtein(p, ref) == 1).getOrElse(ref)
+        java.util.regex.Matcher.quoteReplacement(s"|$corrected|")
+      }
+    )
+
+  private def levenshtein(a: String, b: String): Int = {
+    val (m, n) = (a.length, b.length)
+    if (m == 0) n
+    else if (n == 0) m
+    else {
+      val dp = Array.tabulate(m + 1, n + 1)((i, j) => if (i == 0) j else if (j == 0) i else 0)
+      for {
+        i <- 1 to m
+        j <- 1 to n
+      } {
+        val cost = if (a(i - 1) == b(j - 1)) 0 else 1
+        dp(i)(j) = math.min(math.min(dp(i - 1)(j) + 1, dp(i)(j - 1) + 1), dp(i - 1)(j - 1) + cost)
+      }
+      dp(m)(n)
+    }
+  }
   private val CapiCrossRefRe  = """(cef_\w+_t)::(\w+)\(\)""".r // cef_xxx_t::method()
   private val CapiMemberRefRe = """(cef_\w+_t)::(\w+)""".r     // cef_xxx_t::Member
   private val CppCrossRefRe   = """(Cef\w+)::(\w+)\(\)""".r
@@ -445,7 +476,9 @@ object DocComments {
     if (bufferParams.isEmpty) Nil
     else {
       val hiddenSizes = params.filter(isBufferSizeParam)
-      val sizeNames   = hiddenSizes.map(p => s"{@code ${Naming.toCamelCase(p.name)}}").mkString(", ")
+      // Use snake_case (C API) names in the note so Error Prone's InvalidParam fuzzy-match doesn't
+      // mis-flag these hidden size names as typos of similarly-named Java parameters.
+      val sizeNames = hiddenSizes.map(p => s"{@code ${p.name}}").mkString(", ")
       // Detect array-count params: a SizeT named <array>Count immediately before an ObjectPtrArray/ByValueArray.
       val arrayCountNames = params.zip(params.drop(1)).collect {
         case (count, arr)
@@ -504,7 +537,8 @@ object DocComments {
         }.toList
 
         val cleanText                = CefMetaPattern.replaceAllIn(text, "").trim
-        val convertedText            = convertCefDoc(cleanText, capiSource, cPrototype)
+        val paramCorrectedText       = correctPipeRefTypos(cleanText, fn.params.map(_.name))
+        val convertedText            = convertCefDoc(paramCorrectedText, capiSource, cPrototype)
         val (docText, sourceRefTags) = extractSourceTags(convertedText)
 
         val metaSentences = metaAttrsToSentences(metaAttrs, fn)

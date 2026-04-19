@@ -52,17 +52,18 @@ object JavaMethods {
     val usesOptional  = usesOptionalReturn(ret)
     val usesList      = usesArraysAsList(ret)
     val effectiveRet  = retTypeOverride.getOrElse(if (usesOptional) s"Optional<$rawRetType>" else rawRetType)
-    val paramsDecl    = renderJavaParams(visibleParams, optionals)
+    val paramsDecl    = visibleParams.map(p => renderParam(p, optionals)).mkString(", ")
     val argsExpr      = visibleParams.map(p => Naming.toCamelCase(p.name)).mkString(", ")
     val nativeRetType = Naming.jniNativeReturnType(ret)
-    val nativeParams  = renderNativeParams(visibleParams)
 
+    // Native stubs carry the same nullness annotations as the Java-facing signature so
+    // NullAway doesn't flag call sites that legitimately forward @Nullable arguments.
     MethodShape(
       retType = effectiveRet,
       paramsDecl = paramsDecl,
       argsExpr = argsExpr,
       nativeRetType = nativeRetType,
-      nativeParamsDecl = nativeParams,
+      nativeParamsDecl = paramsDecl,
       usesOptional = usesOptional,
       usesArraysAsList = usesList
     )
@@ -79,22 +80,19 @@ object JavaMethods {
       s"return $callExpr;"
     }
 
-  private def renderJavaParams(visibleParams: List[Param], optionals: Set[String])(using Naming.Context): String =
-    visibleParams.map { param =>
-      val javaType  = Naming.javaType(param.typ)
-      val paramName = Naming.toCamelCase(param.name)
-      if (optionals.contains(param.name) && JavaCodeGen.isReferenceType(param.typ))
-        s"@Nullable $javaType $paramName"
-      else if (JavaCodeGen.isStrictNullCheck(param.typ))
-        s"@Nonnull $javaType $paramName"
-      else if (JavaCodeGen.isReferenceType(param.typ))
-        s"@Nullable $javaType $paramName"
-      else
-        s"$javaType $paramName"
-    }.mkString(", ")
+  private def paramAnnotation(param: Param, optionals: Set[String]): Option[String] =
+    if (optionals.contains(param.name) && JavaCodeGen.isReferenceType(param.typ))
+      Some("@Nullable")
+    else if (JavaCodeGen.isStrictNullCheck(param.typ))
+      Some("@Nonnull")
+    else if (JavaCodeGen.isReferenceType(param.typ))
+      Some("@Nullable")
+    else
+      None
 
-  private def renderNativeParams(visibleParams: List[Param])(using Naming.Context): String =
-    visibleParams.map { param =>
-      s"${Naming.javaType(param.typ)} ${Naming.toCamelCase(param.name)}"
-    }.mkString(", ")
+  private def renderParam(param: Param, optionals: Set[String])(using Naming.Context): String = {
+    val javaType  = Naming.javaType(param.typ)
+    val paramName = Naming.toCamelCase(param.name)
+    paramAnnotation(param, optionals).fold(s"$javaType $paramName")(ann => s"$ann $javaType $paramName")
+  }
 }

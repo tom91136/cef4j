@@ -526,9 +526,9 @@ public interface CefDictionaryValue extends CefLibraryObject {
 
         static native boolean isReadOnly0(long self);
 
-        static native boolean isSame0(long self, CefDictionaryValue that);
+        static native boolean isSame0(long self, @Nullable CefDictionaryValue that);
 
-        static native boolean isEqual0(long self, CefDictionaryValue that);
+        static native boolean isEqual0(long self, @Nullable CefDictionaryValue that);
 
         static native CefDictionaryValue copy0(long self, boolean excludeEmptyChildren);
 
@@ -536,47 +536,47 @@ public interface CefDictionaryValue extends CefLibraryObject {
 
         static native boolean clear0(long self);
 
-        static native boolean hasKey0(long self, String key);
+        static native boolean hasKey0(long self, @Nullable String key);
 
-        static native boolean getKeys0(long self, List<String> keys);
+        static native boolean getKeys0(long self, @Nonnull List<String> keys);
 
-        static native boolean remove0(long self, String key);
+        static native boolean remove0(long self, @Nullable String key);
 
-        static native CefValueType getType0(long self, String key);
+        static native CefValueType getType0(long self, @Nullable String key);
 
-        static native CefValue getValue0(long self, String key);
+        static native CefValue getValue0(long self, @Nullable String key);
 
-        static native boolean getBool0(long self, String key);
+        static native boolean getBool0(long self, @Nullable String key);
 
-        static native int getInt0(long self, String key);
+        static native int getInt0(long self, @Nullable String key);
 
-        static native double getDouble0(long self, String key);
+        static native double getDouble0(long self, @Nullable String key);
 
-        static native String getString0(long self, String key);
+        static native String getString0(long self, @Nullable String key);
 
-        static native CefBinaryValue getBinary0(long self, String key);
+        static native CefBinaryValue getBinary0(long self, @Nullable String key);
 
-        static native CefDictionaryValue getDictionary0(long self, String key);
+        static native CefDictionaryValue getDictionary0(long self, @Nullable String key);
 
-        static native CefListValue getList0(long self, String key);
+        static native CefListValue getList0(long self, @Nullable String key);
 
-        static native boolean setValue0(long self, String key, CefValue value);
+        static native boolean setValue0(long self, @Nullable String key, @Nullable CefValue value);
 
-        static native boolean setNull0(long self, String key);
+        static native boolean setNull0(long self, @Nullable String key);
 
-        static native boolean setBool0(long self, String key, boolean value);
+        static native boolean setBool0(long self, @Nullable String key, boolean value);
 
-        static native boolean setInt0(long self, String key, int value);
+        static native boolean setInt0(long self, @Nullable String key, int value);
 
-        static native boolean setDouble0(long self, String key, double value);
+        static native boolean setDouble0(long self, @Nullable String key, double value);
 
-        static native boolean setString0(long self, String key, String value);
+        static native boolean setString0(long self, @Nullable String key, @Nullable String value);
 
-        static native boolean setBinary0(long self, String key, CefBinaryValue value);
+        static native boolean setBinary0(long self, @Nullable String key, @Nullable CefBinaryValue value);
 
-        static native boolean setDictionary0(long self, String key, CefDictionaryValue value);
+        static native boolean setDictionary0(long self, @Nullable String key, @Nullable CefDictionaryValue value);
 
-        static native boolean setList0(long self, String key, CefListValue value);
+        static native boolean setList0(long self, @Nullable String key, @Nullable CefListValue value);
 
         static native CefDictionaryValue create0();
 

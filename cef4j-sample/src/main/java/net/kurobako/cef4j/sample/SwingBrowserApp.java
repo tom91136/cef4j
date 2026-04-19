@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import javax.swing.*;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Sample Swing browser using {@link CefBrowserPanel} with tabbed browsing, zoom, and keyboard shortcuts. */
+@SuppressWarnings("NullAway.Init")
 public final class SwingBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(SwingBrowserApp.class);
@@ -168,6 +170,7 @@ public final class SwingBrowserApp {
         window.requestFocus();
     }
 
+    @javax.annotation.Nullable
     private static BrowserTab selectedTab() {
         Component sel = tabbedPane.getSelectedComponent();
         return sel instanceof BrowserTab ? (BrowserTab) sel : null;
@@ -249,7 +252,10 @@ public final class SwingBrowserApp {
         private final JButton zoomResetBtn;
         private final JButton zoomInBtn;
         private final JButton devToolsBtn;
+
+        @javax.annotation.Nullable
         private transient volatile CefBrowser browser;
+
         private double zoomLevel = 1.0;
         private boolean disposed;
 
@@ -392,7 +398,8 @@ public final class SwingBrowserApp {
                 public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                     return Optional.of(new CefLifeSpanHandler() {
                         @Override
-                        public void onAfterCreated(CefBrowser b) {
+                        public void onAfterCreated(@javax.annotation.Nullable CefBrowser b) {
+                            if (b == null) return;
                             browser = b;
                             SwingUtilities.invokeLater(() -> {
                                 surface.setBrowser(b);
@@ -401,49 +408,61 @@ public final class SwingBrowserApp {
                             });
                         }
 
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"}) // v132+ overload
                         public boolean onBeforePopup(
-                                CefBrowser b,
-                                CefFrame frame,
+                                @javax.annotation.Nullable CefBrowser b,
+                                @javax.annotation.Nullable CefFrame frame,
                                 int popupId,
-                                String targetUrl,
-                                String targetFrameName,
-                                net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
+                                @javax.annotation.Nullable String targetUrl,
+                                @javax.annotation.Nullable String targetFrameName,
+                                @javax.annotation.Nullable
+                                        net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
                                 boolean userGesture,
-                                CefPopupFeatures popupFeatures,
-                                CefWindowInfo.Mutable windowInfo,
-                                java.util.concurrent.atomic.AtomicReference<CefClient> client,
-                                CefBrowserSettings.Mutable settings,
-                                java.util.concurrent.atomic.AtomicReference<net.kurobako.cef4j.gen.CefDictionaryValue>
-                                        extraInfo,
-                                int[] noJavascriptAccess) {
+                                @javax.annotation.Nullable CefPopupFeatures popupFeatures,
+                                @javax.annotation.Nullable CefWindowInfo.Mutable windowInfo,
+                                @javax.annotation.Nullable
+                                        java.util.concurrent.atomic.AtomicReference<CefClient> client,
+                                @javax.annotation.Nullable CefBrowserSettings.Mutable settings,
+                                @javax.annotation.Nullable
+                                        java.util.concurrent.atomic.AtomicReference<
+                                                        net.kurobako.cef4j.gen.CefDictionaryValue>
+                                                extraInfo,
+                                @javax.annotation.Nullable int[] noJavascriptAccess) {
                             return onBeforePopupCompat(targetUrl);
                         }
 
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        }) // v109/v116/v117-v131 overload
                         public boolean onBeforePopup(
-                                CefBrowser b,
-                                CefFrame frame,
-                                String targetUrl,
-                                String targetFrameName,
-                                net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
+                                @javax.annotation.Nullable CefBrowser b,
+                                @javax.annotation.Nullable CefFrame frame,
+                                @javax.annotation.Nullable String targetUrl,
+                                @javax.annotation.Nullable String targetFrameName,
+                                @javax.annotation.Nullable
+                                        net.kurobako.cef4j.gen.CefWindowOpenDisposition targetDisposition,
                                 boolean userGesture,
-                                CefPopupFeatures popupFeatures,
-                                CefWindowInfo.Mutable windowInfo,
-                                java.util.concurrent.atomic.AtomicReference<CefClient> client,
-                                CefBrowserSettings.Mutable settings,
-                                java.util.concurrent.atomic.AtomicReference<net.kurobako.cef4j.gen.CefDictionaryValue>
-                                        extraInfo,
-                                int[] noJavascriptAccess) {
+                                @javax.annotation.Nullable CefPopupFeatures popupFeatures,
+                                @javax.annotation.Nullable CefWindowInfo.Mutable windowInfo,
+                                @javax.annotation.Nullable
+                                        java.util.concurrent.atomic.AtomicReference<CefClient> client,
+                                @javax.annotation.Nullable CefBrowserSettings.Mutable settings,
+                                @javax.annotation.Nullable
+                                        java.util.concurrent.atomic.AtomicReference<
+                                                        net.kurobako.cef4j.gen.CefDictionaryValue>
+                                                extraInfo,
+                                @javax.annotation.Nullable int[] noJavascriptAccess) {
                             return onBeforePopupCompat(targetUrl);
                         }
 
-                        private boolean onBeforePopupCompat(String targetUrl) {
+                        private boolean onBeforePopupCompat(@javax.annotation.Nullable String targetUrl) {
                             SwingUtilities.invokeLater(() -> createTab(targetUrl != null ? targetUrl : "about:blank"));
                             return true;
                         }
 
                         @Override
-                        public void onBeforeClose(CefBrowser b) {
-                            if (browser != null && browser.isSame(b)) {
+                        public void onBeforeClose(@javax.annotation.Nullable CefBrowser b) {
+                            CefBrowser current = browser;
+                            if (b != null && current != null && current.isSame(b)) {
                                 browser = null;
                             }
                         }
@@ -455,7 +474,10 @@ public final class SwingBrowserApp {
                     return Optional.of(new CefLoadHandler() {
                         @Override
                         public void onLoadingStateChange(
-                                CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                                @javax.annotation.Nullable CefBrowser b,
+                                boolean isLoading,
+                                boolean canGoBack,
+                                boolean canGoForward) {
                             SwingUtilities.invokeLater(() -> {
                                 backBtn.setEnabled(canGoBack);
                                 fwdBtn.setEnabled(canGoForward);
@@ -471,9 +493,10 @@ public final class SwingBrowserApp {
                 public Optional<CefDisplayHandler> getDisplayHandler() {
                     return Optional.of(new CefDisplayHandler() {
                         @Override
-                        public void onTitleChange(CefBrowser b, String title) {
+                        public void onTitleChange(
+                                @javax.annotation.Nullable CefBrowser b, @javax.annotation.Nullable String title) {
                             SwingUtilities.invokeLater(() -> {
-                                updateTabTitle(title);
+                                updateTabTitle(title != null ? title : "");
                                 if (isSelected()) {
                                     updateWindowTitle();
                                 }
@@ -481,7 +504,10 @@ public final class SwingBrowserApp {
                         }
 
                         @Override
-                        public void onAddressChange(CefBrowser b, CefFrame f, String url) {
+                        public void onAddressChange(
+                                @javax.annotation.Nullable CefBrowser b,
+                                @javax.annotation.Nullable CefFrame f,
+                                @javax.annotation.Nullable String url) {
                             SwingUtilities.invokeLater(() -> {
                                 urlBar.setText(url);
                                 if (getTabTitle().equals("New Tab") && url != null && !url.isEmpty()) {
@@ -494,7 +520,8 @@ public final class SwingBrowserApp {
                         }
 
                         @Override
-                        public void onStatusMessage(CefBrowser b, String value) {
+                        public void onStatusMessage(
+                                @javax.annotation.Nullable CefBrowser b, @javax.annotation.Nullable String value) {
                             SwingUtilities.invokeLater(() -> {
                                 if (isSelected()) {
                                     statusLabel.setText(value != null && !value.isEmpty() ? value : " ");
@@ -503,7 +530,7 @@ public final class SwingBrowserApp {
                         }
 
                         @Override
-                        public void onLoadingProgressChange(CefBrowser b, double progress) {
+                        public void onLoadingProgressChange(@javax.annotation.Nullable CefBrowser b, double progress) {
                             SwingUtilities.invokeLater(() -> {
                                 if (!isSelected()) return;
                                 if (progress >= 0 && progress < 1.0) {
@@ -515,17 +542,28 @@ public final class SwingBrowserApp {
                             });
                         }
 
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        }) // v109/v116 long cursor overload
                         public boolean onCursorChange(
-                                CefBrowser b, long cursor, CefCursorType type, CefCursorInfo customCursorInfo) {
+                                @javax.annotation.Nullable CefBrowser b,
+                                long cursor,
+                                @javax.annotation.Nullable CefCursorType type,
+                                @javax.annotation.Nullable CefCursorInfo customCursorInfo) {
                             return onCursorChangeCompat(type);
                         }
 
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        }) // v117+ int cursor overload
                         public boolean onCursorChange(
-                                CefBrowser b, int cursor, CefCursorType type, CefCursorInfo customCursorInfo) {
+                                @javax.annotation.Nullable CefBrowser b,
+                                int cursor,
+                                @javax.annotation.Nullable CefCursorType type,
+                                @javax.annotation.Nullable CefCursorInfo customCursorInfo) {
                             return onCursorChangeCompat(type);
                         }
 
-                        private boolean onCursorChangeCompat(CefCursorType type) {
+                        private boolean onCursorChangeCompat(@javax.annotation.Nullable CefCursorType type) {
+                            if (type == null) return false;
                             Cursor awtCursor = surface.mapCursor(type);
                             SwingUtilities.invokeLater(() -> surface.setCursor(awtCursor));
                             return true;
@@ -538,11 +576,11 @@ public final class SwingBrowserApp {
                     return Optional.of(new net.kurobako.cef4j.gen.CefContextMenuHandler() {
                         @Override
                         public boolean runContextMenu(
-                                CefBrowser b,
-                                net.kurobako.cef4j.gen.CefFrame f,
-                                net.kurobako.cef4j.gen.CefContextMenuParams params,
-                                net.kurobako.cef4j.gen.CefMenuModel model,
-                                net.kurobako.cef4j.gen.CefRunContextMenuCallback callback) {
+                                @javax.annotation.Nullable CefBrowser b,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefFrame f,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefContextMenuParams params,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefMenuModel model,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefRunContextMenuCallback callback) {
                             if (model == null || callback == null) return false;
                             // Extract menu data on CEF thread - model/params invalid after return
                             List<MenuEntry> entries = extractMenuEntries(model);
@@ -577,12 +615,13 @@ public final class SwingBrowserApp {
 
                         @Override
                         public boolean runQuickMenu(
-                                CefBrowser b,
-                                net.kurobako.cef4j.gen.CefFrame f,
-                                net.kurobako.cef4j.gen.CefPoint location,
-                                net.kurobako.cef4j.gen.CefSize size,
-                                net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags editStateFlags,
-                                net.kurobako.cef4j.gen.CefRunQuickMenuCallback callback) {
+                                @javax.annotation.Nullable CefBrowser b,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefFrame f,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefPoint location,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefSize size,
+                                @javax.annotation.Nullable
+                                        net.kurobako.cef4j.gen.CefQuickMenuEditStateFlags editStateFlags,
+                                @javax.annotation.Nullable net.kurobako.cef4j.gen.CefRunQuickMenuCallback callback) {
                             if (callback != null) callback.cancel();
                             return true;
                         }
@@ -649,11 +688,10 @@ public final class SwingBrowserApp {
         }
 
         void updateWindowTitle() {
-            CefBrowser b = browser;
             String title = getTabTitle();
             String url = urlBar.getText();
             String display = (title != null && !title.isEmpty() && !"New Tab".equals(title)) ? title : url;
-            window.setTitle((display != null ? display : "") + " - cef4j (Swing)");
+            window.setTitle(Objects.requireNonNullElse(display, "") + " - cef4j (Swing)");
         }
 
         void updateStatusBar() {

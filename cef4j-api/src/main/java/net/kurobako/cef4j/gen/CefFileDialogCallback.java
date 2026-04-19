@@ -94,7 +94,7 @@ public interface CefFileDialogCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, List<String> filePaths);
+        static native void cont0(long self, @Nullable List<String> filePaths);
 
         static native void cancel0(long self);
 

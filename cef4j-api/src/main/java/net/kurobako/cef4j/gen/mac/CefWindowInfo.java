@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen.mac;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRuntimeStyle;
 
@@ -31,10 +32,10 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
-    public final String windowName;
+    public final @Nullable String windowName;
         /**
          * Initial window bounds. 
-         */    public final CefRect bounds;
+         */    public final @Nullable CefRect bounds;
         /**
          * Set to {@code true} (1) to create the view initially hidden. 
          */    public final int hidden;
@@ -55,9 +56,9 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
          */    public final long view;
         /**
          * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true} or if {@code parent_view} is provided. See cef_runtime_style_t documentation for details. 
-         */    public final CefRuntimeStyle runtimeStyle;
+         */    public final @Nullable CefRuntimeStyle runtimeStyle;
 
-    public CefWindowInfo(String windowName, CefRect bounds, int hidden, long parentView, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long view, CefRuntimeStyle runtimeStyle) {
+    public CefWindowInfo(@Nullable String windowName, @Nullable CefRect bounds, int hidden, long parentView, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long view, @Nullable CefRuntimeStyle runtimeStyle) {
         this.windowName = windowName;
         this.bounds = bounds;
         this.hidden = hidden;
@@ -112,10 +113,10 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
-        public String windowName;
+        public @Nullable String windowName;
             /**
              * Initial window bounds. 
-             */        public CefRect bounds;
+             */        public @Nullable CefRect bounds;
             /**
              * Set to {@code true} (1) to create the view initially hidden. 
              */        public int hidden;
@@ -136,11 +137,11 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
              */        public long view;
             /**
              * Optionally change the runtime style. Alloy style will always be used if {@code windowless_rendering_enabled} is {@code true} or if {@code parent_view} is provided. See cef_runtime_style_t documentation for details. 
-             */        public CefRuntimeStyle runtimeStyle;
+             */        public @Nullable CefRuntimeStyle runtimeStyle;
 
         public Mutable() {}
 
-        public Mutable(String windowName, CefRect bounds, int hidden, long parentView, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long view, CefRuntimeStyle runtimeStyle) {
+        public Mutable(@Nullable String windowName, @Nullable CefRect bounds, int hidden, long parentView, int windowlessRenderingEnabled, int sharedTextureEnabled, int externalBeginFrameEnabled, long view, @Nullable CefRuntimeStyle runtimeStyle) {
             this.windowName = windowName;
             this.bounds = bounds;
             this.hidden = hidden;

@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import javax.annotation.Nullable;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
  *       CefBrowserView (active tab)
  * </pre>
  */
+@SuppressWarnings("NullAway.Init")
 public final class ViewsBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(ViewsBrowserApp.class);
@@ -186,7 +188,7 @@ public final class ViewsBrowserApp {
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(CefBrowser browser, String title) {
+                    public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
                         TabEntry entry = entryHolder[0];
                         if (entry == null) return;
                         String displayTitle = (title == null || title.isEmpty()) ? "New Tab" : title;
@@ -204,7 +206,8 @@ public final class ViewsBrowserApp {
                     }
 
                     @Override
-                    public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
+                    public void onAddressChange(
+                            @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {
                         TabEntry entry = entryHolder[0];
                         if (entry == null) return;
                         entry.currentUrl = url == null ? "" : url;
@@ -214,7 +217,7 @@ public final class ViewsBrowserApp {
                     }
 
                     @Override
-                    public void onStatusMessage(CefBrowser browser, String value) {
+                    public void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {
                         log.trace("Status: {}", value);
                     }
                 });
@@ -225,7 +228,7 @@ public final class ViewsBrowserApp {
                 return Optional.of(new CefLoadHandler() {
                     @Override
                     public void onLoadingStateChange(
-                            CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                            @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                         TabEntry entry = entryHolder[0];
                         if (entry == null) return;
                         entry.isLoading = isLoading;
@@ -386,8 +389,9 @@ public final class ViewsBrowserApp {
         urlBar = CefTextfield.create(new CefTextfieldDelegate() {
                     @Override
                     public boolean onKeyEvent(@Nullable CefTextfield textfield, CefKeyEvent event) {
-                        if (event.windowsKeyCode == VK_RETURN
-                                && event.type == CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN)) {
+                        if (textfield != null
+                                && event.windowsKeyCode == VK_RETURN
+                                && Objects.equals(event.type, CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN))) {
                             textfield.getText().ifPresent(ViewsBrowserApp.this::navigateActiveTab);
                             return true;
                         }
@@ -475,13 +479,7 @@ public final class ViewsBrowserApp {
 
         try {
             win.getClass()
-                    .getMethod(
-                            "setAccelerator",
-                            int.class,
-                            int.class,
-                            boolean.class,
-                            boolean.class,
-                            boolean.class)
+                    .getMethod("setAccelerator", int.class, int.class, boolean.class, boolean.class, boolean.class)
                     .invoke(win, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to invoke legacy CefWindow#setAccelerator", e);
@@ -608,8 +606,9 @@ public final class ViewsBrowserApp {
             }
         };
 
-        CefWindow.createTopLevel(windowDelegate)
+        CefWindow topLevel = CefWindow.createTopLevel(windowDelegate)
                 .orElseThrow(() -> new RuntimeException("Failed to create top-level CefWindow"));
+        log.debug("Top-level window created: {}", topLevel);
 
         SigintHelper.install(shutdownLatch::countDown);
 

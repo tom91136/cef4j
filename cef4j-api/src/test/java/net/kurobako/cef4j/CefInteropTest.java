@@ -6,11 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -55,7 +56,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nullable CefBrowser browser) {
                         browserRef.set(browser);
                         createdLatch.countDown();
                     }
@@ -66,7 +67,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpstatuscode) {
                         httpStatus.set(httpstatuscode);
                         loadEndLatch.countDown();
                     }
@@ -113,7 +114,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -123,7 +124,7 @@ class CefInteropTest extends CefTestBase {
 
                     @Override
                     public void onPaint(
-                            @Nonnull CefBrowser browser,
+                            @Nullable CefBrowser browser,
                             @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
                             @Nonnull CefRect[] dirtyRects,
@@ -155,7 +156,9 @@ class CefInteropTest extends CefTestBase {
 
         byte[] buf = pixelBuffer.get();
         assertThat(buf).as("pixel buffer").isNotNull();
-        assertThat(buf.length).as("pixel buffer size (BGRA)").isEqualTo(viewWidth * viewHeight * 4);
+        assertThat(Objects.requireNonNull(buf).length)
+                .as("pixel buffer size (BGRA)")
+                .isEqualTo(viewWidth * viewHeight * 4);
 
         closeBrowser(browser);
     }
@@ -172,7 +175,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(@Nonnull CefBrowser browser, String title) {
+                    public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
                         if (title != null && !title.isEmpty()) {
                             receivedTitle.set(title);
                             titleLatch.countDown();
@@ -213,7 +216,7 @@ class CefInteropTest extends CefTestBase {
                 return Optional.of(new CefLoadHandler() {
                     @Override
                     public void onLoadingStateChange(
-                            @Nonnull CefBrowser browser, boolean isloading, boolean cangoback, boolean cangoforward) {
+                            @Nullable CefBrowser browser, boolean isloading, boolean cangoback, boolean cangoforward) {
                         events.add("stateChange:isLoading=" + isloading);
                         if (!isloading) {
                             doneLatch.countDown();
@@ -222,14 +225,14 @@ class CefInteropTest extends CefTestBase {
 
                     @Override
                     public void onLoadStart(
-                            @Nonnull CefBrowser browser,
-                            @Nonnull CefFrame frame,
-                            @Nonnull CefTransitionType transitionType) {
+                            @Nullable CefBrowser browser,
+                            @Nullable CefFrame frame,
+                            @Nullable CefTransitionType transitionType) {
                         events.add("loadStart");
                     }
 
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpstatuscode) {
                         events.add("loadEnd:" + httpstatuscode);
                     }
                 });
@@ -266,7 +269,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nullable CefBrowser browser) {
                         browsers.add(browser);
                         createdLatch.countDown();
                     }
@@ -309,7 +312,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpstatuscode) {
                         loadLatch.countDown();
                     }
                 });
@@ -320,10 +323,10 @@ class CefInteropTest extends CefTestBase {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
                     public boolean onConsoleMessage(
-                            @Nonnull CefBrowser browser,
-                            @Nonnull CefLogSeverity level,
-                            String message,
-                            String source,
+                            @Nullable CefBrowser browser,
+                            @Nullable CefLogSeverity level,
+                            @Nullable String message,
+                            @Nullable String source,
                             int line) {
                         consoleMsg.set(message);
                         consoleSeverity.set(level);
@@ -367,13 +370,14 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefFrameHandler> getFrameHandler() {
                 return Optional.of(new CefFrameHandler() {
                     @Override
-                    public void onFrameCreated(@Nonnull CefBrowser browser, @Nonnull CefFrame frame) {
+                    public void onFrameCreated(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
                         frameCreatedCalled.set(true);
                         frameCreatedLatch.countDown();
                     }
 
                     @Override
-                    public void onMainFrameChanged(@Nonnull CefBrowser browser, CefFrame oldFrame, CefFrame newFrame) {
+                    public void onMainFrameChanged(
+                            @Nullable CefBrowser browser, @Nullable CefFrame oldFrame, @Nullable CefFrame newFrame) {
                         mainFrameLatch.countDown();
                     }
                 });
@@ -409,7 +413,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRequestHandler> getRequestHandler() {
                 return Optional.of(new CefRequestHandler() {
                     @Override
-                    public void onRenderViewReady(@Nonnull CefBrowser browser) {
+                    public void onRenderViewReady(@Nullable CefBrowser browser) {
                         readyLatch.countDown();
                     }
                 });
@@ -748,7 +752,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nullable CefBrowser browser) {
                         createdLatch.countDown();
                     }
                 });
@@ -758,7 +762,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpstatuscode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpstatuscode) {
                         loadLatch.countDown();
                     }
                 });
@@ -795,7 +799,8 @@ class CefInteropTest extends CefTestBase {
 
         CefKeyEvent nativeEvent = capturedEvent.get();
         assertThat(nativeEvent).as("captured key event").isNotNull();
-        assertConcreteSizeIfTracked(nativeEvent, "native CefKeyEvent should have actual sizeof, not pending");
+        assertConcreteSizeIfTracked(
+                Objects.requireNonNull(nativeEvent), "native CefKeyEvent should have actual sizeof, not pending");
 
         closeBrowser(browser);
     }
@@ -886,7 +891,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = 200;
@@ -895,7 +900,7 @@ class CefInteropTest extends CefTestBase {
 
                     @Override
                     public boolean getScreenInfo(
-                            @Nonnull CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
+                            @Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
                         screenInfo.deviceScaleFactor = 2.0f;
                         screenInfo.depth = 32;
                         screenInfo.depthPerComponent = 8;
@@ -908,7 +913,7 @@ class CefInteropTest extends CefTestBase {
 
                     @Override
                     public void onPaint(
-                            @Nonnull CefBrowser browser,
+                            @Nullable CefBrowser browser,
                             @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
                             @Nonnull CefRect[] dirtyRects,
@@ -926,13 +931,12 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(paintLatch, 15_000)).as("onPaint should fire").isTrue();
         assertThat(screenInfoCalled.get()).as("getScreenInfo was called").isTrue();
 
-        CefScreenInfo.Mutable info = captured.get();
-        assertThat(info).isNotNull();
+        CefScreenInfo.Mutable info = Objects.requireNonNull(captured.get(), "captured screen info");
         assertThat(info.deviceScaleFactor).isEqualTo(2.0f);
         assertThat(info.depth).isEqualTo(32);
-        assertThat(info.rect).isNotNull();
-        assertThat(info.rect.width).isEqualTo(200);
-        assertThat(info.rect.height).isEqualTo(150);
+        CefRect rect = Objects.requireNonNull(info.rect, "screen info rect");
+        assertThat(rect.width).isEqualTo(200);
+        assertThat(rect.height).isEqualTo(150);
 
         closeBrowser(browser);
     }
@@ -991,7 +995,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser browser, @Nonnull CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                         loadLatch.countDown();
                     }
                 });
@@ -1001,7 +1005,7 @@ class CefInteropTest extends CefTestBase {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = 200;
@@ -1071,7 +1075,9 @@ class CefInteropTest extends CefTestBase {
     }
 
     private static Optional<Method> findNamedMethod(Class<?> type, String name) {
-        return Arrays.stream(type.getMethods()).filter(method -> method.getName().equals(name)).findFirst();
+        return Arrays.stream(type.getMethods())
+                .filter(method -> method.getName().equals(name))
+                .findFirst();
     }
 
     private static Method findSingleMethod(Class<?> type, String name) {
@@ -1091,10 +1097,7 @@ class CefInteropTest extends CefTestBase {
     private static void assertConcreteSizeIfTracked(Object value, String description) {
         String rendered = value.toString();
         if (rendered.contains("size=")) {
-            assertThat(rendered)
-                    .as(description)
-                    .doesNotContain("size=pending")
-                    .matches(".*size=\\d+.*");
+            assertThat(rendered).as(description).doesNotContain("size=pending").matches(".*size=\\d+.*");
         } else {
             assertThat(rendered).as(description).isNotBlank();
         }
@@ -1109,11 +1112,14 @@ class CefInteropTest extends CefTestBase {
             this.keyLatch = keyLatch;
         }
 
+        @SuppressWarnings("MissingOverride") // v117+-only overload; v109/v116 don't declare this signature
         public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, long osEvent) {
             return capture(event);
         }
 
-        public boolean onKeyEvent(@Nullable CefBrowser browser, @Nonnull CefKeyEvent event, @Nullable NativePointer osEvent) {
+        @SuppressWarnings("MissingOverride") // v117+-only overload; v109/v116 don't declare this signature
+        public boolean onKeyEvent(
+                @Nullable CefBrowser browser, @Nonnull CefKeyEvent event, @Nullable NativePointer osEvent) {
             return capture(event);
         }
 
@@ -1133,6 +1139,7 @@ class CefInteropTest extends CefTestBase {
             this.popupLatch = popupLatch;
         }
 
+        @SuppressWarnings("MissingOverride") // v132+ with popupId; absent on v109/v116/v117-v131
         public boolean onBeforePopup(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
@@ -1150,6 +1157,7 @@ class CefInteropTest extends CefTestBase {
             return cancelPopup();
         }
 
+        @SuppressWarnings("MissingOverride") // v109/v116/v117-v131 without popupId; absent on v132+
         public boolean onBeforePopup(
                 @Nullable CefBrowser browser,
                 @Nullable CefFrame frame,
@@ -1183,7 +1191,7 @@ class CefInteropTest extends CefTestBase {
         }
 
         @Override
-        public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+        public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
             rect.x = 0;
             rect.y = 0;
             rect.width = width;

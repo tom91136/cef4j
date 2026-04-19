@@ -24,7 +24,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * Method that will be called on receipt of a DevTools protocol message. {@code browser} is the originating browser instance. {@code message} is a UTF8-encoded JSON dictionary representing either a method result or an event. {@code message} is only valid for the scope of this callback and should be copied if necessary. Return {@code true} if the message was handled or {@code false} if the message should be further processed and passed to the OnDevToolsMethodResult or OnDevToolsEvent methods as appropriate.
      * <p>
      * Method result dictionaries include an "id" (int) value that identifies the orginating method call sent from {@link net.kurobako.cef4j.gen.CefBrowserHost#sendDevToolsMessage(java.nio.ByteBuffer)}, and optionally either a "result" (dictionary) or "error" (dictionary) value. The "error" dictionary will contain "code" (int) and "message" (string) values. Event dictionaries include a "method" (string) value and optionally a "params" (dictionary) value. See the DevTools protocol documentation at <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a> for details of supported method calls and the expected "result" or "params" dictionary contents. JSON dictionaries can be parsed using the CefParseJSON function if desired, however be aware of performance considerations when parsing large messages (some of which may exceed 1MB in size).
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code message_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      * <pre>int (CEF_CALLBACK* on_dev_tools_message)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const void* message, size_t message_size);</pre>
      *
@@ -38,7 +38,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
 
     /**
      * Method that will be called after attempted execution of a DevTools protocol method. {@code browser} is the originating browser instance. {@code message_id} is the "id" value that identifies the originating method call message. If the method succeeded {@code success} will be {@code true} and {@code result} will be the UTF8-encoded JSON "result" dictionary value (which may be empty). If the method failed {@code success} will be {@code false} and {@code result} will be the UTF8-encoded JSON "error" dictionary value. {@code result} is only valid for the scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional details on {@code result} contents.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code resultSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code result_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      * <pre>void (CEF_CALLBACK* on_dev_tools_method_result)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, int message_id, int success, const void* result, size_t result_size);</pre>
      *
@@ -51,7 +51,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
 
     /**
      * Method that will be called on receipt of a DevTools protocol event. {@code browser} is the originating browser instance. {@code method} is the "method" value. {@code params} is the UTF8-encoded JSON "params" dictionary value (which may be empty). {@code params} is only valid for the scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional details on {@code params} contents.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code paramsSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code params_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      * <pre>void (CEF_CALLBACK* on_dev_tools_event)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser, const cef_string_t* method, const void* params, size_t params_size);</pre>
      *

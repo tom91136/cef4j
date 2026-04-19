@@ -77,7 +77,7 @@ public interface CefPreferenceRegistrar extends CefLibraryObject {
       }
 
 
-        static native boolean addPreference0(long self, String name, CefValue defaultValue);
+        static native boolean addPreference0(long self, @Nullable String name, @Nullable CefValue defaultValue);
 
 
         @Override

@@ -49,7 +49,7 @@ public interface CefMediaRoute extends CefLibraryObject {
 
     /**
      * Send a message over this route. {@code message} will be copied if necessary.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code message_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* send_route_message)(struct _cef_media_route_t* self, const void* message, size_t message_size);</pre>
      *
@@ -147,7 +147,7 @@ public interface CefMediaRoute extends CefLibraryObject {
 
         static native CefMediaSink getSink0(long self);
 
-        static native void sendRouteMessage0(long self, ByteBuffer message);
+        static native void sendRouteMessage0(long self, @Nonnull ByteBuffer message);
 
         static native void terminate0(long self);
 

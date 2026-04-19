@@ -264,7 +264,7 @@ public interface CefZipReader extends CefLibraryObject {
 
         static native boolean moveToNextFile0(long self);
 
-        static native boolean moveToFile0(long self, String fileName, boolean caseSensitive);
+        static native boolean moveToFile0(long self, @Nullable String fileName, boolean caseSensitive);
 
         static native boolean cefClose0(long self);
 
@@ -274,17 +274,17 @@ public interface CefZipReader extends CefLibraryObject {
 
         static native CefBasetime getFileLastModified0(long self);
 
-        static native boolean openFile0(long self, String password);
+        static native boolean openFile0(long self, @Nullable String password);
 
         static native boolean closeFile0(long self);
 
-        static native int readFile0(long self, ByteBuffer buffer);
+        static native int readFile0(long self, @Nonnull ByteBuffer buffer);
 
         static native long tell0(long self);
 
         static native boolean eof0(long self);
 
-        static native CefZipReader create0(CefStreamReader stream);
+        static native CefZipReader create0(@Nullable CefStreamReader stream);
 
         @Override
         public boolean equals(Object obj) {

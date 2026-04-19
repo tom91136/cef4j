@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing the audio parameters for setting up the audio handler.
@@ -25,7 +26,7 @@ public final class CefAudioParameters {
 
         /**
          * Layout of the audio channels 
-         */    public final CefChannelLayout channelLayout;
+         */    public final @Nullable CefChannelLayout channelLayout;
         /**
          * Sample rate
          */    public final int sampleRate;
@@ -33,7 +34,7 @@ public final class CefAudioParameters {
          * Number of frames per buffer 
          */    public final int framesPerBuffer;
 
-    public CefAudioParameters(CefChannelLayout channelLayout, int sampleRate, int framesPerBuffer) {
+    public CefAudioParameters(@Nullable CefChannelLayout channelLayout, int sampleRate, int framesPerBuffer) {
         this.channelLayout = channelLayout;
         this.sampleRate = sampleRate;
         this.framesPerBuffer = framesPerBuffer;
@@ -78,7 +79,7 @@ public final class CefAudioParameters {
 
             /**
              * Layout of the audio channels 
-             */        public CefChannelLayout channelLayout;
+             */        public @Nullable CefChannelLayout channelLayout;
             /**
              * Sample rate
              */        public int sampleRate;
@@ -88,7 +89,7 @@ public final class CefAudioParameters {
 
         public Mutable() {}
 
-        public Mutable(CefChannelLayout channelLayout, int sampleRate, int framesPerBuffer) {
+        public Mutable(@Nullable CefChannelLayout channelLayout, int sampleRate, int framesPerBuffer) {
             this.channelLayout = channelLayout;
             this.sampleRate = sampleRate;
             this.framesPerBuffer = framesPerBuffer;

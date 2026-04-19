@@ -616,27 +616,27 @@ public interface CefLabelButton extends CefButton {
 
         static native CefMenuButton asMenuButton0(long self);
 
-        static native void setText0(long self, String text);
+        static native void setText0(long self, @Nullable String text);
 
         static native String getText0(long self);
 
-        static native void setImage0(long self, CefButtonState buttonState, CefImage image);
+        static native void setImage0(long self, @Nonnull CefButtonState buttonState, @Nullable CefImage image);
 
-        static native CefImage getImage0(long self, CefButtonState buttonState);
+        static native CefImage getImage0(long self, @Nonnull CefButtonState buttonState);
 
-        static native void setTextColor0(long self, CefButtonState forState, int color);
+        static native void setTextColor0(long self, @Nonnull CefButtonState forState, int color);
 
         static native void setEnabledTextColors0(long self, int color);
 
-        static native void setFontList0(long self, String fontList);
+        static native void setFontList0(long self, @Nullable String fontList);
 
-        static native void setHorizontalAlignment0(long self, CefHorizontalAlignment alignment);
+        static native void setHorizontalAlignment0(long self, @Nonnull CefHorizontalAlignment alignment);
 
-        static native void setMinimumSize0(long self, CefSize size);
+        static native void setMinimumSize0(long self, @Nonnull CefSize size);
 
-        static native void setMaximumSize0(long self, CefSize size);
+        static native void setMaximumSize0(long self, @Nonnull CefSize size);
 
-        static native CefLabelButton create0(CefButtonDelegate delegate, String text);
+        static native CefLabelButton create0(@Nullable CefButtonDelegate delegate, @Nullable String text);
 
         @Override
         public boolean equals(Object obj) {

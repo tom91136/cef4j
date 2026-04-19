@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Device information for a MediaSink object.
@@ -23,11 +24,11 @@ public final class CefMediaSinkDeviceInfo {
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     private volatile long size = -1;
 
-    public final String ipAddress;
+    public final @Nullable String ipAddress;
     public final int port;
-    public final String modelName;
+    public final @Nullable String modelName;
 
-    public CefMediaSinkDeviceInfo(String ipAddress, int port, String modelName) {
+    public CefMediaSinkDeviceInfo(@Nullable String ipAddress, int port, @Nullable String modelName) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.modelName = modelName;

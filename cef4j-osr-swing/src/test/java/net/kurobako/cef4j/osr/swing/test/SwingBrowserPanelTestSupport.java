@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -77,6 +78,7 @@ final class SwingBrowserPanelTestSupport {
         }
     }
 
+    @Nullable
     static <T> T onSwingThread(Callable<T> task) throws Exception {
         if (SwingUtilities.isEventDispatchThread()) {
             return task.call();
@@ -140,7 +142,8 @@ final class SwingBrowserPanelTestSupport {
                 public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                     return Optional.of(new CefLifeSpanHandler() {
                         @Override
-                        public void onAfterCreated(CefBrowser b) {
+                        public void onAfterCreated(@Nullable CefBrowser b) {
+                            if (b == null) return;
                             SwingUtilities.invokeLater(() -> {
                                 panel.setBrowser(b);
                                 b.getHost().ifPresent(host -> host.setFocus(true));
@@ -150,8 +153,9 @@ final class SwingBrowserPanelTestSupport {
                         }
 
                         @Override
-                        public void onBeforeClose(CefBrowser b) {
-                            if (panel.getBrowser() != null && panel.getBrowser().isSame(b)) {
+                        public void onBeforeClose(@Nullable CefBrowser b) {
+                            CefBrowser current = panel.getBrowser();
+                            if (b != null && current != null && current.isSame(b)) {
                                 panel.setBrowser(null);
                             }
                         }
@@ -163,7 +167,7 @@ final class SwingBrowserPanelTestSupport {
                     return Optional.of(new CefLoadHandler() {
                         @Override
                         public void onLoadingStateChange(
-                                CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                                @Nullable CefBrowser b, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                             state.loading = isLoading;
                             state.canGoBack = canGoBack;
                             state.canGoForward = canGoForward;
@@ -178,32 +182,35 @@ final class SwingBrowserPanelTestSupport {
                 public Optional<CefDisplayHandler> getDisplayHandler() {
                     return Optional.of(new CefDisplayHandler() {
                         @Override
-                        public void onTitleChange(CefBrowser b, String title) {
-                            state.title = title != null ? title : "";
+                        public void onTitleChange(@Nullable CefBrowser b, @Nullable String title) {
+                            state.title = Objects.requireNonNullElse(title, "");
                         }
 
                         @Override
-                        public void onAddressChange(CefBrowser b, CefFrame f, String url) {
-                            state.location = url != null ? url : "";
+                        public void onAddressChange(
+                                @Nullable CefBrowser b, @Nullable CefFrame f, @Nullable String url) {
+                            state.location = Objects.requireNonNullElse(url, "");
                         }
 
+                        @SuppressWarnings("MissingOverride") // long cursor on v109/v116; int on v117+
                         public boolean onCursorChange(
-                                CefBrowser b,
+                                @Nullable CefBrowser b,
                                 long cursor,
-                                @Nonnull CefCursorType type,
-                                CefCursorInfo customCursorInfo) {
-                            return updateCursor(type);
+                                @Nullable CefCursorType type,
+                                @Nullable CefCursorInfo customCursorInfo) {
+                            return type != null && updateCursor(type);
                         }
 
+                        @SuppressWarnings("MissingOverride") // int cursor on v117+; long on v109/v116
                         public boolean onCursorChange(
-                                CefBrowser b,
+                                @Nullable CefBrowser b,
                                 int cursor,
-                                @Nonnull CefCursorType type,
-                                CefCursorInfo customCursorInfo) {
-                            return updateCursor(type);
+                                @Nullable CefCursorType type,
+                                @Nullable CefCursorInfo customCursorInfo) {
+                            return type != null && updateCursor(type);
                         }
 
-                        private boolean updateCursor(@Nonnull CefCursorType type) {
+                        private boolean updateCursor(CefCursorType type) {
                             java.awt.Cursor awtCursor = panel.mapCursor(type);
                             SwingUtilities.invokeLater(() -> panel.setCursor(awtCursor));
                             return true;
@@ -219,8 +226,8 @@ final class SwingBrowserPanelTestSupport {
             CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
         });
 
-        CefBrowserPanel panel = panelRef.get();
-        PanelState state = stateRef.get();
+        CefBrowserPanel panel = Objects.requireNonNull(panelRef.get(), "panel not created");
+        PanelState state = Objects.requireNonNull(stateRef.get(), "panel state not created");
         if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
             throw new TimeoutException("Timed out waiting for CEF browser creation");
         }
@@ -251,7 +258,7 @@ final class SwingBrowserPanelTestSupport {
             CefBrowserHost.createBrowser(windowInfo, client, "", browserSettings.toImmutable(), null, null);
         });
 
-        CefBrowserPanel panel = panelRef.get();
+        CefBrowserPanel panel = Objects.requireNonNull(panelRef.get(), "panel not created");
         if (!state.browserReady.await(10, TimeUnit.SECONDS)) {
             throw new TimeoutException("Timed out waiting for CEF browser creation");
         }
@@ -336,7 +343,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static LocalTestServer startServerWithResponses(Map<String, ResponseSpec> routes) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), 0), 0);
         for (Map.Entry<String, ResponseSpec> entry : routes.entrySet()) {
             server.createContext(entry.getKey(), exchange -> respond(exchange, entry.getValue()));
         }

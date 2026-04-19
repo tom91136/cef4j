@@ -134,7 +134,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
         static native CefProcessMessage build0(long self);
 
-        static native CefSharedProcessMessageBuilder create0(String name, long byteSize);
+        static native CefSharedProcessMessageBuilder create0(@Nullable String name, long byteSize);
 
         @Override
         public boolean equals(Object obj) {

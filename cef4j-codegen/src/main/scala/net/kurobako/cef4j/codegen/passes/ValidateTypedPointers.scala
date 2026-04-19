@@ -31,62 +31,47 @@ object ValidateTypedPointers {
     warnings
   }
 
+  private def isUntypedPtr(ct: CType, handlerNames: Set[String]): Option[String] = ct match {
+    case CType.Ptr(inner) =>
+      val stripped = inner.stripPrefix("const ").stripPrefix("struct ").trim
+      if (stripped == "void" || stripped.isEmpty) None
+      else if (handlerNames.contains(stripped.stripPrefix("_"))) None
+      else Some(inner)
+    case _ => None
+  }
+
+  private def warningsFor(
+      owner: String,
+      fnName: String,
+      ret: CType,
+      params: List[net.kurobako.cef4j.codegen.Param],
+      handlerNames: Set[String]
+  ): List[UntypedPtrWarning] = {
+    val retWarning = isUntypedPtr(ret, handlerNames).map(inner =>
+      UntypedPtrWarning(owner, fnName, inner, "(return)")
+    ).toList
+    val paramWarnings = params.flatMap { p =>
+      isUntypedPtr(p.typ, handlerNames).map(inner =>
+        UntypedPtrWarning(owner, fnName, inner, s"(param: ${p.name})")
+      )
+    }
+    retWarning ++ paramWarnings
+  }
+
   private def collectUntypedPtrWarnings(
       decls: List[CefDecl],
       handlerNames: Set[String]
-  ): List[UntypedPtrWarning] = {
-    def isUntypedPtr(ct: CType): Option[String] = ct match {
-      case CType.Ptr(inner) =>
-        val stripped = inner.stripPrefix("const ").stripPrefix("struct ").trim
-        if (stripped == "void" || stripped.isEmpty) None
-        else if (handlerNames.contains(stripped.stripPrefix("_"))) None
-        else Some(inner)
-      case _ => None
-    }
-
-    def collectFromFns(structName: String, fns: List[net.kurobako.cef4j.codegen.FnPtr]): List[UntypedPtrWarning] =
-      fns.flatMap { fn =>
-        val retWarning = isUntypedPtr(fn.ret).map(inner =>
-          UntypedPtrWarning(structName, fn.name, inner, "(return)")
-        ).toList
-        val paramWarnings = fn.params.flatMap { p =>
-          isUntypedPtr(p.typ).map(inner =>
-            UntypedPtrWarning(structName, fn.name, inner, s"(param: ${p.name})")
-          )
-        }
-        retWarning ++ paramWarnings
-      }
-
-    decls.flatMap {
-      case d: CefDecl.ObjectStruct  => collectFromFns(d.name, d.fns)
-      case d: CefDecl.HandlerStruct => collectFromFns(d.name, d.fns)
-      case _                        => Nil
-    }
+  ): List[UntypedPtrWarning] = decls.flatMap {
+    case d: CefDecl.ObjectStruct =>
+      d.fns.flatMap(fn => warningsFor(d.name, fn.name, fn.ret, fn.params, handlerNames))
+    case d: CefDecl.HandlerStruct =>
+      d.fns.flatMap(fn => warningsFor(d.name, fn.name, fn.ret, fn.params, handlerNames))
+    case _ => Nil
   }
 
   private def collectFreeFuncUntypedPtrWarnings(
       freeFunctions: List[CefDecl.FreeFunction],
       handlerNames: Set[String]
-  ): List[UntypedPtrWarning] = {
-    def isUntypedPtr(ct: CType): Option[String] = ct match {
-      case CType.Ptr(inner) =>
-        val stripped = inner.stripPrefix("const ").stripPrefix("struct ").trim
-        if (stripped == "void" || stripped.isEmpty) None
-        else if (handlerNames.contains(stripped.stripPrefix("_"))) None
-        else Some(inner)
-      case _ => None
-    }
-
-    freeFunctions.flatMap { ff =>
-      val retWarning = isUntypedPtr(ff.ret).map(inner =>
-        UntypedPtrWarning(s"FREE:${ff.cName}", ff.cName, inner, "(return)")
-      ).toList
-      val paramWarnings = ff.params.flatMap { p =>
-        isUntypedPtr(p.typ).map(inner =>
-          UntypedPtrWarning(s"FREE:${ff.cName}", ff.cName, inner, s"(param: ${p.name})")
-        )
-      }
-      retWarning ++ paramWarnings
-    }
-  }
+  ): List[UntypedPtrWarning] =
+    freeFunctions.flatMap(ff => warningsFor(s"FREE:${ff.cName}", ff.cName, ff.ret, ff.params, handlerNames))
 }

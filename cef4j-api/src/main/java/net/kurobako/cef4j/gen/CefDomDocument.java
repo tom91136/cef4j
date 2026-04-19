@@ -284,7 +284,7 @@ public interface CefDomDocument extends CefLibraryObject {
 
         static native String getTitle0(long self);
 
-        static native CefDomNode getElementById0(long self, String id);
+        static native CefDomNode getElementById0(long self, @Nullable String id);
 
         static native CefDomNode getFocusedNode0(long self);
 
@@ -300,7 +300,7 @@ public interface CefDomDocument extends CefLibraryObject {
 
         static native String getBaseUrl0(long self);
 
-        static native String getCompleteUrl0(long self, String partialURL);
+        static native String getCompleteUrl0(long self, @Nullable String partialURL);
 
 
         @Override

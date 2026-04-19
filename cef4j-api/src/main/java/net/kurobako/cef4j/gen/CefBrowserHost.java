@@ -277,7 +277,7 @@ public interface CefBrowserHost extends CefLibraryObject {
      * Usage of the SendDevToolsMessage, ExecuteDevToolsMethod and AddDevToolsMessageObserver methods does not require an active DevTools front-end or remote-debugging session. Other active DevTools sessions will continue to function independently. However, any modification of global browser state by one session may not be reflected in the UI of other sessions.
      * <p>
      * Communication with the DevTools front-end (when displayed) can be logged for development purposes by passing the `--devtools-protocol-log-file=&lt;path&gt;` command-line flag.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code message_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* send_dev_tools_message)(struct _cef_browser_host_t* self, const void* message, size_t message_size);</pre>
      *
@@ -422,7 +422,7 @@ public interface CefBrowserHost extends CefLibraryObject {
     void sendMouseMoveEvent(@Nonnull CefMouseEvent event, boolean mouseLeave);
 
     /**
-     * Send a mouse wheel event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left corner of the view. The {@code deltaX} and {@code deltaY} values represent the movement delta in the X and Y directions respectively. In order to scroll inside select popups with window rendering disabled {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenPoint(CefBrowser, int, int, int[], int[])} should be implemented properly.
+     * Send a mouse wheel event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left corner of the view. The {@code deltaY} and {@code deltaX} values represent the movement delta in the X and Y directions respectively. In order to scroll inside select popups with window rendering disabled {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenPoint(CefBrowser, int, int, int[], int[])} should be implemented properly.
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* send_mouse_wheel_event)(struct _cef_browser_host_t* self, const cef_mouse_event_t* event, int deltaX, int deltaY);</pre>
      *
@@ -559,7 +559,7 @@ public interface CefBrowserHost extends CefLibraryObject {
     void dragTargetDrop(@Nonnull CefMouseEvent event);
 
     /**
-     * Call this method when the drag operation started by a {@link net.kurobako.cef4j.gen.CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int, int)} call has ended either in a drop or by being cancelled. {@code x} and {@code y} are mouse coordinates relative to the upper-left corner of the view. If the web view is both the drag source and the drag target then all DragTarget* methods should be called before DragSource* mthods. This method is only used when window rendering is disabled.
+     * Call this method when the drag operation started by a {@link net.kurobako.cef4j.gen.CefRenderHandler#startDragging(CefBrowser, CefDragData, CefDragOperationsMask, int, int)} call has ended either in a drop or by being cancelled. {@code y} and {@code x} are mouse coordinates relative to the upper-left corner of the view. If the web view is both the drag source and the drag target then all DragTarget* methods should be called before DragSource* mthods. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* drag_source_ended_at)(struct _cef_browser_host_t* self, int x, int y, cef_drag_operations_mask_t op);</pre>
      *
@@ -1189,9 +1189,9 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         static native CefRequestContext getRequestContext0(long self);
 
-        static native boolean canZoom0(long self, CefZoomCommand command);
+        static native boolean canZoom0(long self, @Nonnull CefZoomCommand command);
 
-        static native void zoom0(long self, CefZoomCommand command);
+        static native void zoom0(long self, @Nonnull CefZoomCommand command);
 
         static native double getDefaultZoomLevel0(long self);
 
@@ -1199,37 +1199,37 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         static native void setZoomLevel0(long self, double zoomLevel);
 
-        static native void runFileDialog0(long self, CefFileDialogMode mode, String title, String defaultFilePath, List<String> acceptFilters, CefRunFileDialogCallback callback);
+        static native void runFileDialog0(long self, @Nonnull CefFileDialogMode mode, @Nullable String title, @Nullable String defaultFilePath, @Nullable List<String> acceptFilters, @Nullable CefRunFileDialogCallback callback);
 
-        static native void startDownload0(long self, String url);
+        static native void startDownload0(long self, @Nullable String url);
 
-        static native void downloadImage0(long self, String imageUrl, boolean isFavicon, int maxImageSize, boolean bypassCache, CefDownloadImageCallback callback);
+        static native void downloadImage0(long self, @Nullable String imageUrl, boolean isFavicon, int maxImageSize, boolean bypassCache, @Nullable CefDownloadImageCallback callback);
 
         static native void print0(long self);
 
-        static native void printToPdf0(long self, String path, CefPdfPrintSettings settings, CefPdfPrintCallback callback);
+        static native void printToPdf0(long self, @Nullable String path, @Nonnull CefPdfPrintSettings settings, @Nullable CefPdfPrintCallback callback);
 
-        static native void find0(long self, String searchText, boolean forward, boolean matchCase, boolean findNext);
+        static native void find0(long self, @Nullable String searchText, boolean forward, boolean matchCase, boolean findNext);
 
         static native void stopFinding0(long self, boolean clearSelection);
 
-        static native void showDevTools0(long self, CefWindowInfo windowInfo, CefClient client, CefBrowserSettings settings, CefPoint inspectElementAt);
+        static native void showDevTools0(long self, @Nullable CefWindowInfo windowInfo, @Nullable CefClient client, @Nullable CefBrowserSettings settings, @Nullable CefPoint inspectElementAt);
 
         static native void closeDevTools0(long self);
 
         static native boolean hasDevTools0(long self);
 
-        static native boolean sendDevToolsMessage0(long self, ByteBuffer message);
+        static native boolean sendDevToolsMessage0(long self, @Nonnull ByteBuffer message);
 
-        static native int executeDevToolsMethod0(long self, int messageId, String method, CefDictionaryValue params);
+        static native int executeDevToolsMethod0(long self, int messageId, @Nullable String method, @Nullable CefDictionaryValue params);
 
-        static native CefRegistration addDevToolsMessageObserver0(long self, CefDevToolsMessageObserver observer);
+        static native CefRegistration addDevToolsMessageObserver0(long self, @Nullable CefDevToolsMessageObserver observer);
 
-        static native void getNavigationEntries0(long self, CefNavigationEntryVisitor visitor, boolean currentOnly);
+        static native void getNavigationEntries0(long self, @Nullable CefNavigationEntryVisitor visitor, boolean currentOnly);
 
-        static native void replaceMisspelling0(long self, String word);
+        static native void replaceMisspelling0(long self, @Nullable String word);
 
-        static native void addWordToDictionary0(long self, String word);
+        static native void addWordToDictionary0(long self, @Nullable String word);
 
         static native boolean isWindowRenderingDisabled0(long self);
 
@@ -1239,19 +1239,19 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         static native void notifyScreenInfoChanged0(long self);
 
-        static native void invalidate0(long self, CefPaintElementType type);
+        static native void invalidate0(long self, @Nonnull CefPaintElementType type);
 
         static native void sendExternalBeginFrame0(long self);
 
-        static native void sendKeyEvent0(long self, CefKeyEvent event);
+        static native void sendKeyEvent0(long self, @Nonnull CefKeyEvent event);
 
-        static native void sendMouseClickEvent0(long self, CefMouseEvent event, CefMouseButtonType type, boolean mouseUp, int clickCount);
+        static native void sendMouseClickEvent0(long self, @Nonnull CefMouseEvent event, @Nonnull CefMouseButtonType type, boolean mouseUp, int clickCount);
 
-        static native void sendMouseMoveEvent0(long self, CefMouseEvent event, boolean mouseLeave);
+        static native void sendMouseMoveEvent0(long self, @Nonnull CefMouseEvent event, boolean mouseLeave);
 
-        static native void sendMouseWheelEvent0(long self, CefMouseEvent event, int deltaX, int deltaY);
+        static native void sendMouseWheelEvent0(long self, @Nonnull CefMouseEvent event, int deltaX, int deltaY);
 
-        static native void sendTouchEvent0(long self, CefTouchEvent event);
+        static native void sendTouchEvent0(long self, @Nonnull CefTouchEvent event);
 
         static native void sendCaptureLostEvent0(long self);
 
@@ -1261,31 +1261,31 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         static native void setWindowlessFrameRate0(long self, int frameRate);
 
-        static native void imeSetComposition0(long self, String text, long underlinesCount, CefCompositionUnderline[] underlines, CefRange replacementRange, CefRange selectionRange);
+        static native void imeSetComposition0(long self, @Nullable String text, long underlinesCount, @Nullable CefCompositionUnderline[] underlines, @Nonnull CefRange replacementRange, @Nonnull CefRange selectionRange);
 
-        static native void imeCommitText0(long self, String text, CefRange replacementRange, int relativeCursorPos);
+        static native void imeCommitText0(long self, @Nullable String text, @Nonnull CefRange replacementRange, int relativeCursorPos);
 
         static native void imeFinishComposingText0(long self, boolean keepSelection);
 
         static native void imeCancelComposition0(long self);
 
-        static native void dragTargetDragEnter0(long self, CefDragData dragData, CefMouseEvent event, CefDragOperationsMask allowedOps);
+        static native void dragTargetDragEnter0(long self, @Nullable CefDragData dragData, @Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps);
 
-        static native void dragTargetDragOver0(long self, CefMouseEvent event, CefDragOperationsMask allowedOps);
+        static native void dragTargetDragOver0(long self, @Nonnull CefMouseEvent event, @Nonnull CefDragOperationsMask allowedOps);
 
         static native void dragTargetDragLeave0(long self);
 
-        static native void dragTargetDrop0(long self, CefMouseEvent event);
+        static native void dragTargetDrop0(long self, @Nonnull CefMouseEvent event);
 
-        static native void dragSourceEndedAt0(long self, int x, int y, CefDragOperationsMask op);
+        static native void dragSourceEndedAt0(long self, int x, int y, @Nonnull CefDragOperationsMask op);
 
         static native void dragSourceSystemDragEnded0(long self);
 
         static native CefNavigationEntry getVisibleNavigationEntry0(long self);
 
-        static native void setAccessibilityState0(long self, CefState accessibilityState);
+        static native void setAccessibilityState0(long self, @Nonnull CefState accessibilityState);
 
-        static native void setAutoResizeEnabled0(long self, boolean enabled, CefSize minSize, CefSize maxSize);
+        static native void setAutoResizeEnabled0(long self, boolean enabled, @Nonnull CefSize minSize, @Nonnull CefSize maxSize);
 
         static native void setAudioMuted0(long self, boolean mute);
 
@@ -1297,14 +1297,14 @@ public interface CefBrowserHost extends CefLibraryObject {
 
         static native boolean canExecuteChromeCommand0(long self, int commandId);
 
-        static native void executeChromeCommand0(long self, int commandId, CefWindowOpenDisposition disposition);
+        static native void executeChromeCommand0(long self, int commandId, @Nonnull CefWindowOpenDisposition disposition);
 
         static native boolean isRenderProcessUnresponsive0(long self);
 
         static native CefRuntimeStyle getRuntimeStyle0(long self);
 
-        static native int createBrowser0(CefWindowInfo windowInfo, CefClient client, String url, CefBrowserSettings settings, CefDictionaryValue extraInfo, CefRequestContext requestContext);
-        static native CefBrowser createBrowserSync0(CefWindowInfo windowInfo, CefClient client, String url, CefBrowserSettings settings, CefDictionaryValue extraInfo, CefRequestContext requestContext);
+        static native int createBrowser0(@Nonnull CefWindowInfo windowInfo, @Nullable CefClient client, @Nullable String url, @Nonnull CefBrowserSettings settings, @Nullable CefDictionaryValue extraInfo, @Nullable CefRequestContext requestContext);
+        static native CefBrowser createBrowserSync0(@Nonnull CefWindowInfo windowInfo, @Nullable CefClient client, @Nullable String url, @Nonnull CefBrowserSettings settings, @Nullable CefDictionaryValue extraInfo, @Nullable CefRequestContext requestContext);
         static native CefBrowser getBrowserByIdentifier0(int browserId);
 
         @Override

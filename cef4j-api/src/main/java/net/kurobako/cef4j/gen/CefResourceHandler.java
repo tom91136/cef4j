@@ -67,7 +67,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
     /**
      * Read response data. If data is available immediately copy up to {@code bytes_to_read} bytes into {@code data_out}, set {@code bytes_read} to the number of bytes copied, and return {@code true}. To read the data at a later time keep a pointer to {@code data_out}, set {@code bytes_read} to 0, return {@code true} and execute {@code callback} when the data is available ({@code data_out} will remain valid until the callback is executed). To indicate response completion set {@code bytes_read} to 0 and return {@code false}. To indicate failure set {@code bytes_read} to &lt; 0 (e.g. -2 for {@code ERR_FAILED}) and return {@code false}. This method will be called in sequence but not from a dedicated thread. For backwards compatibility set {@code bytes_read} to -1 and return {@code false} and the ReadResponse method will be called.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code bytesToRead} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code bytes_to_read} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>int (CEF_CALLBACK* read)(struct _cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_resource_read_callback_t* callback);</pre>
      *
@@ -83,7 +83,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * Read response data. If data is available immediately copy up to {@code bytes_to_read} bytes into {@code data_out}, set {@code bytes_read} to the number of bytes copied, and return {@code true}. To read the data at a later time set {@code bytes_read} to 0, return {@code true} and call net.kurobako.cef4j.gen.CefCallback.continue() when the data is available. To indicate response completion return {@code false}.
      * <p>
      * <b>WARNING:</b> This method is deprecated. Use Skip and Read instead.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code bytesToRead} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code bytes_to_read} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>int (CEF_CALLBACK* read_response)(struct _cef_resource_handler_t* self, void* data_out, int bytes_to_read, int* bytes_read, struct _cef_callback_t* callback);</pre>
      *

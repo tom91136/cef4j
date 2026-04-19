@@ -9,15 +9,25 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Window;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefMouseButtonType;
 import net.kurobako.cef4j.gen.CefMouseEvent;
 
 final class CefWebViewPopupSurface {
     private final CefWebView view;
+
+    @Nullable
     private javafx.stage.Popup popup;
+
+    @Nullable
     private ImageView imageView;
+
+    @Nullable
     private IntBuffer pixelBuf;
+
+    @Nullable
     private PixelBuffer<IntBuffer> pixelBuffer;
+
     private int width;
     private int height;
 
@@ -54,29 +64,35 @@ final class CefWebViewPopupSurface {
     }
 
     void blit(int[] pixels, int width, int height) {
-        if (popup == null || imageView == null) return;
+        javafx.stage.Popup currentPopup = popup;
+        ImageView currentImageView = imageView;
+        if (currentPopup == null || currentImageView == null) return;
         var rect = view.popupRect;
         if (rect == null) return;
-        if (pixelBuffer == null || this.width != width || this.height != height) {
+        IntBuffer buf = pixelBuf;
+        PixelBuffer<IntBuffer> pb = pixelBuffer;
+        if (pb == null || buf == null || this.width != width || this.height != height) {
             this.width = width;
             this.height = height;
-            pixelBuf = IntBuffer.allocate(width * height);
-            pixelBuffer = new PixelBuffer<>(width, height, pixelBuf, PixelFormat.getIntArgbPreInstance());
-            imageView.setImage(new WritableImage(pixelBuffer));
+            buf = IntBuffer.allocate(width * height);
+            pb = new PixelBuffer<>(width, height, buf, PixelFormat.getIntArgbPreInstance());
+            pixelBuf = buf;
+            pixelBuffer = pb;
+            currentImageView.setImage(new WritableImage(pb));
         }
-        System.arraycopy(pixels, 0, pixelBuf.array(), 0, width * height);
-        pixelBuffer.updateBuffer(pb -> null);
+        System.arraycopy(pixels, 0, buf.array(), 0, width * height);
+        pb.updateBuffer(ignored -> null);
         double scale = view.currentScaleFactor(view.currentScreen());
-        imageView.setFitWidth(width / scale);
-        imageView.setFitHeight(height / scale);
+        currentImageView.setFitWidth(width / scale);
+        currentImageView.setFitHeight(height / scale);
         Point2D screen = view.localToScreen(rect.x, rect.y);
         Window window = view.getScene() != null ? view.getScene().getWindow() : null;
         if (screen != null && window != null) {
-            if (!popup.isShowing()) {
-                popup.show(window, screen.getX(), screen.getY());
+            if (!currentPopup.isShowing()) {
+                currentPopup.show(window, screen.getX(), screen.getY());
             } else {
-                popup.setAnchorX(screen.getX());
-                popup.setAnchorY(screen.getY());
+                currentPopup.setAnchorX(screen.getX());
+                currentPopup.setAnchorY(screen.getY());
             }
         }
     }

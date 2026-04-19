@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.gen.views.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,7 +91,7 @@ class CefViewsInteropTest extends CefTestBase {
 
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
-            public void onWindowCreated(CefWindow window) {
+            public void onWindowCreated(@Nullable CefWindow window) {
                 windowCreated.set(true);
                 createdLatch.countDown();
             }
@@ -118,7 +119,7 @@ class CefViewsInteropTest extends CefTestBase {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
-            public void onWindowCreated(CefWindow window) {
+            public void onWindowCreated(@Nullable CefWindow window) {
                 createdLatch.countDown();
             }
         };
@@ -143,7 +144,7 @@ class CefViewsInteropTest extends CefTestBase {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
-            public void onWindowCreated(CefWindow window) {
+            public void onWindowCreated(@Nullable CefWindow window) {
                 createdLatch.countDown();
             }
         };
@@ -166,12 +167,12 @@ class CefViewsInteropTest extends CefTestBase {
 
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
-            public void onWindowCreated(CefWindow window) {
+            public void onWindowCreated(@Nullable CefWindow window) {
                 createdLatch.countDown();
             }
 
             @Override
-            public boolean canResize(CefWindow window) {
+            public boolean canResize(@Nullable CefWindow window) {
                 canResizeCalled.set(true);
                 return true;
             }
@@ -190,7 +191,7 @@ class CefViewsInteropTest extends CefTestBase {
         CountDownLatch createdLatch = new CountDownLatch(1);
         CefWindowDelegate delegate = new CefWindowDelegate() {
             @Override
-            public void onWindowCreated(CefWindow window) {
+            public void onWindowCreated(@Nullable CefWindow window) {
                 createdLatch.countDown();
             }
         };

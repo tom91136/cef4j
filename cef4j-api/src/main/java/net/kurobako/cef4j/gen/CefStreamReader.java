@@ -176,7 +176,7 @@ public interface CefStreamReader extends CefLibraryObject {
       }
 
 
-        static native long read0(long self, ByteBuffer ptr, long n);
+        static native long read0(long self, @Nonnull ByteBuffer ptr, long n);
 
         static native int seek0(long self, long offset, int whence);
 
@@ -186,9 +186,9 @@ public interface CefStreamReader extends CefLibraryObject {
 
         static native boolean mayBlock0(long self);
 
-        static native CefStreamReader createForFile0(String fileName);
-        static native CefStreamReader createForData0(ByteBuffer data);
-        static native CefStreamReader createForHandler0(CefReadHandler handler);
+        static native CefStreamReader createForFile0(@Nullable String fileName);
+        static native CefStreamReader createForData0(@Nonnull ByteBuffer data);
+        static native CefStreamReader createForHandler0(@Nullable CefReadHandler handler);
 
         @Override
         public boolean equals(Object obj) {

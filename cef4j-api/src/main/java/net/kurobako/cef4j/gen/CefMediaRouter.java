@@ -150,17 +150,17 @@ public interface CefMediaRouter extends CefLibraryObject {
       }
 
 
-        static native CefRegistration addObserver0(long self, CefMediaObserver observer);
+        static native CefRegistration addObserver0(long self, @Nullable CefMediaObserver observer);
 
-        static native CefMediaSource getSource0(long self, String urn);
+        static native CefMediaSource getSource0(long self, @Nullable String urn);
 
         static native void notifyCurrentSinks0(long self);
 
-        static native void createRoute0(long self, CefMediaSource source, CefMediaSink sink, CefMediaRouteCreateCallback callback);
+        static native void createRoute0(long self, @Nullable CefMediaSource source, @Nullable CefMediaSink sink, @Nullable CefMediaRouteCreateCallback callback);
 
         static native void notifyCurrentRoutes0(long self);
 
-        static native CefMediaRouter getGlobal0(CefCompletionCallback callback);
+        static native CefMediaRouter getGlobal0(@Nullable CefCompletionCallback callback);
 
         @Override
         public boolean equals(Object obj) {

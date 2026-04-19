@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen.linux;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefAcceleratedPaintInfoCommon;
 import net.kurobako.cef4j.gen.CefColorType;
 
@@ -34,12 +35,12 @@ public final class CefAcceleratedPaintInfo implements net.kurobako.cef4j.gen.Cef
          */    public final long modifier;
         /**
          * The pixel format of the texture. 
-         */    public final CefColorType format;
+         */    public final @Nullable CefColorType format;
         /**
          * The extra common info. 
-         */    public final CefAcceleratedPaintInfoCommon extra;
+         */    public final @Nullable CefAcceleratedPaintInfoCommon extra;
 
-    public CefAcceleratedPaintInfo(int planeCount, long modifier, CefColorType format, CefAcceleratedPaintInfoCommon extra) {
+    public CefAcceleratedPaintInfo(int planeCount, long modifier, @Nullable CefColorType format, @Nullable CefAcceleratedPaintInfoCommon extra) {
         this.planeCount = planeCount;
         this.modifier = modifier;
         this.format = format;

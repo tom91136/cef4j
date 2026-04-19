@@ -64,12 +64,26 @@ public class CefBrowserPanel extends JPanel {
     private static final int SCROLL_UNITS_MULTIPLIER = 20;
     private static final int SCREEN_DEPTH = 32;
     private static final int SCREEN_DEPTH_PER_COMPONENT = 8;
+    private static final CefKeyEventType KEY_RAWKEYDOWN = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
+    private static final CefKeyEventType KEY_CHAR = CefKeyEventType.of(CefKeyEventType.Kind.CHAR);
+    private static final CefKeyEventType KEY_KEYUP = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
+    private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
 
     private final transient CefFrameBuffer<BufferedImage> frameBuffer;
+
+    @Nullable
     private transient volatile CefBrowser browser;
+
+    @Nullable
     private transient volatile CefRect popupRect;
+
+    @Nullable
     private transient JWindow osrPopupWindow;
+
+    @Nullable
     private transient BufferedImage osrPopupImage;
+
+    @Nullable
     private transient BufferedImage lastPaintedImage;
 
     // Cached screen location, updated on the EDT. Read by CEF render handler callbacks
@@ -175,48 +189,38 @@ public class CefBrowserPanel extends JPanel {
         addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) h.setFocus(true);
+                ifHostPresent(h -> h.setFocus(true));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 // Keep focus while the popup window owns pointer interaction, or CEF closes the popup immediately.
                 if (osrPopupWindow != null && osrPopupWindow.isVisible()) return;
-                CefBrowserHost h = host();
-                if (h != null) h.setFocus(false);
+                ifHostPresent(h -> h.setFocus(false));
             }
         });
 
-        Consumer<MouseEvent> sendMouseMove = e -> {
-            CefBrowserHost h = host();
-            if (h != null) h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false);
-        };
+        Consumer<MouseEvent> sendMouseMove = e -> ifHostPresent(
+                h -> h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 requestFocusInWindow();
-                CefBrowserHost h = host();
-                if (h != null) {
-                    h.sendMouseClickEvent(
-                            new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
-                            CefMouseButtonType.of(cefButton(e)),
-                            false,
-                            e.getClickCount());
-                }
+                ifHostPresent(h -> h.sendMouseClickEvent(
+                        new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
+                        CefMouseButtonType.of(cefButton(e)),
+                        false,
+                        e.getClickCount()));
                 e.consume();
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                CefBrowserHost h = host();
-                if (h != null) {
-                    h.sendMouseClickEvent(
-                            new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
-                            CefMouseButtonType.of(cefButton(e)),
-                            true,
-                            e.getClickCount());
-                }
+                ifHostPresent(h -> h.sendMouseClickEvent(
+                        new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)),
+                        CefMouseButtonType.of(cefButton(e)),
+                        true,
+                        e.getClickCount()));
                 e.consume();
             }
 
@@ -233,10 +237,8 @@ public class CefBrowserPanel extends JPanel {
                     Point screen = e.getLocationOnScreen();
                     if (popup.getBounds().contains(screen)) return;
                 }
-                CefBrowserHost h = host();
-                if (h != null) {
-                    h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), true);
-                }
+                ifHostPresent(
+                        h -> h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), true));
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -250,58 +252,37 @@ public class CefBrowserPanel extends JPanel {
                 sendMouseMove.accept(e);
             }
         });
-        addMouseWheelListener(e -> {
-            CefBrowserHost h = host();
-            if (h != null) {
-                int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
-                int deltaX = 0;
-                int deltaY = delta;
-                if (e.isShiftDown()) {
-                    deltaX = delta;
-                    deltaY = 0;
-                }
-                h.sendMouseWheelEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), deltaX, deltaY);
+        addMouseWheelListener(e -> ifHostPresent(h -> {
+            int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
+            int deltaX = 0;
+            int deltaY = delta;
+            if (e.isShiftDown()) {
+                deltaX = delta;
+                deltaY = 0;
             }
-        });
+            h.sendMouseWheelEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), deltaX, deltaY);
+        }));
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.isConsumed()) return;
-                CefBrowserHost h = host();
-                if (h == null) return;
-                int mods = keyModifiers(e);
-                h.sendKeyEvent(new CefKeyEvent(
-                        CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN),
-                        mods,
-                        e.getKeyCode(),
-                        e.getKeyCode(),
-                        0,
-                        (char) 0,
-                        (char) 0,
-                        0));
-                char c = e.getKeyChar();
-                if (c != KeyEvent.CHAR_UNDEFINED && !e.isActionKey()) {
+                ifHostPresent(h -> {
+                    int mods = keyModifiers(e);
                     h.sendKeyEvent(new CefKeyEvent(
-                            CefKeyEventType.of(CefKeyEventType.Kind.CHAR), mods, (int) c, (int) c, 0, c, c, 0));
-                }
+                            KEY_RAWKEYDOWN, mods, e.getKeyCode(), e.getKeyCode(), 0, (char) 0, (char) 0, 0));
+                    char c = e.getKeyChar();
+                    if (c != KeyEvent.CHAR_UNDEFINED && !e.isActionKey()) {
+                        h.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, (int) c, (int) c, 0, c, c, 0));
+                    }
+                });
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.isConsumed()) return;
-                CefBrowserHost h = host();
-                if (h != null) {
-                    h.sendKeyEvent(new CefKeyEvent(
-                            CefKeyEventType.of(CefKeyEventType.Kind.KEYUP),
-                            keyModifiers(e),
-                            e.getKeyCode(),
-                            e.getKeyCode(),
-                            0,
-                            (char) 0,
-                            (char) 0,
-                            0));
-                }
+                ifHostPresent(h -> h.sendKeyEvent(new CefKeyEvent(
+                        KEY_KEYUP, keyModifiers(e), e.getKeyCode(), e.getKeyCode(), 0, (char) 0, (char) 0, 0)));
             }
         });
 
@@ -339,20 +320,26 @@ public class CefBrowserPanel extends JPanel {
         });
     }
 
+    @Nullable
     private CefBrowserHost host() {
         CefBrowser current = browser;
         return current != null ? current.getHost().orElse(null) : null;
     }
 
-    private void refreshView(boolean screenInfoChanged) {
+    private void ifHostPresent(Consumer<CefBrowserHost> action) {
         CefBrowserHost h = host();
-        if (h == null) return;
-        frameBuffer.resetBackPressure();
-        if (screenInfoChanged) {
-            h.notifyScreenInfoChanged();
-        }
-        h.wasResized();
-        h.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));
+        if (h != null) action.accept(h);
+    }
+
+    private void refreshView(boolean screenInfoChanged) {
+        ifHostPresent(h -> {
+            frameBuffer.resetBackPressure();
+            if (screenInfoChanged) {
+                h.notifyScreenInfoChanged();
+            }
+            h.wasResized();
+            h.invalidate(PAINT_VIEW);
+        });
     }
 
     /**
@@ -468,11 +455,12 @@ public class CefBrowserPanel extends JPanel {
     }
 
     /** Attaches an already-created browser to this panel. */
-    public void setBrowser(CefBrowser browser) {
+    public void setBrowser(@Nullable CefBrowser browser) {
         this.browser = browser;
     }
 
     /** Returns the attached browser, or {@code null} if none is attached. */
+    @Nullable
     public CefBrowser getBrowser() {
         return browser;
     }
@@ -553,12 +541,11 @@ public class CefBrowserPanel extends JPanel {
         surface.addMouseWheelListener(e -> {
             CefRect rect = popupRect;
             if (rect == null) return;
-            CefBrowserHost h = host();
-            if (h != null) {
+            ifHostPresent(h -> {
                 int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
                 h.sendMouseWheelEvent(
                         new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, baseModifiers(e)), 0, delta);
-            }
+            });
         });
         popup.setContentPane(surface);
         osrPopupWindow = popup;
@@ -567,23 +554,18 @@ public class CefBrowserPanel extends JPanel {
     private void forwardPopupMouse(MouseEvent e, boolean mouseUp) {
         CefRect rect = popupRect;
         if (rect == null) return;
-        CefBrowserHost h = host();
-        if (h != null) {
-            h.sendMouseClickEvent(
-                    new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)),
-                    CefMouseButtonType.of(cefButton(e)),
-                    mouseUp,
-                    e.getClickCount());
-        }
+        ifHostPresent(h -> h.sendMouseClickEvent(
+                new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)),
+                CefMouseButtonType.of(cefButton(e)),
+                mouseUp,
+                e.getClickCount()));
     }
 
     private void forwardPopupMouseMove(MouseEvent e) {
         CefRect rect = popupRect;
         if (rect == null) return;
-        CefBrowserHost h = host();
-        if (h != null) {
-            h.sendMouseMoveEvent(new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)), false);
-        }
+        ifHostPresent(h -> h.sendMouseMoveEvent(
+                new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)), false));
     }
 
     private void hideOsrPopup() {
@@ -609,7 +591,8 @@ public class CefBrowserPanel extends JPanel {
         try {
             Point panelScreen = getLocationOnScreen();
             osrPopupWindow.setLocation(panelScreen.x + rect.x, panelScreen.y + rect.y);
-        } catch (java.awt.IllegalComponentStateException ignored) {
+        } catch (java.awt.IllegalComponentStateException e) {
+            // Panel not currently showing; skip position update - next paint will retry.
         }
         if (!osrPopupWindow.isVisible()) {
             osrPopupWindow.setVisible(true);

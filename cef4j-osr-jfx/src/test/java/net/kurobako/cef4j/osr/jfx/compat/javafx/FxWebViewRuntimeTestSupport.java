@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -42,13 +43,17 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
 final class FxWebViewRuntimeTestSupport {
     private static volatile boolean started;
+
+    @SuppressWarnings("NullAway.Init")
     private static volatile Path cefCachePath;
+
     private static final CopyOnWriteArrayList<Stage> STAGES = new CopyOnWriteArrayList<>();
 
     private FxWebViewRuntimeTestSupport() {}
@@ -108,7 +113,8 @@ final class FxWebViewRuntimeTestSupport {
         }
         try {
             Files.createDirectories(cacheDir);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            // Best-effort; CEF will fail loudly later if the cache dir is unusable.
         }
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
         Cef.INSTANCE.initialise(launch.settings(), launch.args());
@@ -122,6 +128,7 @@ final class FxWebViewRuntimeTestSupport {
         return cefCachePath;
     }
 
+    @Nullable
     static <T> T onFxThread(Callable<T> task) throws Exception {
         ensureStarted();
         if (Platform.isFxApplicationThread()) {
@@ -156,18 +163,20 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static WebView createAttachedWebView() throws Exception {
-        return onFxThread(() -> {
-            WebView view = new WebView();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(new StackPane(view), 800, 600));
-            stage.setOnHidden(event -> STAGES.remove(stage));
-            stage.show();
-            stage.toFront();
-            stage.requestFocus();
-            view.requestFocus();
-            STAGES.add(stage);
-            return view;
-        });
+        return Objects.requireNonNull(
+                onFxThread(() -> {
+                    WebView view = new WebView();
+                    Stage stage = new Stage();
+                    stage.setScene(new Scene(new StackPane(view), 800, 600));
+                    stage.setOnHidden(event -> STAGES.remove(stage));
+                    stage.show();
+                    stage.toFront();
+                    stage.requestFocus();
+                    view.requestFocus();
+                    STAGES.add(stage);
+                    return view;
+                }),
+                "view");
     }
 
     static void closeStages() throws Exception {
@@ -228,7 +237,7 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void setClipboardText(String text) throws Exception {
-        String value = text != null ? text : "";
+        String value = Objects.requireNonNullElse(text, "");
         onFxThread(() -> {
             ClipboardContent content = new ClipboardContent();
             content.putString(value);
@@ -236,6 +245,7 @@ final class FxWebViewRuntimeTestSupport {
         });
     }
 
+    @Nullable
     static String getClipboardText() throws Exception {
         return onFxThread(() -> Clipboard.getSystemClipboard().getString());
     }
@@ -318,9 +328,10 @@ final class FxWebViewRuntimeTestSupport {
 
     static String title(WebView view) throws Exception {
         String value = onFxThread(() -> view.getEngine().getTitle());
-        return value != null ? value : "";
+        return Objects.requireNonNullElse(value, "");
     }
 
+    @SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated but exercised for JFX parity
     static String evalToString(WebView view, String script) throws Exception {
         Object value = onFxThread(() -> view.getEngine().executeScript(script));
         return value != null ? value.toString() : "";
@@ -389,7 +400,7 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static LocalTestServer startServerWithResponses(Map<String, ResponseSpec> routes) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), 0), 0);
         for (Map.Entry<String, ResponseSpec> entry : routes.entrySet()) {
             server.createContext(entry.getKey(), exchange -> respond(exchange, entry.getValue()));
         }
@@ -485,6 +496,7 @@ final class FxWebViewRuntimeTestSupport {
         Thread.sleep(75);
     }
 
+    @Nullable
     private static Node findMenuItemNode(String itemText) {
         List<Window> windows = Window.getWindows();
         Node stageFallback = null;
@@ -505,6 +517,7 @@ final class FxWebViewRuntimeTestSupport {
         return stageFallback;
     }
 
+    @Nullable
     private static Node findNodeWithText(Node node, String normalizedTarget) {
         if (!node.isVisible()) return null;
         String text = extractNodeText(node);
@@ -520,6 +533,7 @@ final class FxWebViewRuntimeTestSupport {
         return null;
     }
 
+    @Nullable
     private static String extractNodeText(Node node) {
         if (node instanceof Labeled) {
             return ((Labeled) node).getText();
@@ -530,8 +544,8 @@ final class FxWebViewRuntimeTestSupport {
         return null;
     }
 
-    private static String normalizeMenuText(String text) {
-        return text == null ? "" : text.replaceAll("[^A-Za-z]", "").toLowerCase();
+    private static String normalizeMenuText(@Nullable String text) {
+        return text == null ? "" : text.replaceAll("[^A-Za-z]", "").toLowerCase(java.util.Locale.ROOT);
     }
 
     private static boolean activateMenuItem(String itemText) {

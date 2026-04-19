@@ -23,9 +23,9 @@ public final class UrlResourceHandler implements CefResourceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(UrlResourceHandler.class);
 
-    private String mimeType;
+    private @Nullable String mimeType;
     private long contentLength = -1;
-    private InputStream inputStream;
+    private @Nullable InputStream inputStream;
     private boolean failed;
 
     @Override
@@ -111,21 +111,22 @@ public final class UrlResourceHandler implements CefResourceHandler {
         if (inputStream != null) {
             try {
                 inputStream.close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                // Stream is being abandoned; close failure doesn't change observable behaviour.
             }
             inputStream = null;
         }
     }
 
     /** Strip parameters (e.g. {@code ; charset=UTF-8}) - CEF's setMimeType expects just the MIME type. */
-    private static String stripMimeParams(String contentType) {
+    private static @Nullable String stripMimeParams(@Nullable String contentType) {
         if (contentType == null) return null;
         int semi = contentType.indexOf(';');
         return semi >= 0 ? contentType.substring(0, semi).trim() : contentType.trim();
     }
 
     private static String guessMimeType(String url) {
-        String lower = url.toLowerCase();
+        String lower = url.toLowerCase(java.util.Locale.ROOT);
         if (lower.endsWith(".js") || lower.endsWith(".mjs")) return "text/javascript";
         if (lower.endsWith(".html") || lower.endsWith(".htm")) return "text/html";
         if (lower.endsWith(".css")) return "text/css";

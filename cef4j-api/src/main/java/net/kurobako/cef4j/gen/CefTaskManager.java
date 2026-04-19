@@ -155,7 +155,7 @@ public interface CefTaskManager extends CefLibraryObject {
 
         static native long[] getTaskIdsList0(long self);
 
-        static native boolean getTaskInfo0(long self, long taskId, CefTaskInfo.Mutable info);
+        static native boolean getTaskInfo0(long self, long taskId, @Nonnull CefTaskInfo.Mutable info);
 
         static native boolean killTask0(long self, long taskId);
 

@@ -97,9 +97,12 @@ object JavaInterfaceCodeGen {
       parentCefName: Option[String] = None,
       ancestorDecls: List[CefDecl.ObjectStruct] = Nil
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val ancestorFns = ancestorDecls.flatMap(_.fns)
-    val hasNullable = hasNullableFnParams(fns ++ ancestorFns)
-    val hasNonnull  = hasNonnullFnParams(fns ++ ancestorFns)
+    val ancestorFns    = ancestorDecls.flatMap(_.fns)
+    val hasNullableRet = !isObject && fns.exists(fn => handlerReturnIsNullable(fn, handlerNames))
+    val hasNullable    = hasNullableRet || (fns.iterator ++ ancestorFns.iterator)
+      .exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
+    val hasNonnull = (fns.iterator ++ ancestorFns.iterator)
+      .exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
 
     val methods = fns.map(fn =>
       renderInterfaceMethod(fn, docs, isObject, handlerNames, sourceHeader, cefStructName)
@@ -122,8 +125,8 @@ object JavaInterfaceCodeGen {
     } else ""
 
     // Check if free functions need additional imports
-    val ffHasNullable = hasNullableFreeFunctionParams(freeFunctions)
-    val ffHasNonnull  = hasNonnullFreeFunctionParams(freeFunctions)
+    val ffHasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
+    val ffHasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
     val ffHasOptional = freeFunctions.exists(ff => JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)))
 
     // Collect type imports from all return types and parameter types (including ancestor overrides)
@@ -258,8 +261,8 @@ ${allLines.mkString("\n")}
   )(using Naming.Context, DocComments.Context, Banners): String = {
     val (staticMethods, _) = renderStaticMethods("CefGlobals", freeFunctions, docs, isClass = true)
 
-    val hasNullable = hasNullableFreeFunctionParams(freeFunctions)
-    val hasNonnull  = hasNonnullFreeFunctionParams(freeFunctions)
+    val hasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
+    val hasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
     val hasOptional = freeFunctions.exists(ff => JavaMethods.usesOptionalReturn(ff.ret))
 
     val ffTypes     = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
@@ -338,8 +341,9 @@ ${allLines.mkString("\n")}
         }
     }
 
+    val retAnn = if (handlerReturnIsNullable(fn, handlerNames)) "@Nullable " else ""
     s"""        @Override
-       |        public ${shape.retType} $methodName($paramsDecl) {
+       |        public $retAnn${shape.retType} $methodName($paramsDecl) {
        |$body
        |        }""".stripMargin
   }
@@ -366,7 +370,8 @@ ${allLines.mkString("\n")}
       s"$javadoc    ${shape.retType} $methodName(${shape.paramsDecl});"
     } else {
       val defaultReturn = defaultMethodReturn(fn, handlerNames)
-      s"$javadoc    default ${shape.retType} $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
+      val retAnn        = if (handlerReturnIsNullable(fn, handlerNames)) "@Nullable " else ""
+      s"$javadoc    default $retAnn${shape.retType} $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
     }
   }
 
@@ -378,6 +383,17 @@ ${allLines.mkString("\n")}
     } else {
       Naming.javaType(fn.ret)
     }
+
+  /** Handler defaults (and Delegating fallbacks) emit {@code return null;} for reference-typed, non-Optional returns.
+    * Those signatures must advertise the nullability to NullAway.
+    */
+  private def handlerReturnIsNullable(fn: FnPtr, handlerNames: Set[String])(using Naming.Context): Boolean =
+    if (isHandlerPtrReturn(fn.ret, handlerNames)) false
+    else
+      fn.ret match {
+        case CType.CountFuncArray(elem, _, _, _) if !Naming.isPrimitiveElement(elem) => false
+        case _ => JavaCodeGen.isReferenceType(fn.ret)
+      }
 
   private def defaultMethodReturn(fn: FnPtr, handlerNames: Set[String])(using
       Naming.Context,
@@ -421,18 +437,6 @@ ${allLines.mkString("\n")}
     val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs)
     s"$prefix${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
   }
-
-  private def hasNullableFnParams(functions: IterableOnce[FnPtr]): Boolean =
-    functions.iterator.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-
-  private def hasNullableFreeFunctionParams(functions: IterableOnce[CefDecl.FreeFunction]): Boolean =
-    functions.iterator.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
-
-  private def hasNonnullFnParams(functions: IterableOnce[FnPtr]): Boolean =
-    functions.iterator.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
-
-  private def hasNonnullFreeFunctionParams(functions: IterableOnce[CefDecl.FreeFunction]): Boolean =
-    functions.iterator.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
 
   private def renderTypeImports(types: List[CType])(using Naming.Context): List[String] =
     types.flatMap(Naming.javaImports).distinct.sorted.map(i => s"import $i;")

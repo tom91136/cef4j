@@ -80,7 +80,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:111</a>
      */
-    default CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
+    default @Nullable CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
         return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
     }
 
@@ -115,7 +115,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:169</a>
      */
-    default CefRuntimeStyle getBrowserRuntimeStyle() {
+    default @Nullable CefRuntimeStyle getBrowserRuntimeStyle() {
         return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
     }
 
@@ -185,7 +185,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
+        public @Nullable CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
             if (!delegates.isEmpty()) return delegates.get(0).getChromeToolbarType(browserView);
             return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
         }
@@ -209,7 +209,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefRuntimeStyle getBrowserRuntimeStyle() {
+        public @Nullable CefRuntimeStyle getBrowserRuntimeStyle() {
             if (!delegates.isEmpty()) return delegates.get(0).getBrowserRuntimeStyle();
             return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
         }

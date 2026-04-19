@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Settings used when initializing a CefBoxLayout.
@@ -40,16 +41,16 @@ public final class CefBoxLayoutSettings {
          */    public final int insideBorderVerticalSpacing;
         /**
          * Adds additional space around the child view area. 
-         */    public final CefInsets insideBorderInsets;
+         */    public final @Nullable CefInsets insideBorderInsets;
         /**
          * Adds additional space between child views. 
          */    public final int betweenChildSpacing;
         /**
          * Specifies where along the main axis the child views should be laid out. 
-         */    public final CefAxisAlignment mainAxisAlignment;
+         */    public final @Nullable CefAxisAlignment mainAxisAlignment;
         /**
          * Specifies where along the cross axis the child views should be laid out. 
-         */    public final CefAxisAlignment crossAxisAlignment;
+         */    public final @Nullable CefAxisAlignment crossAxisAlignment;
         /**
          * Minimum cross axis size. 
          */    public final int minimumCrossAxisSize;
@@ -57,7 +58,7 @@ public final class CefBoxLayoutSettings {
          * Default flex for views when none is specified via CefBoxLayout methods. Using the preferred size as the basis, free space along the main axis is distributed to views in the ratio of their flex weights. Similarly, if the views will overflow the parent, space is subtracted in these ratios. A flex of 0 means this view is not resized. Flex values must not be negative. 
          */    public final int defaultFlex;
 
-    public CefBoxLayoutSettings(int horizontal, int insideBorderHorizontalSpacing, int insideBorderVerticalSpacing, CefInsets insideBorderInsets, int betweenChildSpacing, CefAxisAlignment mainAxisAlignment, CefAxisAlignment crossAxisAlignment, int minimumCrossAxisSize, int defaultFlex) {
+    public CefBoxLayoutSettings(int horizontal, int insideBorderHorizontalSpacing, int insideBorderVerticalSpacing, @Nullable CefInsets insideBorderInsets, int betweenChildSpacing, @Nullable CefAxisAlignment mainAxisAlignment, @Nullable CefAxisAlignment crossAxisAlignment, int minimumCrossAxisSize, int defaultFlex) {
         this.horizontal = horizontal;
         this.insideBorderHorizontalSpacing = insideBorderHorizontalSpacing;
         this.insideBorderVerticalSpacing = insideBorderVerticalSpacing;
@@ -123,16 +124,16 @@ public final class CefBoxLayoutSettings {
              */        public int insideBorderVerticalSpacing;
             /**
              * Adds additional space around the child view area. 
-             */        public CefInsets insideBorderInsets;
+             */        public @Nullable CefInsets insideBorderInsets;
             /**
              * Adds additional space between child views. 
              */        public int betweenChildSpacing;
             /**
              * Specifies where along the main axis the child views should be laid out. 
-             */        public CefAxisAlignment mainAxisAlignment;
+             */        public @Nullable CefAxisAlignment mainAxisAlignment;
             /**
              * Specifies where along the cross axis the child views should be laid out. 
-             */        public CefAxisAlignment crossAxisAlignment;
+             */        public @Nullable CefAxisAlignment crossAxisAlignment;
             /**
              * Minimum cross axis size. 
              */        public int minimumCrossAxisSize;
@@ -142,7 +143,7 @@ public final class CefBoxLayoutSettings {
 
         public Mutable() {}
 
-        public Mutable(int horizontal, int insideBorderHorizontalSpacing, int insideBorderVerticalSpacing, CefInsets insideBorderInsets, int betweenChildSpacing, CefAxisAlignment mainAxisAlignment, CefAxisAlignment crossAxisAlignment, int minimumCrossAxisSize, int defaultFlex) {
+        public Mutable(int horizontal, int insideBorderHorizontalSpacing, int insideBorderVerticalSpacing, @Nullable CefInsets insideBorderInsets, int betweenChildSpacing, @Nullable CefAxisAlignment mainAxisAlignment, @Nullable CefAxisAlignment crossAxisAlignment, int minimumCrossAxisSize, int defaultFlex) {
             this.horizontal = horizontal;
             this.insideBorderHorizontalSpacing = insideBorderHorizontalSpacing;
             this.insideBorderVerticalSpacing = insideBorderVerticalSpacing;

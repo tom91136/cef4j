@@ -10,6 +10,7 @@ dependency-reduced-pom.xml
 .vscode/
 .settings/
 .claude/
+.codex
 .classpath
 .project
 .factorypath
@@ -28,7 +29,7 @@ Thumbs.db
 cef4j-api/src/main/resources/native/*/
 
 # CEF distribution
-.cef-dist/
+.cef-dist*/
 
 # Metals / BSP
 .metals/

@@ -1052,7 +1052,7 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native boolean isPromise0(long self);
 
-        static native boolean isSame0(long self, CefV8Value that);
+        static native boolean isSame0(long self, @Nullable CefV8Value that);
 
         static native boolean getBoolValue0(long self);
 
@@ -1078,27 +1078,27 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native boolean setRethrowExceptions0(long self, boolean rethrow);
 
-        static native int hasValueBykey0(long self, String key);
+        static native int hasValueBykey0(long self, @Nullable String key);
 
         static native int hasValueByindex0(long self, int index);
 
-        static native int deleteValueBykey0(long self, String key);
+        static native int deleteValueBykey0(long self, @Nullable String key);
 
         static native int deleteValueByindex0(long self, int index);
 
-        static native CefV8Value getValueBykey0(long self, String key);
+        static native CefV8Value getValueBykey0(long self, @Nullable String key);
 
         static native CefV8Value getValueByindex0(long self, int index);
 
-        static native int setValueBykey0(long self, String key, CefV8Value value, CefV8PropertyAttribute attribute);
+        static native int setValueBykey0(long self, @Nullable String key, @Nullable CefV8Value value, @Nonnull CefV8PropertyAttribute attribute);
 
-        static native int setValueByindex0(long self, int index, CefV8Value value);
+        static native int setValueByindex0(long self, int index, @Nullable CefV8Value value);
 
-        static native int setValueByaccessor0(long self, String key, CefV8PropertyAttribute attribute);
+        static native int setValueByaccessor0(long self, @Nullable String key, @Nonnull CefV8PropertyAttribute attribute);
 
-        static native boolean getKeys0(long self, List<String> keys);
+        static native boolean getKeys0(long self, @Nonnull List<String> keys);
 
-        static native boolean setUserData0(long self, NativePointer userData);
+        static native boolean setUserData0(long self, @Nullable NativePointer userData);
 
         static native NativePointer getUserData0(long self);
 
@@ -1120,13 +1120,13 @@ public interface CefV8Value extends CefLibraryObject {
 
         static native CefV8Handler getFunctionHandler0(long self);
 
-        static native CefV8Value executeFunction0(long self, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
+        static native CefV8Value executeFunction0(long self, @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments);
 
-        static native CefV8Value executeFunctionWithContext0(long self, CefV8Context context, CefV8Value object, long argumentsCount, CefV8Value[] arguments);
+        static native CefV8Value executeFunctionWithContext0(long self, @Nullable CefV8Context context, @Nullable CefV8Value object, long argumentsCount, @Nullable CefV8Value[] arguments);
 
-        static native boolean resolvePromise0(long self, CefV8Value arg);
+        static native boolean resolvePromise0(long self, @Nullable CefV8Value arg);
 
-        static native boolean rejectPromise0(long self, String errorMsg);
+        static native boolean rejectPromise0(long self, @Nullable String errorMsg);
 
         static native CefV8Value createUndefined0();
         static native CefV8Value createNull0();
@@ -1134,14 +1134,14 @@ public interface CefV8Value extends CefLibraryObject {
         static native CefV8Value createInt0(int value);
         static native CefV8Value createUint0(int value);
         static native CefV8Value createDouble0(double value);
-        static native CefV8Value createDate0(CefBasetime date);
-        static native CefV8Value createString0(String value);
-        static native CefV8Value createObject0(CefV8Accessor accessor, CefV8Interceptor interceptor);
+        static native CefV8Value createDate0(@Nullable CefBasetime date);
+        static native CefV8Value createString0(@Nullable String value);
+        static native CefV8Value createObject0(@Nullable CefV8Accessor accessor, @Nullable CefV8Interceptor interceptor);
         static native CefV8Value createArray0(int length);
-        static native CefV8Value createArrayBuffer0(ByteBuffer buffer, CefV8ArrayBufferReleaseCallback releaseCallback);
-        static native CefV8Value createArrayBufferWithCopy0(ByteBuffer buffer);
-        static native CefV8Value createArrayBufferFromBackingStore0(CefV8BackingStore backingStore);
-        static native CefV8Value createFunction0(String name, CefV8Handler handler);
+        static native CefV8Value createArrayBuffer0(@Nullable ByteBuffer buffer, @Nullable CefV8ArrayBufferReleaseCallback releaseCallback);
+        static native CefV8Value createArrayBufferWithCopy0(@Nullable ByteBuffer buffer);
+        static native CefV8Value createArrayBufferFromBackingStore0(@Nullable CefV8BackingStore backingStore);
+        static native CefV8Value createFunction0(@Nullable String name, @Nullable CefV8Handler handler);
         static native CefV8Value createPromise0();
 
         @Override

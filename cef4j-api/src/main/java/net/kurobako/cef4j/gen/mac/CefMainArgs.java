@@ -3,6 +3,7 @@ package net.kurobako.cef4j.gen.mac;
 
 import javax.annotation.processing.Generated;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing CefExecuteProcess arguments.
@@ -19,9 +20,9 @@ import java.util.List;
 public final class CefMainArgs {
 
     public final int argc;
-    public final List<String> argv;
+    public final @Nullable List<String> argv;
 
-    public CefMainArgs(int argc, List<String> argv) {
+    public CefMainArgs(int argc, @Nullable List<String> argv) {
         this.argc = argc;
         this.argv = argv;
     }
@@ -59,11 +60,11 @@ public final class CefMainArgs {
     public static final class Mutable {
 
         public int argc;
-        public List<String> argv;
+        public @Nullable List<String> argv;
 
         public Mutable() {}
 
-        public Mutable(int argc, List<String> argv) {
+        public Mutable(int argc, @Nullable List<String> argv) {
             this.argc = argc;
             this.argv = argv;
         }

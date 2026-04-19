@@ -3,6 +3,7 @@ package net.kurobako.cef4j;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +46,7 @@ final class NativeStderr {
         FileOutputStream originalStderr = (FileOutputStream) result[1];
 
         // Reassign System.err to the original stderr so Java output is unaffected
-        System.setErr(new PrintStream(originalStderr, true));
+        System.setErr(new PrintStream(originalStderr, true, StandardCharsets.UTF_8));
 
         Thread reader = new Thread(
                 () -> {
@@ -58,7 +59,7 @@ final class NativeStderr {
                                 log.debug("{}", line);
                             }
                         }
-                    } catch (Exception ignored) {
+                    } catch (IOException ignored) {
                         // Pipe closed during shutdown, ignore
                     }
                 },

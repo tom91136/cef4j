@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing a draggable region.
@@ -19,12 +20,12 @@ public final class CefDraggableRegion {
 
         /**
          * Bounds of the region. 
-         */    public final CefRect bounds;
+         */    public final @Nullable CefRect bounds;
         /**
          * True (1) this this region is draggable and {@code false} (0) otherwise. 
          */    public final int draggable;
 
-    public CefDraggableRegion(CefRect bounds, int draggable) {
+    public CefDraggableRegion(@Nullable CefRect bounds, int draggable) {
         this.bounds = bounds;
         this.draggable = draggable;
     }

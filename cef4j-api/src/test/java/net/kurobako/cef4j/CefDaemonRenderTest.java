@@ -41,6 +41,7 @@ import org.junit.jupiter.api.io.TempDir;
 class CefDaemonRenderTest {
 
     @TempDir
+    @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
     @BeforeAll
@@ -90,7 +91,7 @@ class CefDaemonRenderTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -100,7 +101,7 @@ class CefDaemonRenderTest {
 
                     @Override
                     public void onPaint(
-                            @Nonnull CefBrowser browser,
+                            @Nullable CefBrowser browser,
                             @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
                             @Nonnull CefRect[] dirtyRects,
@@ -122,7 +123,7 @@ class CefDaemonRenderTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nullable CefBrowser browser) {
                         browserReady.complete(browser);
                     }
                 });
@@ -241,7 +242,7 @@ class CefDaemonRenderTest {
                         "document.body.style.margin='0'; document.body.style.background='blue';", "about:blank", 0));
 
         ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor();
-        poller.scheduleAtFixedRate(
+        java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
                 () -> {
                     if (!redPaint.isDone()) {
                         redBrowser
@@ -282,7 +283,7 @@ class CefDaemonRenderTest {
     /** Starts a poller that calls {@code invalidate()} every 100ms to drive frame production. */
     private static ScheduledExecutorService startInvalidatePoller(CefBrowser browser, CompletableFuture<?> doneFuture) {
         ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor();
-        poller.scheduleAtFixedRate(
+        java.util.concurrent.Future<?> unused = poller.scheduleAtFixedRate(
                 () -> {
                     if (!doneFuture.isDone()) {
                         browser.getHost()
@@ -311,7 +312,7 @@ class CefDaemonRenderTest {
             public Optional<CefRenderHandler> getRenderHandler() {
                 return Optional.of(new CefRenderHandler() {
                     @Override
-                    public void getViewRect(@Nonnull CefBrowser browser, @Nonnull CefRect.Mutable rect) {
+                    public void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
                         rect.x = 0;
                         rect.y = 0;
                         rect.width = viewWidth;
@@ -331,7 +332,7 @@ class CefDaemonRenderTest {
 
                     @Override
                     public void onPaint(
-                            @Nonnull CefBrowser browser,
+                            @Nullable CefBrowser browser,
                             @Nonnull CefPaintElementType type,
                             long dirtyRectsCount,
                             @Nonnull CefRect[] dirtyRects,
@@ -356,7 +357,8 @@ class CefDaemonRenderTest {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser browser) {
+                    public void onAfterCreated(@Nullable CefBrowser browser) {
+                        if (browser == null) return;
                         browser.getHost().ifPresent(host -> {
                             host.wasResized();
                             host.invalidate(CefPaintElementType.of(CefPaintElementType.Kind.VIEW));

@@ -1,0 +1,173 @@
+name: CI
+
+# Gated: only runs when manually triggered from the Actions tab.
+# Re-enable push/PR triggers by restoring the block below when ready.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  #   tags: [ 'v*' ]
+  # pull_request:
+  #   branches: [ main ]
+
+# Native artifacts must stay portable: libcef4j.so links only against glibc, CEF, and the
+# JVM — libstdc++/libgcc are linked statically, and symbols are hidden via the version
+# script. On Linux we build inside manylinux_2_28 (AlmaLinux 8 / glibc 2.28) so the shipped
+# shared object runs on any distro with glibc >= 2.28.
+
+env:
+  CEF_146: '146.0.9+g3ca6a87+chromium-146.0.7680.165'
+  CEF_144: '144.0.19+g937f5c6+chromium-144.0.7559.246'
+  CEF_116: '116.0.27+gd8c85ac+chromium-116.0.5845.190'
+  CEF_109: '109.1.18+gf1c41e4+chromium-109.0.5414.120'
+
+jobs:
+
+  linux:
+    name: linux / JDK ${{ matrix.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.javafx }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '11', '17', '21', '25' ]
+        cef:
+          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
+          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
+          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
+          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
+        javafx: [ '11.0.2', '17.0.15', '21.0.7', '25.0.2' ]
+        exclude:
+          # JavaFX N requires JDK >= N
+          - { java: '11', javafx: '17.0.15' }
+          - { java: '11', javafx: '21.0.7' }
+          - { java: '11', javafx: '25.0.2' }
+          - { java: '17', javafx: '21.0.7' }
+          - { java: '17', javafx: '25.0.2' }
+          - { java: '21', javafx: '25.0.2' }
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache Maven local repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-
+            maven-linux-jdk${{ matrix.java }}-
+
+      - name: Cache CEF distribution
+        uses: actions/cache@v4
+        with:
+          path: .cef-dist
+          key: cef-dist-${{ matrix.cef.version }}
+
+      # The manylinux_2_28 image has no node/JS runtime, so actions/checkout and friends
+      # can't run inside it. Host ubuntu-latest handles checkout + cache; the build itself
+      # runs in the manylinux container via docker run.
+      - name: Build + test in manylinux_2_28
+        run: |
+          mkdir -p "${HOME}/.m2"
+          docker run --rm \
+            --network host \
+            -v "${GITHUB_WORKSPACE}:/work" \
+            -v "${HOME}/.m2:/root/.m2" \
+            -e JAVA_VER=${{ matrix.java }} \
+            -e CEF_VERSION=${{ matrix.cef.version }} \
+            -e CEF_API=${{ matrix.cef.api }} \
+            -e JAVAFX_VERSION=${{ matrix.javafx }} \
+            quay.io/pypa/manylinux_2_28_x86_64 \
+            bash /work/.github/ci/linux-build.sh
+
+      - name: Stage artifacts
+        if: github.event_name == 'push' && !env.ACT
+        shell: bash
+        run: |
+          mkdir -p staging
+          cp cef4j-api/target/cef4j-api-*.jar          staging/ 2>/dev/null || true
+          cp cef4j-native/target/cef4j-native-*.jar    staging/ 2>/dev/null || true
+          cp cef4j-platform/target/cef4j-platform-*.jar staging/ 2>/dev/null || true
+          cp cef4j-osr-swing/target/cef4j-osr-swing-*.jar staging/ 2>/dev/null || true
+          cp cef4j-osr-jfx/target/cef4j-osr-jfx-*.jar  staging/ 2>/dev/null || true
+          cp cef4j-sample/target/cef4j-sample-*.jar    staging/ 2>/dev/null || true
+          rm -f staging/*-sources.jar staging/*-javadoc.jar
+
+      - name: Upload artifacts
+        if: github.event_name == 'push' && !env.ACT
+        uses: actions/upload-artifact@v7
+        with:
+          name: cef4j-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.javafx }}
+          path: staging/*.jar
+          if-no-files-found: error
+
+  desktop:
+    name: ${{ matrix.os }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.javafx }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, macos-14, macos-13 ]
+        java: [ '11', '17', '21', '25' ]
+        cef:
+          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
+          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
+          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
+          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
+        javafx: [ '11.0.2', '17.0.15', '21.0.7', '25.0.2' ]
+        exclude:
+          - { java: '11', javafx: '17.0.15' }
+          - { java: '11', javafx: '21.0.7' }
+          - { java: '11', javafx: '25.0.2' }
+          - { java: '17', javafx: '21.0.7' }
+          - { java: '17', javafx: '25.0.2' }
+          - { java: '21', javafx: '25.0.2' }
+          # JavaFX 11 has no mac-aarch64 natives
+          - { os: 'macos-14', javafx: '11.0.2' }
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'corretto'
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+
+      - name: Cache CEF distribution
+        uses: actions/cache@v4
+        with:
+          path: .cef-dist
+          key: cef-dist-${{ matrix.os }}-${{ matrix.cef.version }}
+
+      - name: Resolve dependencies
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: ./mvnw -B dependency:go-offline "-Dcef.version=${{ matrix.cef.version }}" "-Dcef.api.version=${{ matrix.cef.api }}" "-Djavafx.version=${{ matrix.javafx }}"
+
+      - name: Build + test
+        run: ./mvnw -B verify "-Dcef.version=${{ matrix.cef.version }}" "-Dcef.api.version=${{ matrix.cef.api }}" "-Djavafx.version=${{ matrix.javafx }}"
+
+      - name: Stage artifacts
+        if: github.event_name == 'push' && !env.ACT
+        shell: bash
+        run: |
+          mkdir -p staging
+          cp cef4j-api/target/cef4j-api-*.jar          staging/ 2>/dev/null || true
+          cp cef4j-native/target/cef4j-native-*.jar    staging/ 2>/dev/null || true
+          cp cef4j-platform/target/cef4j-platform-*.jar staging/ 2>/dev/null || true
+          cp cef4j-osr-swing/target/cef4j-osr-swing-*.jar staging/ 2>/dev/null || true
+          cp cef4j-osr-jfx/target/cef4j-osr-jfx-*.jar  staging/ 2>/dev/null || true
+          cp cef4j-sample/target/cef4j-sample-*.jar    staging/ 2>/dev/null || true
+          rm -f staging/*-sources.jar staging/*-javadoc.jar
+
+      - name: Upload artifacts
+        if: github.event_name == 'push' && !env.ACT
+        uses: actions/upload-artifact@v7
+        with:
+          name: cef4j-${{ matrix.os }}-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.javafx }}
+          path: staging/*.jar
+          if-no-files-found: error

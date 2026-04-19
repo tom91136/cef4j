@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
@@ -73,7 +74,8 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                 .isTrue();
 
-        WebHistory history = onFxThread(() -> view.getEngine().getHistory());
+        WebHistory history =
+                Objects.requireNonNull(onFxThread(() -> view.getEngine().getHistory()), "history");
         assertThat(onFxThread(history::getEntries)).isEmpty();
         assertThat(onFxThread(history::getCurrentIndex)).isEqualTo(0);
     }
@@ -93,7 +95,8 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
             assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                     .isTrue();
 
-            WebHistory history = onFxThread(() -> view.getEngine().getHistory());
+            WebHistory history =
+                    Objects.requireNonNull(onFxThread(() -> view.getEngine().getHistory()), "history");
             assertThat(waitUntilOnFx(() -> history.getEntries().size() >= 2, 3_000))
                     .isTrue();
             assertThat(onFxThread(history::getCurrentIndex)).isGreaterThanOrEqualTo(1);
@@ -119,7 +122,8 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
             assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 3_000))
                     .isTrue();
 
-            WebHistory history = onFxThread(() -> view.getEngine().getHistory());
+            WebHistory history =
+                    Objects.requireNonNull(onFxThread(() -> view.getEngine().getHistory()), "history");
             onFxThread(() -> history.go(-1));
             assertThat(waitUntilOnFx(() -> "one".equals(view.getEngine().getTitle()), 3_000))
                     .isTrue();

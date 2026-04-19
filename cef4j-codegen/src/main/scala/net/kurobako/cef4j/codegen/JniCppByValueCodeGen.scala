@@ -7,12 +7,7 @@ class JniCppByValueCodeGen(
 )(using Naming.Context) {
 
   import JniCppByValueCodeGen.*
-
-  private def jniName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedJavaNameForJniLookup(cefName))
-
-  private def jniMutableName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedMutableNameForJniLookup(cefName))
+  import JniNaming.jniName
 
   private def isSizeField(f: Field): Boolean = f.name == "size" && f.typ == CType.SizeT
 

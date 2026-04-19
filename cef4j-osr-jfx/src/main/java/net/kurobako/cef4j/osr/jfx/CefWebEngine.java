@@ -23,11 +23,12 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Callback;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.CefScriptEngine;
 import org.w3c.dom.Document;
 
 /**
- * JavaFX WebView-compatiable engine facade backed by a {@link CefWebView}.
+ * JavaFX WebView-compatible engine facade backed by a {@link CefWebView}.
  *
  * <p>The API intentionally tracks the most common {@code WebEngine} entry points first. Callers that need full CEF
  * control can drop down to the owning {@link CefWebView}.
@@ -115,6 +116,7 @@ public final class CefWebEngine {
      * alternative.
      */
     @Deprecated
+    @Nullable
     public Object executeScript(String script) {
         view.executeScript(script);
         return null;
@@ -247,11 +249,12 @@ public final class CefWebEngine {
         return userDataDirectory;
     }
 
+    @Nullable
     public EventHandler<CefWebEvent<String>> getOnAlert() {
         return onAlert.get();
     }
 
-    public void setOnAlert(EventHandler<CefWebEvent<String>> handler) {
+    public void setOnAlert(@Nullable EventHandler<CefWebEvent<String>> handler) {
         onAlert.set(handler);
     }
 
@@ -259,11 +262,12 @@ public final class CefWebEngine {
         return onAlert;
     }
 
+    @Nullable
     public EventHandler<CefWebEvent<String>> getOnStatusChanged() {
         return onStatusChanged.get();
     }
 
-    public void setOnStatusChanged(EventHandler<CefWebEvent<String>> handler) {
+    public void setOnStatusChanged(@Nullable EventHandler<CefWebEvent<String>> handler) {
         onStatusChanged.set(handler);
     }
 
@@ -271,11 +275,12 @@ public final class CefWebEngine {
         return onStatusChanged;
     }
 
+    @Nullable
     public EventHandler<CefWebEvent<Rectangle2D>> getOnResized() {
         return onResized.get();
     }
 
-    public void setOnResized(EventHandler<CefWebEvent<Rectangle2D>> handler) {
+    public void setOnResized(@Nullable EventHandler<CefWebEvent<Rectangle2D>> handler) {
         onResized.set(handler);
     }
 
@@ -283,11 +288,12 @@ public final class CefWebEngine {
         return onResized;
     }
 
+    @Nullable
     public EventHandler<CefWebEvent<Boolean>> getOnVisibilityChanged() {
         return onVisibilityChanged.get();
     }
 
-    public void setOnVisibilityChanged(EventHandler<CefWebEvent<Boolean>> handler) {
+    public void setOnVisibilityChanged(@Nullable EventHandler<CefWebEvent<Boolean>> handler) {
         onVisibilityChanged.set(handler);
     }
 
@@ -295,11 +301,12 @@ public final class CefWebEngine {
         return onVisibilityChanged;
     }
 
+    @Nullable
     public Callback<CefPopupFeatures, CefWebEngine> getCreatePopupHandler() {
         return createPopupHandler.get();
     }
 
-    public void setCreatePopupHandler(Callback<CefPopupFeatures, CefWebEngine> handler) {
+    public void setCreatePopupHandler(@Nullable Callback<CefPopupFeatures, CefWebEngine> handler) {
         createPopupHandler.set(handler);
     }
 
@@ -307,11 +314,12 @@ public final class CefWebEngine {
         return createPopupHandler;
     }
 
+    @Nullable
     public Callback<String, Boolean> getConfirmHandler() {
         return confirmHandler.get();
     }
 
-    public void setConfirmHandler(Callback<String, Boolean> handler) {
+    public void setConfirmHandler(@Nullable Callback<String, Boolean> handler) {
         confirmHandler.set(handler);
     }
 
@@ -319,11 +327,12 @@ public final class CefWebEngine {
         return confirmHandler;
     }
 
+    @Nullable
     public Callback<CefPromptData, String> getPromptHandler() {
         return promptHandler.get();
     }
 
-    public void setPromptHandler(Callback<CefPromptData, String> handler) {
+    public void setPromptHandler(@Nullable Callback<CefPromptData, String> handler) {
         promptHandler.set(handler);
     }
 
@@ -331,11 +340,12 @@ public final class CefWebEngine {
         return promptHandler;
     }
 
+    @Nullable
     public EventHandler<CefWebErrorEvent> getOnError() {
         return onError.get();
     }
 
-    public void setOnError(EventHandler<CefWebErrorEvent> handler) {
+    public void setOnError(@Nullable EventHandler<CefWebErrorEvent> handler) {
         onError.set(handler);
     }
 
@@ -343,11 +353,11 @@ public final class CefWebEngine {
         return onError;
     }
 
-    void updateLocation(String value) {
+    void updateLocation(@Nullable String value) {
         location.set(value == null || value.isEmpty() ? "about:blank" : value);
     }
 
-    void updateTitle(String value) {
+    void updateTitle(@Nullable String value) {
         title.set(value == null ? "" : value);
     }
 

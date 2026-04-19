@@ -80,7 +80,7 @@ public interface CefSchemeRegistrar extends CefLibraryObject {
       }
 
 
-        static native boolean addCustomScheme0(long self, String schemeName, int options);
+        static native boolean addCustomScheme0(long self, @Nullable String schemeName, int options);
 
 
         @Override

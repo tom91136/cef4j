@@ -521,27 +521,27 @@ public interface CefDragData extends CefLibraryObject {
 
         static native String getFileName0(long self);
 
-        static native long getFileContents0(long self, CefStreamWriter writer);
+        static native long getFileContents0(long self, @Nullable CefStreamWriter writer);
 
-        static native boolean getFileNames0(long self, List<String> names);
+        static native boolean getFileNames0(long self, @Nonnull List<String> names);
 
-        static native boolean getFilePaths0(long self, List<String> paths);
+        static native boolean getFilePaths0(long self, @Nonnull List<String> paths);
 
-        static native void setLinkUrl0(long self, String url);
+        static native void setLinkUrl0(long self, @Nullable String url);
 
-        static native void setLinkTitle0(long self, String title);
+        static native void setLinkTitle0(long self, @Nullable String title);
 
-        static native void setLinkMetadata0(long self, String data);
+        static native void setLinkMetadata0(long self, @Nullable String data);
 
-        static native void setFragmentText0(long self, String text);
+        static native void setFragmentText0(long self, @Nullable String text);
 
-        static native void setFragmentHtml0(long self, String html);
+        static native void setFragmentHtml0(long self, @Nullable String html);
 
-        static native void setFragmentBaseUrl0(long self, String baseUrl);
+        static native void setFragmentBaseUrl0(long self, @Nullable String baseUrl);
 
         static native void resetFileContents0(long self);
 
-        static native void addFile0(long self, String path, String displayName);
+        static native void addFile0(long self, @Nullable String path, @Nullable String displayName);
 
         static native void clearFilenames0(long self);
 

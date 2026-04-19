@@ -59,6 +59,7 @@ final class CefWebViewClient implements CefClient {
     private final CefWebView view;
     private final CefRenderHandler renderHandler;
     private final CefLoadHandler scrollbarLoadHandler;
+    private String lastHistoryFingerprint = "";
 
     CefWebViewClient(CefWebView view) {
         this.view = view;
@@ -87,52 +88,52 @@ final class CefWebViewClient implements CefClient {
     public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
         return Optional.of(new CefLifeSpanHandler() {
             @Override
-            public void onAfterCreated(CefBrowser browser) {
+            public void onAfterCreated(@Nullable CefBrowser browser) {
                 view.onBrowserCreated(browser);
                 refreshHistoryFromBrowser(browser);
             }
 
+            // Two onBeforePopup overloads: v117+ takes popupId, older builds don't. The
+            // @Override would match in one API generation and fail to compile in the other;
+            // drop it and silence Error Prone's MissingOverride.
+            @SuppressWarnings("MissingOverride")
             public boolean onBeforePopup(
-                    CefBrowser browser,
-                    CefFrame frame,
+                    @Nullable CefBrowser browser,
+                    @Nullable CefFrame frame,
                     int popupId,
-                    String targetUrl,
-                    String targetFrameName,
+                    @Nullable String targetUrl,
+                    @Nullable String targetFrameName,
                     @Nonnull CefWindowOpenDisposition targetDisposition,
                     boolean userGesture,
-                    CefPopupFeatures popupFeatures,
+                    @Nullable CefPopupFeatures popupFeatures,
                     @Nonnull CefWindowInfo.Mutable windowInfo,
-                    AtomicReference<CefClient> clientRef,
+                    @Nullable AtomicReference<CefClient> clientRef,
                     @Nonnull CefBrowserSettings.Mutable settings,
-                    AtomicReference<CefDictionaryValue> extraInfo,
+                    @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                     int[] noJavascriptAccess) {
-                return handleBeforePopup(windowInfo, clientRef);
+                return view.handleBeforePopup(windowInfo, clientRef);
             }
 
+            @SuppressWarnings("MissingOverride")
             public boolean onBeforePopup(
-                    CefBrowser browser,
-                    CefFrame frame,
-                    String targetUrl,
-                    String targetFrameName,
+                    @Nullable CefBrowser browser,
+                    @Nullable CefFrame frame,
+                    @Nullable String targetUrl,
+                    @Nullable String targetFrameName,
                     @Nonnull CefWindowOpenDisposition targetDisposition,
                     boolean userGesture,
-                    CefPopupFeatures popupFeatures,
+                    @Nullable CefPopupFeatures popupFeatures,
                     @Nonnull CefWindowInfo.Mutable windowInfo,
-                    AtomicReference<CefClient> clientRef,
+                    @Nullable AtomicReference<CefClient> clientRef,
                     @Nonnull CefBrowserSettings.Mutable settings,
-                    AtomicReference<CefDictionaryValue> extraInfo,
+                    @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                     int[] noJavascriptAccess) {
-                return handleBeforePopup(windowInfo, clientRef);
+                return view.handleBeforePopup(windowInfo, clientRef);
             }
 
             @Override
-            public void onBeforeClose(CefBrowser browser) {
+            public void onBeforeClose(@Nullable CefBrowser browser) {
                 view.onBeforeBrowserClose();
-            }
-
-            private boolean handleBeforePopup(
-                    @Nonnull CefWindowInfo.Mutable windowInfo, AtomicReference<CefClient> clientRef) {
-                return view.handleBeforePopup(windowInfo, clientRef);
             }
         });
     }
@@ -142,13 +143,13 @@ final class CefWebViewClient implements CefClient {
         return Optional.of(new CefLoadHandler() {
             @Override
             public void onLoadingStateChange(
-                    CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                    @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
                 Platform.runLater(() -> view.engine.updateLoadState(isLoading, canGoBack, canGoForward));
                 refreshHistoryFromBrowser(browser);
             }
 
             @Override
-            public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+            public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                 if (!isMainFrame(frame)) return;
                 scrollbarLoadHandler.onLoadEnd(browser, frame, httpStatusCode);
                 Platform.runLater(() -> {
@@ -160,11 +161,11 @@ final class CefWebViewClient implements CefClient {
 
             @Override
             public void onLoadError(
-                    CefBrowser browser,
-                    CefFrame frame,
+                    @Nullable CefBrowser browser,
+                    @Nullable CefFrame frame,
                     @Nonnull CefErrorCode errorCode,
-                    String errorText,
-                    String failedUrl) {
+                    @Nullable String errorText,
+                    @Nullable String failedUrl) {
                 if (!isMainFrame(frame)) return;
                 Platform.runLater(() -> view.engine.markLoadFailed(new RuntimeException(errorText)));
             }
@@ -175,34 +176,38 @@ final class CefWebViewClient implements CefClient {
     public Optional<CefDisplayHandler> getDisplayHandler() {
         return Optional.of(new CefDisplayHandler() {
             @Override
-            public void onTitleChange(CefBrowser browser, String title) {
+            public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
                 Platform.runLater(() -> view.engine.updateTitle(title));
             }
 
             @Override
-            public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
+            public void onAddressChange(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {
                 if (!isMainFrame(frame)) return;
                 Platform.runLater(() -> view.engine.updateLocation(url));
             }
 
             @Override
-            public void onLoadingProgressChange(CefBrowser browser, double progress) {
+            public void onLoadingProgressChange(@Nullable CefBrowser browser, double progress) {
                 Platform.runLater(() -> view.engine.updateLoadProgress(progress));
             }
 
             @Override
             public boolean onConsoleMessage(
-                    CefBrowser browser, @Nonnull CefLogSeverity level, String message, String source, int line) {
+                    @Nullable CefBrowser browser,
+                    @Nonnull CefLogSeverity level,
+                    @Nullable String message,
+                    @Nullable String source,
+                    int line) {
                 return false;
             }
 
             @Override
-            public void onStatusMessage(CefBrowser browser, String value) {
-                Platform.runLater(() -> view.engine.fireStatusChanged(value != null ? value : ""));
+            public void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {
+                Platform.runLater(() -> view.engine.fireStatusChanged(Objects.requireNonNullElse(value, "")));
             }
 
             @Override
-            public boolean onAutoResize(CefBrowser browser, @Nonnull CefSize newSize) {
+            public boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
                 Rectangle2D currentBounds = view.detachedBounds;
                 view.updateDetachedBounds(
                         new CefRect(
@@ -215,24 +220,37 @@ final class CefWebViewClient implements CefClient {
                 return false;
             }
 
-            public boolean onContentsBoundsChange(CefBrowser browser, @Nonnull CefRect newBounds) {
+            // v117+-only handler; absent in older CEF generations.
+            @SuppressWarnings("MissingOverride")
+            public boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
                 view.updateDetachedBounds(newBounds, true);
                 view.requestViewRefresh(true);
                 return true;
             }
 
+            // Two onCursorChange overloads: the cursor handle is int on some CEF generations
+            // and long on others. Drop @Override and silence Error Prone.
+            @SuppressWarnings("MissingOverride")
             public boolean onCursorChange(
-                    CefBrowser browser, long cursor, @Nonnull CefCursorType type, CefCursorInfo customCursorInfo) {
+                    @Nullable CefBrowser browser,
+                    long cursor,
+                    @Nonnull CefCursorType type,
+                    @Nullable CefCursorInfo customCursorInfo) {
                 return updateCursor(type);
             }
 
+            @SuppressWarnings("MissingOverride")
             public boolean onCursorChange(
-                    CefBrowser browser, int cursor, @Nonnull CefCursorType type, CefCursorInfo customCursorInfo) {
+                    @Nullable CefBrowser browser,
+                    int cursor,
+                    @Nonnull CefCursorType type,
+                    @Nullable CefCursorInfo customCursorInfo) {
                 return updateCursor(type);
             }
 
             private boolean updateCursor(@Nonnull CefCursorType type) {
                 Cursor jfxCursor = view.mapCursor(type);
+                if (view.getCursor() == jfxCursor) return true;
                 Platform.runLater(() -> view.setCursor(jfxCursor));
                 return true;
             }
@@ -303,7 +321,7 @@ final class CefWebViewClient implements CefClient {
                     @Nullable String messageText,
                     @Nullable String defaultPromptText,
                     @Nullable CefJsDialogCallback callback,
-                    @Nullable int[] suppressMessage) {
+                    int[] suppressMessage) {
                 CefJsDialogType.Kind kind = dialogType.kind().orElse(CefJsDialogType.Kind.ALERT);
                 switch (kind) {
                     case ALERT:
@@ -334,7 +352,10 @@ final class CefWebViewClient implements CefClient {
 
             @Override
             public boolean onBeforeUnloadDialog(
-                    CefBrowser browser, String messageText, boolean isReload, CefJsDialogCallback callback) {
+                    @Nullable CefBrowser browser,
+                    @Nullable String messageText,
+                    boolean isReload,
+                    @Nullable CefJsDialogCallback callback) {
                 javafx.util.Callback<String, Boolean> confirm = view.engine.getConfirmHandler();
                 if (confirm == null) return false;
                 AtomicReference<Boolean> confirmResult = new AtomicReference<>(Boolean.FALSE);
@@ -361,7 +382,7 @@ final class CefWebViewClient implements CefClient {
         for (long i = 0; i < count; i++) {
             int commandId = model.getCommandIdAt(i);
             CefMenuItemType.Kind kind = model.getType(commandId).kind().orElse(CefMenuItemType.Kind.NONE);
-            String label = model.getLabel(commandId).orElse("").replace("&", "");
+            String label = stripMnemonic(model.getLabel(commandId).orElse(""));
             javafx.event.EventHandler<javafx.event.ActionEvent> fire = e -> {
                 if (dispatched.compareAndSet(false, true)) {
                     view.hideContextMenu();
@@ -399,30 +420,61 @@ final class CefWebViewClient implements CefClient {
         return items;
     }
 
+    // CEF uses '&' as a mnemonic marker; unescape '&&' to '&' and drop single '&'.
+    private static String stripMnemonic(String label) {
+        if (label.indexOf('&') < 0) return label;
+        StringBuilder sb = new StringBuilder(label.length());
+        int i = 0;
+        while (i < label.length()) {
+            char c = label.charAt(i);
+            if (c == '&' && i + 1 < label.length() && label.charAt(i + 1) == '&') {
+                sb.append('&');
+                i += 2;
+            } else if (c == '&') {
+                i++;
+            } else {
+                sb.append(c);
+                i++;
+            }
+        }
+        return sb.toString();
+    }
+
     private static boolean isMainFrame(@Nullable CefFrame frame) {
         return frame != null && frame.isMain();
     }
 
-    private void refreshHistoryFromBrowser(CefBrowser browser) {
+    // EntrySnapshot mirrors javafx.scene.web.WebHistory.Entry.getLastVisitedDate() which
+    // exposes java.util.Date; keep the type to preserve drop-in compatibility.
+    @SuppressWarnings("JavaUtilDate")
+    private void refreshHistoryFromBrowser(@Nullable CefBrowser browser) {
         if (view.engine.shouldSuppressNavigationHistory()) {
-            Platform.runLater(() -> view.engine.refreshHistory(List.of(), 0));
+            if (!"suppressed".equals(lastHistoryFingerprint)) {
+                lastHistoryFingerprint = "suppressed";
+                Platform.runLater(() -> view.engine.refreshHistory(List.of(), 0));
+            }
             return;
         }
         var host = browser != null ? browser.getHost().orElse(null) : null;
         if (host == null) return;
         List<CefWebHistory.EntrySnapshot> snapshots = new ArrayList<>();
         final int[] currentIndex = {-1};
+        StringBuilder fingerprint = new StringBuilder();
         host.getNavigationEntries(
                 new CefNavigationEntryVisitor() {
                     @Override
-                    public boolean visit(CefNavigationEntry entry, boolean current, int index, int total) {
-                        snapshots.add(new CefWebHistory.EntrySnapshot(
-                                entry != null ? entry.getUrl().orElse("") : "",
-                                entry != null ? entry.getTitle().orElse("") : "",
-                                new Date()));
+                    public boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
+                        String url = entry != null ? entry.getUrl().orElse("") : "";
+                        String title = entry != null ? entry.getTitle().orElse("") : "";
+                        snapshots.add(new CefWebHistory.EntrySnapshot(url, title, new Date()));
+                        fingerprint.append(url).append('\u0001').append(title).append('\u0002');
                         if (current) currentIndex[0] = index;
                         if (index + 1 == total) {
-                            Platform.runLater(() -> view.engine.refreshHistory(snapshots, currentIndex[0]));
+                            String fp = currentIndex[0] + "|" + fingerprint;
+                            if (!fp.equals(lastHistoryFingerprint)) {
+                                lastHistoryFingerprint = fp;
+                                Platform.runLater(() -> view.engine.refreshHistory(snapshots, currentIndex[0]));
+                            }
                         }
                         return true;
                     }

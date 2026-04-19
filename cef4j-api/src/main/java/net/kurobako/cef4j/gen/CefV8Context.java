@@ -248,9 +248,9 @@ public interface CefV8Context extends CefLibraryObject {
 
         static native boolean exit0(long self);
 
-        static native boolean isSame0(long self, CefV8Context that);
+        static native boolean isSame0(long self, @Nullable CefV8Context that);
 
-        static native boolean eval0(long self, String code, String scriptUrl, int startLine, AtomicReference<CefV8Value> retval, AtomicReference<CefV8Exception> exception);
+        static native boolean eval0(long self, @Nullable String code, @Nullable String scriptUrl, int startLine, @Nullable AtomicReference<CefV8Value> retval, @Nullable AtomicReference<CefV8Exception> exception);
 
         static native CefV8Context getCurrentContext0();
         static native CefV8Context getEnteredContext0();

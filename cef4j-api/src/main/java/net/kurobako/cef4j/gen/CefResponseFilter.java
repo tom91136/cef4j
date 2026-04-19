@@ -43,7 +43,7 @@ public interface CefResponseFilter extends CefClientHandler {
      * 1. There is no more input data to filter (the resource response is complete) and the user sets {@code data_out_written} = 0 or returns RESPONSE_FILTER_DONE to indicate that all data has been written, or; 2. The user returns RESPONSE_FILTER_ERROR to indicate an error.
      * <p>
      * Do not keep a reference to the buffers passed to this method.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataInSize}, {@code dataOutSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_in_size}, {@code data_out_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_response_filter_capi.h
      * <pre>cef_response_filter_status_t (CEF_CALLBACK* filter)(struct _cef_response_filter_t* self, void* data_in, size_t data_in_size, size_t* data_in_read, void* data_out, size_t data_out_size, size_t* data_out_written);</pre>
      *
@@ -54,7 +54,7 @@ public interface CefResponseFilter extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:59</a>
      */
-    default CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+    default @Nullable CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
         return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
     }
     /**
@@ -81,7 +81,7 @@ public interface CefResponseFilter extends CefClientHandler {
         }
 
         @Override
-        public CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
+        public @Nullable CefResponseFilterStatus filter(@Nullable ByteBuffer dataIn, long[] dataInRead, @Nonnull ByteBuffer dataOut, long[] dataOutWritten) {
             if (!delegates.isEmpty()) return delegates.get(0).filter(dataIn, dataInRead, dataOut, dataOutWritten);
             return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
         }

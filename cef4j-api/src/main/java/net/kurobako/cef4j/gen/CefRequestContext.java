@@ -515,9 +515,9 @@ public interface CefRequestContext extends CefPreferenceManager {
           return Optional.ofNullable(CefPreferenceManager.NativePeer.addPreferenceObserver0(nativePtr, name, observer));
       }
 
-        static native boolean isSame0(long self, CefRequestContext other);
+        static native boolean isSame0(long self, @Nullable CefRequestContext other);
 
-        static native boolean isSharingWith0(long self, CefRequestContext other);
+        static native boolean isSharingWith0(long self, @Nullable CefRequestContext other);
 
         static native boolean isGlobal0(long self);
 
@@ -525,31 +525,31 @@ public interface CefRequestContext extends CefPreferenceManager {
 
         static native String getCachePath0(long self);
 
-        static native CefCookieManager getCookieManager0(long self, CefCompletionCallback callback);
+        static native CefCookieManager getCookieManager0(long self, @Nullable CefCompletionCallback callback);
 
-        static native boolean registerSchemeHandlerFactory0(long self, String schemeName, String domainName, CefSchemeHandlerFactory factory);
+        static native boolean registerSchemeHandlerFactory0(long self, @Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory);
 
         static native boolean clearSchemeHandlerFactories0(long self);
 
-        static native void clearCertificateExceptions0(long self, CefCompletionCallback callback);
+        static native void clearCertificateExceptions0(long self, @Nullable CefCompletionCallback callback);
 
-        static native void clearHttpAuthCredentials0(long self, CefCompletionCallback callback);
+        static native void clearHttpAuthCredentials0(long self, @Nullable CefCompletionCallback callback);
 
-        static native void closeAllConnections0(long self, CefCompletionCallback callback);
+        static native void closeAllConnections0(long self, @Nullable CefCompletionCallback callback);
 
-        static native void resolveHost0(long self, String origin, CefResolveCallback callback);
+        static native void resolveHost0(long self, @Nullable String origin, @Nullable CefResolveCallback callback);
 
-        static native CefMediaRouter getMediaRouter0(long self, CefCompletionCallback callback);
+        static native CefMediaRouter getMediaRouter0(long self, @Nullable CefCompletionCallback callback);
 
-        static native CefValue getWebsiteSetting0(long self, String requestingUrl, String topLevelUrl, CefContentSettingTypes contentType);
+        static native CefValue getWebsiteSetting0(long self, @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
 
-        static native void setWebsiteSetting0(long self, String requestingUrl, String topLevelUrl, CefContentSettingTypes contentType, CefValue value);
+        static native void setWebsiteSetting0(long self, @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType, @Nullable CefValue value);
 
-        static native CefContentSettingValues getContentSetting0(long self, String requestingUrl, String topLevelUrl, CefContentSettingTypes contentType);
+        static native CefContentSettingValues getContentSetting0(long self, @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
 
-        static native void setContentSetting0(long self, String requestingUrl, String topLevelUrl, CefContentSettingTypes contentType, CefContentSettingValues value);
+        static native void setContentSetting0(long self, @Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType, @Nonnull CefContentSettingValues value);
 
-        static native void setChromeColorScheme0(long self, CefColorVariant variant, int userColor);
+        static native void setChromeColorScheme0(long self, @Nonnull CefColorVariant variant, int userColor);
 
         static native CefColorVariant getChromeColorSchemeMode0(long self);
 
@@ -557,13 +557,13 @@ public interface CefRequestContext extends CefPreferenceManager {
 
         static native CefColorVariant getChromeColorSchemeVariant0(long self);
 
-        static native CefRegistration addSettingObserver0(long self, CefSettingObserver observer);
+        static native CefRegistration addSettingObserver0(long self, @Nullable CefSettingObserver observer);
 
-        static native void clearHttpCache0(long self, CefCompletionCallback callback);
+        static native void clearHttpCache0(long self, @Nullable CefCompletionCallback callback);
 
         static native CefRequestContext getGlobalContext0();
-        static native CefRequestContext createContext0(CefRequestContextSettings settings, CefRequestContextHandler handler);
-        static native CefRequestContext cefCreateContextShared0(CefRequestContext other, CefRequestContextHandler handler);
+        static native CefRequestContext createContext0(@Nonnull CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler);
+        static native CefRequestContext cefCreateContextShared0(@Nullable CefRequestContext other, @Nullable CefRequestContextHandler handler);
 
         @Override
         public boolean equals(Object obj) {

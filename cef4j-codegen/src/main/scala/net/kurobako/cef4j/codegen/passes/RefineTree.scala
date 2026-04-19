@@ -59,6 +59,8 @@ object RefineTree {
   )(using ctx: Naming.Context): CefDecl = {
     // Resolve the C++ class name for this struct (e.g., "cef_menu_model_t" -> "CefMenuModel")
     val cppClassName = decl.namedStruct.flatMap(ctx.cppClassNames.get)
+    // Case-insensitive fallback lookup: pre-lower once per decl instead of scanning per function.
+    lazy val lowerToKey = cppTypeInfo.keysIterator.map(k => k.toLowerCase -> k).toMap
 
     def recover(fn: FnPtr): FnPtr = {
       val pascal   = Naming.toPascalCase(fn.name)
@@ -69,7 +71,7 @@ object RefineTree {
         .orElse(cppTypeInfo.get(pascal).map(_ => pascal))
         .orElse(cppTypeInfo.get(fn.name).map(_ => fn.name))
         .orElse(capiName.filter(cppTypeInfo.contains))
-        .orElse(cppTypeInfo.keys.find(_.equalsIgnoreCase(pascal)))
+        .orElse(lowerToKey.get(pascal.toLowerCase))
       val info = matchedKey.flatMap(cppTypeInfo.get)
 
       info match {
@@ -108,10 +110,11 @@ object RefineTree {
       docs: Map[String, String],
       cppMethodNames: Set[String]
   )(using Naming.Context): CefDecl = {
+    lazy val lowerToName         = cppMethodNames.iterator.map(n => n.toLowerCase -> n).toMap
     def enrich(fn: FnPtr): FnPtr = {
       val pascal  = Naming.toPascalCase(fn.name)
       val docText = DocComments.resolveMethodDoc(fn, docs, decl.namedStruct.getOrElse(""))
-        .orElse(cppMethodNames.find(_.equalsIgnoreCase(pascal)).flatMap(docs.get))
+        .orElse(lowerToName.get(pascal.toLowerCase).flatMap(docs.get))
       docText match {
         case Some(text) => fn.copy(metaAttrs = DocComments.extractAttrsList(text))
         case None       => fn

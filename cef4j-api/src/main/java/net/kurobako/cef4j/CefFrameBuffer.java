@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 
 /**
@@ -68,7 +69,7 @@ public final class CefFrameBuffer<I> {
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        I stamp(I prev, int[] pixels, int width, int height, CefRect[] dirtyRects);
+        I stamp(@Nullable I prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
     }
 
     private int[] pixelBuffer;
@@ -92,8 +93,8 @@ public final class CefFrameBuffer<I> {
     // while the consumer (EDT) reads from frontImage. After stamping,
     // backImage is published as frontImage and the old front becomes the
     // new back buffer for the next frame.
-    private volatile I frontImage;
-    private I backImage;
+    private volatile @Nullable I frontImage;
+    private @Nullable I backImage;
 
     /**
      * Create a frame buffer with a pre-allocated pixel buffer.
@@ -128,7 +129,7 @@ public final class CefFrameBuffer<I> {
      * @param height frame height in pixels
      * @return the stamped image, or {@code null} if the frame was skipped
      */
-    public I onPaint(ByteBuffer buffer, int width, int height) {
+    public @Nullable I onPaint(ByteBuffer buffer, int width, int height) {
         return onPaint(buffer, width, height, null);
     }
 
@@ -145,7 +146,7 @@ public final class CefFrameBuffer<I> {
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
      * @return the stamped image, or {@code null} if the frame was skipped
      */
-    public I onPaint(ByteBuffer buffer, int width, int height, CefRect[] dirtyRects) {
+    public @Nullable I onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
         if (width <= 0 || height <= 0 || buffer == null) return null;
 
         // Back-pressure: skip if consumer hasn't consumed the last frame.
@@ -165,15 +166,13 @@ public final class CefFrameBuffer<I> {
         // bits [0:7]=B, [8:15]=G, [16:23]=R, [24:31]=A - exactly TYPE_INT_ARGB layout.
         java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
-        boolean fullCopy = dirtyRects == null
+        CefRect[] stampRects = null;
+
+        if (dirtyRects == null
                 || dirtyRects.length == 0
                 || backImage == null
                 || lastWidth != width
-                || lastHeight != height;
-
-        CefRect[] stampRects = null;
-
-        if (fullCopy) {
+                || lastHeight != height) {
             hasPending = false;
             src.get(pixelBuffer, 0, pixelCount);
         } else {
@@ -210,7 +209,7 @@ public final class CefFrameBuffer<I> {
      *
      * @return the current image, or {@code null} if no frame has been produced yet
      */
-    public I consume() {
+    public @Nullable I consume() {
         ready = true;
         return frontImage;
     }
@@ -225,7 +224,7 @@ public final class CefFrameBuffer<I> {
         ready = true;
     }
 
-    private void accumulateRects(CefRect[] rects) {
+    private void accumulateRects(@Nullable CefRect[] rects) {
         if (rects == null) return;
         for (CefRect r : rects) {
             int rx2 = r.x + r.width;

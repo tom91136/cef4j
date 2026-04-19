@@ -29,7 +29,7 @@ public interface CefViewDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:54</a>
      */
-    default CefSize getPreferredSize(@Nullable CefView view) {
+    default @Nullable CefSize getPreferredSize(@Nullable CefView view) {
         return null;
     }
 
@@ -40,7 +40,7 @@ public interface CefViewDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:63</a>
      */
-    default CefSize getMinimumSize(@Nullable CefView view) {
+    default @Nullable CefSize getMinimumSize(@Nullable CefView view) {
         return null;
     }
 
@@ -51,7 +51,7 @@ public interface CefViewDelegate extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:69</a>
      */
-    default CefSize getMaximumSize(@Nullable CefView view) {
+    default @Nullable CefSize getMaximumSize(@Nullable CefView view) {
         return null;
     }
 
@@ -156,19 +156,19 @@ public interface CefViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public CefSize getPreferredSize(@Nullable CefView view) {
+        public @Nullable CefSize getPreferredSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getPreferredSize(view);
             return null;
         }
 
         @Override
-        public CefSize getMinimumSize(@Nullable CefView view) {
+        public @Nullable CefSize getMinimumSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getMinimumSize(view);
             return null;
         }
 
         @Override
-        public CefSize getMaximumSize(@Nullable CefView view) {
+        public @Nullable CefSize getMaximumSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getMaximumSize(view);
             return null;
         }

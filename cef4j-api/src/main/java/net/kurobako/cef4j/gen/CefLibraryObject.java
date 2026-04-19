@@ -1,6 +1,8 @@
 // GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
 package net.kurobako.cef4j.gen;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
 
 /**
@@ -25,7 +27,7 @@ public interface CefLibraryObject extends AutoCloseable {
 
     default boolean peerIsClosed() { return false; }
 
-    static void requireOpen(CefLibraryObject obj, String name) {
+    static void requireOpen(@Nullable CefLibraryObject obj, @Nonnull String name) {
         if (obj != null && obj.peerIsClosed()) {
             throw new IllegalStateException(name + " argument has been closed");
         }

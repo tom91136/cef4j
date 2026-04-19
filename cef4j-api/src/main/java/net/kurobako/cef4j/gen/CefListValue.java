@@ -494,9 +494,9 @@ public interface CefListValue extends CefLibraryObject {
 
         static native boolean isReadOnly0(long self);
 
-        static native boolean isSame0(long self, CefListValue that);
+        static native boolean isSame0(long self, @Nullable CefListValue that);
 
-        static native boolean isEqual0(long self, CefListValue that);
+        static native boolean isEqual0(long self, @Nullable CefListValue that);
 
         static native CefListValue copy0(long self);
 
@@ -524,7 +524,7 @@ public interface CefListValue extends CefLibraryObject {
 
         static native CefListValue getList0(long self, long index);
 
-        static native boolean setValue0(long self, long index, CefValue value);
+        static native boolean setValue0(long self, long index, @Nullable CefValue value);
 
         static native boolean setNull0(long self, long index);
 
@@ -534,13 +534,13 @@ public interface CefListValue extends CefLibraryObject {
 
         static native boolean setDouble0(long self, long index, double value);
 
-        static native boolean setString0(long self, long index, String value);
+        static native boolean setString0(long self, long index, @Nullable String value);
 
-        static native boolean setBinary0(long self, long index, CefBinaryValue value);
+        static native boolean setBinary0(long self, long index, @Nullable CefBinaryValue value);
 
-        static native boolean setDictionary0(long self, long index, CefDictionaryValue value);
+        static native boolean setDictionary0(long self, long index, @Nullable CefDictionaryValue value);
 
-        static native boolean setList0(long self, long index, CefListValue value);
+        static native boolean setList0(long self, long index, @Nullable CefListValue value);
 
         static native CefListValue create0();
 

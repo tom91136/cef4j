@@ -4,6 +4,7 @@ import static net.kurobako.cef4j.osr.jfx.compat.javafx.FxWebViewRuntimeTestSuppo
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.web.WebView;
@@ -46,11 +47,11 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
                                 },
                                 5_000))
                         .isTrue();
-                Rectangle2D bounds = latestBounds.get();
+                Rectangle2D bounds = Objects.requireNonNull(latestBounds.get(), "latestBounds");
                 assertThat(bounds.getWidth()).isBetween(380.0, 460.0);
                 assertThat(bounds.getHeight()).isBetween(280.0, 360.0);
             } finally {
-                releasePopup(popupRef.get());
+                releasePopup(Objects.requireNonNull(popupRef.get(), "popup"));
             }
         }
     }
@@ -89,11 +90,11 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
                                 8_000))
                         .as("expected second resizeTo(520,410) to fire; last bounds=%s", latestBounds.get())
                         .isTrue();
-                Rectangle2D bounds = latestBounds.get();
+                Rectangle2D bounds = Objects.requireNonNull(latestBounds.get(), "latestBounds");
                 assertThat(bounds.getWidth()).isBetween(480.0, 560.0);
                 assertThat(bounds.getHeight()).isBetween(370.0, 450.0);
             } finally {
-                releasePopup(popupRef.get());
+                releasePopup(Objects.requireNonNull(popupRef.get(), "popup"));
             }
         }
     }
@@ -101,7 +102,6 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
     // Detached popup WebViews leak WebKit scheduler state across tests in the same JVM, delaying or dropping
     // subsequent popups' events. Loading about:blank drains pending timers before the next test starts.
     private static void releasePopup(WebView popup) throws Exception {
-        if (popup == null) return;
         onFxThread(() -> {
             popup.getEngine().setOnResized(null);
             popup.getEngine().setOnVisibilityChanged(null);
@@ -112,7 +112,8 @@ class WebViewRuntimeV117PlusVisualCompatTest extends WebViewRuntimeCompatTestBas
     @Test
     void closingHostStageAllowsFutureViewToLoad() throws Exception {
         WebView first = createAttachedWebView();
-        Stage firstStage = onFxThread(() -> (Stage) first.getScene().getWindow());
+        Stage firstStage =
+                Objects.requireNonNull(onFxThread(() -> (Stage) first.getScene().getWindow()), "firstStage");
         onFxThread(firstStage::close);
 
         WebView second = createAttachedWebView();

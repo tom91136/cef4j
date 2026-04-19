@@ -551,9 +551,9 @@ public interface CefXmlReader extends CefLibraryObject {
 
         static native String getAttributeByindex0(long self, int index);
 
-        static native String getAttributeByqname0(long self, String qualifiedName);
+        static native String getAttributeByqname0(long self, @Nullable String qualifiedName);
 
-        static native String getAttributeBylname0(long self, String localName, String namespaceURI);
+        static native String getAttributeBylname0(long self, @Nullable String localName, @Nullable String namespaceURI);
 
         static native String getInnerXml0(long self);
 
@@ -563,9 +563,9 @@ public interface CefXmlReader extends CefLibraryObject {
 
         static native int moveToAttributeByindex0(long self, int index);
 
-        static native int moveToAttributeByqname0(long self, String qualifiedName);
+        static native int moveToAttributeByqname0(long self, @Nullable String qualifiedName);
 
-        static native int moveToAttributeBylname0(long self, String localName, String namespaceURI);
+        static native int moveToAttributeBylname0(long self, @Nullable String localName, @Nullable String namespaceURI);
 
         static native boolean moveToFirstAttribute0(long self);
 
@@ -573,7 +573,7 @@ public interface CefXmlReader extends CefLibraryObject {
 
         static native boolean moveToCarryingElement0(long self);
 
-        static native CefXmlReader create0(CefStreamReader stream, CefXmlEncodingType encodingType, String uRI);
+        static native CefXmlReader create0(@Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI);
 
         @Override
         public boolean equals(Object obj) {

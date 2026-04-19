@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -78,13 +79,15 @@ class CefWebViewV117PlusInputTest {
     }
 
     private static CefWebView createAttachedView() throws Exception {
-        return onFxThread(() -> {
-            CefWebView view = new CefWebView();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(new StackPane(view), 800, 600));
-            stage.show();
-            return view;
-        });
+        return java.util.Objects.requireNonNull(
+                onFxThread(() -> {
+                    CefWebView view = new CefWebView();
+                    Stage stage = new Stage();
+                    stage.setScene(new Scene(new StackPane(view), 800, 600));
+                    stage.show();
+                    return view;
+                }),
+                "view");
     }
 
     private static void fireMouse(CefWebView view, javafx.event.EventType<MouseEvent> eventType, double x, double y) {
@@ -130,19 +133,13 @@ class CefWebViewV117PlusInputTest {
         return condition.getAsBoolean();
     }
 
+    @Nullable
     private static Worker.State workerState(CefWebView view) {
         return onFxThreadUnchecked(() -> view.getEngine().getLoadWorker().getState());
     }
 
+    @Nullable
     private static String title(CefWebView view) {
         return onFxThreadUnchecked(() -> view.getEngine().getTitle());
-    }
-
-    private static <T> T onFxThreadUnchecked(java.util.concurrent.Callable<T> task) {
-        try {
-            return onFxThread(task);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

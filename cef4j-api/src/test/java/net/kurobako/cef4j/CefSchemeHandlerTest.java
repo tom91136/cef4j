@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.AfterAll;
@@ -33,6 +32,7 @@ class CefSchemeHandlerTest extends CefTestBase {
                     @Override
                     protected URLConnection openConnection(URL u) {
                         return new URLConnection(u) {
+                            @Nullable
                             private InputStream stream;
 
                             @Override
@@ -48,12 +48,13 @@ class CefSchemeHandlerTest extends CefTestBase {
                             @Override
                             public InputStream getInputStream() throws IOException {
                                 if (!connected) connect();
+                                if (stream == null) throw new IOException("Stream not connected");
                                 return stream;
                             }
 
                             @Override
                             public String getContentType() {
-                                String path = url.getPath().toLowerCase();
+                                String path = url.getPath().toLowerCase(java.util.Locale.ROOT);
                                 if (path.endsWith(".html")) return "text/html";
                                 if (path.endsWith(".js")) return "text/javascript";
                                 if (path.endsWith(".css")) return "text/css";
@@ -97,18 +98,18 @@ class CefSchemeHandlerTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                         httpStatus.set(httpStatusCode);
                         loadLatch.countDown();
                     }
 
                     @Override
                     public void onLoadError(
-                            CefBrowser browser,
-                            CefFrame frame,
-                            @Nonnull CefErrorCode errorCode,
-                            String errorText,
-                            String failedUrl) {
+                            @Nullable CefBrowser browser,
+                            @Nullable CefFrame frame,
+                            @Nullable CefErrorCode errorCode,
+                            @Nullable String errorText,
+                            @Nullable String failedUrl) {
                         loadErrorText.set("error=" + errorCode + " text=" + errorText + " url=" + failedUrl);
                         loadLatch.countDown();
                     }
@@ -119,7 +120,7 @@ class CefSchemeHandlerTest extends CefTestBase {
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
-                    public void onTitleChange(CefBrowser browser, String title) {
+                    public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
                         pageTitle.set(title);
                     }
                 });
@@ -153,17 +154,17 @@ class CefSchemeHandlerTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                         loadLatch.countDown();
                     }
 
                     @Override
                     public void onLoadError(
-                            CefBrowser browser,
-                            CefFrame frame,
-                            @Nonnull CefErrorCode errorCode,
-                            String errorText,
-                            String failedUrl) {
+                            @Nullable CefBrowser browser,
+                            @Nullable CefFrame frame,
+                            @Nullable CefErrorCode errorCode,
+                            @Nullable String errorText,
+                            @Nullable String failedUrl) {
                         loadLatch.countDown();
                     }
                 });

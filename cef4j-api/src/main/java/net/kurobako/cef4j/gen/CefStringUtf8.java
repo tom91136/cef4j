@@ -2,15 +2,16 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefStringUtf8 {
 
-    public final NativePointer str;
+    public final @Nullable NativePointer str;
     public final long length;
 
-    public CefStringUtf8(NativePointer str, long length) {
+    public CefStringUtf8(@Nullable NativePointer str, long length) {
         this.str = str;
         this.length = length;
     }

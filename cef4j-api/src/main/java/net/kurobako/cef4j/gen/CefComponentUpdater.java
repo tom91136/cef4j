@@ -148,9 +148,9 @@ public interface CefComponentUpdater extends CefLibraryObject {
 
         static native CefComponent[] getComponents0(long self);
 
-        static native CefComponent getComponentById0(long self, String componentId);
+        static native CefComponent getComponentById0(long self, @Nullable String componentId);
 
-        static native void update0(long self, String componentId, CefComponentUpdatePriority priority, CefComponentUpdateCallback callback);
+        static native void update0(long self, @Nullable String componentId, @Nonnull CefComponentUpdatePriority priority, @Nullable CefComponentUpdateCallback callback);
 
         static native CefComponentUpdater get0();
 

@@ -8,14 +8,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import net.kurobako.cef4j.gen.CefAcceleratedPaintInfo;
+import net.kurobako.cef4j.gen.CefAcceleratedPaintInfoCommon;
 import net.kurobako.cef4j.gen.CefColorType;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefPaintElementType;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSize;
-import net.kurobako.cef4j.gen.CefAcceleratedPaintInfo;
-import net.kurobako.cef4j.gen.CefAcceleratedPaintInfoCommon;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

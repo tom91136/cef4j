@@ -1,6 +1,6 @@
 package net.kurobako.cef4j.osr.jfx;
 
-/** JavaFX WebView-compatiable prompt payload without depending on {@code javafx-web}. */
+/** JavaFX WebView-compatible prompt payload without depending on {@code javafx-web}. */
 @SuppressWarnings("unused")
 public final class CefPromptData {
     private final String message;

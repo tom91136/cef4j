@@ -78,7 +78,7 @@ public interface CefJsDialogCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, int success, String userInput);
+        static native void cont0(long self, int success, @Nullable String userInput);
 
 
         @Override

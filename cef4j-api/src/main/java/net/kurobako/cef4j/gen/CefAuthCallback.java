@@ -94,7 +94,7 @@ public interface CefAuthCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, String username, String password);
+        static native void cont0(long self, @Nullable String username, @Nullable String password);
 
         static native void cancel0(long self);
 

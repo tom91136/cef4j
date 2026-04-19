@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.osr.jfx;
 
+import java.util.Objects;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -34,7 +35,7 @@ final class CefLoadWorker implements Worker<Void> {
         totalWork.set(-1);
         progress.set(-1);
         message.set("Loading");
-        title.set(location == null ? "" : location);
+        title.set(Objects.requireNonNullElse(location, ""));
     }
 
     void updateRunning(boolean isLoading) {

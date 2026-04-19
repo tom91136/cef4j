@@ -424,9 +424,9 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native boolean isLandscape0(long self);
 
-        static native void setPrinterPrintableArea0(long self, CefSize physicalSizeDeviceUnits, CefRect printableAreaDeviceUnits, boolean landscapeNeedsFlip);
+        static native void setPrinterPrintableArea0(long self, @Nonnull CefSize physicalSizeDeviceUnits, @Nonnull CefRect printableAreaDeviceUnits, boolean landscapeNeedsFlip);
 
-        static native void setDeviceName0(long self, String name);
+        static native void setDeviceName0(long self, @Nullable String name);
 
         static native String getDeviceName0(long self);
 
@@ -434,7 +434,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native int getDpi0(long self);
 
-        static native void setPageRanges0(long self, long rangesCount, CefRange[] ranges);
+        static native void setPageRanges0(long self, long rangesCount, @Nonnull CefRange[] ranges);
 
         static native long getPageRangesCount0(long self);
 
@@ -448,7 +448,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native boolean willCollate0(long self);
 
-        static native void setColorModel0(long self, CefColorModel model);
+        static native void setColorModel0(long self, @Nonnull CefColorModel model);
 
         static native CefColorModel getColorModel0(long self);
 
@@ -456,7 +456,7 @@ public interface CefPrintSettings extends CefLibraryObject {
 
         static native int getCopies0(long self);
 
-        static native void setDuplexMode0(long self, CefDuplexMode mode);
+        static native void setDuplexMode0(long self, @Nonnull CefDuplexMode mode);
 
         static native CefDuplexMode getDuplexMode0(long self);
 

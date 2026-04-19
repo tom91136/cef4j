@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * URL component parts.
@@ -32,36 +33,36 @@ public final class CefUrlParts {
 
         /**
          * The complete URL specification. 
-         */    public final String spec;
+         */    public final @Nullable String spec;
         /**
          * Scheme component not including the colon (e.g., "http"). 
-         */    public final String scheme;
+         */    public final @Nullable String scheme;
         /**
          * User name component. 
-         */    public final String username;
+         */    public final @Nullable String username;
         /**
          * Password component. 
-         */    public final String password;
+         */    public final @Nullable String password;
         /**
          * Host component. This may be a hostname, an IPv4 address or an IPv6 literal surrounded by square brackets (e.g., "[2001:db8::1]"). 
-         */    public final String host;
+         */    public final @Nullable String host;
         /**
          * Port number component. 
-         */    public final String port;
+         */    public final @Nullable String port;
         /**
          * Origin contains just the scheme, host, and port from a URL. Equivalent to clearing any username and password, replacing the path with a slash, and clearing everything after that. This value will be empty for non-standard URLs. 
-         */    public final String origin;
+         */    public final @Nullable String origin;
         /**
          * Path component including the first slash following the host. 
-         */    public final String path;
+         */    public final @Nullable String path;
         /**
          * Query string component (i.e., everything following the '?'). 
-         */    public final String query;
+         */    public final @Nullable String query;
         /**
          * Fragment (hash) identifier component (i.e., the string following the '#'). 
-         */    public final String fragment;
+         */    public final @Nullable String fragment;
 
-    public CefUrlParts(String spec, String scheme, String username, String password, String host, String port, String origin, String path, String query, String fragment) {
+    public CefUrlParts(@Nullable String spec, @Nullable String scheme, @Nullable String username, @Nullable String password, @Nullable String host, @Nullable String port, @Nullable String origin, @Nullable String path, @Nullable String query, @Nullable String fragment) {
         this.spec = spec;
         this.scheme = scheme;
         this.username = username;
@@ -120,38 +121,38 @@ public final class CefUrlParts {
 
             /**
              * The complete URL specification. 
-             */        public String spec;
+             */        public @Nullable String spec;
             /**
              * Scheme component not including the colon (e.g., "http"). 
-             */        public String scheme;
+             */        public @Nullable String scheme;
             /**
              * User name component. 
-             */        public String username;
+             */        public @Nullable String username;
             /**
              * Password component. 
-             */        public String password;
+             */        public @Nullable String password;
             /**
              * Host component. This may be a hostname, an IPv4 address or an IPv6 literal surrounded by square brackets (e.g., "[2001:db8::1]"). 
-             */        public String host;
+             */        public @Nullable String host;
             /**
              * Port number component. 
-             */        public String port;
+             */        public @Nullable String port;
             /**
              * Origin contains just the scheme, host, and port from a URL. Equivalent to clearing any username and password, replacing the path with a slash, and clearing everything after that. This value will be empty for non-standard URLs. 
-             */        public String origin;
+             */        public @Nullable String origin;
             /**
              * Path component including the first slash following the host. 
-             */        public String path;
+             */        public @Nullable String path;
             /**
              * Query string component (i.e., everything following the '?'). 
-             */        public String query;
+             */        public @Nullable String query;
             /**
              * Fragment (hash) identifier component (i.e., the string following the '#'). 
-             */        public String fragment;
+             */        public @Nullable String fragment;
 
         public Mutable() {}
 
-        public Mutable(String spec, String scheme, String username, String password, String host, String port, String origin, String path, String query, String fragment) {
+        public Mutable(@Nullable String spec, @Nullable String scheme, @Nullable String username, @Nullable String password, @Nullable String host, @Nullable String port, @Nullable String origin, @Nullable String path, @Nullable String query, @Nullable String fragment) {
             this.spec = spec;
             this.scheme = scheme;
             this.username = username;

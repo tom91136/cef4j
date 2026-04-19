@@ -193,20 +193,20 @@ public interface CefPreferenceManager extends CefLibraryObject {
       }
 
 
-        static native boolean hasPreference0(long self, String name);
+        static native boolean hasPreference0(long self, @Nullable String name);
 
-        static native CefValue getPreference0(long self, String name);
+        static native CefValue getPreference0(long self, @Nullable String name);
 
         static native CefDictionaryValue getAllPreferences0(long self, boolean includeDefaults);
 
-        static native boolean canSetPreference0(long self, String name);
+        static native boolean canSetPreference0(long self, @Nullable String name);
 
-        static native boolean setPreference0(long self, String name, CefValue value, String error);
+        static native boolean setPreference0(long self, @Nullable String name, @Nullable CefValue value, @Nullable String error);
 
-        static native CefRegistration addPreferenceObserver0(long self, String name, CefPreferenceObserver observer);
+        static native CefRegistration addPreferenceObserver0(long self, @Nullable String name, @Nullable CefPreferenceObserver observer);
 
-        static native void getChromeVariationsAsSwitches0(List<String> switches);
-        static native void getChromeVariationsAsStrings0(List<String> strings);
+        static native void getChromeVariationsAsSwitches0(@Nonnull List<String> switches);
+        static native void getChromeVariationsAsStrings0(@Nonnull List<String> strings);
         static native CefPreferenceManager getGlobal0();
 
         @Override

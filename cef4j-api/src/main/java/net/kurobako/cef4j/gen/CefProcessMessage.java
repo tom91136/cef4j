@@ -175,7 +175,7 @@ public interface CefProcessMessage extends CefLibraryObject {
 
         static native CefSharedMemoryRegion getSharedMemoryRegion0(long self);
 
-        static native CefProcessMessage create0(String name);
+        static native CefProcessMessage create0(@Nullable String name);
 
         @Override
         public boolean equals(Object obj) {

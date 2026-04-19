@@ -178,9 +178,9 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
 
         static native String getCountryName0(long self);
 
-        static native void getOrganizationNames0(long self, List<String> names);
+        static native void getOrganizationNames0(long self, @Nonnull List<String> names);
 
-        static native void getOrganizationUnitNames0(long self, List<String> names);
+        static native void getOrganizationUnitNames0(long self, @Nonnull List<String> names);
 
 
         @Override

@@ -157,17 +157,17 @@ public interface CefCookieManager extends CefLibraryObject {
       }
 
 
-        static native boolean visitAllCookies0(long self, CefCookieVisitor visitor);
+        static native boolean visitAllCookies0(long self, @Nullable CefCookieVisitor visitor);
 
-        static native boolean visitUrlCookies0(long self, String url, boolean includeHttpOnly, CefCookieVisitor visitor);
+        static native boolean visitUrlCookies0(long self, @Nullable String url, boolean includeHttpOnly, @Nullable CefCookieVisitor visitor);
 
-        static native boolean setCookie0(long self, String url, CefCookie cookie, CefSetCookieCallback callback);
+        static native boolean setCookie0(long self, @Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
 
-        static native boolean deleteCookies0(long self, String url, String cookieName, CefDeleteCookiesCallback callback);
+        static native boolean deleteCookies0(long self, @Nullable String url, @Nullable String cookieName, @Nullable CefDeleteCookiesCallback callback);
 
-        static native boolean flushStore0(long self, CefCompletionCallback callback);
+        static native boolean flushStore0(long self, @Nullable CefCompletionCallback callback);
 
-        static native CefCookieManager getGlobalManager0(CefCompletionCallback callback);
+        static native CefCookieManager getGlobalManager0(@Nullable CefCompletionCallback callback);
 
         @Override
         public boolean equals(Object obj) {

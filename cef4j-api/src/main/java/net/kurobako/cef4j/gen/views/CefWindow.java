@@ -1136,11 +1136,11 @@ public interface CefWindow extends CefPanel {
 
         static native void show0(long self);
 
-        static native void showAsBrowserModalDialog0(long self, CefBrowserView browserView);
+        static native void showAsBrowserModalDialog0(long self, @Nullable CefBrowserView browserView);
 
         static native void hide0(long self);
 
-        static native void centerWindow0(long self, CefSize size);
+        static native void centerWindow0(long self, @Nonnull CefSize size);
 
         static native void cefClose0(long self);
 
@@ -1174,21 +1174,21 @@ public interface CefWindow extends CefPanel {
 
         static native CefView getFocusedView0(long self);
 
-        static native void setTitle0(long self, String title);
+        static native void setTitle0(long self, @Nullable String title);
 
         static native String getTitle0(long self);
 
-        static native void setWindowIcon0(long self, CefImage image);
+        static native void setWindowIcon0(long self, @Nullable CefImage image);
 
         static native CefImage getWindowIcon0(long self);
 
-        static native void setWindowAppIcon0(long self, CefImage image);
+        static native void setWindowAppIcon0(long self, @Nullable CefImage image);
 
         static native CefImage getWindowAppIcon0(long self);
 
-        static native CefOverlayController addOverlayView0(long self, CefView view, CefDockingMode dockingMode, boolean canActivate);
+        static native CefOverlayController addOverlayView0(long self, @Nullable CefView view, @Nonnull CefDockingMode dockingMode, boolean canActivate);
 
-        static native void showMenu0(long self, CefMenuModel menuModel, CefPoint screenPoint, CefMenuAnchorPosition anchorPosition);
+        static native void showMenu0(long self, @Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint, @Nonnull CefMenuAnchorPosition anchorPosition);
 
         static native void cancelMenu0(long self);
 
@@ -1196,7 +1196,7 @@ public interface CefWindow extends CefPanel {
 
         static native CefRect getClientAreaBoundsInScreen0(long self);
 
-        static native void setDraggableRegions0(long self, long regionsCount, CefDraggableRegion[] regions);
+        static native void setDraggableRegions0(long self, long regionsCount, @Nullable CefDraggableRegion[] regions);
 
         static native long getWindowHandle0(long self);
 
@@ -1204,7 +1204,7 @@ public interface CefWindow extends CefPanel {
 
         static native void sendMouseMove0(long self, int screenX, int screenY);
 
-        static native void sendMouseEvents0(long self, CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
+        static native void sendMouseEvents0(long self, @Nonnull CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
 
         static native void setAccelerator0(long self, int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed, boolean highPriority);
 
@@ -1218,7 +1218,7 @@ public interface CefWindow extends CefPanel {
 
         static native CefRuntimeStyle getRuntimeStyle0(long self);
 
-        static native CefWindow createTopLevel0(CefWindowDelegate delegate);
+        static native CefWindow createTopLevel0(@Nullable CefWindowDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

@@ -14,6 +14,10 @@ class JniCppCodeGen(
 )(using Naming.Context, Banners) {
 
   import JniCppByValueCodeGen.*
+  import JniNaming.addRefExpr
+  import JniNaming.jniMutableName
+  import JniNaming.jniName
+  import JniNaming.outPrimInfo
 
   val bv         = new JniCppByValueCodeGen(dataStructs)
   val trampoline = new JniCppHandlerTrampolineGen(handlerNames, scopedNames, bv)
@@ -26,29 +30,7 @@ class JniCppCodeGen(
       case xs  => "\n" + xs.map(line => s"$indent$line").mkString("\n")
     }
 
-  private def isHandlerPtr(ct: CType): Boolean = ct match {
-    case CType.ObjectPtr(name) => handlerNames.contains(name)
-    case CType.Ptr(inner)      => handlerNames.contains(inner.stripPrefix("_"))
-    case _                     => false
-  }
-
-  private def addRefExpr(ptr: String): String =
-    s"{ auto* _b = reinterpret_cast<cef_base_ref_counted_t*>($ptr); _b->add_ref(_b); }"
-
-  // JNI internal name for a CEF struct, e.g. "net/kurobako/cef4j/gen/CefBrowser"
-  private def jniName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedJavaNameForJniLookup(cefName))
-
-  private def jniMutableName(cefName: String): String =
-    Naming.javaInternalName(Naming.fullyQualifiedMutableNameForJniLookup(cefName))
-
-  // JNI array type info for OutPrimitivePtr: (cPrimType, jniPrim, jniMethodInfix)
-  private def outPrimInfo(inner: CType): (String, String, String) = inner match {
-    case CType.Long | CType.SizeT => (Naming.cType(inner), "jlong", "Long")
-    case CType.Float              => ("float", "jfloat", "Float")
-    case CType.Double             => ("double", "jdouble", "Double")
-    case _                        => (Naming.cType(inner), "jint", "Int")
-  }
+  private def isHandlerPtr(ct: CType): Boolean = JniNaming.isHandlerPtr(ct, handlerNames)
 
   // String collection conversion info: (suffix, javaToC, freeFunc, writeBackFunc)
   private def strCollInfo(ct: CType): (String, String, String, String) = ct match {

@@ -428,13 +428,13 @@ public interface CefRequest extends CefLibraryObject {
 
         static native String getUrl0(long self);
 
-        static native void setUrl0(long self, String url);
+        static native void setUrl0(long self, @Nullable String url);
 
         static native String getMethod0(long self);
 
-        static native void setMethod0(long self, String method);
+        static native void setMethod0(long self, @Nullable String method);
 
-        static native void setReferrer0(long self, String referrerUrl, CefReferrerPolicy policy);
+        static native void setReferrer0(long self, @Nullable String referrerUrl, @Nonnull CefReferrerPolicy policy);
 
         static native String getReferrerUrl0(long self);
 
@@ -442,17 +442,17 @@ public interface CefRequest extends CefLibraryObject {
 
         static native CefPostData getPostData0(long self);
 
-        static native void setPostData0(long self, CefPostData postData);
+        static native void setPostData0(long self, @Nullable CefPostData postData);
 
-        static native void getHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native void getHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
 
-        static native void setHeaderMap0(long self, Map<String, List<String>> headerMap);
+        static native void setHeaderMap0(long self, @Nonnull Map<String, List<String>> headerMap);
 
-        static native String getHeaderByName0(long self, String name);
+        static native String getHeaderByName0(long self, @Nullable String name);
 
-        static native void setHeaderByName0(long self, String name, String value, boolean overwrite);
+        static native void setHeaderByName0(long self, @Nullable String name, @Nullable String value, boolean overwrite);
 
-        static native void set0(long self, String url, String method, CefPostData postData, Map<String, List<String>> headerMap);
+        static native void set0(long self, @Nullable String url, @Nullable String method, @Nullable CefPostData postData, @Nonnull Map<String, List<String>> headerMap);
 
         static native int getFlags0(long self);
 
@@ -460,7 +460,7 @@ public interface CefRequest extends CefLibraryObject {
 
         static native String getFirstPartyForCookies0(long self);
 
-        static native void setFirstPartyForCookies0(long self, String url);
+        static native void setFirstPartyForCookies0(long self, @Nullable String url);
 
         static native CefResourceType getResourceType0(long self);
 

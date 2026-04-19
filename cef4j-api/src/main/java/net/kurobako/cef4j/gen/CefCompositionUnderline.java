@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Structure representing IME composition underline information. This is a thin wrapper around Blink's WebCompositionUnderline class and should be kept in sync with that.
@@ -27,7 +28,7 @@ public final class CefCompositionUnderline {
 
         /**
          * Underline character range. 
-         */    public final CefRange range;
+         */    public final @Nullable CefRange range;
         /**
          * Text color. 
          */    public final int color;
@@ -39,9 +40,9 @@ public final class CefCompositionUnderline {
          */    public final int thick;
         /**
          * Style. 
-         */    public final CefCompositionUnderlineStyle style;
+         */    public final @Nullable CefCompositionUnderlineStyle style;
 
-    public CefCompositionUnderline(CefRange range, int color, int backgroundColor, int thick, CefCompositionUnderlineStyle style) {
+    public CefCompositionUnderline(@Nullable CefRange range, int color, int backgroundColor, int thick, @Nullable CefCompositionUnderlineStyle style) {
         this.range = range;
         this.color = color;
         this.backgroundColor = backgroundColor;

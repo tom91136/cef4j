@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
+@SuppressWarnings("deprecation") // CefWebEngine.executeScript is deprecated; tests exercise JFX parity
 class WebViewRuntimeDomCompatTest extends WebViewRuntimeCompatTestBase {
 
     @Test

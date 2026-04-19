@@ -207,9 +207,9 @@ public interface CefPostDataElement extends CefLibraryObject {
 
         static native void setToEmpty0(long self);
 
-        static native void setToFile0(long self, String fileName);
+        static native void setToFile0(long self, @Nullable String fileName);
 
-        static native void setToBytes0(long self, ByteBuffer bytes);
+        static native void setToBytes0(long self, @Nonnull ByteBuffer bytes);
 
         static native CefPostdataelementType getType0(long self);
 
@@ -217,7 +217,7 @@ public interface CefPostDataElement extends CefLibraryObject {
 
         static native long getBytesCount0(long self);
 
-        static native long getBytes0(long self, ByteBuffer bytes);
+        static native long getBytes0(long self, @Nonnull ByteBuffer bytes);
 
         static native CefPostDataElement create0();
 

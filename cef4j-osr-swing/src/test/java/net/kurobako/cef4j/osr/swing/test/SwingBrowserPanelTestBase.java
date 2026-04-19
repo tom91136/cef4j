@@ -10,6 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 abstract class SwingBrowserPanelTestBase {
     @TempDir
+    @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
     @BeforeAll

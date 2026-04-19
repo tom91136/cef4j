@@ -76,7 +76,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
       }
 
 
-        static native void cont0(long self, CefPermissionRequestResult result);
+        static native void cont0(long self, @Nonnull CefPermissionRequestResult result);
 
 
         @Override

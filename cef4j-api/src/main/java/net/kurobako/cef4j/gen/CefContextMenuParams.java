@@ -401,7 +401,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
 
         static native String getMisspelledWord0(long self);
 
-        static native boolean getDictionarySuggestions0(long self, List<String> suggestions);
+        static native boolean getDictionarySuggestions0(long self, @Nonnull List<String> suggestions);
 
         static native boolean isEditable0(long self);
 

@@ -79,7 +79,7 @@ public interface CefServer extends CefLibraryObject {
 
     /**
      * Send an HTTP 200 "OK" response to the connection identified by {@code connection_id}. {@code content_type} is the response content type (e.g. "text/html"), {@code data} is the response content, and {@code data_size} is the size of {@code data} in bytes. The contents of {@code data} will be copied. The connection will be closed automatically after the response is sent.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* send_http200_response)(struct _cef_server_t* self, int connection_id, const cef_string_t* content_type, const void* data, size_t data_size);</pre>
      *
@@ -120,7 +120,7 @@ public interface CefServer extends CefLibraryObject {
 
     /**
      * Send raw data directly to the connection identified by {@code connection_id}. {@code data} is the raw data and {@code data_size} is the size of {@code data} in bytes. The contents of {@code data} will be copied. No validation of {@code data} is performed internally so the client should be careful to send the amount indicated by the "Content-Length" header, if specified. See SendHttpResponse documentation for intended usage.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* send_raw_data)(struct _cef_server_t* self, int connection_id, const void* data, size_t data_size);</pre>
      *
@@ -141,7 +141,7 @@ public interface CefServer extends CefLibraryObject {
 
     /**
      * Send a WebSocket message to the connection identified by {@code connection_id}. {@code data} is the response content and {@code data_size} is the size of {@code data} in bytes. The contents of {@code data} will be copied. See {@link net.kurobako.cef4j.gen.CefServerHandler#onWebSocketRequest(CefServer, int, String, CefRequest, CefCallback)} documentation for intended usage.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* send_web_socket_message)(struct _cef_server_t* self, int connection_id, const void* data, size_t data_size);</pre>
      *
@@ -295,21 +295,21 @@ public interface CefServer extends CefLibraryObject {
 
         static native boolean isValidConnection0(long self, int connectionId);
 
-        static native void sendHttp200Response0(long self, int connectionId, String contentType, ByteBuffer data);
+        static native void sendHttp200Response0(long self, int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
 
         static native void sendHttp404Response0(long self, int connectionId);
 
-        static native void sendHttp500Response0(long self, int connectionId, String errorMessage);
+        static native void sendHttp500Response0(long self, int connectionId, @Nullable String errorMessage);
 
-        static native void sendHttpResponse0(long self, int connectionId, int responseCode, String contentType, long contentLength, Map<String, List<String>> extraHeaders);
+        static native void sendHttpResponse0(long self, int connectionId, int responseCode, @Nullable String contentType, long contentLength, @Nullable Map<String, List<String>> extraHeaders);
 
-        static native void sendRawData0(long self, int connectionId, ByteBuffer data);
+        static native void sendRawData0(long self, int connectionId, @Nonnull ByteBuffer data);
 
         static native void closeConnection0(long self, int connectionId);
 
-        static native void sendWebSocketMessage0(long self, int connectionId, ByteBuffer data);
+        static native void sendWebSocketMessage0(long self, int connectionId, @Nonnull ByteBuffer data);
 
-        static native void create0(String address, int port, int backlog, CefServerHandler handler);
+        static native void create0(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler);
 
         @Override
         public boolean equals(Object obj) {

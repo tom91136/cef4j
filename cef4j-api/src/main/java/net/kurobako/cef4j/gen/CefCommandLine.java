@@ -50,7 +50,7 @@ public interface CefCommandLine extends CefLibraryObject {
     Optional<CefCommandLine> copy();
 
     /**
-     * Initialize the command line with the specified {@code argc} and {@code argv} values. The first argument must be the name of the program. This method is only supported on non-Windows platforms.
+     * Initialize the command line with the specified {@code argv} and {@code argc} values. The first argument must be the name of the program. This method is only supported on non-Windows platforms.
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* init_from_argv)(struct _cef_command_line_t* self, int argc, const char* const* argv);</pre>
      *
@@ -409,41 +409,41 @@ public interface CefCommandLine extends CefLibraryObject {
 
         static native CefCommandLine copy0(long self);
 
-        static native void initFromArgv0(long self, int argc, List<String> argv);
+        static native void initFromArgv0(long self, int argc, @Nonnull List<String> argv);
 
-        static native void initFromString0(long self, String commandLine);
+        static native void initFromString0(long self, @Nullable String commandLine);
 
         static native void reset0(long self);
 
-        static native void getArgv0(long self, List<String> argv);
+        static native void getArgv0(long self, @Nonnull List<String> argv);
 
         static native String getCommandLineString0(long self);
 
         static native String getProgram0(long self);
 
-        static native void setProgram0(long self, String program);
+        static native void setProgram0(long self, @Nullable String program);
 
         static native boolean hasSwitches0(long self);
 
-        static native boolean hasSwitch0(long self, String name);
+        static native boolean hasSwitch0(long self, @Nullable String name);
 
-        static native String getSwitchValue0(long self, String name);
+        static native String getSwitchValue0(long self, @Nullable String name);
 
-        static native void getSwitches0(long self, Map<String, String> switches);
+        static native void getSwitches0(long self, @Nonnull Map<String, String> switches);
 
-        static native void appendSwitch0(long self, String name);
+        static native void appendSwitch0(long self, @Nullable String name);
 
-        static native void appendSwitchWithValue0(long self, String name, String value);
+        static native void appendSwitchWithValue0(long self, @Nullable String name, @Nullable String value);
 
         static native boolean hasArguments0(long self);
 
-        static native void getArguments0(long self, List<String> arguments);
+        static native void getArguments0(long self, @Nonnull List<String> arguments);
 
-        static native void appendArgument0(long self, String argument);
+        static native void appendArgument0(long self, @Nullable String argument);
 
-        static native void prependWrapper0(long self, String wrapper);
+        static native void prependWrapper0(long self, @Nullable String wrapper);
 
-        static native void removeSwitch0(long self, String name);
+        static native void removeSwitch0(long self, @Nullable String name);
 
         static native CefCommandLine create0();
         static native CefCommandLine getGlobal0();

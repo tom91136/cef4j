@@ -499,7 +499,7 @@ public interface CefScrollView extends CefView {
           return CefView.NativePeer.convertPointFromView0(nativePtr, view, point);
       }
 
-        static native void setContentView0(long self, CefView view);
+        static native void setContentView0(long self, @Nullable CefView view);
 
         static native CefView getContentView0(long self);
 
@@ -513,7 +513,7 @@ public interface CefScrollView extends CefView {
 
         static native int getVerticalScrollbarWidth0(long self);
 
-        static native CefScrollView create0(CefViewDelegate delegate);
+        static native CefScrollView create0(@Nullable CefViewDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

@@ -46,7 +46,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:78</a>
      */
-    default CefReturnValue onBeforeResourceLoad(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefCallback callback) {
+    default @Nullable CefReturnValue onBeforeResourceLoad(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefCallback callback) {
         return CefReturnValue.of(net.kurobako.cef4j.gen.CefReturnValue.Kind.CONTINUE);
     }
 
@@ -156,7 +156,7 @@ public interface CefResourceRequestHandler extends CefClientHandler {
         }
 
         @Override
-        public CefReturnValue onBeforeResourceLoad(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefCallback callback) {
+        public @Nullable CefReturnValue onBeforeResourceLoad(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefCallback callback) {
             if (!delegates.isEmpty()) return delegates.get(0).onBeforeResourceLoad(browser, frame, request, callback);
             return CefReturnValue.of(net.kurobako.cef4j.gen.CefReturnValue.Kind.CONTINUE);
         }

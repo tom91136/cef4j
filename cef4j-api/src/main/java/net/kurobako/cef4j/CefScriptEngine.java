@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefFrame;
 import net.kurobako.cef4j.gen.CefListValue;
@@ -80,16 +81,16 @@ public final class CefScriptEngine {
     public static final class Result {
 
         private final int type;
-        private final String stringPayload;
+        private final @Nullable String stringPayload;
         private final int intPayload;
 
-        private Result(int type, String stringPayload, int intPayload) {
+        private Result(int type, @Nullable String stringPayload, int intPayload) {
             this.type = type;
             this.stringPayload = stringPayload;
             this.intPayload = intPayload;
         }
 
-        static Result json(String value) {
+        static Result json(@Nullable String value) {
             return new Result(TYPE_JSON, value, 0);
         }
 
@@ -126,7 +127,7 @@ public final class CefScriptEngine {
         }
 
         /** Returns the JSON string payload. Only valid when {@link #isJson()} is true. */
-        public String json() {
+        public @Nullable String json() {
             if (type != TYPE_JSON) throw new IllegalStateException("Not a JSON result");
             return stringPayload;
         }
@@ -138,7 +139,7 @@ public final class CefScriptEngine {
         }
 
         /** Returns the error message. Only valid when {@link #isError()} is true. */
-        public String error() {
+        public @Nullable String error() {
             if (type != TYPE_ERROR) throw new IllegalStateException("Not an error result");
             return stringPayload;
         }
@@ -363,7 +364,10 @@ public final class CefScriptEngine {
      * @return true if the message was handled
      */
     public boolean handleMessage(
-            CefBrowser browser, CefFrame frame, CefProcessId sourceProcess, CefProcessMessage message) {
+            @Nullable CefBrowser browser,
+            @Nullable CefFrame frame,
+            @Nullable CefProcessId sourceProcess,
+            @Nullable CefProcessMessage message) {
         if (message == null) return false;
         String name = message.getName().orElse(null);
 
@@ -469,12 +473,12 @@ public final class CefScriptEngine {
             CefFrame frame,
             String messageName,
             int argCount,
-            Runnable onFailure,
+            @Nullable Runnable onFailure,
             ObjIntConsumer<CefListValue> requestWriter) {
         synchronized (lifecycleLock) {
             if (disposed) {
                 if (onFailure != null) onFailure.run();
-                return failedFuture(new CefScriptException("CefScriptEngine disposed"));
+                return CompletableFuture.failedFuture(new CefScriptException("CefScriptEngine disposed"));
             }
             int reqId = nextId.getAndIncrement();
             CompletableFuture<Result> future = new CompletableFuture<>();
@@ -496,16 +500,10 @@ public final class CefScriptEngine {
     }
 
     private CompletableFuture<Result> failRequest(
-            int reqId, CompletableFuture<Result> future, Runnable onFailure, String message) {
+            int reqId, CompletableFuture<Result> future, @Nullable Runnable onFailure, String message) {
         pending.remove(reqId);
         if (onFailure != null) onFailure.run();
         future.completeExceptionally(new IllegalStateException(message));
         return future;
-    }
-
-    private static <T> CompletableFuture<T> failedFuture(Throwable ex) {
-        CompletableFuture<T> f = new CompletableFuture<>();
-        f.completeExceptionally(ex);
-        return f;
     }
 }

@@ -34,6 +34,11 @@
         <javafx.version>11.0.2</javafx.version>
         <flatlaf.version>3.6</flatlaf.version>
         <palantir.java.format.version>2.72.0</palantir.java.format.version>
+        <errorprone.version>2.32.0</errorprone.version>
+        <nullaway.version>0.12.1</nullaway.version>
+        <spotbugs.version>4.8.6.0</spotbugs.version>
+        <!-- Per-module opt-out; SpotBugs is disabled in modules where it is noisy (e.g. Scala codegen). -->
+        <spotbugs.skip>false</spotbugs.skip>
 
         <!-- exec-maven-plugin: skip by default, override in modules that need it.
              Dummy mainClass required because Maven validates required params before checking skip. -->
@@ -138,6 +143,61 @@
     </dependencyManagement>
 
     <profiles>
+        <!-- Error Prone 2.32.0 references com.sun.tools.javac.code.TypeTag.UNKNOWN, which
+             was removed in JDK 24. Auto-disable Error Prone + NullAway on JDK 24+ so IDEs
+             and local builds on newer JDKs still compile. CI pins JDKs 11/17/21/25; the
+             25-leg will also skip these checks until Error Prone publishes a compatible
+             release. Manual opt-out: -Derrorprone.skip=true. -->
+        <profile>
+            <id>disable-errorprone-on-newer-jdk</id>
+            <activation>
+                <jdk>[24,)</jdk>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <compilerArgs combine.self="override">
+                                    <arg>-Xlint:all</arg>
+                                    <arg>-Xlint:-options</arg>
+                                </compilerArgs>
+                                <annotationProcessorPaths combine.self="override"/>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>disable-errorprone-opt-out</id>
+            <activation>
+                <property>
+                    <name>errorprone.skip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <compilerArgs combine.self="override">
+                                    <arg>-Xlint:all</arg>
+                                    <arg>-Xlint:-options</arg>
+                                </compilerArgs>
+                                <annotationProcessorPaths combine.self="override"/>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
         <!-- Platform detection - activated automatically -->
         <profile>
             <id>linux-x86_64</id>
@@ -253,6 +313,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>spotbugs-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -271,9 +344,41 @@
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
                             <arg>-Xlint:-options</arg>
+                            <!-- Error Prone (+ NullAway) wiring.
+                                 NullAway checks every package under net.kurobako.cef4j, including the
+                                 generated cef4j-api .gen bindings; generated code is expected to pass
+                                 the same nullness discipline as hand-rolled code. -->
+                            <arg>-XDcompilePolicy=simple</arg>
+                            <arg>-XDshould-stop.ifError=FLOW</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false</arg>
                         </compilerArgs>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>com.google.errorprone</groupId>
+                                <artifactId>error_prone_core</artifactId>
+                                <version>${errorprone.version}</version>
+                            </path>
+                            <path>
+                                <groupId>com.uber.nullaway</groupId>
+                                <artifactId>nullaway</artifactId>
+                                <version>${nullaway.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                         <showWarnings>true</showWarnings>
                         <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <effort>Max</effort>
+                        <threshold>Medium</threshold>
+                        <failOnError>true</failOnError>
+                        <includeTests>false</includeTests>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
                     </configuration>
                 </plugin>
                 <plugin>

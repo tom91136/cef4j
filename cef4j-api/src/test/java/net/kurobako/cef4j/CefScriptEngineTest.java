@@ -3,11 +3,11 @@ package net.kurobako.cef4j;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.AfterAll;
@@ -38,7 +38,7 @@ class CefScriptEngineTest extends CefTestBase {
             public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                 return Optional.of(new CefLifeSpanHandler() {
                     @Override
-                    public void onAfterCreated(@Nonnull CefBrowser b) {
+                    public void onAfterCreated(@Nullable CefBrowser b) {
                         createdLatch.countDown();
                     }
                 });
@@ -48,7 +48,7 @@ class CefScriptEngineTest extends CefTestBase {
             public Optional<CefLoadHandler> getLoadHandler() {
                 return Optional.of(new CefLoadHandler() {
                     @Override
-                    public void onLoadEnd(@Nonnull CefBrowser b, @Nonnull CefFrame frame, int httpStatusCode) {
+                    public void onLoadEnd(@Nullable CefBrowser b, @Nullable CefFrame frame, int httpStatusCode) {
                         loadEndLatch.countDown();
                     }
                 });
@@ -63,8 +63,9 @@ class CefScriptEngineTest extends CefTestBase {
             public boolean onProcessMessageReceived(
                     @Nullable CefBrowser b,
                     @Nullable CefFrame frame,
-                    @Nonnull CefProcessId sourceProcess,
+                    @Nullable CefProcessId sourceProcess,
                     @Nullable CefProcessMessage message) {
+                if (b == null || frame == null || sourceProcess == null || message == null) return false;
                 return evaluator.handleMessage(b, frame, sourceProcess, message);
             }
         };
@@ -703,8 +704,9 @@ class CefScriptEngineTest extends CefTestBase {
         try {
             future.get();
         } catch (java.util.concurrent.ExecutionException e) {
-            assertThat(e.getCause()).isInstanceOf(CefScriptException.class);
-            assertThat(e.getCause().getMessage()).contains(messageContains);
+            Throwable cause = Objects.requireNonNull(e.getCause(), "execution exception cause");
+            assertThat(cause).isInstanceOf(CefScriptException.class);
+            assertThat(cause.getMessage()).contains(messageContains);
         }
     }
 

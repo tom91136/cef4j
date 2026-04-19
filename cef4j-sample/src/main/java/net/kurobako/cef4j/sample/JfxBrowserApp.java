@@ -157,7 +157,6 @@ public final class JfxBrowserApp {
     }
 
     private static final class BrowserTab extends Tab {
-        private final TabPane owner;
         private final Stage stage;
         private final CefWebView view;
         private final TextField urlBar = new TextField();
@@ -166,7 +165,6 @@ public final class JfxBrowserApp {
         private boolean disposed;
 
         private BrowserTab(TabPane owner, Stage stage, String initialUrl) {
-            this.owner = owner;
             this.stage = stage;
             this.view = new CefWebView();
             this.view.setZoom(1.0);

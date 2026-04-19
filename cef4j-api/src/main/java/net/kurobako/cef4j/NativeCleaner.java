@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Singleton {@link Cleaner} shared by all generated NativePeer instances. */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ImmutableEnumChecker"})
 public enum NativeCleaner {
     INSTANCE;
 

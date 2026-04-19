@@ -194,9 +194,9 @@ public interface CefPostData extends CefLibraryObject {
 
         static native CefPostDataElement[] getElements0(long self);
 
-        static native boolean removeElement0(long self, CefPostDataElement element);
+        static native boolean removeElement0(long self, @Nullable CefPostDataElement element);
 
-        static native boolean addElement0(long self, CefPostDataElement element);
+        static native boolean addElement0(long self, @Nullable CefPostDataElement element);
 
         static native void removeElements0(long self);
 

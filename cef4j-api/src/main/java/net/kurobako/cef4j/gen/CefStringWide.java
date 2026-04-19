@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * CEF string type definitions. Whomever allocates {@code str} is responsible for providing an appropriate {@code dtor} implementation that will free the string in the same memory space. When reusing an existing string structure make sure to call {@code dtor} for the old value before assigning new {@code str} and {@code dtor} values. Static strings will have a {@code null} {@code dtor} value. Using the below functions if you want this managed for you.
@@ -17,10 +18,10 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefStringWide {
 
-    public final NativePointer str;
+    public final @Nullable NativePointer str;
     public final long length;
 
-    public CefStringWide(NativePointer str, long length) {
+    public CefStringWide(@Nullable NativePointer str, long length) {
         this.str = str;
         this.length = length;
     }

@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import javafx.application.Platform;
 import javafx.stage.Window;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.OS;
 
 final class CefWebViewTestSupport {
@@ -67,6 +68,7 @@ final class CefWebViewTestSupport {
         }
     }
 
+    @Nullable
     static <T> T onFxThread(Callable<T> task) throws Exception {
         if (Platform.isFxApplicationThread()) {
             return task.call();
@@ -97,6 +99,15 @@ final class CefWebViewTestSupport {
             task.run();
             return null;
         });
+    }
+
+    @Nullable
+    static <T> T onFxThreadUnchecked(Callable<T> task) {
+        try {
+            return onFxThread(task);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {

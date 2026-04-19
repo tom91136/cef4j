@@ -586,19 +586,19 @@ public interface CefPanel extends CefView {
 
         static native CefFillLayout setToFillLayout0(long self);
 
-        static native CefBoxLayout setToBoxLayout0(long self, CefBoxLayoutSettings settings);
+        static native CefBoxLayout setToBoxLayout0(long self, @Nonnull CefBoxLayoutSettings settings);
 
         static native CefLayout getLayout0(long self);
 
         static native void layout0(long self);
 
-        static native void addChildView0(long self, CefView view);
+        static native void addChildView0(long self, @Nullable CefView view);
 
-        static native void addChildViewAt0(long self, CefView view, int index);
+        static native void addChildViewAt0(long self, @Nullable CefView view, int index);
 
-        static native void reorderChildView0(long self, CefView view, int index);
+        static native void reorderChildView0(long self, @Nullable CefView view, int index);
 
-        static native void removeChildView0(long self, CefView view);
+        static native void removeChildView0(long self, @Nullable CefView view);
 
         static native void removeAllChildViews0(long self);
 
@@ -606,7 +606,7 @@ public interface CefPanel extends CefView {
 
         static native CefView getChildViewAt0(long self, int index);
 
-        static native CefPanel create0(CefPanelDelegate delegate);
+        static native CefPanel create0(@Nullable CefPanelDelegate delegate);
 
         @Override
         public boolean equals(Object obj) {

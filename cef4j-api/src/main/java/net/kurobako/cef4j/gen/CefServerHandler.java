@@ -92,7 +92,7 @@ public interface CefServerHandler extends CefClientHandler {
 
     /**
      * Called when {@code server} receives an WebSocket message. {@code connection_id} uniquely identifies the connection, {@code data} is the message content and {@code data_size} is the size of {@code data} in bytes. Do not keep a reference to {@code data} outside of this method. See OnWebSocketRequest documentation for intended usage.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code dataSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code data_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_web_socket_message)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id, const void* data, size_t data_size);</pre>
      *

@@ -52,7 +52,7 @@ public interface CefMediaObserver extends CefClientHandler {
 
     /**
      * A message was received over {@code route}. {@code message} is only valid for the scope of this callback and should be copied if necessary.
-     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code messageSize} parameter is derived from the buffer's capacity.</b>
+     * <p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the hidden {@code message_size} parameter is derived from the buffer's capacity.</b>
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* on_route_message_received)(struct _cef_media_observer_t* self, struct _cef_media_route_t* route, const void* message, size_t message_size);</pre>
      *

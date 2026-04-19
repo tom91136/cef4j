@@ -4,10 +4,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 abstract class CefTestBase {
     @TempDir
+    @SuppressWarnings("NullAway.Init") // Populated by JUnit @TempDir before @Test methods run.
     static Path tempDir;
 
     static void initCef(List<String> additionalArgs) throws Exception {
@@ -54,12 +57,11 @@ abstract class CefTestBase {
         }
         String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
         if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
-            for (String arg : extraArgsProperty.split(",")) {
-                String trimmed = arg.trim();
-                if (!trimmed.isEmpty()) {
-                    args.add(trimmed);
-                }
-            }
+            java.util.regex.Pattern.compile(",")
+                    .splitAsStream(extraArgsProperty)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .forEach(args::add);
         }
         Cef.INSTANCE.initialise(settings, args);
     }
@@ -78,7 +80,7 @@ abstract class CefTestBase {
                 public Optional<CefLifeSpanHandler> getLifeSpanHandler() {
                     return Optional.of(new CefLifeSpanHandler() {
                         @Override
-                        public void onAfterCreated(CefBrowser browser) {
+                        public void onAfterCreated(@Nullable CefBrowser browser) {
                             ref.compareAndSet(null, browser);
                             created.countDown();
                         }
@@ -96,12 +98,12 @@ abstract class CefTestBase {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            return ref.get();
+            return Objects.requireNonNull(ref.get(), "browser creation returned null");
         }
         return Cef.INSTANCE.createBrowser(client, url, windowInfo, browserSettings.toImmutable());
     }
 
-    static void closeBrowser(CefBrowser browser) {
+    static void closeBrowser(@Nullable CefBrowser browser) {
         if (browser != null) {
             browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }

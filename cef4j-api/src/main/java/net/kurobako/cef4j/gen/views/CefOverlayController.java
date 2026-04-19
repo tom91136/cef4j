@@ -359,7 +359,7 @@ public interface CefOverlayController extends CefLibraryObject {
 
         static native boolean isValid0(long self);
 
-        static native boolean isSame0(long self, CefOverlayController that);
+        static native boolean isSame0(long self, @Nullable CefOverlayController that);
 
         static native CefView getContentsView0(long self);
 
@@ -369,21 +369,21 @@ public interface CefOverlayController extends CefLibraryObject {
 
         static native void destroy0(long self);
 
-        static native void setBounds0(long self, CefRect bounds);
+        static native void setBounds0(long self, @Nonnull CefRect bounds);
 
         static native CefRect getBounds0(long self);
 
         static native CefRect getBoundsInScreen0(long self);
 
-        static native void setSize0(long self, CefSize size);
+        static native void setSize0(long self, @Nonnull CefSize size);
 
         static native CefSize getSize0(long self);
 
-        static native void setPosition0(long self, CefPoint position);
+        static native void setPosition0(long self, @Nonnull CefPoint position);
 
         static native CefPoint getPosition0(long self);
 
-        static native void setInsets0(long self, CefInsets insets);
+        static native void setInsets0(long self, @Nonnull CefInsets insets);
 
         static native CefInsets getInsets0(long self);
 

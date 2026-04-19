@@ -439,9 +439,9 @@ public interface CefValue extends CefLibraryObject {
 
         static native boolean isReadOnly0(long self);
 
-        static native boolean isSame0(long self, CefValue that);
+        static native boolean isSame0(long self, @Nullable CefValue that);
 
-        static native boolean isEqual0(long self, CefValue that);
+        static native boolean isEqual0(long self, @Nullable CefValue that);
 
         static native CefValue copy0(long self);
 
@@ -469,17 +469,17 @@ public interface CefValue extends CefLibraryObject {
 
         static native boolean setDouble0(long self, double value);
 
-        static native boolean setString0(long self, String value);
+        static native boolean setString0(long self, @Nullable String value);
 
-        static native boolean setBinary0(long self, CefBinaryValue value);
+        static native boolean setBinary0(long self, @Nullable CefBinaryValue value);
 
-        static native boolean setDictionary0(long self, CefDictionaryValue value);
+        static native boolean setDictionary0(long self, @Nullable CefDictionaryValue value);
 
-        static native boolean setList0(long self, CefListValue value);
+        static native boolean setList0(long self, @Nullable CefListValue value);
 
-        static native CefValue parseJson0(String jsonString, CefJsonParserOptions options);
-        static native CefValue parseJsonBuffer0(ByteBuffer json, CefJsonParserOptions options);
-        static native CefValue parseJsonandReturnError0(String jsonString, CefJsonParserOptions options, String errorMsgOut);
+        static native CefValue parseJson0(@Nullable String jsonString, @Nonnull CefJsonParserOptions options);
+        static native CefValue parseJsonBuffer0(@Nonnull ByteBuffer json, @Nonnull CefJsonParserOptions options);
+        static native CefValue parseJsonandReturnError0(@Nullable String jsonString, @Nonnull CefJsonParserOptions options, @Nullable String errorMsgOut);
         static native CefValue create0();
 
         @Override

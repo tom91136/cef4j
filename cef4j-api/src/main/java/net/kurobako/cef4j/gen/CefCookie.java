@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Cookie information.
@@ -34,16 +35,16 @@ public final class CefCookie {
 
         /**
          * The cookie name. 
-         */    public final String name;
+         */    public final @Nullable String name;
         /**
          * The cookie value. 
-         */    public final String value;
+         */    public final @Nullable String value;
         /**
          * If {@code domain} is empty a host cookie will be created instead of a domain cookie. Domain cookies are stored with a leading "." and are visible to sub-domains whereas host cookies are not. 
-         */    public final String domain;
+         */    public final @Nullable String domain;
         /**
          * If {@code path} is non-empty only URLs at or below the path will get the cookie value. 
-         */    public final String path;
+         */    public final @Nullable String path;
         /**
          * If {@code secure} is {@code true} the cookie will only be sent for HTTPS requests. 
          */    public final int secure;
@@ -52,22 +53,22 @@ public final class CefCookie {
          */    public final int httponly;
         /**
          * The cookie creation date. This is automatically populated by the system on cookie creation. 
-         */    public final CefBasetime creation;
+         */    public final @Nullable CefBasetime creation;
         /**
          * The cookie last access date. This is automatically populated by the system on access. 
-         */    public final CefBasetime lastAccess;
+         */    public final @Nullable CefBasetime lastAccess;
         /**
          * The cookie expiration date is only valid if {@code has_expires} is {@code true}. 
          */    public final int hasExpires;
-    public final CefBasetime expires;
+    public final @Nullable CefBasetime expires;
         /**
          * Same site. 
-         */    public final CefCookieSameSite sameSite;
+         */    public final @Nullable CefCookieSameSite sameSite;
         /**
          * Priority. 
-         */    public final CefCookiePriority priority;
+         */    public final @Nullable CefCookiePriority priority;
 
-    public CefCookie(String name, String value, String domain, String path, int secure, int httponly, CefBasetime creation, CefBasetime lastAccess, int hasExpires, CefBasetime expires, CefCookieSameSite sameSite, CefCookiePriority priority) {
+    public CefCookie(@Nullable String name, @Nullable String value, @Nullable String domain, @Nullable String path, int secure, int httponly, @Nullable CefBasetime creation, @Nullable CefBasetime lastAccess, int hasExpires, @Nullable CefBasetime expires, @Nullable CefCookieSameSite sameSite, @Nullable CefCookiePriority priority) {
         this.name = name;
         this.value = value;
         this.domain = domain;
@@ -130,16 +131,16 @@ public final class CefCookie {
 
             /**
              * The cookie name. 
-             */        public String name;
+             */        public @Nullable String name;
             /**
              * The cookie value. 
-             */        public String value;
+             */        public @Nullable String value;
             /**
              * If {@code domain} is empty a host cookie will be created instead of a domain cookie. Domain cookies are stored with a leading "." and are visible to sub-domains whereas host cookies are not. 
-             */        public String domain;
+             */        public @Nullable String domain;
             /**
              * If {@code path} is non-empty only URLs at or below the path will get the cookie value. 
-             */        public String path;
+             */        public @Nullable String path;
             /**
              * If {@code secure} is {@code true} the cookie will only be sent for HTTPS requests. 
              */        public int secure;
@@ -148,24 +149,24 @@ public final class CefCookie {
              */        public int httponly;
             /**
              * The cookie creation date. This is automatically populated by the system on cookie creation. 
-             */        public CefBasetime creation;
+             */        public @Nullable CefBasetime creation;
             /**
              * The cookie last access date. This is automatically populated by the system on access. 
-             */        public CefBasetime lastAccess;
+             */        public @Nullable CefBasetime lastAccess;
             /**
              * The cookie expiration date is only valid if {@code has_expires} is {@code true}. 
              */        public int hasExpires;
-        public CefBasetime expires;
+        public @Nullable CefBasetime expires;
             /**
              * Same site. 
-             */        public CefCookieSameSite sameSite;
+             */        public @Nullable CefCookieSameSite sameSite;
             /**
              * Priority. 
-             */        public CefCookiePriority priority;
+             */        public @Nullable CefCookiePriority priority;
 
         public Mutable() {}
 
-        public Mutable(String name, String value, String domain, String path, int secure, int httponly, CefBasetime creation, CefBasetime lastAccess, int hasExpires, CefBasetime expires, CefCookieSameSite sameSite, CefCookiePriority priority) {
+        public Mutable(@Nullable String name, @Nullable String value, @Nullable String domain, @Nullable String path, int secure, int httponly, @Nullable CefBasetime creation, @Nullable CefBasetime lastAccess, int hasExpires, @Nullable CefBasetime expires, @Nullable CefCookieSameSite sameSite, @Nullable CefCookiePriority priority) {
             this.name = name;
             this.value = value;
             this.domain = domain;

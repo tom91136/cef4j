@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
+import javax.annotation.Nullable;
 
 /**
  * Screen information used when window rendering is disabled. This structure is passed as a parameter to {@link net.kurobako.cef4j.gen.CefRenderHandler#getScreenInfo(CefBrowser, CefScreenInfo.Mutable)} and should be filled in by the client.
@@ -40,12 +41,12 @@ public final class CefScreenInfo {
          */    public final int isMonochrome;
         /**
          * This is set from the rcMonitor member of MONITORINFOEX, to whit: "A RECT structure that specifies the display monitor rectangle, expressed in virtual-screen coordinates. Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values." The {@code rect} and {@code available_rect} properties are used to determine the available surface for rendering popup views. 
-         */    public final CefRect rect;
+         */    public final @Nullable CefRect rect;
         /**
          * This is set from the rcWork member of MONITORINFOEX, to whit: "A RECT structure that specifies the work area rectangle of the display monitor that can be used by applications, expressed in virtual-screen coordinates. Windows uses this rectangle to maximize an application on the monitor. The rest of the area in rcMonitor contains system windows such as the task bar and side bars. Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values". The {@code rect} and {@code available_rect} properties are used to determine the available surface for rendering popup views. 
-         */    public final CefRect availableRect;
+         */    public final @Nullable CefRect availableRect;
 
-    public CefScreenInfo(float deviceScaleFactor, int depth, int depthPerComponent, int isMonochrome, CefRect rect, CefRect availableRect) {
+    public CefScreenInfo(float deviceScaleFactor, int depth, int depthPerComponent, int isMonochrome, @Nullable CefRect rect, @Nullable CefRect availableRect) {
         this.deviceScaleFactor = deviceScaleFactor;
         this.depth = depth;
         this.depthPerComponent = depthPerComponent;
@@ -108,14 +109,14 @@ public final class CefScreenInfo {
              */        public int isMonochrome;
             /**
              * This is set from the rcMonitor member of MONITORINFOEX, to whit: "A RECT structure that specifies the display monitor rectangle, expressed in virtual-screen coordinates. Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values." The {@code rect} and {@code available_rect} properties are used to determine the available surface for rendering popup views. 
-             */        public CefRect rect;
+             */        public @Nullable CefRect rect;
             /**
              * This is set from the rcWork member of MONITORINFOEX, to whit: "A RECT structure that specifies the work area rectangle of the display monitor that can be used by applications, expressed in virtual-screen coordinates. Windows uses this rectangle to maximize an application on the monitor. The rest of the area in rcMonitor contains system windows such as the task bar and side bars. Note that if the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values". The {@code rect} and {@code available_rect} properties are used to determine the available surface for rendering popup views. 
-             */        public CefRect availableRect;
+             */        public @Nullable CefRect availableRect;
 
         public Mutable() {}
 
-        public Mutable(float deviceScaleFactor, int depth, int depthPerComponent, int isMonochrome, CefRect rect, CefRect availableRect) {
+        public Mutable(float deviceScaleFactor, int depth, int depthPerComponent, int isMonochrome, @Nullable CefRect rect, @Nullable CefRect availableRect) {
             this.deviceScaleFactor = deviceScaleFactor;
             this.depth = depth;
             this.depthPerComponent = depthPerComponent;

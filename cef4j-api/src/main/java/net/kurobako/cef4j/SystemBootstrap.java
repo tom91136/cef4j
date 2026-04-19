@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,8 @@ public final class SystemBootstrap {
     private SystemBootstrap() {}
 
     private static volatile boolean loaded = false;
-    private static volatile Path extractionDir;
-    private static volatile Path cachedLibcefDir;
+    private static volatile @Nullable Path extractionDir;
+    private static volatile @Nullable Path cachedLibcefDir;
     private static volatile boolean libcefDirResolved = false;
 
     /**
@@ -113,12 +114,12 @@ public final class SystemBootstrap {
     /**
      * Returns the directory where native files were extracted, or null if the library was loaded from the system path.
      */
-    public static Path getExtractionDir() {
+    public static @Nullable Path getExtractionDir() {
         return extractionDir;
     }
 
     /** Returns the resolved LIBCEF_DIR, or null if not set. Result is cached after first call. */
-    public static Path getLibcefDir() {
+    public static @Nullable Path getLibcefDir() {
         if (libcefDirResolved) return cachedLibcefDir;
         String env = System.getenv("LIBCEF_DIR");
         if (env == null || env.isEmpty()) {
@@ -137,7 +138,7 @@ public final class SystemBootstrap {
 
     // Walk up from working directory looking for .cef-dist/*/Release/ containing the CEF runtime,
     // so IDE run configs work without setting LIBCEF_DIR.
-    private static Path discoverCefDist() {
+    private static @Nullable Path discoverCefDist() {
         Path dir = Paths.get(System.getProperty("user.dir"));
         for (int i = 0; i < 5 && dir != null; i++, dir = dir.getParent()) {
             Path cefDist = dir.resolve(".cef-dist");
@@ -151,7 +152,8 @@ public final class SystemBootstrap {
                     log.debug("Auto-discovered CEF dist: {}", found);
                     return found;
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                log.trace("skipping unreadable CEF dist candidate {}: {}", cefDist, e.toString());
             }
         }
         return null;
@@ -170,7 +172,7 @@ public final class SystemBootstrap {
      * Returns the path to the cef4j_launcher executable. Prefers the extraction directory, falls back to LIBCEF_DIR,
      * then null.
      */
-    public static String getHelperPath() {
+    public static @Nullable String getHelperPath() {
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         if (extractionDir != null) {
             Path launcher = extractionDir.resolve(launcherName);
@@ -195,13 +197,12 @@ public final class SystemBootstrap {
         log.debug("Detected platform: {}, native lib: {}", platform, libName);
 
         Path libcefDir = getLibcefDir();
-        boolean useLinkedRuntime = libcefDir != null;
         boolean platformJarAvailable = isPlatformJarAvailable();
-        if (!useLinkedRuntime && !platformJarAvailable) {
+        if (libcefDir == null && !platformJarAvailable) {
             throw new IOException("CEF runtime not found: cef4j-platform jar not on classpath,"
                     + " LIBCEF_DIR env var not set, -Dcef4j.libcef.dir system property not set");
         }
-        if (useLinkedRuntime && !Files.isDirectory(libcefDir)) {
+        if (libcefDir != null && !Files.isDirectory(libcefDir)) {
             throw new IOException("LIBCEF_DIR is not a directory: " + libcefDir);
         }
 
@@ -216,7 +217,7 @@ public final class SystemBootstrap {
         extractResource(resourceBase + launcherName, launcher);
         launcher.toFile().setExecutable(true);
 
-        if (useLinkedRuntime) {
+        if (libcefDir != null) {
             log.debug("Linking CEF runtime from LIBCEF_DIR: {}", libcefDir);
             linkCefRuntime(libcefDir, cacheDir);
         } else {
@@ -259,8 +260,10 @@ public final class SystemBootstrap {
                         .redirectErrorStream(true)
                         .start()
                         .waitFor();
-            } catch (Exception ignored) {
+            } catch (IOException ignored) {
                 // xattr may not exist or quarantine may not be set; not fatal
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
         } else if (OS.isWindows()) {
             // On Windows, pre-load dependencies in order so each DLL is already
@@ -285,7 +288,11 @@ public final class SystemBootstrap {
     }
 
     private static Path resolveExtractionCacheDir(
-            String platform, String libName, String resourceBase, Path libcefDir, boolean platformJarAvailable)
+            String platform,
+            String libName,
+            String resourceBase,
+            @Nullable Path libcefDir,
+            boolean platformJarAvailable)
             throws IOException {
         Path baseDir = Paths.get(System.getProperty("java.io.tmpdir"), "cef4j-cache", platform);
         Files.createDirectories(baseDir);
@@ -294,7 +301,11 @@ public final class SystemBootstrap {
     }
 
     private static String computeExtractionCacheKey(
-            String platform, String libName, String resourceBase, Path libcefDir, boolean platformJarAvailable)
+            String platform,
+            String libName,
+            String resourceBase,
+            @Nullable Path libcefDir,
+            boolean platformJarAvailable)
             throws IOException {
         MessageDigest digest = newSha256Digest();
         updateDigestFromResource(digest, resourceBase + libName);
@@ -304,7 +315,7 @@ public final class SystemBootstrap {
             updateDigestFromResource(digest, "cef-runtime/file-list.txt");
             updateDigestFromResource(digest, platformRuntimeFingerprintResource());
         } else {
-            Path resolvedLibcefDir = libcefDir.toRealPath();
+            Path resolvedLibcefDir = java.util.Objects.requireNonNull(libcefDir).toRealPath();
             updateDigestWithString(digest, resolvedLibcefDir.toString());
             Path runtimeBinary = resolvedLibcefDir.resolve(platformRuntimeBinaryName());
             if (Files.exists(runtimeBinary)) {
@@ -328,26 +339,26 @@ public final class SystemBootstrap {
     }
 
     private static void extractPlatformRuntime(Path cacheDir) throws IOException {
-        try (InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream("cef-runtime/file-list.txt")) {
-            if (in == null) {
-                throw new IOException("cef-runtime/file-list.txt not found in platform jar");
-            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream("cef-runtime/file-list.txt");
+        if (in == null) {
+            throw new IOException("cef-runtime/file-list.txt not found in platform jar");
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim().replace('\\', '/');
                 if (line.isEmpty()) continue;
                 Path target = cacheDir.resolve(line);
-                // Skip if already extracted and non-empty
                 if (Files.exists(target) && Files.size(target) > 0) continue;
-                Files.createDirectories(target.getParent());
+                Path parent = target.getParent();
+                if (parent != null) Files.createDirectories(parent);
                 extractResource("cef-runtime/" + line, target);
-                // Mark shared libraries and the macOS framework binary as executable
-                String fileName = target.getFileName().toString();
+                Path fileName = target.getFileName();
+                String fileNameStr = fileName == null ? "" : fileName.toString();
                 if (line.endsWith(".so")
                         || line.endsWith(".so.1")
                         || line.endsWith(".dylib")
-                        || fileName.equals("Chromium Embedded Framework")) {
+                        || fileNameStr.equals("Chromium Embedded Framework")) {
                     target.toFile().setExecutable(true);
                 }
             }

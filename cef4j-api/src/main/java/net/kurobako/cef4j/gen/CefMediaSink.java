@@ -176,13 +176,13 @@ public interface CefMediaSink extends CefLibraryObject {
 
         static native CefMediaSinkIconType getIconType0(long self);
 
-        static native void getDeviceInfo0(long self, CefMediaSinkDeviceInfoCallback callback);
+        static native void getDeviceInfo0(long self, @Nullable CefMediaSinkDeviceInfoCallback callback);
 
         static native boolean isCastSink0(long self);
 
         static native boolean isDialSink0(long self);
 
-        static native boolean isCompatibleWith0(long self, CefMediaSource source);
+        static native boolean isCompatibleWith0(long self, @Nullable CefMediaSource source);
 
 
         @Override
