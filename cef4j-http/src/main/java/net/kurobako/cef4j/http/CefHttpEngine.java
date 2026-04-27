@@ -1,0 +1,54 @@
+package net.kurobako.cef4j.http;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
+
+/**
+ * Transport seam for the URL handler. The default implementation wraps {@link net.kurobako.cef4j.gen.CefUrlRequest};
+ * tests inject a fake to exercise the bridge without initialising CEF.
+ *
+ * <p>Deliberately CEF-agnostic: {@code byte[]} bodies, plain header maps.
+ */
+interface CefHttpEngine {
+
+    /**
+     * Fire a request. The returned {@link Cancellation} is invoked by {@link java.net.HttpURLConnection#disconnect()}.
+     * Callbacks on {@code sink} may arrive on any thread; the connection synchronises internally.
+     */
+    @Nonnull
+    Cancellation send(@Nonnull RequestSpec spec, @Nonnull ResponseSink sink);
+
+    interface Cancellation {
+        void cancel();
+    }
+
+    interface ResponseSink {
+        void onResponse(int status, @Nonnull String statusText, @Nonnull Map<String, List<String>> headers);
+
+        void onData(@Nonnull byte[] chunk);
+
+        void onComplete();
+
+        void onError(@Nonnull IOException error);
+    }
+
+    final class RequestSpec {
+        final String url;
+        final String method;
+        final Map<String, List<String>> headers;
+        final byte[] body;
+
+        RequestSpec(
+                @Nonnull String url,
+                @Nonnull String method,
+                @Nonnull Map<String, List<String>> headers,
+                @Nonnull byte[] body) {
+            this.url = url;
+            this.method = method;
+            this.headers = headers;
+            this.body = body;
+        }
+    }
+}

@@ -38,6 +38,7 @@
         <palantir.java.format.version>2.72.0</palantir.java.format.version>
         <errorprone.version>2.32.0</errorprone.version>
         <nullaway.version>0.12.1</nullaway.version>
+        <autoservice.version>1.1.1</autoservice.version>
         <spotbugs.version>4.8.6.0</spotbugs.version>
         <!-- Per-module opt-out; SpotBugs is disabled in modules where it is noisy (e.g. Scala codegen). -->
         <spotbugs.skip>false</spotbugs.skip>
@@ -65,6 +66,7 @@
         <module>cef4j-api</module>
         <module>cef4j-osr-swing</module>
         <module>cef4j-osr-jfx</module>
+        <module>cef4j-http</module>
         <module>cef4j-sample</module>
     </modules>
 
@@ -140,6 +142,11 @@
                 <groupId>com.formdev</groupId>
                 <artifactId>flatlaf</artifactId>
                 <version>${flatlaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+                <version>${autoservice.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
