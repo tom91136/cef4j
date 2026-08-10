@@ -40,7 +40,10 @@ class CefHttpURLConnectionTest {
         c.setRequestProperty("Accept", "application/json");
         c.connect();
         Map<String, List<String>> sent = engine.capturedSpec().headers;
-        assertThat(sent.get("X-Thing")).containsExactly("one", "two");
+        // URLConnection does not specify the order of values returned by getRequestProperties();
+        // OpenJDK currently exposes repeated values newest-first. The bridge's contract is to
+        // preserve every value, not to impose an ordering the source API does not guarantee.
+        assertThat(sent.get("X-Thing")).containsExactlyInAnyOrder("one", "two");
         assertThat(sent.get("Accept")).containsExactly("application/json");
     }
 

@@ -1,0 +1,49 @@
+package net.kurobako.cef4j.ipc.frame;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Duration;
+import java.util.List;
+import net.kurobako.cef4j.test.backend.BrowserBackend;
+import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+/**
+ * Smoke test that drives the {@link BrowserBackend} SPI. Currently picks up the {@link IpcBrowserBackend} via
+ * ServiceLoader from this module's test scope; once {@code cef4j-osr-jfx} (or a cef4j-ipc-jfx in the future) exposes
+ * its own {@code NativeBrowserBackend} on the same SPI, parameterising any existing render/JS test against
+ * {@code BrowserBackend.discover()} runs it across both backends.
+ */
+@Timeout(60)
+class BrowserBackendSmokeTest {
+
+    static List<BrowserBackend> backends() {
+        return BrowserBackend.discover();
+    }
+
+    /**
+     * Combined paint + eval check. Done as a single test method to keep all session lifecycle inside one JVM-spawn:
+     * jeromq's iothread can't survive many ZContext lifecycles in the same JVM (the cumulative-state race documented in
+     * {@code cef4j-ipc-transport}'s pom). reuseForks=false hands each test class its own JVM, but two methods within
+     * one class still share — so we do both checks against one session.
+     */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("backends")
+    void deliversPaintAndEvaluatesJsAcrossBackend(BrowserBackend backend) throws Exception {
+        Assumptions.assumeTrue(backend.isAvailable(), () -> backend.name() + " unavailable");
+        BrowserBackend.SessionConfig cfg = new BrowserBackend.SessionConfig(
+                "data:text/html,<html><body style='background:red'>p</body></html>", 800, 600, Duration.ofSeconds(20));
+        try (BrowserSession s = backend.openSession(cfg)) {
+            BrowserSession.PaintInfo p = s.awaitFirstPaint(Duration.ofSeconds(15));
+            assertThat(p.width).isEqualTo(800);
+            assertThat(p.height).isEqualTo(600);
+            assertThat(p.byteCount).isEqualTo(800L * 600 * 4);
+
+            String result = s.evaluateJavascript("1 + 2 + 3").get();
+            assertThat(result).isEqualTo("6");
+        }
+    }
+}

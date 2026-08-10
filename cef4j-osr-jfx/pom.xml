@@ -71,6 +71,14 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <!-- Cross-backend test SPI: lets the existing osr-jfx tests run via the in-process CefWebView
+                 (NativeBrowserBackend) and share the same parameterised harness with the IPC backend. -->
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -126,6 +134,19 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- Publish a test-jar so cef4j-test-matrix can depend on this module's
+                     NativeBrowserBackend (registered via META-INF/services). -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

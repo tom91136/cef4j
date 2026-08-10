@@ -39,6 +39,7 @@
         <errorprone.version>2.32.0</errorprone.version>
         <nullaway.version>0.12.1</nullaway.version>
         <autoservice.version>1.1.1</autoservice.version>
+        <jeromq.version>0.6.0</jeromq.version>
         <spotbugs.version>4.8.6.0</spotbugs.version>
         <!-- Per-module opt-out; SpotBugs is disabled in modules where it is noisy (e.g. Scala codegen). -->
         <spotbugs.skip>false</spotbugs.skip>
@@ -67,6 +68,14 @@
         <module>cef4j-osr-swing</module>
         <module>cef4j-osr-jfx</module>
         <module>cef4j-http</module>
+        <module>cef4j-ipc-transport</module>
+        <module>cef4j-ipc-session</module>
+        <module>cef4j-ipc-helper-native</module>
+        <module>cef4j-ipc-protocol</module>
+        <module>cef4j-ipc-frame-mmap</module>
+        <module>cef4j-ipc-jfx</module>
+        <module>cef4j-test-shared</module>
+        <module>cef4j-test-matrix</module>
         <module>cef4j-sample</module>
     </modules>
 
@@ -147,6 +156,11 @@
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service-annotations</artifactId>
                 <version>${autoservice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zeromq</groupId>
+                <artifactId>jeromq</artifactId>
+                <version>${jeromq.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -429,6 +443,11 @@
                             <junit.jupiter.execution.timeout.lifecycle.method.default>30 s</junit.jupiter.execution.timeout.lifecycle.method.default>
                         </systemPropertyVariables>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

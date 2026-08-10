@@ -721,7 +721,11 @@ object CHeaderParser {
       )
 
     decls.map {
-      case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = false)))
+      // ObjectStruct methods (cef_browser_host_t::send_mouse_click_event etc.) take const-ptrs to data structs
+      // by-value just like HandlerStruct callbacks do. The reclassify guard checks `dataStructNames` first so
+      // refcounted facade pointers (cef_browser_t*) still land as RemoteHandle, not DataStruct — only true
+      // data structs (cef_mouse_event_t, cef_key_event_t, cef_rect_t…) get promoted.
+      case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = true)))
       case d: CefDecl.HandlerStruct => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = true)))
       case d: CefDecl.FreeFunction  =>
         d.copy(

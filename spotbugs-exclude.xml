@@ -55,4 +55,32 @@
         <Class name="net.kurobako.cef4j.sample.SigintHelper"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
+    <!-- RecordingTransport takes ownership of the MessageLog.Writer passed to it; the constructor
+         contract is "this transport now owns and closes the writer". Intentional reference-store. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.ipc.transport.RecordingTransport"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- HelperProcess.spawn captures p.onExit().thenAccept(...) into an `unused` local because Error
+         Prone's FutureReturnValueIgnored requires the return value to be assigned. SpotBugs disagrees;
+         this is a documented two-way intentional pattern. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.ipc.session.process.HelperProcess"/>
+        <Method name="spawn"/>
+        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+    </Match>
+    <!-- Generated facades mirror CEF struct names verbatim (e.g. cef_v8_exception_t -> CefV8Exception); they
+         describe a CEF-side condition, not a Java throwable. SpotBugs flags the suffix mismatch but renaming
+         them would diverge from the CEF API surface. -->
+    <Match>
+        <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
+        <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
+    </Match>
+    <!-- Generated wire messages deliberately retain and expose byte[] / String[] payloads. Defensive copies would
+         add two full payload copies (constructor + accessor) to the IPC path; callers treat these message views as
+         immutable for their short dispatch lifetime. Keep the exemption scoped to generated protocol classes. -->
+    <Match>
+        <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
 </FindBugsFilter>

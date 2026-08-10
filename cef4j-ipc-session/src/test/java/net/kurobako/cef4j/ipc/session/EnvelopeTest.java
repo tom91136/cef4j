@@ -1,0 +1,93 @@
+package net.kurobako.cef4j.ipc.session;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Test;
+
+class EnvelopeTest {
+
+    @Test
+    void headerSizeIsFourteen() {
+        assertThat(Envelope.HEADER_SIZE).isEqualTo(14);
+    }
+
+    @Test
+    void writeThenReadRoundTrips() {
+        byte[] payload = "hello".getBytes(StandardCharsets.UTF_8);
+        ByteBuffer buf =
+                ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
+        Envelope.writeHeader(buf, Envelope.Kind.REQUEST, /*flags*/ 0, /*corrId*/ 7, /*messageId*/ 42, payload.length);
+        buf.put(payload);
+        buf.flip();
+
+        Envelope.Header h = Envelope.readHeader(buf);
+        assertThat(h.kind).isEqualTo(Envelope.Kind.REQUEST);
+        assertThat(h.flags).isEqualTo(0);
+        assertThat(h.corrId).isEqualTo(7);
+        assertThat(h.messageId).isEqualTo(42);
+        assertThat(h.payloadLength).isEqualTo(payload.length);
+
+        // After readHeader, position is at payload start.
+        byte[] got = new byte[buf.remaining()];
+        buf.get(got);
+        assertThat(got).isEqualTo(payload);
+    }
+
+    @Test
+    void allKindsRoundTrip() {
+        for (Envelope.Kind k : Envelope.Kind.values()) {
+            ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(buf, k, /*flags*/ 0xFF, /*corrId*/ -1, /*messageId*/ 99, 0);
+            buf.flip();
+            Envelope.Header h = Envelope.readHeader(buf);
+            assertThat(h.kind).isEqualTo(k);
+            assertThat(h.flags).isEqualTo(0xFF);
+            assertThat(h.corrId).isEqualTo(-1);
+            assertThat(h.messageId).isEqualTo(99);
+            assertThat(h.payloadLength).isEqualTo(0);
+        }
+    }
+
+    @Test
+    void byteOrderIsLittleEndianRegardlessOfBufferOrder() {
+        // Even if the caller hands us a big-endian buffer, the on-the-wire bytes must be little-endian.
+        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.BIG_ENDIAN);
+        Envelope.writeHeader(
+                buf, Envelope.Kind.EVENT, /*flags*/ 0, /*corrId*/ -1, /*messageId*/ 0x01020304, /*payloadLen*/ 0);
+        buf.flip();
+        // messageId at offset 10, little-endian: bytes [04, 03, 02, 01]
+        assertThat(buf.get(10)).isEqualTo((byte) 0x04);
+        assertThat(buf.get(11)).isEqualTo((byte) 0x03);
+        assertThat(buf.get(12)).isEqualTo((byte) 0x02);
+        assertThat(buf.get(13)).isEqualTo((byte) 0x01);
+    }
+
+    @Test
+    void writeRejectsNegativePayloadLength() {
+        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        assertThatThrownBy(() -> Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, 1, 2, -5))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void readRejectsUnknownKind() {
+        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        buf.putInt(0); // len
+        buf.put((byte) 99); // bogus kind
+        buf.put((byte) 0); // flags
+        buf.putInt(0); // corrId
+        buf.putInt(0); // messageId
+        buf.flip();
+        assertThatThrownBy(() -> Envelope.readHeader(buf)).hasMessageContaining("kind");
+    }
+
+    @Test
+    void readRejectsTruncatedHeader() {
+        ByteBuffer buf = ByteBuffer.allocate(7); // less than HEADER_SIZE
+        assertThatThrownBy(() -> Envelope.readHeader(buf)).isInstanceOf(IllegalArgumentException.class);
+    }
+}

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-ipc-frame-mmap</artifactId>
+    <packaging>jar</packaging>
+    <name>cef4j-ipc-frame-mmap</name>
+    <description>Memory-mapped pixel-frame transport for the cef4j IPC backend</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-ipc-session</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-ipc-protocol</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- Publish a test-jar so cef4j-test-matrix can pull in IpcBrowserBackend (and its
+                     META-INF/services registration) on the matrix module's test classpath. The matrix
+                     module is the only consumer; production code never depends on test-jars. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- Same jeromq cumulative-state issue as cef4j-ipc-transport: integration tests open
+                     multiple ZContexts via ZmqTransport, and after enough churn jeromq's iothread can NPE
+                     on Ctx.sendCommand during teardown. Force a fresh fork per test class to keep the
+                     state from accumulating; the helper-spawn cost dominates anyway, so the extra JVM
+                     startups are negligible relative to a 10s+ test. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Same path resolution as cef4j-ipc-protocol: helper binary lives next to the
+                         CEF dist that the parent pom downloads. Without these, IpcBrowserBackend
+                         reports unavailable and BrowserBackendSmokeTest skips its only row. -->
+                    <systemPropertyVariables>
+                        <cef4j.ipc.helper.binary>${maven.multiModuleProjectDirectory}/cef4j-ipc-helper-native/target/cmake-build/cef4j-helper</cef4j.ipc.helper.binary>
+                        <cef4j.ipc.cef.resources>${cef.dist.dir}/Release</cef4j.ipc.cef.resources>
+                    </systemPropertyVariables>
+                    <reuseForks>false</reuseForks>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

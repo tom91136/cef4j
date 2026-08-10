@@ -7,7 +7,11 @@ yum install -y -q \
     xorg-x11-server-Xvfb mesa-dri-drivers \
     gtk3 libXScrnSaver nss alsa-lib cups-libs \
     libXcomposite libXdamage libXrandr libXtst \
-    pango at-spi2-atk libdrm mesa-libgbm
+    pango at-spi2-atk libdrm mesa-libgbm \
+    cmake gcc-c++ make
+# cmake/gcc-c++/make: needed by cef4j-ipc-helper-native, which builds the helper subprocess via
+# CMake (libzmq fetched + built in-tree via FetchContent). Without these, the cef4j-test-matrix
+# module's IPC leg has no helper binary and IpcBrowserBackend.isAvailable() returns false.
 
 mkdir -p /opt/java
 curl -fsSL "https://corretto.aws/downloads/latest/amazon-corretto-${JAVA_VER}-x64-linux-jdk.tar.gz" \
@@ -67,3 +71,14 @@ trap 'kill ${XVFB_PID} 2>/dev/null || true' EXIT
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}"
+
+# Surface which matrix legs actually ran (Assumptions skip the IPC leg if the helper binary is
+# missing, which would otherwise show as "test passed" via JUnit's aborted-as-success path).
+# This greps the surefire reports and prints per-row PASS/FAIL/skipped so failures in one backend
+# don't get lost behind the other.
+if [ -d cef4j-test-matrix/target/surefire-reports ]; then
+    echo "=== cross-backend matrix results ==="
+    for xml in cef4j-test-matrix/target/surefire-reports/TEST-*.xml; do
+        grep -E "<testcase|<failure|<error|<skipped" "$xml" || true
+    done
+fi
