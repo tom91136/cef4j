@@ -87,7 +87,7 @@ class CodegenV8DispatchTest {
 
             // Bootstrap: wait for an after-created browser + V8 context.
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> browsers.offer(ev.browser()));
@@ -123,7 +123,7 @@ class CodegenV8DispatchTest {
 
             // Same bootstrap dance as the first test.
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> browsers.offer(ev.browser()));
@@ -173,7 +173,7 @@ class CodegenV8DispatchTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(15))) {
 
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> browsers.offer(ev.browser()));

@@ -94,7 +94,7 @@ class JsFunctionRegistrationTest {
 
             // Setup: bootstrap browser + V8 context.
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> browsers.offer(ev.browser()));

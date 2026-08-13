@@ -59,6 +59,7 @@ public final class ZmqTransport implements CefTransport {
 
     private volatile boolean closed = false;
     private volatile boolean disconnected = false;
+    private volatile boolean peerReady = false;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
@@ -97,6 +98,8 @@ public final class ZmqTransport implements CefTransport {
         inprocSender.connect(wakeAddr);
 
         this.monitor = new ZMonitor(ctx, main);
+        monitor.add(ZMonitor.Event.CONNECTED);
+        monitor.add(ZMonitor.Event.ACCEPTED);
         monitor.add(ZMonitor.Event.DISCONNECTED);
         monitor.start();
 
@@ -212,7 +215,7 @@ public final class ZmqTransport implements CefTransport {
                 if (poller.pollin(0)) drainIncoming();
                 if (poller.pollin(1)) {
                     drainWakeSignals();
-                    drainOutbound();
+                    if (peerReady) drainOutbound();
                 }
                 dispatchPendingIfReady();
             }
@@ -269,7 +272,13 @@ public final class ZmqTransport implements CefTransport {
                     if (closed) return;
                     continue;
                 }
-                if (ev.type == ZMonitor.Event.DISCONNECTED) {
+                if (ev.type == ZMonitor.Event.CONNECTED || ev.type == ZMonitor.Event.ACCEPTED) {
+                    // A PAIR send before the ZMTP connection exists is not reliably queued by every
+                    // JeroMQ/platform combination. Retain outbound messages until the monitor confirms
+                    // the peer, then wake the socket-owner thread to flush them.
+                    peerReady = true;
+                    wake();
+                } else if (ev.type == ZMonitor.Event.DISCONNECTED) {
                     if (closed) return; // suppress event triggered by local close
                     disconnected = true;
                     fireDisconnectIfReady();

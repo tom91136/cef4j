@@ -31,6 +31,8 @@ class CefScriptEngineMultiThreadedTest {
     private static CefScriptEngine engineB;
     private static CefBrowser browserA;
     private static CefBrowser browserB;
+    private static final CompletableFuture<Void> closedA = new CompletableFuture<>();
+    private static final CompletableFuture<Void> closedB = new CompletableFuture<>();
 
     @BeforeAll
     static void initCef(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
@@ -69,7 +71,7 @@ class CefScriptEngineMultiThreadedTest {
         CompletableFuture<CefBrowser> browserAFuture = new CompletableFuture<>();
         CompletableFuture<Void> loadedA = new CompletableFuture<>();
         AtomicInteger loadCountA = new AtomicInteger();
-        CefClient clientA = makeClient(engineA, browserAFuture, loadCountA, loadedA, 2);
+        CefClient clientA = makeClient(engineA, browserAFuture, loadCountA, loadedA, closedA, 2);
         createBrowserAsync(clientA, "about:blank");
         browserA = browserAFuture.get(10, TimeUnit.SECONDS);
 
@@ -82,7 +84,7 @@ class CefScriptEngineMultiThreadedTest {
         CompletableFuture<CefBrowser> browserBFuture = new CompletableFuture<>();
         CompletableFuture<Void> loadedB = new CompletableFuture<>();
         AtomicInteger loadCountB = new AtomicInteger();
-        CefClient clientB = makeClient(engineB, browserBFuture, loadCountB, loadedB, 2);
+        CefClient clientB = makeClient(engineB, browserBFuture, loadCountB, loadedB, closedB, 2);
         createBrowserAsync(clientB, "about:blank");
         browserB = browserBFuture.get(10, TimeUnit.SECONDS);
 
@@ -92,11 +94,13 @@ class CefScriptEngineMultiThreadedTest {
     }
 
     @AfterAll
-    static void cleanup() {
+    static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
         if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
         if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
+        if (browserA != null) closedA.get(10, TimeUnit.SECONDS);
+        if (browserB != null) closedB.get(10, TimeUnit.SECONDS);
         // Shut down CEF synchronously so the internal threads release the cache files before
         // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
         // as a synthetic extra test.
@@ -146,6 +150,7 @@ class CefScriptEngineMultiThreadedTest {
             CompletableFuture<CefBrowser> browserFuture,
             AtomicInteger loadCount,
             CompletableFuture<Void> loaded,
+            CompletableFuture<Void> closed,
             int targetLoadCount) {
         return new CefClient() {
             @Override
@@ -154,6 +159,11 @@ class CefScriptEngineMultiThreadedTest {
                     @Override
                     public void onAfterCreated(@Nullable CefBrowser b) {
                         browserFuture.complete(b);
+                    }
+
+                    @Override
+                    public void onBeforeClose(@Nullable CefBrowser b) {
+                        closed.complete(null);
                     }
                 });
             }

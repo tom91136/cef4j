@@ -174,7 +174,7 @@ class RuntimeServerIntegrationTest {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
                     });
@@ -225,7 +225,7 @@ class RuntimeServerIntegrationTest {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
                     });

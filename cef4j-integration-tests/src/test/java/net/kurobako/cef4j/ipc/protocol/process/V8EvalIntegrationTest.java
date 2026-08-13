@@ -244,7 +244,7 @@ class V8EvalIntegrationTest {
 
     private net.kurobako.cef4j.ipc.protocol.gen.Frame setupFrame(CefSession session) throws Exception {
         LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
-        session.on(
+        session.onLatest(
                 LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                 LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                 ev -> browsers.offer(ev.browser()));

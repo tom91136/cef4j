@@ -63,7 +63,9 @@ xvfb-run -a ./mvnw -B install \
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}" \
-    "-Djavafx.test.version=${JAVAFX_TEST_VERSION}"
+    "-Djavafx.test.version=${JAVAFX_TEST_VERSION}" \
+    "-Dcef4j.test.extraArgs=$([[ ${CEF_API} == 109 ]] && printf '%s' --disable-gpu)" \
+    "-Dcef4j.runtime.server.extraArgs=$([[ ${CEF_API} == 109 ]] && printf '%s' --disable-gpu)"
 
 # Maven/Scala codegen runs on JDK 17+, but the distributable IPC transport must
 # remain executable on Java 11. Exercise one representative matrix row with a

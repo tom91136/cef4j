@@ -221,8 +221,8 @@ jobs:
           "-Dcef.api.version=${{ matrix.cef-api }}"
           "-Djavafx.version=${{ matrix.javafx }}"
           "-Djavafx.test.version=${{ matrix.javafx }}"
-          "-Dcef4j.test.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64') && '--disable-gpu' || '' }}"
-          "-Dcef4j.runtime.server.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64') && '--disable-gpu' || '' }}"
+          "-Dcef4j.test.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64' || matrix.cef-api == '109') && '--disable-gpu' || '' }}"
+          "-Dcef4j.runtime.server.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64' || matrix.cef-api == '109') && '--disable-gpu' || '' }}"
 
       # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
       # complete reactor, then exercise every non-JavaFX module natively on ARM64.

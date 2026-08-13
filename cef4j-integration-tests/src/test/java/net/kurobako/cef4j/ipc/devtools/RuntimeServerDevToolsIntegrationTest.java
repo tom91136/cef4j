@@ -58,7 +58,7 @@ class RuntimeServerDevToolsIntegrationTest {
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     event -> browserHandle.complete(event.browser()));

@@ -471,6 +471,11 @@ public final class SystemBootstrap {
     }
 
     private static void extractResource(String resourcePath, Path target) throws IOException {
+        // The cache directory is content-addressed and callers hold its cross-process extraction lock.
+        // A target can therefore only be a complete copy of this exact resource. Reusing it is important
+        // on Windows, where a CEF subprocess from a preceding JVM may still have the launcher mapped and
+        // replacing the executable would fail with AccessDeniedException.
+        if (Files.isRegularFile(target)) return;
         try (InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (in == null) {
                 throw new IOException("Resource not found on classpath: " + resourcePath);

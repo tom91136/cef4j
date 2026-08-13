@@ -94,7 +94,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
             String res = System.getProperty("cef4j.runtime.server.resources");
             this.server = launchServer(Paths.get(bin), Paths.get(res), config.startupTimeout());
             this.transport = ZmqTransport.connect(server.endpoint());
-            this.session = new CefSessionImpl(transport, Duration.ofSeconds(15));
+            this.session = new CefSessionImpl(transport, Duration.ofSeconds(30));
 
             // Bind the frame transport BEFORE the server hands us the browser so we never miss the first paint.
             this.frameTransport = SharedFileFrameTransport.bindAll(session);

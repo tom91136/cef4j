@@ -72,7 +72,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
                     });
@@ -129,7 +129,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
                     });
@@ -173,7 +173,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
                     });
@@ -199,7 +199,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
                     });
@@ -237,7 +237,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> handles.offer(ev.browser()));
@@ -297,7 +297,7 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(10))) {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     ev -> handles.offer(ev.browser()));

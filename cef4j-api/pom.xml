@@ -135,14 +135,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- Native CEF is process-global and older releases retain state that can corrupt
+                         the next test class (most visibly on macOS). Every class still runs; giving each
+                         one a fresh process makes the lifecycle boundary match an end-user application. -->
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                     </systemPropertyVariables>
-                    <!-- Tests in this list need their own JVM because they initialise CEF with
+                    <!-- Tests in this list need a separate execution because they initialise CEF with
                          incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)
-                         and CEF cannot be re-initialised once started. The default fork shares CEF
-                         across compatible tests; the isolated execution below gives each of these a
-                         fresh JVM via reuseForks=false + forkCount=1. -->
+                         and CEF cannot be re-initialised once started. The isolated execution below
+                         selects those classes while reuseForks=false gives every selected class a fresh JVM. -->
                     <excludes>
                         <exclude>**/CefScriptEngineMultiThreadedTest.java</exclude>
                         <exclude>**/CefSchemeHandlerTest.java</exclude>

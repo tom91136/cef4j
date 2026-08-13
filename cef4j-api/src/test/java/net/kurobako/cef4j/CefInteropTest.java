@@ -1049,6 +1049,15 @@ class CefInteropTest extends CefTestBase {
         host.sendMouseClickEvent(mouseEvent, left, false, 1);
         host.sendMouseClickEvent(mouseEvent, left, true, 1);
 
+        // macOS hosted sessions can reject synthetic mouse coordinates before an OSR view has a
+        // backing screen. Focus the anchor and inject Enter as a second genuine input path.
+        browser.getMainFrame().orElseThrow().executeJavaScript("document.getElementById('link').focus()", "test.js", 1);
+        pumpUntil(new CountDownLatch(1), 100);
+        CefKeyEventType rawDown = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
+        CefKeyEventType keyUp = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
+        host.sendKeyEvent(new CefKeyEvent(rawDown, 0, 13, 13, 0, '\r', '\r', 0));
+        host.sendKeyEvent(new CefKeyEvent(keyUp, 0, 13, 13, 0, '\r', '\r', 0));
+
         assertThat(pumpUntil(popupLatch, 10_000))
                 .as("onBeforePopup should fire without SIGSEGV")
                 .isTrue();

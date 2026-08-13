@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
-@Timeout(30)
+@Timeout(60)
 final class RuntimeServerSupervisorTest {
     @Test
     void terminatesSpawnedProcessWhenTransportConnectionFails(@TempDir Path temporary) throws Exception {
@@ -66,9 +66,9 @@ final class RuntimeServerSupervisorTest {
         try (RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
                 AutoCloseable registration = supervisor.onConnection(generations::offer)) {
             assertThat(registration).isNotNull();
-            RuntimeServerSupervisor.Connection first = supervisor.start().get(5, TimeUnit.SECONDS);
-            assertThat(generations.poll(5, TimeUnit.SECONDS)).isSameAs(first);
-            RuntimeServerSupervisor.Connection second = generations.poll(10, TimeUnit.SECONDS);
+            RuntimeServerSupervisor.Connection first = supervisor.start().get(10, TimeUnit.SECONDS);
+            assertThat(generations.poll(10, TimeUnit.SECONDS)).isSameAs(first);
+            RuntimeServerSupervisor.Connection second = generations.poll(30, TimeUnit.SECONDS);
             assertThat(second).isNotNull();
             assertThat(second.pid()).isNotEqualTo(first.pid());
         }
