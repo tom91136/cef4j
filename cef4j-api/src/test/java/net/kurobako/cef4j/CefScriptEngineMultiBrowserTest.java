@@ -39,7 +39,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
 
     @BeforeAll
     static void initCef() throws Exception {
-        initCef(List.of("--renderer-process-limit=1", "--process-per-site"));
+        initCef(List.of());
 
         engineA = new CefScriptEngine(
                 () -> browserA != null ? browserA.getMainFrame().orElse(null) : null);
@@ -72,10 +72,10 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
-        if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
-        if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
+        closeBrowser(browserA);
         assertThat(pumpUntil(closedA, 10_000)).as("browser A closed").isTrue();
-        assertThat(pumpUntil(closedB, 10_000)).as("browser B closed").isTrue();
+        if (browserB != null && browserB.isValid()) closeBrowser(browserB);
+        assertThat(closedB.await(10, TimeUnit.SECONDS)).as("browser B closed").isTrue();
         if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 

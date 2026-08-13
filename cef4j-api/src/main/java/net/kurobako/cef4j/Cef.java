@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -526,6 +527,21 @@ public enum Cef {
             // External message pump / multithreaded loop path: clean-up runs on the calling thread.
             int released = NativeCleaner.INSTANCE.releaseAll();
             log.info("Released {} outstanding NativePeers before shutdown", released);
+            if (activeSettings != null && activeSettings.multiThreadedMessageLoop == 0) {
+                // Releasing the last references may enqueue destruction work on CEF threads. Older
+                // CEF releases can crash in, or shortly after, cef_shutdown() if that work has not
+                // crossed the browser-process loop yet.
+                long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(250);
+                while (System.nanoTime() < deadline) {
+                    CefGlobals.doMessageLoopWork();
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
             CefGlobals.shutdown();
         }
 
