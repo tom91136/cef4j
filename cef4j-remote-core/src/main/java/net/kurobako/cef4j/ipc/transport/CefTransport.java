@@ -50,6 +50,11 @@ public interface CefTransport extends Closeable {
     /** Returns {@code true} if the transport is currently connected and capable of sending. */
     boolean isConnected();
 
+    /** Returns whether this is the client side of a runtime-server connection. */
+    default boolean isRuntimeServerClient() {
+        return false;
+    }
+
     /** Close the transport, releasing any underlying socket/thread resources. Idempotent. */
     @Override
     void close();

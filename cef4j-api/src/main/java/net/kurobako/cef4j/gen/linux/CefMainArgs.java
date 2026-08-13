@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
-public final class CefMainArgs {
+public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
 
     public final int argc;
     public final @Nullable List<String> argv;
@@ -57,7 +57,7 @@ public final class CefMainArgs {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:77</a>
      */
-    public static final class Mutable {
+    public static final class Mutable implements net.kurobako.cef4j.gen.CefMainArgs.Mutable {
 
         public int argc;
         public @Nullable List<String> argv;

@@ -14,7 +14,7 @@ import javax.annotation.processing.Generated;
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
-public final class CefMainArgs {
+public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
 
     public final long instance;
 
@@ -51,7 +51,7 @@ public final class CefMainArgs {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__win_8h.html">internal/cef_types_win.h:64</a>
      */
-    public static final class Mutable {
+    public static final class Mutable implements net.kurobako.cef4j.gen.CefMainArgs.Mutable {
 
         public long instance;
 

@@ -304,8 +304,7 @@ public enum Cef {
                 // daemon-thread wrapper - runMessageLoop() is invalid under multiThreadedMessageLoop
                 // and forking from a multithreaded JVM corrupts child-process FD inheritance.
                 CefSettings immutable = settings.toImmutable();
-                final int result =
-                        CefGlobals.initialize(new CefMainArgs(argv.size(), argv), immutable, appHandler, null);
+                final int result = CefGlobals.initialize(mainArgs(argv), immutable, appHandler, null);
                 if (result == 0) {
                     log.error("CefGlobals.initialize (cef_initialize) failed");
                     throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
@@ -329,10 +328,7 @@ public enum Cef {
                         () -> {
                             try {
                                 result[0] = CefGlobals.initialize(
-                                        new CefMainArgs(finalArgv.size(), finalArgv),
-                                        finalSettings,
-                                        finalAppHandler,
-                                        null);
+                                        mainArgs(finalArgv), finalSettings, finalAppHandler, null);
                             } catch (Throwable t) {
                                 initError.set(t);
                             }
@@ -372,10 +368,7 @@ public enum Cef {
                         () -> {
                             try {
                                 int result = CefGlobals.initialize(
-                                        new CefMainArgs(finalArgv.size(), finalArgv),
-                                        finalSettings,
-                                        finalAppHandler,
-                                        null);
+                                        mainArgs(finalArgv), finalSettings, finalAppHandler, null);
                                 if (result == 0) {
                                     initError.set(
                                             new RuntimeException("CefGlobals.initialize (cef_initialize) failed"));
@@ -563,6 +556,18 @@ public enum Cef {
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         }
+    }
+
+    private static CefMainArgs mainArgs(List<String> argv) {
+        if (OS.isWindows()) {
+            // A null HINSTANCE asks CEF/Chromium to use the current executable module. Keeping the native handle out
+            // of Java also preserves the pure-Java public bootstrap API.
+            return new net.kurobako.cef4j.gen.win.CefMainArgs(0L);
+        }
+        if (OS.isMacOS()) {
+            return new net.kurobako.cef4j.gen.mac.CefMainArgs(argv.size(), argv);
+        }
+        return new net.kurobako.cef4j.gen.linux.CefMainArgs(argv.size(), argv);
     }
 
     /** Returns the current CEF application state. */

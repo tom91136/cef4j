@@ -7,7 +7,7 @@ extern "C" cef_app_t* Create_JniCefApp(JNIEnv* env, jobject handler);
 CEF4J_JNI_EXPORT(jint, CefGlobals, executeProcess0)(JNIEnv* env, jclass clz, jobject args, jobject application, jobject windows_sandbox_info) {
     if (!args) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "args must not be null"); return 0; }
     cef_main_args_t _args_val = {};
-    auto _args_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefMainArgs");
+    auto _args_c = FindClassCached(env, "net/kurobako/cef4j/gen/linux/CefMainArgs");
     _args_val.argc = static_cast<decltype(_args_val.argc)>(env->GetIntField(args, env->GetFieldID(_args_c, "argc", "I")));
     auto _rd_argv_list = env->GetObjectField(args, env->GetFieldID(_args_c, "argv", "Ljava/util/List;"));
     std::vector<std::string> _rd_argv_storage;
@@ -22,7 +22,7 @@ CEF4J_JNI_EXPORT(jint, CefGlobals, initialize0)(JNIEnv* env, jclass clz, jobject
     if (!args) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "args must not be null"); return 0; }
     if (!settings) { env->ThrowNew(FindClassCached(env, "java/lang/NullPointerException"), "settings must not be null"); return 0; }
     cef_main_args_t _args_val = {};
-    auto _args_c = FindClassCached(env, "net/kurobako/cef4j/gen/CefMainArgs");
+    auto _args_c = FindClassCached(env, "net/kurobako/cef4j/gen/linux/CefMainArgs");
     _args_val.argc = static_cast<decltype(_args_val.argc)>(env->GetIntField(args, env->GetFieldID(_args_c, "argc", "I")));
     auto _rd_argv_list = env->GetObjectField(args, env->GetFieldID(_args_c, "argv", "Ljava/util/List;"));
     std::vector<std::string> _rd_argv_storage;

@@ -1035,11 +1035,10 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
         assertThat(pumpUntil(paintLatch, 10_000)).as("first paint").isTrue();
 
-        CefBrowserHost host = browser.getHost().orElseThrow();
-        CefMouseEvent mouseEvent = new CefMouseEvent(50, 25, 0);
-        CefMouseButtonType left = CefMouseButtonType.of(CefMouseButtonType.Kind.LEFT);
-        host.sendMouseClickEvent(mouseEvent, left, false, 1);
-        host.sendMouseClickEvent(mouseEvent, left, true, 1);
+        // This test covers callback marshalling, not platform hit-testing. A synthetic click is sensitive to
+        // backing scale and window focus on macOS CI; popup blocking is disabled for this fixture, so invoking
+        // window.open directly gives every platform the same callback trigger.
+        browser.getMainFrame().orElseThrow().executeJavaScript("window.open('about:blank', '_blank')", "test.js", 1);
 
         assertThat(pumpUntil(popupLatch, 10_000))
                 .as("onBeforePopup should fire without SIGSEGV")

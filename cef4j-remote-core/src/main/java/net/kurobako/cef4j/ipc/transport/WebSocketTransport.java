@@ -126,6 +126,11 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     @Override
+    public boolean isRuntimeServerClient() {
+        return true;
+    }
+
+    @Override
     public void close() {
         if (closed) return;
         closed = true;

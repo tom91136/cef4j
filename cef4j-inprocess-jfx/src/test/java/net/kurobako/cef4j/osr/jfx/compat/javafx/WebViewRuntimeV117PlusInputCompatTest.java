@@ -27,7 +27,8 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
-        assertThat(title(view)).isEqualTo("0");
+        assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
 
         assertThat(waitUntilFiringOnFx(
                         () -> !"0".equals(view.getEngine().getTitle()),
@@ -52,7 +53,8 @@ class WebViewRuntimeV117PlusInputCompatTest extends WebViewRuntimeCompatTestBase
 
         assertThat(waitForWorkerState(view.getEngine(), Worker.State.SUCCEEDED, 5_000))
                 .isTrue();
-        assertThat(title(view)).isEqualTo("0");
+        assertThat(waitUntilOnFx(() -> "0".equals(view.getEngine().getTitle()), 3_000))
+                .isTrue();
 
         assertThat(waitUntilFiringOnFx(
                         () -> !"0".equals(view.getEngine().getTitle()),

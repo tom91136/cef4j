@@ -107,6 +107,11 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     @Override
+    public boolean isRuntimeServerClient() {
+        return true;
+    }
+
+    @Override
     public void close() {
         if (closed) return;
         closed = true;

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public final class CefSessionImpl implements CefSession {
 
     private static final Logger LOG = LoggerFactory.getLogger(CefSessionImpl.class);
+    private static final int RUNTIME_SESSION_READY_MESSAGE_ID = 0;
 
     private final CefTransport transport;
     private final Duration defaultTimeout;
@@ -68,6 +69,19 @@ public final class CefSessionImpl implements CefSession {
         this.ownTimer = ownTimer;
         transport.onReceive(this::handleFrame);
         transport.onDisconnect(this::handleDisconnect);
+        if (transport.isRuntimeServerClient()) sendRuntimeSessionReady();
+    }
+
+    private void sendRuntimeSessionReady() {
+        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, Envelope.NO_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
+        buf.flip();
+        try {
+            transport.send(buf);
+        } catch (CefTransportException e) {
+            if (ownTimer) timer.shutdownNow();
+            throw new IllegalStateException("failed to establish runtime server session", e);
+        }
     }
 
     private static ScheduledExecutorService defaultTimer() {

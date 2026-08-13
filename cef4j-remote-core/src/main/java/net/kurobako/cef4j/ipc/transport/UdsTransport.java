@@ -125,6 +125,11 @@ public final class UdsTransport implements CefTransport {
     }
 
     @Override
+    public boolean isRuntimeServerClient() {
+        return true;
+    }
+
+    @Override
     public void close() {
         if (closed) return;
         closed = true;

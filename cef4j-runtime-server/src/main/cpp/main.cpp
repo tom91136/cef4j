@@ -130,6 +130,7 @@ using cef4j::ipc::kNoCorrId;
 
 // Mirrors hand-written specs in cef4j-codegen/src/main/scala/.../ipc/Specs.scala. IDs in [0, AstIdBase) are
 // hand-allocated; codegen-derived AST ids start at AstIdBase=10000.
+static constexpr std::int32_t kMsgSessionReady         = 0;
 static constexpr std::int32_t kMsgReleaseHandle        = 6;
 static constexpr std::int32_t kMsgCreateBrowser        = 7;
 static constexpr std::int32_t kMsgTriggerIntercept     = 8;
@@ -1824,6 +1825,18 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
     if (h.kind != Kind::Request) return;
 
     switch (h.messageId) {
+        case kMsgSessionReady: {
+            // Browser creation is deliberately behind a client-originated barrier. Without this, fast CEF startup
+            // can emit on_after_created after the server handshake but before the client's session receive handler
+            // exists, making startup depend on scheduler timing (especially on loaded CI runners).
+            static std::atomic<bool> bootstrapStarted{false};
+            if (!bootstrapStarted.exchange(true)) {
+                net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
+                settings.windowlessFrameRate = 30;
+                cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
+            }
+            return;
+        }
         case kMsgReleaseHandle: {
             // Drops the server-side retain for `kind=cef_X_t`'s `handle`. The dispatcher's generated switch
             // knows every facade's table; unknown kinds are silently ignored. Ack regardless so the JVM
@@ -2416,30 +2429,8 @@ int main(int argc, char* argv[]) {
         ipc->endpoint().c_str());
     std::fflush(stdout);
 
-    cef_window_info_t windowInfo{};
-#if CEF_VERSION_MAJOR >= 133
-    windowInfo.size = sizeof(windowInfo);
-#endif
-    windowInfo.windowless_rendering_enabled = 1;
-    windowInfo.bounds.x = 0;
-    windowInfo.bounds.y = 0;
-    windowInfo.bounds.width = 800;
-    windowInfo.bounds.height = 600;
-
-    cef_browser_settings_t browserSettings{};
-    browserSettings.size = sizeof(browserSettings);
-    browserSettings.windowless_frame_rate = 30;
-
-    ScopedCefString initialUrl(std::string("about:blank"));
     auto* client = new Client();
     g_client     = client; // shared with CreateBrowserTask for JVM-triggered creates.
-    if (!cef_browser_host_create_browser(
-                &windowInfo, client, initialUrl.get(), &browserSettings, nullptr, nullptr)) {
-        std::fprintf(stderr, "[cef4j-runtime-server] cef_browser_host_create_browser failed\n");
-        ipc->stop();
-        cef_shutdown();
-        return 1;
-    }
 
     cef_run_message_loop();
     releaseAllDevToolsRegistrations();

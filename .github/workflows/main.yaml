@@ -216,7 +216,7 @@ jobs:
       - name: Build and test in isolated hosted desktop
         if: matrix.javafx-tests == 'true'
         run: >-
-          ./mvnw -B install
+          ./mvnw -B clean install
           "-Dcef.version=${{ matrix.cef-version }}"
           "-Dcef.api.version=${{ matrix.cef-api }}"
           "-Djavafx.version=${{ matrix.javafx }}"
@@ -228,7 +228,7 @@ jobs:
         if: matrix.javafx-tests == 'false'
         shell: bash
         run: |
-          ./mvnw -B install -DskipTests \
+          ./mvnw -B clean install -DskipTests \
             "-Dcef.version=${{ matrix.cef-version }}" \
             "-Dcef.api.version=${{ matrix.cef-api }}" \
             "-Djavafx.version=${{ matrix.javafx }}" \

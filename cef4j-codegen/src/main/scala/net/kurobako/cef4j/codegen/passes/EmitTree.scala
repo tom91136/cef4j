@@ -45,7 +45,21 @@ object EmitTree {
             fn.params.foldLeft(a)((s, p) => byValueMatch(p).fold(s)(s + _))
           )
         case (acc, _) => acc
-      }
+      } ++ refined.freeFunctions.foldLeft(Set.empty[String]) { (acc, fn) =>
+        fn.params.foldLeft(acc) {
+          case (s, Param(_, CType.ConstDataStructPtr(name), _, _))
+              if parseState.platformSpecificTypes.contains(name) =>
+            s + name
+          case (s, Param(_, CType.Ptr(name), _, _)) =>
+            val normalized = name.stripPrefix("_")
+            if parseState.platformSpecificTypes.contains(normalized) then s + normalized else s
+          case (s, p) => byValueMatch(p).fold(s)(s + _)
+        }
+      } ++
+        // cef_main_args_t is consumed by the global cef_initialize/cef_execute_process entry points. Their parser
+        // representation is intentionally opaque, but the struct shape differs on Windows and must use the same
+        // shared-interface/platform-implementation model as platform structs referenced by generated methods.
+        Set("cef_main_args_t").filter(parseState.platformSpecificTypes.contains)
     }
     given Naming.Context = parseState.namingContext.copy(platformInterfaceTypes = sharedPlatformInterfaceStructs)
 

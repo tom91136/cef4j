@@ -2,8 +2,6 @@
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
-import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Structure representing CefExecuteProcess arguments.
@@ -12,85 +10,15 @@ import javax.annotation.Nullable;
  *   int argc;
  *   char** argv;
  * } cef_main_args_t;</pre>
+ * Platform-specific implementations: {@link net.kurobako.cef4j.gen.linux.CefMainArgs}, {@link net.kurobako.cef4j.gen.mac.CefMainArgs}, {@link net.kurobako.cef4j.gen.win.CefMainArgs}.
  *
  * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:77</a>
  */
 @Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
-public final class CefMainArgs {
+public interface CefMainArgs {
 
-    public final int argc;
-    public final @Nullable List<String> argv;
 
-    public CefMainArgs(int argc, @Nullable List<String> argv) {
-        this.argc = argc;
-        this.argv = argv;
-    }
+    public interface Mutable {}
 
-    /** Create a mutable copy of this instance. */
-    public Mutable toMutable() {
-        return new Mutable(this.argc, this.argv);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof CefMainArgs)) return false;
-        CefMainArgs other = (CefMainArgs) obj;
-        return this.argc == other.argc
-                    && java.util.Objects.equals(this.argv, other.argv);
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(argc, argv);
-    }
-
-    @Override
-    public String toString() {
-        return "CefMainArgs{" + "argc=" + argc + ", " + "argv=" + argv + "}";
-    }
-
-    /**
-     * Mutable variant of {@link CefMainArgs}. Structure representing CefExecuteProcess arguments.
-     * <p>Definition generated from internal/cef_types_linux.h
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__linux_8h.html">internal/cef_types_linux.h:77</a>
-     */
-    public static final class Mutable {
-
-        public int argc;
-        public @Nullable List<String> argv;
-
-        public Mutable() {}
-
-        public Mutable(int argc, @Nullable List<String> argv) {
-            this.argc = argc;
-            this.argv = argv;
-        }
-
-        /** Create an immutable snapshot of this instance. */
-        public CefMainArgs toImmutable() {
-            return new CefMainArgs(this.argc, this.argv);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
-            return this.argc == other.argc
-                        && java.util.Objects.equals(this.argv, other.argv);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(argc, argv);
-        }
-
-        @Override
-        public String toString() {
-            return "CefMainArgs.Mutable{" + "argc=" + argc + ", " + "argv=" + argv + "}";
-        }
-    }
 }

@@ -39,6 +39,7 @@ public final class ZmqTransport implements CefTransport {
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
     private final String endpoint;
+    private final boolean runtimeServerClient;
     private final ZContext ctx;
     private final ZMQ.Socket main;
     private final ZMQ.Socket inprocWorker;
@@ -76,6 +77,7 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private ZmqTransport(boolean isBind, String requestedEndpoint) {
+        this.runtimeServerClient = !isBind;
         int id = INSTANCE.incrementAndGet();
         this.ctx = new ZContext();
         this.main = ctx.createSocket(SocketType.PAIR);
@@ -140,6 +142,11 @@ public final class ZmqTransport implements CefTransport {
     @Override
     public boolean isConnected() {
         return !closed && !disconnected;
+    }
+
+    @Override
+    public boolean isRuntimeServerClient() {
+        return runtimeServerClient;
     }
 
     @Override

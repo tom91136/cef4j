@@ -237,9 +237,16 @@ class JniCppByValueCodeGen(
         )
       case BvField(cName, javaName, BvFieldType.Long) =>
         val fieldRef = s"$dest$accessor$cName"
-        List(
+        val copy     =
           s"""$fieldRef = from_jlong<decltype($fieldRef)>(env->GetLongField($javaObj, env->GetFieldID($clsVar, "$javaName", "J")));"""
-        )
+        if (cefName == "cef_main_args_t" && cName == "instance")
+          List(
+            copy,
+            "#ifdef _WIN32",
+            s"if (!$fieldRef) $fieldRef = ::GetModuleHandleW(nullptr);",
+            "#endif"
+          )
+        else List(copy)
       case BvField(cName, javaName, typ) =>
         List(
           s"""$dest$accessor$cName = static_cast<decltype($dest$accessor$cName)>(${bvGetAndCast(
