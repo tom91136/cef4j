@@ -18,13 +18,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
 class CefWebViewV117PlusMultiBrowserTest {
 
     @BeforeAll
-    static void setup(@TempDir Path tempDir) throws Exception {
+    static void setup(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
         assumeDisplayServer();
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();

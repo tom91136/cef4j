@@ -15,6 +15,8 @@ public enum NativeCleaner {
 
     private final Cleaner cleaner = Cleaner.create();
     private final Set<Cleaner.Cleanable> active = ConcurrentHashMap.newKeySet();
+    private final Object lifecycleLock = new Object();
+    private boolean shutdown;
 
     public Cleaner.Cleanable register(Object obj, Runnable action) {
         if (log.isTraceEnabled()) {
@@ -34,26 +36,42 @@ public enum NativeCleaner {
                             : obj.getClass().getSimpleName(),
                     Long.toHexString(result));
         }
-        Cleaner.Cleanable c = cleaner.register(obj, action);
-        Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
-        holder[0] = () -> {
-            active.remove(holder[0]);
-            c.clean();
-        };
-        active.add(holder[0]);
-        return holder[0];
+        synchronized (lifecycleLock) {
+            if (shutdown) {
+                // CEF has already shut down. A late Cleaner registration must never call back
+                // into native code whose process-global state no longer exists.
+                return () -> {};
+            }
+            Cleaner.Cleanable c = cleaner.register(obj, action);
+            Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
+            holder[0] = () -> {
+                active.remove(holder[0]);
+                c.clean();
+            };
+            active.add(holder[0]);
+            return holder[0];
+        }
     }
 
     /** Force-release all outstanding NativePeers. Call before cef_shutdown. Returns the total ref counts released. */
     public int releaseAll() {
-        Set<Cleaner.Cleanable> snapshot = Set.copyOf(active);
-        if (log.isTraceEnabled() && !snapshot.isEmpty()) {
-            log.trace("releaseAll: {} outstanding peers", snapshot.size());
+        int released = 0;
+        while (true) {
+            Set<Cleaner.Cleanable> snapshot;
+            synchronized (lifecycleLock) {
+                snapshot = Set.copyOf(active);
+                if (snapshot.isEmpty()) {
+                    shutdown = true;
+                    return released;
+                }
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("releaseAll: {} outstanding peers", snapshot.size());
+            }
+            for (Cleaner.Cleanable c : snapshot) {
+                c.clean();
+                released++;
+            }
         }
-        for (Cleaner.Cleanable c : snapshot) {
-            c.clean();
-        }
-        active.clear();
-        return snapshot.size();
     }
 }

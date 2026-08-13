@@ -331,9 +331,8 @@ public class CefWebView extends Region {
     public void load(String url) {
         engine.updateLocation(url);
         runWithBrowser(false, current -> {
-            // Match WebEngine semantics: a later load cancels an in-flight navigation. CEF's asynchronous
-            // UI-thread dispatch must not allow a slow earlier request to commit after this one.
-            current.stopLoad();
+            // loadUrl replaces any in-flight navigation itself. Calling stopLoad first can race the
+            // first renderer commit on older CEF releases and leave the replacement queued forever.
             current.getMainFrame().ifPresent(frame -> frame.loadUrl(engine.getLocation()));
             requestViewRefresh(false);
         });

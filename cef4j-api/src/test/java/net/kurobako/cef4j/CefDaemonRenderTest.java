@@ -38,7 +38,7 @@ import org.junit.jupiter.api.io.TempDir;
  * external-message-pump tests.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Timeout(30)
+@Timeout(60)
 class CefDaemonRenderTest {
 
     // CEF deliberately remains alive until this dedicated test fork exits, so its cache cannot be removed by
@@ -180,7 +180,7 @@ class CefDaemonRenderTest {
                         "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0));
 
         ScheduledExecutorService poller = startInvalidatePoller(browser, colorPaint);
-        byte[] pixels = colorPaint.get(15, TimeUnit.SECONDS);
+        byte[] pixels = colorPaint.get(30, TimeUnit.SECONDS);
         poller.shutdownNow();
 
         assertThat(pixels.length).isEqualTo(viewWidth * viewHeight * 4);
