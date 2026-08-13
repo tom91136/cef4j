@@ -173,23 +173,24 @@ public class CefBrowserPanel extends JPanel {
     /** Terminate CEF. See {@link Cef#terminate()}. */
     public static void terminate() {
         synchronized (INITIALISE_LOCK) {
-            Cef.INSTANCE.terminate();
             JFrame frame = awtBootstrapFrame;
             awtBootstrapFrame = null;
-            if (frame == null) return;
-            Runnable dispose = frame::dispose;
-            if (SwingUtilities.isEventDispatchThread()) {
-                dispose.run();
-                return;
+            if (frame != null) {
+                Runnable dispose = frame::dispose;
+                if (SwingUtilities.isEventDispatchThread()) {
+                    dispose.run();
+                } else {
+                    try {
+                        SwingUtilities.invokeAndWait(dispose);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException("Interrupted while shutting down AWT before CEF", e);
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        throw new IllegalStateException("Failed to shut down AWT before CEF", e.getCause());
+                    }
+                }
             }
-            try {
-                SwingUtilities.invokeAndWait(dispose);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException("Interrupted while shutting down AWT after CEF", e);
-            } catch (java.lang.reflect.InvocationTargetException e) {
-                throw new IllegalStateException("Failed to shut down AWT after CEF", e.getCause());
-            }
+            Cef.INSTANCE.terminate();
         }
     }
 

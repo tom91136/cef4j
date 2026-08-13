@@ -29,13 +29,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
 class CefWebViewSchemeTest {
 
     @BeforeAll
-    static void setup(@TempDir Path tempDir) throws Exception {
+    static void setup() throws Exception {
         assumeDisplayServer();
 
         URL.setURLStreamHandlerFactory(protocol -> {
@@ -93,9 +92,11 @@ class CefWebViewSchemeTest {
         });
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
-                .toAbsolutePath()
-                .toString();
+        // macOS intentionally skips cef_shutdown(), so its CEF cache can remain
+        // mapped until process exit and must not be owned by JUnit's eager TempDir cleanup.
+        Path cacheRoot = Files.createTempDirectory("cef4j-scheme-cache-");
+        cacheRoot.toFile().deleteOnExit();
+        launch.settings().cachePath = cacheRoot.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         Cef.INSTANCE.initialise(launch.settings(), args);
