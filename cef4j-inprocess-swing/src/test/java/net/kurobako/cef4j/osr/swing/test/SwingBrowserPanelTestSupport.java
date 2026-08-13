@@ -59,6 +59,7 @@ final class SwingBrowserPanelTestSupport {
         volatile boolean canGoForward;
         volatile boolean loadEnded;
         final CountDownLatch browserReady = new CountDownLatch(1);
+        final CountDownLatch browserClosed = new CountDownLatch(1);
     }
 
     static void ensureCefStarted(Path tempDir) throws Exception {
@@ -161,6 +162,7 @@ final class SwingBrowserPanelTestSupport {
                             if (b != null && current != null && current.isSame(b)) {
                                 panel.browser(null);
                             }
+                            state.browserClosed.countDown();
                         }
                     });
                 }
@@ -271,12 +273,21 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static void closeFrames() throws Exception {
+        Map<CefBrowserPanel, PanelState> closing = new LinkedHashMap<>(STATES);
         onSwingThread(() -> {
+            for (CefBrowserPanel panel : closing.keySet()) {
+                panel.release();
+            }
             for (JFrame frame : FRAMES) {
                 frame.dispose();
             }
             FRAMES.clear();
         });
+        for (PanelState state : closing.values()) {
+            if (state.browserReady.getCount() == 0 && !state.browserClosed.await(10, TimeUnit.SECONDS)) {
+                throw new TimeoutException("Timed out waiting for CEF browser closure");
+            }
+        }
         STATES.clear();
     }
 

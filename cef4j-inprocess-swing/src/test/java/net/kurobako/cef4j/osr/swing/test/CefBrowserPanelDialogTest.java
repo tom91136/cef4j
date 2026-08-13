@@ -67,6 +67,12 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
                                 state.browserReady.countDown();
                             });
                         }
+
+                        @Override
+                        public void onBeforeClose(@Nullable CefBrowser b) {
+                            panel.browser(null);
+                            state.browserClosed.countDown();
+                        }
                     });
                 }
 

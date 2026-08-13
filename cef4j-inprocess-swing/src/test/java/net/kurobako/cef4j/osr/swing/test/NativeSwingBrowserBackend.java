@@ -125,6 +125,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
                             @Override
                             public void onBeforeClose(@Nullable CefBrowser closing) {
+                                browser.set(null);
+                                nextPanel.browser(null);
                                 browserClosed.complete(null);
                             }
                         });
