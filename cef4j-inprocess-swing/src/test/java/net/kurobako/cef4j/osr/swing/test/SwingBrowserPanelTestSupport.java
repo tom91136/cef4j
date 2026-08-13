@@ -114,6 +114,10 @@ final class SwingBrowserPanelTestSupport {
         });
     }
 
+    static void trackFrame(JFrame frame) {
+        FRAMES.add(frame);
+    }
+
     static CefBrowserPanel createAttachedPanel() throws Exception {
         AtomicReference<CefBrowserPanel> panelRef = new AtomicReference<>();
         AtomicReference<PanelState> stateRef = new AtomicReference<>();
@@ -131,7 +135,7 @@ final class SwingBrowserPanelTestSupport {
             frame.add(panel, BorderLayout.CENTER);
             frame.setSize(800, 600);
             frame.setVisible(true);
-            FRAMES.add(frame);
+            trackFrame(frame);
 
             CefRenderHandler renderHandler = panel.createRenderHandler();
 

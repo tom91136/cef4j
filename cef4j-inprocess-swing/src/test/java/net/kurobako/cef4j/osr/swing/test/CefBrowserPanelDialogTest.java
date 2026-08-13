@@ -134,6 +134,7 @@ class CefBrowserPanelDialogTest extends SwingBrowserPanelTestBase {
             frame.add(panel, java.awt.BorderLayout.CENTER);
             frame.setSize(800, 600);
             frame.setVisible(true);
+            trackFrame(frame);
 
             net.kurobako.cef4j.gen.CefWindowInfo windowInfo =
                     net.kurobako.cef4j.Cef.createWindowlessInfo(new net.kurobako.cef4j.gen.CefRect(

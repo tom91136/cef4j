@@ -107,9 +107,17 @@ abstract class CefTestBase {
         return Cef.INSTANCE.createBrowser(client, url, windowInfo, browserSettings.toImmutable());
     }
 
-    static void closeBrowser(@Nullable CefBrowser browser) {
-        if (browser != null) {
-            browser.getHost().ifPresent(host -> host.closeBrowser(true));
+    static void closeBrowser(@Nullable CefBrowser browser) throws InterruptedException {
+        if (browser == null) return;
+        browser.getHost().ifPresent(host -> host.closeBrowser(true));
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (browser.isValid() && System.nanoTime() < deadline) {
+            if (!OS.isMacOS()) Cef.INSTANCE.doMessageLoopWork();
+            Thread.sleep(5);
+        }
+        if (browser.isValid()) {
+            throw new AssertionError("Timed out waiting for CEF browser closure");
         }
     }
 
