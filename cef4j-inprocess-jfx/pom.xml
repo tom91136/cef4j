@@ -282,5 +282,27 @@
                 <javafx.test.version>23.0.2</javafx.test.version>
             </properties>
         </profile>
+        <profile>
+            <id>javafx-macos-software-rendering</id>
+            <activation>
+                <os><name>Mac OS X</name></os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="merge">
+                            <!-- GitHub's macOS WindowServer session has no usable CGL context.
+                                 Exercise the same JavaFX scene graph and CEF pixel path through
+                                 Prism's software pipeline instead of aborting in libglass. -->
+                            <systemPropertyVariables>
+                                <prism.order>sw</prism.order>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

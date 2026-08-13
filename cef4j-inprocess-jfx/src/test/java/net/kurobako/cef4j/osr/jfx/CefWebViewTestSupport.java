@@ -3,7 +3,9 @@ package net.kurobako.cef4j.osr.jfx;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -57,14 +59,34 @@ final class CefWebViewTestSupport {
 
     static void closeAllWindows() throws Exception {
         try {
-            onFxThread(() -> {
+            List<CompletableFuture<Void>> releases = onFxThread(() -> {
+                List<CompletableFuture<Void>> pending = new ArrayList<>();
                 for (Window window : new ArrayList<>(Window.getWindows())) {
+                    if (window.getScene() != null) {
+                        collectCefViews(window.getScene().getRoot(), pending);
+                    }
                     if (window.isShowing()) window.hide();
                 }
-                return null;
+                return pending;
             });
+            if (releases != null) {
+                for (CompletableFuture<Void> release : releases) {
+                    release.get(10, TimeUnit.SECONDS);
+                }
+            }
         } catch (IllegalStateException e) {
             // Toolkit not initialized — @BeforeAll was skipped, nothing to clean up
+        }
+    }
+
+    private static void collectCefViews(javafx.scene.Node node, List<CompletableFuture<Void>> releases) {
+        if (node instanceof CefWebView) {
+            releases.add(((CefWebView) node).releaseAsync());
+        }
+        if (node instanceof javafx.scene.Parent) {
+            for (javafx.scene.Node child : ((javafx.scene.Parent) node).getChildrenUnmodifiable()) {
+                collectCefViews(child, releases);
+            }
         }
     }
 

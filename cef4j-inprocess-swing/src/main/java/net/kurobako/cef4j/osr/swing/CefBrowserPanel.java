@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
@@ -96,7 +97,9 @@ public class CefBrowserPanel extends JPanel {
 
     /**
      * Initialise CEF for off-screen rendering. Must be called before constructing any {@link CefBrowserPanel},
-     * typically from the {@code main} thread before AWT is initialised.
+     * typically from the {@code main} thread. On Linux and Windows this method realises and disposes a hidden AWT peer
+     * before CEF starts, which avoids toolkit-ordering crashes in older CEF releases. On macOS CEF must start before
+     * AWT and the peer bootstrap is therefore omitted.
      *
      * <p>OSR-required settings ({@code windowlessRenderingEnabled=1}, the platform-appropriate message-loop mode, and
      * {@code --disable-popup-blocking} / {@code --ozone-platform=x11} on Linux) are stamped onto {@code settings} /
@@ -114,16 +117,15 @@ public class CefBrowserPanel extends JPanel {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
-            // Note: we intentionally do NOT call SwingUtilities.isEventDispatchThread() here.
-            // On macOS without -XstartOnFirstThread, that call triggers AWT initialisation which
-            // blocks until [NSApp run] is running on Thread 0.  CEF must initialise first (starting
-            // [NSApp run] via cef_run_message_loop on Thread 0) so that AWT's [AWTStarter starter:]
-            // sees NSApp is already running and completes immediately.
+            // Do not touch Swing before initialiseAwtPeer has checked the platform. On macOS without
+            // -XstartOnFirstThread, even SwingUtilities.isEventDispatchThread() can trigger AWT initialisation and
+            // block until [NSApp run] is running on Thread 0. CEF must initialise first there.
             Cef.State cefState = Cef.INSTANCE.state();
             if (cefState == Cef.State.INITIALISED) {
                 requireOsrInitialised();
                 return;
             }
+            initialiseAwtPeer();
             SystemBootstrap.load();
             Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
             CefSettings.Mutable osrDefaults = defaults.settings();
@@ -137,6 +139,30 @@ public class CefBrowserPanel extends JPanel {
                 Cef.INSTANCE.addAppHandler(appHandler);
             }
             Cef.INSTANCE.initialise(settings, combinedArgs);
+        }
+    }
+
+    private static void initialiseAwtPeer() {
+        if (System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("mac")) {
+            return;
+        }
+        Runnable initialise = () -> {
+            JFrame frame = new JFrame();
+            frame.setUndecorated(true);
+            frame.pack();
+            frame.dispose();
+        };
+        if (SwingUtilities.isEventDispatchThread()) {
+            initialise.run();
+            return;
+        }
+        try {
+            SwingUtilities.invokeAndWait(initialise);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while initialising AWT before CEF", e);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            throw new IllegalStateException("Failed to initialise AWT before CEF", e.getCause());
         }
     }
 

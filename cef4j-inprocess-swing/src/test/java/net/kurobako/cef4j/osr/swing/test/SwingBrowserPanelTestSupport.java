@@ -38,6 +38,7 @@ import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefLoadHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefRenderHandler;
+import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
@@ -71,11 +72,9 @@ final class SwingBrowserPanelTestSupport {
 
         try {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
-            Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-            launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-            java.util.List<String> args = new java.util.ArrayList<>(launch.args());
-            args.addAll(CefTestLaunch.extraArgs());
-            Cef.INSTANCE.initialise(launch.settings(), args);
+            CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.cachePath = cacheDir.toAbsolutePath().toString();
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), null);
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);

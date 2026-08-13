@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -96,7 +98,8 @@ class CefWebViewRenderTest {
                         .as("CefWebView should have received at least one paint (framesPainted > 0)")
                         .isTrue();
             } finally {
-                onFxThread(view::release);
+                CompletableFuture<Void> released = onFxThread(view::releaseAsync);
+                if (released != null) released.get(10, TimeUnit.SECONDS);
             }
         } finally {
             closeAllWindows();
