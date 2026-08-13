@@ -21,7 +21,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
     private static final CopyOnWriteArrayList<WebView> POPUP_VIEWS = new CopyOnWriteArrayList<>();
 
     private static WebView newPopupView() {
-        WebView view = new WebView();
+        WebView view = trackWebView(new WebView());
         POPUP_VIEWS.add(view);
         return view;
     }

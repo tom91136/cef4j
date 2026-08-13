@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +56,7 @@ final class FxWebViewRuntimeTestSupport {
     private static volatile Path cefCachePath;
 
     private static final CopyOnWriteArrayList<Stage> STAGES = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArrayList<WebView> VIEWS = new CopyOnWriteArrayList<>();
 
     private FxWebViewRuntimeTestSupport() {}
 
@@ -167,7 +169,7 @@ final class FxWebViewRuntimeTestSupport {
     static WebView createAttachedWebView() throws Exception {
         return Objects.requireNonNull(
                 onFxThread(() -> {
-                    WebView view = new WebView();
+                    WebView view = trackWebView(new WebView());
                     Stage stage = new Stage();
                     stage.setScene(new Scene(new StackPane(view), 800, 600));
                     stage.setOnHidden(event -> STAGES.remove(stage));
@@ -182,7 +184,19 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void closeStages() throws Exception {
+        List<CompletableFuture<?>> closes = new ArrayList<>();
         onFxThread(() -> {
+            if (isCefCompatHarness()) {
+                for (WebView view : VIEWS) {
+                    try {
+                        Object result =
+                                view.getClass().getMethod("releaseAsync").invoke(view);
+                        if (result instanceof CompletableFuture<?>) closes.add((CompletableFuture<?>) result);
+                    } catch (ReflectiveOperationException e) {
+                        throw new IllegalStateException("failed to release CEF WebView", e);
+                    }
+                }
+            }
             List<Window> windows = new ArrayList<>(Window.getWindows());
             for (Window window : windows) {
                 if (window.isShowing()) {
@@ -193,10 +207,17 @@ final class FxWebViewRuntimeTestSupport {
                 stage.close();
             }
             STAGES.clear();
+            VIEWS.clear();
             ClipboardContent content = new ClipboardContent();
             content.putString("");
             Clipboard.getSystemClipboard().setContent(content);
         });
+        CompletableFuture.allOf(closes.toArray(new CompletableFuture<?>[0])).get(10, TimeUnit.SECONDS);
+    }
+
+    static WebView trackWebView(WebView view) {
+        VIEWS.add(view);
+        return view;
     }
 
     static boolean waitUntil(BooleanSupplier condition, long timeoutMillis) throws Exception {

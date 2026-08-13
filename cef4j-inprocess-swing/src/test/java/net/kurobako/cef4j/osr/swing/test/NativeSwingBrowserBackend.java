@@ -81,6 +81,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         private final LinkedBlockingQueue<PaintInfo> paints = new LinkedBlockingQueue<>();
         private final AtomicReference<CefBrowser> browser = new AtomicReference<>();
         private final AtomicReference<CompletableFuture<Void>> pendingLoad = new AtomicReference<>();
+        private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
         private final CefScriptEngine scripts = new CefScriptEngine(() -> Optional.ofNullable(browser.get())
                 .flatMap(CefBrowser::getMainFrame)
                 .orElse(null));
@@ -120,6 +121,11 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                                 browser.set(created);
                                 nextPanel.browser(created);
                                 ready.countDown();
+                            }
+
+                            @Override
+                            public void onBeforeClose(@Nullable CefBrowser closing) {
+                                browserClosed.complete(null);
                             }
                         });
                     }
@@ -222,8 +228,9 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                     panel.release();
                     frame.dispose();
                 });
-            } catch (Exception ignored) {
-                // The isolated test JVM owns any remaining native resources.
+                browserClosed.get(10, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                throw new IllegalStateException("native Swing browser did not close cleanly", e);
             }
         }
     }

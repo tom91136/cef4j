@@ -22,6 +22,7 @@ class CefScriptEngineTest extends CefTestBase {
 
     private static CefScriptEngine evaluator;
     private static CefBrowser browser;
+    private static final CountDownLatch browserClosed = new CountDownLatch(1);
 
     @BeforeAll
     static void initCef() throws Exception {
@@ -40,6 +41,11 @@ class CefScriptEngineTest extends CefTestBase {
                     @Override
                     public void onAfterCreated(@Nullable CefBrowser b) {
                         createdLatch.countDown();
+                    }
+
+                    @Override
+                    public void onBeforeClose(@Nullable CefBrowser b) {
+                        browserClosed.countDown();
                     }
                 });
             }
@@ -77,11 +83,13 @@ class CefScriptEngineTest extends CefTestBase {
     }
 
     @AfterAll
-    static void cleanup() {
+    static void cleanup() throws Exception {
         if (evaluator != null) evaluator.dispose();
         if (browser != null) {
             browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
+        assertThat(pumpUntil(browserClosed, 10_000)).as("browser closed").isTrue();
+        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

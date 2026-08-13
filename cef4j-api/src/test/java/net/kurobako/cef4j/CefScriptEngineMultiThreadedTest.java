@@ -53,9 +53,8 @@ class CefScriptEngineMultiThreadedTest {
             List<String> extraArgs = new ArrayList<>();
             if (OS.isLinux()) {
                 String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
-                if (ozonePlatform != null && !ozonePlatform.isBlank()) {
-                    extraArgs.add("--ozone-platform=" + ozonePlatform.trim());
-                }
+                extraArgs.add("--ozone-platform="
+                        + (ozonePlatform == null || ozonePlatform.isBlank() ? "x11" : ozonePlatform.trim()));
             }
             String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
             if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {

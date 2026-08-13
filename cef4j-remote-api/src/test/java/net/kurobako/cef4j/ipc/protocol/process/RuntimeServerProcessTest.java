@@ -117,7 +117,7 @@ class RuntimeServerProcessTest {
 
             CountDownLatch sawEvent = new CountDownLatch(1);
             int[] capturedHandle = {-1};
-            session.on(
+            session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
                         capturedHandle[0] = ev.browser().id();
                         sawEvent.countDown();

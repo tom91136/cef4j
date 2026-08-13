@@ -34,6 +34,9 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     @SuppressWarnings("NullAway.Init")
     private static CefBrowser browserB;
 
+    private static final CountDownLatch closedA = new CountDownLatch(1);
+    private static final CountDownLatch closedB = new CountDownLatch(1);
+
     @BeforeAll
     static void initCef() throws Exception {
         initCef(List.of("--renderer-process-limit=1", "--process-per-site"));
@@ -43,7 +46,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         AtomicInteger loadCountA = new AtomicInteger();
         CountDownLatch createdA = new CountDownLatch(1);
         CountDownLatch loadedA = new CountDownLatch(1);
-        CefClient clientA = makeClient(engineA, createdA, loadCountA, loadedA, 2);
+        CefClient clientA = makeClient(engineA, createdA, loadCountA, loadedA, closedA, 2);
         browserA = createWindowlessBrowser(clientA, "about:blank");
         assertThat(pumpUntil(createdA, 10_000)).as("browser A created").isTrue();
 
@@ -56,7 +59,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         AtomicInteger loadCountB = new AtomicInteger();
         CountDownLatch createdB = new CountDownLatch(1);
         CountDownLatch loadedB = new CountDownLatch(1);
-        CefClient clientB = makeClient(engineB, createdB, loadCountB, loadedB, 2);
+        CefClient clientB = makeClient(engineB, createdB, loadCountB, loadedB, closedB, 2);
         browserB = createWindowlessBrowser(clientB, "about:blank");
         assertThat(pumpUntil(createdB, 10_000)).as("browser B created").isTrue();
 
@@ -66,11 +69,14 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
     }
 
     @AfterAll
-    static void cleanup() {
+    static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
         if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
         if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
+        assertThat(pumpUntil(closedA, 10_000)).as("browser A closed").isTrue();
+        assertThat(pumpUntil(closedB, 10_000)).as("browser B closed").isTrue();
+        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test
@@ -155,6 +161,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
             CountDownLatch created,
             AtomicInteger loadCount,
             CountDownLatch loaded,
+            CountDownLatch closed,
             int targetLoadCount) {
         return new CefClient() {
             @Override
@@ -163,6 +170,11 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
                     @Override
                     public void onAfterCreated(@Nullable CefBrowser b) {
                         created.countDown();
+                    }
+
+                    @Override
+                    public void onBeforeClose(@Nullable CefBrowser b) {
+                        closed.countDown();
                     }
                 });
             }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -75,6 +76,7 @@ public class CefWebView extends Region {
         return b != null ? b.getMainFrame().orElse(null) : null;
     });
     private final CefClient client = new CefWebViewClient(this);
+    private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
         if (isShowing) {
             maybeCreateBrowser(false);
@@ -103,6 +105,8 @@ public class CefWebView extends Region {
 
     @Nullable
     private volatile BrowserHandle browser;
+
+    private volatile boolean releaseRequested;
 
     private final BrowserCleanupAction browserCleanup = new BrowserCleanupAction();
     private final Cleaner.Cleanable cleanable;
@@ -375,7 +379,20 @@ public class CefWebView extends Region {
     }
 
     /** Releases this view's native browser and associated resources. */
+    @SuppressWarnings("FutureReturnValueIgnored")
     public void release() {
+        releaseAsync();
+    }
+
+    /**
+     * Releases this view and completes after CEF confirms that its browser has closed.
+     *
+     * <p>The returned future is useful when an application must establish a clean browser-lifecycle boundary before
+     * calling {@link #terminate()}.
+     */
+    public CompletableFuture<Void> releaseAsync() {
+        boolean creationPending = browserCreationPosted;
+        releaseRequested = true;
         popupSurface.hide();
         BrowserHandle h = browser;
         browser = null;
@@ -394,9 +411,12 @@ public class CefWebView extends Region {
         scriptEngine.dispose();
         if (h != null) {
             h.close(true);
+        } else if (!creationPending) {
+            browserClosed.complete(null);
         }
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
         cleanable.clean();
+        return browserClosed;
     }
 
     @Override
@@ -907,6 +927,10 @@ public class CefWebView extends Region {
     void onBrowserCreated(@Nullable CefBrowser browser) {
         if (browser == null) return;
         BrowserHandle created = new BrowserHandle(browser);
+        if (releaseRequested) {
+            created.close(true);
+            return;
+        }
         if (this.browser == null) {
             this.browser = created;
             browserCleanup.browser = created;
@@ -960,6 +984,7 @@ public class CefWebView extends Region {
 
     void onBeforeBrowserClose() {
         scriptEngine.dispose();
+        browserClosed.complete(null);
         Platform.runLater(() -> engine.fireVisibilityChanged(false));
     }
 
