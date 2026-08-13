@@ -1945,6 +1945,7 @@ namespace tables {
     inline cef4j::ipc::HandleTable<cef_textfield_t> textfield;
     inline cef4j::ipc::HandleTable<cef_window_delegate_t> windowDelegate;
     inline cef4j::ipc::HandleTable<cef_window_t> window;
+
 } // namespace tables
 
 /** Releases the table entry matching the given CEF struct name. Used by the runtime server to dispatch

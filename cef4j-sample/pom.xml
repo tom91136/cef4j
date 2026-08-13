@@ -17,6 +17,9 @@
 
     <properties>
         <javafx.version>19.0.2.1</javafx.version>
+        <!-- This runnable example intentionally follows the selected JavaFX runtime. The published
+             cef4j libraries retain the Java 11 dependency-bytecode check. -->
+        <bytecode.check.skip>true</bytecode.check.skip>
         <exec.skip>false</exec.skip>
         <exec.mainClass>net.kurobako.cef4j.sample.SwingBrowserApp</exec.mainClass>
     </properties>

@@ -122,8 +122,14 @@ set(CEF4J_RUNTIME_DIST "${CMAKE_BINARY_DIR}/runtime-server")
 add_custom_command(TARGET cef4j-runtime-server POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:cef4j-runtime-server>" "${CEF4J_RUNTIME_DIST}/"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CEF_ROOT}/LICENSE.txt" "${CEF4J_RUNTIME_DIST}/CEF-LICENSE.txt"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CEF_ROOT}/CREDITS.html" "${CEF4J_RUNTIME_DIST}/CEF-CREDITS.html")
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CEF_ROOT}/LICENSE.txt" "${CEF4J_RUNTIME_DIST}/CEF-LICENSE.txt")
+
+# Older minimal CEF distributions (including 109) do not ship CREDITS.html.
+if(EXISTS "${CEF_ROOT}/CREDITS.html")
+    add_custom_command(TARGET cef4j-runtime-server POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CEF_ROOT}/CREDITS.html" "${CEF4J_RUNTIME_DIST}/CEF-CREDITS.html")
+endif()
 
 if(APPLE)
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD

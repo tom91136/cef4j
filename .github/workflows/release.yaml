@@ -83,6 +83,12 @@ jobs:
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
       - id: cef-cache
         name: Restore compressed CEF archive
         uses: actions/cache/restore@v5
@@ -133,8 +139,8 @@ jobs:
           CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
           CEF_VERSION: ${{ env.CEF_VERSION }}
           CEF_API: ${{ env.CEF_API }}
-          JAVAFX_VERSION: ${{ env.JAVAFX_VERSION }}
-          JAVAFX_TEST_VERSION: ${{ env.JAVAFX_VERSION }}
+          JAVAFX_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
+          JAVAFX_TEST_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
           JAVA11_SMOKE: 'false'
           RELEASE_BUILD: 'true'
         run: .github/ci/linux-build.sh
@@ -160,6 +166,7 @@ jobs:
           "-Dcef.api.version=${{ env.CEF_API }}"
           "-Djavafx.version=${{ env.JAVAFX_VERSION }}"
           "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
+          "-Djavafx.platform=win"
 
       - name: Stage classified artifacts
         shell: bash

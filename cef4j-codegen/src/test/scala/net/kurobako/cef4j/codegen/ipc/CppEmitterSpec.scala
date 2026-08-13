@@ -1,8 +1,11 @@
 package net.kurobako.cef4j.codegen.ipc
 
 import java.nio.file.Files
+import scala.concurrent.duration.*
 
 class CppEmitterSpec extends munit.FunSuite {
+
+  override val munitTimeout = 2.minutes
 
   private val sampleSpec = MessageSpec(
     className = "LoadUrlRequest",

@@ -32,10 +32,10 @@ jobs:
           - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', java11-smoke: 'false' }
           - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', java11-smoke: 'false' }
           - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', java11-smoke: 'true' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.1', java11-smoke: 'true' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.1', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.1', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.1', java11-smoke: 'false' }
     steps:
       - uses: actions/checkout@v6
 
@@ -157,6 +157,12 @@ jobs:
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
       - id: cef-cache
         name: Restore compressed CEF archive
         uses: actions/cache/restore@v5
@@ -177,6 +183,7 @@ jobs:
           key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
 
       - name: Resolve dependencies
+        if: runner.os != 'Windows' || matrix.arch != 'aarch64'
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
@@ -188,6 +195,21 @@ jobs:
             "-Dcef.api.version=${{ matrix.cef-api }}"
             "-Djavafx.version=${{ matrix.javafx }}"
             "-Djavafx.test.version=${{ matrix.javafx }}"
+
+      - name: Resolve dependencies for Windows ARM
+        if: runner.os == 'Windows' && matrix.arch == 'aarch64'
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: >-
+            ./mvnw -B dependency:go-offline
+            "-DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server"
+            "-Dcef.version=${{ matrix.cef-version }}"
+            "-Dcef.api.version=${{ matrix.cef-api }}"
+            "-Djavafx.version=${{ matrix.javafx }}"
+            "-Djavafx.test.version=${{ matrix.javafx }}"
+            "-Djavafx.platform=win"
 
       # GitHub-hosted Windows and macOS runners are disposable VMs with their own
       # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
@@ -212,13 +234,15 @@ jobs:
             "-Dcef.version=${{ matrix.cef-version }}" \
             "-Dcef.api.version=${{ matrix.cef-api }}" \
             "-Djavafx.version=${{ matrix.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.javafx }}"
+            "-Djavafx.test.version=${{ matrix.javafx }}" \
+            "-Djavafx.platform=win"
           ./mvnw -B test \
             -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
             "-Dcef.version=${{ matrix.cef-version }}" \
             "-Dcef.api.version=${{ matrix.cef-api }}" \
             "-Djavafx.version=${{ matrix.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.javafx }}"
+            "-Djavafx.test.version=${{ matrix.javafx }}" \
+            "-Djavafx.platform=win"
 
       - name: Java 11 runtime smoke
         if: matrix.java11-smoke == 'true'

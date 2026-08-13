@@ -25,3 +25,11 @@
 
 #define get_v8_context get_v8context
 #endif
+
+inline void cef4j_verify_api_hash() {
+#if CEF_VERSION_MAJOR < 133
+    (void)cef_api_hash(0);
+#else
+    (void)cef_api_hash(CEF_API_VERSION, 0);
+#endif
+}

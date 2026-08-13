@@ -1766,7 +1766,9 @@ struct CreateBrowserTask : cef_task_t {
             if (!g_client) return;
 
             cef_window_info_t windowInfo{};
+#if CEF_VERSION_MAJOR >= 133
             windowInfo.size                       = sizeof(windowInfo);
+#endif
             windowInfo.windowless_rendering_enabled = 1;
             windowInfo.bounds.x                   = 0;
             windowInfo.bounds.y                   = 0;
@@ -2285,7 +2287,7 @@ int main(int argc, char* argv[]) {
     for (auto& argument : cefArgumentStorage) cefArguments.push_back(argument.data());
 #endif
     // Register the API version we were compiled against. CEF's CToCpp wrappers reject calls otherwise.
-    (void)cef_api_hash(CEF_API_VERSION, 0);
+    cef4j_verify_api_hash();
 
     cef_main_args_t args{};
 #ifdef _WIN32
@@ -2415,7 +2417,9 @@ int main(int argc, char* argv[]) {
     std::fflush(stdout);
 
     cef_window_info_t windowInfo{};
+#if CEF_VERSION_MAJOR >= 133
     windowInfo.size = sizeof(windowInfo);
+#endif
     windowInfo.windowless_rendering_enabled = 1;
     windowInfo.bounds.x = 0;
     windowInfo.bounds.y = 0;

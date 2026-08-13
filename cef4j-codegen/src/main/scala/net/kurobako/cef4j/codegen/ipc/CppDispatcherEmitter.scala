@@ -83,7 +83,13 @@ object CppDispatcherEmitter {
       val isRenderer      = f.affinity == ProcessAffinity.Renderer
       hasOwnDispatchable || referencedByOther || isFrameForRelay || isRenderer
     }
-    val tableFields  = tableStructs.map(tableField)
+    val tableFields = tableStructs.map(tableField)
+    // CEF < 133 spelled this type cef_v8value_t, which naturally generates
+    // tables::v8value. Hand-written runtime code uses the normalized post-133
+    // spelling; retain that stable internal name across both API eras.
+    val tableAliases =
+      if (tableStructs.exists(_.cefStructName == "cef_v8value_t")) "    inline auto& v8Value = v8value;"
+      else ""
     val capiIncludes = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
     val genIncludes  = dispatchableByFac.flatMap { case (_, ms) =>
       ms.flatMap(m => List(m.requestClassName, m.responseClassName))
@@ -241,6 +247,7 @@ object CppDispatcherEmitter {
        |  * generated cases use them for retain/release/insert against handle params and returns. */
        |namespace tables {
        |${tableFields.mkString("\n")}
+       |$tableAliases
        |} // namespace tables
        |
        |/** Releases the table entry matching the given CEF struct name. Used by the runtime server to dispatch

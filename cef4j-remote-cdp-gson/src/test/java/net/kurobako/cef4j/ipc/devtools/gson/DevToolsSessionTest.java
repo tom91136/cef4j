@@ -153,7 +153,13 @@ class DevToolsSessionTest {
             var pending = devTools.send("Page.captureScreenshot", null);
             peer.respond(peer.receive(), new BrowserHostSendDevToolsMessageResponse(1));
             peer.close();
-            assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS)).hasRootCauseMessage("CEF session closed");
+            // The session request and CDP close listener race deliberately here. Either path may
+            // complete the future first, but both must report the transport loss promptly.
+            assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS)).satisfies(failure -> {
+                Throwable cause = Objects.requireNonNull(failure.getCause());
+                assertThat(cause).isInstanceOfAny(IllegalStateException.class, CefTransportException.class);
+                assertThat(cause.getMessage()).isIn("CEF session closed", "transport disconnected");
+            });
         }
     }
 
