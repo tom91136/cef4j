@@ -291,7 +291,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static void shutdownCef() {
-        Cef.INSTANCE.terminate();
+        CefBrowserPanel.terminate();
     }
 
     static void loadUrl(CefBrowserPanel panel, String url) {

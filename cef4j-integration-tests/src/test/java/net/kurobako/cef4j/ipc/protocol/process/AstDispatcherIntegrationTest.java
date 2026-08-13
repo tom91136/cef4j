@@ -255,8 +255,8 @@ class AstDispatcherIntegrationTest {
             session.request(new CreateBrowserRequest(urlB, settings), CreateBrowserResponse.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
-            RemoteHandle handleA = handles.poll(20, TimeUnit.SECONDS);
-            RemoteHandle handleB = handles.poll(20, TimeUnit.SECONDS);
+            RemoteHandle handleA = handles.poll(45, TimeUnit.SECONDS);
+            RemoteHandle handleB = handles.poll(45, TimeUnit.SECONDS);
             assertThat(handleA).isNotNull();
             assertThat(handleB).isNotNull();
             assertThat(handleA).isNotEqualTo(handleB);

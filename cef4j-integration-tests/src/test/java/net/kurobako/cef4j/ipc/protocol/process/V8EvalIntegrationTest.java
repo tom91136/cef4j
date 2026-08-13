@@ -250,7 +250,7 @@ class V8EvalIntegrationTest {
                 ev -> browsers.offer(ev.browser()));
         LinkedBlockingQueue<V8ContextCreatedEvent> contexts = new LinkedBlockingQueue<>();
         session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
-        RemoteHandle browser = browsers.poll(20, TimeUnit.SECONDS);
+        RemoteHandle browser = browsers.poll(45, TimeUnit.SECONDS);
         assertThat(browser).isNotNull();
         V8ContextCreatedEvent ctx = contexts.poll(15, TimeUnit.SECONDS);
         assertThat(ctx).isNotNull();

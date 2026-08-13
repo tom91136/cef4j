@@ -103,8 +103,10 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void shutdownCefHarness() {
-        if (!isCefCompatHarness()) return;
-        Cef.INSTANCE.terminate();
+        if (isCefCompatHarness()) {
+            Cef.INSTANCE.terminate();
+        }
+        Platform.exit();
     }
 
     private static void initialiseCef() {

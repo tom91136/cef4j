@@ -188,7 +188,9 @@ class RuntimeServerIntegrationTest {
                 @Override
                 public void onLoadEnd(RemoteHandle browser, RemoteHandle frame, int httpStatusCode) {
                     urlChecks.add(new Frame(session, frame).getUrl().thenAccept(loaded -> {
-                        if (loaded.equals(url) || loaded.startsWith(url)) {
+                        // Resolving the frame URL is asynchronous. An about:blank OnLoadEnd can therefore
+                        // observe the subsequent target URL; only correlate successful HTTP load events.
+                        if (httpStatusCode == 200 && (loaded.equals(url) || loaded.startsWith(url))) {
                             capturedStatus[0] = httpStatusCode;
                             sawOurUrl.countDown();
                         }

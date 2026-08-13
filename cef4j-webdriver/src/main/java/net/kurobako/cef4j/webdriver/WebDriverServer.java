@@ -524,8 +524,21 @@ public final class WebDriverServer implements AutoCloseable {
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof WebDriverException) throw (WebDriverException) cause;
-            throw new WebDriverException(fallback, "backend command failed", cause);
+            if (cause == null) cause = e;
+            throw new WebDriverException(fallback, "backend command failed: " + describe(cause), cause);
         }
+    }
+
+    private static String describe(Throwable failure) {
+        Throwable current = failure;
+        String description = current.getClass().getSimpleName();
+        while (current != null) {
+            if (current.getMessage() != null && !current.getMessage().isBlank()) {
+                description = current.getClass().getSimpleName() + ": " + current.getMessage();
+            }
+            current = current.getCause();
+        }
+        return description;
     }
 
     private static JsonObject matchCapabilities(JsonObject body) {

@@ -66,6 +66,10 @@ public class CefBrowserPanel extends JPanel {
     private static final int SCREEN_DEPTH = 32;
     private static final int SCREEN_DEPTH_PER_COMPONENT = 8;
     private static final Object INITIALISE_LOCK = new Object();
+
+    @Nullable
+    private static JFrame awtBootstrapFrame;
+
     private static final CefKeyEventType KEY_RAWKEYDOWN = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
     private static final CefKeyEventType KEY_CHAR = CefKeyEventType.of(CefKeyEventType.Kind.CHAR);
     private static final CefKeyEventType KEY_KEYUP = CefKeyEventType.of(CefKeyEventType.Kind.KEYUP);
@@ -150,7 +154,7 @@ public class CefBrowserPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setUndecorated(true);
             frame.pack();
-            frame.dispose();
+            awtBootstrapFrame = frame;
         };
         if (SwingUtilities.isEventDispatchThread()) {
             initialise.run();
@@ -168,7 +172,25 @@ public class CefBrowserPanel extends JPanel {
 
     /** Terminate CEF. See {@link Cef#terminate()}. */
     public static void terminate() {
-        Cef.INSTANCE.terminate();
+        synchronized (INITIALISE_LOCK) {
+            Cef.INSTANCE.terminate();
+            JFrame frame = awtBootstrapFrame;
+            awtBootstrapFrame = null;
+            if (frame == null) return;
+            Runnable dispose = frame::dispose;
+            if (SwingUtilities.isEventDispatchThread()) {
+                dispose.run();
+                return;
+            }
+            try {
+                SwingUtilities.invokeAndWait(dispose);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while shutting down AWT after CEF", e);
+            } catch (java.lang.reflect.InvocationTargetException e) {
+                throw new IllegalStateException("Failed to shut down AWT after CEF", e.getCause());
+            }
+        }
     }
 
     private static void requireOsrInitialised() {
