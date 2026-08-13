@@ -100,6 +100,7 @@ public final class ZmqTransport implements CefTransport {
         this.monitor = new ZMonitor(ctx, main);
         monitor.add(ZMonitor.Event.CONNECTED);
         monitor.add(ZMonitor.Event.ACCEPTED);
+        monitor.add(ZMonitor.Event.CONNECT_RETRIED);
         monitor.add(ZMonitor.Event.DISCONNECTED);
         monitor.start();
 
@@ -215,8 +216,10 @@ public final class ZmqTransport implements CefTransport {
                 if (poller.pollin(0)) drainIncoming();
                 if (poller.pollin(1)) {
                     drainWakeSignals();
-                    if (peerReady) drainOutbound();
                 }
+                // Also check after the bounded poll: the monitor's wake may race creation of the
+                // inproc pipe and be dropped, but queued application frames must still be flushed.
+                if (peerReady && !outbound.isEmpty()) drainOutbound();
                 dispatchPendingIfReady();
             }
         } catch (ZMQException e) {
@@ -278,7 +281,8 @@ public final class ZmqTransport implements CefTransport {
                     // the peer, then wake the socket-owner thread to flush them.
                     peerReady = true;
                     wake();
-                } else if (ev.type == ZMonitor.Event.DISCONNECTED) {
+                } else if (ev.type == ZMonitor.Event.DISCONNECTED
+                        || (ev.type == ZMonitor.Event.CONNECT_RETRIED && peerReady)) {
                     if (closed) return; // suppress event triggered by local close
                     disconnected = true;
                     fireDisconnectIfReady();

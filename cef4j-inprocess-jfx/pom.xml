@@ -233,6 +233,25 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>linux-aarch64-static-tls</id>
+            <activation>
+                <os><name>Linux</name><arch>aarch64</arch></os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="merge">
+                            <environmentVariables>
+                                <LD_PRELOAD>${cef.dist.dir}/Release/libcef.so</LD_PRELOAD>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- macOS arm64: JavaFX 13.0.2 has no arm64 native lib in Maven Central; use 23.0.2.
              The provided-scope deps transitively pull in javafx-*-23.0.2-mac-aarch64.jar which
              contains both the Java classes (compile) and native .dylib files (test runtime). -->

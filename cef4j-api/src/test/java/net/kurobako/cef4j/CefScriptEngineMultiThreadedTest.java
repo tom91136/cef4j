@@ -104,7 +104,9 @@ class CefScriptEngineMultiThreadedTest {
         // Shut down CEF synchronously so the internal threads release the cache files before
         // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
         // as a synthetic extra test.
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
+        // CEF 116 on Windows crashes inside cef_shutdown even after both onBeforeClose callbacks.
+        // This class owns its Surefire JVM, so normal process teardown is the safe lifecycle boundary there.
+        if (!OS.isWindows() && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
         }
     }

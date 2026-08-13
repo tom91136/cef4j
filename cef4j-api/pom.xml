@@ -211,4 +211,31 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>linux-aarch64-static-tls</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="merge">
+                            <!-- Older Linux ARM CEF builds use initial-exec TLS. Loading JavaFX first can
+                                 exhaust the static TLS block, so make the dynamic loader reserve it up front. -->
+                            <environmentVariables>
+                                <LD_PRELOAD>${cef.dist.dir}/Release/libcef.so</LD_PRELOAD>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
