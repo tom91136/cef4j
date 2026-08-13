@@ -98,14 +98,11 @@ class CefScriptEngineMultiThreadedTest {
     static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
-        // CEF 109/116 can crash while closing browsers that use the multi-threaded loop on Linux.
-        // The behavioural test still runs in full; its dedicated Surefire JVM is the lifecycle
-        // boundary, as it already is for this configuration on Windows.
-        if (OS.isLinux() && cefApiVersion() < 117) return;
-        if (browserA != null) browserA.getHost().ifPresent(host -> host.closeBrowser(true));
-        if (browserB != null) browserB.getHost().ifPresent(host -> host.closeBrowser(true));
-        if (browserA != null) closedA.get(10, TimeUnit.SECONDS);
-        if (browserB != null) closedB.get(10, TimeUnit.SECONDS);
+        // Close one browser completely before starting the next close. Older CEF
+        // releases can race their multi-threaded browser destruction when both
+        // close requests are posted together.
+        closeBrowser(browserA, closedA);
+        closeBrowser(browserB, closedB);
         // Shut down CEF synchronously so the internal threads release the cache files before
         // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
         // as a synthetic extra test.
@@ -116,8 +113,10 @@ class CefScriptEngineMultiThreadedTest {
         }
     }
 
-    private static int cefApiVersion() {
-        return Integer.parseInt(System.getProperty("cef4j.test.cefApiVersion", "0"));
+    private static void closeBrowser(CefBrowser browser, CompletableFuture<Void> closed) throws Exception {
+        if (browser == null) return;
+        browser.getHost().ifPresent(host -> host.closeBrowser(true));
+        closed.get(10, TimeUnit.SECONDS);
     }
 
     @Test
