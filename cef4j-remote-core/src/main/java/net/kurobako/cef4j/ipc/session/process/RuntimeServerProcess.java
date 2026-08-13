@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public final class RuntimeServerProcess implements Closeable {
 
     private static final Duration DEFAULT_BOOTSTRAP_TIMEOUT = Duration.ofSeconds(10);
     private static final long CLOSE_GRACE_MS = 5000;
+    private static final String EXTRA_ARGUMENTS_PROPERTY = "cef4j.runtime.server.extraArgs";
 
     private final Process process;
     private final String transport;
@@ -120,14 +122,8 @@ public final class RuntimeServerProcess implements Closeable {
         Objects.requireNonNull(bootstrapTimeout, "bootstrapTimeout");
         Objects.requireNonNull(environment, "environment");
 
-        ProcessBuilder pb = new ProcessBuilder(
-                binary.toString(),
-                "--transport",
-                transport,
-                "--bind",
-                bindEndpoint,
-                "--frame-transport",
-                frameTransport);
+        ProcessBuilder pb = new ProcessBuilder(serverCommand(
+                binary, transport, bindEndpoint, frameTransport, System.getProperty(EXTRA_ARGUMENTS_PROPERTY)));
         pb.environment().putAll(environment);
         pb.redirectErrorStream(false);
         Process p = pb.start();
@@ -178,6 +174,30 @@ public final class RuntimeServerProcess implements Closeable {
             Throwable cause = e.getCause();
             throw (cause instanceof IOException) ? (IOException) cause : new IOException(cause);
         }
+    }
+
+    /**
+     * Builds the runtime-server command, including optional comma-separated CEF switches from
+     * {@code cef4j.runtime.server.extraArgs}. This is primarily useful for deployment-specific Chromium switches; the
+     * runtime server otherwise preserves CEF's defaults.
+     */
+    static List<String> serverCommand(
+            Path binary, String transport, String bindEndpoint, String frameTransport, @Nullable String extraArgs) {
+        List<String> command = new ArrayList<>(List.of(
+                binary.toString(),
+                "--transport",
+                transport,
+                "--bind",
+                bindEndpoint,
+                "--frame-transport",
+                frameTransport));
+        if (extraArgs != null && !extraArgs.isBlank()) {
+            Stream.of(extraArgs.split(","))
+                    .map(String::trim)
+                    .filter(argument -> !argument.isEmpty())
+                    .forEach(command::add);
+        }
+        return command;
     }
 
     /** Registers a deliberately detached watcher that owns process-exit cleanup and bootstrap failure reporting. */

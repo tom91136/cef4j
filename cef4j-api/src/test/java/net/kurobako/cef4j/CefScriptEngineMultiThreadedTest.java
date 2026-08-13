@@ -21,6 +21,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -32,7 +33,7 @@ class CefScriptEngineMultiThreadedTest {
     private static CefBrowser browserB;
 
     @BeforeAll
-    static void initCef(@TempDir Path tempDir) throws Exception {
+    static void initCef(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
         Assumptions.assumeFalse(OS.isMacOS(), "multiThreadedMessageLoop is not supported on macOS");
         SystemBootstrap.load();
 

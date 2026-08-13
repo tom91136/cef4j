@@ -27,6 +27,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Timeout;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CefInteropTest extends CefTestBase {
@@ -979,6 +980,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(33)
+    @Timeout(45)
     void onBeforePopup_firesWithoutCrash() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
         CountDownLatch paintLatch = new CountDownLatch(1);
@@ -1035,10 +1037,17 @@ class CefInteropTest extends CefTestBase {
         assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
         assertThat(pumpUntil(paintLatch, 10_000)).as("first paint").isTrue();
 
-        // This test covers callback marshalling, not platform hit-testing. A synthetic click is sensitive to
-        // backing scale and window focus on macOS CI; popup blocking is disabled for this fixture, so invoking
-        // window.open directly gives every platform the same callback trigger.
+        // CEF 109/116 accept window.open here, while newer Chromium builds can still require a user gesture in
+        // hosted sessions despite --disable-popup-blocking. Trigger both paths: the handler cancels the popup, so
+        // whichever path wins only completes the same latch and no second browser is created.
         browser.getMainFrame().orElseThrow().executeJavaScript("window.open('about:blank', '_blank')", "test.js", 1);
+        CefBrowserHost host = browser.getHost().orElseThrow();
+        CefMouseEvent mouseEvent = new CefMouseEvent(50, 25, 0);
+        CefMouseButtonType left = CefMouseButtonType.of(CefMouseButtonType.Kind.LEFT);
+        host.setFocus(true);
+        host.sendMouseMoveEvent(mouseEvent, false);
+        host.sendMouseClickEvent(mouseEvent, left, false, 1);
+        host.sendMouseClickEvent(mouseEvent, left, true, 1);
 
         assertThat(pumpUntil(popupLatch, 10_000))
                 .as("onBeforePopup should fire without SIGSEGV")

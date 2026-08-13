@@ -18,6 +18,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
@@ -29,7 +30,7 @@ class CefAppDelegatingTest {
     private static CefBrowserProcessHandler bphB;
 
     @BeforeAll
-    static void setup(@TempDir Path tempDir) throws Exception {
+    static void setup(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
         SystemBootstrap.load();
 
         bphA = spy(new CefBrowserProcessHandler() {});

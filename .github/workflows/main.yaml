@@ -221,6 +221,8 @@ jobs:
           "-Dcef.api.version=${{ matrix.cef-api }}"
           "-Djavafx.version=${{ matrix.javafx }}"
           "-Djavafx.test.version=${{ matrix.javafx }}"
+          "-Dcef4j.test.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64') && '--disable-gpu' || '' }}"
+          "-Dcef4j.runtime.server.extraArgs=${{ (runner.os == 'macOS' || matrix.arch == 'aarch64') && '--disable-gpu' || '' }}"
 
       # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
       # complete reactor, then exercise every non-JavaFX module natively on ARM64.
@@ -233,14 +235,18 @@ jobs:
             "-Dcef.api.version=${{ matrix.cef-api }}" \
             "-Djavafx.version=${{ matrix.javafx }}" \
             "-Djavafx.test.version=${{ matrix.javafx }}" \
-            "-Djavafx.platform=win"
+            "-Djavafx.platform=win" \
+            "-Dcef4j.test.extraArgs=--disable-gpu" \
+            "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
           ./mvnw -B clean test \
             -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
             "-Dcef.version=${{ matrix.cef-version }}" \
             "-Dcef.api.version=${{ matrix.cef-api }}" \
             "-Djavafx.version=${{ matrix.javafx }}" \
             "-Djavafx.test.version=${{ matrix.javafx }}" \
-            "-Djavafx.platform=win"
+            "-Djavafx.platform=win" \
+            "-Dcef4j.test.extraArgs=--disable-gpu" \
+            "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
 
       - name: Java 11 runtime smoke
         if: matrix.java11-smoke == 'true'

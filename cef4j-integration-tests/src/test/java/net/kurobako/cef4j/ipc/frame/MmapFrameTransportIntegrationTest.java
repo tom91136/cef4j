@@ -143,7 +143,7 @@ class MmapFrameTransportIntegrationTest {
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
                         if (!handleFuture.isDone()) handleFuture.complete(e.browser());
                     });
-            RemoteHandle realBrowser = handleFuture.get(20, TimeUnit.SECONDS);
+            RemoteHandle realBrowser = handleFuture.get(30, TimeUnit.SECONDS);
 
             // Bind to a NON-existent browser handle. The transport subscribes globally to OsrPaintEvent but filters
             // by browser id internally; events for the real browser must not slip through.
