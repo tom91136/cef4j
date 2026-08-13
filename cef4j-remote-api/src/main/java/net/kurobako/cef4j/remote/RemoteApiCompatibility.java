@@ -14,6 +14,17 @@ public final class RemoteApiCompatibility {
         return CEF_API_VERSION;
     }
 
+    /**
+     * Returns whether the runtime's native CEF API identifier matches this generated API.
+     *
+     * <p>CEF 109 and 116 expose legacy major-only identifiers (for example {@code 109}), while cef4j's generated
+     * metadata consistently uses the modern major/revision form ({@code 10900}).
+     */
+    public static boolean supports(int runtimeCefApiVersion) {
+        int normalized = runtimeCefApiVersion < 1_000 ? runtimeCefApiVersion * 100 : runtimeCefApiVersion;
+        return normalized == CEF_API_VERSION;
+    }
+
     private static int loadCefApiVersion() {
         Properties properties = new Properties();
         try (InputStream input = RemoteApiCompatibility.class.getResourceAsStream("version.properties")) {

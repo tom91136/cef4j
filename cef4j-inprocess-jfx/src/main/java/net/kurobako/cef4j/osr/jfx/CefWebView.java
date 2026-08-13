@@ -331,6 +331,9 @@ public class CefWebView extends Region {
     public void load(String url) {
         engine.updateLocation(url);
         runWithBrowser(false, current -> {
+            // Match WebEngine semantics: a later load cancels an in-flight navigation. CEF's asynchronous
+            // UI-thread dispatch must not allow a slow earlier request to commit after this one.
+            current.stopLoad();
             current.getMainFrame().ifPresent(frame -> frame.loadUrl(engine.getLocation()));
             requestViewRefresh(false);
         });
@@ -957,7 +960,16 @@ public class CefWebView extends Region {
         javafx.util.Callback<CefPopupFeatures, CefWebEngine> handler = engine.getCreatePopupHandler();
         if (handler == null) return true;
         final AtomicReference<CefWebEngine> popupEngine = new AtomicReference<>();
-        runOnFxAndWait(() -> popupEngine.set(handler.call(new CefPopupFeatures(false, false, false, true))));
+        runOnFxAndWait(() -> {
+            CefWebEngine created = handler.call(new CefPopupFeatures(false, false, false, true));
+            if (created != null) {
+                // CEF, rather than maybeCreateBrowser(), owns popup creation. Record the in-flight browser before
+                // returning from the user callback: observers may react to the callback immediately and release the
+                // view, which must then wait for CEF's onAfterCreated/onBeforeClose lifecycle.
+                created.getView().browserCreationPosted = true;
+            }
+            popupEngine.set(created);
+        });
         CefWebEngine createdEngine = popupEngine.get();
         if (createdEngine == null) return true;
         CefRect popupBounds;

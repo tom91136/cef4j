@@ -10,4 +10,13 @@ class RemoteApiCompatibilityTest {
         assertThat(RemoteApiCompatibility.cefApiVersion()).isPositive();
         assertThat(RemoteApiCompatibility.cefApiVersion() % 100).isZero();
     }
+
+    @Test
+    void acceptsLegacyMajorOnlyRuntimeVersion() {
+        int generated = RemoteApiCompatibility.cefApiVersion();
+
+        assertThat(RemoteApiCompatibility.supports(generated / 100)).isTrue();
+        assertThat(RemoteApiCompatibility.supports(generated)).isTrue();
+        assertThat(RemoteApiCompatibility.supports(generated + 100)).isFalse();
+    }
 }

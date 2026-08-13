@@ -65,7 +65,7 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
                 server = RuntimeServerProcess.spawn(
                         binary, controlTransport, endpoint, frameTransport, timeout, environment);
                 int serverApi = server.handshake().cefApiVersion();
-                if (serverApi != RemoteApiCompatibility.cefApiVersion()) {
+                if (!RemoteApiCompatibility.supports(serverApi)) {
                     throw new IllegalStateException("Remote CEF API mismatch: client="
                             + RemoteApiCompatibility.cefApiVersion() + ", server=" + serverApi);
                 }
