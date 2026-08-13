@@ -1,0 +1,107 @@
+package net.kurobako.cef4j.cdp.gson;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.google.gson.JsonParser;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpSchema;
+import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpTransport;
+import net.kurobako.cef4j.cdp.CdpVersionMismatchException;
+import net.kurobako.cef4j.cdp.generated.Runtime;
+import org.junit.jupiter.api.Test;
+
+final class GsonCdpCodecTest {
+    @Test
+    void typedCallUsesCodecNeutralTransport() {
+        FakeTransport transport = new FakeTransport(
+                "{\"result\":{\"type\":\"string\",\"value\":\"hello\"}}".getBytes(StandardCharsets.UTF_8));
+        CdpClient client = new CdpClient(transport, new GsonCdpCodec());
+        Runtime.EvaluateResult result = client.domains()
+                .runtime()
+                .evaluate(Runtime.EvaluateParams.builder()
+                        .expression("'hello'")
+                        .returnByValue(true)
+                        .build())
+                .toCompletableFuture()
+                .join();
+
+        assertThat(transport.method).isEqualTo("Runtime.evaluate");
+        assertThat(JsonParser.parseString(new String(transport.params, StandardCharsets.UTF_8)))
+                .isEqualTo(JsonParser.parseString("{\"expression\":\"'hello'\",\"returnByValue\":true}"));
+        Runtime.RemoteObject remoteObject = Objects.requireNonNull(result.result());
+        assertThat(remoteObject.type()).isEqualTo("string");
+        assertThat(remoteObject.value()).isEqualTo("hello");
+    }
+
+    @Test
+    void exactVersionCheckUsesOnlyTheExistingTransport() {
+        String response = "{\"product\":\"Chrome/" + CdpSchema.chromiumVersion()
+                + "\",\"protocolVersion\":\"1.3\",\"revision\":\"r\","
+                + "\"userAgent\":\"ua\",\"jsVersion\":\"v8\"}";
+        FakeTransport transport = new FakeTransport(response.getBytes(StandardCharsets.UTF_8));
+        CdpClient client = new CdpClient(transport, new GsonCdpCodec());
+
+        assertThat(CdpSchema.requireExactVersion(client)
+                        .toCompletableFuture()
+                        .join()
+                        .product())
+                .endsWith(CdpSchema.chromiumVersion());
+        assertThat(transport.method).isEqualTo("Browser.getVersion");
+        assertThat(transport.params).isNull();
+    }
+
+    @Test
+    void exactVersionCheckRejectsMismatch() {
+        FakeTransport transport =
+                new FakeTransport("{\"product\":\"Chrome/145.0.0.0\"}".getBytes(StandardCharsets.UTF_8));
+        CdpClient client = new CdpClient(transport, new GsonCdpCodec());
+        assertThatThrownBy(() -> CdpSchema.requireExactVersion(client)
+                        .toCompletableFuture()
+                        .join())
+                .isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(CdpVersionMismatchException.class);
+    }
+
+    @Test
+    void buildersRejectMissingRequiredProtocolFields() {
+        assertThatThrownBy(() ->
+                        Runtime.EvaluateParams.builder().returnByValue(true).build())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("expression");
+    }
+
+    private static final class FakeTransport implements CdpTransport {
+        private final byte[] response;
+
+        @Nullable
+        private String method;
+
+        @Nullable
+        private byte[] params;
+
+        private FakeTransport(byte[] response) {
+            this.response = response;
+        }
+
+        @Override
+        public CompletionStage<byte[]> execute(String method, @Nullable byte[] params) {
+            this.method = method;
+            this.params = params;
+            return CompletableFuture.completedFuture(response);
+        }
+
+        @Override
+        public CdpSubscription subscribe(String method, Consumer<byte[]> handler) {
+            return () -> {};
+        }
+    }
+}

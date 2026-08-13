@@ -212,7 +212,11 @@ object RefineTree {
                 )
                 None
             }
-          case _ =>
+          // CEF's C++ vector + count_func convention is flattened by the C API generator to a
+          // single cef_string_list_t parameter. It already carries its own size, so no promotion
+          // is needed and the absent synthetic count parameter is expected.
+          case (None, Some(Param(_, CType.StringList, _, _))) => None
+          case _                                              =>
             System.err.println(
               s"  WARN: count_func on $debugName: expected params $countParamName + $arrayParamName but not found"
             )

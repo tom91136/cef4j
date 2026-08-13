@@ -1,0 +1,5 @@
+set(CEF4J_SYSTEM_PROCESSOR x86_64)
+set(CEF4J_HOST_PROCESSOR_REGEX "^(x86_64|amd64|AMD64)$")
+set(CEF4J_TARGET_TRIPLE x86_64-linux-gnu)
+set(CEF4J_EXTRA_FLAGS "-march=westmere -mtune=skylake")
+include("${CMAKE_CURRENT_LIST_DIR}/linux-common.cmake")

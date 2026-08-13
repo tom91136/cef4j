@@ -31,7 +31,8 @@ class CppEmitterSpec extends munit.FunSuite {
     assert(src.contains("std::string url"))
     assert(src.contains("std::size_t encodedSize() const noexcept"))
     assert(src.contains("void encodeInto(std::uint8_t* dst) const noexcept"))
-    assert(src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len) noexcept"))
+    assert(src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len)"))
+    assert(!src.contains("static LoadUrlRequest decode(const std::uint8_t* src, std::size_t len) noexcept"))
   }
 
   test("encodedSize for fixed+variable mix sums fixed bytes plus variable .size() expressions") {

@@ -147,6 +147,7 @@ public enum Cef {
     private volatile @Nullable CountDownLatch shutdownLatch;
     private volatile @Nullable CefSettings activeSettings;
     private final CopyOnWriteArrayList<CefApp> appHandlers = new CopyOnWriteArrayList<>();
+    private final Object lifecycleLock = new Object();
 
     private void checkState() {
         if (state != State.INITIALISED)
@@ -198,7 +199,7 @@ public enum Cef {
      * @throws IllegalArgumentException if settings contain unsupported options (see {@link #initialiseUnsafe} to
      *     bypass)
      */
-    public synchronized void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+    public void initialise(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
         validateSettings(settings);
         initialiseInternal(settings, extraArgs);
     }
@@ -207,7 +208,7 @@ public enum Cef {
      * Initialise CEF without validating settings. Use this only if you know what you are doing — certain configurations
      * (e.g. {@code multiThreadedMessageLoop=1} on macOS) will crash or hang the process.
      */
-    public synchronized void initialiseUnsafe(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+    public void initialiseUnsafe(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
         initialiseInternal(settings, extraArgs);
     }
 
@@ -220,196 +221,218 @@ public enum Cef {
         }
     }
 
-    private synchronized void initialiseInternal(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
-        Objects.requireNonNull(settings);
-        Objects.requireNonNull(extraArgs);
-        if (state == State.INITIALISED) return;
-        if (state == State.TERMINATED || state == State.SHUTTING_DOWN) {
-            throw new IllegalStateException("CEF has been shut down and cannot be reinitialized");
-        }
-
-        log.info("Initializing CEF with args: {}", extraArgs);
-
-        if (!SystemBootstrap.isLoaded()) {
-            SystemBootstrap.load();
-        }
-
-        if (settings.browserSubprocessPath == null) {
-            settings.browserSubprocessPath = SystemBootstrap.getHelperPath();
-        }
-
-        if (settings.resourcesDirPath == null) {
-            Path baseDir = null;
-            Path extDir = SystemBootstrap.getExtractionDir();
-            if (extDir != null) {
-                baseDir = extDir;
-            } else {
-                baseDir = SystemBootstrap.getLibcefDir();
+    private void initialiseInternal(@Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs) {
+        synchronized (lifecycleLock) {
+            Objects.requireNonNull(settings);
+            Objects.requireNonNull(extraArgs);
+            if (state == State.INITIALISED) return;
+            if (state == State.TERMINATED || state == State.SHUTTING_DOWN) {
+                throw new IllegalStateException("CEF has been shut down and cannot be reinitialized");
             }
-            if (baseDir != null) {
-                if (OS.isMacOS()) {
-                    Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
-                    if (settings.frameworkDirPath == null) {
-                        settings.frameworkDirPath =
-                                frameworkDir.toAbsolutePath().toString();
-                    }
-                    settings.resourcesDirPath =
-                            frameworkDir.resolve("Resources").toAbsolutePath().toString();
-                    settings.localesDirPath = settings.resourcesDirPath;
+
+            log.info("Initializing CEF with args: {}", extraArgs);
+
+            if (!SystemBootstrap.isLoaded()) {
+                SystemBootstrap.load();
+            }
+
+            if (settings.browserSubprocessPath == null) {
+                settings.browserSubprocessPath = SystemBootstrap.helperPath();
+            }
+
+            if (settings.resourcesDirPath == null) {
+                Path baseDir = null;
+                Path extDir = SystemBootstrap.extractionDir();
+                if (extDir != null) {
+                    baseDir = extDir;
                 } else {
-                    settings.resourcesDirPath = baseDir.toAbsolutePath().toString();
+                    baseDir = SystemBootstrap.libcefDir();
+                }
+                if (baseDir != null) {
+                    if (OS.isMacOS()) {
+                        Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
+                        if (settings.frameworkDirPath == null) {
+                            settings.frameworkDirPath =
+                                    frameworkDir.toAbsolutePath().toString();
+                        }
+                        settings.resourcesDirPath = frameworkDir
+                                .resolve("Resources")
+                                .toAbsolutePath()
+                                .toString();
+                        settings.localesDirPath = settings.resourcesDirPath;
+                    } else {
+                        settings.resourcesDirPath = baseDir.toAbsolutePath().toString();
+                    }
                 }
             }
-        }
 
-        if (!OS.isMacOS() && settings.localesDirPath == null) {
-            settings.localesDirPath = settings.resourcesDirPath != null ? settings.resourcesDirPath + "/locales" : null;
-        }
-        setOptionalIntSetting(settings, "disableSignalHandlers", 1);
-
-        // Sandbox is not supported in JVM-based CEF embeddings: the subprocess helper is a
-        // separate executable and sandbox initialisation requires same-process control that the
-        // JVM cannot provide. See JCEF context.cpp and CEF sandbox_setup docs.
-        settings.noSandbox = 1;
-
-        log.debug("CEF config: subprocess={}, resources={}", settings.browserSubprocessPath, settings.resourcesDirPath);
-
-        CefApp appHandler = buildAppHandler(extraArgs);
-
-        java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
-        argv.add("cef4j");
-        argv.addAll(extraArgs);
-        addArgIfMissing(argv, "--no-sandbox");
-        if (OS.isLinux()) {
-            addArgIfMissing(argv, "--disable-setuid-sandbox");
-            addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
-            addArgIfMissing(argv, "--disable-gpu-sandbox");
-        }
-
-        boolean useExternalPump = settings.externalMessagePump != 0;
-        boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
-
-        if (useExternalPump || useMultiThreadedLoop) {
-            // External pump: caller drives the loop via doMessageLoopWork().
-            // Multi-threaded loop: CEF spawns its own UI thread internally.
-            // In both cases cef_initialize() must be followed by neither runMessageLoop() nor a
-            // daemon-thread wrapper - runMessageLoop() is invalid under multiThreadedMessageLoop
-            // and forking from a multithreaded JVM corrupts child-process FD inheritance.
-            CefSettings immutable = settings.toImmutable();
-            final int result = CefGlobals.initialize(new CefMainArgs(argv.size(), argv), immutable, appHandler, null);
-            if (result == 0) {
-                log.error("CefGlobals.initialize (cef_initialize) failed");
-                throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
+            if (!OS.isMacOS() && settings.localesDirPath == null) {
+                settings.localesDirPath =
+                        settings.resourcesDirPath != null ? settings.resourcesDirPath + "/locales" : null;
             }
-            activeSettings = immutable;
-            state = State.INITIALISED;
-            initThread = Thread.currentThread();
-            daemonManaged = false;
-        } else if (OS.isMacOS()) {
-            // macOS path: dispatch cef_initialize() + cef_run_message_loop() + cleanup onto
-            // Thread 0 (the AppKit main thread) in a single dispatch_async block.
-            // cef_run_message_loop() calls [NSApp run] which becomes the event loop for Thread 0.
-            // terminate() calls cef_quit_message_loop() + [NSApp stop:] and waits for the
-            // dispatch block to finish via a semaphore.
-            final CefSettings finalSettings = settings.toImmutable();
-            final CefApp finalAppHandler = appHandler;
-            final List<String> finalArgv = List.copyOf(argv);
-            final AtomicReference<Throwable> initError = new AtomicReference<>();
-            final int[] result = new int[1];
-            SystemBootstrap.initAndRunOnMainThread(
-                    () -> {
-                        try {
-                            result[0] = CefGlobals.initialize(
-                                    new CefMainArgs(finalArgv.size(), finalArgv), finalSettings, finalAppHandler, null);
-                        } catch (Throwable t) {
-                            initError.set(t);
-                        }
-                    },
-                    () -> {
-                        // Runs on Thread 0 after cef_run_message_loop() returns.
-                        int released = NativeCleaner.INSTANCE.releaseAll();
-                        log.info("Released {} outstanding NativePeers before shutdown", released);
-                    });
-            Throwable err = initError.get();
-            if (err != null) {
-                state = State.UNINITIALISED;
-                throw (err instanceof RuntimeException) ? (RuntimeException) err : new RuntimeException(err);
-            }
-            if (result[0] == 0) {
-                state = State.UNINITIALISED;
-                log.error("CefGlobals.initialize (cef_initialize) failed");
-                throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
-            }
-            activeSettings = finalSettings;
-            state = State.INITIALISED;
-            initThread = Thread.currentThread();
-            daemonManaged = false;
-            macOsManaged = true;
-        } else {
-            // Daemon thread path: CEF init + message loop run on a dedicated thread.
-            CountDownLatch initLatch = new CountDownLatch(1);
-            AtomicReference<Throwable> initError = new AtomicReference<>();
-            CountDownLatch sdLatch = new CountDownLatch(1);
-            this.shutdownLatch = sdLatch;
+            setOptionalIntSetting(settings, "disableSignalHandlers", 1);
 
-            final CefSettings finalSettings = settings.toImmutable();
-            final CefApp finalAppHandler = appHandler;
-            final List<String> finalArgv = List.copyOf(argv);
+            // Sandbox is not supported in JVM-based CEF embeddings: the subprocess helper is a
+            // separate executable and sandbox initialisation requires same-process control that the
+            // JVM cannot provide. See JCEF context.cpp and CEF sandbox_setup docs.
+            settings.noSandbox = 1;
 
-            Thread daemon = new Thread(
-                    () -> {
-                        try {
-                            int result = CefGlobals.initialize(
-                                    new CefMainArgs(finalArgv.size(), finalArgv), finalSettings, finalAppHandler, null);
-                            if (result == 0) {
-                                initError.set(new RuntimeException("CefGlobals.initialize (cef_initialize) failed"));
-                                return;
+            log.debug(
+                    "CEF config: subprocess={}, resources={}",
+                    settings.browserSubprocessPath,
+                    settings.resourcesDirPath);
+
+            CefApp appHandler = buildAppHandler(extraArgs);
+
+            java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
+            argv.add("cef4j");
+            argv.addAll(extraArgs);
+            addArgIfMissing(argv, "--no-sandbox");
+            if (OS.isLinux()) {
+                addArgIfMissing(argv, "--disable-setuid-sandbox");
+                addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
+                addArgIfMissing(argv, "--disable-gpu-sandbox");
+            }
+
+            boolean useExternalPump = settings.externalMessagePump != 0;
+            boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
+
+            if (useExternalPump || useMultiThreadedLoop) {
+                // External pump: caller drives the loop via doMessageLoopWork().
+                // Multi-threaded loop: CEF spawns its own UI thread internally.
+                // In both cases cef_initialize() must be followed by neither runMessageLoop() nor a
+                // daemon-thread wrapper - runMessageLoop() is invalid under multiThreadedMessageLoop
+                // and forking from a multithreaded JVM corrupts child-process FD inheritance.
+                CefSettings immutable = settings.toImmutable();
+                final int result =
+                        CefGlobals.initialize(new CefMainArgs(argv.size(), argv), immutable, appHandler, null);
+                if (result == 0) {
+                    log.error("CefGlobals.initialize (cef_initialize) failed");
+                    throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
+                }
+                activeSettings = immutable;
+                state = State.INITIALISED;
+                initThread = Thread.currentThread();
+                daemonManaged = false;
+            } else if (OS.isMacOS()) {
+                // macOS path: dispatch cef_initialize() + cef_run_message_loop() + cleanup onto
+                // Thread 0 (the AppKit main thread) in a single dispatch_async block.
+                // cef_run_message_loop() calls [NSApp run] which becomes the event loop for Thread 0.
+                // terminate() calls cef_quit_message_loop() + [NSApp stop:] and waits for the
+                // dispatch block to finish via a semaphore.
+                final CefSettings finalSettings = settings.toImmutable();
+                final CefApp finalAppHandler = appHandler;
+                final List<String> finalArgv = List.copyOf(argv);
+                final AtomicReference<Throwable> initError = new AtomicReference<>();
+                final int[] result = new int[1];
+                SystemBootstrap.initAndRunOnMainThread(
+                        () -> {
+                            try {
+                                result[0] = CefGlobals.initialize(
+                                        new CefMainArgs(finalArgv.size(), finalArgv),
+                                        finalSettings,
+                                        finalAppHandler,
+                                        null);
+                            } catch (Throwable t) {
+                                initError.set(t);
                             }
-                            log.info("CEF initialized on daemon thread");
-                            initLatch.countDown();
-
-                            CefGlobals.runMessageLoop();
-
-                            log.info("CEF message loop exited, shutting down");
+                        },
+                        () -> {
+                            // Runs on Thread 0 after cef_run_message_loop() returns.
                             int released = NativeCleaner.INSTANCE.releaseAll();
-                            log.info(
-                                    "Released {} outstanding NativePeers from daemon thread before shutdown", released);
-                            CefGlobals.shutdown();
-                            log.info("CEF terminated");
-                        } catch (Throwable t) {
-                            initError.compareAndSet(null, t);
-                        } finally {
-                            initLatch.countDown();
-                            sdLatch.countDown();
-                        }
-                    },
-                    "cef4j-message-loop");
-            daemon.setDaemon(true);
-            daemon.start();
+                            log.info("Released {} outstanding NativePeers before shutdown", released);
+                        });
+                Throwable err = initError.get();
+                if (err != null) {
+                    state = State.UNINITIALISED;
+                    throw (err instanceof RuntimeException) ? (RuntimeException) err : new RuntimeException(err);
+                }
+                if (result[0] == 0) {
+                    state = State.UNINITIALISED;
+                    log.error("CefGlobals.initialize (cef_initialize) failed");
+                    throw new RuntimeException("CefGlobals.initialize (cef_initialize) failed");
+                }
+                activeSettings = finalSettings;
+                state = State.INITIALISED;
+                initThread = Thread.currentThread();
+                daemonManaged = false;
+                macOsManaged = true;
+            } else {
+                // Daemon thread path: CEF init + message loop run on a dedicated thread.
+                CountDownLatch initLatch = new CountDownLatch(1);
+                AtomicReference<Throwable> initError = new AtomicReference<>();
+                CountDownLatch sdLatch = new CountDownLatch(1);
+                this.shutdownLatch = sdLatch;
 
-            try {
-                initLatch.await();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Interrupted waiting for CEF initialization", e);
+                final CefSettings finalSettings = settings.toImmutable();
+                final CefApp finalAppHandler = appHandler;
+                final List<String> finalArgv = List.copyOf(argv);
+
+                Thread daemon = new Thread(
+                        () -> {
+                            try {
+                                int result = CefGlobals.initialize(
+                                        new CefMainArgs(finalArgv.size(), finalArgv),
+                                        finalSettings,
+                                        finalAppHandler,
+                                        null);
+                                if (result == 0) {
+                                    initError.set(
+                                            new RuntimeException("CefGlobals.initialize (cef_initialize) failed"));
+                                    return;
+                                }
+                                log.info("CEF initialized on daemon thread");
+                                initLatch.countDown();
+
+                                CefGlobals.runMessageLoop();
+
+                                log.info("CEF message loop exited, shutting down");
+                                int released = NativeCleaner.INSTANCE.releaseAll();
+                                log.info(
+                                        "Released {} outstanding NativePeers from daemon thread before shutdown",
+                                        released);
+                                CefGlobals.shutdown();
+                                log.info("CEF terminated");
+                            } catch (Throwable t) {
+                                initError.compareAndSet(null, t);
+                            } finally {
+                                initLatch.countDown();
+                                sdLatch.countDown();
+                            }
+                        },
+                        "cef4j-message-loop");
+                daemon.setDaemon(true);
+                daemon.start();
+
+                boolean interrupted = false;
+                while (true) {
+                    try {
+                        initLatch.await();
+                        break;
+                    } catch (InterruptedException ignored) {
+                        // CEF initialization cannot safely be abandoned once its daemon has entered native code.
+                        // Finish the lifecycle transition, then restore the caller's interrupt status.
+                        interrupted = true;
+                    }
+                }
+                if (interrupted) Thread.currentThread().interrupt();
+
+                Throwable error = initError.get();
+                if (error != null) {
+                    state = State.UNINITIALISED;
+                    throw (error instanceof RuntimeException) ? (RuntimeException) error : new RuntimeException(error);
+                }
+
+                activeSettings = finalSettings;
+                state = State.INITIALISED;
+                initThread = daemon;
+                daemonManaged = true;
             }
 
-            Throwable error = initError.get();
-            if (error != null) {
-                state = State.UNINITIALISED;
-                throw (error instanceof RuntimeException) ? (RuntimeException) error : new RuntimeException(error);
+            log.info("CEF initialized");
+            if (activeSettings != null && activeSettings.cachePath != null) {
+                NativeStderr.setCrashLogPath(activeSettings.cachePath);
             }
-
-            activeSettings = finalSettings;
-            state = State.INITIALISED;
-            initThread = daemon;
-            daemonManaged = true;
-        }
-
-        log.info("CEF initialized");
-        if (activeSettings != null && activeSettings.cachePath != null) {
-            NativeStderr.setCrashLogPath(activeSettings.cachePath);
         }
     }
 
@@ -472,10 +495,10 @@ public enum Cef {
     public void terminate() {
         // Transition to SHUTTING_DOWN under the monitor, then release it before blocking calls.
         // Holding the monitor during dispatch_sync/semaphore_wait would deadlock if Thread 0
-        // (or the daemon thread) tries to enter any synchronized Cef method during shutdown.
+        // (or the daemon thread) tries to enter a lifecycle-critical section during shutdown.
         boolean isMacOs;
         boolean isDaemon;
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             if (state == State.UNINITIALISED || state == State.TERMINATED || state == State.SHUTTING_DOWN) return;
 
             if (!daemonManaged && !macOsManaged && Thread.currentThread() != initThread) {
@@ -513,7 +536,7 @@ public enum Cef {
             CefGlobals.shutdown();
         }
 
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             state = State.TERMINATED;
         }
         log.info("CEF terminated");
@@ -543,7 +566,7 @@ public enum Cef {
     }
 
     /** Returns the current CEF application state. */
-    public State getState() {
+    public State state() {
         return state;
     }
 
@@ -551,7 +574,7 @@ public enum Cef {
      * Returns the settings CEF was initialized with, or {@link Optional#empty()} if CEF has not yet been initialised.
      * Used by lazy-init paths to validate compatibility before adding a new browser view.
      */
-    public Optional<CefSettings> getActiveSettings() {
+    public Optional<CefSettings> activeSettings() {
         return Optional.ofNullable(activeSettings);
     }
 

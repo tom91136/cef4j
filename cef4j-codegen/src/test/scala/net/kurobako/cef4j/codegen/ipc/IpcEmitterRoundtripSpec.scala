@@ -121,11 +121,33 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     }
   }
 
+  test("C++ emitter bounds every decode and rejects negative variable lengths") {
+    val spec = MessageSpec(
+      className = "HostileRequest",
+      packageName = "test.gen",
+      messageId = 102,
+      fields = List(
+        FieldSpec("name", FieldType.Utf8String),
+        FieldSpec("payload", FieldType.Bytes),
+        FieldSpec("items", FieldType.StringList),
+        FieldSpec("tail", FieldType.I64)
+      )
+    )
+    val source = CppEmitter.emit(spec)
+    assert(source.contains("requireAvailable"))
+    assert(source.contains("negative length for name"))
+    assert(source.contains("negative length for payload"))
+    assert(source.contains("negative count for items"))
+    assert(source.contains("negative string length for items"))
+    assert(!source.contains("(void)len"))
+    assert(!source.contains("decode(const std::uint8_t* src, std::size_t len) noexcept"))
+  }
+
   // ---------------------------------------------------------------------------
   // In-memory Java compilation harness.
   //
   // The generated code references {@code net.kurobako.cef4j.ipc.session.CefMessage*} and
-  // {@code javax.annotation.Nonnull}. cef4j-codegen has no compile dep on cef4j-ipc-session (and can't
+  // {@code javax.annotation.Nonnull}. cef4j-codegen has no compile dep on cef4j-remote-core (and can't
   // — codegen builds first in the reactor). Instead we co-compile minimal stub interfaces here so the
   // generated source is type-checkable in isolation.
   // ---------------------------------------------------------------------------

@@ -3,9 +3,9 @@ package net.kurobako.cef4j.codegen.ipc
 /** Emits a single-header C++ struct + encode/decode functions matching the Java side wire format.
   *
   * Layout: same little-endian order, same length-prefixed strings/bytes. Output is intended to be included into the
-  * cef4j-ipc-helper-native build, replacing the inline byte parsing in {@code main.cpp}.
+  * cef4j-runtime-server build, replacing the inline byte parsing in {@code main.cpp}.
   *
-  * One header per spec; no inline-defined codecs in a `.cpp` to keep the helper's build flat.
+  * One header per spec; no inline-defined codecs in a `.cpp` to keep the runtime server's build flat.
   */
 object CppEmitter {
 
@@ -19,6 +19,7 @@ object CppEmitter {
     val sizeBody = renderEncodedSizeBody(spec)
     val encBody  = renderEncodeBody(spec)
     val decBody  = renderDecodeBody(spec)
+    val decPos   = "        std::size_t pos = 0;"
     // Nested DataStruct fields reference other generated headers; pull them in via #include so the compile
     // graph resolves. Each spec gets its own .h file (Main.scala writes one per spec), so naming matches.
     val nestedIncludes = spec.fields.collect {
@@ -31,6 +32,7 @@ object CppEmitter {
        |
        |#include <cstdint>
        |#include <cstring>
+       |#include <stdexcept>
        |#include <string>
        |#include <vector>
        |$nestedIncludes
@@ -52,10 +54,13 @@ object CppEmitter {
        |    }
        |
        |    /** Reads a $cls from a payload starting at {@code src}; {@code len} bounds the buffer. */
-       |    static $cls decode(const std::uint8_t* src, std::size_t len) noexcept {
+       |    static $cls decode(const std::uint8_t* src, std::size_t len) {
        |        $cls out;
-       |        std::size_t pos = 0;
-       |        (void)len;
+       |$decPos
+       |        [[maybe_unused]] auto requireAvailable = [&](std::size_t count) {
+       |            if (pos > len || count > len - pos)
+       |                throw std::invalid_argument("truncated $cls payload");
+       |        };
        |$decBody
        |        return out;
        |    }
@@ -80,7 +85,7 @@ object CppEmitter {
     case FieldType.Utf8String          => "std::string"
     case FieldType.Bytes               => "std::vector<std::uint8_t>"
     case FieldType.StringList          => "std::vector<std::string>"
-    case FieldType.RemoteHandle        => "std::int32_t" // resolved via helper-side HandleTable
+    case FieldType.RemoteHandle        => "std::int32_t" // resolved via runtime-server-side HandleTable
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
@@ -148,7 +153,7 @@ object CppEmitter {
     s"static_cast<std::int64_t>(static_cast<std::uint64_t>($srcVar[$offsetVar]) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 1]) << 8) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 2]) << 16) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 3]) << 24) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 4]) << 32) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 5]) << 40) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 6]) << 48) | (static_cast<std::uint64_t>($srcVar[$offsetVar + 7]) << 56))"
 
   private def renderEncodeBody(spec: MessageSpec): String = {
-    val pre   = "        std::size_t pos = 0;"
+    val pre   = if (spec.fields.isEmpty) Nil else List("        std::size_t pos = 0;")
     val parts = spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.I32 | FieldType.RemoteHandle => List(writeI32("pos", f.name))
@@ -188,22 +193,33 @@ object CppEmitter {
           )
       }
     }
-    (pre :: parts).mkString("\n")
+    (pre ++ parts).mkString("\n")
   }
 
   private def renderDecodeBody(spec: MessageSpec): String =
     spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.I32 | FieldType.RemoteHandle =>
-          List(s"        out.${f.name} = ${readI32("pos", "src")};", "        pos += 4;")
-        case FieldType.I64  => List(s"        out.${f.name} = ${readI64("pos", "src")};", "        pos += 8;")
+          List(
+            "        requireAvailable(4);",
+            s"        out.${f.name} = ${readI32("pos", "src")};",
+            "        pos += 4;"
+          )
+        case FieldType.I64 => List(
+            "        requireAvailable(8);",
+            s"        out.${f.name} = ${readI64("pos", "src")};",
+            "        pos += 8;"
+          )
         case FieldType.Bool =>
-          List(s"        out.${f.name} = src[pos] != 0;", "        pos += 1;")
+          List("        requireAvailable(1);", s"        out.${f.name} = src[pos] != 0;", "        pos += 1;")
         case FieldType.Utf8String =>
           List(
             s"        {",
+            s"            requireAvailable(4);",
             s"            std::int32_t n = ${readI32("pos", "src")};",
             s"            pos += 4;",
+            s"            if (n < 0) throw std::invalid_argument(\"negative length for ${f.name}\");",
+            s"            requireAvailable(static_cast<std::size_t>(n));",
             s"            out.${f.name}.assign(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(n));",
             s"            pos += static_cast<std::size_t>(n);",
             s"        }"
@@ -211,8 +227,11 @@ object CppEmitter {
         case FieldType.Bytes =>
           List(
             s"        {",
+            s"            requireAvailable(4);",
             s"            std::int32_t n = ${readI32("pos", "src")};",
             s"            pos += 4;",
+            s"            if (n < 0) throw std::invalid_argument(\"negative length for ${f.name}\");",
+            s"            requireAvailable(static_cast<std::size_t>(n));",
             s"            out.${f.name}.assign(src + pos, src + pos + n);",
             s"            pos += static_cast<std::size_t>(n);",
             s"        }"
@@ -220,12 +239,18 @@ object CppEmitter {
         case FieldType.StringList =>
           List(
             s"        {",
+            s"            requireAvailable(4);",
             s"            std::int32_t cnt = ${readI32("pos", "src")};",
             s"            pos += 4;",
+            s"            if (cnt < 0) throw std::invalid_argument(\"negative count for ${f.name}\");",
+            s"            if (static_cast<std::size_t>(cnt) > (len - pos) / 4) throw std::invalid_argument(\"invalid count for ${f.name}\");",
             s"            out.${f.name}.reserve(static_cast<std::size_t>(cnt));",
             s"            for (std::int32_t __i = 0; __i < cnt; ++__i) {",
+            s"                requireAvailable(4);",
             s"                std::int32_t slen = ${readI32("pos", "src")};",
             s"                pos += 4;",
+            s"                if (slen < 0) throw std::invalid_argument(\"negative string length for ${f.name}\");",
+            s"                requireAvailable(static_cast<std::size_t>(slen));",
             s"                out.${f.name}.emplace_back(reinterpret_cast<const char*>(src + pos), static_cast<std::size_t>(slen));",
             s"                pos += static_cast<std::size_t>(slen);",
             s"            }",
@@ -235,6 +260,7 @@ object CppEmitter {
           val cls = SpecDeriver.cefStructToClassName(cefName)
           List(
             s"        out.${f.name} = $cls::decode(src + pos, len - pos);",
+            s"        requireAvailable(out.${f.name}.encodedSize());",
             s"        pos += out.${f.name}.encodedSize();"
           )
       }

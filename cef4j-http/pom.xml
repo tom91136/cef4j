@@ -38,7 +38,7 @@
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
             <version>${project.version}</version>
-            <classifier>${cef.platform}</classifier>
+            <classifier>${cef.classifier}</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>

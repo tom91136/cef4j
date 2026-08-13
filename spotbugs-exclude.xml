@@ -15,6 +15,12 @@
         <Class name="net.kurobako.cef4j.gen.NativePointer$Managed"/>
         <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
     </Match>
+    <!-- Dirty-region accumulation is producer-confined to CEF's onPaint thread. The only cross-thread
+         fields are ready/frontImage, which are volatile and provide the intended hand-off. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.CefFrameBuffer"/>
+        <Bug pattern="AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
+    </Match>
     <!-- CefBrowserPanel validates CEF is initialised before proceeding. The IllegalStateException is the
          intended contract; a finalizer-attack mitigation would require a factory method and break the public API. -->
     <Match>
@@ -25,6 +31,18 @@
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+    <!-- URLConnection's contract requires getOutputStream() to return the connection-owned request stream.
+         The response sink likewise retains the exact IOException so a waiting caller can observe it. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.http.CefHttpURLConnection"/>
+        <Method name="getOutputStream"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.http.CefHttpURLConnection$Sink"/>
+        <Method name="onError"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
     <!-- The JFX WebView/WebEngine API exposes JavaFX Property objects by design; binding is the intended use. -->
     <Match>
@@ -61,14 +79,6 @@
         <Class name="net.kurobako.cef4j.ipc.transport.RecordingTransport"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
-    <!-- HelperProcess.spawn captures p.onExit().thenAccept(...) into an `unused` local because Error
-         Prone's FutureReturnValueIgnored requires the return value to be assigned. SpotBugs disagrees;
-         this is a documented two-way intentional pattern. -->
-    <Match>
-        <Class name="net.kurobako.cef4j.ipc.session.process.HelperProcess"/>
-        <Method name="spawn"/>
-        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
-    </Match>
     <!-- Generated facades mirror CEF struct names verbatim (e.g. cef_v8_exception_t -> CefV8Exception); they
          describe a CEF-side condition, not a Java throwable. SpotBugs flags the suffix mismatch but renaming
          them would diverge from the CEF API surface. -->
@@ -82,5 +92,16 @@
     <Match>
         <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- CdpObject recursively freezes maps/lists before retaining them; exposing that immutable view is its codec
+         boundary. CdpDomains likewise returns immutable, stateless command clients owned for the facade lifetime. -->
+    <Match>
+        <Class name="net.kurobako.cef4j.cdp.CdpObject"/>
+        <Method name="toMap"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.cdp.generated.CdpDomains"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
     </Match>
 </FindBugsFilter>

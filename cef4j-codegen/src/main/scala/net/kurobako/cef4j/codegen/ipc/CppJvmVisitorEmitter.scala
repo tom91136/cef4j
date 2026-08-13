@@ -3,7 +3,7 @@ package net.kurobako.cef4j.codegen.ipc
 /** Emits a single C++ header `JvmVisitors.h` containing one synthetic `cef_X_t` subclass per JVM-owned visitor. Each
   * synthetic carries a `callbackId` that identifies the JVM-side {@link JvmCallbackTable} entry to invoke. When CEF
   * fires the callback method, the synthetic encodes the matching `XxxCallbackEvent` (with `callbackId` + the invocation
-  * args) and ships it via the helper's `IpcServer`.
+  * args) and ships it via the runtime server's `IpcServer`.
   *
   * Pattern verified end-to-end by the hand-written {@code JvmStringVisitor.h}; this emitter generalises it so every
   * visitor-shaped CEF callback gets the same treatment without per-type hand code. The dispatcher (see
@@ -112,12 +112,12 @@ object CppJvmVisitorEmitter {
        |
        |    $syntheticCls(std::int32_t cbId, cef4j::ipc::IpcServer* server)
        |            : $cefStruct{}, callbackId(cbId), ipc(server) {
-       |        auto* base                  = reinterpret_cast<cef_base_ref_counted_t*>(this);
-       |        base->size                  = sizeof($cefStruct);
-       |        base->add_ref               = [](cef_base_ref_counted_t* self) {
+       |        auto* selfBase              = reinterpret_cast<cef_base_ref_counted_t*>(this);
+       |        selfBase->size              = sizeof($cefStruct);
+       |        selfBase->add_ref           = [](cef_base_ref_counted_t* self) {
        |            reinterpret_cast<$syntheticCls*>(self)->refCount.fetch_add(1, std::memory_order_relaxed);
        |        };
-       |        base->release               = [](cef_base_ref_counted_t* self) -> int {
+       |        selfBase->release           = [](cef_base_ref_counted_t* self) -> int {
        |            auto* v = reinterpret_cast<$syntheticCls*>(self);
        |            if (v->refCount.fetch_sub(1, std::memory_order_acq_rel) == 1) {
        |                delete v;
@@ -125,10 +125,10 @@ object CppJvmVisitorEmitter {
        |            }
        |            return 0;
        |        };
-       |        base->has_one_ref           = [](cef_base_ref_counted_t* self) -> int {
+       |        selfBase->has_one_ref       = [](cef_base_ref_counted_t* self) -> int {
        |            return reinterpret_cast<$syntheticCls*>(self)->refCount.load(std::memory_order_acquire) == 1;
        |        };
-       |        base->has_at_least_one_ref  = [](cef_base_ref_counted_t* self) -> int {
+       |        selfBase->has_at_least_one_ref = [](cef_base_ref_counted_t* self) -> int {
        |            return reinterpret_cast<$syntheticCls*>(self)->refCount.load(std::memory_order_acquire) >= 1;
        |        };
        |        $callbackMethod = []($lambdaParams) {

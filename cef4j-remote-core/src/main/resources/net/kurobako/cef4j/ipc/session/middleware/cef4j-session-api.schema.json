@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kurobako.net/cef4j/schema/session-api-trace-v1.json",
+  "title": "cef4j session API trace record",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["type", "format", "version", "createdEpochMillis", "metadata"],
+      "properties": {
+        "type": { "const": "header" },
+        "format": { "const": "cef4j-session-api" },
+        "version": { "const": 1 },
+        "createdEpochMillis": { "$ref": "#/$defs/int64" },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "type": "object",
+      "required": ["type", "sequence", "elapsedNanos", "operationId", "messageId"],
+      "properties": {
+        "type": {
+          "enum": [
+            "request",
+            "response",
+            "failure",
+            "subscribe",
+            "subscribe_latest",
+            "unsubscribe",
+            "event",
+            "intercept_register",
+            "intercept_unregister",
+            "intercept",
+            "intercept_response",
+            "close"
+          ]
+        },
+        "sequence": { "$ref": "#/$defs/uint64" },
+        "elapsedNanos": { "$ref": "#/$defs/uint64" },
+        "operationId": { "$ref": "#/$defs/int64" },
+        "messageId": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        "payloadBase64": {
+          "type": "string",
+          "contentEncoding": "base64"
+        },
+        "detailType": { "type": "string" },
+        "detailMessage": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  ],
+  "$defs": {
+    "int64": {
+      "type": "string",
+      "pattern": "^-?[0-9]+$"
+    },
+    "uint64": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    }
+  }
+}

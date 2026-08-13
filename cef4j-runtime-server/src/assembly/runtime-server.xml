@@ -1,0 +1,31 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>${cef.classifier}</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>cef4j-runtime-server-${project.version}-${cef.classifier}</baseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/cmake-build/runtime-server</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>cef4j-runtime-server</include>
+                <include>cef4j-runtime-server.exe</include>
+            </includes>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/cmake-build/runtime-server</directory>
+            <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>cef4j-runtime-server</exclude>
+                <exclude>cef4j-runtime-server.exe</exclude>
+            </excludes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
+</assembly>

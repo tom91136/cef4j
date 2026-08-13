@@ -1,228 +1,268 @@
-# Debugging Native Crashes in cef4j
+# Debugging cef4j
 
-## Symptoms
+This is the operational reference for builds, native crashes, platform startup, the runtime server, IPC, and test
+isolation. Planned engineering work belongs in [PLAN.md](PLAN.md); architecture and normal usage belong in
+[README.md](README.md).
 
-Native crashes manifest as:
-- JVM termination with no Java stack trace
-- Surefire reporting "The forked VM terminated without properly saying goodbye"
-- Exit codes like 133 (128 + SIGTRAP), 134 (128 + SIGABRT), 139 (128 + SIGSEGV)
-- glibc errors: `malloc(): invalid size (unsorted)`, `malloc(): corrupted top size`
+## First response
 
-## Step 1: Check chrome_debug.log
+1. Reproduce at the narrowest test layer: Java unit, HTTP/fake backend, IPC loopback, packaged runtime server, then
+   full UI.
+2. On Linux, put every CEF/UI test under `xvfb-run`; never attach native tests to the active desktop session.
+3. Record the JDK, OS/architecture, CEF version/API, control transport, frame provider, and whether CEF is in-process
+   or in the runtime server.
+4. Inspect `chrome_debug.log`, the JVM crash file (`hs_err_pid*.log`), runtime-server stderr, and Surefire reports.
+5. Confirm the executable and libraries actually loaded are from the build being tested.
 
-CEF writes its own log file alongside the user data directory. FATAL errors that
-kill the process appear here even when they don't appear in application logs.
+Useful baseline commands:
 
-Look for the most recent `chrome_debug.log`:
-
-```sh
-find /tmp -name 'chrome_debug.log' -mmin -5 2>/dev/null
+```bash
+xvfb-run -a ./mvnw test
+xvfb-run -a ./mvnw clean verify -Dspotless.skip=true
+find /tmp -name chrome_debug.log -mmin -10 2>/dev/null
+find . -name 'hs_err_pid*.log' -o -path '*/surefire-reports/*-output.txt'
 ```
 
-Grep for FATAL:
+## Native-crash symptoms
 
-```sh
-grep FATAL /tmp/cef4j-test-*/chrome_debug.log
+- JVM or runtime-server termination without a Java stack trace
+- Surefire: `The forked VM terminated without properly saying goodbye`
+- exit 133 (`SIGTRAP`), 134 (`SIGABRT`), or 139 (`SIGSEGV`)
+- allocator errors such as `malloc(): invalid size` or `malloc(): corrupted top size`
+- a supervisor generation disconnect followed by a server restart
+
+CEF `LOG(FATAL)` writes to `chrome_debug.log` and may then trap without copying the fatal message to stderr. cef4j's
+native crash handler prints the selected CEF log path and a native backtrace on macOS/Linux when possible.
+
+```bash
+find /tmp -name chrome_debug.log -mmin -10 -print
+rg 'FATAL|ERROR' /tmp/cef4j-*/chrome_debug.log
 ```
 
-### Why FATAL errors don't appear in application logs
+Set `-Dcef4j.disableStderrRedirect=true` when direct native stderr is more useful than the normal SLF4J bridge.
 
-CEF's `LOG(FATAL)` writes to `chrome_debug.log` via its internal file logger but
-does **not** write to stderr. It then calls `__builtin_trap()` (SIGTRAP on
-Linux), killing the process immediately. Since the message never reaches the
-stderr pipe, the SLF4J daemon reader thread has nothing to capture.
+### Crash classification
 
-Normal CEF output (WARNING, ERROR) does go to stderr and appears in SLF4J.
+| Symptom | Likely cause |
+| --- | --- |
+| `invalid version -1` in CEF log | `cef_api_hash` was not reached; verify `JNI_OnLoad` and exports |
+| crash after passing an object pointer | missing native `add_ref`; CEF consumed the caller's reference |
+| allocator corruption | leaked/freed CEF string or collection, buffer overrun, or double free |
+| crash in `release()` or shutdown | stale pointer, incorrect ownership, or duplicate release |
+| `SIGTRAP` without allocator output | CEF `DCHECK`/`LOG(FATAL)`; inspect `chrome_debug.log` |
+| generated JNI `SIGSEGV` | null/stale native pointer or incorrect generated cast/layout |
+| client disconnect with server exit | inspect server logs before treating it as a transport failure |
 
-The crash signal handler in `stderr_redirect.cpp` catches SIGTRAP/SIGABRT and
-prints the crash notice with the exact `chrome_debug.log` path (if the cache
-directory was set) plus a native backtrace on macOS/Linux:
+## Confirm the native build in use
 
-```
-[cef4j] Native crash detected. CEF log: /tmp/cef4j-cache/chrome_debug.log
-[cef4j] Native backtrace:
-0   libcef4j.dylib  0x...  crashHandler + 123
-...
-```
+In-process tests extract embedded libraries from resources, so rebuilding a target library alone may not change the
+copy loaded by a test. Rebuild and update the packaged resource or use the CMake output directly in a standalone
+reproducer. Compare hashes before debugging stale behavior:
 
-## Step 2: Disable the Stderr Redirect
-
-For interactive debugging, bypass `NativeStderr` so all native output goes
-straight to the terminal. In your test code, load the library manually instead
-of calling `SystemBootstrap.load()`:
-
-```java
-// Skip NativeStderr.install() — load libs directly
-Path cacheDir = Path.of("/tmp/cef4j-cache/linux64");
-System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
-System.load(cacheDir.resolve("libcef4j.so").toAbsolutePath().toString());
-```
-
-Or, if using surefire, add `-Dcef4j.disableStderrRedirect=true` — `NativeStderr.install()`
-honours this flag and leaves native stderr unredirected. The simplest approach for
-hard-to-reproduce crashes is a standalone reproducer (see Step 3).
-
-## Step 3: Create a Standalone Reproducer
-
-Maven surefire hides native crash output and forks a JVM that may crash before
-producing any report. Create a standalone `.java` file:
-
-```java
-import net.kurobako.cef4j.gen.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-public class CrashTest {
-    public static void main(String[] args) throws Exception {
-        // Load without stderr redirect so FATAL output is visible
-        Path cacheDir = Path.of("/tmp/cef4j-cache/linux64");
-        System.load(cacheDir.resolve("libcef.so").toAbsolutePath().toString());
-        System.load(cacheDir.resolve("libcef4j.so").toAbsolutePath().toString());
-
-        Path dataDir = Files.createTempDirectory("cef4j-test-");
-        dataDir.toFile().deleteOnExit();
-        net.kurobako.cef4j.Cef.INSTANCE
-            .cachePath(dataDir.toAbsolutePath().toString())
-            .initialize();
-
-        // ... reproduce the crash here ...
-
-        net.kurobako.cef4j.Cef.INSTANCE.dispose();
-        System.err.println("=== done");
-    }
-}
-```
-
-Run directly:
-
-```sh
-java -cp "cef4j-api/target/classes:$HOME/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:$HOME/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:$HOME/.m2/repository/org/slf4j/slf4j-simple/2.0.17/slf4j-simple-2.0.17.jar" \
-  --source 21 CrashTest.java
-```
-
-## Step 4: Classify the Crash
-
-| Symptom | Likely Cause |
-|---|---|
-| `invalid version -1` in chrome_debug.log | `cef_api_hash` not called — check `JNI_OnLoad` runs (symbol must be exported in `cef4j.map`) |
-| Crash during `close()` after passing object as argument | Missing `add_ref` — CEF consumed a reference via `CppToC::Unwrap()` |
-| `malloc(): invalid size` | Heap corruption, often from leaked `cef_string_userfree_t` or double-free |
-| Crash in `release()` at shutdown | Object freed twice, or freed after CEF shutdown |
-| SIGTRAP with no malloc error | CEF `DCHECK` / `LOG(FATAL)` assertion — check `chrome_debug.log` for the message |
-| SIGSEGV in generated JNI code | Null native pointer, stale pointer, or wrong struct cast |
-
-## Step 5: Updating the .so After Rebuilding
-
-The test suite extracts `libcef4j.so` from the classpath JAR resource on every
-run, overwriting any manual copy in `/tmp/cef4j-cache/linux64/`. To test a
-rebuilt library:
-
-```sh
-# 1. Rebuild
-mvn compile -pl cef4j-native
-
-# 2. Copy to BOTH locations
-cp cef4j-native/target/cmake-build/libcef4j.so \
-   cef4j-api/src/main/resources/native/linux64/libcef4j.so
-cp cef4j-native/target/cmake-build/libcef4j.so \
-   /tmp/cef4j-cache/linux64/libcef4j.so
-
-# 3. Run tests (recompiles cef4j-api, picking up the new resource)
-mvn test -pl cef4j-api -Dtest='CefInteropTest#browserLifecycle_onAfterCreatedAndOnLoadEndFire'
-```
-
-For standalone reproducers that load from `/tmp/cef4j-cache/linux64/`, only the
-second copy is needed.
-
-### Verifying the right library is loaded
-
-```sh
-# Check all copies are the same build
+```bash
 md5sum cef4j-native/target/cmake-build/libcef4j.so \
-       cef4j-api/src/main/resources/native/linux64/libcef4j.so \
-       /tmp/cef4j-cache/linux64/libcef4j.so
-
-# Verify key symbols are exported
-nm -D /tmp/cef4j-cache/linux64/libcef4j.so | grep 'JNI_OnLoad\|cef_api'
+  cef4j-api/src/main/resources/native/linux64/libcef4j.so \
+  /tmp/cef4j-cache/linux64/libcef4j.so
+nm -D cef4j-native/target/cmake-build/libcef4j.so | rg 'JNI_OnLoad|cef_api'
 ```
 
-## Step 6: ASAN / Valgrind
+Paths and suffixes differ on macOS and Windows. The runtime-server launchable unit is
+`cef4j-runtime-server/target/cmake-build/runtime-server/`; keep the executable beside its matching CEF resources.
 
-For heap corruption, build `libcef4j.so` with AddressSanitizer:
+## Standalone and native debuggers
 
-```sh
+Prefer a small Java main that obtains `Cef.osrLaunchArgs()`, supplies a fresh cache path, initializes CEF, reproduces
+one operation, and terminates. Run it outside Surefire with the exact module classpath. Do not use an old reproducer's
+initialization API without comparing it to the current samples.
+
+AddressSanitizer build pattern on Linux:
+
+```bash
 cd cef4j-native/target/cmake-build
 cmake ../.. -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
-  -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
-  -DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address"
-make -j$(nproc)
+  -DCMAKE_C_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
+  -DCMAKE_CXX_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
+  -DCMAKE_SHARED_LINKER_FLAGS='-fsanitize=address'
+cmake --build . -j
 ```
 
-Then run with ASAN preloaded:
+Then preload the matching ASAN runtime when launching Java. For GDB:
 
-```sh
-LD_PRELOAD=$(gcc -print-file-name=libasan.so) \
-  java -Djava.library.path=cef4j-native/target/cmake-build \
-  --source 21 CrashTest.java
+```bash
+gdb --args java -Dcef4j.disableStderrRedirect=true -cp '<classpath>' CrashTest
 ```
 
-## Step 7: GDB
+CEF and the JVM use signals internally. In GDB, it is often useful to pass these through until the actual crash:
 
-For SIGTRAP / SIGSEGV, attach GDB:
-
-```sh
-gdb --args java -Djava.library.path=/tmp/cef4j-cache/linux64 \
-  --source 21 CrashTest.java
-```
-
-In GDB:
-```
-handle SIGSEGV nostop noprint pass  # CEF uses SIGSEGV for sandboxing
-handle SIGUSR1 nostop noprint pass  # JVM uses SIGUSR1
+```text
+handle SIGSEGV nostop noprint pass
+handle SIGUSR1 nostop noprint pass
 run
-# When it crashes:
-bt        # backtrace
-info reg  # registers
+bt
+info registers
 ```
 
-## Known Bug Patterns
+On macOS use LLDB; on Windows collect the runtime-server or JVM dump with WinDbg/Visual Studio. A runtime-server crash
+is easier to diagnose than an in-process crash because the Java client and its logs survive.
 
-### Missing add_ref on ObjectPtr Parameters
+## Known native ownership patterns
 
-**Root cause:** CEF's C API wrapper functions call `CppToC::Unwrap()` on pointer
-arguments, which creates a `CefRefPtr` WITHOUT calling `AddRef()`. It consumes the
-caller's reference. If the JNI code passes a raw pointer without first adding a
-reference, the refcount drops to 0 and CEF destroys the object.
+### Object-pointer parameters
 
-**Symptoms:** Object passed as argument to `isSame`, `isEqual`, `setValue`,
-`setDictionary`, `setBinary`, `setList` etc. becomes invalid after the call.
-Crash occurs later when `release()` is called on the destroyed object.
+CEF C API wrappers may create a `CefRefPtr` from an incoming raw pointer without incrementing it first. Generated JNI
+must `add_ref` an `ObjectPtr` argument before passing it into a call that consumes the reference. A missing increment
+can destroy the object during the call and crash at a later release.
 
-**Fix:** Call `add_ref` on every `ObjectPtr` parameter before passing it to a CEF
-C API function. The codegen handles this automatically in `JniCppCodeGen.scala`.
+### User-free strings
 
-### Leaked cef_string_userfree_t
+`JStringToCefString` allocates a `cef_string_userfree_t`. Store the result, pass it to CEF, and call
+`cef_string_userfree_free()` afterward. Do not create it as an unowned inline temporary.
 
-**Root cause:** `JStringToCefString(env, jStr)` allocates a `cef_string_userfree_t`
-via `cef_string_userfree_utf16_alloc()`. If the return value is used as an inline
-temporary (e.g., `s->has_key(s, JStringToCefString(env, key))`), the allocated
-string is never freed.
+### String-collection writeback
 
-**Symptoms:** Memory leak, potential heap corruption under heavy string traffic.
+Write native string lists/maps back into Java only for output parameters. Writing setter inputs back can duplicate
+entries or throw when the caller supplied an immutable collection.
 
-**Fix:** Store the allocated string in a local variable, pass it to the CEF call,
-then free it with `cef_string_userfree_free()` after the call.
+## Runtime-server startup and recovery
 
-### Unconditional String Collection Writeback
+The first stdout protocol line must resemble:
 
-**Root cause:** String collection params (`cef_string_list_t`, `cef_string_map_t`,
-`cef_string_multimap_t`) were always written back to the Java collection after the
-CEF call. For `set_*` functions (where the collection is an in-param, not out-param),
-this doubled the entries or overwrote an immutable collection.
+```text
+CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=zmq frame=shared-file endpoint=... capabilities=...
+```
 
-**Symptoms:** `UnsupportedOperationException` when passing `List.of()` to a setter,
-or doubled entries in mutable lists after setter calls.
+If startup fails:
 
-**Fix:** Only write back for `get_*` functions. For `set_*` functions, just free
-the temporary native collection.
+- run the packaged executable directly with the same `--transport`, `--bind`, and `--frame-transport` arguments;
+- ensure stdout has no banner or logging before the handshake;
+- verify the handshake protocol/API and provider names match the launcher request;
+- confirm the executable can find its sibling CEF libraries/resources;
+- check the configured startup timeout and the server's stderr;
+- use a fresh writable CEF cache/profile directory.
+
+`RuntimeServerSupervisor` creates a new generation after a crash. Expected behavior is:
+
+- the failed generation's `CefSession` closes;
+- all pending futures fail promptly;
+- old generated facades and native handles remain unusable;
+- restart uses bounded exponential backoff;
+- the application receives the new-generation callback and recreates browser state.
+
+If old calls reach a restarted server, generation ownership has been bypassed and that is a correctness bug. Do not
+work around it by replaying integer handles.
+
+Shared-frame paths include server/browser generation identity. Windows can keep a mapped file locked after the server
+exits; cleanup may be deferred, but the replacement generation must never reuse that path.
+
+## IPC diagnosis
+
+Start with in-memory `LoopbackTransport`, then the real provider. `RecordingTransport` and `ReplayTransport` can isolate
+wire/correlation failures without CEF.
+
+| Provider | Checks |
+| --- | --- |
+| `local` | endpoint scheme matches platform; Unix defaults to loopback ZMQ, Windows advertises a named pipe |
+| `zmq` | endpoint is reachable and unique; no stale server owns the port |
+| `uds` | junixsocket is present; socket path is short, writable, and removed after exit |
+| `websocket` | `ws`/`wss` URI, bearer token agreement, TLS trust, binary-message framing, loopback policy |
+| `inline` frames | negotiated message/frame limits can hold a complete BGRA snapshot |
+| `shared-file` frames | file exists, header/sequence is current, map length and stride agree, path is generation-specific |
+
+The fixed session envelope is 14 bytes, little-endian: payload length (4), kind (1), flags (1), correlation ID (4),
+and message ID (4). A decode failure should log these fields before inspecting higher-level generated messages.
+
+Transport reader callbacks must not block. Handlers should complete futures or enqueue work; synchronous intercepts
+are the exception and must return promptly because the server is waiting.
+
+## Frames and MJPEG
+
+- Verify width, height, stride, pixel format, source sequence, key-frame flag, and base sequence together.
+- A raw-frame callback owns its buffer only for the callback duration; copy it if it must outlive the call.
+- A stateful decoder must reject a missing/broken base chain and request a key frame.
+- Slow MJPEG clients receive the newest retained JPEG, not an unbounded queue of old frames.
+- Non-loopback MJPEG requires explicit remote enablement, TLS, and bearer authentication.
+
+When diagnosing recovery, attach the new raw source atomically and verify that a late MJPEG consumer receives a frame
+from the new generation.
+
+## WebDriver diagnosis
+
+Use the lowest test rung that demonstrates the problem:
+
+1. unit tests for capability merging, JSON/error mapping, and session state;
+2. loopback HTTP with a fake `AutomationBackend`;
+3. Selenium `RemoteWebDriver` against the real endpoint;
+4. in-process CEF through `cef4j-inprocess-webdriver`;
+5. packaged CEF through `cef4j-remote-webdriver`;
+6. pinned WPT/wdspec cases.
+
+The endpoint automates packaged CEF and does not use a system Chrome installation or ChromeDriver. A missing command
+must return the W3C `unsupported operation` error; a silent success is a protocol defect. On runtime-server crash, fail
+the active command and follow the WebDriver session policy tracked in [PLAN.md](PLAN.md).
+
+## Platform notes
+
+### Linux
+
+Always isolate native/UI tests:
+
+```bash
+xvfb-run -a ./mvnw -pl '<modules>' -am test
+```
+
+CEF startup applies `noSandbox` and the no-sandbox flags needed by this embedding. Container/tool sandboxes can still
+cause false negatives; reproduce on the host's private Xvfb before changing code. Prefer software rendering when the
+machine has no usable GPU.
+
+CI and release builds set `CMAKE_SYSROOT` to `sysroot/out/<arch>`. If CMake reports missing standard headers or links
+against runner libraries, confirm the matching tarball was prepared with `sysroot/manage.sh prepare <arch>` and that
+the configure log names `cmake/toolchains/linux-<arch>.cmake` plus a sysroot GCC install directory. Delete only the
+affected module's `target/cmake-build` before reconfiguring; CMake does not change toolchains in an existing cache.
+
+The cache key includes OS, runner architecture, target architecture, and `sysroot/Dockerfile` hash. RISC-V uses
+`Dockerfile.ubuntu` and is intentionally outside required CI. PowerPC is not carried in this repository.
+
+### macOS
+
+The Java `main` thread is not necessarily OS Thread 0. Current cef4j OSR startup dispatches `cef_initialize()` to
+Thread 0 via GCD, sets `externalMessagePump=1`, and installs a CFRunLoop timer there to call
+`cef_do_message_loop_work()`. Shutdown is also dispatched to Thread 0. Do not pass `-XstartOnFirstThread`; it conflicts
+with JavaFX/AWT startup patterns and cef4j does not require it.
+
+CEF subprocess Mach-port rendezvous derives its service name from the bundle identifier. A bare helper executable and
+the JVM bundle can otherwise disagree. `bundle_fix_mac.mm` makes both sides see the cef4j identifier. If subprocesses
+start but cannot rendezvous, inspect that fix and the effective bundle identifiers before blaming transport IPC.
+
+`multiThreadedMessageLoop=1` is invalid for this macOS embedding. Use the defaults returned by `Cef.osrLaunchArgs()`.
+The subprocess `CefApp` must be heap allocated because CEF may release it after `cef_execute_process()` returns.
+
+JavaFX/Swing tests need Window Server access. SSH-only sessions should skip UI tests rather than hang; use an attached
+GUI agent for actual rendering coverage.
+
+### Windows
+
+The in-process CEF loop runs on a cef4j-managed daemon thread. The portable local runtime-server client uses standard
+Java file I/O over `\\.\pipe\...` and does not load a JNI socket library. Verify pipe name agreement and access control
+when launch succeeds but connection does not.
+
+Headless SSH/RDP environments can deny DirectComposition or GPU access. Reproduce with software rendering and an
+interactive desktop before classifying display-composition warnings as product failures.
+
+## Warnings that may be environmental
+
+Treat a warning as benign only when the relevant assertions, rendering, and shutdown all succeed. Examples seen in
+headless/platform runs include Linux descriptor lookup messages, Windows DirectComposition access-denied messages,
+macOS password-encryption/keychain availability messages, and newer-JDK native-access warnings. Capture them in a test
+report; do not globally suppress a new warning until its source and Java 11 implications are understood.
+
+## Cleanup after interrupted runs
+
+First confirm no build or test process is active. Remove only narrowly identified stale artifacts: a dedicated test
+profile/cache, an orphaned Unix socket, or generation-specific shared-frame files. In-process native cache removal is
+recoverable because it is re-extracted on next use:
+
+```bash
+rm -rf /tmp/cef4j-cache
+```
+
+Do not recursively remove broad temp, workspace, or user-home paths. Preserve logs until the failure is understood.

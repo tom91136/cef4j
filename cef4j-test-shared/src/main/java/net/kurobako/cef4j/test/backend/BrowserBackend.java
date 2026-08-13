@@ -1,6 +1,8 @@
 package net.kurobako.cef4j.test.backend;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -10,8 +12,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Discovery: implementations are registered via Java's {@link java.util.ServiceLoader}; the {@code @MethodSource}
  * for parameterised tests calls {@link #discover()} which collects whatever's on the test classpath. The
- * {@code cef4j-osr-jfx} module's test scope provides {@code NativeBrowserBackend}; the future {@code cef4j-ipc-jfx}
- * test scope provides {@code IpcBrowserBackend}.
+ * {@code cef4j-inprocess-jfx} module's test scope provides {@code NativeBrowserBackend}; the future
+ * {@code cef4j-remote-jfx} test scope provides {@code RemoteCefBrowserBackend}.
  */
 public interface BrowserBackend {
 
@@ -25,6 +27,12 @@ public interface BrowserBackend {
     /** True if this backend can run on the current OS / display server / available binaries. */
     boolean isAvailable();
 
+    /** Optional behaviours that shared contracts may exercise without weakening their assertions. */
+    @Nonnull
+    default Set<Capability> capabilities() {
+        return Collections.emptySet();
+    }
+
     /**
      * Open a browser session. The implementation handles whatever lifecycle is needed: in-process CEF init for
      * {@code native}, helper subprocess + ZMQ session for {@code ipc}. Closing the session releases all backend state —
@@ -32,6 +40,10 @@ public interface BrowserBackend {
      */
     @Nonnull
     BrowserSession openSession(@Nonnull SessionConfig config);
+
+    enum Capability {
+        VIEWPORT_RESIZE
+    }
 
     /**
      * Implementation-defined startup configuration. Captures everything the backends share without leaking

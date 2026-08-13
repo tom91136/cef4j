@@ -402,13 +402,14 @@ public final class SwingBrowserApp {
                             if (b == null) return;
                             browser = b;
                             SwingUtilities.invokeLater(() -> {
-                                surface.setBrowser(b);
+                                surface.browser(b);
                                 b.getHost().ifPresent(host -> host.setFocus(true));
                                 surface.requestFocusInWindow();
                             });
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"}) // v132+ overload
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
+                        }) // v132+ overload
                         public boolean onBeforePopup(
                                 @javax.annotation.Nullable CefBrowser b,
                                 @javax.annotation.Nullable CefFrame frame,
@@ -431,7 +432,7 @@ public final class SwingBrowserApp {
                             return onBeforePopupCompat(targetUrl);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
                         }) // v109/v116/v117-v131 overload
                         public boolean onBeforePopup(
                                 @javax.annotation.Nullable CefBrowser b,
@@ -542,7 +543,7 @@ public final class SwingBrowserApp {
                             });
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
                         }) // v109/v116 long cursor overload
                         public boolean onCursorChange(
                                 @javax.annotation.Nullable CefBrowser b,
@@ -552,7 +553,7 @@ public final class SwingBrowserApp {
                             return onCursorChangeCompat(type);
                         }
 
-                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable"
+                        @SuppressWarnings({"MissingOverride", "UnusedMethod", "UnusedVariable", "EffectivelyPrivate"
                         }) // v117+ int cursor overload
                         public boolean onCursorChange(
                                 @javax.annotation.Nullable CefBrowser b,

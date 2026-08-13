@@ -22,10 +22,10 @@ enum FieldType {
     */
   case StringList
 
-  /** Wire-encoded as a 4-byte little-endian id. The helper side maintains a `HandleTable` mapping ids back to
+  /** Wire-encoded as a 4-byte little-endian id. The runtime server side maintains a `HandleTable` mapping ids back to
     * ref-counted CEF struct pointers; the JVM side wraps the id in a typed `RemoteHandle` value object.
     *
-    * Lifetime: this slice doesn't yet emit retain/release messages; handles stay valid until the helper exits.
+    * Lifetime: this slice doesn't yet emit retain/release messages; handles stay valid until the runtime server exits.
     * Refcounted lifecycle is a planned follow-up.
     */
   case RemoteHandle
@@ -53,13 +53,13 @@ case class MessageSpec(
   *
   * One `FacadeSpec` corresponds to one CEF struct and lists every method that successfully derived a Request/Response
   * pair. Skipped methods (unsupported return types, etc.) are absent. `cefStructName` is the original C type (e.g.
-  * `cef_browser_t`); the helper-side dispatcher uses it to pick the right `HandleTable<T>` and to know the receiver
-  * pointer type when invoking methods.
+  * `cef_browser_t`); the runtime-server-side dispatcher uses it to pick the right `HandleTable<T>` and to know the
+  * receiver pointer type when invoking methods.
   */
 /** Which CEF process the methods on this facade run in. CEF restricts most APIs to a single process — `cef_browser_t`
   * is browser-process only, `cef_v8_value_t` is renderer-process only. The dispatcher needs to know so it can route
-  * requests correctly: browser-affinity methods are called directly on the helper's UI thread; renderer-affinity
-  * methods are relayed via `cef_process_message` to the renderer subprocess and dispatched there.
+  * requests correctly: browser-affinity methods are called directly on the runtime server's UI thread;
+  * renderer-affinity methods are relayed via `cef_process_message` to the renderer subprocess and dispatched there.
   */
 enum ProcessAffinity {
   case Browser
@@ -92,7 +92,9 @@ case class FacadeMethod(
     // (excluding self at index 0). Most entries are Explicit fields from explicitParams; BytesSize entries
     // synthesize the size companion that gets filtered from the wire — its value is `bytesField.size()` at
     // the call site. None defaults to "explicit params in declaration order" — what most methods need.
-    cCallArgs: Option[List[CCallArg]] = None
+    cCallArgs: Option[List[CCallArg]] = None,
+    /** Normalized Javadoc emitted by the mature CEF documentation pipeline. */
+    javadoc: String = ""
 )
 
 /** One argument in the C-call signature. Used by the dispatcher emitter to build the actual `receiver->fn(...)` call
@@ -111,12 +113,12 @@ object CCallArg {
 }
 
 /** A typed Java interface for a CEF `HandlerStruct` callback set (e.g. `cef_load_handler_t` → `CefLoadHandler`). Each
-  * method corresponds to one event class the helper can emit; the generated `register(...)` static wires
+  * method corresponds to one event class the runtime server can emit; the generated `register(...)` static wires
   * `session.on(messageId, decoder, ev -> handler.method(ev.fields()))` for every method.
   *
-  * Helper-side callback wiring (i.e. setting these handlers on a CefClient and forwarding to IPC events) is a separate
-  * concern. These interfaces are useful even before that lands: they document the API surface and let future helper
-  * code register typed callbacks immediately.
+  * Runtime-server-side callback wiring (i.e. setting these handlers on a CefClient and forwarding to IPC events) is a
+  * separate concern. These interfaces are useful even before that lands: they document the API surface and let future
+  * runtime-server code register typed callbacks immediately.
   */
 case class HandlerSpec(
     className: String,
@@ -125,10 +127,10 @@ case class HandlerSpec(
     methods: List[HandlerMethod]
 )
 
-/** A "JVM-owned visitor" — a HandlerStruct whose ownership lives on the JVM side and which CEF invokes. The helper
-  * synthesises a real `cef_X_t` whose single callback ships an event back to the JVM carrying a callbackId; the JVM
-  * dispatches by id to the registered Java visitor. Inverse of {@link HandlerSpec}, which is helper-owned and
-  * broadcasts events.
+/** A "JVM-owned visitor" — a HandlerStruct whose ownership lives on the JVM side and which CEF invokes. The runtime
+  * server synthesises a real `cef_X_t` whose single callback ships an event back to the JVM carrying a callbackId; the
+  * JVM dispatches by id to the registered Java visitor. Inverse of {@link HandlerSpec}, which is runtime-server-owned
+  * and broadcasts events.
   *
   * Detected from HandlerStructs that meet all of:
   *   - Used as an `ObjectPtr` method param in some facade (i.e. they cross the wire as method args).
@@ -144,12 +146,13 @@ case class JvmVisitorSpec(
     methodName: String,      // e.g. "visit"
     cefMethodName: String,   // e.g. "visit" (snake_case)
     params: List[FieldSpec], // visit args (excluding self), as wire fields
-    constStringByField: Map[String, Boolean] = Map.empty
+    constStringByField: Map[String, Boolean] = Map.empty,
+    javadoc: String = ""
 )
 
 /** A CEF by-value data struct (e.g. `cef_browser_settings_t`, `cef_window_info_t`). Unlike the ObjectStruct facades,
-  * these are pure data — no methods, no helper-side handle. They cross the wire as a flat list of typed fields encoded
-  * in the same little-endian layout as message bodies.
+  * these are pure data — no methods, no runtime-server-side handle. They cross the wire as a flat list of typed fields
+  * encoded in the same little-endian layout as message bodies.
   *
   * Initial codegen scope: only primitives (`I32` covers Int/UInt/Enum, `I64` covers Long, `Bool`) and `Utf8String`.
   * Structs that have any other field type are skipped from emission so we don't ship partial shims that misrepresent
@@ -173,11 +176,12 @@ case class HandlerMethod(
     // string param so the emitter picks the right qualifier.
     constStringByField: Map[String, Boolean] = Map.empty,
     // None for void callbacks (delivered as Kind::Event, fire-and-forget). Some(FieldType) for callbacks the
-    // helper needs a JVM-supplied return value from (DoClose returns int, OnBeforePopup returns int, etc.).
-    // Non-void variants ride the Kind::Intercept wire: helper sends the request, blocks on
+    // runtime server needs a JVM-supplied return value from (DoClose returns int, OnBeforePopup returns int, etc.).
+    // Non-void variants ride the Kind::Intercept wire: runtime server sends the request, blocks on
     // InterceptRegistry::awaitResponse, decodes the JVM-supplied response, returns to CEF.
     returnType: Option[FieldType] = None,
     // Class name for the response message when returnType is Some — symmetric to FacadeMethod's
     // requestClassName/responseClassName. The Request shape lives in eventClassName.
-    responseClassName: Option[String] = None
+    responseClassName: Option[String] = None,
+    javadoc: String = ""
 )

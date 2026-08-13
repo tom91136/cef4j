@@ -13,7 +13,7 @@
     <artifactId>cef4j-test-shared</artifactId>
     <packaging>jar</packaging>
     <name>cef4j-test-shared</name>
-    <description>Cross-backend test SPI for parameterising existing CEF tests across in-process and IPC backends</description>
+    <description>Cross-backend test SPI for parameterising existing CEF tests across in-process and Remote CEF backends</description>
 
     <dependencies>
         <!-- This module is a test-support library: classes are placed in `main` scope (not `test`) so consumer
@@ -29,11 +29,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.jupiter.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

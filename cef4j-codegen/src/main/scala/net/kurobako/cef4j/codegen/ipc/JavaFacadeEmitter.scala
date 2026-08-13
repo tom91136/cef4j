@@ -50,7 +50,7 @@ object JavaFacadeEmitter {
        |
        |/**
        | * Typed facade for {@code ${spec.cefStructName}}, dispatching through a {@link CefSession}.
-       | * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a helper-side
+       | * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
        | * ref-counted CEF object.
        | */
        |public final class $cls {
@@ -73,9 +73,10 @@ object JavaFacadeEmitter {
        |""".stripMargin
   }
 
-  /** Sends a `ReleaseHandleRequest` keyed by the facade's CEF struct name; the helper's `dispatchRelease` routes to the
-    * matching `tables::X.release(id)`. After this future completes, the helper-side handle is gone and any subsequent
-    * method call on this facade will fail with "no receiver". Caller is responsible for not double-releasing.
+  /** Sends a `ReleaseHandleRequest` keyed by the facade's CEF struct name; the runtime server's `dispatchRelease`
+    * routes to the matching `tables::X.release(id)`. After this future completes, the runtime-server-side handle is
+    * gone and any subsequent method call on this facade will fail with "no receiver". Caller is responsible for not
+    * double-releasing.
     *
     * Named `releaseHandle()` rather than `close()` because some CEF facades (`cef_window_t`, `cef_xml_reader_t`,
     * `cef_zip_reader_t`) already define a `close()` C-API method and we mustn't shadow them.
@@ -85,8 +86,8 @@ object JavaFacadeEmitter {
       // Renderer-affinity handles live in the renderer subprocess's `tables::X`, not the browser's. Plain
       // ReleaseHandleRequest dispatches in the browser and would silently no-op. RendererReleaseHandleRequest
       // carries the frame so the browser-side relay ships it to the right renderer; the renderer-side
-      // helper turns it into a dispatchRelease against its own table state.
-      s"""    /** Releases the helper-side handle this facade points at. Routed via the renderer relay since
+      // runtime server turns it into a dispatchRelease against its own table state.
+      s"""    /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
          |      * ${spec.cefStructName} only exists in the renderer subprocess's table state. */
          |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
          |        return session
@@ -96,7 +97,7 @@ object JavaFacadeEmitter {
          |            .thenApply(r -> null);
          |    }""".stripMargin
     else
-      s"""    /** Releases the helper-side handle this facade points at. Subsequent method calls on this instance
+      s"""    /** Releases the runtime-server-side handle this facade points at. Subsequent method calls on this instance
          |      * will fail with an empty / null-receiver response. */
          |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
          |        return session
@@ -197,7 +198,11 @@ object JavaFacadeEmitter {
         case _ => s"${javaParamType(p.ty)} ${p.name}"
       }
     }.mkString(", ")
-    s"""    public $returnType ${m.methodName}($paramAnnots) {
+    val methodDoc =
+      if (m.javadoc.nonEmpty) m.javadoc.linesIterator.mkString("\n") + "\n"
+      else s"""    /** Dispatches {@code ${m.cefMethodName}} to the runtime server. */
+              |""".stripMargin
+    s"""$methodDoc    public $returnType ${m.methodName}($paramAnnots) {
        |        return session
        |            .request(new ${m.requestClassName}($ctorArgs), ${m.responseClassName}.DECODER)
        |            $mapperSuffix;

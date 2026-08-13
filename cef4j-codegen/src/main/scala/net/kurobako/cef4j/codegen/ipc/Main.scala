@@ -1,15 +1,19 @@
 package net.kurobako.cef4j.codegen.ipc
 
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import scala.jdk.StreamConverters.*
 
+import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.CHeaderParser
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.DocComments
+import net.kurobako.cef4j.codegen.HeaderMetadataIndex
+import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Preprocessor
+import net.kurobako.cef4j.codegen.namedStruct
+import net.kurobako.cef4j.codegen.passes.InitialiseDocContext
 import net.kurobako.cef4j.codegen.{Config => CodegenConfig}
 
 /** IPC codegen entry point. Hand-written specs for now; later sessions add a CEF AST-driven derivation.
@@ -33,9 +37,17 @@ object Main {
         ) =
       cfg.cefInclude match {
         case Some(inc) => deriveFromCef(inc, cfg.compilerId, cfg.javaPackage, cfg.cefApiVersionRaw)
-        case None      => (Nil, Nil, Nil, Map.empty, Nil, Nil)
+        case None      =>
+          (
+            List.empty[MessageSpec],
+            List.empty[FacadeSpec],
+            List.empty[HandlerSpec],
+            Map.empty[String, String],
+            List.empty[DataStructSpec],
+            List.empty[JvmVisitorSpec]
+          )
       }
-    // Visitor structs are JVM-owned — strip them from the helper-owned handler set so we don't double-emit a
+    // Visitor structs are JVM-owned — strip them from the runtime-server-owned handler set so we don't double-emit a
     // dead "broadcast" forwarder + a JVM-visitor synthetic for the same struct.
     val visitorStructs = astJvmVisitors.map(_.cefStructName).toSet
     val astHandlers    = astHandlersAll.filterNot(h => visitorStructs.contains(h.cefStructName))
@@ -131,8 +143,8 @@ object Main {
         write(outCpp.resolve(s"${ds.className}.h"), CppEmitter.emit(asMessage))
       }
       // Dispatcher header is only meaningful when AST facades are available (i.e. --cef-include was passed); a
-      // helper running with hand-written specs only doesn't need a generated dispatcher. Emit relative paths
-      // (e.g. `include/capi/cef_browser_capi.h`, `include/capi/views/cef_box_layout_capi.h`) so the helper's
+      // runtime server running with hand-written specs only doesn't need a generated dispatcher. Emit relative paths
+      // (e.g. `include/capi/cef_browser_capi.h`, `include/capi/views/cef_box_layout_capi.h`) so the runtime server's
       // `-I${CEF_ROOT}` lands on them correctly.
       if (facades.nonEmpty) {
         val capiHeaders = cfg.cefInclude.toList.flatMap { inc =>
@@ -222,14 +234,7 @@ object Main {
     n
   }
 
-  private def write(target: Path, source: String): Unit =
-    Files.write(
-      target,
-      source.getBytes(StandardCharsets.UTF_8),
-      StandardOpenOption.CREATE,
-      StandardOpenOption.TRUNCATE_EXISTING,
-      StandardOpenOption.WRITE
-    )
+  private def write(target: Path, source: String): Unit = AtomicFiles.writeString(target, source)
 
   private case class Config(
       outJava: Option[Path] = None,
@@ -250,7 +255,7 @@ object Main {
         case s"--compiler=$id"         => cfg.copy(compilerId = id)
         case s"--cef-api-version=$raw" => cfg.copy(cefApiVersionRaw = Some(raw))
         case other                     =>
-          System.err.println(s"Unknown argument: $other"); cfg
+          throw new IllegalArgumentException(s"Unknown argument: $other")
       }
     }
 
@@ -259,8 +264,8 @@ object Main {
     *
     * When {@code cefApiVersionRaw} is provided, it gets normalised (146 → 14600 etc.) and forwarded to the preprocessor
     * as a `CEF_API_VERSION=NNNNN` define so that version-gated `#if CEF_API_ADDED(...)` blocks match the
-    * CEF_API_VERSION the helper compiles against. Without this, the codegen sees experimental methods that aren't
-    * actually present in the helper's struct layout, leading to "no member named X" compile failures.
+    * CEF_API_VERSION the runtime server compiles against. Without this, the codegen sees experimental methods that
+    * aren't actually present in the runtime server's struct layout, leading to "no member named X" compile failures.
     */
   private def deriveFromCef(
       cefInclude: Path,
@@ -300,20 +305,68 @@ object Main {
     // because the void* stays as OpaquePtr (not a wire-supported type).
     val decls: List[CefDecl] = CHeaderParser.promoteBufferParams(rawDecls)
 
+    // Reuse the same metadata index and normalization pipeline as the in-process bindings. The remote facade and
+    // handler APIs are another projection of the same CEF headers, so throwing away those comments here made the two
+    // public surfaces needlessly different and lost source links, thread notes and cef_meta semantics.
+    val metadata                           = HeaderMetadataIndex(cefInclude)
+    given ipcNamingContext: Naming.Context = Naming.Context.fromCppClassNames(
+      metadata.cppClassNames,
+      metadata.deriveCompoundSegments(cefInclude),
+      packageName
+    )
+    val structNames                          = decls.flatMap(_.namedStruct).toSet
+    val baseDocs                             = DocComments.withClassNames(InitialiseDocContext(cefInclude), structNames)
+    given ipcDocContext: DocComments.Context = DocComments.withMethodSignatures(baseDocs, decls)
+    val methodDocs: Map[(String, String), String] = decls.flatMap {
+      case d: CefDecl.ObjectStruct =>
+        d.fns.map(fn =>
+          (d.name, fn.name) -> remoteSafeDoc(DocComments.forMethod(fn, metadata.docs, d.sourceHeader, "", d.name))
+        )
+      case d: CefDecl.HandlerStruct =>
+        d.fns.map(fn =>
+          (d.name, fn.name) -> remoteSafeDoc(DocComments.forMethod(fn, metadata.docs, d.sourceHeader, "", d.name))
+        )
+      case _ => Nil
+    }.filter(_._2.nonEmpty).toMap
+
     // Resolve data structs first so we can pass the known set to the message/facade derivers. They use it
     // to skip methods whose params reference a struct the data-struct deriver couldn't emit (cef_cookie_t,
     // cef_key_event_t, etc. — they have nested data structs / char16 fields the overlay deriver doesn't
     // support yet). Without this filter the dispatcher would emit `#include "Cookie.h"` for an overlay we
-    // never wrote, breaking the helper build.
+    // never wrote, breaking the runtime server build.
     val dataStructs      = SpecDeriver.deriveDataStructs(decls, packageName)
     val knownDataStructs = dataStructs.map(_.cefStructName).toSet
     (
       SpecDeriver.derive(decls, packageName, knownDataStructs),
-      SpecDeriver.deriveFacades(decls, packageName, knownDataStructs),
-      SpecDeriver.deriveHandlers(decls, packageName, knownDataStructs),
+      SpecDeriver.deriveFacades(decls, packageName, knownDataStructs, methodDocs),
+      SpecDeriver.deriveHandlers(decls, packageName, knownDataStructs, methodDocs),
       SpecDeriver.deriveClientGetters(decls),
       dataStructs,
-      SpecDeriver.deriveJvmVisitors(decls, packageName, knownDataStructs)
+      SpecDeriver.deriveJvmVisitors(decls, packageName, knownDataStructs, methodDocs)
+    )
+  }
+
+  /** Inline links emitted for the JNI projection carry JNI parameter types. The remote projection deliberately uses
+    * wire types instead, and some facade names omit the Cef prefix. Preserve the reference as code without publishing a
+    * link to a signature that does not exist in this projection; external CEF source links remain untouched.
+    */
+  private def remoteSafeDoc(doc: String): String = {
+    val Link = """\{@link\s+([^\s}]+)(?:\s+[^}]*)?\}""".r
+    Link.replaceAllIn(
+      doc,
+      matched => {
+        val target       = matched.group(1)
+        val hash         = target.indexOf('#')
+        val rawClassName = if (hash >= 0) target.substring(0, hash) else target
+        val className    = rawClassName.substring(rawClassName.lastIndexOf('.') + 1)
+        val member       =
+          if (hash < 0) ""
+          else {
+            val raw = target.substring(hash + 1)
+            "." + raw.takeWhile(_ != '(') + (if (raw.contains('(')) "()" else "")
+          }
+        s"{@code $className$member}"
+      }
     )
   }
 }

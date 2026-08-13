@@ -8,9 +8,9 @@ import net.kurobako.cef4j.codegen.Param
 /** Derives {@link MessageSpec}s by walking the CEF C API AST that {@code cef4j-codegen}'s parse pipeline already
   * produces. Mapping rules:
   *
-  *   - {@link CefDecl.HandlerStruct} method → event (no `self` field; helper → JVM, routed by messageId).
+  *   - {@link CefDecl.HandlerStruct} method → event (no `self` field; runtime server → JVM, routed by messageId).
   *   - {@link CefDecl.ObjectStruct} method → request (gets an explicit `self: RemoteHandle` first field so the
-  *     helper-side dispatcher can resolve the receiver).
+  *     runtime-server-side dispatcher can resolve the receiver).
   *   - Param types: scalar primitives ({@link CType.Int}/{@link CType.Long}/{@link CType.Bool}) → matching
   *     {@link FieldType}; {@link CType.JString} → Utf8String; pointers to cef_*_t structs ({@link CType.ObjectPtr},
   *     {@link CType.OutObjectPtr}, raw {@link CType.Ptr}, {@link CType.ConstDataStructPtr}) →
@@ -61,13 +61,16 @@ object SpecDeriver {
   def deriveHandlers(
       decls: List[CefDecl],
       packageName: String,
-      knownDataStructs: Set[String] = Set.empty
+      knownDataStructs: Set[String] = Set.empty,
+      methodDocs: Map[(String, String), String] = Map.empty
   ): List[HandlerSpec] = {
     val byStruct = scala.collection.mutable.LinkedHashMap.empty[String, List[HandlerMethod]]
     decls.foreach {
       case h: CefDecl.HandlerStruct =>
         val structPrefix = toCamelCase(stripCefPrefix(h.name))
-        val methods      = h.fns.flatMap(deriveHandlerMethod(structPrefix, _, knownDataStructs))
+        val methods      = h.fns.flatMap(fn =>
+          deriveHandlerMethod(structPrefix, fn, knownDataStructs, methodDocs.getOrElse((h.name, fn.name), ""))
+        )
         if (methods.nonEmpty) {
           val existing = byStruct.getOrElse(h.name, Nil)
           if (existing.isEmpty) byStruct.put(h.name, methods)
@@ -134,16 +137,17 @@ object SpecDeriver {
   }
 
   /** Walks every facade and collects the cef struct names that appear as RemoteHandle params. These are the candidates
-    * for "JVM-owned visitor" treatment — handler structs that the JVM provides to the helper as method args (the helper
-    * synthesises a real cef_X_t and routes its callback back to JVM). Compare with {@link deriveHandlers}: that's for
-    * HandlerStructs the helper owns and broadcasts events from.
+    * for "JVM-owned visitor" treatment — handler structs that the JVM provides to the runtime server as method args
+    * (the runtime server synthesises a real cef_X_t and routes its callback back to JVM). Compare with
+    * {@link deriveHandlers}: that's for HandlerStructs the runtime server owns and broadcasts events from.
     *
     * Cross-references with HandlerStructs to filter to single-void-method shapes that look like visitors.
     */
   def deriveJvmVisitors(
       decls: List[CefDecl],
       packageName: String,
-      knownDataStructs: Set[String] = Set.empty
+      knownDataStructs: Set[String] = Set.empty,
+      methodDocs: Map[(String, String), String] = Map.empty
   ): List[JvmVisitorSpec] = {
     // Step 1: find every cef struct name passed as an ObjectPtr param to any ObjectStruct method.
     val paramStructs: Set[String] = decls.collect {
@@ -201,7 +205,8 @@ object SpecDeriver {
                 methodName = snakeToCamel(fn.name),
                 cefMethodName = fn.name,
                 params = params,
-                constStringByField = constStrings
+                constStringByField = constStrings,
+                javadoc = methodDocs.getOrElse((h.name, fn.name), "")
               ))
             }
           }
@@ -210,8 +215,8 @@ object SpecDeriver {
   }
 
   /** Walks `cef_client_t`'s methods (which all look like `get_X_handler` returning `cef_X_handler_t*`) and returns a
-    * mapping from `cef_X_handler_t` → `get_X_handler` so the helper-side `wireClient` can bind every known forwarder.
-    * Note: `cef_client_t` is a HandlerStruct (not an ObjectStruct), and its methods have non-void return so
+    * mapping from `cef_X_handler_t` → `get_X_handler` so the runtime-server-side `wireClient` can bind every known
+    * forwarder. Note: `cef_client_t` is a HandlerStruct (not an ObjectStruct), and its methods have non-void return so
     * {@link deriveHandlers} filters them out — we have to read decls directly here.
     */
   def deriveClientGetters(decls: List[CefDecl]): Map[String, String] =
@@ -228,18 +233,19 @@ object SpecDeriver {
     }.getOrElse(Map.empty)
 
   /** Mirrors {@link deriveOne} for HandlerStructs: a callback's params become Event-message fields; methods with
-    * unsupported types are skipped. Also records `handleStructByField` so a helper-side forwarder can pick the right
-    * `HandleTable<T>` to look up each pointer param.
+    * unsupported types are skipped. Also records `handleStructByField` so a runtime-server-side forwarder can pick the
+    * right `HandleTable<T>` to look up each pointer param.
     *
     * Void-returning callbacks ride Kind::Event (fire-and-forget). Non-void callbacks (`int on_before_popup(...)`,
-    * `int do_close(...)`) ride Kind::Intercept — helper sends the request, blocks waiting for the JVM-supplied return
-    * value, then hands it back to CEF. Currently {@link FieldType.Bool} is the only supported return type since CEF's
-    * non-void handler callbacks are overwhelmingly `int`-as-bool flow-control signals.
+    * `int do_close(...)`) ride Kind::Intercept — runtime server sends the request, blocks waiting for the JVM-supplied
+    * return value, then hands it back to CEF. Currently {@link FieldType.Bool} is the only supported return type since
+    * CEF's non-void handler callbacks are overwhelmingly `int`-as-bool flow-control signals.
     */
   private def deriveHandlerMethod(
       structPrefix: String,
       fn: FnPtr,
-      knownDataStructs: Set[String]
+      knownDataStructs: Set[String],
+      javadoc: String
   ): Option[HandlerMethod] = {
     val returnType: Option[FieldType] = fn.ret match {
       case CType.Void                             => None
@@ -275,20 +281,24 @@ object SpecDeriver {
       handleStructByField = handles,
       constStringByField = constStrings,
       returnType = returnType,
-      responseClassName = returnType.map(_ => structPrefix + opName + "Response")
+      responseClassName = returnType.map(_ => structPrefix + opName + "Response"),
+      javadoc = javadoc
     ))
   }
 
   def deriveFacades(
       decls: List[CefDecl],
       packageName: String,
-      knownDataStructs: Set[String] = Set.empty
+      knownDataStructs: Set[String] = Set.empty,
+      methodDocs: Map[(String, String), String] = Map.empty
   ): List[FacadeSpec] = {
     val byStruct = scala.collection.mutable.LinkedHashMap.empty[String, List[FacadeMethod]]
     decls.foreach {
       case o: CefDecl.ObjectStruct =>
         val structPrefix = toCamelCase(stripCefPrefix(o.name))
-        val methods      = o.fns.flatMap(deriveFacadeMethod(structPrefix, _, knownDataStructs))
+        val methods      = o.fns.flatMap(fn =>
+          deriveFacadeMethod(structPrefix, fn, knownDataStructs, methodDocs.getOrElse((o.name, fn.name), ""))
+        )
         if (methods.nonEmpty) byStruct.put(o.name, methods)
       case _ => ()
     }
@@ -343,7 +353,8 @@ object SpecDeriver {
   private def deriveFacadeMethod(
       structPrefix: String,
       fn: FnPtr,
-      knownDataStructs: Set[String]
+      knownDataStructs: Set[String],
+      javadoc: String
   ): Option[FacadeMethod] = {
     val methodName = snakeToCamel(fn.name)
     if (ReservedFacadeMethodNames.contains(methodName)) return None
@@ -353,7 +364,7 @@ object SpecDeriver {
     }
     // Skip methods with non-const Buffer params: CEF treats those as output buffers (writable, caller-
     // allocated), which doesn't fit the wire model (we'd need a way to ship the result back, but the buffer
-    // is already on the JVM side from the request decode). Inputs (const void*) are fine — the helper just
+    // is already on the JVM side from the request decode). Inputs (const void*) are fine — the runtime server just
     // hands the bytes to the method as a read-only view.
     val hasOutputBuffer = visible.exists {
       case Param(_, CType.Buffer(_), isConst, _) => !isConst
@@ -382,7 +393,7 @@ object SpecDeriver {
     val opName              = toCamelCase(fn.name)
     // For methods with Buffer/BufferSize companion pairs, build the original C-arg ordering so the dispatcher
     // can emit the call with size and bytes at their actual positions. The wire only carries Bytes; the
-    // BufferSize companion gets re-derived from the byte vector's length on the helper side.
+    // BufferSize companion gets re-derived from the byte vector's length on the runtime server side.
     val cCallArgs: Option[List[CCallArg]] =
       if (fn.params.exists(p => p.typ.isInstanceOf[CType.Buffer] || p.typ.isInstanceOf[CType.BufferSize])) {
         // Map each param's snake_case original name to its safeFieldName-camelCase to match what's in
@@ -403,12 +414,13 @@ object SpecDeriver {
       explicitParams = explicitParams,
       resultField = resultField,
       handleStructByField = handleStructByField,
-      cCallArgs = cCallArgs
+      cCallArgs = cCallArgs,
+      javadoc = javadoc
     ))
   }
 
   /** Variant of {@link toFieldSpec} that also returns the original C struct type for RemoteHandle fields, so the
-    * helper-side dispatcher can pick the right `HandleTable<T>`.
+    * runtime-server-side dispatcher can pick the right `HandleTable<T>`.
     */
   private def toFieldSpecWithStruct(p: Param, knownDataStructs: Set[String]): Option[(FieldSpec, Option[String])] =
     toFieldTypeWithStruct(p.typ, knownDataStructs).map { case (t, structOpt) =>
@@ -507,7 +519,7 @@ object SpecDeriver {
       }
     } else {
       // Handler callback. Void returns emit a single Event message (fire-and-forget). Non-void Bool returns
-      // also emit a paired Response — these ride the Kind::Intercept wire: helper sends the Event, blocks for
+      // also emit a paired Response — these ride the Kind::Intercept wire: runtime server sends the Event, blocks for
       // a Response, returns the bool to CEF. Other non-void return shapes are still skipped here.
       val name      = baseName + "Event"
       val eventSpec = MessageSpec(name, packageName, stableId(name), explicitFields)
@@ -562,7 +574,7 @@ object SpecDeriver {
       Some(FieldType.RemoteHandle)
     case CType.ConstDataStructPtr(name) if knownDataStructs.isEmpty || knownDataStructs.contains(name) =>
       // By-value settings/info structs. Wire shape: the data struct's own encodedSize/encodeInto rides
-      // inline; helper-side dispatcher fills a stack-local cef_X_t before the C call.
+      // inline; runtime-server-side dispatcher fills a stack-local cef_X_t before the C call.
       Some(FieldType.DataStruct(name))
     case CType.DataStruct(name) if knownDataStructs.isEmpty || knownDataStructs.contains(name) =>
       // Raw by-value return — `cef_rect_t (*get_bounds)(...)`. Wire shape is the same overlay; dispatcher
@@ -580,7 +592,7 @@ object SpecDeriver {
       // and gets re-synthesized at the call site via FacadeMethod.cCallArgs.
       Some(FieldType.Bytes)
     case CType.StringList =>
-      // CEF's cef_string_list_t — wire shape is int32 count + count UTF-8 strings. Helper-side dispatcher
+      // CEF's cef_string_list_t — wire shape is int32 count + count UTF-8 strings. Runtime-server-side dispatcher
       // converts std::vector<std::string> into a transient cef_string_list_t before/after the C call.
       Some(FieldType.StringList)
     case _ => None

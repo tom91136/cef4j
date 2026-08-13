@@ -29,19 +29,19 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-osr-swing</artifactId>
+            <artifactId>cef4j-inprocess-swing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-osr-jfx</artifactId>
+            <artifactId>cef4j-inprocess-jfx</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
             <version>${project.version}</version>
-            <classifier>${cef.platform}</classifier>
+            <classifier>${cef.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>

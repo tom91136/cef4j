@@ -1,173 +1,239 @@
 name: CI
 
-# Gated: only runs when manually triggered from the Actions tab.
-# Re-enable push/PR triggers by restoring the block below when ready.
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [ main ]
-  #   tags: [ 'v*' ]
-  # pull_request:
-  #   branches: [ main ]
 
-# Native artifacts must stay portable: libcef4j.so links only against glibc, CEF, and the
-# JVM — libstdc++/libgcc are linked statically, and symbols are hidden via the version
-# script. On Linux we build inside manylinux_2_28 (AlmaLinux 8 / glibc 2.28) so the shipped
-# shared object runs on any distro with glibc >= 2.28.
+permissions:
+  contents: read
 
-env:
-  CEF_146: '146.0.9+g3ca6a87+chromium-146.0.7680.165'
-  CEF_144: '144.0.19+g937f5c6+chromium-144.0.7559.246'
-  CEF_116: '116.0.27+gd8c85ac+chromium-116.0.5845.190'
-  CEF_109: '109.1.18+gf1c41e4+chromium-109.0.5414.120'
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+# Keep this matrix curated rather than multiplying every JDK, CEF, JavaFX, and OS.
+# JavaFX rows always override compile and test versions together. Java 11 is the
+# runtime/bytecode floor; Maven and Scala code generation intentionally run on 17+.
 jobs:
-
   linux:
-    name: linux / JDK ${{ matrix.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.javafx }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '11', '17', '21', '25' ]
-        cef:
-          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
-          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
-          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
-          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
-        javafx: [ '11.0.2', '17.0.15', '21.0.7', '25.0.2' ]
-        exclude:
-          # JavaFX N requires JDK >= N
-          - { java: '11', javafx: '17.0.15' }
-          - { java: '11', javafx: '21.0.7' }
-          - { java: '11', javafx: '25.0.2' }
-          - { java: '17', javafx: '21.0.7' }
-          - { java: '17', javafx: '25.0.2' }
-          - { java: '21', javafx: '25.0.2' }
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Cache Maven local repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: maven-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-
-            maven-linux-jdk${{ matrix.java }}-
-
-      - name: Cache CEF distribution
-        uses: actions/cache@v4
-        with:
-          path: .cef-dist
-          key: cef-dist-${{ matrix.cef.version }}
-
-      # The manylinux_2_28 image has no node/JS runtime, so actions/checkout and friends
-      # can't run inside it. Host ubuntu-latest handles checkout + cache; the build itself
-      # runs in the manylinux container via docker run.
-      - name: Build + test in manylinux_2_28
-        run: |
-          mkdir -p "${HOME}/.m2"
-          docker run --rm \
-            --network host \
-            -v "${GITHUB_WORKSPACE}:/work" \
-            -v "${HOME}/.m2:/root/.m2" \
-            -e JAVA_VER=${{ matrix.java }} \
-            -e CEF_VERSION=${{ matrix.cef.version }} \
-            -e CEF_API=${{ matrix.cef.api }} \
-            -e JAVAFX_VERSION=${{ matrix.javafx }} \
-            quay.io/pypa/manylinux_2_28_x86_64 \
-            bash /work/.github/ci/linux-build.sh
-
-      - name: Stage artifacts
-        if: github.event_name == 'push' && !env.ACT
-        shell: bash
-        run: |
-          mkdir -p staging
-          cp cef4j-api/target/cef4j-api-*.jar          staging/ 2>/dev/null || true
-          cp cef4j-native/target/cef4j-native-*.jar    staging/ 2>/dev/null || true
-          cp cef4j-platform/target/cef4j-platform-*.jar staging/ 2>/dev/null || true
-          cp cef4j-osr-swing/target/cef4j-osr-swing-*.jar staging/ 2>/dev/null || true
-          cp cef4j-osr-jfx/target/cef4j-osr-jfx-*.jar  staging/ 2>/dev/null || true
-          cp cef4j-sample/target/cef4j-sample-*.jar    staging/ 2>/dev/null || true
-          rm -f staging/*-sources.jar staging/*-javadoc.jar
-
-      - name: Upload artifacts
-        if: github.event_name == 'push' && !env.ACT
-        uses: actions/upload-artifact@v7
-        with:
-          name: cef4j-linux-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.javafx }}
-          path: staging/*.jar
-          if-no-files-found: error
-
-  desktop:
-    name: ${{ matrix.os }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.javafx }}
+    name: Linux ${{ matrix.arch }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, macos-14, macos-13 ]
-        java: [ '11', '17', '21', '25' ]
-        cef:
-          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
-          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
-          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
-          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
-        javafx: [ '11.0.2', '17.0.15', '21.0.7', '25.0.2' ]
-        exclude:
-          - { java: '11', javafx: '17.0.15' }
-          - { java: '11', javafx: '21.0.7' }
-          - { java: '11', javafx: '25.0.2' }
-          - { java: '17', javafx: '21.0.7' }
-          - { java: '17', javafx: '25.0.2' }
-          - { java: '21', javafx: '25.0.2' }
-          # JavaFX 11 has no mac-aarch64 natives
-          - { os: 'macos-14', javafx: '11.0.2' }
+        include:
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', java11-smoke: 'true' }
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', java11-smoke: 'false' }
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '25', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '25.0.2', java11-smoke: 'false' }
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', java11-smoke: 'false' }
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', java11-smoke: 'false' }
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', java11-smoke: 'true' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', java11-smoke: 'false' }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', java11-smoke: 'false' }
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up JDK ${{ matrix.java }}
+      # The complete 4-version/6-platform archive set is about 4.9 GiB. Never
+      # cache .cef-dist itself: unpacked CEF trees would exceed the 10 GiB budget.
+      - id: cef-cache
+        name: Restore compressed CEF archive
+        uses: actions/cache/restore@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
+
+      - name: Fetch and validate CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true'
+        run: .github/ci/fetch-cef.sh '${{ matrix.cef-version }}' '${{ matrix.cef-platform }}'
+
+      # PR caches are deliberately read-only; otherwise public branch-scoped
+      # entries can evict the reusable default-branch cache.
+      - name: Save compressed CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
+
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          distribution: 'corretto'
-          java-version: ${{ matrix.java }}
-          cache: 'maven'
+          distribution: corretto
+          java-version: |
+            11
+            ${{ matrix.java }}
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Cache CEF distribution
-        uses: actions/cache@v4
+      - id: sysroot-cache
+        name: Restore AlmaLinux 8 sysroot
+        uses: actions/cache/restore@v5
         with:
-          path: .cef-dist
-          key: cef-dist-${{ matrix.os }}-${{ matrix.cef.version }}
+          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
+          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
+
+      - name: Build AlmaLinux 8 sysroot
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+        run: sysroot/manage.sh build ${{ matrix.arch }}
+
+      - name: Save AlmaLinux 8 sysroot
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
+          key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
+
+      - name: Prepare AlmaLinux 8 sysroot
+        run: sysroot/manage.sh prepare ${{ matrix.arch }}
+
+      - name: Install Linux build and runtime prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld cmake make binutils xvfb \
+            libgtk-3-0 libxss1 libnss3 libasound2 libcups2 \
+            libxcomposite1 libxdamage1 libxrandr2 libxtst6 \
+            libpango-1.0-0 libatk-bridge2.0-0 libdrm2 libgbm1
+
+      - name: Build and test against AlmaLinux 8 sysroot
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
+          CEF_VERSION: ${{ matrix.cef-version }}
+          CEF_API: ${{ matrix.cef-api }}
+          JAVAFX_VERSION: ${{ matrix.javafx }}
+          JAVAFX_TEST_VERSION: ${{ matrix.javafx }}
+          JAVA11_SMOKE: ${{ matrix.java11-smoke }}
+        run: .github/ci/linux-build.sh
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports-linux-${{ matrix.arch }}-jdk${{ matrix.java }}-cef${{ matrix.cef-api }}-jfx${{ matrix.javafx }}
+          path: '**/target/surefire-reports/**'
+          if-no-files-found: ignore
+          retention-days: 7
+
+  desktop:
+    name: ${{ matrix.label }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: 'Windows x64', os: 'windows-latest', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', javafx-tests: 'true', java11-smoke: 'true' }
+          - { label: 'Windows x64 current JDK', os: 'windows-latest', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '25', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '25.0.2', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'Windows x64', os: 'windows-latest', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'Windows x64', os: 'windows-latest', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'Windows x64', os: 'windows-latest', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: microsoft, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'true' }
+          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: microsoft, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
+          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: microsoft, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
+          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: microsoft, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
+          - { label: 'macOS Intel', os: 'macos-15-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', javafx-tests: 'true', java11-smoke: 'true' }
+          - { label: 'macOS Intel', os: 'macos-15-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS Intel', os: 'macos-15-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS Intel', os: 'macos-15-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS ARM', os: 'macos-15', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS ARM', os: 'macos-15', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS ARM', os: 'macos-15', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
+          - { label: 'macOS ARM', os: 'macos-15', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDKs
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: |
+            11
+            ${{ matrix.java }}
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - id: cef-cache
+        name: Restore compressed CEF archive
+        uses: actions/cache/restore@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
+
+      - name: Fetch and validate CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: .github/ci/fetch-cef.sh '${{ matrix.cef-version }}' '${{ matrix.cef-platform }}'
+
+      - name: Save compressed CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
 
       - name: Resolve dependencies
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: ./mvnw -B dependency:go-offline "-Dcef.version=${{ matrix.cef.version }}" "-Dcef.api.version=${{ matrix.cef.api }}" "-Djavafx.version=${{ matrix.javafx }}"
+          command: >-
+            ./mvnw -B dependency:go-offline
+            -DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server
+            "-Dcef.version=${{ matrix.cef-version }}"
+            "-Dcef.api.version=${{ matrix.cef-api }}"
+            "-Djavafx.version=${{ matrix.javafx }}"
+            "-Djavafx.test.version=${{ matrix.javafx }}"
 
-      - name: Build + test
-        run: ./mvnw -B verify "-Dcef.version=${{ matrix.cef.version }}" "-Dcef.api.version=${{ matrix.cef.api }}" "-Djavafx.version=${{ matrix.javafx }}"
+      # GitHub-hosted Windows and macOS runners are disposable VMs with their own
+      # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
+      - name: Build and test in isolated hosted desktop
+        if: matrix.javafx-tests == 'true'
+        run: >-
+          ./mvnw -B install
+          "-Dcef.version=${{ matrix.cef-version }}"
+          "-Dcef.api.version=${{ matrix.cef-api }}"
+          "-Djavafx.version=${{ matrix.javafx }}"
+          "-Djavafx.test.version=${{ matrix.javafx }}"
 
-      - name: Stage artifacts
-        if: github.event_name == 'push' && !env.ACT
+      # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
+      # complete reactor, then exercise every non-JavaFX module natively on ARM64.
+      - name: Build on Windows ARM without JavaFX runtime tests
+        if: matrix.javafx-tests == 'false'
         shell: bash
+        env:
+          CMAKE_GENERATOR_PLATFORM: ARM64
         run: |
-          mkdir -p staging
-          cp cef4j-api/target/cef4j-api-*.jar          staging/ 2>/dev/null || true
-          cp cef4j-native/target/cef4j-native-*.jar    staging/ 2>/dev/null || true
-          cp cef4j-platform/target/cef4j-platform-*.jar staging/ 2>/dev/null || true
-          cp cef4j-osr-swing/target/cef4j-osr-swing-*.jar staging/ 2>/dev/null || true
-          cp cef4j-osr-jfx/target/cef4j-osr-jfx-*.jar  staging/ 2>/dev/null || true
-          cp cef4j-sample/target/cef4j-sample-*.jar    staging/ 2>/dev/null || true
-          rm -f staging/*-sources.jar staging/*-javadoc.jar
+          ./mvnw -B install -DskipTests \
+            "-Dcef.version=${{ matrix.cef-version }}" \
+            "-Dcef.api.version=${{ matrix.cef-api }}" \
+            "-Djavafx.version=${{ matrix.javafx }}" \
+            "-Djavafx.test.version=${{ matrix.javafx }}"
+          ./mvnw -B test \
+            -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
+            "-Dcef.version=${{ matrix.cef-version }}" \
+            "-Dcef.api.version=${{ matrix.cef-api }}" \
+            "-Djavafx.version=${{ matrix.javafx }}" \
+            "-Djavafx.test.version=${{ matrix.javafx }}"
 
-      - name: Upload artifacts
-        if: github.event_name == 'push' && !env.ACT
+      - name: Java 11 runtime smoke
+        if: matrix.java11-smoke == 'true'
+        run: >-
+          ./mvnw -B
+          -pl cef4j-remote-core,cef4j-remote-recording-gson,cef4j-remote-recording-jackson,cef4j-remote-frame,cef4j-cdp,cef4j-cdp-gson,cef4j-cdp-jackson,cef4j-remote-cdp-gson,cef4j-remote-cdp-jackson,cef4j-webdriver,cef4j-webdriver-gson,cef4j-webdriver-jackson,cef4j-remote-webdriver
+          test -Djava11.runtime.smoke=true
+
+      - name: Upload test reports on failure
+        if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: cef4j-${{ matrix.os }}-jdk${{ matrix.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.javafx }}
-          path: staging/*.jar
-          if-no-files-found: error
+          name: reports-${{ matrix.os }}-cef${{ matrix.cef-api }}-jdk${{ matrix.java }}-jfx${{ matrix.javafx }}
+          path: '**/target/surefire-reports/**'
+          if-no-files-found: ignore
+          retention-days: 7

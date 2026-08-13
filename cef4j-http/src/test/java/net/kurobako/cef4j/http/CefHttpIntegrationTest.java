@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -36,7 +38,10 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(60)
 class CefHttpIntegrationTest {
 
-    @TempDir
+    // CEF owns files in this cache until the isolated fork exits. JUnit's default cleanup runs
+    // before process exit and races Chromium recreating SingletonSocket, so leave it to the CI
+    // worker's temporary-filesystem cleanup instead.
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 
@@ -48,7 +53,7 @@ class CefHttpIntegrationTest {
     @BeforeAll
     static void setup() throws Exception {
         SystemBootstrap.load();
-        if (Cef.INSTANCE.getState() != Cef.State.INITIALISED) {
+        if (Cef.INSTANCE.state() != Cef.State.INITIALISED) {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = cacheDir.toAbsolutePath().toString();
@@ -63,7 +68,7 @@ class CefHttpIntegrationTest {
             Cef.INSTANCE.initialise(settings, args);
         }
 
-        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
         server.createContext("/text", ex -> respond(ex, 200, "hello from fixture"));
         server.createContext("/missing", ex -> respond(ex, 404, "nope"));
         server.createContext("/echo", ex -> {

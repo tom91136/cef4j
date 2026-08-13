@@ -50,6 +50,7 @@ object CodegenPlatform {
       case "macosarm64"       => Some(CodegenPlatform.Mac)
       case "win" | "windows"  => Some(CodegenPlatform.Windows)
       case "windows64"        => Some(CodegenPlatform.Windows)
+      case "windowsarm64"     => Some(CodegenPlatform.Windows)
       case "auto" | "current" => Some(detectCurrent)
       case _                  => None
     }

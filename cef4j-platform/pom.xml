@@ -13,7 +13,7 @@
     <artifactId>cef4j-platform</artifactId>
     <packaging>pom</packaging>
     <name>cef4j-platform</name>
-    <description>CEF runtime binaries for ${cef.platform}</description>
+    <description>Platform-specific CEF runtime binaries</description>
 
     <build>
         <plugins>
@@ -50,6 +50,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <skip>${platform.assembly.skip}</skip>
                             <target>
                                 <mkdir dir="${project.build.directory}/file-list"/>
                                 <!-- Release files: Linux/Windows individual libs + macOS framework bundle -->
@@ -85,7 +86,8 @@
                                 <pathconvert pathsep="&#10;" property="resource.list" refid="resource.files">
                                     <map from="${cef.dist.dir}/Resources/" to=""/>
                                 </pathconvert>
-                                <echo file="${project.build.directory}/file-list/cef-runtime/file-list.txt">${release.list}
+                                <mkdir dir="${project.build.directory}/file-list/cef-runtime/${cef.platform}"/>
+                                <echo file="${project.build.directory}/file-list/cef-runtime/${cef.platform}/file-list.txt">${release.list}
 ${resource.list}</echo>
                             </target>
                         </configuration>
@@ -105,6 +107,7 @@ ${resource.list}</echo>
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <skipAssembly>${platform.assembly.skip}</skipAssembly>
                             <descriptors>
                                 <descriptor>src/assembly/platform.xml</descriptor>
                             </descriptors>
@@ -114,4 +117,5 @@ ${resource.list}</echo>
             </plugin>
         </plugins>
     </build>
+
 </project>

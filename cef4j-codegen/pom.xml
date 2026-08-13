@@ -20,6 +20,8 @@
              lowerings). Not worth chasing; NullAway + Error Prone only run on Java, so this module is
              linted via Scala's own compiler warnings. -->
         <spotbugs.skip>true</spotbugs.skip>
+        <!-- Scala 3.8 and the shaded code generator intentionally require Java 17. -->
+        <bytecode.check.skip>true</bytecode.check.skip>
     </properties>
 
     <dependencies>

@@ -28,7 +28,7 @@ object JavaDataStructEmitter {
        |/**
        | * Wire-format value type mirroring {@code ${spec.cefStructName}}. Fields are immutable; pass instances
        | * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
-       | * helper side and fills the matching {@code ${spec.cefStructName}} before invoking CEF.
+       | * runtime-server side and fills the matching {@code ${spec.cefStructName}} before invoking CEF.
        | */
        |public final class $cls {
        |
@@ -73,7 +73,7 @@ object JavaDataStructEmitter {
 
   /** A mutable builder. Default values: 0 / false / "" / RemoteHandle.NULL. Each setter returns the builder for chained
     * calls. CEF tends to use 0 / "" as a "use default" sentinel, so a `BrowserSettings.builder() .build()` instance
-    * hands the helper a request to use CEF's defaults for everything.
+    * hands the runtime server a request to use CEF's defaults for everything.
     */
   private def renderBuilder(spec: DataStructSpec): String = {
     val cls     = spec.className

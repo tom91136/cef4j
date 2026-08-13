@@ -30,9 +30,15 @@ cef4j-api/src/main/resources/native/*/
 
 # CEF distribution
 .cef-dist*/
+sysroot/out/
 
 # Metals / BSP
 .metals/
 .bsp/
 .bloop/
+.scala-build/
 *.log
+
+# Python tooling
+__pycache__/
+*.py[cod]

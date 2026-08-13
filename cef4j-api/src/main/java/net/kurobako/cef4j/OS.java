@@ -32,12 +32,12 @@ public final class OS {
     }
 
     /**
-     * Returns the CEF platform identifier (e.g. "linux64", "macosarm64", "windows64").
+     * Returns the CEF platform identifier (e.g. "linux64", "macosarm64", "windowsarm64").
      *
      * @return the platform string matching CEF binary distribution naming
      * @throws UnsupportedOperationException if the platform is not supported
      */
-    public static String getPlatform() {
+    public static String platform() {
         if (isLinux()) {
             if (isArm64()) return "linuxarm64";
             if (isAmd64()) return "linux64";
@@ -45,7 +45,8 @@ public final class OS {
             if (isArm64()) return "macosarm64";
             if (isAmd64()) return "macosx64";
         } else if (isWindows()) {
-            return "windows64";
+            if (isArm64()) return "windowsarm64";
+            if (isAmd64()) return "windows64";
         }
         throw new UnsupportedOperationException("Unsupported platform: " + OS_NAME + "/" + OS_ARCH);
     }

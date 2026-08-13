@@ -10,7 +10,7 @@ package net.kurobako.cef4j.codegen.ipc
   *   JvmCallbackTable<CefStringVisitor> visitors = new JvmCallbackTable<>();
   *   CefStringVisitor.route(session, visitors);
   *   int callbackId = visitors.register(text -> System.out.println(text));
-  *   frame.getSource(new RemoteHandle(callbackId));   // helper synthesises cef_string_visitor_t bound to id
+  *   frame.getSource(new RemoteHandle(callbackId));   // runtime server synthesises cef_string_visitor_t bound to id
   * }}}
   */
 object JavaJvmVisitorEmitter {
@@ -32,12 +32,15 @@ object JavaJvmVisitorEmitter {
        |/**
        | * Typed interface for {@code ${spec.cefStructName}}, a JVM-owned CEF visitor. JVM provides the implementation,
        | * passes a callbackId minted from a {@link JvmCallbackTable} as the visitor handle to a CEF method, and the
-       | * helper synthesises a real {@code ${spec.cefStructName}} that routes the callback back to the JVM.
+       | * runtime server synthesises a real {@code ${spec.cefStructName}} that routes the callback back to the JVM.
        | */
        |@FunctionalInterface
        |public interface $cls {
        |
-       |    /** Mirrors the {@code ${spec.cefMethodName}} callback on the CEF struct. */
+       |${
+        if (spec.javadoc.nonEmpty) spec.javadoc
+        else s"    /** Mirrors the {@code ${spec.cefMethodName}} callback on the CEF struct. */"
+      }
        |    void $methodName($params);
        |
        |    /**

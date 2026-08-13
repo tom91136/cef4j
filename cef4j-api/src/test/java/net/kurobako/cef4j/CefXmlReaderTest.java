@@ -39,8 +39,10 @@ class CefXmlReaderTest extends CefTestBase {
     static Stream<Named<BiFunction<byte[], Path, CefStreamReader>>> streamFactories() {
         return Stream.of(
                 Named.of("file", CefXmlReaderTest::createFileFactory),
-                Named.of("handler", (data, tmpDir) -> CefStreamReader.createForHandler(new ByteArrayReadHandler(data))
-                        .orElseThrow(() -> new AssertionError("createForHandler returned empty"))));
+                Named.of(
+                        "handler",
+                        (data, tmpDir) -> CefStreamReader.createForHandler(new ByteArrayReadHandler(data))
+                                .orElseThrow(() -> new AssertionError("createForHandler returned empty"))));
     }
 
     private static CefStreamReader createFileFactory(byte[] data, Path tmpDir) {

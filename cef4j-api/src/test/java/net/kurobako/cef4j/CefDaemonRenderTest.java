@@ -47,7 +47,7 @@ class CefDaemonRenderTest {
     @BeforeAll
     static void initCef() throws Exception {
         SystemBootstrap.load();
-        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) return;
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) return;
 
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
 

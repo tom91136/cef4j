@@ -23,7 +23,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 abstract class CefTestBase {
     // CleanupMode.NEVER: CEF holds files in the cache dir open until JVM exit (cef_shutdown
-    // is skipped on macOS, see MACOS_PORTING_NOTES.md), so JUnit's auto-cleanup throws
+    // is skipped on macOS; see the platform notes in DEBUG.md), so JUnit's auto-cleanup throws
     // DirectoryNotEmptyException at @AfterAll time. The OS cleans /tmp eventually.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init") // Populated by JUnit @TempDir before @Test methods run.
@@ -31,7 +31,7 @@ abstract class CefTestBase {
 
     static void initCef(List<String> additionalArgs) throws Exception {
         SystemBootstrap.load();
-        Cef.State state = Cef.INSTANCE.getState();
+        Cef.State state = Cef.INSTANCE.state();
         if (state == Cef.State.INITIALISED) return;
         if (state == Cef.State.SHUTTING_DOWN || state == Cef.State.TERMINATED) {
             throw new IllegalStateException("CEF is not re-initialisable in this JVM once shutdown has begun");

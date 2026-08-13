@@ -1,0 +1,313 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v-prefixed release tag to build
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  CEF_VERSION: '146.0.9+g3ca6a87+chromium-146.0.7680.165'
+  CEF_API: '146'
+  # Release artifacts compile against the oldest supported JavaFX API. Newer
+  # JavaFX lines are compatibility-tested in main.yaml, never used as the release baseline.
+  JAVAFX_VERSION: '13.0.2'
+
+jobs:
+  validate:
+    name: Validate release tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+      - id: version
+        name: Match tag to Maven version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          version=$(./mvnw -q -N help:evaluate -Dexpression=project.version -DforceStdout)
+          cef_version=$(./mvnw -q -N help:evaluate -Dexpression=cef.version -DforceStdout)
+          cef_api=$(printf '%s' "${cef_version}" | sed -E 's/^([0-9]+).*/\1/')
+          javafx_version=$(./mvnw -q -N help:evaluate -Dexpression=javafx.version -DforceStdout)
+          test "${RELEASE_TAG}" = "v${version}"
+          test "${CEF_VERSION}" = "${cef_version}"
+          test "${CEF_API}" = "${cef_api}"
+          test "${JAVAFX_VERSION}" = "${javafx_version}"
+          case "${version}" in
+            *-SNAPSHOT) exit 1 ;;
+          esac
+          echo "tag=${RELEASE_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+  platform:
+    name: ${{ matrix.label }} release bundle
+    needs: validate
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: Linux x64, os: ubuntu-24.04, platform: linux64, classifier: linux-x86_64, arch: x86_64, distribution: corretto }
+          - { label: Linux ARM, os: ubuntu-24.04-arm, platform: linuxarm64, classifier: linux-arm64, arch: aarch64, distribution: corretto }
+          - { label: Windows x64, os: windows-latest, platform: windows64, classifier: windows-x86_64, distribution: corretto }
+          - { label: Windows ARM, os: windows-11-arm, platform: windowsarm64, classifier: windows-arm64, distribution: microsoft }
+          - { label: macOS Intel, os: macos-15-intel, platform: macosx64, classifier: macosx-x86_64, distribution: corretto }
+          - { label: macOS ARM, os: macos-15, platform: macosarm64, classifier: macosx-arm64, distribution: corretto }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+          cache-read-only: true
+
+      - id: cef-cache
+        name: Restore compressed CEF archive
+        uses: actions/cache/restore@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-${{ matrix.platform }}-${{ env.CEF_VERSION }}
+
+      - name: Fetch and validate CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: .github/ci/fetch-cef.sh '${{ env.CEF_VERSION }}' '${{ matrix.platform }}'
+
+      - id: sysroot-cache
+        name: Restore AlmaLinux 8 sysroot
+        if: runner.os == 'Linux'
+        uses: actions/cache/restore@v5
+        with:
+          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
+          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
+
+      - name: Build AlmaLinux 8 sysroot
+        if: runner.os == 'Linux' && steps.sysroot-cache.outputs.cache-hit != 'true'
+        run: sysroot/manage.sh build ${{ matrix.arch }}
+
+      - name: Save AlmaLinux 8 sysroot
+        if: runner.os == 'Linux' && steps.sysroot-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
+          key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
+
+      - name: Prepare AlmaLinux 8 sysroot
+        if: runner.os == 'Linux'
+        run: sysroot/manage.sh prepare ${{ matrix.arch }}
+
+      - name: Install Linux build prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld cmake make binutils xvfb \
+            libgtk-3-0 libxss1 libnss3 libasound2 libcups2 \
+            libxcomposite1 libxdamage1 libxrandr2 libxtst6 \
+            libpango-1.0-0 libatk-bridge2.0-0 libdrm2 libgbm1
+
+      - name: Build platform release artifacts (Linux)
+        if: runner.os == 'Linux'
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
+          CEF_VERSION: ${{ env.CEF_VERSION }}
+          CEF_API: ${{ env.CEF_API }}
+          JAVAFX_VERSION: ${{ env.JAVAFX_VERSION }}
+          JAVAFX_TEST_VERSION: ${{ env.JAVAFX_VERSION }}
+          JAVA11_SMOKE: 'false'
+          RELEASE_BUILD: 'true'
+        run: .github/ci/linux-build.sh
+
+      - name: Build platform release artifacts (Windows/macOS)
+        if: runner.os != 'Linux' && matrix.platform != 'windowsarm64'
+        run: >-
+          ./mvnw -B clean verify
+          -DskipTests -Dgpg.skip=true -Drelease.bundle=true -Prelease
+          "-Dcef.version=${{ env.CEF_VERSION }}"
+          "-Dcef.api.version=${{ env.CEF_API }}"
+          "-Djavafx.version=${{ env.JAVAFX_VERSION }}"
+          "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
+
+      - name: Build platform release artifacts (Windows ARM)
+        if: matrix.platform == 'windowsarm64'
+        env:
+          CMAKE_GENERATOR_PLATFORM: ARM64
+        run: >-
+          ./mvnw -B clean verify
+          -DskipTests -Dgpg.skip=true -Drelease.bundle=true -Prelease
+          "-Dcef.version=${{ env.CEF_VERSION }}"
+          "-Dcef.api.version=${{ env.CEF_API }}"
+          "-Djavafx.version=${{ env.JAVAFX_VERSION }}"
+          "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
+
+      - name: Stage classified artifacts
+        shell: bash
+        run: |
+          mkdir -p staging
+          cp cef4j-platform/target/cef4j-platform-*-${{ matrix.classifier }}.jar staging/
+          cp cef4j-runtime-server/target/cef4j-runtime-server-*-${{ matrix.classifier }}.zip staging/
+
+      - name: Stage platform-neutral Maven artifacts
+        if: matrix.platform == 'linux64'
+        shell: bash
+        run: bash .github/ci/stage-java-artifacts.sh staging
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.platform }}
+          path: staging/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-assets:
+    name: Attach GitHub release assets
+    if: github.event_name == 'release'
+    needs: [validate, platform]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
+      - name: Upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.validate.outputs.tag }}
+        run: gh release upload "${RELEASE_TAG}" release-assets/* --clobber
+
+  publish-central:
+    name: Upload platform-neutral Maven Central deployment
+    if: github.event_name == 'release'
+    needs: [validate, platform]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: central
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
+
+      - name: Set up Java and Maven Central credentials
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+          cache-read-only: true
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - id: cef-cache
+        name: Restore compressed CEF archive
+        uses: actions/cache/restore@v5
+        with:
+          path: .cef-dist/*.tar.bz2
+          key: cef-archive-linux64-${{ env.CEF_VERSION }}
+
+      - name: Fetch and validate CEF archive
+        if: steps.cef-cache.outputs.cache-hit != 'true'
+        run: .github/ci/fetch-cef.sh '${{ env.CEF_VERSION }}' linux64
+
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb cmake make clang lld binutils
+
+      - id: sysroot-cache
+        name: Restore AlmaLinux 8 x86-64 sysroot
+        uses: actions/cache/restore@v5
+        with:
+          path: sysroot/out/sysroot-al8-x86_64.tar.xz
+          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-x86_64-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
+
+      - name: Build AlmaLinux 8 x86-64 sysroot
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+        run: sysroot/manage.sh build x86_64
+
+      - name: Save AlmaLinux 8 x86-64 sysroot
+        if: steps.sysroot-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: sysroot/out/sysroot-al8-x86_64.tar.xz
+          key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
+
+      - name: Prepare AlmaLinux 8 x86-64 sysroot
+        run: sysroot/manage.sh prepare x86_64
+
+      - name: Upload signed Central bundle for manual publication
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/x86_64
+        run: |
+          xvfb-run -a ./mvnw -B deploy -Prelease \
+            -DskipTests \
+            "-Dcef.version=${{ env.CEF_VERSION }}" \
+            "-Dcef.api.version=${{ env.CEF_API }}" \
+            "-Djavafx.version=${{ env.JAVAFX_VERSION }}" \
+            "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
+
+  publish-native-central:
+    name: Upload classified native Maven Central deployments
+    if: github.event_name == 'release'
+    needs: [validate, platform]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: central
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: native-assets
+          merge-multiple: true
+
+      - name: Import Maven Central signing key
+        uses: actions/setup-java@v5
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        with:
+          distribution: corretto
+          java-version: '21'
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Upload size-safe native classifier families for manual publication
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: bash .github/ci/publish-native-central.sh native-assets "${{ needs.validate.outputs.version }}"

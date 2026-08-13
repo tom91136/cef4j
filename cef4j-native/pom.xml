@@ -224,6 +224,7 @@
                             <arguments>
                                 <argument>${project.basedir}</argument>
                                 <argument>-G${cmake.generator}</argument>
+                                <argument>-DCMAKE_TOOLCHAIN_FILE=${cmake.toolchain.file}</argument>
                                 <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
                                 <argument>-DJAVA_HOME=${java.home}</argument>
                                 <argument>-DCEF4J_API_VERSION_RAW=${cef.version}</argument>
@@ -261,7 +262,8 @@
                 </dependencies>
             </plugin>
 
-            <!-- Step 4: Copy native lib + helper into cef4j-api resources -->
+            <!-- Step 4: Stage JNI + launcher for the classified platform artifact. Keeping
+                 these out of cef4j-api makes that Maven coordinate platform-neutral. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -273,7 +275,32 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/../cef4j-api/src/main/resources/native/${cef.platform}</outputDirectory>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/target/platform-native/native/${cef.platform}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/cmake-build</directory>
+                                    <includes>
+                                        <include>libcef4j.so</include>
+                                        <include>cef4j.dll</include>
+                                        <include>libcef4j.dylib</include>
+                                        <include>cef4j_launcher</include>
+                                        <include>cef4j_launcher.exe</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-native-lib-for-reactor-tests</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- The classified platform JAR is attached at package, after the test phase.
+                                 Stage the same files in API output so reactor tests can start CEF; cef4j-api's
+                                 JAR excludes this directory and therefore remains platform-neutral. -->
+                            <outputDirectory>${project.basedir}/../cef4j-api/target/classes/native/${cef.platform}</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}/cmake-build</directory>

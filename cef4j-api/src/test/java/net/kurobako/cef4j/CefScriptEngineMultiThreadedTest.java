@@ -38,7 +38,7 @@ class CefScriptEngineMultiThreadedTest {
 
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
 
-        if (Cef.INSTANCE.getState() == Cef.State.UNINITIALISED) {
+        if (Cef.INSTANCE.state() == Cef.State.UNINITIALISED) {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = cacheDir.toAbsolutePath().toString();
             settings.windowlessRenderingEnabled = 1;
@@ -99,7 +99,7 @@ class CefScriptEngineMultiThreadedTest {
         // Shut down CEF synchronously so the internal threads release the cache files before
         // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
         // as a synthetic extra test.
-        if (Cef.INSTANCE.getState() == Cef.State.INITIALISED) {
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
         }
     }

@@ -87,10 +87,9 @@ object Main {
           CodegenPlatform.parse(platform) match {
             case Some(p) => cfg.copy(targetPlatform = p)
             case None    =>
-              System.err.println(
-                s"Unknown target platform '$platform' (expected linux/mac/windows, linux64/macosx64/windows64, or auto)"
+              throw new IllegalArgumentException(
+                s"Unknown target platform '$platform' (expected linux/mac/windows, linux64/linuxarm64, macosx64/macosarm64, windows64/windowsarm64, or auto)"
               )
-              cfg
           }
         case s"--emit-java=$enabled" =>
           cfg.copy(emitJava = parseBoolean(enabled))
@@ -105,8 +104,7 @@ object Main {
         case s"--extra-capi-dirs=$dirs" =>
           cfg.copy(extraCapiDirs = parseDirList(dirs))
         case other =>
-          System.err.println(s"Unknown argument: $other")
-          cfg
+          throw new IllegalArgumentException(s"Unknown argument: $other")
       }
     }
 
@@ -115,7 +113,8 @@ object Main {
 
   private def parseBoolean(value: String): Boolean =
     value.trim.toLowerCase match {
-      case "1" | "true" | "yes" | "on" => true
-      case _                           => false
+      case "1" | "true" | "yes" | "on"  => true
+      case "0" | "false" | "no" | "off" => false
+      case other                        => throw new IllegalArgumentException(s"Invalid boolean value: $other")
     }
 }

@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.annotation.Nullable;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public final class SystemBootstrap {
 
     private static final Logger log = LoggerFactory.getLogger(SystemBootstrap.class);
+    private static final Object LOAD_LOCK = new Object();
 
     private SystemBootstrap() {}
 
@@ -47,40 +50,42 @@ public final class SystemBootstrap {
      *
      * @throws UnsatisfiedLinkError if the library cannot be loaded
      */
-    public static synchronized void load() {
-        if (loaded) return;
+    public static void load() {
+        synchronized (LOAD_LOCK) {
+            if (loaded) return;
 
-        // Strategy 1: system library path (java.library.path / LD_LIBRARY_PATH)
-        try {
-            log.debug("Trying System.loadLibrary(\"cef4j\")");
-            System.loadLibrary("cef4j");
-            if (OS.isMacOS()) {
-                // Even when loaded from system path, CEF must be loaded via cef_load_library().
-                Path libcefDir = getLibcefDir();
-                if (libcefDir == null) {
-                    throw new UnsatisfiedLinkError("LIBCEF_DIR must be set on macOS to locate the CEF framework");
-                }
-                Path frameworkBinary = libcefDir
-                        .resolve("Chromium Embedded Framework.framework")
-                        .resolve("Chromium Embedded Framework");
-                if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
-                    throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
-                }
-            }
-            loaded = true;
-            log.info("Loaded cef4j native library from system path");
-        } catch (UnsatisfiedLinkError e) {
-            log.debug("System library path failed: {}", e.getMessage());
-            // Strategy 2: extract from classpath + LIBCEF_DIR
+            // Strategy 1: system library path (java.library.path / LD_LIBRARY_PATH)
             try {
-                loadFromClasspath();
-            } catch (IOException ex) {
-                throw new UnsatisfiedLinkError(ex.getMessage());
+                log.debug("Trying System.loadLibrary(\"cef4j\")");
+                System.loadLibrary("cef4j");
+                if (OS.isMacOS()) {
+                    // Even when loaded from system path, CEF must be loaded via cef_load_library().
+                    Path libcefDir = libcefDir();
+                    if (libcefDir == null) {
+                        throw new UnsatisfiedLinkError("LIBCEF_DIR must be set on macOS to locate the CEF framework");
+                    }
+                    Path frameworkBinary = libcefDir
+                            .resolve("Chromium Embedded Framework.framework")
+                            .resolve("Chromium Embedded Framework");
+                    if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
+                        throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
+                    }
+                }
+                loaded = true;
+                log.info("Loaded cef4j native library from system path");
+            } catch (UnsatisfiedLinkError e) {
+                log.debug("System library path failed: {}", e.getMessage());
+                // Strategy 2: extract from classpath + LIBCEF_DIR
+                try {
+                    loadFromClasspath();
+                } catch (IOException ex) {
+                    throw new UnsatisfiedLinkError(ex.getMessage());
+                }
             }
-        }
 
-        // Redirect native stderr to SLF4J before cef_initialize
-        NativeStderr.install();
+            // Redirect native stderr to SLF4J before cef_initialize
+            NativeStderr.install();
+        }
     }
 
     /**
@@ -89,21 +94,24 @@ public final class SystemBootstrap {
      * @param libraryPath the directory containing libcef4j.so
      * @throws UnsatisfiedLinkError if the library cannot be loaded
      */
-    public static synchronized void loadFrom(Path libraryPath) {
-        if (loaded) return;
-        String libName = OS.mapLibraryName("cef4j");
-        Path fullPath = libraryPath.resolve(libName);
-        log.debug("Loading native library from explicit path: {}", fullPath);
-        System.load(fullPath.toAbsolutePath().toString());
-        if (OS.isMacOS()) {
-            Path frameworkBinary =
-                    libraryPath.resolve("Chromium Embedded Framework.framework").resolve("Chromium Embedded Framework");
-            if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
-                throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
+    public static void loadFrom(Path libraryPath) {
+        synchronized (LOAD_LOCK) {
+            if (loaded) return;
+            String libName = OS.mapLibraryName("cef4j");
+            Path fullPath = libraryPath.resolve(libName);
+            log.debug("Loading native library from explicit path: {}", fullPath);
+            System.load(fullPath.toAbsolutePath().toString());
+            if (OS.isMacOS()) {
+                Path frameworkBinary = libraryPath
+                        .resolve("Chromium Embedded Framework.framework")
+                        .resolve("Chromium Embedded Framework");
+                if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
+                    throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
+                }
             }
+            loaded = true;
+            log.info("Loaded cef4j native library from filesystem path {}", fullPath);
         }
-        loaded = true;
-        log.info("Loaded cef4j native library from filesystem path {}", fullPath);
     }
 
     /** Returns whether the native library has been loaded. */
@@ -114,12 +122,12 @@ public final class SystemBootstrap {
     /**
      * Returns the directory where native files were extracted, or null if the library was loaded from the system path.
      */
-    public static @Nullable Path getExtractionDir() {
+    public static @Nullable Path extractionDir() {
         return extractionDir;
     }
 
     /** Returns the resolved LIBCEF_DIR, or null if not set. Result is cached after first call. */
-    public static @Nullable Path getLibcefDir() {
+    public static @Nullable Path libcefDir() {
         if (libcefDirResolved) return cachedLibcefDir;
         String env = System.getenv("LIBCEF_DIR");
         if (env == null || env.isEmpty()) {
@@ -172,7 +180,7 @@ public final class SystemBootstrap {
      * Returns the path to the cef4j_launcher executable. Prefers the extraction directory, falls back to LIBCEF_DIR,
      * then null.
      */
-    public static @Nullable String getHelperPath() {
+    public static @Nullable String helperPath() {
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         if (extractionDir != null) {
             Path launcher = extractionDir.resolve(launcherName);
@@ -180,7 +188,7 @@ public final class SystemBootstrap {
                 return launcher.toAbsolutePath().toString();
             }
         }
-        Path libcefDir = getLibcefDir();
+        Path libcefDir = libcefDir();
         if (libcefDir != null) {
             Path launcher = libcefDir.resolve(launcherName);
             if (Files.exists(launcher)) {
@@ -191,12 +199,12 @@ public final class SystemBootstrap {
     }
 
     private static void loadFromClasspath() throws IOException {
-        String platform = OS.getPlatform();
+        String platform = OS.platform();
         String libName = OS.mapLibraryName("cef4j");
         String resourceBase = "native/" + platform + "/";
         log.debug("Detected platform: {}, native lib: {}", platform, libName);
 
-        Path libcefDir = getLibcefDir();
+        Path libcefDir = libcefDir();
         boolean platformJarAvailable = isPlatformJarAvailable();
         if (libcefDir == null && !platformJarAvailable) {
             throw new IOException("CEF runtime not found: cef4j-platform jar not on classpath,"
@@ -210,22 +218,29 @@ public final class SystemBootstrap {
         log.debug("Extraction cache dir: {}", cacheDir);
         Files.createDirectories(cacheDir);
 
-        // Extract libcef4j native library and subprocess launcher from classpath resources
-        extractResource(resourceBase + libName, cacheDir.resolve(libName));
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         Path launcher = cacheDir.resolve(launcherName);
-        extractResource(resourceBase + launcherName, launcher);
-        launcher.toFile().setExecutable(true);
+        Path extractionLock = cacheDir.resolve(".extract.lock");
+        try (FileChannel lockChannel =
+                FileChannel.open(extractionLock, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+            java.nio.channels.FileLock extractionFileLock = lockChannel.lock();
+            try {
+                extractResource(resourceBase + libName, cacheDir.resolve(libName));
+                extractResource(resourceBase + launcherName, launcher);
+                launcher.toFile().setExecutable(true);
 
-        if (libcefDir != null) {
-            log.debug("Linking CEF runtime from LIBCEF_DIR: {}", libcefDir);
-            linkCefRuntime(libcefDir, cacheDir);
-        } else {
-            log.debug("CEF runtime found in platform jar, extracting");
-            extractPlatformRuntime(cacheDir);
+                if (libcefDir != null) {
+                    log.debug("Linking CEF runtime from LIBCEF_DIR: {}", libcefDir);
+                    linkCefRuntime(libcefDir, cacheDir);
+                } else {
+                    log.debug("CEF runtime found in platform jar, extracting");
+                    extractPlatformRuntime(cacheDir);
+                }
+                extractionDir = cacheDir;
+            } finally {
+                extractionFileLock.close();
+            }
         }
-
-        extractionDir = cacheDir;
 
         if (OS.isMacOS()) {
             // The GPU subprocess (cef4j_launcher --type=gpu-process) looks for ANGLE libraries
@@ -312,7 +327,7 @@ public final class SystemBootstrap {
         updateDigestFromResource(digest, resourceBase + (OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher"));
         updateDigestWithString(digest, platform);
         if (platformJarAvailable) {
-            updateDigestFromResource(digest, "cef-runtime/file-list.txt");
+            updateDigestFromResource(digest, platformRuntimeResource("file-list.txt"));
             updateDigestFromResource(digest, platformRuntimeFingerprintResource());
         } else {
             Path resolvedLibcefDir = java.util.Objects.requireNonNull(libcefDir).toRealPath();
@@ -335,13 +350,14 @@ public final class SystemBootstrap {
 
     private static boolean isPlatformJarAvailable() {
         // file-list.txt is present in every platform JAR (Linux, macOS, Windows)
-        return SystemBootstrap.class.getClassLoader().getResource("cef-runtime/file-list.txt") != null;
+        return SystemBootstrap.class.getClassLoader().getResource(platformRuntimeResource("file-list.txt")) != null;
     }
 
     private static void extractPlatformRuntime(Path cacheDir) throws IOException {
-        InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream("cef-runtime/file-list.txt");
+        String fileListResource = platformRuntimeResource("file-list.txt");
+        InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(fileListResource);
         if (in == null) {
-            throw new IOException("cef-runtime/file-list.txt not found in platform jar");
+            throw new IOException(fileListResource + " not found in platform jar");
         }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
             String line;
@@ -352,7 +368,7 @@ public final class SystemBootstrap {
                 if (Files.exists(target) && Files.size(target) > 0) continue;
                 Path parent = target.getParent();
                 if (parent != null) Files.createDirectories(parent);
-                extractResource("cef-runtime/" + line, target);
+                extractResource(platformRuntimeResource(line), target);
                 Path fileName = target.getFileName();
                 String fileNameStr = fileName == null ? "" : fileName.toString();
                 if (line.endsWith(".so")
@@ -459,7 +475,22 @@ public final class SystemBootstrap {
             if (in == null) {
                 throw new IOException("Resource not found on classpath: " + resourcePath);
             }
-            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+            Path parent = target.toAbsolutePath().getParent();
+            if (parent == null) throw new IOException("target has no parent directory: " + target);
+            Files.createDirectories(parent);
+            Path fileName = target.getFileName();
+            String prefix = fileName == null ? "cef4j" : fileName.toString();
+            Path temporary = Files.createTempFile(parent, prefix, ".part");
+            try {
+                Files.copy(in, temporary, StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temporary);
+            }
         }
     }
 
@@ -483,9 +514,13 @@ public final class SystemBootstrap {
 
     private static String platformRuntimeFingerprintResource() {
         if (OS.isMacOS()) {
-            return "cef-runtime/Chromium Embedded Framework.framework/Chromium Embedded Framework";
+            return platformRuntimeResource("Chromium Embedded Framework.framework/Chromium Embedded Framework");
         }
-        return "cef-runtime/" + platformRuntimeBinaryName();
+        return platformRuntimeResource(platformRuntimeBinaryName());
+    }
+
+    private static String platformRuntimeResource(String path) {
+        return "cef-runtime/" + OS.platform() + "/" + path;
     }
 
     private static String platformRuntimeBinaryName() {

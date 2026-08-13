@@ -2,6 +2,10 @@ package net.kurobako.cef4j.codegen
 
 class CodeGenOutputSpec extends munit.FunSuite {
 
+  test("CLI rejects unknown arguments before generating output") {
+    intercept[IllegalArgumentException](Main.main(Array("--not-a-real-option=true")))
+  }
+
   private given Banners = new Banners("test")
 
   private val codegen        = new JniCppCodeGen(Map.empty)
@@ -16,6 +20,10 @@ class CodeGenOutputSpec extends munit.FunSuite {
       )
     )
   )
+
+  test("Windows ARM64 distribution name selects Windows code generation") {
+    assertEquals(CodegenPlatform.parse("windowsarm64"), Some(CodegenPlatform.Windows))
+  }
 
   test("Java native codegen produces correct JNI export macro") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(

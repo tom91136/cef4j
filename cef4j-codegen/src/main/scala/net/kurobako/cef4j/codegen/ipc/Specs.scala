@@ -4,7 +4,7 @@ package net.kurobako.cef4j.codegen.ipc
 object Specs {
 
   def all(packageName: String): List[MessageSpec] = List(
-    // ----- Refcount lifecycle: JVM-side facade.close() releases the matching helper-side handle. The
+    // ----- Refcount lifecycle: JVM-side facade.close() releases the matching runtime-server-side handle. The
     //       dispatcher's generated `dispatchRelease(kind, id)` switches on `kind` (the CEF struct name, e.g.
     //       "cef_browser_t") to pick the right HandleTable. Single shared message keeps the wire surface tight.
     MessageSpec(
@@ -21,11 +21,11 @@ object Specs {
     ),
 
     // ----- Renderer-affinity counterpart of ReleaseHandleRequest. JVM facades for cef_v8_*/cef_dom* hold
-    //       handles into the renderer subprocess's `tables::X` (the helper binary holds independent table
+    //       handles into the renderer subprocess's `tables::X` (the runtime server binary holds independent table
     //       state per process). Plain ReleaseHandleRequest dispatches in the browser process and would
     //       silently no-op for these. RendererReleaseHandleRequest carries a frame so the browser-side
     //       relay can ship it to the right renderer; the renderer-side handler then runs dispatchRelease
-    //       in its own table state. messageId is part of the renderer-relay set (the helper main.cpp
+    //       in its own table state. messageId is part of the renderer-relay set (the runtime server main.cpp
     //       intercepts this id before genrender::dispatch and routes it to gendisp::dispatchRelease).
     MessageSpec(
       className = "RendererReleaseHandleRequest",
@@ -44,11 +44,11 @@ object Specs {
       fields = Nil
     ),
 
-    // ----- OSR viewport resize. JFX layout drives a per-browser size; the helper updates its render
+    // ----- OSR viewport resize. JFX layout drives a per-browser size; the runtime server updates its render
     //       handler's view rect and calls cef_browser_host_t::was_resized so CEF re-queries dimensions and
     //       triggers a fresh paint at the new size. Codegen-generated BrowserHost.wasResized covers the
-    //       second half (signalling the resize) but doesn't ship dimensions; this Request feeds the helper
-    //       the JFX-side size so the helper-side renderer knows what to ask for. shm capacity is sized for
+    //       second half (signalling the resize) but doesn't ship dimensions; this Request feeds the runtime server
+    //       the JFX-side size so the runtime-server-side renderer knows what to ask for. shm capacity is sized for
     //       4K (sufficient for any practical resize); we don't reallocate today, just paint into a larger
     //       buffer.
     MessageSpec(
@@ -69,10 +69,10 @@ object Specs {
     ),
 
     // ----- Browser-creation factory. Carries a `BrowserSettings` data struct over the wire (the new
-    //       FieldType.DataStruct path); the helper decodes it and copies field-by-field into a native
+    //       FieldType.DataStruct path); the runtime server decodes it and copies field-by-field into a native
     //       cef_browser_settings_t before calling cef_browser_host_create_browser. The new browser's handle
     //       arrives via LifeSpanHandlerOnAfterCreatedEvent (forwarder + tables::browser.insert).
-    //       window_info_t is still helper-side defaults (windowless 800x600); adding it as a second field is
+    //       window_info_t is still runtime-server-side defaults (windowless 800x600); adding it as a second field is
     //       the natural follow-up once we have a WindowInfo data struct (currently filtered because it has
     //       a platform handle field).
     MessageSpec(
@@ -92,7 +92,7 @@ object Specs {
     ),
 
     // ----- V8 evaluate javascript: JVM evaluates JS in a specific frame's V8 context and gets the result.
-    //       Wire path: JVM → browser-process helper (Kind::Request with corrId) → relay to renderer via
+    //       Wire path: JVM → browser-process runtime server (Kind::Request with corrId) → relay to renderer via
     //       cef_process_message("v8_eval_req") with [corrId, code] → renderer looks up frame, evaluates in
     //       the frame's V8 context, packs result into cef_process_message("v8_eval_resp") with [corrId,
     //       valueKind, value] → browser-process on_process_message_received decodes and replies as
@@ -133,7 +133,7 @@ object Specs {
 
     // ----- V8 value method dispatch: JVM holds a renderer-side V8 handle id (from EvaluateJavascript with
     //       retainHandle=true) and calls methods on it. Same wire path as EvaluateJavascript: JVM →
-    //       browser-helper (Kind::Request) → cef_process_message to renderer → V8 op → response process
+    //       browser-process server (Kind::Request) → cef_process_message to renderer → V8 op → response process
     //       message → Kind::Response. Renderer-side dispatcher routes by message name.
     MessageSpec(
       className = "V8GetStringValueRequest",
@@ -367,7 +367,7 @@ object Specs {
 
     // ----- V8 context created event: fired when the renderer subprocess creates a V8 execution context for a
     //       frame (typically once per top-level navigation, plus per-iframe). Renderer-process side encodes the
-    //       event into a CEF process message that travels over the existing browser↔renderer pipe; the helper's
+    //       event into a CEF process message that travels over the existing browser↔renderer pipe; the runtime server's
     //       on_process_message_received in the browser process re-encodes it as an IPC event for the JVM. This
     //       is the renderer-process IPC-channel foundation: with it the JVM can observe renderer state, and a
     //       follow-up adds JVM→renderer dispatch (V8 method calls) by the inverse path.
@@ -381,9 +381,9 @@ object Specs {
       )
     ),
 
-    // ----- OSR paint event: helper publishes browser pixel buffers via POSIX shared memory and sends a small
-    //       envelope describing where in the shm region to read. The shm name is opened once per browser; the
-    //       JVM mmaps it and reads the dirty region. byteCount is the populated tail of the buffer (most-recent
+    // ----- OSR paint event: runtime server publishes browser pixel buffers via portable file-backed shared mappings
+    //       and sends a small envelope describing which path to read. Java 11 opens it with FileChannel.map on every
+    //       supported platform. byteCount is the populated tail of the buffer (most-recent
     //       paint), width/height describe the full bitmap. Sent as Kind::Event.
     MessageSpec(
       className = "OsrPaintEvent",
@@ -407,11 +407,77 @@ object Specs {
       )
     ),
 
-    // ----- Test-only intercept echo: validates the synchronous helper→JVM callback wire end-to-end without
-    //       needing a real CEF callback. JVM sends TriggerInterceptRequest{echoMessageId, echoPayload}; helper
+    // ----- Inline OSR paint event: transports that cannot share the runtime server's file-backed mapping publish a complete
+    //       BGRA snapshot inside the IPC event. The WebSocket runtime server coalesces pending events by browser so
+    //       slow consumers receive the newest frame rather than an ever-growing stale-frame backlog. This is
+    //       intentionally uncompressed; compression/video is a separate frame-transport concern.
+    MessageSpec(
+      className = "InlinePaintEvent",
+      packageName = packageName,
+      messageId = 26,
+      fields = List(
+        FieldSpec("browser", FieldType.RemoteHandle),
+        FieldSpec("frameSequence", FieldType.I64),
+        FieldSpec("width", FieldType.I32),
+        FieldSpec("height", FieldType.I32),
+        FieldSpec("paintType", FieldType.I32),
+        FieldSpec("dirtyX", FieldType.I32),
+        FieldSpec("dirtyY", FieldType.I32),
+        FieldSpec("dirtyWidth", FieldType.I32),
+        FieldSpec("dirtyHeight", FieldType.I32),
+        FieldSpec("pixels", FieldType.Bytes)
+      )
+    ),
+
+    // ----- Raw DevTools Protocol bridge. CEF exposes complete UTF-8 JSON messages, which we preserve on
+    //       the wire so higher layers can correlate CDP results and events without depending on a concrete
+    //       control transport. Registration is runtime-server-owned because the generated callback facade cannot
+    //       represent CEF's callback-scoped void* buffers safely.
+    MessageSpec(
+      className = "DevToolsAttachRequest",
+      packageName = packageName,
+      messageId = 27,
+      fields = List(FieldSpec("browser", FieldType.RemoteHandle))
+    ),
+    MessageSpec(
+      className = "DevToolsAttachResponse",
+      packageName = packageName,
+      messageId = 27,
+      fields = Nil
+    ),
+    MessageSpec(
+      className = "DevToolsMessageEvent",
+      packageName = packageName,
+      messageId = 28,
+      fields = List(
+        FieldSpec("browser", FieldType.RemoteHandle),
+        FieldSpec("message", FieldType.Bytes)
+      )
+    ),
+    MessageSpec(
+      className = "DevToolsAgentDetachedEvent",
+      packageName = packageName,
+      messageId = 29,
+      fields = List(FieldSpec("browser", FieldType.RemoteHandle))
+    ),
+    MessageSpec(
+      className = "DevToolsDetachRequest",
+      packageName = packageName,
+      messageId = 30,
+      fields = List(FieldSpec("browser", FieldType.RemoteHandle))
+    ),
+    MessageSpec(
+      className = "DevToolsDetachResponse",
+      packageName = packageName,
+      messageId = 30,
+      fields = Nil
+    ),
+
+    // ----- Test-only intercept echo: validates the synchronous runtime server→JVM callback wire end-to-end without
+    //       needing a real CEF callback. JVM sends TriggerInterceptRequest{echoMessageId, echoPayload}; runtime server
     //       allocates a corrId, fires Kind::Intercept(echoMessageId, echoPayload), blocks waiting for a
     //       Kind::InterceptResponse with the same corrId. JVM-side test registers an intercept handler that
-    //       returns a payload. Helper acks the original Request with TriggerInterceptResponse{returnedPayload}.
+    //       returns a payload. Runtime server acks the original Request with TriggerInterceptResponse{returnedPayload}.
     MessageSpec(
       className = "TriggerInterceptRequest",
       packageName = packageName,

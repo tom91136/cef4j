@@ -1,14 +1,14 @@
 package net.kurobako.cef4j.codegen.ipc
 
 /** Emits `RendererDispatcher.h` — the renderer-side counterpart to {@link CppDispatcherEmitter}. The browser-side
-  * dispatcher relays renderer-affinity Requests via `cef4j_renderer_req` process_message; the helper, when running as
-  * the renderer subprocess, calls into this dispatcher on receipt to decode the Request, look up the receiver in the
-  * per-struct HandleTable, enter the frame's V8 context, invoke the C-API method, encode the Response, and ship it back
-  * as `cef4j_renderer_resp` to the browser. The browser-side `Client::on_process_message_received` then decodes the
-  * envelope and replies as Kind::Response on the IPC wire.
+  * dispatcher relays renderer-affinity Requests via `cef4j_renderer_req` process_message; the runtime server, when
+  * running as the renderer subprocess, calls into this dispatcher on receipt to decode the Request, look up the
+  * receiver in the per-struct HandleTable, enter the frame's V8 context, invoke the C-API method, encode the Response,
+  * and ship it back as `cef4j_renderer_resp` to the browser. The browser-side `Client::on_process_message_received`
+  * then decodes the envelope and replies as Kind::Response on the IPC wire.
   *
-  * Reuses the `${ns}_dispatcher::tables::*` HandleTables — the helper binary is the same executable for both browser
-  * and renderer subprocess, but the address spaces are independent so each process has its own table state.
+  * Reuses the `${ns}_dispatcher::tables::*` HandleTables — the runtime server binary is the same executable for both
+  * browser and renderer subprocess, but the address spaces are independent so each process has its own table state.
   *
   * Supported method shapes (similar to {@link CppDispatcherEmitter#isDispatchable}):
   *   - Receiver: a renderer-affinity facade struct (cef_v8_*, cef_dom*).

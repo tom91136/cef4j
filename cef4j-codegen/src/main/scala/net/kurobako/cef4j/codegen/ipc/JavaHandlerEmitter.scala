@@ -4,9 +4,9 @@ package net.kurobako.cef4j.codegen.ipc
   * one default-`{}` method per callback so implementers only override what they care about, plus a static
   * `register(CefSession, Handler)` that wires `session.on(...)` for every event the handler covers.
   *
-  * Helper-side wiring (setting these handlers on a `CefClient` and forwarding C callbacks to IPC events) is a separate
-  * concern; these interfaces are useful even before that lands as a typed dispatch surface for any future helper code
-  * that emits the corresponding events.
+  * Runtime-server-side wiring (setting these handlers on a `CefClient` and forwarding C callbacks to IPC events) is a
+  * separate concern; these interfaces are useful even before that lands as a typed dispatch surface for any future
+  * runtime-server code that emits the corresponding events.
   */
 object JavaHandlerEmitter {
 
@@ -45,15 +45,16 @@ object JavaHandlerEmitter {
     val params = m.params.map(p => s"${javaParamType(p.ty)} ${p.name}").mkString(", ")
     m.returnType match {
       case None =>
-        s"""    /** Mirrors the {@code ${snakeOf(m.methodName)}} callback on the CEF struct. */
-           |    default void ${m.methodName}($params) {}""".stripMargin
+        val doc = methodDoc(m, s"Mirrors the {@code ${snakeOf(m.methodName)}} callback on the CEF struct.")
+        s"""$doc    default void ${m.methodName}($params) {}""".stripMargin
       case Some(FieldType.Bool) =>
         // Returns Boolean (boxed) so a `null` answer can mean "no opinion → don't bind"; falls through to
         // CEF's default-zero behavior. Otherwise true→1 (block popup, suppress dialog, cancel navigation).
-        s"""    /** Mirrors the {@code ${snakeOf(m.methodName)}} callback. Return {@code null} or omit override
-           |      * for CEF's default behavior (treated as 0); return {@link Boolean#TRUE}/{@link Boolean#FALSE} to
-           |      * supply the int return value the helper hands back to CEF. */
-           |    @Nullable
+        val doc = methodDoc(
+          m,
+          s"Mirrors the {@code ${snakeOf(m.methodName)}} callback. A null result selects CEF's default behavior."
+        )
+        s"""$doc    @Nullable
            |    default Boolean ${m.methodName}($params) { return null; }""".stripMargin
       case Some(_) =>
         // SpecDeriver currently only emits Bool returns, but keep a safe default-void in case the model
@@ -62,11 +63,18 @@ object JavaHandlerEmitter {
     }
   }
 
+  private def methodDoc(m: HandlerMethod, fallback: String): String =
+    if (m.javadoc.nonEmpty) m.javadoc.linesIterator.mkString("\n") + "\n"
+    else s"""    /** $fallback */
+            |""".stripMargin
+
   private def renderRegisterCall(m: HandlerMethod): String = {
     val args = m.params.map(p => s"ev.${p.name}()").mkString(", ")
     m.returnType match {
       case None =>
-        s"""        session.on(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER,
+        val subscription =
+          if (m.eventClassName == "LifeSpanHandlerOnAfterCreatedEvent") "onLatest" else "on"
+        s"""        session.$subscription(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER,
            |                ev -> handler.${m.methodName}($args));""".stripMargin
       case Some(FieldType.Bool) =>
         // Non-void: bind via session.intercept(). The handler returns Boolean — null means default (0)

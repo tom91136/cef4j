@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-runtime-server-all</artifactId>
+    <packaging>pom</packaging>
+    <name>cef4j-runtime-server-all</name>
+    <description>Convenience artifact containing every supported packaged CEF runtime server</description>
+
+    <properties>
+        <bytecode.check.skip>true</bytecode.check.skip>
+    </properties>
+
+    <profiles>
+        <!-- See cef4j-platform-all: consumers get every classifier while reactor builds stay local. -->
+        <profile>
+            <id>all-platforms</id>
+            <activation><activeByDefault>true</activeByDefault></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-linux</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>x86_64</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-linux</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>arm64</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-windows</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>x86_64</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-windows</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>arm64</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-macos</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>x86_64</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>cef4j-runtime-server-macos</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                    <classifier>arm64</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>cef4j-reactor</id>
+            <activation>
+                <property><name>cef4j.reactor</name></property>
+            </activation>
+        </profile>
+    </profiles>
+</project>

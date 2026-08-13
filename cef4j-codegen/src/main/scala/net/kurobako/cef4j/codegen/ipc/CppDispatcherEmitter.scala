@@ -1,7 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a single self-contained C++ header — `Dispatcher.h` — that the helper includes to handle JVM → helper
-  * `Request` messages without hand-written switch cases.
+/** Emits a single self-contained C++ header — `Dispatcher.h` — that the runtime server includes to handle JVM → runtime
+  * server `Request` messages without hand-written switch cases.
   *
   * Supported method shapes (see {@link isDispatchable}):
   *   - params: `I32`/`I64`/`Bool`/`Utf8String`, plus the implicit `self` RemoteHandle (always present)
@@ -40,7 +40,7 @@ object CppDispatcherEmitter {
       jvmVisitorByCef: Map[String, JvmVisitorSpec] = Map.empty,
       // Hand-written renderer-relay messageIds — Requests that are not tied to a per-facade method but
       // still need to be shipped to the renderer subprocess via `cef4j_renderer_req`. Currently used for
-      // RendererReleaseHandleRequest, which the renderer-side helper turns into a dispatchRelease call on
+      // RendererReleaseHandleRequest, which the renderer-side runtime server turns into a dispatchRelease call on
       // its own handle tables.
       manualRendererRelayIds: List[Int] = Nil
   )
@@ -70,10 +70,10 @@ object CppDispatcherEmitter {
     // method exists so the relay can find a cef_frame_t* by id even if no browser-affinity method happens to
     // reference cef_frame_t (defensive — Browser::getMainFrame currently keeps it referenced anyway).
     val frameAlwaysNeeded = rendererMessageIds.nonEmpty
-    // Tables include renderer-affinity facades too — they don't get dispatched cases here, but the helper's
+    // Tables include renderer-affinity facades too — they don't get dispatched cases here, but the runtime server's
     // hand-written code (and the auto-generated HandlerForwarders) still need a `tables::v8Value` etc. so
     // V8 handles passed through render-process handler callbacks can be inserted/looked up uniformly. The
-    // renderer dispatcher uses the same tables when the helper runs as the renderer subprocess.
+    // renderer dispatcher uses the same tables when the runtime server runs as the renderer subprocess.
     val tableStructs = in.facades.filter { f =>
       val hasOwnDispatchable = dispatchableByFac.exists(_._1.cefStructName == f.cefStructName)
       val referencedByOther  = dispatchableByFac.exists { case (_, ms) =>
@@ -145,7 +145,9 @@ object CppDispatcherEmitter {
        |#include "Envelope.h"
        |#include "HandleTable.h"
        |#include "IpcServer.h"
-       |${if (in.jvmVisitorByCef.nonEmpty) "\n#include \"JvmVisitors.h\"" else ""}
+       |${
+        if (in.jvmVisitorByCef.nonEmpty) "\n#include \"JvmVisitors.h\"" else ""
+      }
        |
        |$genIncludes
        |
@@ -153,8 +155,8 @@ object CppDispatcherEmitter {
        |
        |namespace genvisitors = ${ns}_visitors;
        |
-       |/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns; mirrors the helper's
-       |  * own ScopedCefString. Lives in the dispatcher namespace to avoid clashing with the helper's copy. */
+       |/** RAII shim around `cef_string_t` for params and `cef_string_userfree_t` for returns; mirrors the runtime server's
+       |  * own ScopedCefString. Lives in the dispatcher namespace to avoid clashing with the runtime server's copy. */
        |class ScopedCefString {
        |public:
        |    ScopedCefString() : s_{} {}
@@ -234,14 +236,14 @@ object CppDispatcherEmitter {
        |    return id;
        |}
        |
-       |/** Per-facade-struct HandleTable<T> instances. Lifetime: process. The helper accesses these directly to
+       |/** Per-facade-struct HandleTable<T> instances. Lifetime: process. The runtime server accesses these directly to
        |  * register browsers etc. (e.g. `tables::browser.insert(b)` after `OnAfterCreated`); the dispatcher's
        |  * generated cases use them for retain/release/insert against handle params and returns. */
        |namespace tables {
        |${tableFields.mkString("\n")}
        |} // namespace tables
        |
-       |/** Releases the table entry matching the given CEF struct name. Used by the helper to dispatch
+       |/** Releases the table entry matching the given CEF struct name. Used by the runtime server to dispatch
        |  * `ReleaseHandleRequest{handle, kind}` to the right `HandleTable<T>::release`. Returns true if `kind`
        |  * was recognised (release attempted). Unknown kinds are silently ignored. */
        |inline bool dispatchRelease(const std::string& kind, std::int32_t id) {
@@ -249,7 +251,7 @@ object CppDispatcherEmitter {
        |    return false;
        |}
        |
-       |/** Held by the helper main and passed into {@link dispatch}. Owned by the helper; the dispatcher does not
+       |/** Held by the runtime server main and passed into {@link dispatch}. Owned by the runtime server; the dispatcher does not
        |  * free anything. Tables are static and live in `${ns}_dispatcher::tables`. */
        |struct DispatcherContext {
        |    cef4j::ipc::IpcServer* ipc = nullptr;
@@ -290,7 +292,7 @@ object CppDispatcherEmitter {
        |  * raw payload over a "cef4j_renderer_req" process_message. The renderer-side dispatcher decodes the
        |  * Request from the same payload bytes and invokes the method inside the right V8 context.
        |  *
-       |  * Reply path: renderer fires "cef4j_renderer_resp" carrying corrId/messageId/payload back; the helper's
+       |  * Reply path: renderer fires "cef4j_renderer_resp" carrying corrId/messageId/payload back; the runtime server's
        |  * Client::on_process_message_received turns that into a Kind::Response on the IPC wire.
        |  *
        |  * Posts the actual `frame->send_process_message` call onto the CEF UI thread (CEF API contract for
@@ -324,7 +326,7 @@ object CppDispatcherEmitter {
        |                cef_binary_value_t* binary = cef_binary_value_create(payloadCopy.data(), payloadCopy.size());
        |                if (binary) {
        |                    // `set_binary` ADOPTS the +1 from `cef_binary_value_create` — do NOT release `binary`
-       |                    // again here, that's a double-decrement that crashes the helper.
+       |                    // again here, that's a double-decrement that crashes the runtime server.
        |                    args->set_binary(args, 2, binary);
        |                }
        |                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
@@ -339,7 +341,7 @@ object CppDispatcherEmitter {
        |    return true;
        |}
        |
-       |/** Tries to handle one frame. Returns {@code true} iff the message id was recognised by codegen — the helper's
+       |/** Tries to handle one frame. Returns {@code true} iff the message id was recognised by codegen — the runtime server's
        |  * own switch should fall through to this for ids it doesn't claim. */
        |inline bool dispatch(const DispatcherContext& ctx, const cef4j::ipc::Header& h,
        |                     std::vector<std::uint8_t> payload) {
@@ -377,7 +379,6 @@ object CppDispatcherEmitter {
       case FieldType.RemoteHandle =>
         m.handleStructByField.get(name).exists(s => facadeStructs.contains(s) || visitorStructs.contains(s))
       case FieldType.DataStruct(cefName) => dataStructNames.contains(cefName)
-      case _                             => false
     }
     val paramsOk = m.explicitParams.forall(p => fieldOk(p.name, p.ty))
     val resultOk = m.resultField match {
@@ -439,7 +440,6 @@ object CppDispatcherEmitter {
         // Qualify with the generated namespace (`gen` is aliased near the top of dispatch()) so the
         // dispatcher case body resolves the overlay class regardless of the current namespace context.
         case FieldType.DataStruct(cefName) => "gen::" + SpecDeriver.cefStructToClassName(cefName)
-        case _                             => "std::int32_t" // unreachable per isDispatchable
       }
       // Move-construct overlays/byte vectors (which can be large) so we don't deep-copy out of the request.
       val rhs = p.ty match {
@@ -579,18 +579,18 @@ object CppDispatcherEmitter {
                |                              respPayload.data(), respPayload.size());
                |                }""".stripMargin
           case _ =>
-            val (cppRetType, assign) = field.ty match {
-              case FieldType.I32        => ("int", "static_cast<std::int32_t>(rawResult)")
-              case FieldType.I64        => ("int64_t", "static_cast<std::int64_t>(rawResult)")
-              case FieldType.Bool       => ("int", "rawResult != 0")
+            val assign = field.ty match {
+              case FieldType.I32        => "static_cast<std::int32_t>(rawResult)"
+              case FieldType.I64        => "static_cast<std::int64_t>((std::uintptr_t) rawResult)"
+              case FieldType.Bool       => "rawResult != 0"
               case FieldType.Utf8String =>
-                ("cef_string_userfree_t", "ScopedCefString::take(rawResult).toUtf8()")
+                "ScopedCefString::take(rawResult).toUtf8()"
               case FieldType.RemoteHandle =>
                 val tbl = resultStruct.map(tableFieldName).getOrElse("nullptr_table")
-                (s"${resultStruct.get}*", s"insertOrRelease(&tables::$tbl, rawResult)")
-              case _ => ("int", "0") // unreachable per isDispatchable
+                s"insertOrRelease(&tables::$tbl, rawResult)"
+              case _ => "0" // unreachable per isDispatchable
             }
-            s"""$preludeBlock                $cppRetType rawResult = receiver->$cFn($argList);
+            s"""$preludeBlock                auto rawResult = receiver->$cFn($argList);
                |                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
                |                base->release(base);$postludeBlock
                |                if (ipc) {
@@ -642,7 +642,6 @@ object CppDispatcherEmitter {
     case FieldType.StringList    => s"${p.name}_list"
     case FieldType.RemoteHandle  => s"${p.name}_ptr"
     case FieldType.DataStruct(_) => s"&${p.name}_native"
-    case _                       => p.name
   }
 
   /** Per-field copy from a wire-decoded overlay into a native `cef_X_t` value. Uses `decltype`-cast for
@@ -653,7 +652,7 @@ object CppDispatcherEmitter {
     // Some CEF data structs (cef_browser_settings_t, cef_window_info_t…) start with `size_t size` for ABI
     // versioning; others (cef_mouse_event_t, cef_rect_t) don't. Only emit the size-init line when the
     // struct actually has the field — otherwise we emit `event_native.size = sizeof(...)` for a struct
-    // that has no `size` member and the helper doesn't compile.
+    // that has no `size` member and the runtime server doesn't compile.
     val hasSizeField = spec.fields.exists(f => SpecDeriver.camelToSnake(f.name) == "size")
     val sizeAssign   = if (hasSizeField) List(s"                $nativeVar.size = sizeof($nativeVar);") else Nil
     val copies       = spec.fields.flatMap { f =>

@@ -1,0 +1,4 @@
+net.kurobako.cef4j.ipc.transport.ZmqTransportProvider
+net.kurobako.cef4j.ipc.transport.LocalTransportProvider
+net.kurobako.cef4j.ipc.transport.UdsTransportProvider
+net.kurobako.cef4j.ipc.transport.WebSocketTransportProvider

@@ -32,6 +32,28 @@ public interface BrowserSession extends AutoCloseable {
     @Nonnull
     PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException;
 
+    /** Resize the browser's CSS viewport. Only valid when the backend advertises VIEWPORT_RESIZE. */
+    @Nonnull
+    default CompletableFuture<Void> resizeViewport(int width, int height) {
+        CompletableFuture<Void> failure = new CompletableFuture<>();
+        failure.completeExceptionally(new UnsupportedOperationException("viewport resize is not supported"));
+        return failure;
+    }
+
+    /** Wait until a paint with the requested dimensions arrives. */
+    @Nonnull
+    default PaintInfo awaitPaint(int width, int height, @Nonnull Duration timeout) throws InterruptedException {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        PaintInfo last = null;
+        while (System.nanoTime() < deadline) {
+            Duration remaining = Duration.ofNanos(Math.max(1L, deadline - System.nanoTime()));
+            last = awaitFirstPaint(remaining);
+            if (last.width == width && last.height == height) return last;
+        }
+        throw new InterruptedException("no " + width + "x" + height + " paint within " + timeout
+                + (last == null ? "" : "; last was " + last.width + "x" + last.height));
+    }
+
     @Override
     void close();
 

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-runtime-server</artifactId>
+    <packaging>pom</packaging>
+    <name>cef4j-runtime-server</name>
+    <description>Packaged native CEF runtime server exposing the Remote CEF API</description>
+
+    <properties>
+        <exec.skip>false</exec.skip>
+        <!-- Linux only for Slice C; mac/windows added later. -->
+        <ipc.gen.cpp.dir>${project.basedir}/src/main/cpp/gen</ipc.gen.cpp.dir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>download-cef</id>
+                        <phase>initialize</phase>
+                        <goals><goal>wget</goal></goals>
+                        <configuration>
+                            <url>${cef.dist.url}</url>
+                            <outputDirectory>${cef.dist.cache}</outputDirectory>
+                            <unpackWhenChanged>true</unpackWhenChanged>
+                            <skipCache>false</skipCache>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>mkdir-cmake-build</id>
+                        <phase>initialize</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/cmake-build"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <!-- Generate C++ headers from Specs.scala (and AST-derived Dispatcher.h) into
+                         src/main/cpp/gen/ before CMake configures. The cef-include flag enables AST mode so
+                         the Dispatcher.h covering hundreds of methods gets emitted. -->
+                    <execution>
+                        <id>run-ipc-codegen-cpp</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>net.kurobako.cef4j.codegen.ipc.Main</mainClass>
+                            <arguments>
+                                <argument>--out-cpp=${ipc.gen.cpp.dir}</argument>
+                                <argument>--cef-include=${cef.dist.dir}/include</argument>
+                                <argument>--compiler=${native.compiler.id}</argument>
+                                <argument>--cef-api-version=${cef.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-configure</id>
+                        <phase>compile</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>cmake</executable>
+                            <workingDirectory>${project.build.directory}/cmake-build</workingDirectory>
+                            <arguments>
+                                <argument>${project.basedir}</argument>
+                                <argument>-G${cmake.generator}</argument>
+                                <argument>-DCMAKE_TOOLCHAIN_FILE=${cmake.toolchain.file}</argument>
+                                <argument>-DCEF_ROOT=${cef.dist.dir}</argument>
+                                <argument>-DCEF4J_API_VERSION_RAW=${cef.version}</argument>
+                                <argument>-DCMAKE_BUILD_TYPE=Release</argument>
+                                <!-- libzmq 4.3.5 still declares an old CMake compatibility floor. -->
+                                <argument>-Wno-deprecated</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-build</id>
+                        <phase>compile</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>cmake</executable>
+                            <arguments>
+                                <argument>--build</argument>
+                                <argument>${project.build.directory}/cmake-build</argument>
+                                <argument>--config</argument>
+                                <argument>Release</argument>
+                                <argument>--parallel</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.kurobako.cef4j</groupId>
+                        <artifactId>cef4j-codegen</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release-runtime-server-bundle</id>
+            <activation>
+                <property>
+                    <name>release.bundle</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>assemble-runtime-server</id>
+                                <phase>package</phase>
+                                <goals><goal>single</goal></goals>
+                                <configuration>
+                                    <skipAssembly>${platform.assembly.skip}</skipAssembly>
+                                    <descriptors>
+                                        <descriptor>src/assembly/runtime-server.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

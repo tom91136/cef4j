@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>146.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-inprocess-swing</artifactId>
+    <packaging>jar</packaging>
+    <name>cef4j-inprocess-swing</name>
+    <description>In-process Swing browser panel for cef4j</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-platform</artifactId>
+            <version>${project.version}</version>
+            <classifier>${cef.classifier}</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bucket-v117-plus-tests</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="cef4j.test.v117plus.excludes"
+                                           value="__never__"
+                                           else="**/*V117Plus*.java">
+                                    <matches string="${cef.version}"
+                                             pattern="^(11[7-9]|1[2-9][0-9]|[2-9][0-9]{2,})\..*"/>
+                                </condition>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>11</release>
+                    <testExcludes>
+                        <testExclude>${cef4j.test.v117plus.excludes}</testExclude>
+                    </testExcludes>
+                    <testIncrementalExcludes>
+                        <testIncrementalExclude>${cef4j.test.v117plus.excludes}</testIncrementalExclude>
+                    </testIncrementalExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <argLine>${surefire.argLine} -Djava.awt.headless=false</argLine>
+                    <systemPropertyVariables>
+                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
