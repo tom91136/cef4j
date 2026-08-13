@@ -273,20 +273,19 @@ final class SwingBrowserPanelTestSupport {
 
     static void closeFrames() throws Exception {
         Map<CefBrowserPanel, PanelState> closing = new LinkedHashMap<>(STATES);
-        onSwingThread(() -> {
-            for (CefBrowserPanel panel : closing.keySet()) {
-                panel.release();
+        for (Map.Entry<CefBrowserPanel, PanelState> entry : closing.entrySet()) {
+            onSwingThread(entry.getKey()::release);
+            PanelState state = entry.getValue();
+            if (state.browserReady.getCount() == 0 && !state.browserClosed.await(10, TimeUnit.SECONDS)) {
+                throw new TimeoutException("Timed out waiting for CEF browser closure");
             }
+        }
+        onSwingThread(() -> {
             for (JFrame frame : FRAMES) {
                 frame.dispose();
             }
             FRAMES.clear();
         });
-        for (PanelState state : closing.values()) {
-            if (state.browserReady.getCount() == 0 && !state.browserClosed.await(10, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Timed out waiting for CEF browser closure");
-            }
-        }
         STATES.clear();
     }
 

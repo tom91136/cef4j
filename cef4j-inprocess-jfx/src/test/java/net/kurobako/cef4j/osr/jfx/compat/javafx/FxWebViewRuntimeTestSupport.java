@@ -213,19 +213,21 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void closeStages() throws Exception {
-        List<CompletableFuture<?>> closes = new ArrayList<>();
-        onFxThread(() -> {
-            if (isCefCompatHarness()) {
-                for (WebView view : VIEWS) {
+        if (isCefCompatHarness()) {
+            for (WebView view : VIEWS) {
+                CompletableFuture<?> close = onFxThread(() -> {
                     try {
                         Object result =
                                 view.getClass().getMethod("releaseAsync").invoke(view);
-                        if (result instanceof CompletableFuture<?>) closes.add((CompletableFuture<?>) result);
+                        return result instanceof CompletableFuture<?> ? (CompletableFuture<?>) result : null;
                     } catch (ReflectiveOperationException e) {
                         throw new IllegalStateException("failed to release CEF WebView", e);
                     }
-                }
+                });
+                if (close != null) close.get(10, TimeUnit.SECONDS);
             }
+        }
+        onFxThread(() -> {
             List<Window> windows = new ArrayList<>(Window.getWindows());
             for (Window window : windows) {
                 if (window.isShowing()) {
@@ -241,7 +243,6 @@ final class FxWebViewRuntimeTestSupport {
             content.putString("");
             Clipboard.getSystemClipboard().setContent(content);
         });
-        CompletableFuture.allOf(closes.toArray(new CompletableFuture<?>[0])).get(10, TimeUnit.SECONDS);
     }
 
     static WebView trackWebView(WebView view) {

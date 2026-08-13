@@ -20,17 +20,16 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
     void mouseExitEventsReachThePage() throws Exception {
         CefBrowserPanel panel = createAttachedPanel();
 
-        loadContent(
-                panel,
-                "<html><body style='margin:0;height:100vh'>"
-                        + "<script>"
-                        + "document.title = 'start';"
-                        + "document.addEventListener('mousemove', function() { document.title = 'inside'; });"
-                        + "document.addEventListener('mouseleave', function() { document.title = 'outside'; });"
-                        + "</script>"
-                        + "</body></html>");
+        String html = "<html><body style='margin:0;height:100vh'>"
+                + "<script>"
+                + "document.title = 'start';"
+                + "document.addEventListener('mousemove', function() { document.title = 'inside'; });"
+                + "document.addEventListener('mouseleave', function() { document.title = 'outside'; });"
+                + "</script>"
+                + "</body></html>";
+        loadContent(panel, html);
 
-        assertThat(waitUntil(() -> "start".equals(getTitle(panel)), 10_000))
+        assertThat(waitUntilDispatching(() -> "start".equals(getTitle(panel)), 10_000, () -> loadContent(panel, html)))
                 .as("the input fixture page should finish loading")
                 .isTrue();
 
