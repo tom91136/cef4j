@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -245,7 +247,7 @@ public final class RuntimeServerProcess implements Closeable {
     /** Connects using the provider selected by the runtime server. */
     @Nonnull
     public CefTransport connect() throws CefTransportException {
-        return CefTransports.connect(transport, endpoint);
+        return supervise(CefTransports.connect(transport, endpoint));
     }
 
     /** Connects an authenticated WebSocket generation, optionally trusting a caller-supplied TLS context. */
@@ -255,7 +257,11 @@ public final class RuntimeServerProcess implements Closeable {
         if (!"websocket".equals(transport)) {
             throw new CefTransportException("runtime server selected " + transport + ", not websocket");
         }
-        return WebSocketTransport.connect(endpoint, bearerToken, sslContext);
+        return supervise(WebSocketTransport.connect(endpoint, bearerToken, sslContext));
+    }
+
+    private CefTransport supervise(CefTransport delegate) {
+        return new ProcessSupervisedTransport(delegate, process);
     }
 
     public boolean isAlive() {
@@ -270,6 +276,81 @@ public final class RuntimeServerProcess implements Closeable {
     @Nonnull
     public CompletableFuture<Integer> onExit() {
         return process.onExit().thenApply(Process::exitValue);
+    }
+
+    /**
+     * Adds deterministic child-process death notification to any selected transport. Socket-level disconnect detection
+     * remains useful for remote servers, but a locally spawned server has a stronger signal available:
+     * {@link Process#onExit()}. This also avoids depending on platform-specific heartbeat/monitor timing.
+     */
+    private static final class ProcessSupervisedTransport implements CefTransport {
+        private final CefTransport delegate;
+        private final Process process;
+        private final CompletableFuture<Void> exitWatcher;
+        private final AtomicBoolean closed = new AtomicBoolean();
+        private final AtomicBoolean disconnected = new AtomicBoolean();
+        private final AtomicBoolean notified = new AtomicBoolean();
+
+        @Nullable
+        private volatile Runnable disconnectHandler;
+
+        private ProcessSupervisedTransport(CefTransport delegate, Process process) {
+            this.delegate = delegate;
+            this.process = process;
+            delegate.onDisconnect(this::markDisconnected);
+            exitWatcher = process.onExit().thenRun(this::markDisconnected);
+        }
+
+        @Override
+        public void send(ByteBuffer frame) throws CefTransportException {
+            if (!process.isAlive()) {
+                markDisconnected();
+                throw new CefTransportException("runtime server process has exited");
+            }
+            delegate.send(frame);
+        }
+
+        @Override
+        public void onReceive(Consumer<ByteBuffer> handler) {
+            delegate.onReceive(handler);
+        }
+
+        @Override
+        public void onDisconnect(Runnable handler) {
+            disconnectHandler = Objects.requireNonNull(handler, "handler");
+            fireDisconnectIfReady();
+        }
+
+        @Override
+        public boolean isConnected() {
+            return !closed.get() && !disconnected.get() && process.isAlive() && delegate.isConnected();
+        }
+
+        @Override
+        public boolean isRuntimeServerClient() {
+            return delegate.isRuntimeServerClient();
+        }
+
+        @Override
+        public void close() {
+            if (closed.compareAndSet(false, true)) {
+                exitWatcher.cancel(false);
+                delegate.close();
+            }
+        }
+
+        private void markDisconnected() {
+            if (closed.get()) return;
+            disconnected.set(true);
+            fireDisconnectIfReady();
+        }
+
+        private void fireDisconnectIfReady() {
+            Runnable handler = disconnectHandler;
+            if (disconnected.get() && !closed.get() && handler != null && notified.compareAndSet(false, true)) {
+                handler.run();
+            }
+        }
     }
 
     /** Immediately terminates this server generation. Primarily useful for recovery tests and operator controls. */
@@ -323,6 +404,14 @@ public final class RuntimeServerProcess implements Closeable {
         List<ProcessHandle> descendants = descendantsOf(process);
         destroy(descendants, true);
         process.destroyForcibly();
+        try {
+            process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
+            if (!awaitExit(descendants, CLOSE_GRACE_MS)) {
+                LOG.warn("runtime server pid={} still has live descendants after kill", process.pid());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static List<ProcessHandle> descendantsOf(Process process) {

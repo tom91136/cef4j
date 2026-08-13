@@ -257,7 +257,7 @@ class RuntimeServerIntegrationTest {
     @Test
     void killingRuntimeServerDisconnectsSessionCleanly() throws Exception {
         RuntimeServerProcess server = startServerWithEnv();
-        try (ZmqTransport transport = ZmqTransport.connect(server.endpoint());
+        try (net.kurobako.cef4j.ipc.transport.CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(60))) {
 
             // Send a request with a messageId the server does not handle. The server drops it silently
@@ -284,7 +284,9 @@ class RuntimeServerIntegrationTest {
 
             // Let the server bind and the ZMTP heartbeat exchange establish.
             Thread.sleep(500);
-            ProcessHandle.of(server.pid()).ifPresent(ProcessHandle::destroyForcibly);
+            // Kill the complete CEF process tree. Killing only the server parent reparents renderer children
+            // before close() can enumerate them and poisons later native tests on constrained runners.
+            server.kill();
 
             org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(20, TimeUnit.SECONDS))
                     .as("pending request should fail once the server is gone")
