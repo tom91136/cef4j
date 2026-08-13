@@ -231,23 +231,23 @@ public final class RemoteWebView extends Region {
 
     /**
      * Builds and dispatches a single CEF KeyEvent. {@code keyCode} populates both windowsKeyCode and nativeKeyCode (we
-     * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR. The size field
-     * is left at 0 — CEF fills it on the server side, and the wire encoder ignores it for our overlay.
+     * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR. The builder
+     * keeps this source compatible with CEF releases from before the size field was added.
      */
     private void sendKey(int eventType, KeyEvent jfx, int keyCode, int character) {
         BrowserHost host = hostRef.get();
         if (host == null) return;
         observe(
-                host.sendKeyEvent(new net.kurobako.cef4j.ipc.protocol.gen.KeyEvent(
-                        /*size=*/ 0L,
-                        eventType,
-                        keyModifiers(jfx),
-                        /*windowsKeyCode=*/ keyCode,
-                        /*nativeKeyCode=*/ keyCode,
-                        /*isSystemKey=*/ 0,
-                        character,
-                        /*unmodifiedCharacter=*/ character,
-                        /*focusOnEditableField=*/ 0)),
+                host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
+                        .type(eventType)
+                        .modifiers(keyModifiers(jfx))
+                        .windowsKeyCode(keyCode)
+                        .nativeKeyCode(keyCode)
+                        .isSystemKey(0)
+                        .character(character)
+                        .unmodifiedCharacter(character)
+                        .focusOnEditableField(0)
+                        .build()),
                 "forward key event");
     }
 

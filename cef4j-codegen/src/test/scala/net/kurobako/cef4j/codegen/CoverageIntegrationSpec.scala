@@ -3,9 +3,12 @@ package net.kurobako.cef4j.codegen
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import scala.concurrent.duration.*
 import scala.jdk.StreamConverters._
 
 class CoverageIntegrationSpec extends munit.FunSuite {
+
+  override val munitTimeout = 2.minutes
 
   private val cefRoot: Path = {
     val prop = System.getProperty("cef.root")

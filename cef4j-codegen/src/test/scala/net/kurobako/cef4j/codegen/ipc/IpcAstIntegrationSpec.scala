@@ -3,6 +3,7 @@ package net.kurobako.cef4j.codegen.ipc
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import scala.concurrent.duration.*
 import scala.jdk.StreamConverters.*
 
 import net.kurobako.cef4j.codegen.CHeaderParser
@@ -16,6 +17,8 @@ import net.kurobako.cef4j.codegen.Preprocessor
   * that emitting Java + C++ for any one of them does not throw.
   */
 class IpcAstIntegrationSpec extends munit.FunSuite {
+
+  override val munitTimeout = 2.minutes
 
   private val cefRoot: Path = {
     val prop = System.getProperty("cef.root")
