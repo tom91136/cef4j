@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.ImmutableCapabilities;
@@ -59,6 +61,16 @@ class RuntimeServerWebDriverIntegrationTest {
     }
 
     @Test
+    void servesM1CommandsOverPlatformLocalTransport() throws Exception {
+        String endpoint =
+                System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win")
+                        ? "pipe://cef4j-webdriver-" + Long.toUnsignedString(System.nanoTime())
+                        : "tcp://127.0.0.1:0";
+        verifyTransport("local", endpoint, "inline");
+    }
+
+    @Test
+    @DisabledOnOs(value = OS.WINDOWS, disabledReason = "Unix-domain sockets are not a Windows transport")
     void servesM1CommandsOverUnixDomainSocket() throws Exception {
         Path socketDirectory = Files.createTempDirectory("cef4j-webdriver-uds");
         verifyTransport("uds", "unix://" + socketDirectory.resolve("control.sock"), "inline");

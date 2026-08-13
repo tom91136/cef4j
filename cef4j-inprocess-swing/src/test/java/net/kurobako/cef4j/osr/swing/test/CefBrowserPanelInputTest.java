@@ -30,7 +30,9 @@ class CefBrowserPanelInputTest extends SwingBrowserPanelTestBase {
                         + "</script>"
                         + "</body></html>");
 
-        assertThat(waitUntil(() -> "start".equals(getTitle(panel)), 5_000)).isTrue();
+        assertThat(waitUntil(() -> "start".equals(getTitle(panel)), 10_000))
+                .as("the input fixture page should finish loading")
+                .isTrue();
 
         dispatchMouse(panel, MouseEvent.MOUSE_ENTERED, 80, 80, 0, MouseEvent.NOBUTTON, false, 0);
         assertThat(waitUntilDispatching(

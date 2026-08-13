@@ -107,6 +107,33 @@ final class FxWebViewRuntimeTestSupport {
             Cef.INSTANCE.terminate();
         }
         Platform.exit();
+        awaitJavaFxShutdown();
+    }
+
+    private static void awaitJavaFxShutdown() {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            Thread applicationThread = javaFxApplicationThread();
+            if (applicationThread == null || !applicationThread.isAlive()) return;
+            try {
+                applicationThread.join(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        Thread applicationThread = javaFxApplicationThread();
+        if (applicationThread != null && applicationThread.isAlive()) {
+            throw new IllegalStateException("JavaFX application thread did not stop after Platform.exit()");
+        }
+    }
+
+    @Nullable
+    private static Thread javaFxApplicationThread() {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if ("JavaFX Application Thread".equals(thread.getName())) return thread;
+        }
+        return null;
     }
 
     private static void initialiseCef() {
