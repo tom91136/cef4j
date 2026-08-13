@@ -109,6 +109,12 @@ if(UNIX AND NOT APPLE)
     target_link_options(cef4j-runtime-server PRIVATE -static-libstdc++ -static-libgcc)
 elseif(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "")
+    # CEF derives macOS process identity and Mach rendezvous names from the top-level application bundle. A bare
+    # executable can compile and load the framework but stalls during cef_initialize on current CEF releases.
+    set_target_properties(cef4j-runtime-server PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME "cef4j-runtime-server"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "net.kurobako.cef4j.runtime-server")
 elseif(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
     set_target_properties(cef4j-runtime-server PROPERTIES
@@ -134,6 +140,12 @@ endif()
 if(APPLE)
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
+            "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server.app"
+        # Do not leave a tempting bare copy on macOS: it can load CEF but lacks the application-bundle identity CEF
+        # requires during initialization. Consumers must launch the executable inside the packaged .app.
+        COMMAND ${CMAKE_COMMAND} -E rm -f "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
             "${CEF4J_RUNTIME_DIST}/Frameworks/Chromium Embedded Framework.framework")

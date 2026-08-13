@@ -157,8 +157,6 @@ jobs:
 
       - name: Build platform release artifacts (Windows ARM)
         if: matrix.platform == 'windowsarm64'
-        env:
-          CMAKE_GENERATOR_PLATFORM: ARM64
         run: >-
           ./mvnw -B clean verify
           -DskipTests -Dgpg.skip=true -Drelease.bundle=true -Prelease

@@ -258,16 +258,16 @@ public final class RemoteBrowserPanel extends JPanel {
         BrowserHost host = hostRef.get();
         if (host == null) return;
         observe(
-                host.sendKeyEvent(new net.kurobako.cef4j.ipc.protocol.gen.KeyEvent(
-                        0L,
-                        type,
-                        modifiers(event),
-                        keyCode,
-                        event.getExtendedKeyCode(),
-                        event.isAltDown() ? 1 : 0,
-                        character,
-                        character,
-                        0)),
+                host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
+                        .type(type)
+                        .modifiers(modifiers(event))
+                        .windowsKeyCode(keyCode)
+                        .nativeKeyCode(event.getExtendedKeyCode())
+                        .isSystemKey(event.isAltDown() ? 1 : 0)
+                        .character(character)
+                        .unmodifiedCharacter(character)
+                        .focusOnEditableField(0)
+                        .build()),
                 "forward key event");
     }
 

@@ -12,9 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -85,30 +83,17 @@ class RuntimeServerIntegrationTest {
     }
 
     private static RuntimeServerProcess startServerWithEnv(String transport, String endpoint) throws IOException {
-        Map<String, String> environment = new LinkedHashMap<>();
-        environment.put("CEF_RESOURCES_DIR", cefResources.toString());
-        if (isWindows()) {
-            environment.put("PATH", cefResources + java.io.File.pathSeparator + System.getenv("PATH"));
-        } else if (isMac()) {
-            Path framework = cefResources.resolve("Chromium Embedded Framework.framework");
-            environment.put("CEF_FRAMEWORK_DIR", framework.toString());
-        } else {
-            String inherited = System.getenv("LD_LIBRARY_PATH");
-            environment.put(
-                    "LD_LIBRARY_PATH",
-                    cefResources
-                            + (inherited == null || inherited.isEmpty() ? "" : java.io.File.pathSeparator + inherited));
-        }
         return RuntimeServerProcess.spawn(
-                serverBinary, transport, endpoint, "shared-file", Duration.ofSeconds(30), environment);
+                serverBinary,
+                transport,
+                endpoint,
+                "shared-file",
+                Duration.ofSeconds(30),
+                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
     }
 
     private static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
-    }
-
-    private static boolean isMac() {
-        return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
     }
 
     private static boolean optionalUdsClientAvailable() {

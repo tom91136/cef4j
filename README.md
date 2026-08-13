@@ -154,6 +154,8 @@ cef4j-runtime-server/target/cmake-build/runtime-server/
 
 That directory is the launchable unit and contains the server executable plus its matching CEF libraries and
 resources.
+On macOS, launch `cef4j-runtime-server.app/Contents/MacOS/cef4j-runtime-server`; CEF requires that application-bundle
+identity, so the distribution intentionally omits a bare top-level executable.
 
 ### API middleware, recording, and replay
 

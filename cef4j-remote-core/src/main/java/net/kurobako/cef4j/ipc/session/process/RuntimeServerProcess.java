@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -152,25 +154,25 @@ public final class RuntimeServerProcess implements Closeable {
         try {
             RuntimeServerHandshake handshake = handshakeFuture.get(bootstrapTimeout.toMillis(), TimeUnit.MILLISECONDS);
             if (!transport.equals(handshake.transport()) || !frameTransport.equals(handshake.frameTransport())) {
-                p.destroyForcibly();
+                terminateProcessTree(p);
                 cleanupProcessFiles(p.pid());
                 cleanupUdsSocket(bindEndpoint);
                 throw new IOException("runtime server selected unexpected providers: " + handshake);
             }
             return new RuntimeServerProcess(p, handshake);
         } catch (TimeoutException e) {
-            p.destroyForcibly();
+            terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
             throw new IOException("runtime server did not publish its handshake within " + bootstrapTimeout, e);
         } catch (InterruptedException e) {
-            p.destroyForcibly();
+            terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
             Thread.currentThread().interrupt();
             throw new IOException("interrupted while awaiting runtime server bootstrap", e);
         } catch (ExecutionException e) {
-            p.destroyForcibly();
+            terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
             Throwable cause = e.getCause();
@@ -252,32 +254,93 @@ public final class RuntimeServerProcess implements Closeable {
 
     /** Immediately terminates this server generation. Primarily useful for recovery tests and operator controls. */
     public void kill() {
-        process.destroyForcibly();
+        terminateProcessTree(process);
     }
 
     @Override
     public void close() {
+        List<ProcessHandle> descendants = descendantsOf(process);
         if (!process.isAlive()) {
+            destroy(descendants, true);
             cleanupProcessFiles(process.pid());
             cleanupUdsSocket(endpoint);
             return;
         }
         process.destroy();
+        destroy(descendants, false);
         try {
-            if (!process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS)) {
+            long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(CLOSE_GRACE_MS);
+            boolean processAlive = !process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
+            long remaining = Math.max(0L, deadline - System.nanoTime());
+            boolean descendantsExited = awaitExit(descendants, TimeUnit.NANOSECONDS.toMillis(remaining));
+            if (processAlive || !descendantsExited) {
                 LOG.warn(
-                        "runtime server pid={} did not exit within {}ms; sending SIGKILL",
+                        "runtime server process tree pid={} did not exit within {}ms; forcing termination",
                         process.pid(),
                         CLOSE_GRACE_MS);
                 process.destroyForcibly();
+                destroy(descendants, true);
                 process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
+                if (!awaitExit(descendants, CLOSE_GRACE_MS)) {
+                    LOG.warn(
+                            "runtime server pid={} still has live descendants after forced termination", process.pid());
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             process.destroyForcibly();
+            destroy(descendants, true);
         } finally {
+            // A Windows launcher is commonly cmd.exe with the actual runtime server as a child. Capture descendants
+            // before stopping the launcher and always sweep them so repeated tests cannot leak CEF subprocesses.
+            destroy(descendants, true);
             cleanupProcessFiles(process.pid());
             cleanupUdsSocket(endpoint);
+        }
+    }
+
+    private static void terminateProcessTree(Process process) {
+        List<ProcessHandle> descendants = descendantsOf(process);
+        destroy(descendants, true);
+        process.destroyForcibly();
+    }
+
+    private static List<ProcessHandle> descendantsOf(Process process) {
+        try (Stream<ProcessHandle> descendants = process.descendants()) {
+            return descendants.collect(Collectors.toList());
+        } catch (UnsupportedOperationException | SecurityException e) {
+            LOG.debug("cannot enumerate descendants of runtime server pid={}: {}", process.pid(), e.toString());
+            return List.of();
+        }
+    }
+
+    private static void destroy(List<ProcessHandle> processes, boolean forcibly) {
+        // Captured ProcessHandles remain usable if the hierarchy changes, so sweep every known subprocess.
+        for (ProcessHandle process : processes) {
+            if (!process.isAlive()) continue;
+            try {
+                if (forcibly) process.destroyForcibly();
+                else process.destroy();
+            } catch (UnsupportedOperationException | SecurityException e) {
+                LOG.debug("cannot terminate runtime server descendant pid={}: {}", process.pid(), e.toString());
+            }
+        }
+    }
+
+    private static boolean awaitExit(List<ProcessHandle> processes, long timeoutMillis) throws InterruptedException {
+        CompletableFuture<?>[] exits = processes.stream()
+                .filter(ProcessHandle::isAlive)
+                .map(ProcessHandle::onExit)
+                .toArray(CompletableFuture<?>[]::new);
+        if (exits.length == 0) return true;
+        try {
+            CompletableFuture.allOf(exits).get(timeoutMillis, TimeUnit.MILLISECONDS);
+            return true;
+        } catch (ExecutionException e) {
+            LOG.debug("failed while awaiting runtime server descendants", e);
+            return false;
+        } catch (TimeoutException e) {
+            return false;
         }
     }
 

@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleResponse;
@@ -30,6 +32,10 @@ class RuntimeServerProcessTest {
      * needs a path-to-binary argument - the same shape it will eventually take for the real C++ server.
      */
     private static Path writeLauncherScript(Path dir) throws IOException {
+        return writeLauncherScript(dir, true);
+    }
+
+    private static Path writeLauncherScript(Path dir, boolean replaceLauncherProcess) throws IOException {
         boolean isWindows =
                 System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
         Path javaHome = Path.of(System.getProperty("java.home"));
@@ -50,7 +56,8 @@ class RuntimeServerProcessTest {
             Files.writeString(script, content);
         } else {
             script = dir.resolve("stub-runtime-server.sh");
-            String content = "#!/bin/sh\nexec \"" + javaExe + "\" -cp \"" + classpath + "\" " + mainClass + " \"$@\"\n";
+            String command = (replaceLauncherProcess ? "exec " : "") + "\"" + javaExe + "\"";
+            String content = "#!/bin/sh\n" + command + " -cp \"" + classpath + "\" " + mainClass + " \"$@\"\n";
             Files.writeString(script, content);
             script.toFile().setExecutable(true);
         }
@@ -78,6 +85,24 @@ class RuntimeServerProcessTest {
         assertThat(server.isAlive())
                 .as("server pid=%d should not be alive after close()", pid)
                 .isFalse();
+    }
+
+    @Test
+    void closeTerminatesLauncherDescendants(@TempDir Path tmp) throws Exception {
+        Path script = writeLauncherScript(tmp, false);
+        RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
+        List<ProcessHandle> descendants;
+        try (java.util.stream.Stream<ProcessHandle> handles =
+                ProcessHandle.of(server.pid()).orElseThrow().descendants()) {
+            descendants = handles.collect(Collectors.toList());
+        }
+        assertThat(descendants)
+                .as("launcher should own the stub server process")
+                .isNotEmpty();
+
+        server.close();
+
+        assertThat(descendants).noneMatch(ProcessHandle::isAlive);
     }
 
     @Test

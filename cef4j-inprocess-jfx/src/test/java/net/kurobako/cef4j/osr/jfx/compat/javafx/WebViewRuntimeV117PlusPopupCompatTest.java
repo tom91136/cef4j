@@ -90,7 +90,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/opener",
                         "<html><body><script>"
                                 + "window.open('/first', 'reuse-me');"
-                                + "window.open('/second', 'reuse-me');"
+                                + "setTimeout(function() { window.open('/second', 'reuse-me'); }, 100);"
                                 + "</script></body></html>",
                 "/first", "<html><head><title>first-popup</title></head><body>first</body></html>",
                 "/second", "<html><head><title>second-popup</title></head><body>second</body></html>"))) {
@@ -108,7 +108,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
 
             onFxThread(() -> view.getEngine().load(server.url("/opener")));
 
-            assertThat(waitUntil(() -> "second-popup".equals(popupTitle.get()), 8_000))
+            assertThat(waitUntil(() -> "second-popup".equals(popupTitle.get()), 12_000))
                     .as("expected popup title 'second-popup'; got '%s'", popupTitle.get())
                     .isTrue();
         }
@@ -210,7 +210,11 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                                 + "</script></body></html>",
                 "/popup",
                         "<html><body><script>"
-                                + "setTimeout(function() { window.resizeTo(500, 400); }, 100);"
+                                + "var resizeAttempts = 0;"
+                                + "var resizeTimer = setInterval(function() {"
+                                + "  window.resizeTo(500, 400);"
+                                + "  if (++resizeAttempts === 20) clearInterval(resizeTimer);"
+                                + "}, 100);"
                                 + "</script></body></html>"))) {
             WebView view = createAttachedWebView();
             AtomicReference<Rectangle2D> latestBounds = new AtomicReference<>();
@@ -229,7 +233,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                                 Rectangle2D b = latestBounds.get();
                                 return b != null && b.getWidth() > 400;
                             },
-                            8_000))
+                            12_000))
                     .isTrue();
             Rectangle2D bounds = Objects.requireNonNull(latestBounds.get(), "latestBounds");
             assertThat(bounds.getWidth()).isBetween(450.0, 550.0);

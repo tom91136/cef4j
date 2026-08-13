@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -40,7 +41,9 @@ import org.junit.jupiter.api.io.TempDir;
 @Timeout(30)
 class CefDaemonRenderTest {
 
-    @TempDir
+    // CEF deliberately remains alive until this dedicated test fork exits, so its cache cannot be removed by
+    // JUnit's before-exit cleanup on every platform/JDK combination.
+    @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
 

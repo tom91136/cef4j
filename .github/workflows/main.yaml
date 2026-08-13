@@ -227,8 +227,6 @@ jobs:
       - name: Build on Windows ARM without JavaFX runtime tests
         if: matrix.javafx-tests == 'false'
         shell: bash
-        env:
-          CMAKE_GENERATOR_PLATFORM: ARM64
         run: |
           ./mvnw -B install -DskipTests \
             "-Dcef.version=${{ matrix.cef-version }}" \
@@ -236,7 +234,7 @@ jobs:
             "-Djavafx.version=${{ matrix.javafx }}" \
             "-Djavafx.test.version=${{ matrix.javafx }}" \
             "-Djavafx.platform=win"
-          ./mvnw -B test \
+          ./mvnw -B clean test \
             -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
             "-Dcef.version=${{ matrix.cef-version }}" \
             "-Dcef.api.version=${{ matrix.cef-api }}" \

@@ -387,6 +387,7 @@
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosx64_minimal.tar.bz2</cef.dist.url>
                 <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>clang</native.compiler.id>
+                <runtime.server.executable>cef4j-runtime-server.app/Contents/MacOS/cef4j-runtime-server</runtime.server.executable>
             </properties>
         </profile>
         <profile>
@@ -403,6 +404,7 @@
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_macosarm64_minimal.tar.bz2</cef.dist.url>
                 <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>clang</native.compiler.id>
+                <runtime.server.executable>cef4j-runtime-server.app/Contents/MacOS/cef4j-runtime-server</runtime.server.executable>
             </properties>
         </profile>
         <profile>
@@ -417,7 +419,7 @@
                 <cef.platform>windows64</cef.platform>
                 <cef.classifier>windows-x86_64</cef.classifier>
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_windows64_minimal.tar.bz2</cef.dist.url>
-                <cmake.generator>Visual Studio 17 2022</cmake.generator>
+                <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>msvc</native.compiler.id>
                 <runtime.server.executable>cef4j-runtime-server.exe</runtime.server.executable>
             </properties>
@@ -434,7 +436,7 @@
                 <cef.platform>windowsarm64</cef.platform>
                 <cef.classifier>windows-arm64</cef.classifier>
                 <cef.dist.url>https://cef-builds.spotifycdn.com/cef_binary_${cef.version}_windowsarm64_minimal.tar.bz2</cef.dist.url>
-                <cmake.generator>Visual Studio 17 2022</cmake.generator>
+                <cmake.generator>Ninja</cmake.generator>
                 <native.compiler.id>msvc</native.compiler.id>
                 <runtime.server.executable>cef4j-runtime-server.exe</runtime.server.executable>
             </properties>

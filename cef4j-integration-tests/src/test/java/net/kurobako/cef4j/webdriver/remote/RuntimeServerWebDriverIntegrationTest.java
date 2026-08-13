@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
@@ -176,11 +174,13 @@ class RuntimeServerWebDriverIntegrationTest {
 
     private static RuntimeServerBrowserRuntimeFactory runtimeFactory(
             String transport, String endpoint, String frameTransport) {
-        Map<String, String> environment = new HashMap<>();
-        environment.put("CEF_RESOURCES_DIR", cefResources.toString());
-        environment.put("LD_LIBRARY_PATH", cefResources + ":" + System.getenv().getOrDefault("LD_LIBRARY_PATH", ""));
         return new RuntimeServerBrowserRuntimeFactory(
-                serverBinary, transport, endpoint, frameTransport, Duration.ofSeconds(30), environment);
+                serverBinary,
+                transport,
+                endpoint,
+                frameTransport,
+                Duration.ofSeconds(30),
+                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
     }
 
     private static HttpServer startFixture(byte[] page) throws Exception {

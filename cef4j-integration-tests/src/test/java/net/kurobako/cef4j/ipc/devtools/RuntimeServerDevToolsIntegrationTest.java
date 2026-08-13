@@ -86,13 +86,12 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static RuntimeServerProcess startServer(String transport, String endpoint, String frameTransport)
             throws IOException {
-        Path script = Files.createTempDirectory("cef4j-devtools-server").resolve("launch.sh");
-        String content = "#!/bin/sh\n"
-                + "export CEF_RESOURCES_DIR=\"" + cefResources + "\"\n"
-                + "export LD_LIBRARY_PATH=\"" + cefResources + ":${LD_LIBRARY_PATH:-}\"\n"
-                + "exec \"" + serverBinary + "\" \"$@\"\n";
-        Files.writeString(script, content);
-        script.toFile().setExecutable(true);
-        return RuntimeServerProcess.spawn(script, transport, endpoint, frameTransport, Duration.ofSeconds(30));
+        return RuntimeServerProcess.spawn(
+                serverBinary,
+                transport,
+                endpoint,
+                frameTransport,
+                Duration.ofSeconds(30),
+                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
     }
 }

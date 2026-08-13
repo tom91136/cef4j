@@ -49,15 +49,13 @@ class RemoteHandleIntegrationTest {
     }
 
     private static RuntimeServerProcess spawnServerWithEnv() throws IOException {
-        Path tmpDir = Files.createTempDirectory("cef4j-runtime-server-launcher");
-        Path script = tmpDir.resolve("server-launch.sh");
-        String content = "#!/bin/sh\n"
-                + "export CEF_RESOURCES_DIR=\"" + cefResources + "\"\n"
-                + "export LD_LIBRARY_PATH=\"" + cefResources + ":${LD_LIBRARY_PATH:-}\"\n"
-                + "exec \"" + serverBinary + "\" \"$@\"\n";
-        Files.writeString(script, content);
-        script.toFile().setExecutable(true);
-        return RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0", Duration.ofSeconds(30));
+        return RuntimeServerProcess.spawn(
+                serverBinary,
+                "zmq",
+                "tcp://127.0.0.1:0",
+                "shared-file",
+                Duration.ofSeconds(30),
+                net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
     }
 
     @Test

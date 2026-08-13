@@ -69,15 +69,12 @@ final class WebSocketFrameTransportIntegrationTest {
     }
 
     private static RuntimeServerProcess spawnServer() throws IOException {
-        Path directory = Files.createTempDirectory("cef4j-websocket-frame-");
-        Path script = directory.resolve("server-launch.sh");
-        String content = "#!/bin/sh\n"
-                + "export CEF_RESOURCES_DIR=\"" + cefResources + "\"\n"
-                + "export LD_LIBRARY_PATH=\"" + cefResources + ":${LD_LIBRARY_PATH:-}\"\n"
-                + "exec \"" + serverBinary + "\" \"$@\"\n";
-        Files.writeString(script, content);
-        script.toFile().setExecutable(true);
         return RuntimeServerProcess.spawn(
-                script, "websocket", "ws://127.0.0.1:0/cef4j", "inline", Duration.ofSeconds(30));
+                serverBinary,
+                "websocket",
+                "ws://127.0.0.1:0/cef4j",
+                "inline",
+                Duration.ofSeconds(30),
+                RemoteCefBrowserBackend.runtimeEnvironment(cefResources));
     }
 }
