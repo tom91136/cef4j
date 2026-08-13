@@ -93,16 +93,6 @@
                                     <matches string="${cef.version}"
                                              pattern="^(14[4-9]|1[5-9][0-9]|[2-9][0-9]{2,})\..*"/>
                                 </condition>
-                                <!-- CEF 109 crashes natively when shutting down its Linux
-                                     multi-threaded message loop. CEF 116+ covers this mode. -->
-                                <condition property="cef4j.test.cef109.multithreaded.excludes"
-                                           value="**/CefScriptEngineMultiThreadedTest.java"
-                                           else="__never__">
-                                    <and>
-                                        <matches string="${cef.version}" pattern="^109\..*"/>
-                                        <matches string="${os.name}" pattern="^Linux$" casesensitive="false"/>
-                                    </and>
-                                </condition>
                             </target>
                         </configuration>
                     </execution>
@@ -142,6 +132,7 @@
                     <forkCount>1</forkCount>
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
+                        <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
                     </systemPropertyVariables>
                     <!-- Tests in this list need a separate execution because they initialise CEF with
                          incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)
@@ -170,7 +161,6 @@
                             <forkCount>1</forkCount>
                             <excludes combine.self="override">
                                 <exclude>${cef4j.test.v144plus.excludes}</exclude>
-                                <exclude>${cef4j.test.cef109.multithreaded.excludes}</exclude>
                             </excludes>
                             <includes>
                                 <include>**/CefSchemeHandlerTest.java</include>
