@@ -27,6 +27,13 @@ public final class StubSupervisedServerMain {
             System.out.flush();
             String drop = System.getenv("CEF4J_STUB_DROP_AFTER_MS");
             if (drop != null) {
+                // Start the fault timer only after the client has completed ZMTP and sent its
+                // runtime-session-ready envelope. Otherwise slow Windows runners can close the
+                // socket before it was ever a live transport, which tests startup rather than recovery.
+                long readyDeadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+                while (socket.recv(0) == null && System.nanoTime() < readyDeadline) {
+                    // recv uses the bounded timeout configured above
+                }
                 Thread.sleep(Long.parseLong(drop));
                 socket.close();
                 Thread.sleep(30_000);

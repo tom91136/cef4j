@@ -31,7 +31,9 @@ class CefWebViewV117PlusMultiBrowserTest {
         launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
-        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+        java.util.List<String> args = new java.util.ArrayList<>(launch.args());
+        args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
+        Cef.INSTANCE.initialise(launch.settings(), args);
         startJavaFx();
     }
 

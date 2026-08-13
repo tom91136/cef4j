@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
@@ -17,6 +18,13 @@ import org.junit.jupiter.api.Timeout;
 
 @Timeout(30)
 class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase {
+    private static final CopyOnWriteArrayList<WebView> POPUP_VIEWS = new CopyOnWriteArrayList<>();
+
+    private static WebView newPopupView() {
+        WebView view = new WebView();
+        POPUP_VIEWS.add(view);
+        return view;
+    }
 
     @Test
     void createPopupHandlerReceivesPopupFeaturesOnWindowOpen() throws Exception {
@@ -30,7 +38,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
                 popupRequested.set(true);
                 receivedFeatures.set(features);
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 return popupView.getEngine();
             }));
 
@@ -66,9 +74,8 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
                 "/popup", "<html><head><title>popup-title</title></head><body>popup</body></html>"))) {
             WebView view = createAttachedWebView();
             AtomicReference<String> popupTitle = new AtomicReference<>();
-
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 popupView
                         .getEngine()
                         .titleProperty()
@@ -98,7 +105,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             AtomicReference<String> popupTitle = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 popupView
                         .getEngine()
                         .titleProperty()
@@ -127,7 +134,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             AtomicBoolean becameHidden = new AtomicBoolean();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 popupView.getEngine().setOnVisibilityChanged(event -> {
                     if (Boolean.TRUE.equals(event.getData())) {
                         becameVisible.set(true);
@@ -158,7 +165,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             AtomicReference<Rectangle2D> popupBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 WebEngine popupEngine = popupView.getEngine();
                 popupEngine.setOnResized(event -> popupBounds.set(event.getData()));
                 return popupEngine;
@@ -186,7 +193,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             AtomicReference<Rectangle2D> popupBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 WebEngine popupEngine = popupView.getEngine();
                 popupEngine.setOnResized(event -> popupBounds.set(event.getData()));
                 return popupEngine;
@@ -220,7 +227,7 @@ class WebViewRuntimeV117PlusPopupCompatTest extends WebViewRuntimeCompatTestBase
             AtomicReference<Rectangle2D> latestBounds = new AtomicReference<>();
 
             onFxThread(() -> view.getEngine().setCreatePopupHandler(features -> {
-                WebView popupView = new WebView();
+                WebView popupView = newPopupView();
                 WebEngine popupEngine = popupView.getEngine();
                 popupEngine.setOnResized(event -> latestBounds.set(event.getData()));
                 return popupEngine;

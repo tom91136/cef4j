@@ -117,7 +117,9 @@ final class FxWebViewRuntimeTestSupport {
             // Best-effort; CEF will fail loudly later if the cache dir is unusable.
         }
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
-        Cef.INSTANCE.initialise(launch.settings(), launch.args());
+        java.util.List<String> args = new java.util.ArrayList<>(launch.args());
+        args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
+        Cef.INSTANCE.initialise(launch.settings(), args);
     }
 
     static void setCefCachePath(Path cachePath) {

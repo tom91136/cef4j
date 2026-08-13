@@ -71,6 +71,12 @@ jobs:
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
+      - name: Cache Maven wrapper distribution
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/wrapper
+          key: maven-wrapper-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+
       - id: sysroot-cache
         name: Restore AlmaLinux 8 sysroot
         uses: actions/cache/restore@v5
@@ -156,6 +162,12 @@ jobs:
             ${{ matrix.java }}
           cache: maven
           cache-dependency-path: '**/pom.xml'
+
+      - name: Cache Maven wrapper distribution
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/wrapper
+          key: maven-wrapper-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
 
       - name: Set up MSVC
         if: runner.os == 'Windows'

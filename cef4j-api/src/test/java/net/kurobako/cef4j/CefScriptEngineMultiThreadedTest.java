@@ -21,10 +21,12 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Timeout(60)
 class CefScriptEngineMultiThreadedTest {
 
     private static CefScriptEngine engineA;

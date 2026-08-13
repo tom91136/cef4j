@@ -34,6 +34,7 @@ import net.kurobako.cef4j.gen.CefRenderHandler;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
@@ -64,7 +65,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath =
                     Files.createTempDirectory("cef4j-native-swing-contract").toString();
-            CefBrowserPanel.initialise(settings, java.util.List.of(), null);
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), null);
             return new Session(config);
         } catch (Exception e) {
             throw new RuntimeException("failed to open native Swing contract session", e);

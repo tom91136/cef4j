@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +77,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         Path tmp = Files.createTempDirectory("cef4j-native-backend-cache");
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = tmp.toAbsolutePath().toString();
-        CefWebView.initialise(settings, List.of(), null);
+        CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), null);
         cefInitialised = true;
     }
 
