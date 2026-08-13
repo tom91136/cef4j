@@ -118,6 +118,7 @@
 #include "include/capi/views/cef_window_capi.h"
 #include "include/capi/views/cef_window_delegate_capi.h"
 
+#include "CefCompat.h"
 #include "Dispatcher.h"
 
 #include "DomdocumentGetBaseUrlRequest.h"

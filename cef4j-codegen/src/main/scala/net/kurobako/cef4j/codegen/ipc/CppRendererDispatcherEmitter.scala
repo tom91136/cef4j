@@ -69,6 +69,7 @@ object CppRendererDispatcherEmitter {
        |#include "include/internal/cef_string_list.h"
        |$capiIncludes
        |
+       |#include "CefCompat.h"
        |#include "Dispatcher.h"
        |
        |$genIncludes

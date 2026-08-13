@@ -57,6 +57,7 @@ extern "C" void cef4j_fix_main_bundle_id(void);
 #endif
 
 #include "Envelope.h"
+#include "CefCompat.h"
 #include "HandleTable.h"
 #include "InterceptRegistry.h"
 #include "IpcServer.h"
