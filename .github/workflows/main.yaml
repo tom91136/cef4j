@@ -303,7 +303,7 @@ jobs:
         run: >-
           ./mvnw -B
           -pl cef4j-remote-core,cef4j-remote-recording-gson,cef4j-remote-recording-jackson,cef4j-remote-frame,cef4j-cdp,cef4j-cdp-gson,cef4j-cdp-jackson,cef4j-remote-cdp-gson,cef4j-remote-cdp-jackson,cef4j-webdriver,cef4j-webdriver-gson,cef4j-webdriver-jackson,cef4j-remote-webdriver
-          test -Djava11.runtime.smoke=true
+          test "-Djava11.runtime.smoke=true"
 
       - name: Upload test reports on failure
         if: failure()

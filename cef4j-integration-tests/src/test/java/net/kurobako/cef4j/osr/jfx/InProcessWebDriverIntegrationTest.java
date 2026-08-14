@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -120,10 +121,11 @@ class InProcessWebDriverIntegrationTest {
                     @Override
                     public void close() {
                         try {
-                            onFxThread(() -> {
+                            CompletableFuture<Void> released = onFxThread(() -> {
                                 stage.close();
-                                view.release();
+                                return view.releaseAsync();
                             });
+                            Objects.requireNonNull(released, "browser release").get(10, TimeUnit.SECONDS);
                         } catch (Exception failure) {
                             throw new RuntimeException("failed to close in-process browser", failure);
                         }

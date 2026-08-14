@@ -975,14 +975,17 @@ public class CefWebView extends Region {
         if (windowInfo instanceof net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
+            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
             popupBounds = wi.bounds;
         } else if (windowInfo instanceof net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
+            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
             popupBounds = wi.bounds;
         } else if (windowInfo instanceof net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) {
             var wi = (net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable) windowInfo;
             wi.windowlessRenderingEnabled = 1;
+            if (wi.bounds == null) wi.bounds = new CefRect(0, 0, 800, 600);
             popupBounds = wi.bounds;
         } else {
             throw new IllegalStateException(

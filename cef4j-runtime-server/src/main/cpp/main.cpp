@@ -53,7 +53,6 @@
 #include "include/internal/cef_types.h"
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
-extern "C" void cef4j_fix_main_bundle_id(void);
 #endif
 
 #include "Envelope.h"
@@ -2253,7 +2252,6 @@ static int processId() {
 
 int main(int argc, char* argv[]) {
 #ifdef __APPLE__
-    cef4j_fix_main_bundle_id();
     std::string frameworkDirectory;
     std::string frameworkBinary;
     std::vector<std::string> cefArgumentStorage;
