@@ -25,10 +25,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 class NativeBackendSmokeTest {
 
     @AfterAll
-    static void shutdownCef() {
+    static void shutdownCef() throws Exception {
+        CefWebViewTestSupport.closeAllWindows();
+        CefWebViewTestSupport.drainJavaFx();
         if (net.kurobako.cef4j.Cef.INSTANCE.state() == net.kurobako.cef4j.Cef.State.INITIALISED) {
             CefWebView.terminate();
         }
+        CefWebViewTestSupport.shutdownJavaFx();
     }
 
     static List<BrowserBackend> backends() {

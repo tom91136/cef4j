@@ -75,8 +75,8 @@ class SessionReplayTest {
 
     @Test
     void replayedResponseResolvesPendingRequest(@TempDir Path tmp) throws Exception {
-        // Pre-build a log with a single RESPONSE for corrId=0 (the corrId the session will hand out for the
-        // first request). This is what makes replay deterministic: corrId allocation is monotonic from 0.
+        // corrId=0 is reserved for the runtime readiness exchange. Application request allocation is monotonic
+        // from 1, so a recorded response for the first application request deterministically uses corrId=1.
         Path log = tmp.resolve("session.log");
         try (MessageLog.Writer w = MessageLog.writer(log)) {
             w.append(
@@ -84,7 +84,7 @@ class SessionReplayTest {
                     100L,
                     envelope(
                             Envelope.Kind.RESPONSE,
-                            /*corrId*/ 0,
+                            /*corrId*/ 1,
                             MSG_NAVIGATE,
                             "navigated".getBytes(StandardCharsets.UTF_8)));
         }

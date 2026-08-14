@@ -47,10 +47,14 @@ final class CefWebViewTestSupport {
 
     static void startJavaFx() throws Exception {
         CountDownLatch fxLatch = new CountDownLatch(1);
-        try {
-            Platform.startup(fxLatch::countDown);
-        } catch (IllegalStateException alreadyRunning) {
+        Runnable configure = () -> {
+            Platform.setImplicitExit(false);
             fxLatch.countDown();
+        };
+        try {
+            Platform.startup(configure);
+        } catch (IllegalStateException alreadyRunning) {
+            Platform.runLater(configure);
         }
         if (!fxLatch.await(10, TimeUnit.SECONDS)) {
             throw new TimeoutException("Timed out starting JavaFX");
@@ -58,6 +62,8 @@ final class CefWebViewTestSupport {
     }
 
     static void closeAllWindows() throws Exception {
+        Thread applicationThread = javaFxApplicationThread();
+        if (applicationThread == null || !applicationThread.isAlive()) return;
         try {
             List<CompletableFuture<Void>> releases = onFxThread(() -> {
                 List<CompletableFuture<Void>> pending = new ArrayList<>();
@@ -77,6 +83,37 @@ final class CefWebViewTestSupport {
         } catch (IllegalStateException e) {
             // Toolkit not initialized — @BeforeAll was skipped, nothing to clean up
         }
+    }
+
+    static void drainJavaFx() throws Exception {
+        // Browser close completion can enqueue final visibility/pulse work. Keep CEF
+        // alive until a marker behind that work has run.
+        Thread applicationThread = javaFxApplicationThread();
+        if (applicationThread == null || !applicationThread.isAlive()) return;
+        onFxThread(() -> {});
+    }
+
+    static void shutdownJavaFx() throws Exception {
+        Platform.exit();
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        Thread applicationThread;
+        while ((applicationThread = javaFxApplicationThread()) != null
+                && applicationThread.isAlive()
+                && System.nanoTime() < deadline) {
+            applicationThread.join(100);
+        }
+        applicationThread = javaFxApplicationThread();
+        if (applicationThread != null && applicationThread.isAlive()) {
+            throw new IllegalStateException("JavaFX application thread did not stop after Platform.exit()");
+        }
+    }
+
+    @Nullable
+    private static Thread javaFxApplicationThread() {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if ("JavaFX Application Thread".equals(thread.getName())) return thread;
+        }
+        return null;
     }
 
     private static void collectCefViews(javafx.scene.Node node, List<CompletableFuture<Void>> releases) {

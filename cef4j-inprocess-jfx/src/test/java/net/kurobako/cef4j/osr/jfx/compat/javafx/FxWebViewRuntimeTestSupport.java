@@ -105,10 +105,19 @@ final class FxWebViewRuntimeTestSupport {
 
     static void shutdownCefHarness() {
         if (isCefCompatHarness() && net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) {
+            drainJavaFx();
             Cef.INSTANCE.terminate();
         }
         Platform.exit();
         awaitJavaFxShutdown();
+    }
+
+    private static void drainJavaFx() {
+        try {
+            onFxThread(() -> {});
+        } catch (Exception e) {
+            throw new IllegalStateException("failed to drain JavaFX before CEF shutdown", e);
+        }
     }
 
     private static void awaitJavaFxShutdown() {

@@ -25,15 +25,16 @@ public final class StubSupervisedServerMain {
                     + " frame=" + frame + " endpoint=" + socket.getLastEndpoint()
                     + " capabilities=remote-cef-api");
             System.out.flush();
+            byte[] readyRequest = awaitReadyRequest(socket);
+            byte[] readyResponse = readyRequest.clone();
+            // Envelope kind is the byte at offset 4: REQUEST=1, RESPONSE=2. The readiness
+            // response preserves corrId=0/messageId=0 from the validated request.
+            readyResponse[4] = 2;
+            socket.send(readyResponse);
             String drop = System.getenv("CEF4J_STUB_DROP_AFTER_MS");
             if (drop != null) {
-                // Start the fault timer only after the client has completed ZMTP and sent its
-                // runtime-session-ready envelope. Otherwise slow Windows runners can close the
-                // socket before it was ever a live transport, which tests startup rather than recovery.
-                long readyDeadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
-                while (socket.recv(0) == null && System.nanoTime() < readyDeadline) {
-                    // recv uses the bounded timeout configured above
-                }
+                // Start the fault timer only after the client has completed the explicit
+                // runtime-session-ready exchange, so this exercises recovery rather than startup.
                 Thread.sleep(Long.parseLong(drop));
                 socket.close();
                 Thread.sleep(30_000);
@@ -41,6 +42,24 @@ public final class StubSupervisedServerMain {
                 while (!Thread.currentThread().isInterrupted()) socket.recv(0);
             }
         }
+    }
+
+    private static byte[] awaitReadyRequest(ZMQ.Socket socket) {
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+        byte[] request;
+        while ((request = socket.recv(0)) == null && System.nanoTime() < deadline) {
+            // recv uses the bounded timeout configured above
+        }
+        if (request == null) throw new IllegalStateException("runtime readiness request timed out");
+        if (request.length != 14 || request[4] != 1) {
+            throw new IllegalArgumentException("invalid runtime readiness envelope");
+        }
+        for (int i = 0; i < request.length; i++) {
+            if (i != 4 && request[i] != 0) {
+                throw new IllegalArgumentException("invalid runtime readiness envelope");
+            }
+        }
+        return request;
     }
 
     private static String option(String[] args, String name, String fallback) {

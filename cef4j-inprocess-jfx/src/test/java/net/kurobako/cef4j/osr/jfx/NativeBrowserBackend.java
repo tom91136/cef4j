@@ -183,8 +183,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
                     released.set(webView.releaseAsync());
                 });
                 if (released.get() != null) released.get().get(10, TimeUnit.SECONDS);
-            } catch (Exception ignored) {
-                // Test teardown is best effort; the isolated fork owns any remaining native state.
+            } catch (Exception e) {
+                throw new IllegalStateException("native JavaFX browser did not close cleanly", e);
             }
         }
     }
