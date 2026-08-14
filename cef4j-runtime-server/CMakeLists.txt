@@ -137,27 +137,49 @@ if(EXISTS "${CEF_ROOT}/CREDITS.html")
 endif()
 
 if(APPLE)
-    set(CEF4J_RUNTIME_HELPER_NAME "cef4j-runtime-server Helper")
-    set(CEF4J_RUNTIME_HELPER_BUNDLE
-        "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/${CEF4J_RUNTIME_HELPER_NAME}.app")
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/main/macos/Helper-Info.plist.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/Helper-Info.plist"
-        @ONLY)
+    # Chromium selects a role-specific helper bundle for some subprocess types. A generic helper alone may appear to
+    # work until the GPU or renderer process is launched, then fail with PROCESS_LAUNCH_FAILED (1003). All five CEF
+    # bundle identities intentionally contain the same executable: main() routes --type= subprocesses through
+    # cef_execute_process before starting browser-process services.
+    set(CEF4J_RUNTIME_HELPER_ROLES default alerts gpu plugin renderer)
+    foreach(helper_role IN LISTS CEF4J_RUNTIME_HELPER_ROLES)
+        if(helper_role STREQUAL "default")
+            set(CEF4J_RUNTIME_HELPER_SUFFIX "")
+            set(CEF4J_RUNTIME_HELPER_ID_SUFFIX "")
+        elseif(helper_role STREQUAL "alerts")
+            set(CEF4J_RUNTIME_HELPER_SUFFIX " (Alerts)")
+            set(CEF4J_RUNTIME_HELPER_ID_SUFFIX ".alerts")
+        elseif(helper_role STREQUAL "gpu")
+            set(CEF4J_RUNTIME_HELPER_SUFFIX " (GPU)")
+            set(CEF4J_RUNTIME_HELPER_ID_SUFFIX ".gpu")
+        elseif(helper_role STREQUAL "plugin")
+            set(CEF4J_RUNTIME_HELPER_SUFFIX " (Plugin)")
+            set(CEF4J_RUNTIME_HELPER_ID_SUFFIX ".plugin")
+        elseif(helper_role STREQUAL "renderer")
+            set(CEF4J_RUNTIME_HELPER_SUFFIX " (Renderer)")
+            set(CEF4J_RUNTIME_HELPER_ID_SUFFIX ".renderer")
+        endif()
+        set(CEF4J_RUNTIME_HELPER_NAME "cef4j-runtime-server Helper${CEF4J_RUNTIME_HELPER_SUFFIX}")
+        set(CEF4J_RUNTIME_HELPER_BUNDLE
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/${CEF4J_RUNTIME_HELPER_NAME}.app")
+        set(CEF4J_RUNTIME_HELPER_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Helper-${helper_role}-Info.plist")
+        configure_file(
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/main/macos/Helper-Info.plist.in"
+            "${CEF4J_RUNTIME_HELPER_PLIST}"
+            @ONLY)
+        add_custom_command(TARGET cef4j-runtime-server POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS"
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Resources"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "$<TARGET_FILE:cef4j-runtime-server>"
+                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS/${CEF4J_RUNTIME_HELPER_NAME}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CEF4J_RUNTIME_HELPER_PLIST}"
+                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Info.plist")
+    endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        # Chromium launches macOS subprocesses through an application bundle. Reusing
-        # the same program preserves the remote server's renderer-side App implementation;
-        # main() routes --type= subprocesses through cef_execute_process immediately.
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS"
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Resources"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:cef4j-runtime-server>"
-            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS/${CEF4J_RUNTIME_HELPER_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/Helper-Info.plist"
-            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Info.plist"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"

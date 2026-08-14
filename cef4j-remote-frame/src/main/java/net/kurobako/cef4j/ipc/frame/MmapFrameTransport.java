@@ -220,8 +220,7 @@ public final class MmapFrameTransport implements FrameTransport {
     }
 
     private void disposeMappingLocked() {
-        // ByteBuffer mappings are auto-cleaned on GC; explicit unmap would require non-public JDK APIs. Closing the
-        // channel releases our handle; the runtime server removes retired files after rotating mappings.
+        ByteBuffer buffer = mappedBuffer;
         FileChannel ch = mappedChannel;
         RandomAccessFile raf = mappedFile;
         mappedBuffer = null;
@@ -229,6 +228,13 @@ public final class MmapFrameTransport implements FrameTransport {
         mappedFile = null;
         mappedShmName = null;
         mappedSize = 0;
+        // Closing a FileChannel does not unmap its MappedByteBuffer. That leaves the shared-frame file locked on
+        // Windows until a later GC, preventing both deterministic client cleanup and server-side slot rotation.
+        // Unsafe.invokeCleaner is available from Java 9 onward and requires no client JNI library. Reduced runtimes
+        // that omit jdk.unsupported retain the platform's normal GC-based unmapping fallback.
+        if (buffer != null && !MappedBufferCleaner.clean(buffer)) {
+            LOG.debug("explicit shared-frame unmap unavailable for browser={}", browserIdForLog());
+        }
         try {
             if (ch != null) ch.close();
         } catch (IOException ignored) {

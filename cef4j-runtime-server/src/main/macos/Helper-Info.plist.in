@@ -9,7 +9,7 @@
     <key>CFBundleExecutable</key>
     <string>@CEF4J_RUNTIME_HELPER_NAME@</string>
     <key>CFBundleIdentifier</key>
-    <string>net.kurobako.cef4j.runtime-server.helper</string>
+    <string>net.kurobako.cef4j.runtime-server.helper@CEF4J_RUNTIME_HELPER_ID_SUFFIX@</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

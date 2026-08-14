@@ -2426,6 +2426,12 @@ int main(int argc, char* argv[]) {
     }
     g_ipc                 = ipc.get();
     genhandlers::g_ipc    = ipc.get(); // Generated forwarders fire events through this pointer.
+
+    // Publish the CEF client before the IPC worker can receive SessionReady. Otherwise a fast client can consume the
+    // one-shot bootstrap barrier, post CreateBrowserTask, and have that task observe a null g_client before main gets
+    // here. The task then returns without creating a browser and subsequent SessionReady messages cannot retry it.
+    auto* client = new Client();
+    g_client     = client;
     ipc->start(onIpcFrame);
 
     std::printf(
@@ -2436,9 +2442,6 @@ int main(int argc, char* argv[]) {
         frameTransportName.c_str(),
         ipc->endpoint().c_str());
     std::fflush(stdout);
-
-    auto* client = new Client();
-    g_client     = client; // shared with CreateBrowserTask for JVM-triggered creates.
 
     cef_run_message_loop();
     releaseAllDevToolsRegistrations();

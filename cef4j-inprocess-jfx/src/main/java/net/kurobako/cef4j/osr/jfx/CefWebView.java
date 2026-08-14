@@ -930,7 +930,12 @@ public class CefWebView extends Region {
         if (browser == null) return;
         BrowserHandle created = new BrowserHandle(browser);
         if (releaseRequested) {
-            created.close(true);
+            // A popup can be released after onBeforePopup returns but before CEF finishes CreateInternal. Closing it
+            // synchronously from onAfterCreated clears CEF's platform delegate before CreateInternal subsequently
+            // calls NotifyBrowserCreated, causing a native null dereference on CEF 144+. Defer the close until this
+            // callback has unwound; closeBrowser is safe to invoke from the JavaFX thread and posts to CEF's UI
+            // thread when required.
+            Platform.runLater(() -> created.close(true));
             return;
         }
         if (this.browser == null) {

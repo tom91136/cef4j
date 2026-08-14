@@ -17,6 +17,10 @@
                 <include>cef4j-runtime-server.exe</include>
                 <include>cef4j-runtime-server.app/Contents/MacOS/cef4j-runtime-server</include>
                 <include>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper.app/Contents/MacOS/cef4j-runtime-server Helper</include>
+                <include>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Alerts).app/Contents/MacOS/cef4j-runtime-server Helper (Alerts)</include>
+                <include>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (GPU).app/Contents/MacOS/cef4j-runtime-server Helper (GPU)</include>
+                <include>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Plugin).app/Contents/MacOS/cef4j-runtime-server Helper (Plugin)</include>
+                <include>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Renderer).app/Contents/MacOS/cef4j-runtime-server Helper (Renderer)</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>
@@ -28,6 +32,10 @@
                 <exclude>cef4j-runtime-server.exe</exclude>
                 <exclude>cef4j-runtime-server.app/Contents/MacOS/cef4j-runtime-server</exclude>
                 <exclude>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper.app/Contents/MacOS/cef4j-runtime-server Helper</exclude>
+                <exclude>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Alerts).app/Contents/MacOS/cef4j-runtime-server Helper (Alerts)</exclude>
+                <exclude>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (GPU).app/Contents/MacOS/cef4j-runtime-server Helper (GPU)</exclude>
+                <exclude>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Plugin).app/Contents/MacOS/cef4j-runtime-server Helper (Plugin)</exclude>
+                <exclude>cef4j-runtime-server.app/Contents/Frameworks/cef4j-runtime-server Helper (Renderer).app/Contents/MacOS/cef4j-runtime-server Helper (Renderer)</exclude>
             </excludes>
             <fileMode>0644</fileMode>
         </fileSet>

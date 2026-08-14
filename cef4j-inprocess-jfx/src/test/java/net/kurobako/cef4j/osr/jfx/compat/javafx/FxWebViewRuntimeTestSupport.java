@@ -224,6 +224,14 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void closeStages() throws Exception {
+        // Relinquish any native clipboard selection while the CEF browser that owns it is still
+        // alive. Older Chromium versions can otherwise dispatch a late X11 selection callback
+        // through an already-closed browser while JavaFX takes ownership below.
+        onFxThread(() -> {
+            ClipboardContent content = new ClipboardContent();
+            content.putString("");
+            Clipboard.getSystemClipboard().setContent(content);
+        });
         if (isCefCompatHarness()) {
             // Popup views are appended after their opener. Close in reverse creation order so a
             // slow native popup cannot still be inside CefBrowserHost::CreateBrowser while its
@@ -255,9 +263,6 @@ final class FxWebViewRuntimeTestSupport {
             }
             STAGES.clear();
             VIEWS.clear();
-            ClipboardContent content = new ClipboardContent();
-            content.putString("");
-            Clipboard.getSystemClipboard().setContent(content);
         });
     }
 
