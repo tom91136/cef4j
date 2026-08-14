@@ -4,11 +4,41 @@
 #include "runtime_stubs.gen.h"
 #include "cef_compat.h"
 
+#ifndef _WIN32
+#include <array>
+#include <signal.h>
+#endif
+
+int Cef4jInitialize(const cef_main_args_t* args, const cef_settings_t* settings,
+        cef_app_t* application, void* windowsSandboxInfo) {
+#ifndef _WIN32
+    // Chromium's crash handler replaces HotSpot's handlers on CEF releases
+    // that do not expose cef_settings_t.disable_signal_handlers. Preserve the
+    // complete fatal-signal set instead of keying this behavior to a CEF
+    // version so custom/branch builds receive the same JVM-safe semantics.
+    constexpr std::array<int, 7> fatalSignals{
+        SIGILL, SIGABRT, SIGFPE, SIGBUS, SIGSEGV, SIGSYS, SIGTRAP};
+    std::array<struct sigaction, fatalSignals.size()> previous{};
+    std::array<bool, fatalSignals.size()> captured{};
+    for (size_t i = 0; i < fatalSignals.size(); ++i) {
+        captured[i] = sigaction(fatalSignals[i], nullptr, &previous[i]) == 0;
+    }
+#endif
+
+    int result = cef_initialize(args, settings, application, windowsSandboxInfo);
+
+#ifndef _WIN32
+    for (size_t i = 0; i < fatalSignals.size(); ++i) {
+        if (captured[i]) sigaction(fatalSignals[i], &previous[i], nullptr);
+    }
+#endif
+    return result;
+}
+
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
 #include "include/cef_api_hash.h"
 #include "include/cef_version.h"
-#include "include/capi/cef_app_capi.h"
 #include "include/capi/cef_task_capi.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <atomic>

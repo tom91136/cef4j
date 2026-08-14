@@ -36,8 +36,8 @@ class CefWebViewV117PlusInputTest {
                 .toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
-        Cef.INSTANCE.initialise(launch.settings(), args);
         startJavaFx();
+        Cef.INSTANCE.initialise(launch.settings(), args);
     }
 
     @AfterEach

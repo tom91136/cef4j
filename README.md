@@ -77,6 +77,9 @@ source compatibility.
 
 JavaFX initialization and use:
 
+Call this from `Application.start(...)` after JavaFX has initialized its platform integration. This ordering is
+required on macOS and is portable to Linux and Windows.
+
 ```java
 CefSettings.Mutable settings = new CefSettings.Mutable();
 settings.cachePath = Files.createTempDirectory("cef4j-").toAbsolutePath().toString();

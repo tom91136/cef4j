@@ -3,7 +3,6 @@ package net.kurobako.cef4j.osr.jfx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefSettings;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,11 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
  * explicit {@link CefWebView#initialise(CefSettings.Mutable, List, net.kurobako.cef4j.gen.CefApp)} call gets a
  * descriptive exception instead of a silent blank view.
  *
- * <p><b>macOS note:</b> this test is skipped on macOS because {@code Platform.startup()} is incompatible with how JUnit
- * drives tests: with {@code -XstartOnFirstThread} it enters a nested {@code NSApp.run()} that never returns until
- * {@code Platform.exit()} is called; without the flag it crashes AppKit during toolkit initialisation. The JavaFX
- * sample ({@code JfxBrowserApp}) uses {@code Application.launch()} which handles this correctly and is the macOS
- * integration vehicle for this render path.
+ * <p>JavaFX starts before CEF so macOS establishes Glass/AppKit before CEF enters the shared application event loop.
  */
 @Timeout(30)
 @TestMethodOrder(org.junit.jupiter.api.MethodOrderer.OrderAnnotation.class)
@@ -51,7 +45,6 @@ class CefWebViewRenderTest {
     @Order(1)
     @Test
     void constructorThrowsClearErrorWhenCefNotInitialised() throws Exception {
-        assumeFalse(OS.isMacOS(), "Platform.startup() is incompatible with JUnit on macOS; see class javadoc");
         assumeDisplayServer();
         startJavaFx();
         assertThatThrownBy(() -> onFxThread(() -> new CefWebView()))
@@ -62,16 +55,14 @@ class CefWebViewRenderTest {
     @Order(2)
     @Test
     void webViewPaintsFramesAfterPageLoad(@TempDir Path tempDir) throws Exception {
-        assumeFalse(OS.isMacOS(), "Platform.startup() is incompatible with JUnit on macOS; see class javadoc");
         assumeDisplayServer();
+        startJavaFx();
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
         CefWebView.initialise(settings, List.of(), null);
         try {
-            startJavaFx();
-
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {
                         CefWebView v = new CefWebView();

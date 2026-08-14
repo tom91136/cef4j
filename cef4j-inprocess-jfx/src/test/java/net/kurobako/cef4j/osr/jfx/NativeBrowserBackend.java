@@ -65,8 +65,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
     @Nonnull
     public BrowserSession openSession(@Nonnull SessionConfig config) {
         try {
-            ensureCefInitialised();
             startJavaFx();
+            ensureCefInitialised();
             return new NativeSession(config);
         } catch (Exception e) {
             throw new RuntimeException("failed to open native browser session", e);

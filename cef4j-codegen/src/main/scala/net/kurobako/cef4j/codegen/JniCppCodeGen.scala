@@ -594,7 +594,13 @@ $convertAndReturn"""
     }
     val blocks = renderCallBlocks(argConversions, npeChecks)
 
-    val fnCall = s"${ff.cName}(${blocks.callArgs})"
+    // Older CEF releases predate cef_settings_t.disable_signal_handlers and
+    // overwrite the JVM's fatal-signal handlers during cef_initialize(). Route
+    // every generated initialize binding through the runtime compatibility
+    // wrapper; on newer CEF it is a harmless snapshot/restore around an init
+    // that already leaves the handlers alone.
+    val nativeFunction = if (ff.cName == "cef_initialize") "Cef4jInitialize" else ff.cName
+    val fnCall         = s"$nativeFunction(${blocks.callArgs})"
 
     val body = ff.ret match {
       case CType.Void =>

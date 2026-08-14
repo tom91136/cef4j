@@ -8,6 +8,7 @@
 #include <vector>
 #include <type_traits>
 #include "include/capi/cef_base_capi.h"
+#include "include/capi/cef_app_capi.h"
 #include "include/internal/cef_string.h"
 #include "cef_compat.h"
 
@@ -34,6 +35,13 @@
 #define CEF4J_JNI_EXPORT_RT_(ret, cls, name) \
     extern "C" JNIEXPORT ret JNICALL Java_net_kurobako_cef4j_##cls##_##name
 #define CEF4J_JNI_EXPORT_RT(ret, cls, name) CEF4J_JNI_EXPORT_RT_(ret, cls, name)
+
+// Compatibility wrapper for cef_initialize(). CEF versions before the
+// disable_signal_handlers setting overwrite HotSpot's fatal-signal handlers,
+// turning recoverable JVM guard-page faults into SIGBUS/SIGSEGV process exits.
+// The implementation preserves the host handlers active immediately before CEF initialization.
+int Cef4jInitialize(const cef_main_args_t* args, const cef_settings_t* settings,
+                    cef_app_t* application, void* windowsSandboxInfo);
 
 // ScopedJNIEnv: Ensures a JNIEnv* is available on the current thread.
 //

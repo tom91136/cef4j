@@ -175,26 +175,10 @@ public class CefBrowserPanel extends JPanel {
         synchronized (INITIALISE_LOCK) {
             JFrame frame = awtBootstrapFrame;
             awtBootstrapFrame = null;
-            if (frame != null) {
-                Runnable dispose = frame::dispose;
-                if (SwingUtilities.isEventDispatchThread()) {
-                    dispose.run();
-                } else {
-                    try {
-                        SwingUtilities.invokeAndWait(dispose);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new IllegalStateException("Interrupted while shutting down AWT before CEF", e);
-                    } catch (java.lang.reflect.InvocationTargetException e) {
-                        throw new IllegalStateException("Failed to shut down AWT before CEF", e.getCause());
-                    }
-                }
-            }
             if (frame != null && !SwingUtilities.isEventDispatchThread()) {
                 try {
-                    // Disposing a peer can enqueue hierarchy/component work behind the
-                    // dispose callback itself. Keep CEF alive until that work has run;
-                    // otherwise a late AWT callback can enter already-unloaded native state.
+                    // Drain browser/frame disposal work while the bootstrap peer still keeps AWT/X11 alive. Older CEF
+                    // releases can otherwise race toolkit auto-shutdown while cef_shutdown is still unwinding.
                     SwingUtilities.invokeAndWait(() -> {});
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -203,7 +187,29 @@ public class CefBrowserPanel extends JPanel {
                     throw new IllegalStateException("Failed to drain AWT before CEF shutdown", e.getCause());
                 }
             }
-            Cef.INSTANCE.terminate();
+            try {
+                Cef.INSTANCE.terminate();
+            } finally {
+                if (frame != null) disposeAwtBootstrap(frame);
+            }
+        }
+    }
+
+    private static void disposeAwtBootstrap(JFrame frame) {
+        Runnable dispose = frame::dispose;
+        if (SwingUtilities.isEventDispatchThread()) {
+            dispose.run();
+            return;
+        }
+        try {
+            SwingUtilities.invokeAndWait(dispose);
+            // Disposal can enqueue final hierarchy/component work behind the callback itself.
+            SwingUtilities.invokeAndWait(() -> {});
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while shutting down AWT after CEF", e);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            throw new IllegalStateException("Failed to shut down AWT after CEF", e.getCause());
         }
     }
 

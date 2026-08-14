@@ -99,9 +99,8 @@ class CefWebViewSchemeTest {
         launch.settings().cachePath = cacheRoot.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
-        Cef.INSTANCE.initialise(launch.settings(), args);
-
         startJavaFx();
+        Cef.INSTANCE.initialise(launch.settings(), args);
 
         CefGlobals.registerSchemeHandlerFactory("classpath", null, new UrlSchemeHandlerFactory());
     }

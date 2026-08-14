@@ -136,9 +136,10 @@ public class CefWebView extends Region {
     final java.util.concurrent.atomic.LongAdder framesPainted = new java.util.concurrent.atomic.LongAdder();
 
     /**
-     * Initialise CEF for off-screen rendering. Must be called before
-     * {@link javafx.application.Application#launch(Class, String...)}, typically from the {@code main} thread before
-     * JavaFX is initialised.
+     * Initialise CEF for off-screen rendering. On macOS, call this after the JavaFX toolkit has started (normally from
+     * {@link javafx.application.Application#start(javafx.stage.Stage)}); JavaFX and Glass must establish their AppKit
+     * integration before CEF takes over the shared application event loop. Calling from that same lifecycle point is
+     * also supported on Linux and Windows.
      *
      * <p>OSR-required settings ({@code windowlessRenderingEnabled=1}, the platform-appropriate message-loop mode, and
      * {@code --disable-popup-blocking} / {@code --ozone-platform=x11} on Linux) are stamped onto {@code settings} /
@@ -156,9 +157,8 @@ public class CefWebView extends Region {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
-            // Note: we intentionally do NOT call Platform.isFxApplicationThread() here.
-            // On macOS without -XstartOnFirstThread, that call triggers JavaFX/Glass initialisation
-            // which blocks until [NSApp run] is running on Thread 0.  CEF must initialise first.
+            // Do not implicitly start JavaFX here. Toolkit ownership belongs to Application.launch(), and on macOS the
+            // caller must establish Glass/AppKit before CEF enters its managed application message loop.
             if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
                 // Already up - just validate it's configured for OSR.
                 requireOsrInitialised();
@@ -190,7 +190,7 @@ public class CefWebView extends Region {
         if (state != Cef.State.INITIALISED) {
             throw new IllegalStateException(
                     "CEF must be initialised for off-screen rendering before creating a CefWebView.\n"
-                            + "Add this before Application.launch():\n\n"
+                            + "Call this from Application.start(...) before creating the view:\n\n"
                             + "    Cef.LaunchArgs launch = Cef.osrLaunchArgs();\n"
                             + "    Cef.INSTANCE.initialise(launch.settings(), launch.args());\n");
         }

@@ -80,5 +80,5 @@ CEF4J_JNI_EXPORT(jint, CefGlobals, initialize0)(JNIEnv* env, jclass clz, jobject
     _settings_val.use_views_default_popup = static_cast<decltype(_settings_val.use_views_default_popup)>(env->GetIntField(settings, env->GetFieldID(_settings_c, "useViewsDefaultPopup", "I")));
     _settings_val.size = sizeof(cef_settings_t);
     cef_app_t* _application_ptr = application ? Create_JniCefApp(env, application) : nullptr;
-    return static_cast<jint>(cef_initialize(&_args_val, &_settings_val, _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
+    return static_cast<jint>(Cef4jInitialize(&_args_val, &_settings_val, _application_ptr, reinterpret_cast<void*>(windows_sandbox_info ? env->GetLongField(windows_sandbox_info, env->GetFieldID(env->GetObjectClass(windows_sandbox_info), "address", "J")) : 0)));
 }

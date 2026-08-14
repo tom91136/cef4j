@@ -24,8 +24,8 @@ import org.zeromq.ZMonitor;
  * <p>Internals: a single worker thread owns the main DEALER socket (ZMQ sockets are not thread-safe). External
  * {@link #send} callers enqueue bytes onto a {@link BlockingQueue} and signal the worker via an in-process PAIR pipe;
  * the worker polls both the main socket and the wake pipe, draining outbound bytes after each wake. DEALER is used
- * instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms. Application frames remain
- * in the Java-side outbound queue until the socket monitor confirms that the ZMTP peer is ready.
+ * instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms. {@code ZMQ_IMMEDIATE}
+ * keeps application frames in the Java-side outbound queue until the socket has an established ZMTP pipe.
  *
  * <p>Disconnect detection uses {@link ZMonitor} on the main socket; ZMTP heartbeats are enabled so peer crashes are
  * surfaced even when the TCP FIN is lost.
@@ -85,6 +85,10 @@ public final class ZmqTransport implements CefTransport {
         this.ctx = new ZContext();
         this.main = ctx.createSocket(SocketType.DEALER);
         main.setLinger(0);
+        // Without IMMEDIATE, ZeroMQ may accept a send into a not-yet-connected pipe and later discard it if that pipe
+        // is replaced during handshake/reconnect. A false DONTWAIT result is exactly the backpressure signal the
+        // Java-side queue needs in order to retain and retry the frame.
+        main.setImmediate(true);
         // ZMTP heartbeats so silent peer death (kill -9) is surfaced via ZMonitor.
         main.setHeartbeatIvl(500);
         main.setHeartbeatTimeout(2000);
@@ -245,10 +249,6 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void drainOutbound() {
-        // A successful non-blocking DEALER send before ZMTP is connected does not
-        // guarantee that every JeroMQ/platform combination retains the frame.
-        // The monitor thread wakes us as soon as CONNECTED/ACCEPTED is observed.
-        if (!peerReady) return;
         byte[] out;
         while ((out = outbound.peek()) != null) {
             try {
@@ -286,9 +286,6 @@ public final class ZmqTransport implements CefTransport {
                     continue;
                 }
                 if (ev.type == ZMonitor.Event.CONNECTED || ev.type == ZMonitor.Event.ACCEPTED) {
-                    // A PAIR send before the ZMTP connection exists is not reliably queued by every
-                    // JeroMQ/platform combination. Retain outbound messages until the monitor confirms
-                    // the peer, then wake the socket-owner thread to flush them.
                     peerReady = true;
                     wake();
                 } else if (ev.type == ZMonitor.Event.DISCONNECTED

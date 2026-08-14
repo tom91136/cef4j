@@ -32,10 +32,7 @@ public final class JfxBrowserApp {
         return cacheDir;
     }
 
-    public static void main(String[] args) throws IOException {
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = createCacheDir().toAbsolutePath().toString();
-        CefWebView.initialise(settings, List.of(), null);
+    public static void main(String[] args) {
         SigintHelper.install(() -> {
             if (Platform.isFxApplicationThread()) {
                 Platform.exit();
@@ -54,7 +51,12 @@ public final class JfxBrowserApp {
         private static final String DEFAULT_URL = "https://codepen.io/rcyou/pen/QEObEZ";
 
         @Override
-        public void start(Stage stage) {
+        public void start(Stage stage) throws IOException {
+            // JavaFX must establish its AppKit integration before CEF on macOS.
+            CefSettings.Mutable settings = new CefSettings.Mutable();
+            settings.cachePath = createCacheDir().toAbsolutePath().toString();
+            CefWebView.initialise(settings, List.of(), null);
+
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);
             stage.setHeight(800);

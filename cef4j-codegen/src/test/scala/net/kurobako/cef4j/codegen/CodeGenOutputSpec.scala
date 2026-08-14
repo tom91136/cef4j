@@ -37,6 +37,22 @@ class CodeGenOutputSpec extends munit.FunSuite {
     )
   }
 
+  test("cef_initialize preserves the host JVM signal handlers") {
+    val initialize: CefDecl.FreeFunction = CefDecl.FreeFunction(
+      cName = "cef_initialize",
+      ret = CType.Bool,
+      params = Nil,
+      ownerStruct = "",
+      javaMethodName = "initialize",
+      sourceHeader = "cef_app_capi.h"
+    )
+
+    val cpp = codegen.renderFreeFunction("CefGlobals", initialize, isDirectClass = true)
+
+    assert(cpp.contains("Cef4jInitialize()"), s"Expected JVM-safe initialize wrapper in:\n$cpp")
+    assert(!cpp.contains("return static_cast<jint>(cef_initialize())"), s"Unexpected direct CEF init call in:\n$cpp")
+  }
+
   test("object codegen produces null-guard on self before function pointer call") {
     val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
       "cef_browser_t",
