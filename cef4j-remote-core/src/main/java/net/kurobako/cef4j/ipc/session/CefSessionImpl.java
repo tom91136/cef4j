@@ -27,13 +27,17 @@ public final class CefSessionImpl implements CefSession {
 
     private static final Logger LOG = LoggerFactory.getLogger(CefSessionImpl.class);
     private static final int RUNTIME_SESSION_READY_MESSAGE_ID = 0;
+    private static final int RUNTIME_SESSION_READY_CORR_ID = 0;
 
     private final CefTransport transport;
     private final Duration defaultTimeout;
     private final ScheduledExecutorService timer;
     private final boolean ownTimer;
 
-    private final AtomicInteger nextCorrId = new AtomicInteger(0);
+    // corrId 0 belongs to the runtime-session-ready handshake. Application
+    // requests start at 1 so a delayed bootstrap acknowledgement can never
+    // complete an unrelated request.
+    private final AtomicInteger nextCorrId = new AtomicInteger(1);
     private final AtomicLong nextEventSequence = new AtomicLong(0);
     private final ConcurrentHashMap<Integer, Pending<?>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, CopyOnWriteArrayList<EventBinding<?>>> eventHandlers =
@@ -43,6 +47,7 @@ public final class CefSessionImpl implements CefSession {
     private final CopyOnWriteArrayList<Runnable> closeHandlers = new CopyOnWriteArrayList<>();
     private final java.util.concurrent.atomic.AtomicBoolean closeNotified =
             new java.util.concurrent.atomic.AtomicBoolean();
+    private final CompletableFuture<Void> runtimeSessionReady = new CompletableFuture<>();
 
     private volatile boolean closed = false;
 
@@ -69,18 +74,29 @@ public final class CefSessionImpl implements CefSession {
         this.ownTimer = ownTimer;
         transport.onReceive(this::handleFrame);
         transport.onDisconnect(this::handleDisconnect);
-        if (transport.isRuntimeServerClient()) sendRuntimeSessionReady();
+        if (transport.isRuntimeServerClient()) establishRuntimeSession();
     }
 
-    private void sendRuntimeSessionReady() {
+    private void establishRuntimeSession() {
         ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, Envelope.NO_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
+        Envelope.writeHeader(
+                buf, Envelope.Kind.REQUEST, 0, RUNTIME_SESSION_READY_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
         buf.flip();
         try {
             transport.send(buf);
+            runtimeSessionReady.get(defaultTimeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (CefTransportException e) {
             if (ownTimer) timer.shutdownNow();
             throw new IllegalStateException("failed to establish runtime server session", e);
+        } catch (java.util.concurrent.ExecutionException | TimeoutException e) {
+            transport.close();
+            if (ownTimer) timer.shutdownNow();
+            throw new IllegalStateException("runtime server did not acknowledge session readiness", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            transport.close();
+            if (ownTimer) timer.shutdownNow();
+            throw new IllegalStateException("interrupted while establishing runtime server session", e);
         }
     }
 
@@ -283,6 +299,10 @@ public final class CefSessionImpl implements CefSession {
 
     @SuppressWarnings("unchecked")
     private <R extends CefMessageView> void handleResponse(Envelope.Header h, ByteBuffer payload) {
+        if (h.messageId == RUNTIME_SESSION_READY_MESSAGE_ID && h.corrId == RUNTIME_SESSION_READY_CORR_ID) {
+            runtimeSessionReady.complete(null);
+            return;
+        }
         Pending<?> raw = pending.remove(h.corrId);
         if (raw == null) {
             LOG.debug("orphan response corrId={} (ignored)", h.corrId);

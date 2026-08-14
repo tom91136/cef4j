@@ -2,6 +2,8 @@ package net.kurobako.cef4j.ipc.session;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,6 +17,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.kurobako.cef4j.ipc.transport.CefTransport;
+import net.kurobako.cef4j.ipc.transport.CefTransportException;
 import net.kurobako.cef4j.ipc.transport.LoopbackTransport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +53,19 @@ class CefSessionImplTest {
     }
 
     @Test
+    void runtimeServerSessionWaitsForAcknowledgedReadyBarrier() {
+        AcknowledgingRuntimeTransport transport = new AcknowledgingRuntimeTransport();
+        try (CefSessionImpl acknowledged = new CefSessionImpl(transport, Duration.ofSeconds(2))) {
+            assertThat(acknowledged).isNotNull();
+            ByteBuffer readyRequest = Objects.requireNonNull(transport.readyRequest);
+            Envelope.Header header = Envelope.readHeader(readyRequest.duplicate());
+            assertThat(header.kind).isEqualTo(Envelope.Kind.REQUEST);
+            assertThat(header.messageId).isZero();
+            assertThat(header.corrId).isZero();
+        }
+    }
+
+    @Test
     void requestResolvesWhenResponseArrives() throws Exception {
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ping".getBytes(StandardCharsets.UTF_8)),
@@ -61,6 +81,46 @@ class CefSessionImplTest {
         TestMessages.BytesView v = fut.get(2, TimeUnit.SECONDS);
         assertThat(v.messageId).isEqualTo(MSG_PING);
         assertThat(v.bytes).isEqualTo("pong".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static final class AcknowledgingRuntimeTransport implements CefTransport {
+        @Nullable
+        private Consumer<ByteBuffer> receiver;
+
+        @Nullable
+        private ByteBuffer readyRequest;
+
+        @Override
+        public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+            readyRequest = ByteBuffer.allocate(frame.remaining()).order(ByteOrder.LITTLE_ENDIAN);
+            readyRequest.put(frame).flip();
+            Envelope.Header request = Envelope.readHeader(readyRequest.duplicate());
+            ByteBuffer response = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(response, Envelope.Kind.RESPONSE, 0, request.corrId, request.messageId, 0);
+            response.flip();
+            Objects.requireNonNull(receiver).accept(response);
+        }
+
+        @Override
+        public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
+            receiver = handler;
+        }
+
+        @Override
+        public void onDisconnect(@Nonnull Runnable handler) {}
+
+        @Override
+        public boolean isConnected() {
+            return true;
+        }
+
+        @Override
+        public boolean isRuntimeServerClient() {
+            return true;
+        }
+
+        @Override
+        public void close() {}
     }
 
     @Test

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
@@ -21,6 +22,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.Frame;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -86,6 +88,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         private final RemoteHandle browserHandle;
         private final Browser browser;
         private final SharedFileFrameTransport frameTransport;
+        private final LinkedBlockingQueue<V8ContextCreatedEvent> contextQueue = new LinkedBlockingQueue<>();
         private final AtomicReference<PaintInfo> latestPaint = new AtomicReference<>();
         private final LinkedBlockingQueue<PaintInfo> paintQueue = new LinkedBlockingQueue<>();
 
@@ -98,6 +101,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
             // Bind the frame transport BEFORE the server hands us the browser so we never miss the first paint.
             this.frameTransport = SharedFileFrameTransport.bindAll(session);
+            session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contextQueue::offer);
             frameTransport.onFrame((w, h, pixels, meta) -> {
                 PaintInfo p = new PaintInfo(w, h, pixels.remaining());
                 latestPaint.set(p);
@@ -126,7 +130,30 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return browser.getMainFrame().thenCompose(frame -> frame.loadUrl(url));
+            // Frame.loadUrl acknowledges that navigation was queued. BrowserSession's
+            // stronger contract requires the new document to be usable, so wait for
+            // the renderer's matching V8 context before completing.
+            contextQueue.clear();
+            return browser.getMainFrame()
+                    .thenCompose(frame -> frame.loadUrl(url))
+                    .thenCompose(ignored -> CompletableFuture.runAsync(() -> awaitContext(url)));
+        }
+
+        private void awaitContext(String url) {
+            long deadline = System.nanoTime() + Duration.ofSeconds(20).toNanos();
+            try {
+                while (System.nanoTime() < deadline) {
+                    long remaining = Math.max(1L, deadline - System.nanoTime());
+                    V8ContextCreatedEvent event = contextQueue.poll(remaining, TimeUnit.NANOSECONDS);
+                    if (event == null) break;
+                    if (url.equals(event.frameUrl())) return;
+                }
+                throw new java.util.concurrent.CompletionException(
+                        new TimeoutException("no V8 context for navigation to " + url));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new java.util.concurrent.CompletionException(e);
+            }
         }
 
         @Override

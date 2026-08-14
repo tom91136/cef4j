@@ -1933,6 +1933,11 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 settings.windowlessFrameRate = 30;
                 cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
             }
+            // Make the bootstrap barrier observable. The client does not expose
+            // the session until this acknowledgement arrives, so a dropped or
+            // disconnected first frame fails promptly instead of surfacing as a
+            // browser-event timeout much later.
+            if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
             return;
         }
         case kMsgReleaseHandle: {
