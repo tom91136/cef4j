@@ -8,7 +8,8 @@ import scala.jdk.StreamConverters._
 
 class CoverageIntegrationSpec extends munit.FunSuite {
 
-  override val munitTimeout = 2.minutes
+  // Preprocessing every CEF C API header can exceed two minutes on hosted Windows runners.
+  override val munitTimeout = 5.minutes
 
   private val cefRoot: Path = {
     val prop = System.getProperty("cef.root")
