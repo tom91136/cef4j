@@ -234,6 +234,12 @@ public final class SystemBootstrap {
             throw new IOException("CEF runtime directory is required with " + REACTOR_NATIVE_DIR + ": " + libcefDir);
         }
 
+        // The staged reactor directory initially contains only cef4j JNI and its subprocess
+        // launcher. Prepare it exactly like a classpath extraction before loading anything:
+        // older CEF releases resolve ICU beside the real libcef binary, while subprocesses
+        // resolve the remaining runtime files beside the launcher.
+        prepareReactorRuntime(libcefDir, nativeDir);
+
         String libName = OS.mapLibraryName("cef4j");
         if (OS.isMacOS()) {
             System.load(nativeDir.resolve(libName).toString());
@@ -299,17 +305,7 @@ public final class SystemBootstrap {
         }
 
         if (OS.isMacOS()) {
-            // The GPU subprocess (cef4j_launcher --type=gpu-process) looks for ANGLE libraries
-            // (libEGL.dylib, libGLESv2.dylib, libvk_swiftshader.dylib) relative to its own
-            // executable path (cacheDir), not relative to the framework bundle. Symlink them from
-            // the framework's Libraries/ directory so the GPU process finds them.
-            Path frameworkLibs =
-                    cacheDir.resolve("Chromium Embedded Framework.framework").resolve("Libraries");
-            for (String lib : new String[] {
-                "libEGL.dylib", "libGLESv2.dylib", "libvk_swiftshader.dylib", "vk_swiftshader_icd.json"
-            }) {
-                linkOrCopy(frameworkLibs.resolve(lib), cacheDir.resolve(lib));
-            }
+            prepareMacAngleLibraries(cacheDir);
 
             // On macOS, the CEF framework must NOT be direct-linked; it is loaded dynamically via
             // cef_load_library() (per CEF README). Load libcef4j.dylib first (it contains the
@@ -483,6 +479,23 @@ public final class SystemBootstrap {
             linkOrCopy(libcefDir.resolve(res), cacheDir.resolve(res));
         }
         linkOrCopy(libcefDir.resolve("locales"), cacheDir.resolve("locales"));
+    }
+
+    static void prepareReactorRuntime(Path libcefDir, Path nativeDir) throws IOException {
+        linkCefRuntime(libcefDir, nativeDir);
+        if (OS.isMacOS()) prepareMacAngleLibraries(nativeDir);
+    }
+
+    private static void prepareMacAngleLibraries(Path runtimeDir) throws IOException {
+        // The GPU subprocess resolves ANGLE libraries relative to its executable, not the
+        // framework bundle. This applies to both extracted and reactor-staged launchers.
+        Path frameworkLibs =
+                runtimeDir.resolve("Chromium Embedded Framework.framework").resolve("Libraries");
+        for (String lib :
+                new String[] {"libEGL.dylib", "libGLESv2.dylib", "libvk_swiftshader.dylib", "vk_swiftshader_icd.json"
+                }) {
+            linkOrCopy(frameworkLibs.resolve(lib), runtimeDir.resolve(lib));
+        }
     }
 
     // macOS only: calls cef_load_library() from libcef_dll_dylib.cc to dynamically load the

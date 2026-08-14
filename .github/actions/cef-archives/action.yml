@@ -22,6 +22,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
         key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - name: Fetch and validate target CEF archive
       if: steps.target-cache.outputs.cache-hit != 'true'
@@ -36,6 +37,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
         key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     # The generator normalises API metadata across all three desktop CEF
     # distributions, regardless of the current build platform.
@@ -46,6 +48,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
         key: cef-archive-linux64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - name: Fetch Linux code-generation archive
       if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true'
@@ -60,6 +63,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
         key: cef-archive-linux64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - id: macos-codegen-cache
       name: Restore macOS code-generation archive
@@ -68,6 +72,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
         key: cef-archive-macosx64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - name: Fetch macOS code-generation archive
       if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true'
@@ -82,6 +87,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
         key: cef-archive-macosx64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - id: windows-codegen-cache
       name: Restore Windows code-generation archive
@@ -90,6 +96,7 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
         key: cef-archive-windows64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - name: Fetch Windows code-generation archive
       if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true'
@@ -104,3 +111,4 @@ runs:
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
         key: cef-archive-windows64-${{ inputs.version }}
+        enableCrossOsArchive: true
