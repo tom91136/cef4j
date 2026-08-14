@@ -39,8 +39,10 @@ class CefInteropTest extends CefTestBase {
 
     @AfterAll
     static void shutdownCef() {
-        // Do not dispose - CEF cannot be re-initialized after shutdown, and other test
-        // classes in the same JVM fork need it. The process exit cleans up CEF resources.
+        // Surefire runs every native test class in its own fork. On macOS, use cef4j's managed
+        // main-loop shutdown so Thread 0 is parked before normal JVM teardown can fire CEF's
+        // remaining CFRunLoop observers.
+        if (OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test
