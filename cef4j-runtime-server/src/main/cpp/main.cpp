@@ -2541,14 +2541,29 @@ int main(int argc, char* argv[]) {
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    std::printf(
-        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-        "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
-        CEF_API_VERSION,
-        transportName.c_str(),
-        frameTransportName.c_str(),
-        ipc->endpoint().c_str());
-    std::fflush(stdout);
+    // Publish the endpoint from the first task actually executed by CEF's UI loop. Publishing it immediately before
+    // cef_run_message_loop leaves a race on macOS: a fast client can acknowledge SessionReady and enqueue browser
+    // creation while the UI loop is not yet accepting cross-thread work. Older CEF builds can strand that task, so
+    // the session appears ready but never receives on_after_created (and shutdown tasks are stranded for the same
+    // reason). A client cannot connect until this task proves that the UI loop is live.
+    const std::string handshakeTransport = transportName;
+    const std::string handshakeFrame = frameTransportName;
+    const std::string handshakeEndpoint = ipc->endpoint();
+    if (!cef_post_task(TID_UI, new gendisp::LambdaTask([handshakeTransport, handshakeFrame, handshakeEndpoint]() {
+            std::printf(
+                "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
+                "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
+                CEF_API_VERSION,
+                handshakeTransport.c_str(),
+                handshakeFrame.c_str(),
+                handshakeEndpoint.c_str());
+            std::fflush(stdout);
+        }))) {
+        std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule runtime handshake\n");
+        ipc->stop();
+        cef_shutdown();
+        return 1;
+    }
 
     // RuntimeServerProcess owns this private control pipe. It deliberately sits below every IPC backend so a wedged
     // or already-disconnected ZMQ/UDS/WebSocket session cannot prevent orderly native teardown. The command reader is
