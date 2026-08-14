@@ -1927,17 +1927,24 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             // Browser creation is deliberately behind a client-originated barrier. Without this, fast CEF startup
             // can emit on_after_created after the server handshake but before the client's session receive handler
             // exists, making startup depend on scheduler timing (especially on loaded CI runners).
-            static std::atomic<bool> bootstrapStarted{false};
-            if (!bootstrapStarted.exchange(true)) {
-                net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
-                settings.windowlessFrameRate = 30;
-                cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
-            }
-            // Make the bootstrap barrier observable. The client does not expose
-            // the session until this acknowledgement arrives, so a dropped or
-            // disconnected first frame fails promptly instead of surfacing as a
-            // browser-event timeout much later.
-            if (g_ipc) g_ipc->send(Kind::Response, 0, h.corrId, h.messageId, nullptr, 0);
+            //
+            // Send the acknowledgement from the UI task itself. Publishing the process endpoint does not prove that
+            // CEF's message loop is accepting cross-thread tasks yet (most visibly on macOS), while acknowledging on
+            // the IPC worker can let the client issue browser work that an older CEF strands before its loop starts.
+            // The JVM retransmits SessionReady until it receives this idempotent acknowledgement, so post every
+            // attempt: if an early task is stranded, a later retry made after the loop starts can still establish the
+            // session. Browser bootstrap remains one-shot among the tasks that actually execute.
+            const auto corrId = h.corrId;
+            const auto messageId = h.messageId;
+            cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, messageId]() {
+                static std::atomic<bool> bootstrapStarted{false};
+                if (!bootstrapStarted.exchange(true)) {
+                    net_kurobako_cef4j_ipc_protocol_gen::BrowserSettings settings{};
+                    settings.windowlessFrameRate = 30;
+                    cef_post_task(TID_UI, new CreateBrowserTask("about:blank", std::move(settings)));
+                }
+                if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, messageId, nullptr, 0);
+            }));
             return;
         }
         case kMsgReleaseHandle: {
@@ -2541,29 +2548,18 @@ int main(int argc, char* argv[]) {
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // Publish the endpoint from the first task actually executed by CEF's UI loop. Publishing it immediately before
-    // cef_run_message_loop leaves a race on macOS: a fast client can acknowledge SessionReady and enqueue browser
-    // creation while the UI loop is not yet accepting cross-thread work. Older CEF builds can strand that task, so
-    // the session appears ready but never receives on_after_created (and shutdown tasks are stranded for the same
-    // reason). A client cannot connect until this task proves that the UI loop is live.
-    const std::string handshakeTransport = transportName;
-    const std::string handshakeFrame = frameTransportName;
-    const std::string handshakeEndpoint = ipc->endpoint();
-    if (!cef_post_task(TID_UI, new gendisp::LambdaTask([handshakeTransport, handshakeFrame, handshakeEndpoint]() {
-            std::printf(
-                "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-                "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
-                CEF_API_VERSION,
-                handshakeTransport.c_str(),
-                handshakeFrame.c_str(),
-                handshakeEndpoint.c_str());
-            std::fflush(stdout);
-        }))) {
-        std::fprintf(stderr, "[cef4j-runtime-server] failed to schedule runtime handshake\n");
-        ipc->stop();
-        cef_shutdown();
-        return 1;
-    }
+    // Publish the bound endpoint as soon as the IPC worker is available. SessionReady is the stronger barrier: its
+    // acknowledgement is emitted by a task that has executed on CEF's UI loop, and the JVM retransmits it until that
+    // happens. Keeping transport discovery separate from UI readiness gives ZMTP time to establish under load while
+    // still preventing callers from using a CEF loop that has not started processing work.
+    std::printf(
+        "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
+        "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
+        CEF_API_VERSION,
+        transportName.c_str(),
+        frameTransportName.c_str(),
+        ipc->endpoint().c_str());
+    std::fflush(stdout);
 
     // RuntimeServerProcess owns this private control pipe. It deliberately sits below every IPC backend so a wedged
     // or already-disconnected ZMQ/UDS/WebSocket session cannot prevent orderly native teardown. The command reader is

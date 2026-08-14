@@ -13,6 +13,8 @@ namespace ipc {
 
 namespace {
 constexpr std::size_t kMaxFrameSize = 64U * 1024U * 1024U;
+constexpr int kHeartbeatIntervalMs = 1000;
+constexpr int kHeartbeatTimeoutMs = 10000;
 
 std::string makeInprocAddr() {
     static std::atomic<std::uint64_t> counter{0};
@@ -48,8 +50,10 @@ bool ZmqIpcServer::bind(const std::string& addr) {
     mainSock_ = zmq_socket(ctx_, ZMQ_DEALER);
     if (!mainSock_) return false;
     setLingerZero(mainSock_);
-    int hbIvl = 500;
-    int hbTo = 2000;
+    // Match the JVM peer's tolerance for scheduler stalls. Locally spawned servers are supervised by Process.onExit,
+    // so this network heartbeat primarily covers remote peers and must not declare a busy live process dead.
+    int hbIvl = kHeartbeatIntervalMs;
+    int hbTo = kHeartbeatTimeoutMs;
     zmq_setsockopt(mainSock_, ZMQ_HEARTBEAT_IVL, &hbIvl, sizeof(hbIvl));
     zmq_setsockopt(mainSock_, ZMQ_HEARTBEAT_TIMEOUT, &hbTo, sizeof(hbTo));
 

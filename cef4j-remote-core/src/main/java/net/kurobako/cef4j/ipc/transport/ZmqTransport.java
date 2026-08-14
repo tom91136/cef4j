@@ -36,6 +36,8 @@ public final class ZmqTransport implements CefTransport {
     private static final byte[] EMPTY = new byte[0];
     private static final int POLL_TIMEOUT_MS = 200;
     private static final int MONITOR_TIMEOUT_MS = 500;
+    private static final int HEARTBEAT_INTERVAL_MS = 1_000;
+    private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int CLOSE_BUDGET_MS = 5000;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -89,9 +91,11 @@ public final class ZmqTransport implements CefTransport {
         // is replaced during handshake/reconnect. A false DONTWAIT result is exactly the backpressure signal the
         // Java-side queue needs in order to retain and retry the frame.
         main.setImmediate(true);
-        // ZMTP heartbeats so silent peer death (kill -9) is surfaced via ZMonitor.
-        main.setHeartbeatIvl(500);
-        main.setHeartbeatTimeout(2000);
+        // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
+        // time to resume: a two-second timeout produced false disconnects during concurrent native CI builds. Local
+        // runtime servers still have immediate Process.onExit supervision independent of this network timeout.
+        main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
+        main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
         String wakeAddr = "inproc://zmq-wake-" + UUID.randomUUID();
         this.inprocWorker = ctx.createSocket(SocketType.PAIR);

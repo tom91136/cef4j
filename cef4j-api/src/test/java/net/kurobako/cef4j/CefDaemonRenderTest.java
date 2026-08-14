@@ -161,9 +161,10 @@ class CefDaemonRenderTest {
         int viewHeight = 100;
 
         CompletableFuture<CefBrowser> browserReady = new CompletableFuture<>();
+        CompletableFuture<Void> pageReady = new CompletableFuture<>();
         CompletableFuture<byte[]> colorPaint = new CompletableFuture<>();
 
-        CefClient client = makeColorClient(viewWidth, viewHeight, 2, colorPaint, browserReady);
+        CefClient client = makeColorClient(viewWidth, viewHeight, 2, colorPaint, browserReady, pageReady);
 
         CefWindowInfo windowInfo = Cef.createWindowlessInfo(new CefRect(0, 0, viewWidth, viewHeight));
         CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
@@ -171,10 +172,10 @@ class CefDaemonRenderTest {
         CefBrowserHost.createBrowser(windowInfo, client, "about:blank", browserSettings.toImmutable(), null, null);
 
         CefBrowser browser = browserReady.get(10, TimeUnit.SECONDS);
+        pageReady.get(10, TimeUnit.SECONDS);
 
-        // Use JS to set the page background. CEF's compositor in headless OSR mode
-        // doesn't produce composited frames from initial page load, but does respond
-        // to JS-driven DOM mutations combined with invalidate() polling.
+        // onAfterCreated does not imply that the initial document has loaded. Wait for main-frame onLoadEnd before
+        // mutating about:blank, otherwise the pending navigation can replace the document and discard this script.
         browser.getMainFrame()
                 .ifPresent(frame -> frame.executeJavaScript(
                         "document.body.style.margin='0'; document.body.style.background='red';", "about:blank", 0));
@@ -209,10 +210,12 @@ class CefDaemonRenderTest {
         CompletableFuture<byte[]> bluePaint = new CompletableFuture<>();
         CompletableFuture<CefBrowser> redBrowserReady = new CompletableFuture<>();
         CompletableFuture<CefBrowser> blueBrowserReady = new CompletableFuture<>();
+        CompletableFuture<Void> redPageReady = new CompletableFuture<>();
+        CompletableFuture<Void> bluePageReady = new CompletableFuture<>();
 
         // BGRA offset: red channel = +2, blue channel = +0
-        CefClient redClient = makeColorClient(viewSize, viewSize, 2, redPaint, redBrowserReady);
-        CefClient blueClient = makeColorClient(viewSize, viewSize, 0, bluePaint, blueBrowserReady);
+        CefClient redClient = makeColorClient(viewSize, viewSize, 2, redPaint, redBrowserReady, redPageReady);
+        CefClient blueClient = makeColorClient(viewSize, viewSize, 0, bluePaint, blueBrowserReady, bluePageReady);
 
         CefBrowserSettings.Mutable bs = new CefBrowserSettings.Mutable();
         bs.windowlessFrameRate = 60;
@@ -233,6 +236,8 @@ class CefDaemonRenderTest {
 
         CefBrowser redBrowser = redBrowserReady.get(10, TimeUnit.SECONDS);
         CefBrowser blueBrowser = blueBrowserReady.get(10, TimeUnit.SECONDS);
+        redPageReady.get(10, TimeUnit.SECONDS);
+        bluePageReady.get(10, TimeUnit.SECONDS);
 
         // Set colors via JS after browsers are created
         redBrowser
@@ -309,7 +314,8 @@ class CefDaemonRenderTest {
             int viewHeight,
             int expectedChannelOffset,
             CompletableFuture<byte[]> paintFuture,
-            CompletableFuture<CefBrowser> browserReady) {
+            CompletableFuture<CefBrowser> browserReady,
+            CompletableFuture<Void> pageReady) {
         return new CefClient() {
             @Override
             public Optional<CefRenderHandler> getRenderHandler() {
@@ -352,6 +358,16 @@ class CefDaemonRenderTest {
                                 paintFuture.complete(copy);
                             }
                         }
+                    }
+                });
+            }
+
+            @Override
+            public Optional<CefLoadHandler> getLoadHandler() {
+                return Optional.of(new CefLoadHandler() {
+                    @Override
+                    public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
+                        if (frame != null && frame.isMain()) pageReady.complete(null);
                     }
                 });
             }
