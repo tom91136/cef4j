@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
@@ -44,6 +45,8 @@ public final class MmapFrameTransport implements FrameTransport {
     private final RemoteHandle browser; // null = accept all browsers' paints
 
     private final AtomicInteger sequence = new AtomicInteger();
+
+    private final AtomicReference<OsrPaintEvent> pendingPaint = new AtomicReference<>();
 
     @Nullable
     private volatile FrameConsumer consumer;
@@ -97,7 +100,9 @@ public final class MmapFrameTransport implements FrameTransport {
     private HandlerRegistration registration;
 
     private void subscribe(CefSession session) {
-        this.registration = session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint);
+        // A recovered session may receive its first paint between session construction and frame-consumer binding.
+        // Ask the session to replay that latest event, then retain it locally until onFrame installs a consumer.
+        this.registration = session.onLatest(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint);
     }
 
     private String browserIdForLog() {
@@ -108,7 +113,15 @@ public final class MmapFrameTransport implements FrameTransport {
         if (closed) return;
         if (browser != null && ev.browser().id() != browser.id()) return;
         FrameConsumer c = consumer;
-        if (c == null) return;
+        if (c == null) {
+            pendingPaint.set(ev);
+            c = consumer;
+            if (c == null || !pendingPaint.compareAndSet(ev, null)) return;
+        }
+        deliver(ev, c);
+    }
+
+    private void deliver(OsrPaintEvent ev, FrameConsumer c) {
         ByteBuffer view = ensureMapping(ev);
         if (view == null) return;
         ByteBuffer pixels = copyStableFrame(ev, view);
@@ -231,6 +244,12 @@ public final class MmapFrameTransport implements FrameTransport {
     @Override
     public void onFrame(@Nullable FrameConsumer consumer) {
         this.consumer = consumer;
+        if (consumer != null) {
+            OsrPaintEvent pending = pendingPaint.getAndSet(null);
+            if (pending != null && !closed) deliver(pending, consumer);
+        } else {
+            pendingPaint.set(null);
+        }
     }
 
     @Override
@@ -238,6 +257,7 @@ public final class MmapFrameTransport implements FrameTransport {
         if (closed) return;
         closed = true;
         consumer = null;
+        pendingPaint.set(null);
         if (registration != null) registration.unregister();
         synchronized (mappingLock) {
             disposeMappingLocked();

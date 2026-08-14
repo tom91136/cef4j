@@ -13,7 +13,9 @@ public final class BrowserContract {
 
     public static void verify(@Nonnull BrowserBackend backend) throws Exception {
         Assumptions.assumeTrue(backend.isAvailable(), () -> backend.name() + " unavailable");
-        Duration timeout = Duration.ofSeconds(20);
+        // Native browser startup can exceed 20 seconds on contended hosted macOS runners.
+        // Keep the paint/evaluation assertions intact while allowing that startup variance.
+        Duration timeout = Duration.ofSeconds(40);
         BrowserBackend.SessionConfig config = new BrowserBackend.SessionConfig(
                 "data:text/html,<html><body style='margin:0;background:rgb(255,0,0)'>"
                         + "<span id='marker'>first</span></body></html>",

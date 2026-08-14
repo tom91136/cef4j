@@ -104,7 +104,7 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void shutdownCefHarness() {
-        if (isCefCompatHarness()) {
+        if (isCefCompatHarness() && net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) {
             Cef.INSTANCE.terminate();
         }
         Platform.exit();

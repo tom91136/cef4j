@@ -109,7 +109,7 @@ class CefWebViewSchemeTest {
     @AfterAll
     static void cleanup() throws Exception {
         closeAllWindows();
-        Cef.INSTANCE.terminate();
+        if (net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) Cef.INSTANCE.terminate();
     }
 
     @Test

@@ -5,7 +5,8 @@ import scala.concurrent.duration.*
 
 class CppEmitterSpec extends munit.FunSuite {
 
-  override val munitTimeout = 2.minutes
+  // Hosted Windows compiler startup can consume most of two minutes before compiling this smoke program.
+  override val munitTimeout = 5.minutes
 
   private val sampleSpec = MessageSpec(
     className = "LoadUrlRequest",

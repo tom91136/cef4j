@@ -57,7 +57,8 @@ class InProcessWebDriverIntegrationTest {
     @AfterAll
     static void terminateCef() throws Exception {
         closeAllWindows();
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
+        if (net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()
+                && Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
     }
 
     @Test

@@ -103,7 +103,7 @@ class CefWebViewRenderTest {
             }
         } finally {
             closeAllWindows();
-            CefWebView.terminate();
+            if (net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) CefWebView.terminate();
         }
     }
 
@@ -115,7 +115,8 @@ class CefWebViewRenderTest {
     @AfterAll
     static void shutdownSanity() {
         // Ensure CEF is terminated even if the second test fails mid-flight.
-        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) {
+        if (net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()
+                && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
         }
     }

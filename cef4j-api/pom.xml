@@ -51,6 +51,12 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-test-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
             <version>${project.version}</version>
             <classifier>${cef.classifier}</classifier>
@@ -132,7 +138,6 @@
                     <forkCount>1</forkCount>
                     <systemPropertyVariables>
                         <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
-                        <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
                     </systemPropertyVariables>
                     <!-- Tests in this list need a separate execution because they initialise CEF with
                          incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)

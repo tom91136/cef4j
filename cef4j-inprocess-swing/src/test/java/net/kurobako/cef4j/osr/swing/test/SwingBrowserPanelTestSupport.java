@@ -42,6 +42,7 @@ import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.CefTestLifecycle;
 import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
@@ -300,7 +301,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     static void shutdownCef() {
-        CefBrowserPanel.terminate();
+        if (CefTestLifecycle.explicitShutdownSafe()) CefBrowserPanel.terminate();
     }
 
     static void loadUrl(CefBrowserPanel panel, String url) {

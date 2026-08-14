@@ -614,6 +614,7 @@
                         <!-- Cap the forked JVM so a hung test can't block the build indefinitely -->
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
+                            <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
                             <!-- JUnit 5 per-test timeout (also picked up by IDEs).
                                  Lifecycle gets extra budget so @AfterAll can run Cef.terminate()
                                  cleanly; CEF shutdown closes all outstanding browsers which can
