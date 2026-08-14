@@ -217,12 +217,10 @@
                 <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <!-- Same fork-per-class story as cef4j-remote-frame: jeromq's iothread can't survive
-                     many ZContext lifecycles in the same JVM. Each test class in this matrix module gets
-                     its own JVM so cumulative ZContext state never trips the close-time NPE.
-                     System properties mirror cef4j-inprocess-jfx: JFX needs headless=false (surefire default
-                     would crash glassgtk3 in XInternAtom) and the native backend needs cef4j.libcef.dir
-                     to find libcef.so. -->
+                <!-- Some matrix tests initialise in-process CEF, whose process-global lifecycle cannot be restarted
+                     safely between classes. System properties mirror cef4j-inprocess-jfx: JFX needs headless=false
+                     (surefire default would crash glassgtk3 in XInternAtom) and the native backend needs
+                     cef4j.libcef.dir to find libcef.so. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>

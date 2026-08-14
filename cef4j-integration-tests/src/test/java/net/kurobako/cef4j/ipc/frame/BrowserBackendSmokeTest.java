@@ -22,12 +22,7 @@ class BrowserBackendSmokeTest {
         return BrowserBackend.discover();
     }
 
-    /**
-     * Combined paint + eval check. Done as a single test method to keep all session lifecycle inside one JVM-spawn:
-     * jeromq's iothread can't survive many ZContext lifecycles in the same JVM (the cumulative-state race documented in
-     * {@code cef4j-remote-core}'s pom). reuseForks=false hands each test class its own JVM, but two methods within one
-     * class still share — so we do both checks against one session.
-     */
+    /** Combined paint + eval check against one browser session for every backend. */
     @ParameterizedTest(name = "{0}")
     @MethodSource("backends")
     void deliversPaintAndEvaluatesJsAcrossBackend(BrowserBackend backend) throws Exception {

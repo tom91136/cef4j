@@ -40,6 +40,14 @@ public final class ZmqTransport implements CefTransport {
     private static final int CLOSE_BUDGET_MS = 5000;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
+    /**
+     * One ZeroMQ context per JVM is the intended usage model. Each transport gets a shadow context so closing it still
+     * closes exactly its own sockets without repeatedly terminating and recreating JeroMQ's shared I/O thread.
+     */
+    private static final class SharedContext {
+        private static final ZContext INSTANCE = new ZContext();
+    }
+
     private final String endpoint;
     private final boolean runtimeServerClient;
     private final ZContext ctx;
@@ -79,7 +87,7 @@ public final class ZmqTransport implements CefTransport {
     private ZmqTransport(boolean isBind, String requestedEndpoint) {
         this.runtimeServerClient = !isBind;
         int id = INSTANCE.incrementAndGet();
-        this.ctx = new ZContext();
+        this.ctx = SharedContext.INSTANCE.shadow();
         this.main = ctx.createSocket(SocketType.DEALER);
         main.setLinger(0);
         // Without IMMEDIATE, ZeroMQ may accept a send into a not-yet-connected pipe and later discard it if that pipe
@@ -92,7 +100,9 @@ public final class ZmqTransport implements CefTransport {
         main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
         main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
-        this.monitor = new ZMonitor(ctx, main);
+        // ZMonitor internally creates its own shadow, so give it the process-wide parent rather than this
+        // transport's shadow (JeroMQ intentionally rejects shadows of shadows).
+        this.monitor = new ZMonitor(SharedContext.INSTANCE, main);
         monitor.add(ZMonitor.Event.CONNECTED);
         monitor.add(ZMonitor.Event.ACCEPTED);
         monitor.add(ZMonitor.Event.CONNECT_RETRIED);
@@ -150,17 +160,12 @@ public final class ZmqTransport implements CefTransport {
     public void close() {
         if (closed) return;
         closed = true;
-        // Both monitor.close() and ctx.close() can deadlock when jeromq's iothread has died
-        // mid-flight (a documented bug pattern under heavy churn). The deadlocks block on inproc
-        // mailbox acks that never arrive. Run the whole shutdown on a daemon side-thread with a
-        // hard budget — if it doesn't finish in time we abandon the leaked sockets/context and
-        // let the JVM reclaim them on exit. The tests that exercise close are short-lived so a
-        // leaked context is harmless; the alternative (forever-hang) wedges the surefire fork.
+        // JeroMQ shutdown can deadlock if its I/O thread has died mid-flight. Run the transport's shadow-context
+        // shutdown on a daemon side-thread with a hard budget. The process-wide parent context remains live for other
+        // transports; abandoning a stuck shadow is preferable to wedging the application during close.
         Thread shutdown = new Thread(
                 () -> {
-                    // Let the two Java owner threads leave their bounded polls before closing the context. Closing
-                    // the context while an IO thread is still acknowledging termination can make JeroMQ write to an
-                    // already-closed signal channel and print an uncaught teardown exception.
+                    // Let both Java owner threads leave their bounded polls before closing this transport's shadow.
                     joinQuietly(worker);
                     joinQuietly(monitorThread);
                     try {
