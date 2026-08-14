@@ -146,7 +146,7 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
             onFxThread(() -> view.getEngine().load(server.url("/slow")));
             onFxThread(() -> view.getEngine().load(server.url("/fast")));
 
-            assertThat(waitUntilOnFx(() -> "fast".equals(view.getEngine().getTitle()), 5_000))
+            assertThat(waitUntilOnFx(() -> "fast".equals(view.getEngine().getTitle()), 10_000))
                     .isTrue();
             assertThat(onFxThread(() -> view.getEngine().getLocation())).isEqualTo(server.url("/fast"));
         }

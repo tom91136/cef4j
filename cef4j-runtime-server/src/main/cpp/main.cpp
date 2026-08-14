@@ -2387,13 +2387,14 @@ int main(int argc, char* argv[]) {
     // Subprocesses re-exec this program. On macOS they must not use the browser-process
     // executable inside the top-level .app: recent Chromium releases can deadlock in
     // cef_initialize while trying to establish process identity that way. The packaged
-    // distribution includes a byte-identical, explicitly selected helper executable.
+    // distribution includes a byte-identical executable in a proper helper application bundle.
     // It enters cef_execute_process above before any browser-only server setup.
     {
         std::filesystem::path subprocessPath = std::filesystem::absolute(argv[0]);
 #ifdef __APPLE__
         const auto packagedHelper = subprocessPath.parent_path().parent_path() / "Frameworks"
-                                  / "cef4j-runtime-server-helper";
+                                  / "cef4j-runtime-server Helper.app" / "Contents" / "MacOS"
+                                  / "cef4j-runtime-server Helper";
         if (std::filesystem::exists(packagedHelper)) subprocessPath = packagedHelper;
 #endif
         ScopedCefString sp(subprocessPath.string());

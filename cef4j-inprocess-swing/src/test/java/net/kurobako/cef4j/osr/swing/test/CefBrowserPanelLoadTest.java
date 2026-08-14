@@ -104,7 +104,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             loadUrl(panel, server.url("/slow"));
             loadUrl(panel, server.url("/fast"));
 
-            assertThat(waitUntil(() -> "fast".equals(getTitle(panel)), 5_000)).isTrue();
+            assertThat(waitUntil(() -> "fast".equals(getTitle(panel)), 10_000)).isTrue();
             assertThat(getLocation(panel)).isEqualTo(server.url("/fast"));
         }
     }

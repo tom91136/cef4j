@@ -72,8 +72,14 @@ final class SwingBrowserPanelTestSupport {
 
         try {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+            Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = cacheDir.toAbsolutePath().toString();
+            settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+            settings.logFile = reportDir
+                    .resolve("cef-" + ProcessHandle.current().pid() + ".log")
+                    .toAbsolutePath()
+                    .toString();
             CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), null);
             started = true;
         } catch (Exception e) {

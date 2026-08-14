@@ -138,15 +138,27 @@ if(EXISTS "${CEF_ROOT}/CREDITS.html")
 endif()
 
 if(APPLE)
+    set(CEF4J_RUNTIME_HELPER_NAME "cef4j-runtime-server Helper")
+    set(CEF4J_RUNTIME_HELPER_BUNDLE
+        "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/${CEF4J_RUNTIME_HELPER_NAME}.app")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/main/macos/Helper-Info.plist.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/Helper-Info.plist"
+        @ONLY)
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        # CEF requires a distinct subprocess executable on macOS. Reusing the same
-        # program preserves the remote server's renderer-side App implementation;
+        # Chromium launches macOS subprocesses through an application bundle. Reusing
+        # the same program preserves the remote server's renderer-side App implementation;
         # main() routes --type= subprocesses through cef_execute_process immediately.
         COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks"
+            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS"
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Resources"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "$<TARGET_FILE:cef4j-runtime-server>"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/cef4j-runtime-server-helper"
+            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS/${CEF4J_RUNTIME_HELPER_NAME}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/Helper-Info.plist"
+            "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Info.plist"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"

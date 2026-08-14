@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,16 @@ final class FxWebViewRuntimeTestSupport {
             // Best-effort; CEF will fail loudly later if the cache dir is unusable.
         }
         launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
+        try {
+            Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
+            launch.settings().logFile = reportDir
+                    .resolve("cef-" + ProcessHandle.current().pid() + ".log")
+                    .toAbsolutePath()
+                    .toString();
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to create CEF test log directory", e);
+        }
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         Cef.INSTANCE.initialise(launch.settings(), args);
@@ -214,7 +225,12 @@ final class FxWebViewRuntimeTestSupport {
 
     static void closeStages() throws Exception {
         if (isCefCompatHarness()) {
-            for (WebView view : VIEWS) {
+            // Popup views are appended after their opener. Close in reverse creation order so a
+            // slow native popup cannot still be inside CefBrowserHost::CreateBrowser while its
+            // opener is being destroyed (CEF 144+ can otherwise crash in CreateInternal).
+            List<WebView> closing = new ArrayList<>(VIEWS);
+            Collections.reverse(closing);
+            for (WebView view : closing) {
                 CompletableFuture<?> close = onFxThread(() -> {
                     try {
                         Object result =

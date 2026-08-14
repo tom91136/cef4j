@@ -38,9 +38,15 @@ abstract class CefTestBase {
         }
 
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        Path reportDir = Files.createDirectories(Path.of("target", "surefire-reports"));
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+        settings.logFile = reportDir
+                .resolve("cef-" + ProcessHandle.current().pid() + ".log")
+                .toAbsolutePath()
+                .toString();
         settings.windowlessRenderingEnabled = 1;
         if (OS.isMacOS()) {
             // macOS: use daemon thread path (externalMessagePump=0). externalMessagePump=1
