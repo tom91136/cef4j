@@ -104,12 +104,20 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void shutdownCefHarness() {
-        if (isCefCompatHarness() && net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) {
-            drainJavaFx();
-            Cef.INSTANCE.terminate();
+        // JUnit still invokes @AfterAll when @BeforeAll aborts an unsupported
+        // headless run. Do not turn that intentional test abort into a teardown
+        // error by attempting to start JavaFX from the shutdown path.
+        if (!started) return;
+        try {
+            if (isCefCompatHarness() && net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) {
+                drainJavaFx();
+                Cef.INSTANCE.terminate();
+            }
+        } finally {
+            Platform.exit();
+            awaitJavaFxShutdown();
+            started = false;
         }
-        Platform.exit();
-        awaitJavaFxShutdown();
     }
 
     private static void drainJavaFx() {
@@ -492,6 +500,7 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     private static void respond(HttpExchange exchange, ResponseSpec response) throws IOException {
+        if (response.requestStarted != null) response.requestStarted.countDown();
         if (response.delayMillis > 0) {
             try {
                 Thread.sleep(response.delayMillis);
@@ -515,24 +524,36 @@ final class FxWebViewRuntimeTestSupport {
         private final Map<String, String> headers;
         private final String body;
         private final long delayMillis;
+        private final @Nullable CountDownLatch requestStarted;
 
-        private ResponseSpec(int statusCode, Map<String, String> headers, String body, long delayMillis) {
+        private ResponseSpec(
+                int statusCode,
+                Map<String, String> headers,
+                String body,
+                long delayMillis,
+                @Nullable CountDownLatch requestStarted) {
             this.statusCode = statusCode;
             this.headers = headers;
             this.body = body;
             this.delayMillis = delayMillis;
+            this.requestStarted = requestStarted;
         }
 
         static ResponseSpec html(String body) {
-            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, 0);
+            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, 0, null);
         }
 
         static ResponseSpec html(String body, long delayMillis) {
-            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, delayMillis);
+            return new ResponseSpec(200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, delayMillis, null);
+        }
+
+        static ResponseSpec html(String body, long delayMillis, CountDownLatch requestStarted) {
+            return new ResponseSpec(
+                    200, Map.of("Content-Type", "text/html; charset=UTF-8"), body, delayMillis, requestStarted);
         }
 
         static ResponseSpec redirect(String location) {
-            return new ResponseSpec(302, Map.of("Location", location), "", 0);
+            return new ResponseSpec(302, Map.of("Location", location), "", 0, null);
         }
     }
 

@@ -24,8 +24,8 @@ import org.zeromq.ZMonitor;
  * <p>Internals: a single worker thread owns the main DEALER socket (ZMQ sockets are not thread-safe). External
  * {@link #send} callers enqueue bytes onto a {@link BlockingQueue} and signal the worker via an in-process PAIR pipe;
  * the worker polls both the main socket and the wake pipe, draining outbound bytes after each wake. DEALER is used
- * instead of PAIR because it queues frames while the TCP handshake completes and has consistent backpressure behaviour
- * across JeroMQ platforms.
+ * instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms. Application frames remain
+ * in the Java-side outbound queue until the socket monitor confirms that the ZMTP peer is ready.
  *
  * <p>Disconnect detection uses {@link ZMonitor} on the main socket; ZMTP heartbeats are enabled so peer crashes are
  * surfaced even when the TCP FIN is lost.
@@ -245,12 +245,16 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void drainOutbound() {
+        // A successful non-blocking DEALER send before ZMTP is connected does not
+        // guarantee that every JeroMQ/platform combination retains the frame.
+        // The monitor thread wakes us as soon as CONNECTED/ACCEPTED is observed.
+        if (!peerReady) return;
         byte[] out;
         while ((out = outbound.peek()) != null) {
             try {
-                // Never block the socket-owner thread: it must continue polling inbound frames and
-                // shutdown signals. DEALER retains pre-connect frames, while a false return means the
-                // high-water mark is full; leave the head queued and retry after the bounded poll.
+                // Never block the socket-owner thread: it must continue polling inbound frames and shutdown signals.
+                // A false return means the high-water mark is full; leave the head queued and retry after the bounded
+                // poll.
                 if (!main.send(out, ZMQ.DONTWAIT)) return;
                 outbound.poll();
             } catch (ZMQException e) {

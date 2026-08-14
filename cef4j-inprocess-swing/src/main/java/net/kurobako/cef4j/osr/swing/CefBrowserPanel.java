@@ -190,6 +190,19 @@ public class CefBrowserPanel extends JPanel {
                     }
                 }
             }
+            if (frame != null && !SwingUtilities.isEventDispatchThread()) {
+                try {
+                    // Disposing a peer can enqueue hierarchy/component work behind the
+                    // dispose callback itself. Keep CEF alive until that work has run;
+                    // otherwise a late AWT callback can enter already-unloaded native state.
+                    SwingUtilities.invokeAndWait(() -> {});
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while draining AWT before CEF shutdown", e);
+                } catch (java.lang.reflect.InvocationTargetException e) {
+                    throw new IllegalStateException("Failed to drain AWT before CEF shutdown", e.getCause());
+                }
+            }
             Cef.INSTANCE.terminate();
         }
     }

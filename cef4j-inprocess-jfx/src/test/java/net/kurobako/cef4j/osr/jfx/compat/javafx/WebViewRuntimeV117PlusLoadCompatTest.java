@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebHistory;
@@ -136,14 +138,17 @@ class WebViewRuntimeV117PlusLoadCompatTest extends WebViewRuntimeCompatTestBase 
 
     @Test
     void laterLoadWinsWhenPreviousRequestIsStillInFlight() throws Exception {
+        CountDownLatch slowRequestStarted = new CountDownLatch(1);
         try (LocalTestServer server = startServerWithResponses(Map.of(
                 "/slow",
-                ResponseSpec.html("<html><head><title>slow</title></head><body>slow</body></html>", 750),
+                ResponseSpec.html(
+                        "<html><head><title>slow</title></head><body>slow</body></html>", 750, slowRequestStarted),
                 "/fast",
                 ResponseSpec.html("<html><head><title>fast</title></head><body>fast</body></html>")))) {
             WebView view = createAttachedWebView();
 
             onFxThread(() -> view.getEngine().load(server.url("/slow")));
+            assertThat(slowRequestStarted.await(5, TimeUnit.SECONDS)).isTrue();
             onFxThread(() -> view.getEngine().load(server.url("/fast")));
 
             assertThat(waitUntilOnFx(() -> "fast".equals(view.getEngine().getTitle()), 10_000))
