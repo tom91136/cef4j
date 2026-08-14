@@ -17,7 +17,7 @@ public final class StubSupervisedServerMain {
         String transport = option(args, "--transport", "zmq");
         String frame = option(args, "--frame-transport", "shared-file");
         try (ZContext context = new ZContext()) {
-            ZMQ.Socket socket = context.createSocket(SocketType.PAIR);
+            ZMQ.Socket socket = context.createSocket(SocketType.DEALER);
             socket.setLinger(0);
             socket.setReceiveTimeOut(100);
             socket.bind(bind);

@@ -15,7 +15,7 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 /**
- * Pure-Java stand-in for the C++ runtime server, used by {@link RuntimeServerProcessTest}. It binds a PAIR socket,
+ * Pure-Java stand-in for the C++ runtime server, used by {@link RuntimeServerProcessTest}. It binds a DEALER socket,
  * publishes the versioned runtime-server handshake, and implements a tiny conversation:
  *
  * <ul>
@@ -37,7 +37,7 @@ public final class StubRuntimeServerMain {
         control.setDaemon(true);
         control.start();
         try (ZContext ctx = new ZContext()) {
-            ZMQ.Socket sock = ctx.createSocket(SocketType.PAIR);
+            ZMQ.Socket sock = ctx.createSocket(SocketType.DEALER);
             sock.setLinger(0);
             sock.setReceiveTimeOut(200); // poll-like loop so we can notice ctx close / interrupts
             sock.bind(bind);

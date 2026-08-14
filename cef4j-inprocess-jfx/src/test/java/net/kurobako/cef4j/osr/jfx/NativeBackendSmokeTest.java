@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.util.List;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +23,13 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 @Timeout(60)
 class NativeBackendSmokeTest {
+
+    @AfterAll
+    static void shutdownCef() {
+        if (net.kurobako.cef4j.Cef.INSTANCE.state() == net.kurobako.cef4j.Cef.State.INITIALISED) {
+            CefWebView.terminate();
+        }
+    }
 
     static List<BrowserBackend> backends() {
         return BrowserBackend.discover();

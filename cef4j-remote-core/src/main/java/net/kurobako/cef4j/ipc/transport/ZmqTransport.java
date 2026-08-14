@@ -19,11 +19,13 @@ import org.zeromq.ZMQException;
 import org.zeromq.ZMonitor;
 
 /**
- * JeroMQ-backed {@link CefTransport} using PAIR sockets. Construct via {@link #bind} or {@link #connect}.
+ * JeroMQ-backed {@link CefTransport} using DEALER sockets. Construct via {@link #bind} or {@link #connect}.
  *
- * <p>Internals: a single worker thread owns the main socket (ZMQ sockets are not thread-safe). External {@link #send}
- * callers enqueue bytes onto a {@link BlockingQueue} and signal the worker via an in-process PAIR pipe; the worker
- * polls both the main socket and the wake pipe, draining outbound bytes after each wake.
+ * <p>Internals: a single worker thread owns the main DEALER socket (ZMQ sockets are not thread-safe). External
+ * {@link #send} callers enqueue bytes onto a {@link BlockingQueue} and signal the worker via an in-process PAIR pipe;
+ * the worker polls both the main socket and the wake pipe, draining outbound bytes after each wake. DEALER is used
+ * instead of PAIR because it queues frames while the TCP handshake completes and has consistent backpressure behaviour
+ * across JeroMQ platforms.
  *
  * <p>Disconnect detection uses {@link ZMonitor} on the main socket; ZMTP heartbeats are enabled so peer crashes are
  * surfaced even when the TCP FIN is lost.
@@ -81,7 +83,7 @@ public final class ZmqTransport implements CefTransport {
         this.runtimeServerClient = !isBind;
         int id = INSTANCE.incrementAndGet();
         this.ctx = new ZContext();
-        this.main = ctx.createSocket(SocketType.PAIR);
+        this.main = ctx.createSocket(SocketType.DEALER);
         main.setLinger(0);
         // ZMTP heartbeats so silent peer death (kill -9) is surfaced via ZMonitor.
         main.setHeartbeatIvl(500);
@@ -219,7 +221,7 @@ public final class ZmqTransport implements CefTransport {
                 }
                 // Also check after the bounded poll: the monitor's wake may race creation of the
                 // inproc pipe and be dropped, but queued application frames must still be flushed.
-                if (peerReady && !outbound.isEmpty()) drainOutbound();
+                if (!outbound.isEmpty()) drainOutbound();
                 dispatchPendingIfReady();
             }
         } catch (ZMQException e) {
@@ -244,9 +246,13 @@ public final class ZmqTransport implements CefTransport {
 
     private void drainOutbound() {
         byte[] out;
-        while ((out = outbound.poll()) != null) {
+        while ((out = outbound.peek()) != null) {
             try {
-                main.send(out, 0);
+                // Never block the socket-owner thread: it must continue polling inbound frames and
+                // shutdown signals. DEALER retains pre-connect frames, while a false return means the
+                // high-water mark is full; leave the head queued and retry after the bounded poll.
+                if (!main.send(out, ZMQ.DONTWAIT)) return;
+                outbound.poll();
             } catch (ZMQException e) {
                 LOG.debug("send on {} failed: {}", endpoint, e.toString());
                 return;

@@ -43,7 +43,9 @@ ZmqIpcServer::~ZmqIpcServer() {
 }
 
 bool ZmqIpcServer::bind(const std::string& addr) {
-    mainSock_ = zmq_socket(ctx_, ZMQ_PAIR);
+    // DEALER queues frames across connection establishment and exposes backpressure
+    // consistently to the Java DEALER peer. The inproc wake sockets remain PAIR.
+    mainSock_ = zmq_socket(ctx_, ZMQ_DEALER);
     if (!mainSock_) return false;
     setLingerZero(mainSock_);
     int hbIvl = 500;

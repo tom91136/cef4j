@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -176,10 +177,12 @@ public final class NativeBrowserBackend implements BrowserBackend {
         @Override
         public void close() {
             try {
+                AtomicReference<CompletableFuture<Void>> released = new AtomicReference<>();
                 onFxThread(() -> {
                     if (stage.isShowing()) stage.close();
-                    webView.release();
+                    released.set(webView.releaseAsync());
                 });
+                if (released.get() != null) released.get().get(10, TimeUnit.SECONDS);
             } catch (Exception ignored) {
                 // Test teardown is best effort; the isolated fork owns any remaining native state.
             }

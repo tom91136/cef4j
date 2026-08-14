@@ -44,6 +44,7 @@ public final class SystemBootstrap {
     private static volatile @Nullable Path extractionDir;
     private static volatile @Nullable Path cachedLibcefDir;
     private static volatile boolean libcefDirResolved = false;
+    private static final String REACTOR_NATIVE_DIR = "cef4j.reactor.native.dir";
 
     /**
      * Load the native library. Tries system path first, falls back to classpath extraction with LIBCEF_DIR.
@@ -54,8 +55,23 @@ public final class SystemBootstrap {
         synchronized (LOAD_LOCK) {
             if (loaded) return;
 
+            Path reactorNativeDir = reactorNativeDir();
+            if (reactorNativeDir != null) {
+                try {
+                    loadReactorNative(reactorNativeDir);
+                    loaded = true;
+                    log.info("Loaded cef4j native library from reactor output {}", reactorNativeDir);
+                } catch (IOException e) {
+                    throw new UnsatisfiedLinkError(e.getMessage());
+                }
+            }
+
             // Strategy 1: system library path (java.library.path / LD_LIBRARY_PATH)
             try {
+                if (loaded) {
+                    NativeStderr.install();
+                    return;
+                }
                 log.debug("Trying System.loadLibrary(\"cef4j\")");
                 System.loadLibrary("cef4j");
                 if (OS.isMacOS()) {
@@ -182,6 +198,13 @@ public final class SystemBootstrap {
      */
     public static @Nullable String helperPath() {
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
+        Path reactorNativeDir = reactorNativeDir();
+        if (reactorNativeDir != null) {
+            Path launcher = reactorNativeDir.resolve(launcherName);
+            if (Files.exists(launcher)) {
+                return launcher.toAbsolutePath().toString();
+            }
+        }
         if (extractionDir != null) {
             Path launcher = extractionDir.resolve(launcherName);
             if (Files.exists(launcher)) {
@@ -196,6 +219,39 @@ public final class SystemBootstrap {
             }
         }
         return null;
+    }
+
+    private static @Nullable Path reactorNativeDir() {
+        String configured = System.getProperty(REACTOR_NATIVE_DIR);
+        if (configured == null || configured.isBlank()) return null;
+        Path dir = Paths.get(configured).toAbsolutePath().normalize();
+        return Files.isRegularFile(dir.resolve(OS.mapLibraryName("cef4j"))) ? dir : null;
+    }
+
+    private static void loadReactorNative(Path nativeDir) throws IOException {
+        Path libcefDir = libcefDir();
+        if (libcefDir == null || !Files.isDirectory(libcefDir)) {
+            throw new IOException("CEF runtime directory is required with " + REACTOR_NATIVE_DIR + ": " + libcefDir);
+        }
+
+        String libName = OS.mapLibraryName("cef4j");
+        if (OS.isMacOS()) {
+            System.load(nativeDir.resolve(libName).toString());
+            Path frameworkBinary =
+                    libcefDir.resolve("Chromium Embedded Framework.framework").resolve("Chromium Embedded Framework");
+            if (!loadCefLibrary0(frameworkBinary.toString())) {
+                throw new IOException("cef_load_library() failed for: " + frameworkBinary);
+            }
+        } else if (OS.isWindows()) {
+            for (String dep : new String[] {"chrome_elf.dll", "libcef.dll"}) {
+                Path dependency = libcefDir.resolve(dep);
+                if (Files.exists(dependency)) System.load(dependency.toString());
+            }
+            System.load(nativeDir.resolve(libName).toString());
+        } else {
+            System.load(libcefDir.resolve("libcef.so").toString());
+            System.load(nativeDir.resolve(libName).toString());
+        }
     }
 
     private static void loadFromClasspath() throws IOException {

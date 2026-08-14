@@ -615,6 +615,11 @@
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
                             <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
+                            <!-- Reactor tests must use the JNI library built in this invocation. Snapshot
+                                 platform JARs in ~/.m2 may represent a different CEF matrix row while
+                                 retaining the same Maven coordinate. SystemBootstrap ignores this path
+                                 when the staged reactor library does not exist (for downstream builds). -->
+                            <cef4j.reactor.native.dir>${maven.multiModuleProjectDirectory}/target/platform-native/native/${cef.platform}</cef4j.reactor.native.dir>
                             <!-- JUnit 5 per-test timeout (also picked up by IDEs).
                                  Lifecycle gets extra budget so @AfterAll can run Cef.terminate()
                                  cleanly; CEF shutdown closes all outstanding browsers which can

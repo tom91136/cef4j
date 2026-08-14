@@ -298,10 +298,8 @@ public final class CdpAutomationBackend implements AutomationBackend {
     @Nonnull
     public CompletableFuture<Void> elementClear(String elementId) {
         return focusElement(elementId)
-                .thenCompose(ignored -> dispatchKey("rawKeyDown", "a", "KeyA", 65, 2))
-                .thenCompose(ignored -> dispatchKey("keyUp", "a", "KeyA", 65, 2))
-                .thenCompose(ignored -> dispatchKey("rawKeyDown", "Backspace", "Backspace", 8, 0))
-                .thenCompose(ignored -> dispatchKey("keyUp", "Backspace", "Backspace", 8, 0));
+                .thenCompose(ignored -> callElementValue(elementId, CLEAR_ELEMENT, new JsonArray()))
+                .thenApply(ignored -> null);
     }
 
     @Override
@@ -462,17 +460,6 @@ public final class CdpAutomationBackend implements AutomationBackend {
         params.addProperty("button", "left");
         params.addProperty("clickCount", 1);
         return cdp.send("Input.dispatchMouseEvent", params).thenApply(ignored -> null);
-    }
-
-    private CompletableFuture<Void> dispatchKey(String type, String key, String code, int virtualKey, int modifiers) {
-        JsonObject params = new JsonObject();
-        params.addProperty("type", type);
-        params.addProperty("key", key);
-        params.addProperty("code", code);
-        params.addProperty("windowsVirtualKeyCode", virtualKey);
-        params.addProperty("nativeVirtualKeyCode", virtualKey);
-        params.addProperty("modifiers", modifiers);
-        return cdp.send("Input.dispatchKeyEvent", params).thenApply(ignored -> null);
     }
 
     private int requireElementId(String id) {
@@ -648,6 +635,13 @@ public final class CdpAutomationBackend implements AutomationBackend {
             + "if(!this.isConnected)return false;const s=getComputedStyle(this);"
             + "if(s.display==='none'||s.visibility==='hidden'||s.visibility==='collapse'||Number(s.opacity)===0)return false;"
             + "const r=this.getBoundingClientRect();return r.width>0&&r.height>0;}";
+
+    private static final String CLEAR_ELEMENT = "function(){"
+            + "if(this.isContentEditable){this.textContent='';}"
+            + "else if('value' in this){this.value='';}"
+            + "else{throw new Error('element is not editable');}"
+            + "this.dispatchEvent(new Event('input',{bubbles:true,composed:true}));"
+            + "this.dispatchEvent(new Event('change',{bubbles:true}));}";
 
     private CompletableFuture<JsonElement> evaluateValue(String expression) {
         JsonObject params = new JsonObject();
