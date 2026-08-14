@@ -1,0 +1,106 @@
+name: Prepare CEF archives
+description: Restore and validate the target and cross-platform code-generation archives
+
+inputs:
+  version:
+    description: CEF binary version
+    required: true
+  platform:
+    description: Target CEF platform
+    required: true
+  save-cache:
+    description: Save archives missing from the cache
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - id: target-cache
+      name: Restore target CEF archive
+      uses: actions/cache/restore@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
+        key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
+
+    - name: Fetch and validate target CEF archive
+      if: steps.target-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: >-
+        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
+        '${{ inputs.version }}' '${{ inputs.platform }}'
+
+    - name: Save target CEF archive
+      if: steps.target-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
+        key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
+
+    # The generator normalises API metadata across all three desktop CEF
+    # distributions, regardless of the current build platform.
+    - id: linux-codegen-cache
+      name: Restore Linux code-generation archive
+      if: inputs.platform != 'linux64'
+      uses: actions/cache/restore@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
+        key: cef-archive-linux64-${{ inputs.version }}
+
+    - name: Fetch Linux code-generation archive
+      if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: >-
+        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
+        '${{ inputs.version }}' linux64
+
+    - name: Save Linux code-generation archive
+      if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
+        key: cef-archive-linux64-${{ inputs.version }}
+
+    - id: macos-codegen-cache
+      name: Restore macOS code-generation archive
+      if: inputs.platform != 'macosx64'
+      uses: actions/cache/restore@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
+        key: cef-archive-macosx64-${{ inputs.version }}
+
+    - name: Fetch macOS code-generation archive
+      if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: >-
+        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
+        '${{ inputs.version }}' macosx64
+
+    - name: Save macOS code-generation archive
+      if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
+        key: cef-archive-macosx64-${{ inputs.version }}
+
+    - id: windows-codegen-cache
+      name: Restore Windows code-generation archive
+      if: inputs.platform != 'windows64'
+      uses: actions/cache/restore@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
+        key: cef-archive-windows64-${{ inputs.version }}
+
+    - name: Fetch Windows code-generation archive
+      if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: >-
+        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
+        '${{ inputs.version }}' windows64
+
+    - name: Save Windows code-generation archive
+      if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v5
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
+        key: cef-archive-windows64-${{ inputs.version }}

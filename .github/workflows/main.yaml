@@ -39,27 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # The complete 4-version/6-platform archive set is about 4.9 GiB. Never
-      # cache .cef-dist itself: unpacked CEF trees would exceed the 10 GiB budget.
-      - id: cef-cache
-        name: Restore compressed CEF archive
-        uses: actions/cache/restore@v5
+      # The complete 4-version/6-platform archive set is about 4.9 GiB. Each
+      # immutable archive has one cache entry, shared by target and codegen use.
+      - name: Prepare compressed CEF archives
+        uses: ./.github/actions/cef-archives
         with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
-
-      - name: Fetch and validate CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true'
-        run: .github/ci/fetch-cef.sh '${{ matrix.cef-version }}' '${{ matrix.cef-platform }}'
-
-      # PR caches are deliberately read-only; otherwise public branch-scoped
-      # entries can evict the reusable default-branch cache.
-      - name: Save compressed CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v5
-        with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
+          version: ${{ matrix.cef-version }}
+          platform: ${{ matrix.cef-platform }}
+          # PR caches remain read-only so they cannot evict main's entries.
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Set up JDKs
         uses: actions/setup-java@v5
@@ -200,24 +188,12 @@ jobs:
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
-      - id: cef-cache
-        name: Restore compressed CEF archive
-        uses: actions/cache/restore@v5
+      - name: Prepare compressed CEF archives
+        uses: ./.github/actions/cef-archives
         with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
-
-      - name: Fetch and validate CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: .github/ci/fetch-cef.sh '${{ matrix.cef-version }}' '${{ matrix.cef-platform }}'
-
-      - name: Save compressed CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v5
-        with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-${{ matrix.cef-platform }}-${{ matrix.cef-version }}
+          version: ${{ matrix.cef-version }}
+          platform: ${{ matrix.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Resolve dependencies
         if: runner.os != 'Windows' || matrix.arch != 'aarch64'

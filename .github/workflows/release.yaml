@@ -89,17 +89,11 @@ jobs:
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
-      - id: cef-cache
-        name: Restore compressed CEF archive
-        uses: actions/cache/restore@v5
+      - name: Prepare compressed CEF archives
+        uses: ./.github/actions/cef-archives
         with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-${{ matrix.platform }}-${{ env.CEF_VERSION }}
-
-      - name: Fetch and validate CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: .github/ci/fetch-cef.sh '${{ env.CEF_VERSION }}' '${{ matrix.platform }}'
+          version: ${{ env.CEF_VERSION }}
+          platform: ${{ matrix.platform }}
 
       - id: sysroot-cache
         name: Restore AlmaLinux 8 sysroot
@@ -229,16 +223,11 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - id: cef-cache
-        name: Restore compressed CEF archive
-        uses: actions/cache/restore@v5
+      - name: Prepare compressed CEF archives
+        uses: ./.github/actions/cef-archives
         with:
-          path: .cef-dist/*.tar.bz2
-          key: cef-archive-linux64-${{ env.CEF_VERSION }}
-
-      - name: Fetch and validate CEF archive
-        if: steps.cef-cache.outputs.cache-hit != 'true'
-        run: .github/ci/fetch-cef.sh '${{ env.CEF_VERSION }}' linux64
+          version: ${{ env.CEF_VERSION }}
+          platform: linux64
 
       - name: Install native build prerequisites
         run: |
