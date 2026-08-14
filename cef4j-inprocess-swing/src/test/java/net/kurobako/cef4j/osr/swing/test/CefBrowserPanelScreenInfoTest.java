@@ -21,6 +21,40 @@ import org.junit.jupiter.api.Timeout;
 class CefBrowserPanelScreenInfoTest extends SwingBrowserPanelTestBase {
 
     @Test
+    void attachingBrowserAfterPanelIsVisibleRefreshesCefView() throws Exception {
+        AtomicInteger screenInfoNotifications = new AtomicInteger();
+        AtomicInteger resizeNotifications = new AtomicInteger();
+        CefBrowser browser = proxyBrowser(proxyHost(screenInfoNotifications, resizeNotifications));
+        JFrame[] frameRef = new JFrame[1];
+
+        try {
+            onSwingThread(() -> {
+                CefBrowserPanel panel = new CefBrowserPanel();
+                JFrame frame = new JFrame("late-browser-attach-test");
+                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                frame.add(panel);
+                frame.setSize(400, 300);
+                frame.setVisible(true);
+                frameRef[0] = frame;
+            });
+
+            screenInfoNotifications.set(0);
+            resizeNotifications.set(0);
+            onSwingThread(() -> {
+                CefBrowserPanel panel =
+                        (CefBrowserPanel) frameRef[0].getContentPane().getComponent(0);
+                panel.browser(browser);
+            });
+
+            assertThat(waitUntil(() -> screenInfoNotifications.get() > 0, 1_000))
+                    .isTrue();
+            assertThat(resizeNotifications.get()).isGreaterThan(0);
+        } finally {
+            if (frameRef[0] != null) onSwingThread(() -> frameRef[0].dispose());
+        }
+    }
+
+    @Test
     void movingThePanelNotifiesCefThatScreenInfoMayHaveChanged() throws Exception {
         AtomicInteger screenInfoNotifications = new AtomicInteger();
         AtomicInteger resizeNotifications = new AtomicInteger();

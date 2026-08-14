@@ -28,6 +28,7 @@ public final class CefSessionImpl implements CefSession {
     private static final Logger LOG = LoggerFactory.getLogger(CefSessionImpl.class);
     private static final int RUNTIME_SESSION_READY_MESSAGE_ID = 0;
     private static final int RUNTIME_SESSION_READY_CORR_ID = 0;
+    private static final long RUNTIME_SESSION_READY_RETRY_NANOS = TimeUnit.MILLISECONDS.toNanos(250);
 
     private final CefTransport transport;
     private final Duration defaultTimeout;
@@ -82,9 +83,21 @@ public final class CefSessionImpl implements CefSession {
         Envelope.writeHeader(
                 buf, Envelope.Kind.REQUEST, 0, RUNTIME_SESSION_READY_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
         buf.flip();
+        long deadline = System.nanoTime() + defaultTimeout.toNanos();
         try {
-            transport.send(buf);
-            runtimeSessionReady.get(defaultTimeout.toMillis(), TimeUnit.MILLISECONDS);
+            while (!runtimeSessionReady.isDone()) {
+                // SessionReady is an idempotent bootstrap barrier. Retransmit it until acknowledged so a transport
+                // connection becoming writable concurrently with the first send cannot strand startup forever.
+                transport.send(buf.duplicate());
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) throw new TimeoutException();
+                try {
+                    runtimeSessionReady.get(
+                            Math.min(remaining, RUNTIME_SESSION_READY_RETRY_NANOS), TimeUnit.NANOSECONDS);
+                } catch (TimeoutException retry) {
+                    if (deadline - System.nanoTime() <= 0) throw retry;
+                }
+            }
         } catch (CefTransportException e) {
             if (ownTimer) timer.shutdownNow();
             throw new IllegalStateException("failed to establish runtime server session", e);

@@ -529,9 +529,18 @@ public class CefBrowserPanel extends JPanel {
     /** Test/diagnostic hook invoked after a complete view frame has entered the panel's frame buffer. */
     protected void onViewPainted(int width, int height) {}
 
-    /** Attaches an already-created browser to this panel. */
+    /** Attaches an already-created browser to this panel and refreshes its OSR viewport. */
     public void browser(@Nullable CefBrowser browser) {
         this.browser = browser;
+        if (browser == null) return;
+        Runnable refresh = () -> {
+            // The panel may have been realised before CEF completed browser creation. In that ordering its component
+            // resize event had no browser host to notify, so explicitly publish the current viewport on attachment.
+            updateScreenLocation();
+            refreshView(true);
+        };
+        if (SwingUtilities.isEventDispatchThread()) refresh.run();
+        else SwingUtilities.invokeLater(refresh);
     }
 
     /** Returns the attached browser, or {@code null} if none is attached. */

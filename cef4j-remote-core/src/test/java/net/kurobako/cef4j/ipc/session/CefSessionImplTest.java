@@ -66,6 +66,15 @@ class CefSessionImplTest {
     }
 
     @Test
+    void runtimeServerSessionRetransmitsDroppedReadyBarrier() {
+        AcknowledgingRuntimeTransport transport = new AcknowledgingRuntimeTransport(1);
+        try (CefSessionImpl acknowledged = new CefSessionImpl(transport, Duration.ofSeconds(2))) {
+            assertThat(acknowledged).isNotNull();
+            assertThat(transport.sendCount).isEqualTo(2);
+        }
+    }
+
+    @Test
     void requestResolvesWhenResponseArrives() throws Exception {
         CompletableFuture<TestMessages.BytesView> fut = session.request(
                 new TestMessages.BytesEncoder(MSG_PING, "ping".getBytes(StandardCharsets.UTF_8)),
@@ -84,16 +93,30 @@ class CefSessionImplTest {
     }
 
     private static final class AcknowledgingRuntimeTransport implements CefTransport {
+        private final int requestsToDrop;
+
         @Nullable
         private Consumer<ByteBuffer> receiver;
 
         @Nullable
         private ByteBuffer readyRequest;
 
+        private int sendCount;
+
+        private AcknowledgingRuntimeTransport() {
+            this(0);
+        }
+
+        private AcknowledgingRuntimeTransport(int requestsToDrop) {
+            this.requestsToDrop = requestsToDrop;
+        }
+
         @Override
         public void send(@Nonnull ByteBuffer frame) throws CefTransportException {
+            sendCount++;
             readyRequest = ByteBuffer.allocate(frame.remaining()).order(ByteOrder.LITTLE_ENDIAN);
             readyRequest.put(frame).flip();
+            if (sendCount <= requestsToDrop) return;
             Envelope.Header request = Envelope.readHeader(readyRequest.duplicate());
             ByteBuffer response = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
             Envelope.writeHeader(response, Envelope.Kind.RESPONSE, 0, request.corrId, request.messageId, 0);
