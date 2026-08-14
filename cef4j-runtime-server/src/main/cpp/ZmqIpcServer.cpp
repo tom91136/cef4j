@@ -156,8 +156,14 @@ void ZmqIpcServer::workerLoop() {
             // drain wake signals
             char buf[16];
             while (zmq_recv(wakeWorkerSock_, buf, sizeof(buf), ZMQ_DONTWAIT) >= 0) {}
-            drainOutbound();
         }
+        // A producer can enqueue before the inproc wake PAIR has completed its
+        // connection.  The best-effort DONTWAIT wake is then legitimately
+        // dropped, so polling only after a wake can strand the first outbound
+        // frame forever.  The bounded main poll is also a progress clock: check
+        // the queue on every pass so bootstrap events and responses cannot be
+        // lost solely because they were the first send in a fresh process.
+        drainOutbound();
     }
 }
 

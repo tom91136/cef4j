@@ -177,7 +177,8 @@ if(APPLE)
                 "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/MacOS/${CEF4J_RUNTIME_HELPER_NAME}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CEF4J_RUNTIME_HELPER_PLIST}"
-                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Info.plist")
+                "${CEF4J_RUNTIME_HELPER_BUNDLE}/Contents/Info.plist"
+            VERBATIM)
     endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
@@ -189,7 +190,8 @@ if(APPLE)
         COMMAND ${CMAKE_COMMAND} -E rm -f "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
-            "${CEF4J_RUNTIME_DIST}/Frameworks/Chromium Embedded Framework.framework")
+            "${CEF4J_RUNTIME_DIST}/Frameworks/Chromium Embedded Framework.framework"
+        VERBATIM)
     file(GLOB CEF4J_MAC_GRAPHICS_LIBS
         "${CEF_ROOT}/Release/Chromium Embedded Framework.framework/Libraries/*.dylib"
         "${CEF_ROOT}/Release/Chromium Embedded Framework.framework/Libraries/*.json")

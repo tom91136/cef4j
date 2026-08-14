@@ -476,11 +476,8 @@ public enum Cef {
      * <p>When the daemon thread manages the message loop, this method signals the loop to exit and waits for shutdown
      * to complete. When using the external message pump, this must be called on the init thread.
      *
-     * <p><b>macOS:</b> after this method returns, the caller should terminate the JVM via
-     * {@code Runtime.getRuntime().halt(0)} rather than {@code System.exit(0)} or normal return. CEF's CFRunLoop
-     * observers remain registered (because {@code cef_shutdown()} is skipped due to async browser close) and normal JVM
-     * teardown would fire them, causing a CHECK failure. The native side parks Thread 0 for up to 5 seconds as a safety
-     * net; if the JVM hasn't halted by then, it calls {@code _exit(0)}.
+     * <p>All browser instances must be closed before calling this method. On macOS, shutdown runs on Thread 0 after the
+     * managed CEF message loop exits so that CEF can remove its CFRunLoop observers before ordinary JVM teardown.
      *
      * <p>As per CEF design, after this call, CEF cannot be re-initialised in the same process (i.e. JVM). The singleton
      * remains accessible but all operations will throw {@link IllegalStateException}.
@@ -508,8 +505,7 @@ public enum Cef {
 
         if (isMacOs) {
             // Quit the message loop (cef_quit_message_loop + cef4j_stop_nsapp) and
-            // wait for the dispatch block to finish cleanup (NativeCleaner.releaseAll).
-            // cef_shutdown() is skipped — see terminate() javadoc.
+            // wait for the dispatch block to finish cleanup and cef_shutdown().
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
         } else if (isDaemon) {
             // Signal the daemon thread's runMessageLoop() to return; cleanup runs there.

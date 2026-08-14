@@ -25,7 +25,8 @@ class CefBrowserPanelV117PlusLoadTest extends SwingBrowserPanelTestBase {
 
         assertThat(waitUntil(() -> "host-stable".equals(getTitle(panel)), 5_000))
                 .isTrue();
-        Thread.sleep(300);
-        assertThat(isLoading(panel)).isFalse();
+        assertThat(waitUntil(() -> !isLoading(panel), 5_000))
+                .as("the top-level loading state should settle after the iframe error")
+                .isTrue();
     }
 }

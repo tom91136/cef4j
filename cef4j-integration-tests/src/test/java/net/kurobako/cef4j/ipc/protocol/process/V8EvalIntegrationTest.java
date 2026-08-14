@@ -249,7 +249,10 @@ class V8EvalIntegrationTest {
                 LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                 ev -> browsers.offer(ev.browser()));
         LinkedBlockingQueue<V8ContextCreatedEvent> contexts = new LinkedBlockingQueue<>();
-        session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
+        // Browser and renderer startup can complete before this test registers its observers on a fast machine. Both
+        // events describe current session state, so replay the latest value instead of losing a startup edge and
+        // waiting until the session times out.
+        session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
         RemoteHandle browser = browsers.poll(45, TimeUnit.SECONDS);
         assertThat(browser).isNotNull();
         V8ContextCreatedEvent ctx = contexts.poll(15, TimeUnit.SECONDS);

@@ -29,12 +29,25 @@ class WebViewRuntimeInputCompatTest extends WebViewRuntimeCompatTestBase {
                 .isTrue();
 
         for (int i = 1; i <= 4; i++) {
-            leftClick(view, 120, 120);
+            assertThat(clickUntilFocused(view))
+                    .as("the input should receive DOM focus after click #%s", i)
+                    .isTrue();
             typeText(view, javafx.scene.input.KeyCode.A, "a");
             String expected = "a".repeat(i);
             assertThat(waitUntilOnFx(() -> expected.equals(title(view)), 2_000))
                     .as("keyboard input after click #%s", i)
                     .isTrue();
         }
+    }
+
+    @SuppressWarnings("deprecation") // generated CEF parity test intentionally exercises CefWebEngine.executeScript
+    private static boolean clickUntilFocused(WebView view) throws Exception {
+        for (int attempt = 0; attempt < 4; attempt++) {
+            leftClick(view, 120, 120);
+            onFxThread(() -> view.getEngine()
+                    .executeScript("document.title = (document.activeElement && document.activeElement.id) || ''"));
+            if (waitUntilOnFx(() -> "field".equals(view.getEngine().getTitle()), 500)) return true;
+        }
+        return false;
     }
 }

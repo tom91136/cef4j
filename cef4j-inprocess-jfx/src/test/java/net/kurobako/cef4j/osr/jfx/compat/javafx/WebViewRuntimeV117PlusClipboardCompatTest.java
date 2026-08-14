@@ -36,6 +36,9 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
             setClipboardText("seed");
             selectSourceText(view);
             performClipboardAction(view, Region.SOURCE, ClipboardAction.COPY, copy);
+            assertThat(waitForTransfer(view, text, ClipboardAction.COPY))
+                    .as("copy iteration %s should reach the clipboard", iteration)
+                    .isTrue();
             focusTarget(view);
             performClipboardAction(view, Region.TARGET, ClipboardAction.PASTE, paste);
             assertThat(waitForExpectedPaste(view, text + "|" + text, paste))
@@ -55,6 +58,9 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
             setClipboardText("seed");
             selectSourceText(view);
             performClipboardAction(view, Region.SOURCE, ClipboardAction.CUT, cut);
+            assertThat(waitForTransfer(view, text, ClipboardAction.CUT))
+                    .as("cut iteration %s should reach the clipboard and clear the source", iteration)
+                    .isTrue();
             focusTarget(view);
             performClipboardAction(view, Region.TARGET, ClipboardAction.PASTE, paste);
             assertThat(waitForExpectedPaste(view, "|" + text, paste))
@@ -161,6 +167,15 @@ class WebViewRuntimeV117PlusClipboardCompatTest extends WebViewRuntimeCompatTest
         focusTarget(view);
         performClipboardAction(view, Region.TARGET, ClipboardAction.PASTE, pasteTrigger);
         return waitUntilOnFx(() -> expectedTitle.equals(titleFor(view)), 1_800);
+    }
+
+    private static boolean waitForTransfer(WebView view, String text, ClipboardAction action) throws Exception {
+        String expectedTitle = action == ClipboardAction.CUT ? "|" : text + "|";
+        return waitUntilOnFx(
+                () -> text.equals(javafx.scene.input.Clipboard.getSystemClipboard()
+                                .getString())
+                        && expectedTitle.equals(view.getEngine().getTitle()),
+                2_000);
     }
 
     private static void clearTarget(WebView view) throws Exception {

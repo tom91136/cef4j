@@ -120,21 +120,17 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env,
             InvokeJavaRunnableFromNative(jvm, cleanupRef);
             CEF4J_DIAG("dispatch block: cleanup done");
         }
-        // cef_shutdown() is intentionally skipped.  Browser close operations
-        // (closeBrowser(true)) are asynchronous and may not have fully completed
-        // before cef4j_stop_nsapp forced [NSApp run] to return.  Calling
-        // cef_shutdown() with live browser objects triggers a CHECK/SIGTRAP.
+        // CefShutdown removes CEF's CFRunLoop observers. Leaving them installed
+        // makes ordinary JVM teardown re-enter Chromium after Java state has
+        // already been dismantled, which manifests as SIGBUS/SIGTRAP in a
+        // successful Surefire fork. NativeCleaner has released every retained
+        // browser-side peer above; callers must close browsers before terminate,
+        // just as on the other platforms.
+        CEF4J_DIAG("dispatch block: calling cef_shutdown");
+        cef_shutdown();
+        CEF4J_DIAG("dispatch block: cef_shutdown done");
         dispatch_semaphore_signal(loopDone);
-        CEF4J_DIAG("dispatch block: all done, parking Thread 0");
-        // CRITICAL: do NOT return from this block.  Returning gives control back
-        // to the JVM's ParkEventLoop CFRunLoop, which fires CEF's registered
-        // observers (still installed because cef_shutdown was skipped) and
-        // triggers a CHECK/SIGTRAP.  Park here until halt(0)/_exit kills us.
-        // Safety net: if the Java side doesn't halt within 5 seconds, force-exit.
-        dispatch_semaphore_wait(dispatch_semaphore_create(0),
-                dispatch_time(DISPATCH_TIME_NOW, 5ull * NSEC_PER_SEC));
-        CEF4J_DIAG("dispatch block: safety-net _exit(0)");
-        _exit(0);
+        CEF4J_DIAG("dispatch block: all done");
     });
 
     // Schedule app activation after a short delay — by this time [NSApp run]

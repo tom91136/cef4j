@@ -49,7 +49,10 @@ class NavigationMatrixTest {
             String second = null;
             long deadline = System.nanoTime() + Duration.ofSeconds(15).toNanos();
             while (System.nanoTime() < deadline) {
-                String v = s.evaluateJavascript("document.getElementById('m').textContent")
+                // During commit the old document has gone but the new DOM may not exist yet. Keep this probe total so
+                // that transient document replacement is observed as "not ready" rather than aborting the poll with
+                // a TypeError. The final assertion still requires the second document's marker.
+                String v = s.evaluateJavascript("(document.getElementById('m') || {}).textContent || ''")
                         .get();
                 if (v != null && v.contains("second")) {
                     second = v;
