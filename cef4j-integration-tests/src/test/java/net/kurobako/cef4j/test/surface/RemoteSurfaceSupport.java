@@ -4,15 +4,20 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
 import net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend;
 import net.kurobako.cef4j.ipc.frame.SharedFileFrameTransport;
+import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
@@ -92,6 +97,43 @@ final class RemoteSurfaceSupport {
 
         private void accept(int width, int height, ByteBuffer pixels) {
             paints.offer(new BrowserSession.PaintInfo(width, height, pixels.remaining()));
+        }
+    }
+
+    /** Strengthens a queued navigation ack into "the new renderer context is ready" for shared backend contracts. */
+    static final class NavigationProbe implements AutoCloseable {
+        private final LinkedBlockingQueue<V8ContextCreatedEvent> contexts = new LinkedBlockingQueue<>();
+        private final HandlerRegistration registration;
+
+        NavigationProbe(CefSession session) {
+            registration = session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
+        }
+
+        CompletableFuture<Void> load(String url, Supplier<CompletableFuture<Void>> queueLoad) {
+            contexts.clear();
+            return queueLoad.get().thenCompose(ignored -> CompletableFuture.runAsync(() -> awaitContext(url)));
+        }
+
+        private void awaitContext(String url) {
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+            try {
+                while (System.nanoTime() < deadline) {
+                    V8ContextCreatedEvent event =
+                            contexts.poll(Math.max(1L, deadline - System.nanoTime()), TimeUnit.NANOSECONDS);
+                    if (event == null) break;
+                    if (url.equals(event.frameUrl())) return;
+                }
+                throw new java.util.concurrent.CompletionException(
+                        new TimeoutException("no V8 context for navigation to " + url));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new java.util.concurrent.CompletionException(e);
+            }
+        }
+
+        @Override
+        public void close() {
+            registration.close();
         }
     }
 

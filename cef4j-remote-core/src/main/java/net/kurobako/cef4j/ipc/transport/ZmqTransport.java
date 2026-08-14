@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.transport;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,14 +27,14 @@ import org.zeromq.ZMonitor;
  * {@code ZMQ_IMMEDIATE} keeps application frames in the Java-side outbound queue until the socket has an established
  * ZMTP pipe.
  *
- * <p>Disconnect detection uses {@link ZMonitor} on the main socket; ZMTP heartbeats are enabled so peer crashes are
- * surfaced even when the TCP FIN is lost.
+ * <p>Disconnect detection uses a lightweight event hook on the main socket. The JeroMQ I/O thread only enqueues event
+ * types; the socket owner consumes them. ZMTP heartbeats are enabled so peer crashes are surfaced even when the TCP FIN
+ * is lost.
  */
 public final class ZmqTransport implements CefTransport {
 
     private static final Logger LOG = LoggerFactory.getLogger(ZmqTransport.class);
     private static final int POLL_TIMEOUT_MS = 10;
-    private static final int MONITOR_TIMEOUT_MS = 500;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
@@ -52,11 +53,10 @@ public final class ZmqTransport implements CefTransport {
     private final boolean runtimeServerClient;
     private final ZContext ctx;
     private final ZMQ.Socket main;
+    private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>();
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
     private final Thread worker;
-    private final Thread monitorThread;
-    private final ZMonitor monitor;
 
     @Nullable
     private volatile Consumer<ByteBuffer> receiveHandler;
@@ -100,14 +100,14 @@ public final class ZmqTransport implements CefTransport {
         main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
         main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
-        // ZMonitor internally creates its own shadow, so give it the process-wide parent rather than this
-        // transport's shadow (JeroMQ intentionally rejects shadows of shadows).
-        this.monitor = new ZMonitor(SharedContext.INSTANCE, main);
-        monitor.add(ZMonitor.Event.CONNECTED);
-        monitor.add(ZMonitor.Event.ACCEPTED);
-        monitor.add(ZMonitor.Event.CONNECT_RETRIED);
-        monitor.add(ZMonitor.Event.DISCONNECTED);
-        monitor.start();
+        int eventMask = ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_CONNECT_RETRIED | ZMQ.EVENT_DISCONNECTED;
+        // JeroMQ invokes this on its I/O thread. Never call application code or touch the socket here: enqueue the
+        // immutable event type and let the transport worker own all resulting state transitions.
+        if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
+            main.close();
+            ctx.close();
+            throw new IllegalStateException("Unable to monitor ZeroMQ transport " + requestedEndpoint);
+        }
 
         if (isBind) {
             main.bind(requestedEndpoint);
@@ -120,10 +120,6 @@ public final class ZmqTransport implements CefTransport {
         this.worker = new Thread(this::workerLoop, "zmq-worker-" + id);
         worker.setDaemon(true);
         worker.start();
-
-        this.monitorThread = new Thread(this::monitorLoop, "zmq-monitor-" + id);
-        monitorThread.setDaemon(true);
-        monitorThread.start();
     }
 
     @Override
@@ -165,14 +161,8 @@ public final class ZmqTransport implements CefTransport {
         // transports; abandoning a stuck shadow is preferable to wedging the application during close.
         Thread shutdown = new Thread(
                 () -> {
-                    // Let both Java owner threads leave their bounded polls before closing this transport's shadow.
+                    // Let the Java owner thread leave its bounded poll before closing this transport's shadow.
                     joinQuietly(worker);
-                    joinQuietly(monitorThread);
-                    try {
-                        monitor.close();
-                    } catch (RuntimeException e) {
-                        LOG.debug("monitor close on {} threw {}", endpoint, e.toString());
-                    }
                     try {
                         ctx.close();
                     } catch (RuntimeException e) {
@@ -200,6 +190,7 @@ public final class ZmqTransport implements CefTransport {
                 int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
                 if (poller.pollin(0)) drainIncoming();
+                if (drainMonitor()) break;
                 // Only this worker touches the socket. send() callers may run on arbitrary
                 // application threads and communicate solely through the thread-safe queue.
                 if (!outbound.isEmpty()) drainOutbound();
@@ -210,6 +201,21 @@ public final class ZmqTransport implements CefTransport {
         } finally {
             poller.close();
         }
+    }
+
+    private boolean drainMonitor() {
+        ZMonitor.Event event;
+        while ((event = monitorEvents.poll()) != null) {
+            if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
+                peerReady = true;
+            } else if (event == ZMonitor.Event.DISCONNECTED || (event == ZMonitor.Event.CONNECT_RETRIED && peerReady)) {
+                if (closed) return true; // suppress event triggered by local close
+                disconnected = true;
+                fireDisconnectIfReady();
+                return true;
+            }
+        }
+        return false;
     }
 
     private void drainIncoming() {
@@ -245,29 +251,6 @@ public final class ZmqTransport implements CefTransport {
             } catch (RuntimeException e) {
                 LOG.warn("receive handler on {} threw", endpoint, e);
             }
-        }
-    }
-
-    private void monitorLoop() {
-        try {
-            while (true) {
-                ZMonitor.ZEvent ev = monitor.nextEvent(MONITOR_TIMEOUT_MS);
-                if (ev == null) {
-                    if (closed) return;
-                    continue;
-                }
-                if (ev.type == ZMonitor.Event.CONNECTED || ev.type == ZMonitor.Event.ACCEPTED) {
-                    peerReady = true;
-                } else if (ev.type == ZMonitor.Event.DISCONNECTED
-                        || (ev.type == ZMonitor.Event.CONNECT_RETRIED && peerReady)) {
-                    if (closed) return; // suppress event triggered by local close
-                    disconnected = true;
-                    fireDisconnectIfReady();
-                    return;
-                }
-            }
-        } catch (RuntimeException e) {
-            LOG.debug("monitor on {} exiting due to {}", endpoint, e.toString());
         }
     }
 

@@ -246,6 +246,13 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         }
 
         @Override
+        protected float getEffectiveScaleFactor() {
+            // The cross-backend contract compares logical viewport and buffer dimensions. Production panels retain
+            // the real display scale (and therefore HiDPI physical buffers); normalize only this contract probe.
+            return 1f;
+        }
+
+        @Override
         protected void onViewPainted(int width, int height) {
             paints.offer(new BrowserSession.PaintInfo(width, height, (long) width * height * 4L));
         }

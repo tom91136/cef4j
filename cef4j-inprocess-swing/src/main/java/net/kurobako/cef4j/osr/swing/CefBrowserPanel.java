@@ -549,8 +549,8 @@ public class CefBrowserPanel extends JPanel {
         return browser;
     }
 
-    /** Returns the effective HiDPI scale factor for this panel. */
-    float getEffectiveScaleFactor() {
+    /** Returns the physical-pixel scale reported to CEF for this panel's display. */
+    protected float getEffectiveScaleFactor() {
         GraphicsConfiguration gc = getGraphicsConfiguration();
         if (gc == null) return 1f;
         AffineTransform tx = gc.getDefaultTransform();

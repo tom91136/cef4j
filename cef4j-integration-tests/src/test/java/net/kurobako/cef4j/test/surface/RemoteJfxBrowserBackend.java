@@ -81,6 +81,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
 
     private static final class Session implements BrowserSession {
         private final RemoteSurfaceSupport.RuntimeFixture runtime;
+        private final RemoteSurfaceSupport.NavigationProbe navigation;
         private final RemoteSurfaceSupport.FrameProbe frames = new RemoteSurfaceSupport.FrameProbe();
         private final RemoteWebView view;
         private final StackPane root;
@@ -109,6 +110,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             this.root = Objects.requireNonNull(rootRef.get(), "remote JavaFX root");
             this.stage = Objects.requireNonNull(stageRef.get(), "remote JavaFX stage");
             this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+            this.navigation = new RemoteSurfaceSupport.NavigationProbe(runtime.session);
             try {
                 // Attach without another UI-queue round trip: browser-created is a one-shot event.
                 view.attach(runtime.session);
@@ -120,6 +122,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
                     loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 }
             } catch (Exception e) {
+                navigation.close();
                 runtime.close();
                 throw e;
             }
@@ -128,7 +131,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return view.loadUrl(url);
+            return navigation.load(url, () -> view.loadUrl(url));
         }
 
         @Override
@@ -172,6 +175,7 @@ final class RemoteJfxBrowserBackend implements BrowserBackend {
             } catch (Exception ignored) {
                 // Continue closing the server-side resources.
             }
+            navigation.close();
             runtime.close();
         }
     }

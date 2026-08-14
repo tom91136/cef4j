@@ -56,6 +56,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
 
     private static final class Session implements BrowserSession {
         private final RemoteSurfaceSupport.RuntimeFixture runtime;
+        private final RemoteSurfaceSupport.NavigationProbe navigation;
         private final RemoteSurfaceSupport.FrameProbe frames = new RemoteSurfaceSupport.FrameProbe();
         private final RemoteBrowserPanel panel;
         private final JFrame frame;
@@ -81,6 +82,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             this.panel = Objects.requireNonNull(panelRef.get(), "remote Swing panel");
             this.frame = Objects.requireNonNull(frameRef.get(), "remote Swing frame");
             this.runtime = RemoteSurfaceSupport.open(config.startupTimeout());
+            this.navigation = new RemoteSurfaceSupport.NavigationProbe(runtime.session);
             try {
                 // Attach before showing; browser-created is a one-shot session event.
                 panel.attach(runtime.session);
@@ -92,6 +94,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
                     loadUrl(config.initialUrl()).get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 }
             } catch (Exception e) {
+                navigation.close();
                 runtime.close();
                 throw e;
             }
@@ -100,7 +103,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<Void> loadUrl(@Nonnull String url) {
-            return panel.loadUrl(url);
+            return navigation.load(url, () -> panel.loadUrl(url));
         }
 
         @Override
@@ -143,6 +146,7 @@ final class RemoteSwingBrowserBackend implements BrowserBackend {
             } catch (Exception ignored) {
                 // Continue closing the server-side resources.
             }
+            navigation.close();
             runtime.close();
         }
     }
