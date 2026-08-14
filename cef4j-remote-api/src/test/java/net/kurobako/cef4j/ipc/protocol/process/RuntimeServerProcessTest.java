@@ -85,6 +85,9 @@ class RuntimeServerProcessTest {
         assertThat(server.isAlive())
                 .as("server pid=%d should not be alive after close()", pid)
                 .isFalse();
+        assertThat(server.onExit().get(1, TimeUnit.SECONDS))
+                .as("cooperative runtime shutdown should preserve a clean exit code")
+                .isZero();
     }
 
     @Test

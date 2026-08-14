@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  *   <li>The server binds, then writes one versioned {@code CEF4J_RUNTIME_SERVER ...} handshake line to stdout.
  *   <li>{@link #spawn} blocks reading that line, then returns. Subsequent output is drained to the runtime-server
  *       loggers.
- *   <li>{@link #close} sends SIGTERM, waits up to 5s, then SIGKILL.
+ *   <li>{@link #close} requests backend-independent graceful shutdown over inherited stdin, waits up to 5s, then
+ *       forcibly terminates an unresponsive process tree.
  * </ol>
  *
  * <p>Crash detection during normal operation surfaces through the transport: if the server dies, the JVM-side
@@ -60,6 +61,8 @@ public final class RuntimeServerProcess implements Closeable {
 
     private static final Duration DEFAULT_BOOTSTRAP_TIMEOUT = Duration.ofSeconds(10);
     private static final long CLOSE_GRACE_MS = 5000;
+    private static final String GRACEFUL_SHUTDOWN_CAPABILITY = "graceful-shutdown";
+    private static final byte[] SHUTDOWN_COMMAND = "CEF4J_SHUTDOWN\n".getBytes(StandardCharsets.US_ASCII);
     private static final int BOOTSTRAP_DIAGNOSTIC_LINES = 40;
     private static final String EXTRA_ARGUMENTS_PROPERTY = "cef4j.runtime.server.extraArgs";
 
@@ -395,8 +398,7 @@ public final class RuntimeServerProcess implements Closeable {
             cleanupUdsSocket(endpoint);
             return;
         }
-        process.destroy();
-        destroy(descendants, false);
+        boolean gracefulRequested = requestGracefulShutdown();
         try {
             long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(CLOSE_GRACE_MS);
             boolean processAlive = !process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
@@ -404,9 +406,10 @@ public final class RuntimeServerProcess implements Closeable {
             boolean descendantsExited = awaitExit(descendants, TimeUnit.NANOSECONDS.toMillis(remaining));
             if (processAlive || !descendantsExited) {
                 LOG.warn(
-                        "runtime server process tree pid={} did not exit within {}ms; forcing termination",
+                        "runtime server process tree pid={} did not exit within {}ms after {} shutdown; forcing termination",
                         process.pid(),
-                        CLOSE_GRACE_MS);
+                        CLOSE_GRACE_MS,
+                        gracefulRequested ? "graceful" : "failed graceful");
                 process.destroyForcibly();
                 destroy(descendants, true);
                 process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
@@ -425,6 +428,22 @@ public final class RuntimeServerProcess implements Closeable {
             destroy(descendants, true);
             cleanupProcessFiles(process.pid());
             cleanupUdsSocket(endpoint);
+        }
+    }
+
+    private boolean requestGracefulShutdown() {
+        if (!handshake.hasCapability(GRACEFUL_SHUTDOWN_CAPABILITY)) {
+            process.destroy();
+            destroy(descendantsOf(process), false);
+            return false;
+        }
+        try {
+            process.getOutputStream().write(SHUTDOWN_COMMAND);
+            process.getOutputStream().flush();
+            return true;
+        } catch (IOException e) {
+            LOG.debug("cannot request graceful shutdown from runtime server pid={}: {}", process.pid(), e.toString());
+            return false;
         }
     }
 

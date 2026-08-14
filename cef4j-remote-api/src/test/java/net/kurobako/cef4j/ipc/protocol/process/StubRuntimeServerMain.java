@@ -1,7 +1,11 @@
 package net.kurobako.cef4j.ipc.protocol.process;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleRequest;
 import net.kurobako.cef4j.ipc.session.Envelope;
@@ -20,7 +24,7 @@ import org.zeromq.ZMQ;
  * </ul>
  *
  * Used by tests that verify runtime-server bootstrap and request/event roundtrip without needing CEF. Exits when the
- * peer disconnects or on SIGTERM.
+ * parent sends the runtime server's backend-independent stdin shutdown command.
  */
 public final class StubRuntimeServerMain {
 
@@ -28,6 +32,10 @@ public final class StubRuntimeServerMain {
         String bind = parseBindArg(args);
         String transport = parseOption(args, "--transport", "zmq");
         String frameTransport = parseOption(args, "--frame-transport", "mmap");
+        AtomicBoolean running = new AtomicBoolean(true);
+        Thread control = new Thread(() -> awaitShutdownCommand(running), "stub-runtime-control");
+        control.setDaemon(true);
+        control.start();
         try (ZContext ctx = new ZContext()) {
             ZMQ.Socket sock = ctx.createSocket(SocketType.PAIR);
             sock.setLinger(0);
@@ -35,14 +43,23 @@ public final class StubRuntimeServerMain {
             sock.bind(bind);
             String resolved = sock.getLastEndpoint();
             System.out.println("CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=" + transport
-                    + " frame=" + frameTransport + " endpoint=" + resolved + " capabilities=remote-cef-api");
+                    + " frame=" + frameTransport + " endpoint=" + resolved
+                    + " capabilities=remote-cef-api,graceful-shutdown");
             System.out.flush();
 
-            while (!Thread.currentThread().isInterrupted()) {
+            while (running.get() && !Thread.currentThread().isInterrupted()) {
                 byte[] frame = sock.recv(0);
                 if (frame == null) continue; // timeout
                 handleFrame(sock, frame);
             }
+        }
+    }
+
+    private static void awaitShutdownCommand(AtomicBoolean running) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.US_ASCII))) {
+            if ("CEF4J_SHUTDOWN".equals(reader.readLine())) running.set(false);
+        } catch (java.io.IOException ignored) {
+            // The test parent may forcibly close a deliberately broken stub.
         }
     }
 

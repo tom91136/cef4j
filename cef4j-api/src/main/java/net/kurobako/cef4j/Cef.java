@@ -317,7 +317,7 @@ public enum Cef {
                 // macOS path: dispatch cef_initialize() + cef_run_message_loop() + cleanup onto
                 // Thread 0 (the AppKit main thread) in a single dispatch_async block.
                 // cef_run_message_loop() calls [NSApp run] which becomes the event loop for Thread 0.
-                // terminate() calls cef_quit_message_loop() + [NSApp stop:] and waits for the
+                // terminate() posts cef_quit_message_loop() to CEF's UI thread and waits for the
                 // dispatch block to finish via a semaphore.
                 final CefSettings finalSettings = settings.toImmutable();
                 final CefApp finalAppHandler = appHandler;
@@ -504,8 +504,8 @@ public enum Cef {
         log.info("CEF shutting down");
 
         if (isMacOs) {
-            // Quit the message loop (cef_quit_message_loop + cef4j_stop_nsapp) and
-            // wait for the dispatch block to finish cleanup and cef_shutdown().
+            // Ask CEF to quit its message loop naturally, using an NSApp wake-up only
+            // as a bounded fallback, then wait for cleanup and cef_shutdown().
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
         } else if (isDaemon) {
             // Signal the daemon thread's runMessageLoop() to return; cleanup runs there.

@@ -122,9 +122,16 @@ public final class MmapFrameTransport implements FrameTransport {
     }
 
     private void deliver(OsrPaintEvent ev, FrameConsumer c) {
-        ByteBuffer view = ensureMapping(ev);
-        if (view == null) return;
-        ByteBuffer pixels = copyStableFrame(ev, view);
+        ByteBuffer pixels;
+        synchronized (mappingLock) {
+            if (closed) return;
+            ByteBuffer view = ensureMappingLocked(ev);
+            if (view == null) return;
+            // Keep the mapping lock through the native-memory copy. close() explicitly unmaps the buffer and may
+            // run on a caller thread while this method runs on the transport worker; unmapping between
+            // ensureMapping and ByteBuffer.put would crash the JVM inside Unsafe.copyMemory.
+            pixels = copyStableFrame(ev, view);
+        }
         if (pixels == null) return;
         FrameMetadata meta = new FrameMetadata(
                 sequence.incrementAndGet(),
@@ -165,58 +172,54 @@ public final class MmapFrameTransport implements FrameTransport {
      * resize-driven generations change the path. Returns {@code null} if the file could not be opened.
      */
     @Nullable
-    private ByteBuffer ensureMapping(OsrPaintEvent ev) {
-        synchronized (mappingLock) {
-            if (closed) return null;
-            String name = ev.shmName();
-            if (!name.equals(mappedShmName)) {
-                disposeMappingLocked();
-                Path sharedPath = Paths.get(name).toAbsolutePath().normalize();
-                Path leaf = sharedPath.getFileName();
-                if (leaf == null || !leaf.toString().matches("cef4j-paint-[0-9]+-[0-9]+-[0-9]+-[01]\\.frame")) {
-                    LOG.warn("rejecting invalid shared-frame path={} for browser={}", name, browserIdForLog());
-                    return null;
-                }
-                try {
-                    Path tempRoot =
-                            Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
-                    Path realPath = sharedPath.toRealPath();
-                    if (!tempRoot.equals(realPath.getParent())) {
-                        LOG.warn("rejecting shared-frame path outside java.io.tmpdir: {}", realPath);
-                        return null;
-                    }
-                    RandomAccessFile raf = new RandomAccessFile(realPath.toFile(), "r");
-                    FileChannel ch = raf.getChannel();
-                    long size = ch.size();
-                    ByteBuffer mapped = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
-                    this.mappedFile = raf;
-                    this.mappedChannel = ch;
-                    this.mappedBuffer = mapped;
-                    this.mappedSize = size;
-                    this.mappedShmName = name;
-                } catch (IOException e) {
-                    LOG.warn("failed to open shared-frame file {} for browser={}", sharedPath, browserIdForLog(), e);
-                    return null;
-                }
-            }
-            long expectedBytes = (long) ev.width() * ev.height() * 4L;
-            // Defensive: reject malformed dimensions/counts before allocating or slicing.
-            if (ev.width() <= 0
-                    || ev.height() <= 0
-                    || ev.byteCount() <= 0
-                    || expectedBytes != ev.byteCount()
-                    || ev.byteCount() > mappedSize - SHM_HEADER_BYTES) {
-                LOG.warn(
-                        "invalid paint dimensions={}x{} byteCount={} mapped size={} for browser={}",
-                        ev.width(),
-                        ev.height(),
-                        ev.byteCount(),
-                        mappedSize,
-                        browserIdForLog());
+    private ByteBuffer ensureMappingLocked(OsrPaintEvent ev) {
+        String name = ev.shmName();
+        if (!name.equals(mappedShmName)) {
+            disposeMappingLocked();
+            Path sharedPath = Paths.get(name).toAbsolutePath().normalize();
+            Path leaf = sharedPath.getFileName();
+            if (leaf == null || !leaf.toString().matches("cef4j-paint-[0-9]+-[0-9]+-[0-9]+-[01]\\.frame")) {
+                LOG.warn("rejecting invalid shared-frame path={} for browser={}", name, browserIdForLog());
                 return null;
             }
-            return mappedBuffer;
+            try {
+                Path tempRoot = Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
+                Path realPath = sharedPath.toRealPath();
+                if (!tempRoot.equals(realPath.getParent())) {
+                    LOG.warn("rejecting shared-frame path outside java.io.tmpdir: {}", realPath);
+                    return null;
+                }
+                RandomAccessFile raf = new RandomAccessFile(realPath.toFile(), "r");
+                FileChannel ch = raf.getChannel();
+                long size = ch.size();
+                ByteBuffer mapped = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                this.mappedFile = raf;
+                this.mappedChannel = ch;
+                this.mappedBuffer = mapped;
+                this.mappedSize = size;
+                this.mappedShmName = name;
+            } catch (IOException e) {
+                LOG.warn("failed to open shared-frame file {} for browser={}", sharedPath, browserIdForLog(), e);
+                return null;
+            }
         }
+        long expectedBytes = (long) ev.width() * ev.height() * 4L;
+        // Defensive: reject malformed dimensions/counts before allocating or slicing.
+        if (ev.width() <= 0
+                || ev.height() <= 0
+                || ev.byteCount() <= 0
+                || expectedBytes != ev.byteCount()
+                || ev.byteCount() > mappedSize - SHM_HEADER_BYTES) {
+            LOG.warn(
+                    "invalid paint dimensions={}x{} byteCount={} mapped size={} for browser={}",
+                    ev.width(),
+                    ev.height(),
+                    ev.byteCount(),
+                    mappedSize,
+                    browserIdForLog());
+            return null;
+        }
+        return mappedBuffer;
     }
 
     private void disposeMappingLocked() {

@@ -9,7 +9,9 @@
 #include "include/cef_api_hash.h"
 #include "include/cef_version.h"
 #include "include/capi/cef_app_capi.h"
+#include "include/capi/cef_task_capi.h"
 #include <CoreFoundation/CoreFoundation.h>
+#include <atomic>
 #include <dispatch/dispatch.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -70,6 +72,31 @@ CEF4J_JNI_EXPORT_RT(jboolean, SystemBootstrap, loadCefLibrary0)(JNIEnv* env, jcl
 #ifdef __APPLE__
 static dispatch_semaphore_t g_cef_init_done = nullptr;
 static dispatch_semaphore_t g_cef_message_loop_done = nullptr;
+
+struct QuitMessageLoopTask : cef_task_t {
+    std::atomic<int> refCount{1};
+
+    QuitMessageLoopTask() : cef_task_t{} {
+        auto* base = reinterpret_cast<cef_base_ref_counted_t*>(static_cast<cef_task_t*>(this));
+        base->size = sizeof(cef_task_t);
+        base->add_ref = [](cef_base_ref_counted_t* self) {
+            reinterpret_cast<QuitMessageLoopTask*>(self)->refCount.fetch_add(1, std::memory_order_relaxed);
+        };
+        base->release = [](cef_base_ref_counted_t* self) -> int {
+            auto* task = reinterpret_cast<QuitMessageLoopTask*>(self);
+            if (task->refCount.fetch_sub(1, std::memory_order_acq_rel) != 1) return 0;
+            delete task;
+            return 1;
+        };
+        base->has_one_ref = [](cef_base_ref_counted_t* self) -> int {
+            return reinterpret_cast<QuitMessageLoopTask*>(self)->refCount.load(std::memory_order_acquire) == 1;
+        };
+        base->has_at_least_one_ref = [](cef_base_ref_counted_t* self) -> int {
+            return reinterpret_cast<QuitMessageLoopTask*>(self)->refCount.load(std::memory_order_acquire) >= 1;
+        };
+        execute = [](cef_task_t* /*self*/) { cef_quit_message_loop(); };
+    }
+};
 
 static void InvokeJavaRunnableFromNative(JavaVM* jvm, jobject globalRef) {
     ScopedJNIEnv scoped(jvm);
@@ -182,16 +209,29 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, dispatchToMainThreadSync0)(JNIEnv* en
 
 CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, quitAndWaitMainThreadMessageLoop0)(JNIEnv* /*env*/, jclass /*clz*/) {
 #ifdef __APPLE__
-    CEF4J_DIAG("quit: calling cef_quit_message_loop");
-    cef_quit_message_loop();
-    CEF4J_DIAG("quit: calling cef4j_stop_nsapp");
-    // cef_quit_message_loop() posts a quit task, but AWT's NSApplicationAWT
-    // overrides [NSApp run] and may not honour [NSApp stop:] from the quit task.
-    // Force-stop via cef4j_stop_nsapp() + dummy event to unblock [NSApp run].
-    cef4j_stop_nsapp();
-    CEF4J_DIAG("quit: waiting for message loop done semaphore");
+    CEF4J_DIAG("quit: posting cef_quit_message_loop to TID_UI");
+    // CefQuitMessageLoop must run on the same main application thread that
+    // entered CefRunMessageLoop. Calling it directly from the JUnit/AWT caller
+    // can leave Chromium's quit task unprocessed; force-stopping NSApp after
+    // that incomplete transition makes CefShutdown trap during teardown.
+    cef_post_task(TID_UI, new QuitMessageLoopTask());
     if (g_cef_message_loop_done) {
-        dispatch_semaphore_wait(g_cef_message_loop_done, DISPATCH_TIME_FOREVER);
+        CEF4J_DIAG("quit: waiting for natural message-loop exit");
+        // Let CEF's posted quit task close its internal browser/context state before
+        // cef_run_message_loop() returns. Force-stopping NSApp immediately races that
+        // work and makes cef_shutdown() CHECK-fail on current macOS CEF builds.
+        long waitResult = dispatch_semaphore_wait(
+                g_cef_message_loop_done, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
+        if (waitResult != 0) {
+            // AWT's NSApplicationAWT can occasionally prevent the posted quit task
+            // from stopping [NSApp run]. Keep the old wake-up mechanism strictly as
+            // a bounded fallback so terminate() cannot hang forever.
+            CEF4J_DIAG("quit: natural exit timed out; forcing NSApp stop");
+            cef4j_stop_nsapp();
+            dispatch_semaphore_wait(g_cef_message_loop_done, DISPATCH_TIME_FOREVER);
+        } else {
+            CEF4J_DIAG("quit: natural message-loop exit completed");
+        }
         g_cef_message_loop_done = nullptr;
     }
     CEF4J_DIAG("quit: done");

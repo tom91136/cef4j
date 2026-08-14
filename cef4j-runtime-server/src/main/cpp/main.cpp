@@ -24,6 +24,7 @@
 #include <cstring>
 #include <functional>
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -210,6 +211,100 @@ static cef_client_t* g_client = nullptr;     // shared by the initial browser + 
 // handler forwarders share the same waiter map without needing an extern.
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
+// Browser lifetime tracking exists independently of the generated handle table. A client can disappear without
+// explicitly releasing facade handles, but the owning RuntimeServerProcess must still be able to close every browser
+// and let Chromium reap its subprocesses before cef_shutdown(). Mutations happen on CEF's UI thread.
+static std::unordered_map<int, cef_browser_t*> g_liveBrowsers;
+static bool g_runtimeShuttingDown = false;
+static bool g_runtimeQuitPosted = false;
+static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_after_created) g_forwardOnAfterCreated = nullptr;
+static decltype(genhandlers::g_lifeSpanHandlerForwarder.do_close) g_forwardDoClose = nullptr;
+static decltype(genhandlers::g_lifeSpanHandlerForwarder.on_before_close) g_forwardOnBeforeClose = nullptr;
+
+static void trackBrowser(cef_browser_t* browser) {
+    if (!browser) return;
+    int id = browser->get_identifier(browser);
+    g_liveBrowsers.emplace(id, browser);
+}
+
+static bool untrackBrowser(cef_browser_t* browser) {
+    if (!browser) return false;
+    int id = browser->get_identifier(browser);
+    auto it = g_liveBrowsers.find(id);
+    if (it == g_liveBrowsers.end()) return false;
+    g_liveBrowsers.erase(it);
+    return true;
+}
+
+static void releaseAllDevToolsRegistrations();
+static void finishRuntimeShutdown();
+
+static void closeTrackedBrowsers() {
+    std::vector<cef_browser_t*> snapshot;
+    snapshot.reserve(g_liveBrowsers.size());
+    for (const auto& entry : g_liveBrowsers) {
+        snapshot.push_back(entry.second);
+    }
+    if (snapshot.empty()) {
+        finishRuntimeShutdown();
+        return;
+    }
+    for (auto* browser : snapshot) {
+        auto* host = browser->get_host(browser);
+        if (host) {
+            host->close_browser(host, 1);
+            auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
+            hostBase->release(hostBase);
+        }
+    }
+}
+
+static void beginRuntimeShutdown() {
+    if (g_runtimeShuttingDown) return;
+    g_runtimeShuttingDown = true;
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: closing %zu browser(s)\n", g_liveBrowsers.size());
+    closeTrackedBrowsers();
+}
+
+static void installLifeSpanHooks() {
+    auto& handler = genhandlers::g_lifeSpanHandlerForwarder;
+    g_forwardOnAfterCreated = handler.on_after_created;
+    g_forwardDoClose = handler.do_close;
+    g_forwardOnBeforeClose = handler.on_before_close;
+    handler.on_after_created = [](cef_life_span_handler_t* self, cef_browser_t* browser) {
+        trackBrowser(browser);
+        if (g_runtimeShuttingDown) {
+            auto* host = browser ? browser->get_host(browser) : nullptr;
+            if (host) {
+                host->close_browser(host, 1);
+                auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
+                hostBase->release(hostBase);
+            }
+            return;
+        }
+        g_forwardOnAfterCreated(self, browser);
+    };
+    handler.do_close = [](cef_life_span_handler_t* self, cef_browser_t* browser) -> int {
+        if (g_runtimeShuttingDown) return 0;
+        return g_forwardDoClose(self, browser);
+    };
+    handler.on_before_close = [](cef_life_span_handler_t* self, cef_browser_t* browser) {
+        if (!g_runtimeShuttingDown) g_forwardOnBeforeClose(self, browser);
+        bool removed = untrackBrowser(browser);
+        if (g_runtimeShuttingDown && removed && g_liveBrowsers.empty() && !g_runtimeQuitPosted) {
+            g_runtimeQuitPosted = true;
+            std::fprintf(stderr, "[cef4j-runtime-server] shutdown: final browser closed\n");
+            // CEF invokes OnBeforeClose on TID_UI and explicitly permits CefQuitMessageLoop from the final callback.
+            // An additional posted task can be stranded when this callback is the last runnable item in the loop.
+            finishRuntimeShutdown();
+        }
+    };
+}
+
+static void releaseTrackedBrowsers() {
+    g_liveBrowsers.clear();
+}
+
 // Per-type handle registries live in the codegen'd dispatcher namespace (`gendisp::tables::browser`,
 // `gendisp::tables::frame`, etc.). The server registers handles it mints itself (currently the initial
 // browser); the dispatcher's generated cases handle every other insert/retain/release.
@@ -255,7 +350,6 @@ static std::unordered_map<int, Viewport> g_viewports;
 // Releasing a cef_registration_t unregisters the observer. All mutations happen on CEF's UI thread.
 struct DevToolsRegistration {
     cef_registration_t* registration;
-    cef_dev_tools_message_observer_t* observer;
 };
 static std::unordered_map<std::int32_t, DevToolsRegistration> g_devToolsRegistrations;
 
@@ -311,8 +405,6 @@ static void releaseDevToolsRegistration(std::int32_t browserHandle) {
     if (it == g_devToolsRegistrations.end()) return;
     auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(it->second.registration);
     registrationBase->release(registrationBase);
-    auto* observerBase = reinterpret_cast<cef_base_ref_counted_t*>(it->second.observer);
-    observerBase->release(observerBase);
     g_devToolsRegistrations.erase(it);
 }
 
@@ -320,8 +412,6 @@ static void releaseAllDevToolsRegistrations() {
     for (auto& entry : g_devToolsRegistrations) {
         auto* registrationBase = reinterpret_cast<cef_base_ref_counted_t*>(entry.second.registration);
         registrationBase->release(registrationBase);
-        auto* observerBase = reinterpret_cast<cef_base_ref_counted_t*>(entry.second.observer);
-        observerBase->release(observerBase);
     }
     g_devToolsRegistrations.clear();
 }
@@ -767,7 +857,13 @@ struct Client : cef_client_t {
             return 0;
         };
     }
+
 };
+
+static void finishRuntimeShutdown() {
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: quitting CEF message loop\n");
+    cef_quit_message_loop();
+}
 
 // ---------------------------------------------------------------------------
 // Renderer-process surface. The same binary is re-execed for renderer subprocesses; cef_execute_process
@@ -1763,7 +1859,10 @@ struct CreateBrowserTask : cef_task_t {
         initRef<CreateBrowserTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         execute = [](cef_task_t* self) {
             auto* t = reinterpret_cast<CreateBrowserTask*>(self);
-            if (!g_client) return;
+            // A request can be queued just before the parent shutdown command reaches TID_UI. Never begin a new
+            // browser after shutdown has started: the existing final browser may already have posted the message-loop
+            // quit, leaving CEF browser creation racing teardown.
+            if (!g_client || g_runtimeShuttingDown) return;
 
             cef_window_info_t windowInfo{};
 #if CEF_VERSION_MAJOR >= 133
@@ -1942,9 +2041,11 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             cef_post_task(TID_UI, new gendisp::LambdaTask([browser, browserHandle, corrId, msgId]() {
                 auto* host = browser->get_host(browser);
                 cef_registration_t* registration = nullptr;
-                DevToolsObserver* observer = nullptr;
                 if (host) {
-                    observer = new DevToolsObserver(browserHandle);
+                    // The CEF C API transfers the incoming observer reference into its C++ CefRefPtr wrapper.
+                    // The returned registration owns that observer for the rest of its lifetime; retaining the raw
+                    // pointer here and releasing it after the registration is destroyed is a use-after-free.
+                    auto* observer = new DevToolsObserver(browserHandle);
                     registration = host->add_dev_tools_message_observer(host, observer);
                     auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
                     hostBase->release(hostBase);
@@ -1953,10 +2054,6 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 browserBase->release(browserBase);
 
                 if (!registration) {
-                    if (observer) {
-                        auto* observerBase = reinterpret_cast<cef_base_ref_counted_t*>(observer);
-                        observerBase->release(observerBase);
-                    }
                     static const std::uint8_t kReceiverGonePayload[8] = {
                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
                     if (g_ipc) g_ipc->send(Kind::Error, 0, corrId, msgId,
@@ -1964,8 +2061,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                     return;
                 }
                 releaseDevToolsRegistration(browserHandle);
-                g_devToolsRegistrations.emplace(
-                        browserHandle, DevToolsRegistration{registration, observer});
+                g_devToolsRegistrations.emplace(browserHandle, DevToolsRegistration{registration});
                 if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
             }));
             return;
@@ -1977,7 +2073,12 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t msgId = h.messageId;
             cef_post_task(TID_UI, new gendisp::LambdaTask([browserHandle, corrId, msgId]() {
                 releaseDevToolsRegistration(browserHandle);
-                if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
+                // Releasing the registration queues Chromium-side agent cleanup. Acknowledge from the next UI
+                // task so a client that immediately shuts down after the response cannot race browser destruction
+                // against that cleanup.
+                cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, msgId]() {
+                    if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
+                }));
             }));
             return;
         }
@@ -2430,24 +2531,41 @@ int main(int argc, char* argv[]) {
     // Publish the CEF client before the IPC worker can receive SessionReady. Otherwise a fast client can consume the
     // one-shot bootstrap barrier, post CreateBrowserTask, and have that task observe a null g_client before main gets
     // here. The task then returns without creating a browser and subsequent SessionReady messages cannot retry it.
+    installLifeSpanHooks();
     auto* client = new Client();
     g_client     = client;
     ipc->start(onIpcFrame);
 
     std::printf(
         "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
-        "capabilities=remote-cef-api,devtools,osr,input\n",
+        "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
         CEF_API_VERSION,
         transportName.c_str(),
         frameTransportName.c_str(),
         ipc->endpoint().c_str());
     std::fflush(stdout);
 
+    // RuntimeServerProcess owns this private control pipe. It deliberately sits below every IPC backend so a wedged
+    // or already-disconnected ZMQ/UDS/WebSocket session cannot prevent orderly native teardown. The command reader is
+    // detached because process exit is the final lifetime boundary; an exact command posts all CEF work to TID_UI.
+    std::thread([] {
+        std::string command;
+        if (std::getline(std::cin, command) && command == "CEF4J_SHUTDOWN") {
+            std::fprintf(stderr, "[cef4j-runtime-server] shutdown: parent command received\n");
+            cef_post_task(TID_UI, new gendisp::LambdaTask(beginRuntimeShutdown));
+        }
+    }).detach();
+
     cef_run_message_loop();
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
     releaseAllDevToolsRegistrations();
+    releaseTrackedBrowsers();
     cef_shutdown();
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: cef_shutdown complete\n");
     g_ipc = nullptr;
     genhandlers::g_ipc = nullptr;
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
     ipc->stop();
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: IPC transport stopped\n");
     return 0;
 }

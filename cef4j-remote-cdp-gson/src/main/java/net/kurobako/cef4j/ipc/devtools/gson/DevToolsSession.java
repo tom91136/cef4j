@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,6 +42,7 @@ public final class DevToolsSession implements CdpTransport {
     private final BrowserHost host;
     private final AtomicInteger nextMessageId = new AtomicInteger();
     private final AtomicBoolean open = new AtomicBoolean(true);
+    private final Object closeLock = new Object();
     private final ConcurrentHashMap<Integer, CompletableFuture<JsonObject>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<JsonObject>>> eventHandlers =
             new ConcurrentHashMap<>();
@@ -49,6 +51,9 @@ public final class DevToolsSession implements CdpTransport {
 
     @Nullable
     private CefSession.HandlerRegistration closeRegistration;
+
+    @Nullable
+    private CompletableFuture<Void> closeFuture;
 
     private DevToolsSession(CefSession session, RemoteHandle browser, BrowserHost host) {
         this.session = session;
@@ -142,19 +147,28 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
     public void close() {
-        if (!open.compareAndSet(true, false)) return;
-        messageRegistration.unregister();
-        detachedRegistration.unregister();
-        unregisterClose();
-        failPending(new IllegalStateException("DevTools session is closed"));
-        eventHandlers.clear();
-        session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
-                .exceptionally(failure -> {
-                    LOG.debug("DevTools detach failed during close", failure);
-                    return null;
-                });
+        closeAsync();
+    }
+
+    @Override
+    @Nonnull
+    public CompletionStage<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture != null) return closeFuture.minimalCompletionStage();
+            if (!open.compareAndSet(true, false)) return CompletableFuture.completedFuture(null);
+            messageRegistration.unregister();
+            detachedRegistration.unregister();
+            unregisterClose();
+            failPending(new IllegalStateException("DevTools session is closed"));
+            eventHandlers.clear();
+            closeFuture = session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
+                    .handle((ignored, failure) -> {
+                        if (failure != null) LOG.debug("DevTools detach failed during close", failure);
+                        return null;
+                    });
+            return closeFuture.minimalCompletionStage();
+        }
     }
 
     private void handleMessage(DevToolsMessageEvent event) {

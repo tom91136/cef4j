@@ -204,11 +204,29 @@ void ZmqIpcServer::drainOutbound() {
         for (auto& item : latest_) batch.push_back(std::move(item.second));
         latest_.clear();
     }
-    for (auto& frame : batch) {
-        if (zmq_send(mainSock_, frame.data(), frame.size(), 0) < 0) {
-            std::fprintf(stderr, "[cef4j-runtime-server] zmq_send failed: %s\n", zmq_strerror(zmq_errno()));
+    while (!batch.empty()) {
+        auto& frame = batch.front();
+        if (zmq_send(mainSock_, frame.data(), frame.size(), ZMQ_DONTWAIT) >= 0) {
+            batch.pop_front();
+            continue;
+        }
+        int error = zmq_errno();
+        if (error == EAGAIN && running_) {
+            // A disconnected or temporarily back-pressured peer must never pin
+            // the worker inside zmq_send: stop() owns a join on this thread.
+            // Put the unsent suffix ahead of anything producers queued while we
+            // were sending, preserving request/response order for the next poll.
+            std::lock_guard<std::mutex> lk(outboundMu_);
+            while (!batch.empty()) {
+                outbound_.push_front(std::move(batch.back()));
+                batch.pop_back();
+            }
             return;
         }
+        if (error != EAGAIN && error != ETERM) {
+            std::fprintf(stderr, "[cef4j-runtime-server] zmq_send failed: %s\n", zmq_strerror(error));
+        }
+        return;
     }
 }
 

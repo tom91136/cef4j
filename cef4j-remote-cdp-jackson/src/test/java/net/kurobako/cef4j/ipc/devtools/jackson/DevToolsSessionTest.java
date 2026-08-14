@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -100,10 +101,12 @@ class DevToolsSessionTest {
             assertThat(consoleEvents.poll(2, TimeUnit.SECONDS).get("type").asText())
                     .isEqualTo("log");
 
-            devTools.close();
+            CompletableFuture<Void> closing = devTools.closeAsync().toCompletableFuture();
             Frame detach = peer.receive();
             assertThat(detach.messageId).isEqualTo(30);
+            assertThat(closing).isNotDone();
             peer.respond(detach, null);
+            closing.get(2, TimeUnit.SECONDS);
         }
     }
 

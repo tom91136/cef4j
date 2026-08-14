@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,6 +36,7 @@ public final class DevToolsSession implements CdpTransport {
     private final BrowserHost host;
     private final AtomicInteger nextMessageId = new AtomicInteger();
     private final AtomicBoolean open = new AtomicBoolean(true);
+    private final Object closeLock = new Object();
     private final ConcurrentHashMap<Integer, CompletableFuture<ObjectNode>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<ObjectNode>>> handlers =
             new ConcurrentHashMap<>();
@@ -43,6 +45,9 @@ public final class DevToolsSession implements CdpTransport {
 
     @Nullable
     private CefSession.HandlerRegistration closeRegistration;
+
+    @Nullable
+    private CompletableFuture<Void> closeFuture;
 
     private DevToolsSession(CefSession session, RemoteHandle browser, BrowserHost host) {
         this.session = session;
@@ -117,17 +122,26 @@ public final class DevToolsSession implements CdpTransport {
 
     @Override
     public void close() {
-        if (!open.compareAndSet(true, false)) return;
-        messageRegistration.unregister();
-        detachedRegistration.unregister();
-        unregisterClose();
-        failPending(new IllegalStateException("DevTools session is closed"));
-        handlers.clear();
-        session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
-                .exceptionally(failure -> {
-                    LOG.debug("DevTools detach failed", failure);
-                    return null;
-                });
+        closeAsync();
+    }
+
+    @Override
+    public CompletionStage<Void> closeAsync() {
+        synchronized (closeLock) {
+            if (closeFuture != null) return closeFuture.minimalCompletionStage();
+            if (!open.compareAndSet(true, false)) return CompletableFuture.completedFuture(null);
+            messageRegistration.unregister();
+            detachedRegistration.unregister();
+            unregisterClose();
+            failPending(new IllegalStateException("DevTools session is closed"));
+            handlers.clear();
+            closeFuture = session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
+                    .handle((ignored, failure) -> {
+                        if (failure != null) LOG.debug("DevTools detach failed", failure);
+                        return null;
+                    });
+            return closeFuture.minimalCompletionStage();
+        }
     }
 
     private void handleMessage(DevToolsMessageEvent event) {

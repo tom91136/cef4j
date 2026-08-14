@@ -127,8 +127,16 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
         @Override
         public void close() {
             if (!closed.compareAndSet(false, true)) return;
-            devTools.close();
-            runtime.close();
+            try {
+                // Detach is a native UI-thread operation. Do not race server shutdown (sent over a separate
+                // control pipe) against the IPC acknowledgement that the DevTools registration was released.
+                devTools.closeAsync()
+                        .toCompletableFuture()
+                        .handle((ignored, failure) -> null)
+                        .join();
+            } finally {
+                runtime.close();
+            }
         }
     }
 

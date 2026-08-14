@@ -8,9 +8,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -98,11 +95,9 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     event -> browser.complete(event.browser()));
-            session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
-                    .get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            // CefSessionImpl's runtime-server handshake creates the bootstrap browser only after the receive
+            // handler is installed. onLatest also replays the event if creation wins this registration race.
+            // Sending CreateBrowserRequest here would create an unowned second browser for every runtime.
             RemoteHandle handle = browser.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
             registration.close();
             return new OwnedRuntime(session, handle, server);
