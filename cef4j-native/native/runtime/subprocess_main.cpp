@@ -836,6 +836,10 @@ int main(int argc, char* argv[]) {
     // If CEF drops the last ref during cef_execute_process, it's deleted properly.
     // If not, it leaks — acceptable since the process is about to exit.
     auto* app = new SubprocessApp();
-    return cef_execute_process(&args, app, nullptr);
+    int exitCode = cef_execute_process(&args, app, nullptr);
+#ifdef __APPLE__
+    cef_unload_library();
+#endif
+    return exitCode;
 }
 #endif

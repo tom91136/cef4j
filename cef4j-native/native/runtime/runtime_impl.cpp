@@ -156,6 +156,11 @@ CEF4J_JNI_EXPORT_RT(void, SystemBootstrap, initAndRunOnMainThread0)(JNIEnv* env,
         CEF4J_DIAG("dispatch block: calling cef_shutdown");
         cef_shutdown();
         CEF4J_DIAG("dispatch block: cef_shutdown done");
+        // Match CefScopedLibraryLoader's lifetime contract. Leaving the CEF
+        // framework loaded until JVM teardown lets older releases run framework
+        // destructors after AppKit/Java state has already been dismantled.
+        cef_unload_library();
+        CEF4J_DIAG("dispatch block: CEF framework unloaded");
         dispatch_semaphore_signal(loopDone);
         CEF4J_DIAG("dispatch block: all done");
     });
