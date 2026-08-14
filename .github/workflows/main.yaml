@@ -121,7 +121,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: reports-linux-${{ matrix.arch }}-jdk${{ matrix.java }}-cef${{ matrix.cef-api }}-jfx${{ matrix.javafx }}
-          path: '**/target/surefire-reports/**'
+          path: |
+            **/target/surefire-reports/**
+            **/hs_err_pid*.log
           if-no-files-found: ignore
           retention-days: 7
 
@@ -272,6 +274,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: reports-${{ matrix.os }}-cef${{ matrix.cef-api }}-jdk${{ matrix.java }}-jfx${{ matrix.javafx }}
-          path: '**/target/surefire-reports/**'
+          path: |
+            **/target/surefire-reports/**
+            **/hs_err_pid*.log
           if-no-files-found: ignore
           retention-days: 7

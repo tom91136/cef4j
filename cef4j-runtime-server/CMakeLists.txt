@@ -139,6 +139,14 @@ endif()
 
 if(APPLE)
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
+        # CEF requires a distinct subprocess executable on macOS. Reusing the same
+        # program preserves the remote server's renderer-side App implementation;
+        # main() routes --type= subprocesses through cef_execute_process immediately.
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:cef4j-runtime-server>"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/cef4j-runtime-server-helper"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"

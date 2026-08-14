@@ -15,10 +15,12 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,6 +60,7 @@ public final class RuntimeServerProcess implements Closeable {
 
     private static final Duration DEFAULT_BOOTSTRAP_TIMEOUT = Duration.ofSeconds(10);
     private static final long CLOSE_GRACE_MS = 5000;
+    private static final int BOOTSTRAP_DIAGNOSTIC_LINES = 40;
     private static final String EXTRA_ARGUMENTS_PROPERTY = "cef4j.runtime.server.extraArgs";
 
     private final Process process;
@@ -131,7 +134,9 @@ public final class RuntimeServerProcess implements Closeable {
         Process p = pb.start();
 
         CompletableFuture<RuntimeServerHandshake> handshakeFuture = new CompletableFuture<>();
+        Deque<String> bootstrapOutput = new ConcurrentLinkedDeque<>();
         startReader(p.getInputStream(), "runtime-server-stdout-" + p.pid(), line -> {
+            rememberOutput(bootstrapOutput, "stdout: " + line);
             if (!handshakeFuture.isDone()) {
                 if (line.startsWith(RuntimeServerHandshake.PREFIX)) {
                     try {
@@ -145,9 +150,12 @@ public final class RuntimeServerProcess implements Closeable {
             }
             STDOUT_LOG.info("{}", line);
         });
-        startReader(p.getErrorStream(), "runtime-server-stderr-" + p.pid(), line -> STDERR_LOG.info("{}", line));
+        startReader(p.getErrorStream(), "runtime-server-stderr-" + p.pid(), line -> {
+            rememberOutput(bootstrapOutput, "stderr: " + line);
+            STDERR_LOG.info("{}", line);
+        });
 
-        watchForExit(p, bindEndpoint, handshakeFuture);
+        watchForExit(p, bindEndpoint, handshakeFuture, bootstrapOutput);
 
         try {
             RuntimeServerHandshake handshake = handshakeFuture.get(bootstrapTimeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -162,7 +170,10 @@ public final class RuntimeServerProcess implements Closeable {
             terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
-            throw new IOException("runtime server did not publish its handshake within " + bootstrapTimeout, e);
+            throw new IOException(
+                    "runtime server did not publish its handshake within " + bootstrapTimeout
+                            + diagnosticSuffix(bootstrapOutput),
+                    e);
         } catch (InterruptedException e) {
             terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
@@ -205,15 +216,32 @@ public final class RuntimeServerProcess implements Closeable {
     /** Registers a deliberately detached watcher that owns process-exit cleanup and bootstrap failure reporting. */
     @SuppressWarnings("FutureReturnValueIgnored")
     private static void watchForExit(
-            Process process, String bindEndpoint, CompletableFuture<RuntimeServerHandshake> handshakeFuture) {
+            Process process,
+            String bindEndpoint,
+            CompletableFuture<RuntimeServerHandshake> handshakeFuture,
+            Deque<String> bootstrapOutput) {
         process.onExit().thenAccept(exited -> {
             cleanupProcessFiles(exited.pid());
             cleanupUdsSocket(bindEndpoint);
             if (!handshakeFuture.isDone()) {
-                handshakeFuture.completeExceptionally(
-                        new IOException("runtime server exited before handshake (exit=" + exited.exitValue() + ")"));
+                handshakeFuture.completeExceptionally(new IOException("runtime server exited before handshake (exit="
+                        + exited.exitValue() + ")" + diagnosticSuffix(bootstrapOutput)));
             }
         });
+    }
+
+    private static void rememberOutput(Deque<String> output, String line) {
+        output.addLast(line);
+        while (output.size() > BOOTSTRAP_DIAGNOSTIC_LINES) output.pollFirst();
+    }
+
+    private static String diagnosticSuffix(Deque<String> output) {
+        if (output.isEmpty()) return "";
+        return output.stream()
+                .collect(Collectors.joining(
+                        System.lineSeparator(),
+                        System.lineSeparator() + "recent runtime-server output:" + System.lineSeparator(),
+                        ""));
     }
 
     private RuntimeServerProcess(Process process, RuntimeServerHandshake handshake) {

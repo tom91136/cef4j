@@ -2384,10 +2384,19 @@ int main(int argc, char* argv[]) {
         ScopedCefString locPath(localesPath);
         cef_string_set(locPath.get()->str, locPath.get()->length, &settings.locales_dir_path, 1);
     }
-    // Subprocesses re-exec our binary; tell CEF to use argv[0] explicitly. Resolves
-    // edge cases when the binary is launched via a relative path or symlink.
+    // Subprocesses re-exec this program. On macOS they must not use the browser-process
+    // executable inside the top-level .app: recent Chromium releases can deadlock in
+    // cef_initialize while trying to establish process identity that way. The packaged
+    // distribution includes a byte-identical, explicitly selected helper executable.
+    // It enters cef_execute_process above before any browser-only server setup.
     {
-        ScopedCefString sp(std::string{argv[0]});
+        std::filesystem::path subprocessPath = std::filesystem::absolute(argv[0]);
+#ifdef __APPLE__
+        const auto packagedHelper = subprocessPath.parent_path().parent_path() / "Frameworks"
+                                  / "cef4j-runtime-server-helper";
+        if (std::filesystem::exists(packagedHelper)) subprocessPath = packagedHelper;
+#endif
+        ScopedCefString sp(subprocessPath.string());
         cef_string_set(sp.get()->str, sp.get()->length, &settings.browser_subprocess_path, 1);
     }
 
