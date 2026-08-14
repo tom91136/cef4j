@@ -170,13 +170,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up JDKs
+      # setup-java records each installation in Maven's toolchains.xml. Windows
+      # ARM needs Microsoft for the Java 11 smoke toolchain because Zulu's native
+      # Windows ARM64 builds start after 11; the active Java 21 build JDK remains
+      # Zulu to avoid Microsoft 21's fatal handling of Chromium NTE_BAD_KEYSET.
+      - name: Set up Java 11 runtime toolchain
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ runner.os == 'Windows' && matrix.arch == 'aarch64' && 'microsoft' || matrix.distribution }}
+          java-version: '11'
+
+      - name: Set up build JDK
         uses: actions/setup-java@v5
         with:
           distribution: ${{ matrix.distribution }}
-          java-version: |
-            11
-            ${{ matrix.java }}
+          java-version: ${{ matrix.java }}
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
