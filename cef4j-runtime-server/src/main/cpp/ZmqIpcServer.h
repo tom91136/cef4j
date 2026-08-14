@@ -29,8 +29,6 @@ private:
     void drainIncoming();
     void* ctx_ = nullptr;
     void* mainSock_ = nullptr;
-    void* wakeWorkerSock_ = nullptr;
-    void* wakeSenderSock_ = nullptr;
     std::string endpoint_;
     FrameHandler handler_;
     std::thread worker_;
@@ -39,7 +37,6 @@ private:
     std::mutex outboundMu_;
     std::deque<std::vector<std::uint8_t>> outbound_;
     std::deque<std::pair<std::int64_t, std::vector<std::uint8_t>>> latest_;
-    std::mutex senderMu_;
 };
 
 } // namespace ipc

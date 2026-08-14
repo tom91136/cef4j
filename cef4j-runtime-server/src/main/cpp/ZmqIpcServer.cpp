@@ -3,28 +3,17 @@
 #include <zmq.h>
 
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
-#include <random>
 
 namespace cef4j {
 namespace ipc {
 
 namespace {
 constexpr std::size_t kMaxFrameSize = 64U * 1024U * 1024U;
+constexpr long kPollTimeoutMs = 10;
 constexpr int kHeartbeatIntervalMs = 1000;
 constexpr int kHeartbeatTimeoutMs = 10000;
-
-std::string makeInprocAddr() {
-    static std::atomic<std::uint64_t> counter{0};
-    auto n = counter.fetch_add(1, std::memory_order_relaxed);
-    auto epoch = std::chrono::steady_clock::now().time_since_epoch().count();
-    char buf[64];
-    std::snprintf(buf, sizeof(buf), "inproc://cef4j-runtime-server-wake-%lld-%llu",
-                  static_cast<long long>(epoch), static_cast<unsigned long long>(n));
-    return buf;
-}
 
 void setLingerZero(void* sock) {
     int linger = 0;
@@ -38,15 +27,13 @@ ZmqIpcServer::ZmqIpcServer() {
 
 ZmqIpcServer::~ZmqIpcServer() {
     stop();
-    if (wakeSenderSock_) zmq_close(wakeSenderSock_);
-    if (wakeWorkerSock_) zmq_close(wakeWorkerSock_);
     if (mainSock_) zmq_close(mainSock_);
     if (ctx_) zmq_ctx_term(ctx_);
 }
 
 bool ZmqIpcServer::bind(const std::string& addr) {
     // DEALER queues frames across connection establishment and exposes backpressure
-    // consistently to the Java DEALER peer. The inproc wake sockets remain PAIR.
+    // consistently to the Java DEALER peer.
     mainSock_ = zmq_socket(ctx_, ZMQ_DEALER);
     if (!mainSock_) return false;
     setLingerZero(mainSock_);
@@ -71,14 +58,6 @@ bool ZmqIpcServer::bind(const std::string& addr) {
     // ZMQ_LAST_ENDPOINT includes a trailing NUL; resolvedLen counts it.
     endpoint_.assign(resolved, resolvedLen > 0 ? resolvedLen - 1 : 0);
 
-    auto wakeAddr = makeInprocAddr();
-    wakeWorkerSock_ = zmq_socket(ctx_, ZMQ_PAIR);
-    wakeSenderSock_ = zmq_socket(ctx_, ZMQ_PAIR);
-    if (!wakeWorkerSock_ || !wakeSenderSock_) return false;
-    setLingerZero(wakeWorkerSock_);
-    setLingerZero(wakeSenderSock_);
-    if (zmq_bind(wakeWorkerSock_, wakeAddr.c_str()) != 0) return false;
-    if (zmq_connect(wakeSenderSock_, wakeAddr.c_str()) != 0) return false;
     return true;
 }
 
@@ -91,12 +70,6 @@ void ZmqIpcServer::start(FrameHandler handler) {
 void ZmqIpcServer::stop() {
     if (!running_.exchange(false)) return;
     stop_ = true;
-    {
-        std::lock_guard<std::mutex> lk(senderMu_);
-        if (wakeSenderSock_) {
-            zmq_send(wakeSenderSock_, "", 0, ZMQ_DONTWAIT);
-        }
-    }
     if (worker_.joinable()) worker_.join();
 }
 
@@ -111,12 +84,6 @@ bool ZmqIpcServer::send(Kind kind, std::uint8_t flags, std::int32_t corrId, std:
     {
         std::lock_guard<std::mutex> lk(outboundMu_);
         outbound_.push_back(std::move(frame));
-    }
-    {
-        std::lock_guard<std::mutex> lk(senderMu_);
-        if (wakeSenderSock_) {
-            zmq_send(wakeSenderSock_, "", 0, ZMQ_DONTWAIT);
-        }
     }
     return true;
 }
@@ -134,41 +101,25 @@ bool ZmqIpcServer::sendLatest(Kind kind, std::uint8_t flags, std::int32_t corrId
         if (it == latest_.end()) latest_.emplace_back(streamId, std::move(frame));
         else it->second = std::move(frame);
     }
-    std::lock_guard<std::mutex> lk(senderMu_);
-    if (wakeSenderSock_) zmq_send(wakeSenderSock_, "", 0, ZMQ_DONTWAIT);
     return true;
 }
 
 void ZmqIpcServer::workerLoop() {
-    zmq_pollitem_t items[2];
+    zmq_pollitem_t items[1];
     items[0].socket = mainSock_;
     items[0].events = ZMQ_POLLIN;
     items[0].fd = 0;
     items[0].revents = 0;
-    items[1].socket = wakeWorkerSock_;
-    items[1].events = ZMQ_POLLIN;
-    items[1].fd = 0;
-    items[1].revents = 0;
-
     while (!stop_) {
-        long timeoutMs = 200;
-        int n = zmq_poll(items, 2, timeoutMs);
+        int n = zmq_poll(items, 1, kPollTimeoutMs);
         if (n < 0) {
             if (zmq_errno() == ETERM) break;
             continue;
         }
         if (items[0].revents & ZMQ_POLLIN) drainIncoming();
-        if (items[1].revents & ZMQ_POLLIN) {
-            // drain wake signals
-            char buf[16];
-            while (zmq_recv(wakeWorkerSock_, buf, sizeof(buf), ZMQ_DONTWAIT) >= 0) {}
-        }
-        // A producer can enqueue before the inproc wake PAIR has completed its
-        // connection.  The best-effort DONTWAIT wake is then legitimately
-        // dropped, so polling only after a wake can strand the first outbound
-        // frame forever.  The bounded main poll is also a progress clock: check
-        // the queue on every pass so bootstrap events and responses cannot be
-        // lost solely because they were the first send in a fresh process.
+        // send() can run on any CEF thread, but ZeroMQ sockets are thread-affine.
+        // Producers therefore only enqueue. This short bounded poll is the
+        // worker's progress clock for outbound frames and shutdown.
         drainOutbound();
     }
 }

@@ -2,7 +2,6 @@ package net.kurobako.cef4j.ipc.transport;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,10 +21,10 @@ import org.zeromq.ZMonitor;
  * JeroMQ-backed {@link CefTransport} using DEALER sockets. Construct via {@link #bind} or {@link #connect}.
  *
  * <p>Internals: a single worker thread owns the main DEALER socket (ZMQ sockets are not thread-safe). External
- * {@link #send} callers enqueue bytes onto a {@link BlockingQueue} and signal the worker via an in-process PAIR pipe;
- * the worker polls both the main socket and the wake pipe, draining outbound bytes after each wake. DEALER is used
- * instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms. {@code ZMQ_IMMEDIATE}
- * keeps application frames in the Java-side outbound queue until the socket has an established ZMTP pipe.
+ * {@link #send} callers enqueue bytes onto a {@link BlockingQueue}; the worker drains outbound bytes on a short bounded
+ * poll. DEALER is used instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms.
+ * {@code ZMQ_IMMEDIATE} keeps application frames in the Java-side outbound queue until the socket has an established
+ * ZMTP pipe.
  *
  * <p>Disconnect detection uses {@link ZMonitor} on the main socket; ZMTP heartbeats are enabled so peer crashes are
  * surfaced even when the TCP FIN is lost.
@@ -33,8 +32,7 @@ import org.zeromq.ZMonitor;
 public final class ZmqTransport implements CefTransport {
 
     private static final Logger LOG = LoggerFactory.getLogger(ZmqTransport.class);
-    private static final byte[] EMPTY = new byte[0];
-    private static final int POLL_TIMEOUT_MS = 200;
+    private static final int POLL_TIMEOUT_MS = 10;
     private static final int MONITOR_TIMEOUT_MS = 500;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
@@ -46,11 +44,8 @@ public final class ZmqTransport implements CefTransport {
     private final boolean runtimeServerClient;
     private final ZContext ctx;
     private final ZMQ.Socket main;
-    private final ZMQ.Socket inprocWorker;
-    private final ZMQ.Socket inprocSender;
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>();
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
-    private final Object wakeLock = new Object();
     private final Thread worker;
     private final Thread monitorThread;
     private final ZMonitor monitor;
@@ -97,16 +92,6 @@ public final class ZmqTransport implements CefTransport {
         main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
         main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
-        String wakeAddr = "inproc://zmq-wake-" + UUID.randomUUID();
-        this.inprocWorker = ctx.createSocket(SocketType.PAIR);
-        this.inprocSender = ctx.createSocket(SocketType.PAIR);
-        // Default ZMQ_LINGER is -1 (infinite). Without overriding, ctx.close() blocks waiting for queued
-        // wake messages to be received by the soon-to-be-closed peer. Set to 0 for immediate teardown.
-        inprocWorker.setLinger(0);
-        inprocSender.setLinger(0);
-        inprocWorker.bind(wakeAddr);
-        inprocSender.connect(wakeAddr);
-
         this.monitor = new ZMonitor(ctx, main);
         monitor.add(ZMonitor.Event.CONNECTED);
         monitor.add(ZMonitor.Event.ACCEPTED);
@@ -138,13 +123,11 @@ public final class ZmqTransport implements CefTransport {
         byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         outbound.add(copy);
-        wake();
     }
 
     @Override
     public void onReceive(@Nonnull Consumer<ByteBuffer> handler) {
         this.receiveHandler = handler;
-        wake();
     }
 
     @Override
@@ -204,31 +187,16 @@ public final class ZmqTransport implements CefTransport {
         }
     }
 
-    private void wake() {
-        synchronized (wakeLock) {
-            if (closed) return;
-            try {
-                inprocSender.send(EMPTY, ZMQ.DONTWAIT);
-            } catch (RuntimeException ignored) {
-                // wake is best-effort; if the socket is gone the worker will exit on its own
-            }
-        }
-    }
-
     private void workerLoop() {
-        ZMQ.Poller poller = ctx.createPoller(2);
+        ZMQ.Poller poller = ctx.createPoller(1);
         poller.register(main, ZMQ.Poller.POLLIN);
-        poller.register(inprocWorker, ZMQ.Poller.POLLIN);
         try {
             while (!closed) {
                 int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
                 if (poller.pollin(0)) drainIncoming();
-                if (poller.pollin(1)) {
-                    drainWakeSignals();
-                }
-                // Also check after the bounded poll: the monitor's wake may race creation of the
-                // inproc pipe and be dropped, but queued application frames must still be flushed.
+                // Only this worker touches the socket. send() callers may run on arbitrary
+                // application threads and communicate solely through the thread-safe queue.
                 if (!outbound.isEmpty()) drainOutbound();
                 dispatchPendingIfReady();
             }
@@ -243,12 +211,6 @@ public final class ZmqTransport implements CefTransport {
         byte[] frame;
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
             pending.add(frame);
-        }
-    }
-
-    private void drainWakeSignals() {
-        while (inprocWorker.recv(ZMQ.DONTWAIT) != null) {
-            // discard
         }
     }
 
@@ -291,7 +253,6 @@ public final class ZmqTransport implements CefTransport {
                 }
                 if (ev.type == ZMonitor.Event.CONNECTED || ev.type == ZMonitor.Event.ACCEPTED) {
                     peerReady = true;
-                    wake();
                 } else if (ev.type == ZMonitor.Event.DISCONNECTED
                         || (ev.type == ZMonitor.Event.CONNECT_RETRIED && peerReady)) {
                     if (closed) return; // suppress event triggered by local close
