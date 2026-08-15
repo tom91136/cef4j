@@ -1839,6 +1839,16 @@ struct App : cef_app_t {
             base->add_ref(base);
             return a->renderProcessHandler;
         };
+#if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
+        // CEF 109's GPU subprocess does not make progress on the headless Apple Silicon CI host. The in-process
+        // test surface already uses this Chromium switch on macOS; applying it here preserves windowless software
+        // rendering and lets the remote server exercise the same OSR/API paths. Keep the workaround narrowly scoped
+        // to the old CEF release where it is required.
+        on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
+            ScopedCefString disableGpu("disable-gpu");
+            commandLine->append_switch(commandLine, disableGpu.get());
+        };
+#endif
     }
 };
 
