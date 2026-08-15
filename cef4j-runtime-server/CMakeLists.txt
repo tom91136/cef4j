@@ -187,6 +187,11 @@ if(APPLE)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework"
+        # CEF validates the macOS browser process and its helper tree before creating a renderer. The locally-built
+        # app has no developer identity in CI, but an ad-hoc signature gives the bundle a coherent process identity
+        # without introducing a signing-certificate requirement for downstream users.
+        COMMAND /usr/bin/codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
+        COMMAND /usr/bin/codesign --verify --deep --strict "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
             "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server.app"
