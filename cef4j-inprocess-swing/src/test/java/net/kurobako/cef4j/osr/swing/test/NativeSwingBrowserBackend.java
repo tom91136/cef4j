@@ -203,10 +203,26 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             long deadline = System.nanoTime() + timeout.toNanos();
             PaintInfo last = null;
             while (System.nanoTime() < deadline) {
-                last = paints.poll(Math.max(1L, deadline - System.nanoTime()), TimeUnit.NANOSECONDS);
-                if (last != null && last.width == width && last.height == height) return last;
+                // A hosted macOS renderer can become ready after the one-shot invalidation performed while the
+                // browser is attached. Republish the current viewport while waiting so that losing that early
+                // invalidation does not turn a healthy OSR browser into a forty-second test timeout.
+                CefBrowser current = browser.get();
+                if (current != null) {
+                    SwingUtilities.invokeLater(() -> {
+                        if (browser.get() == current) panel.browser(current);
+                    });
+                }
+                long remaining = Math.max(1L, deadline - System.nanoTime());
+                PaintInfo observed =
+                        paints.poll(Math.min(remaining, TimeUnit.SECONDS.toNanos(1)), TimeUnit.NANOSECONDS);
+                if (observed != null) {
+                    last = observed;
+                    if (observed.width == width && observed.height == height) return observed;
+                }
             }
-            throw new InterruptedException("no native Swing paint within " + timeout);
+            String observed = last == null ? "none" : last.width + "x" + last.height;
+            throw new InterruptedException("no " + width + "x" + height + " native Swing paint within " + timeout
+                    + "; last observed paint=" + observed);
         }
 
         @Override

@@ -54,6 +54,7 @@
 #include "include/internal/cef_types.h"
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
+extern "C" void cef4jInitializeMacApplication();
 #endif
 
 #include "Envelope.h"
@@ -2413,6 +2414,14 @@ int main(int argc, char* argv[]) {
         std::fprintf(stderr, "[cef4j-runtime-server] failed to load CEF framework: %s\n", frameworkBinary.c_str());
         return 1;
     }
+    bool isSubprocess = false;
+    for (int i = 1; i < argc; ++i) {
+        if (std::strncmp(argv[i], "--type=", 7) == 0) {
+            isSubprocess = true;
+            break;
+        }
+    }
+    if (!isSubprocess) cef4jInitializeMacApplication();
     cefArgumentStorage.assign(argv, argv + argc);
     const auto hasCefOption = [&cefArgumentStorage](const std::string& prefix) {
         for (const auto& argument : cefArgumentStorage) {

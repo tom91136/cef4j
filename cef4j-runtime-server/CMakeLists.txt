@@ -60,7 +60,9 @@ set(CEF4J_RUNTIME_SERVER_SOURCES
 )
 
 if(APPLE)
+    enable_language(OBJCXX)
     list(APPEND CEF4J_RUNTIME_SERVER_SOURCES
+        src/main/macos/MacApplication.mm
         "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
     set_source_files_properties("${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc"
         PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
@@ -90,7 +92,7 @@ target_include_directories(cef4j-runtime-server PRIVATE
 
 if(APPLE)
     target_link_libraries(cef4j-runtime-server PRIVATE libzmq-static
-        "-framework Foundation" "-ldl")
+        "-framework AppKit" "-framework Foundation" "-ldl")
 elseif(WIN32)
     target_link_libraries(cef4j-runtime-server PRIVATE libzmq-static ${CEF_ROOT}/Release/libcef.lib ws2_32)
 else()
