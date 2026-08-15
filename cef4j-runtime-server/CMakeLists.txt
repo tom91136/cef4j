@@ -181,16 +181,18 @@ if(APPLE)
             VERBATIM)
     endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}/Frameworks"
+        # Keep the framework in the top-level app bundle. CEF derives process identity from that bundle and its
+        # documented default framework location is Contents/Frameworks; an adjacent framework can load but then
+        # stall during browser-process initialization on current macOS releases.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
             "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server.app"
         # Do not leave a tempting bare copy on macOS: it can load CEF but lacks the application-bundle identity CEF
         # requires during initialization. Consumers must launch the executable inside the packaged .app.
         COMMAND ${CMAKE_COMMAND} -E rm -f "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
-            "${CEF4J_RUNTIME_DIST}/Frameworks/Chromium Embedded Framework.framework"
         VERBATIM)
     file(GLOB CEF4J_MAC_GRAPHICS_LIBS
         "${CEF_ROOT}/Release/Chromium Embedded Framework.framework/Libraries/*.dylib"

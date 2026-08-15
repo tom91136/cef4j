@@ -881,6 +881,11 @@ public class CefWebView extends Region {
         }
         if (!browserCreated) {
             pendingBrowserActions.add(action);
+            // onBrowserCreated publishes browser before draining this queue. If it completed its drain between the
+            // null check above and this insertion, claim and run the newly queued action here. If the callback already
+            // claimed it, remove returns false and exactly one side executes it.
+            current = browser;
+            if (current != null && pendingBrowserActions.remove(action)) action.accept(current);
         }
     }
 

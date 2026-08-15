@@ -284,15 +284,7 @@ public enum Cef {
 
             CefApp appHandler = buildAppHandler(extraArgs);
 
-            java.util.ArrayList<String> argv = new java.util.ArrayList<>(2 + extraArgs.size());
-            argv.add("cef4j");
-            argv.addAll(extraArgs);
-            addArgIfMissing(argv, "--no-sandbox");
-            if (OS.isLinux()) {
-                addArgIfMissing(argv, "--disable-setuid-sandbox");
-                addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
-                addArgIfMissing(argv, "--disable-gpu-sandbox");
-            }
+            List<String> argv = processArguments(extraArgs);
 
             boolean useExternalPump = settings.externalMessagePump != 0;
             boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
@@ -456,6 +448,25 @@ public enum Cef {
         if (!args.contains(arg)) {
             args.add(arg);
         }
+    }
+
+    static List<String> processArguments(List<String> extraArgs) {
+        java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
+        argv.add("cef4j");
+        argv.addAll(extraArgs);
+        addArgIfMissing(argv, "--no-sandbox");
+        if (!OS.isWindows()) {
+            // CEF releases before disable_signal_handlers briefly install default fatal-signal handlers during
+            // cef_initialize(). Snapshotting and restoring them afterward still leaves a race with HotSpot's normal
+            // SIGSEGV safepoint polling. Prevent CEF from replacing the JVM handlers in the first place.
+            addArgIfMissing(argv, "--disable-in-process-stack-traces");
+        }
+        if (OS.isLinux()) {
+            addArgIfMissing(argv, "--disable-setuid-sandbox");
+            addArgIfMissing(argv, "--disable-seccomp-filter-sandbox");
+            addArgIfMissing(argv, "--disable-gpu-sandbox");
+        }
+        return argv;
     }
 
     /**

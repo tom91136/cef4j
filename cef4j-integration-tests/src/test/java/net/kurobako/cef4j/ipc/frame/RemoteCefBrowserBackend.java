@@ -233,11 +233,7 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
             environment.put("PATH", cefResources + java.io.File.pathSeparator + System.getenv("PATH"));
         } else if (os.contains("mac")) {
             environment.put(
-                    "CEF_FRAMEWORK_DIR",
-                    cefResources
-                            .resolve("Frameworks")
-                            .resolve("Chromium Embedded Framework.framework")
-                            .toString());
+                    "CEF_FRAMEWORK_DIR", frameworkDirectory(cefResources).toString());
         } else {
             environment.put("CEF_RESOURCES_DIR", cefResources.toString());
             String inherited = System.getenv("LD_LIBRARY_PATH");
@@ -247,5 +243,15 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                             + (inherited == null || inherited.isEmpty() ? "" : java.io.File.pathSeparator + inherited));
         }
         return environment;
+    }
+
+    static Path frameworkDirectory(Path runtimeDirectory) {
+        Path bundled = runtimeDirectory
+                .resolve("cef4j-runtime-server.app")
+                .resolve("Contents")
+                .resolve("Frameworks")
+                .resolve("Chromium Embedded Framework.framework");
+        if (Files.isDirectory(bundled)) return bundled;
+        return runtimeDirectory.resolve("Frameworks").resolve("Chromium Embedded Framework.framework");
     }
 }
