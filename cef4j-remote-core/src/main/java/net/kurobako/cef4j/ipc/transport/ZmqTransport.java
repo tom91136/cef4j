@@ -3,6 +3,8 @@ package net.kurobako.cef4j.ipc.transport;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,8 +26,7 @@ import org.zeromq.ZMonitor;
  * <p>Internals: a single worker thread owns the main DEALER socket (ZMQ sockets are not thread-safe). External
  * {@link #send} callers enqueue bytes onto a {@link BlockingQueue}; the worker drains outbound bytes on a short bounded
  * poll. DEALER is used instead of PAIR for consistent routing and backpressure behaviour across JeroMQ platforms.
- * {@code ZMQ_IMMEDIATE} keeps application frames in the Java-side outbound queue until the socket has an established
- * ZMTP pipe.
+ * Frames remain in the transport's application queue until the socket worker accepts them.
  *
  * <p>Disconnect detection uses a lightweight event hook on the main socket. The JeroMQ I/O thread only enqueues event
  * types; the socket owner consumes them. ZMTP heartbeats are enabled so peer crashes are surfaced even when the TCP FIN
@@ -37,22 +38,12 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
+    private static final long BOOTSTRAP_REPLY_TIMEOUT_NANOS = 500_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
-    private static final int CLOSE_BUDGET_MS = 5000;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
-    /**
-     * One ZeroMQ context per JVM is the intended usage model. Each transport gets a shadow context so closing it still
-     * closes exactly its own sockets without repeatedly terminating and recreating JeroMQ's shared I/O thread.
-     */
-    private static final class SharedContext {
-        private static final ZContext INSTANCE = new ZContext();
-    }
-
-    private final String endpoint;
+    private volatile String endpoint;
     private final boolean runtimeServerClient;
-    private final ZContext ctx;
-    private final ZMQ.Socket main;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
     private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>();
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
@@ -67,7 +58,14 @@ public final class ZmqTransport implements CefTransport {
     private volatile boolean closed = false;
     private volatile boolean disconnected = false;
     private volatile boolean peerReady = false;
+    private boolean tcpConnected = false;
+    private long bootstrapReplyDeadlineNanos = 0;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
+    // Worker-owned diagnostics; only emitted at DEBUG and useful for distinguishing an established-but-stalled pipe
+    // from a worker/socket failure.
+    private int sentFrames = 0;
+    private int receivedFrames = 0;
+    private boolean sendBlocked = false;
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
     public static ZmqTransport bind(@Nonnull String endpoint) {
@@ -86,40 +84,90 @@ public final class ZmqTransport implements CefTransport {
 
     private ZmqTransport(boolean isBind, String requestedEndpoint) {
         this.runtimeServerClient = !isBind;
+        this.endpoint = requestedEndpoint;
         int id = INSTANCE.incrementAndGet();
-        this.ctx = SharedContext.INSTANCE.shadow();
-        this.main = ctx.createSocket(SocketType.DEALER);
-        main.setLinger(0);
-        // Without IMMEDIATE, ZeroMQ may accept a send into a not-yet-connected pipe and later discard it if that pipe
-        // is replaced during handshake/reconnect. A false DONTWAIT result is exactly the backpressure signal the
-        // Java-side queue needs in order to retain and retry the frame.
-        main.setImmediate(true);
-        // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
-        // time to resume: a two-second timeout produced false disconnects during concurrent native CI builds. Local
-        // runtime servers still have immediate Process.onExit supervision independent of this network timeout.
-        main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
-        main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
-
-        int eventMask = ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_CONNECT_RETRIED | ZMQ.EVENT_DISCONNECTED;
-        // JeroMQ invokes this on its I/O thread. Never call application code or touch the socket here: enqueue the
-        // immutable event type and let the transport worker own all resulting state transitions.
-        if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
-            main.close();
-            ctx.close();
-            throw new IllegalStateException("Unable to monitor ZeroMQ transport " + requestedEndpoint);
-        }
-
-        if (isBind) {
-            main.bind(requestedEndpoint);
-            this.endpoint = main.getLastEndpoint();
-        } else {
-            main.connect(requestedEndpoint);
-            this.endpoint = requestedEndpoint;
-        }
-
-        this.worker = new Thread(this::workerLoop, "zmq-worker-" + id);
+        CompletableFuture<String> setup = new CompletableFuture<>();
+        this.worker = new Thread(() -> workerLoop(isBind, requestedEndpoint, setup), "zmq-worker-" + id);
         worker.setDaemon(true);
         worker.start();
+        try {
+            this.endpoint = setup.join();
+        } catch (CompletionException e) {
+            closed = true;
+            joinQuietly(worker);
+            throw new IllegalStateException("Unable to initialize ZeroMQ transport " + requestedEndpoint, e.getCause());
+        }
+    }
+
+    private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
+        // Create, use and close both the context and socket on this thread. JeroMQ sockets are thread-confined, so the
+        // transport never hands a live socket between its construction and worker threads.
+        ZContext ctx = new ZContext();
+        ZMQ.Socket main = ctx.createSocket(SocketType.DEALER);
+        try {
+            main.setLinger(0);
+            main.setImmediate(true);
+            // ZMTP heartbeats surface silent remote peer death. Allow a saturated or temporarily suspended host enough
+            // time to resume: a two-second timeout produced false disconnects during concurrent native CI builds.
+            // Local runtime servers still have immediate Process.onExit supervision independent of this timeout.
+            main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
+            main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
+
+            int eventMask =
+                    ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_CONNECT_RETRIED | ZMQ.EVENT_DISCONNECTED;
+            // The event callback runs on JeroMQ's I/O thread. It only transfers immutable event values to the socket
+            // owner; application callbacks and socket operations stay on this worker.
+            if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
+                throw new IllegalStateException("Unable to monitor ZeroMQ transport " + requestedEndpoint);
+            }
+
+            if (isBind) {
+                main.bind(requestedEndpoint);
+                endpoint = main.getLastEndpoint();
+            } else {
+                main.connect(requestedEndpoint);
+            }
+        } catch (RuntimeException e) {
+            setup.completeExceptionally(e);
+            ctx.close();
+            return;
+        }
+        ZMQ.Poller poller = ctx.createPoller(1);
+        poller.register(main, ZMQ.Poller.POLLIN);
+        setup.complete(endpoint);
+        LOG.debug("worker on {} started", endpoint);
+        try {
+            while (!closed) {
+                int n = poller.poll(POLL_TIMEOUT_MS);
+                if (n < 0) break;
+                if (poller.pollin(0)) drainIncoming(main);
+                if (drainMonitor()) break;
+                restartStalledHandshake(main);
+                // Only this worker touches the socket. send() callers may run on arbitrary
+                // application threads and communicate solely through the thread-safe queue.
+                if (peerReady && !outbound.isEmpty()) drainOutbound(main);
+                dispatchPendingIfReady();
+            }
+        } catch (ZMQException e) {
+            setup.completeExceptionally(e);
+            LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
+        } finally {
+            poller.close();
+            // ZeroMQ sockets are thread-confined. The worker is the sole socket owner, so it also closes the
+            // transport's independently owned context.
+            try {
+                ctx.close();
+            } catch (RuntimeException e) {
+                LOG.debug("ctx close on {} threw {}", endpoint, e.toString());
+            }
+            LOG.debug(
+                    "worker on {} stopped (closed={}, disconnected={}, sent={}, received={})",
+                    endpoint,
+                    closed,
+                    disconnected,
+                    sentFrames,
+                    receivedFrames);
+        }
     }
 
     @Override
@@ -156,59 +204,23 @@ public final class ZmqTransport implements CefTransport {
     public void close() {
         if (closed) return;
         closed = true;
-        // JeroMQ shutdown can deadlock if its I/O thread has died mid-flight. Run the transport's shadow-context
-        // shutdown on a daemon side-thread with a hard budget. The process-wide parent context remains live for other
-        // transports; abandoning a stuck shadow is preferable to wedging the application during close.
-        Thread shutdown = new Thread(
-                () -> {
-                    // Let the Java owner thread leave its bounded poll before closing this transport's shadow.
-                    joinQuietly(worker);
-                    try {
-                        ctx.close();
-                    } catch (RuntimeException e) {
-                        LOG.debug("ctx close on {} threw {}", endpoint, e.toString());
-                    }
-                },
-                "zmq-shutdown-" + endpoint);
-        shutdown.setDaemon(true);
-        shutdown.start();
-        try {
-            shutdown.join(CLOSE_BUDGET_MS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        if (shutdown.isAlive()) {
-            LOG.debug("close on {} did not return within {}ms; abandoning", endpoint, CLOSE_BUDGET_MS);
-        }
-    }
-
-    private void workerLoop() {
-        ZMQ.Poller poller = ctx.createPoller(1);
-        poller.register(main, ZMQ.Poller.POLLIN);
-        try {
-            while (!closed) {
-                int n = poller.poll(POLL_TIMEOUT_MS);
-                if (n < 0) break;
-                if (poller.pollin(0)) drainIncoming();
-                if (drainMonitor()) break;
-                // Only this worker touches the socket. send() callers may run on arbitrary
-                // application threads and communicate solely through the thread-safe queue.
-                if (!outbound.isEmpty()) drainOutbound();
-                dispatchPendingIfReady();
-            }
-        } catch (ZMQException e) {
-            LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
-        } finally {
-            poller.close();
-        }
+        // close() is also legal from a receive/disconnect callback, which runs on the worker. In that case the loop's
+        // finally block performs ownership-correct cleanup as soon as the callback returns.
+        if (Thread.currentThread() != worker) joinQuietly(worker);
     }
 
     private boolean drainMonitor() {
         ZMonitor.Event event;
         while ((event = monitorEvents.poll()) != null) {
+            LOG.debug("monitor on {} received {}", endpoint, event);
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
+                tcpConnected = true;
                 peerReady = true;
-            } else if (event == ZMonitor.Event.DISCONNECTED || (event == ZMonitor.Event.CONNECT_RETRIED && peerReady)) {
+                bootstrapReplyDeadlineNanos = System.nanoTime() + BOOTSTRAP_REPLY_TIMEOUT_NANOS;
+            } else if (event == ZMonitor.Event.DISCONNECTED || event == ZMonitor.Event.CONNECT_RETRIED) {
+                tcpConnected = false;
+                bootstrapReplyDeadlineNanos = 0;
+                if (!peerReady) continue;
                 if (closed) return true; // suppress event triggered by local close
                 disconnected = true;
                 fireDisconnectIfReady();
@@ -218,21 +230,46 @@ public final class ZmqTransport implements CefTransport {
         return false;
     }
 
-    private void drainIncoming() {
+    private void restartStalledHandshake(ZMQ.Socket main) {
+        if (!runtimeServerClient || receivedFrames > 0 || !tcpConnected || bootstrapReplyDeadlineNanos == 0) return;
+        if (sentFrames == 0 && outbound.isEmpty()) return;
+        if (System.nanoTime() < bootstrapReplyDeadlineNanos) return;
+        restartConnection(main, "bootstrap reply timeout");
+    }
+
+    private void restartConnection(ZMQ.Socket main, String reason) {
+        LOG.debug("restarting {} after {}", endpoint, reason);
+        peerReady = false;
+        main.disconnect(endpoint);
+        main.connect(endpoint);
+        tcpConnected = false;
+        bootstrapReplyDeadlineNanos = 0;
+    }
+
+    private void drainIncoming(ZMQ.Socket main) {
         byte[] frame;
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
+            receivedFrames++;
+            if (receivedFrames == 1) LOG.debug("first frame received on {}", endpoint);
             pending.add(frame);
         }
     }
 
-    private void drainOutbound() {
+    private void drainOutbound(ZMQ.Socket main) {
         byte[] out;
         while ((out = outbound.peek()) != null) {
             try {
                 // Never block the socket-owner thread: it must continue polling inbound frames and shutdown signals.
                 // A false return means the high-water mark is full; leave the head queued and retry after the bounded
                 // poll.
-                if (!main.send(out, ZMQ.DONTWAIT)) return;
+                if (!main.send(out, ZMQ.DONTWAIT)) {
+                    if (!sendBlocked) LOG.debug("send on {} waiting for a writable pipe", endpoint);
+                    sendBlocked = true;
+                    return;
+                }
+                sentFrames++;
+                if (sentFrames == 1 || sendBlocked) LOG.debug("frame {} accepted for send on {}", sentFrames, endpoint);
+                sendBlocked = false;
                 outbound.poll();
             } catch (ZMQException e) {
                 LOG.debug("send on {} failed: {}", endpoint, e.toString());

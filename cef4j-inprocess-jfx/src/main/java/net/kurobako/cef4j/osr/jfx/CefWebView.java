@@ -814,13 +814,15 @@ public class CefWebView extends Region {
             return;
         }
         runWithBrowserHost(false, host -> {
-            host.sendMouseWheelEvent(
-                    new CefMouseEvent(
-                            (int) e.getX(),
-                            (int) e.getY(),
-                            baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown())),
-                    (int) e.getDeltaX(),
-                    (int) e.getDeltaY());
+            CefMouseEvent mouse = new CefMouseEvent(
+                    (int) e.getX(),
+                    (int) e.getY(),
+                    baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown()));
+            // JavaFX may synthesize or route a scroll without first emitting MOUSE_MOVED (notably after a newly shown
+            // window gains focus). Keep Chromium's OSR pointer target in sync so the wheel reaches the frame beneath
+            // the JavaFX event coordinates instead of being discarded against stale pointer state.
+            host.sendMouseMoveEvent(mouse, false);
+            host.sendMouseWheelEvent(mouse, (int) e.getDeltaX(), (int) e.getDeltaY());
         });
     }
 

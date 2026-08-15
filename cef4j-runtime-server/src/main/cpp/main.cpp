@@ -2383,9 +2383,10 @@ int main(int argc, char* argv[]) {
         }
     }
     if (frameworkDirectory.empty()) {
-        std::filesystem::path executable = std::filesystem::absolute(argv[0]).parent_path();
-        frameworkDirectory =
-                (executable / "Frameworks" / "Chromium Embedded Framework.framework").string();
+        const std::filesystem::path executableDirectory = std::filesystem::absolute(argv[0]).parent_path();
+        frameworkDirectory = (executableDirectory.parent_path() / "Frameworks"
+                              / "Chromium Embedded Framework.framework")
+                                     .string();
     }
     frameworkBinary = (std::filesystem::path(frameworkDirectory) / "Chromium Embedded Framework").string();
     if (frameworkBinary.empty() || !cef_load_library(frameworkBinary.c_str())) {

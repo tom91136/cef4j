@@ -118,9 +118,14 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             @Override
                             public void onAfterCreated(@Nullable CefBrowser created) {
                                 if (created == null) return;
-                                browser.set(created);
-                                nextPanel.browser(created);
-                                ready.countDown();
+                                // browser() publishes the initial viewport and invalidates the OSR surface on the EDT.
+                                // Do not release the constructor until that work has run. On slower ARM hosts the old
+                                // asynchronous attach let navigation finish before CEF received a usable view size.
+                                SwingUtilities.invokeLater(() -> {
+                                    browser.set(created);
+                                    nextPanel.browser(created);
+                                    ready.countDown();
+                                });
                             }
 
                             @Override

@@ -429,6 +429,10 @@ final class FxWebViewRuntimeTestSupport {
     }
 
     static void fireScroll(WebView view, double x, double y, double deltaX, double deltaY) {
+        // A newly shown hosted window does not necessarily own native focus by the time its first synthetic event is
+        // fired. Chromium may discard wheel input for that unfocused OSR host, so establish the same focus precondition
+        // used by the keyboard and pointer helpers before dispatching the JavaFX event.
+        focusView(view);
         view.fireEvent(new ScrollEvent(
                 ScrollEvent.SCROLL,
                 x,

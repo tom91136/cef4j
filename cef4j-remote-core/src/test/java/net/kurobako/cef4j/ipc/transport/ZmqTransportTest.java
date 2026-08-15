@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
@@ -41,6 +42,49 @@ final class ZmqTransportTest extends CefTransportContractTest {
                     arrived.countDown();
                 });
                 assertThat(arrived.await(30, TimeUnit.SECONDS)).isTrue();
+            }
+        }
+    }
+
+    @Test
+    void repeatedRuntimeSessionLifecycleDoesNotLoseFirstFrame() throws Exception {
+        for (int iteration = 0; iteration < 64; iteration++) {
+            try (ZmqTransport server = ZmqTransport.bind("tcp://127.0.0.1:*");
+                    ZmqTransport client = ZmqTransport.connect(server.endpoint())) {
+                CountDownLatch arrived = new CountDownLatch(1);
+                server.onReceive(frame -> arrived.countDown());
+                client.send(ByteBuffer.wrap(new byte[] {(byte) iteration}));
+                assertThat(arrived.await(5, TimeUnit.SECONDS))
+                        .as("iteration %s", iteration)
+                        .isTrue();
+            }
+        }
+    }
+
+    @Test
+    void reconnectsWhenPeerGreetingNeverCompletes() throws Exception {
+        byte[] zmtpGreetingPrefix = {(byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 1, 0x7f};
+        CountDownLatch connections = new CountDownLatch(2);
+        try (ServerSocket server = new ServerSocket(0, 2, InetAddress.getLoopbackAddress())) {
+            Thread peer = new Thread(
+                    () -> {
+                        try (Socket first = server.accept()) {
+                            connections.countDown();
+                            first.getOutputStream().write(zmtpGreetingPrefix);
+                            first.getOutputStream().flush();
+                            try (Socket second = server.accept()) {
+                                if (second.isConnected()) connections.countDown();
+                            }
+                        } catch (Exception ignored) {
+                            // Closing the test server is the expected way to release a pending accept.
+                        }
+                    },
+                    "stalled-zmtp-peer");
+            peer.setDaemon(true);
+            peer.start();
+            try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort())) {
+                transport.send(ByteBuffer.wrap(new byte[] {1}));
+                assertThat(connections.await(5, TimeUnit.SECONDS)).isTrue();
             }
         }
     }

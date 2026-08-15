@@ -2,6 +2,7 @@
 
 #include "IpcServer.h"
 #include <atomic>
+#include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <thread>
@@ -24,7 +25,7 @@ public:
                     const std::uint8_t* payload, std::size_t payloadLen, std::int64_t streamId) override;
 
 private:
-    void workerLoop();
+    void workerLoop(std::string addr);
     void drainOutbound();
     void drainIncoming();
     void* ctx_ = nullptr;
@@ -34,7 +35,15 @@ private:
     std::thread worker_;
     std::atomic<bool> running_{false};
     std::atomic<bool> stop_{false};
+    std::mutex lifecycleMu_;
+    std::condition_variable lifecycleCv_;
+    bool bindComplete_ = false;
+    bool bindSucceeded_ = false;
+    bool startRequested_ = false;
     std::mutex outboundMu_;
+    // ROUTER envelope for the single JVM peer. Only the socket-owning worker
+    // reads or writes this value.
+    std::vector<std::uint8_t> peerIdentity_;
     std::deque<std::vector<std::uint8_t>> outbound_;
     std::deque<std::pair<std::int64_t, std::vector<std::uint8_t>>> latest_;
 };
