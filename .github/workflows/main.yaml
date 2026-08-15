@@ -260,22 +260,17 @@ jobs:
             "-Dcef.api.version=${{ matrix.cef-api }}"
 
       # GitHub-hosted Windows and macOS runners are disposable VMs with their own
-      # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop. CEF's macOS browser
-      # process is also more reliable on hosted runners without a composited WindowServer surface; --headless keeps
-      # the same OSR, IPC, CDP, and WebDriver coverage while avoiding that dependency.
+      # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
       - name: Build and test in isolated hosted desktop
         if: matrix.javafx-tests == 'true'
-        shell: bash
-        run: |
-          cef_args=--disable-gpu
-          if [[ "$RUNNER_OS" == macOS ]]; then cef_args="$cef_args,--headless"; fi
-          ./mvnw -B clean install \
-            "-Dcef.version=${{ matrix.cef-version }}" \
-            "-Dcef.api.version=${{ matrix.cef-api }}" \
-            "-Djavafx.version=${{ matrix.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.javafx }}" \
-            "-Dcef4j.test.extraArgs=$cef_args" \
-            "-Dcef4j.runtime.server.extraArgs=$cef_args"
+        run: >-
+          ./mvnw -B clean install
+          "-Dcef.version=${{ matrix.cef-version }}"
+          "-Dcef.api.version=${{ matrix.cef-api }}"
+          "-Djavafx.version=${{ matrix.javafx }}"
+          "-Djavafx.test.version=${{ matrix.javafx }}"
+          "-Dcef4j.test.extraArgs=--disable-gpu"
+          "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
 
       # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
       # complete reactor, then exercise every non-JavaFX module natively on ARM64.
