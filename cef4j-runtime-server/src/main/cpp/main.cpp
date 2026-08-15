@@ -2394,9 +2394,19 @@ int main(int argc, char* argv[]) {
     }
     if (frameworkDirectory.empty()) {
         const std::filesystem::path executableDirectory = std::filesystem::absolute(argv[0]).parent_path();
-        frameworkDirectory = (executableDirectory.parent_path() / "Frameworks"
-                              / "Chromium Embedded Framework.framework")
+        const auto frameworkName = std::filesystem::path("Chromium Embedded Framework.framework");
+        // The browser executable is in <App>.app/Contents/MacOS, whereas CEF launches renderer/GPU processes from
+        // <App>.app/Contents/Frameworks/<Helper>.app/Contents/MacOS. Resolve the framework from the normal
+        // browser location first, then from the enclosing application when this is a helper process. Without the
+        // latter, the helper looks in its own Contents/Frameworks directory and starts without the parent app's CEF
+        // framework, leaving browser creation and session-ready callbacks permanently pending.
+        const auto browserFramework = executableDirectory.parent_path() / "Frameworks" / frameworkName;
+        if (std::filesystem::exists(browserFramework)) {
+            frameworkDirectory = browserFramework.string();
+        } else {
+            frameworkDirectory = (executableDirectory.parent_path().parent_path().parent_path() / frameworkName)
                                      .string();
+        }
     }
     frameworkBinary = (std::filesystem::path(frameworkDirectory) / "Chromium Embedded Framework").string();
     if (frameworkBinary.empty() || !cef_load_library(frameworkBinary.c_str())) {
