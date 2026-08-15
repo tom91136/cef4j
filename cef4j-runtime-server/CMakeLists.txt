@@ -113,7 +113,9 @@ elseif(APPLE)
     set_target_properties(cef4j-runtime-server PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_NAME "cef4j-runtime-server"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "net.kurobako.cef4j.runtime-server")
+        MACOSX_BUNDLE_GUI_IDENTIFIER "net.kurobako.cef4j.runtime-server"
+        MACOSX_BUNDLE_INFO_PLIST
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/main/macos/Main-Info.plist.in")
 elseif(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
     set_target_properties(cef4j-runtime-server PROPERTIES
@@ -181,12 +183,26 @@ if(APPLE)
             VERBATIM)
     endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        # Keep the framework in the top-level app bundle. CEF derives process identity from that bundle and its
-        # documented default framework location is Contents/Frameworks; an adjacent framework can load but then
-        # stall during browser-process initialization on current macOS releases.
+        # Follow CEF's canonical framework layout exactly. In particular, the public framework paths must be
+        # symlinks into Versions/A; copying the framework root directly can flatten that layout and leave macOS
+        # process-identity validation unable to associate the browser with its helper applications.
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions/A"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "Versions/A/Chromium Embedded Framework"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "Versions/A/Libraries"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "Versions/A/Resources"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Resources"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "A"
+            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions/Current"
         # CEF validates the macOS browser process and its helper tree before creating a renderer. The locally-built
         # app has no developer identity in CI, but an ad-hoc signature gives the bundle a coherent process identity
         # without introducing a signing-certificate requirement for downstream users.
