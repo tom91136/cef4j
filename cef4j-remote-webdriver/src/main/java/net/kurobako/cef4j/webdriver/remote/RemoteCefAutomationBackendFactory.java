@@ -2,6 +2,9 @@ package net.kurobako.cef4j.webdriver.remote;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -18,9 +21,13 @@ import net.kurobako.cef4j.webdriver.CdpAutomationBackend;
 import net.kurobako.cef4j.webdriver.JsonCdpBrowser;
 import net.kurobako.cef4j.webdriver.JsonObject;
 import net.kurobako.cef4j.webdriver.WebDriverJsonCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Adapts any transport-neutral Remote CEF runtime factory to the WebDriver HTTP layer. */
 public final class RemoteCefAutomationBackendFactory implements AutomationBackendFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteCefAutomationBackendFactory.class);
+    private static final long DEVTOOLS_CLOSE_TIMEOUT_SECONDS = 5;
     private final RemoteBrowserRuntimeFactory runtimeFactory;
     private final RemoteDevToolsSessionFactory devToolsFactory;
     private final WebDriverJsonCodec jsonCodec;
@@ -127,16 +134,27 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
         @Override
         public void close() {
             if (!closed.compareAndSet(false, true)) return;
-            try {
-                // Detach is a native UI-thread operation. Do not race server shutdown (sent over a separate
-                // control pipe) against the IPC acknowledgement that the DevTools registration was released.
-                devTools.closeAsync()
-                        .toCompletableFuture()
-                        .handle((ignored, failure) -> null)
-                        .join();
-            } finally {
-                runtime.close();
-            }
+            closeDevToolsThenRuntime(devTools, runtime);
+        }
+    }
+
+    /**
+     * Gives native DevTools detach a short grace period, then always releases the owned runtime-server process.
+     *
+     * <p>A remote CEF server can be wedged precisely while processing detach. Waiting without a bound here turns a
+     * normal WebDriver session close into an unkillable JVM-side leak and prevents the process supervisor from applying
+     * its own bounded shutdown policy.
+     */
+    static void closeDevToolsThenRuntime(CdpTransport devTools, RemoteBrowserRuntime runtime) {
+        try {
+            devTools.closeAsync().toCompletableFuture().get(DEVTOOLS_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException failure) {
+            Thread.currentThread().interrupt();
+            LOG.warn("interrupted while waiting for remote DevTools detach");
+        } catch (ExecutionException | TimeoutException failure) {
+            LOG.warn("remote DevTools detach did not complete before runtime shutdown: {}", failure.toString());
+        } finally {
+            runtime.close();
         }
     }
 

@@ -1,0 +1,66 @@
+package net.kurobako.cef4j.webdriver.remote;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpTransport;
+import net.kurobako.cef4j.remote.RemoteBrowserRuntime;
+import org.junit.jupiter.api.Test;
+
+class RemoteCefAutomationBackendFactoryTest {
+    @Test
+    void closesRuntimeWhenDevToolsDetachNeverAcknowledges() {
+        AtomicBoolean runtimeClosed = new AtomicBoolean();
+        long started = System.nanoTime();
+
+        RemoteCefAutomationBackendFactory.closeDevToolsThenRuntime(
+                new NeverClosingDevTools(), new TestRuntime(runtimeClosed));
+
+        assertThat(runtimeClosed).isTrue();
+        assertThat(java.util.concurrent.TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - started))
+                .isLessThan(10);
+    }
+
+    private static final class NeverClosingDevTools implements CdpTransport {
+        @Override
+        public CompletableFuture<byte[]> execute(String method, @Nullable byte[] params) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public CdpSubscription subscribe(String method, java.util.function.Consumer<byte[]> handler) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public CompletableFuture<Void> closeAsync() {
+            return new CompletableFuture<>();
+        }
+    }
+
+    private static final class TestRuntime implements RemoteBrowserRuntime {
+        private final AtomicBoolean closed;
+
+        private TestRuntime(AtomicBoolean closed) {
+            this.closed = closed;
+        }
+
+        @Override
+        public net.kurobako.cef4j.ipc.session.CefSession session() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public net.kurobako.cef4j.ipc.session.RemoteHandle browser() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void close() {
+            closed.set(true);
+        }
+    }
+}
