@@ -54,7 +54,8 @@
 #include "include/internal/cef_types.h"
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
-extern "C" void cef4jInitializeMacApplication();
+extern "C" void* cef4jInitializeMacApplication();
+extern "C" void cef4jReleaseMacApplication(void* autoreleasePool);
 #endif
 
 #include "Envelope.h"
@@ -2376,6 +2377,13 @@ static int processId() {
 
 int main(int argc, char* argv[]) {
 #ifdef __APPLE__
+    struct MacApplicationScope {
+        ~MacApplicationScope() {
+            if (autoreleasePool) cef4jReleaseMacApplication(autoreleasePool);
+        }
+
+        void* autoreleasePool = nullptr;
+    } macApplication;
     std::string frameworkDirectory;
     std::string frameworkBinary;
     std::vector<std::string> cefArgumentStorage;
@@ -2421,7 +2429,12 @@ int main(int argc, char* argv[]) {
             break;
         }
     }
-    if (!isSubprocess) cef4jInitializeMacApplication();
+    if (!isSubprocess) {
+        std::fprintf(stderr, "[cef4j-runtime-server] macOS application bootstrap: begin\n");
+        macApplication.autoreleasePool = cef4jInitializeMacApplication();
+        if (!macApplication.autoreleasePool) return 1;
+        std::fprintf(stderr, "[cef4j-runtime-server] macOS application bootstrap: complete\n");
+    }
     cefArgumentStorage.assign(argv, argv + argc);
     const auto hasCefOption = [&cefArgumentStorage](const std::string& prefix) {
         for (const auto& argument : cefArgumentStorage) {
@@ -2543,10 +2556,16 @@ int main(int argc, char* argv[]) {
     }
 
     auto* browserApp = new App();
+#ifdef __APPLE__
+    std::fprintf(stderr, "[cef4j-runtime-server] cef_initialize: begin\n");
+#endif
     if (!cef_initialize(&args, &settings, browserApp, nullptr)) {
         std::fprintf(stderr, "[cef4j-runtime-server] cef_initialize failed\n");
         return 1;
     }
+#ifdef __APPLE__
+    std::fprintf(stderr, "[cef4j-runtime-server] cef_initialize: complete\n");
+#endif
 
     auto ipc = cef4j::ipc::createIpcServer(transportName);
     if (!ipc) {

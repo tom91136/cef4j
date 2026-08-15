@@ -2,6 +2,8 @@
 
 #import <AppKit/AppKit.h>
 
+#include <cstdio>
+
 // Keep these protocol declarations in C/Objective-C territory. Including
 // cef_application_mac.h also pulls the C++ wrapper API, whose language-level
 // requirement is newer than the C API runtime server's C++17 floor in recent
@@ -47,6 +49,21 @@
 }
 @end
 
-extern "C" void cef4jInitializeMacApplication() {
+extern "C" void* cef4jInitializeMacApplication() {
+    // Match CEF's C API sample by keeping an Objective-C autorelease pool alive
+    // for the complete browser-process lifetime, including CEF initialization,
+    // the native message loop and shutdown.
+    NSAutoreleasePool* autoreleasePool = [[NSAutoreleasePool alloc] init];
     [Cef4jRuntimeApplication sharedApplication];
+    if (![NSApp isKindOfClass:[Cef4jRuntimeApplication class]]) {
+        std::fprintf(stderr, "[cef4j-runtime-server] macOS application bootstrap: unexpected NSApp class %s\n",
+                     NSStringFromClass([NSApp class]).UTF8String);
+        [autoreleasePool drain];
+        return nullptr;
+    }
+    return autoreleasePool;
+}
+
+extern "C" void cef4jReleaseMacApplication(void* autoreleasePool) {
+    [static_cast<NSAutoreleasePool*>(autoreleasePool) drain];
 }
