@@ -6,9 +6,12 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
@@ -28,10 +31,10 @@ public final class NamedPipeTransport implements CefTransport {
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
     private final String endpoint;
-    private final RandomAccessFile pipe;
+    private final Closeable pipe;
     private final DataInputStream input;
     private final DataOutputStream output;
-    private final Object sendLock = new Object();
+    private final Object ioLock = new Object();
     private final Object receiveLock = new Object();
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
@@ -51,19 +54,23 @@ public final class NamedPipeTransport implements CefTransport {
             throw new CefTransportException("Windows named pipes are unavailable on " + System.getProperty("os.name"));
         }
         String path = pathOf(endpoint);
+        RandomAccessFile pipe = null;
         try {
-            RandomAccessFile pipe = new RandomAccessFile(path, "rw");
-            return new NamedPipeTransport(endpointOf(path), pipe);
+            pipe = new RandomAccessFile(path, "rw");
+            FileDescriptor descriptor = pipe.getFD();
+            return new NamedPipeTransport(
+                    endpointOf(path), pipe, new FileInputStream(descriptor), new FileOutputStream(descriptor));
         } catch (IOException failure) {
+            closeResource(endpoint, pipe);
             throw new CefTransportException(endpoint + ": connect failed", failure);
         }
     }
 
-    private NamedPipeTransport(String endpoint, RandomAccessFile pipe) throws IOException {
+    NamedPipeTransport(String endpoint, Closeable pipe, InputStream inputPipe, OutputStream outputPipe) {
         this.endpoint = endpoint;
         this.pipe = pipe;
-        this.input = new DataInputStream(new BufferedInputStream(new FileInputStream(pipe.getFD())));
-        this.output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(pipe.getFD())));
+        this.input = new DataInputStream(new BufferedInputStream(inputPipe));
+        this.output = new DataOutputStream(new BufferedOutputStream(outputPipe));
         Thread reader = new Thread(this::readLoop, "named-pipe-reader-" + INSTANCE.incrementAndGet());
         reader.setDaemon(true);
         reader.start();
@@ -75,7 +82,7 @@ public final class NamedPipeTransport implements CefTransport {
         byte[] bytes = new byte[frame.remaining()];
         frame.get(bytes);
         if (bytes.length > MAX_FRAME_SIZE) throw new CefTransportException(endpoint + ": frame is too large");
-        synchronized (sendLock) {
+        synchronized (ioLock) {
             try {
                 output.writeInt(bytes.length);
                 output.write(bytes);
@@ -130,7 +137,8 @@ public final class NamedPipeTransport implements CefTransport {
         return closer;
     }
 
-    private static void closeResource(String endpoint, Closeable resource) {
+    private static void closeResource(String endpoint, @Nullable Closeable resource) {
+        if (resource == null) return;
         try {
             resource.close();
         } catch (IOException failure) {
@@ -141,16 +149,32 @@ public final class NamedPipeTransport implements CefTransport {
     private void readLoop() {
         try {
             while (!closed) {
-                int length = input.readInt();
-                if (length < 0 || length > MAX_FRAME_SIZE) throw new IOException("invalid frame length " + length);
-                byte[] frame = new byte[length];
-                input.readFully(frame);
+                byte[] frame = null;
+                // A pending synchronous ReadFile prevents WriteFile on the same Windows named-pipe handle. Poll like
+                // the native server does, then serialize only the brief operation that consumes an available frame.
+                synchronized (ioLock) {
+                    if (input.available() >= Integer.BYTES) {
+                        int length = input.readInt();
+                        if (length < 0 || length > MAX_FRAME_SIZE) {
+                            throw new IOException("invalid frame length " + length);
+                        }
+                        frame = new byte[length];
+                        input.readFully(frame);
+                    }
+                }
+                if (frame == null) {
+                    Thread.sleep(2L);
+                    continue;
+                }
                 synchronized (receiveLock) {
                     Consumer<ByteBuffer> handler = receiveHandler;
                     if (handler == null) pending.add(frame);
                     else dispatch(handler, frame);
                 }
             }
+        } catch (InterruptedException failure) {
+            Thread.currentThread().interrupt();
+            markDisconnected();
         } catch (EOFException failure) {
             markDisconnected();
         } catch (IOException failure) {
