@@ -2,6 +2,7 @@ package net.kurobako.cef4j.ipc.transport;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -115,8 +116,23 @@ public final class NamedPipeTransport implements CefTransport {
     public void close() {
         if (closed) return;
         closed = true;
+        // RandomAccessFile.close() can wait indefinitely behind a synchronous ReadFile on Windows. Closing must not
+        // strand the owner before it gets a chance to stop the runtime server (which disconnects the pipe and releases
+        // that read), so perform the native handle close on a daemon thread.
+        closeAsync(endpoint, pipe);
+    }
+
+    static Thread closeAsync(String endpoint, Closeable resource) {
+        Thread closer =
+                new Thread(() -> closeResource(endpoint, resource), "named-pipe-closer-" + INSTANCE.incrementAndGet());
+        closer.setDaemon(true);
+        closer.start();
+        return closer;
+    }
+
+    private static void closeResource(String endpoint, Closeable resource) {
         try {
-            pipe.close();
+            resource.close();
         } catch (IOException failure) {
             LOG.debug("close on {} failed", endpoint, failure);
         }

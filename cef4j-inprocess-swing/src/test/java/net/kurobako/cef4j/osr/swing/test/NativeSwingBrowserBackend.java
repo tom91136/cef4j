@@ -48,6 +48,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
+        if (!net.kurobako.cef4j.test.CefTestLifecycle.nativeSwingContractAvailable()) return false;
         String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
         return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
     }

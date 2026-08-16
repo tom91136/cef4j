@@ -612,6 +612,7 @@
                         <!-- Empty by default; opt-in via -Dsurefire.argLine=... for ad-hoc overrides. -->
                         <argLine>${surefire.argLine}</argLine>
                         <!-- Cap the forked JVM so a hung test can't block the build indefinitely -->
+                        <forkedProcessTimeoutInSeconds>180</forkedProcessTimeoutInSeconds>
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
                             <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>

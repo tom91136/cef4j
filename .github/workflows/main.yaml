@@ -18,7 +18,39 @@ concurrency:
 # JavaFX rows always override compile and test versions together. Java 11 is the
 # runtime/bytecode floor; Maven and Scala code generation intentionally run on 17+.
 jobs:
+  maven-wrapper:
+    name: Bootstrap Maven wrapper
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+      - id: wrapper-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.m2/wrapper
+          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+          enableCrossOsArchive: true
+      - name: Download Maven wrapper distribution once
+        if: steps.wrapper-cache.outputs.cache-hit != 'true'
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: ./mvnw --version
+      - name: Save Maven wrapper distribution
+        if: steps.wrapper-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ~/.m2/wrapper
+          key: ${{ steps.wrapper-cache.outputs.cache-primary-key }}
+          enableCrossOsArchive: true
+
   linux:
+    needs: maven-wrapper
     name: Linux ${{ matrix.arch }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -63,7 +95,8 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.m2/wrapper
-          key: maven-wrapper-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+          enableCrossOsArchive: true
 
       # Surefire detects its JUnit provider only when tests begin, so dependency:go-offline cannot discover it.
       # Resolve that lazy provider explicitly while CDN/DNS failures are still covered by retries.
@@ -140,6 +173,7 @@ jobs:
           retention-days: 7
 
   desktop:
+    needs: maven-wrapper
     name: ${{ matrix.label }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -191,7 +225,8 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.m2/wrapper
-          key: maven-wrapper-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+          enableCrossOsArchive: true
 
       - name: Set up MSVC
         if: runner.os == 'Windows'
