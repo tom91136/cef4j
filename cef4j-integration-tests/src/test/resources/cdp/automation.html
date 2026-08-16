@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>cef4j generated CDP fixture</title>
+  <style>
+    body { margin: 16px; font: 16px sans-serif; }
+    #action-button { display: block; width: 180px; height: 48px; margin: 12px 0; }
+    #name-input { width: 240px; height: 28px; }
+    #fixture-pixel { width: 2px; height: 2px; }
+  </style>
+</head>
+<body data-fixture="generated-cdp">
+  <main id="fixture-root">
+    <h1 id="heading">Generated CDP integration fixture</h1>
+    <label for="name-input">Name</label>
+    <input id="name-input" autocomplete="off">
+    <output id="typed-output">empty</output>
+    <button id="action-button" type="button" data-action="increment">Run action</button>
+    <output id="click-output">0</output>
+    <output id="fetch-output">idle</output>
+    <output id="continued-output">idle</output>
+    <output id="mock-output">idle</output>
+    <img id="fixture-pixel" src="/cdp/pixel.png" alt="fixture pixel">
+  </main>
+  <script src="/cdp/automation.js"></script>
+</body>
+</html>
