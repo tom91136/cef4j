@@ -48,8 +48,13 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(libzmq)
-target_compile_options(objects PRIVATE
-    $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-braces -Wno-missing-field-initializers>)
+# libzmq exposes its object library on Unix builds, but not in every Windows
+# configuration. Keep the Clang warning suppression local to that dependency
+# without making the optional internal target a configure-time requirement.
+if(TARGET objects)
+    target_compile_options(objects PRIVATE
+        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-braces -Wno-missing-field-initializers>)
+endif()
 
 # ----- CEF runtime server --------------------------------------------------------
 set(CEF4J_RUNTIME_SERVER_SOURCES
