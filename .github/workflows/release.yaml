@@ -27,7 +27,7 @@ env:
 jobs:
   validate:
     name: Validate release tag
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       tag: ${{ steps.version.outputs.tag }}
       version: ${{ steps.version.outputs.version }}
@@ -66,10 +66,10 @@ jobs:
         include:
           - { label: Linux x64, os: ubuntu-24.04, platform: linux64, classifier: linux-x86_64, arch: x86_64, distribution: corretto }
           - { label: Linux ARM, os: ubuntu-24.04-arm, platform: linuxarm64, classifier: linux-arm64, arch: aarch64, distribution: corretto }
-          - { label: Windows x64, os: windows-latest, platform: windows64, classifier: windows-x86_64, distribution: corretto }
+          - { label: Windows x64, os: windows-2025-vs2026, platform: windows64, classifier: windows-x86_64, distribution: corretto }
           - { label: Windows ARM, os: windows-11-arm, platform: windowsarm64, classifier: windows-arm64, distribution: microsoft }
-          - { label: macOS Intel, os: macos-15-intel, platform: macosx64, classifier: macosx-x86_64, distribution: corretto }
-          - { label: macOS ARM, os: macos-15, platform: macosarm64, classifier: macosx-arm64, distribution: corretto }
+          - { label: macOS Intel, os: macos-26-intel, platform: macosx64, classifier: macosx-x86_64, distribution: corretto }
+          - { label: macOS ARM, os: macos-26, platform: macosarm64, classifier: macosx-arm64, distribution: corretto }
     steps:
       - uses: actions/checkout@v6
         with:
@@ -183,7 +183,7 @@ jobs:
     name: Attach GitHub release assets
     if: github.event_name == 'release'
     needs: [validate, platform]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -202,7 +202,7 @@ jobs:
     name: Upload platform-neutral Maven Central deployment
     if: github.event_name == 'release'
     needs: [validate, platform]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: central
     steps:
@@ -273,7 +273,7 @@ jobs:
     name: Upload classified native Maven Central deployments
     if: github.event_name == 'release'
     needs: [validate, platform]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: central
     steps:
