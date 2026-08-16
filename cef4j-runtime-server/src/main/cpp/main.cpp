@@ -56,6 +56,8 @@
 #include "include/wrapper/cef_library_loader.h"
 extern "C" void* cef4jInitializeMacApplication();
 extern "C" void cef4jReleaseMacApplication(void* autoreleasePool);
+extern "C" void cef4jRunMacMessageLoop();
+extern "C" void cef4jQuitMacMessageLoop();
 #endif
 
 #include "Envelope.h"
@@ -864,7 +866,11 @@ struct Client : cef_client_t {
 
 static void finishRuntimeShutdown() {
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: quitting CEF message loop\n");
+#ifdef __APPLE__
+    cef4jQuitMacMessageLoop();
+#else
     cef_quit_message_loop();
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -2621,7 +2627,11 @@ int main(int argc, char* argv[]) {
         }
     }).detach();
 
+#ifdef __APPLE__
+    cef4jRunMacMessageLoop();
+#else
     cef_run_message_loop();
+#endif
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
     releaseAllDevToolsRegistrations();
     releaseTrackedBrowsers();

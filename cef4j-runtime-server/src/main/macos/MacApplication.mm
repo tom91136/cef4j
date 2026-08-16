@@ -2,7 +2,14 @@
 
 #import <AppKit/AppKit.h>
 
+#include <atomic>
 #include <cstdio>
+
+extern "C" void cef_do_message_loop_work(void);
+
+namespace {
+std::atomic<bool> g_quitMessageLoop{false};
+}
 
 // Keep these protocol declarations in C/Objective-C territory. Including
 // cef_application_mac.h also pulls the C++ wrapper API, whose language-level
@@ -66,4 +73,36 @@ extern "C" void* cef4jInitializeMacApplication() {
 
 extern "C" void cef4jReleaseMacApplication(void* autoreleasePool) {
     [static_cast<NSAutoreleasePool*>(autoreleasePool) drain];
+}
+
+extern "C" void cef4jRunMacMessageLoop() {
+    g_quitMessageLoop.store(false, std::memory_order_release);
+
+    // A bundle executable launched directly by ProcessBuilder does not always
+    // receive LaunchServices' normal finish-launching transition on hosted
+    // macOS runners. Complete it explicitly, then drive both AppKit's run loop
+    // and CEF work from the process main thread. This is also more robust than
+    // relying on cef_run_message_loop()'s nested [NSApp run] integration for a
+    // UI-element application that owns no native windows.
+    if (![NSApp isRunning]) [NSApp finishLaunching];
+    while (!g_quitMessageLoop.load(std::memory_order_acquire)) {
+        @autoreleasepool {
+            cef_do_message_loop_work();
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true);
+        }
+    }
+
+    // Let CEF and AppKit process teardown work posted by the final browser
+    // callback before cef_shutdown() removes their run-loop observers.
+    for (int i = 0; i < 10; ++i) {
+        @autoreleasepool {
+            cef_do_message_loop_work();
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, true);
+        }
+    }
+}
+
+extern "C" void cef4jQuitMacMessageLoop() {
+    g_quitMessageLoop.store(true, std::memory_order_release);
+    CFRunLoopWakeUp(CFRunLoopGetMain());
 }

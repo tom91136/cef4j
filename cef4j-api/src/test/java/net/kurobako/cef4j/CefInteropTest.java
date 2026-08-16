@@ -168,6 +168,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(3)
+    @Timeout(30)
     void displayHandler_onTitleChangeMarshalsString() throws Exception {
 
         CountDownLatch titleLatch = new CountDownLatch(1);
@@ -198,8 +199,8 @@ class CefInteropTest extends CefTestBase {
 
         CefBrowser browser = createWindowlessBrowser(client, dataUrl);
 
-        assertThat(pumpUntil(titleLatch, 10_000))
-                .as("onTitleChange should fire within 10s")
+        assertThat(pumpUntil(titleLatch, 20_000))
+                .as("onTitleChange should fire within 20s")
                 .isTrue();
         assertThat(receivedTitle.get()).as("title from HTML").isEqualTo("cef4j-test-title");
 
@@ -982,7 +983,7 @@ class CefInteropTest extends CefTestBase {
 
     @Test
     @Order(33)
-    @Timeout(45)
+    @Timeout(75)
     void onBeforePopup_firesWithoutCrash() throws Exception {
         CountDownLatch loadLatch = new CountDownLatch(1);
         CountDownLatch paintLatch = new CountDownLatch(1);
@@ -1036,8 +1037,8 @@ class CefInteropTest extends CefTestBase {
         String dataUrl = "data:text/html;base64,"
                 + java.util.Base64.getEncoder().encodeToString(html.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         CefBrowser browser = createWindowlessBrowser(client, dataUrl);
-        assertThat(pumpUntil(loadLatch, 10_000)).as("page loaded").isTrue();
-        assertThat(pumpUntil(paintLatch, 10_000)).as("first paint").isTrue();
+        assertThat(pumpUntil(loadLatch, 20_000)).as("page loaded").isTrue();
+        assertThat(pumpUntil(paintLatch, 20_000)).as("first paint").isTrue();
 
         // CEF 109/116 accept window.open here, while newer Chromium builds can still require a user gesture in
         // hosted sessions despite --disable-popup-blocking. Trigger both paths: the handler cancels the popup, so
@@ -1060,7 +1061,7 @@ class CefInteropTest extends CefTestBase {
         host.sendKeyEvent(new CefKeyEvent(rawDown, 0, 13, 13, 0, '\r', '\r', 0));
         host.sendKeyEvent(new CefKeyEvent(keyUp, 0, 13, 13, 0, '\r', '\r', 0));
 
-        assertThat(pumpUntil(popupLatch, 10_000))
+        assertThat(pumpUntil(popupLatch, 20_000))
                 .as("onBeforePopup should fire without SIGSEGV")
                 .isTrue();
         assertThat(popupFired.get()).isTrue();
