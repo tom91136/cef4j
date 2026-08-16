@@ -37,7 +37,7 @@ for attempt in 1 2 3; do
     sleep 10
 done
 
-./mvnw -B clean package -DskipTests "${reactor_selection[@]}" \
+./mvnw -B clean install -DskipTests "${reactor_selection[@]}" \
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}" \
