@@ -14,9 +14,11 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Keep this matrix curated rather than multiplying every JDK, CEF, JavaFX, and OS.
-# JavaFX rows always override compile and test versions together. Java 11 is the
-# runtime/bytecode floor; Maven and Scala code generation intentionally run on 17+.
+# Exercise every supported native target and CEF API with every supported LTS
+# build JDK. JavaFX follows the JDK axis, while a focused second pass verifies
+# that all non-JavaFX modules build and test without the JavaFX reactor modules.
+# Java 11 remains the runtime/bytecode floor; Maven and Scala code generation
+# intentionally run on 17+.
 jobs:
   maven-wrapper:
     name: Bootstrap Maven wrapper
@@ -51,23 +53,24 @@ jobs:
 
   linux:
     needs: maven-wrapper
-    name: Linux ${{ matrix.arch }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
-    runs-on: ${{ matrix.os }}
+    name: Linux ${{ matrix.platform.arch }} / JDK ${{ matrix.jdk.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.jdk.javafx }}
+    runs-on: ${{ matrix.platform.os }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', java11-smoke: 'true' }
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', java11-smoke: 'false' }
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '25', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '25.0.2', java11-smoke: 'false' }
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', java11-smoke: 'false' }
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', java11-smoke: 'false' }
-          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.1', java11-smoke: 'true' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.1', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.1', java11-smoke: 'false' }
-          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.1', java11-smoke: 'false' }
+        platform:
+          - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64 }
+          - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64 }
+        cef:
+          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
+          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
+          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
+          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
+        jdk:
+          - { java: '17', javafx: '13.0.2' }
+          - { java: '21', javafx: '21.0.7' }
+          - { java: '25', javafx: '25.0.2' }
     steps:
       - uses: actions/checkout@v6
 
@@ -76,8 +79,8 @@ jobs:
       - name: Prepare compressed CEF archives
         uses: ./.github/actions/cef-archives
         with:
-          version: ${{ matrix.cef-version }}
-          platform: ${{ matrix.cef-platform }}
+          version: ${{ matrix.cef.version }}
+          platform: ${{ matrix.platform.cef-platform }}
           # PR caches remain read-only so they cannot evict main's entries.
           save-cache: ${{ github.ref == 'refs/heads/main' }}
 
@@ -87,7 +90,7 @@ jobs:
           distribution: corretto
           java-version: |
             11
-            ${{ matrix.java }}
+            ${{ matrix.jdk.java }}
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
@@ -113,22 +116,22 @@ jobs:
         name: Restore AlmaLinux 8 sysroot
         uses: actions/cache/restore@v5
         with:
-          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
-          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
+          path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
+          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.platform.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
 
       - name: Build AlmaLinux 8 sysroot
         if: steps.sysroot-cache.outputs.cache-hit != 'true'
-        run: sysroot/manage.sh build ${{ matrix.arch }}
+        run: sysroot/manage.sh build ${{ matrix.platform.arch }}
 
       - name: Save AlmaLinux 8 sysroot
         if: steps.sysroot-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
-          path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
+          path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
           key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
 
       - name: Prepare AlmaLinux 8 sysroot
-        run: sysroot/manage.sh prepare ${{ matrix.arch }}
+        run: sysroot/manage.sh prepare ${{ matrix.platform.arch }}
 
       - name: Install Linux build and runtime prerequisites
         run: |
@@ -148,24 +151,27 @@ jobs:
           max_attempts: 3
           command: >-
             ./mvnw -B -pl cef4j-native spotless:check
-            "-Dcef.version=${{ matrix.cef-version }}"
-            "-Dcef.api.version=${{ matrix.cef-api }}"
+            "-Dcef.version=${{ matrix.cef.version }}"
+            "-Dcef.api.version=${{ matrix.cef.api }}"
 
       - name: Build and test against AlmaLinux 8 sysroot
         env:
-          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
-          CEF_VERSION: ${{ matrix.cef-version }}
-          CEF_API: ${{ matrix.cef-api }}
-          JAVAFX_VERSION: ${{ matrix.javafx }}
-          JAVAFX_TEST_VERSION: ${{ matrix.javafx }}
-          JAVA11_SMOKE: ${{ matrix.java11-smoke }}
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
+          CEF_VERSION: ${{ matrix.cef.version }}
+          CEF_API: ${{ matrix.cef.api }}
+          JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          # JavaFX only published a Linux ARM64 build for the initial 21 release,
+          # and has no ARM64 artifact compatible with JDK 17.
+          JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
+          JAVA11_SMOKE: ${{ matrix.cef.api == '146' && matrix.jdk.java == '17' }}
         run: .github/ci/linux-build.sh
 
       - name: Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: reports-linux-${{ matrix.arch }}-jdk${{ matrix.java }}-cef${{ matrix.cef-api }}-jfx${{ matrix.javafx }}
+          name: reports-linux-${{ matrix.platform.arch }}-jdk${{ matrix.jdk.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.jdk.javafx }}
           path: |
             **/target/surefire-reports/**
             **/hs_err_pid*.log
@@ -174,32 +180,28 @@ jobs:
 
   desktop:
     needs: maven-wrapper
-    name: ${{ matrix.label }} / JDK ${{ matrix.java }} / CEF ${{ matrix.cef-api }} / JavaFX ${{ matrix.javafx }}
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.platform.label }} / JDK ${{ matrix.jdk.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.jdk.javafx }}
+    runs-on: ${{ matrix.platform.os }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - { label: 'Windows x64', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', javafx-tests: 'true', java11-smoke: 'true' }
-          - { label: 'Windows x64 current JDK', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '25', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '25.0.2', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'Windows x64', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'Windows x64', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'Windows x64', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
+        platform:
+          - { label: 'Windows x64', os: 'windows-2025-vs2026', arch: x86_64, cef-platform: windows64, distribution: corretto, javafx-tests: true }
           # The Microsoft ARM64 JDK turns Chromium's NTE_BAD_KEYSET exception into a fatal VM
-          # error on hosted Windows ARM. Zulu is a native Windows ARM64 JDK at the same Java level.
-          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'true' }
-          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
-          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
-          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', javafx-tests: 'false', java11-smoke: 'false' }
-          - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '13.0.2', javafx-tests: 'true', java11-smoke: 'true' }
-          - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, java: '17', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '17.0.15', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '146', cef-version: '146.0.9+g3ca6a87+chromium-146.0.7680.165', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '144', cef-version: '144.0.19+g937f5c6+chromium-144.0.7559.246', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '116', cef-version: '116.0.27+gd8c85ac+chromium-116.0.5845.190', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
-          - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, java: '21', cef-api: '109', cef-version: '109.1.18+gf1c41e4+chromium-109.0.5414.120', javafx: '21.0.7', javafx-tests: 'true', java11-smoke: 'false' }
+          # error on hosted Windows ARM. Zulu is a native Windows ARM64 JDK at every build level.
+          - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, javafx-tests: false }
+          - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, javafx-tests: true }
+          - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, javafx-tests: true }
+        cef:
+          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
+          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
+          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
+          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
+        jdk:
+          - { java: '17', javafx: '13.0.2' }
+          - { java: '21', javafx: '21.0.7' }
+          - { java: '25', javafx: '25.0.2' }
     steps:
       - uses: actions/checkout@v6
 
@@ -210,14 +212,14 @@ jobs:
       - name: Set up Java 11 runtime toolchain
         uses: actions/setup-java@v5
         with:
-          distribution: ${{ runner.os == 'Windows' && matrix.arch == 'aarch64' && 'microsoft' || matrix.distribution }}
+          distribution: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'microsoft' || matrix.platform.distribution }}
           java-version: '11'
 
       - name: Set up build JDK
         uses: actions/setup-java@v5
         with:
-          distribution: ${{ matrix.distribution }}
-          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.platform.distribution }}
+          java-version: ${{ matrix.jdk.java }}
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
@@ -251,12 +253,12 @@ jobs:
       - name: Prepare compressed CEF archives
         uses: ./.github/actions/cef-archives
         with:
-          version: ${{ matrix.cef-version }}
-          platform: ${{ matrix.cef-platform }}
+          version: ${{ matrix.cef.version }}
+          platform: ${{ matrix.platform.cef-platform }}
           save-cache: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Resolve dependencies
-        if: runner.os != 'Windows' || matrix.arch != 'aarch64'
+        if: runner.os != 'Windows' || matrix.platform.arch != 'aarch64'
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
@@ -264,13 +266,13 @@ jobs:
           command: >-
             ./mvnw -B dependency:go-offline
             "-DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server"
-            "-Dcef.version=${{ matrix.cef-version }}"
-            "-Dcef.api.version=${{ matrix.cef-api }}"
-            "-Djavafx.version=${{ matrix.javafx }}"
-            "-Djavafx.test.version=${{ matrix.javafx }}"
+            "-Dcef.version=${{ matrix.cef.version }}"
+            "-Dcef.api.version=${{ matrix.cef.api }}"
+            "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
+            "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
 
       - name: Resolve dependencies for Windows ARM
-        if: runner.os == 'Windows' && matrix.arch == 'aarch64'
+        if: runner.os == 'Windows' && matrix.platform.arch == 'aarch64'
         uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
@@ -278,10 +280,10 @@ jobs:
           command: >-
             ./mvnw -B dependency:go-offline
             "-DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server"
-            "-Dcef.version=${{ matrix.cef-version }}"
-            "-Dcef.api.version=${{ matrix.cef-api }}"
-            "-Djavafx.version=${{ matrix.javafx }}"
-            "-Djavafx.test.version=${{ matrix.javafx }}"
+            "-Dcef.version=${{ matrix.cef.version }}"
+            "-Dcef.api.version=${{ matrix.cef.api }}"
+            "-Djavafx.version=${{ matrix.jdk.javafx }}"
+            "-Djavafx.test.version=${{ matrix.jdk.javafx }}"
             "-Djavafx.platform=win"
 
       # Surefire detects its JUnit provider only when tests begin, so dependency:go-offline cannot discover it.
@@ -305,50 +307,63 @@ jobs:
           max_attempts: 3
           command: >-
             ./mvnw -B -pl cef4j-native spotless:check
-            "-Dcef.version=${{ matrix.cef-version }}"
-            "-Dcef.api.version=${{ matrix.cef-api }}"
+            "-Dcef.version=${{ matrix.cef.version }}"
+            "-Dcef.api.version=${{ matrix.cef.api }}"
 
       # GitHub-hosted Windows and macOS runners are disposable VMs with their own
       # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
       # Mock the macOS keychain because unsigned Chromium test processes can block
       # in Security.framework while authorizing a persisted Safe Storage item.
       - name: Build and test in isolated hosted desktop
-        if: matrix.javafx-tests == 'true'
+        if: matrix.platform.javafx-tests
         run: >-
           ./mvnw -B clean install
-          "-Dcef.version=${{ matrix.cef-version }}"
-          "-Dcef.api.version=${{ matrix.cef-api }}"
-          "-Djavafx.version=${{ matrix.javafx }}"
-          "-Djavafx.test.version=${{ matrix.javafx }}"
+          "-Dcef.version=${{ matrix.cef.version }}"
+          "-Dcef.api.version=${{ matrix.cef.api }}"
+          "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
+          "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
           "-Dcef4j.test.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
           "-Dcef4j.runtime.server.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
 
       # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
       # complete reactor, then exercise every non-JavaFX module natively on ARM64.
-      - name: Build on Windows ARM without JavaFX runtime tests
-        if: matrix.javafx-tests == 'false'
+      - name: Build and test on Windows ARM without JavaFX
+        if: ${{ !matrix.platform.javafx-tests }}
         shell: bash
         run: |
           ./mvnw -B clean install -DskipTests \
-            "-Dcef.version=${{ matrix.cef-version }}" \
-            "-Dcef.api.version=${{ matrix.cef-api }}" \
-            "-Djavafx.version=${{ matrix.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.javafx }}" \
+            "-Dcef.version=${{ matrix.cef.version }}" \
+            "-Dcef.api.version=${{ matrix.cef.api }}" \
+            "-Djavafx.version=${{ matrix.jdk.javafx }}" \
+            "-Djavafx.test.version=${{ matrix.jdk.javafx }}" \
             "-Djavafx.platform=win" \
             "-Dcef4j.test.extraArgs=--disable-gpu" \
             "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
           ./mvnw -B clean test \
             -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
-            "-Dcef.version=${{ matrix.cef-version }}" \
-            "-Dcef.api.version=${{ matrix.cef-api }}" \
-            "-Djavafx.version=${{ matrix.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.javafx }}" \
+            "-Dcef.version=${{ matrix.cef.version }}" \
+            "-Dcef.api.version=${{ matrix.cef.api }}" \
+            "-Djavafx.version=${{ matrix.jdk.javafx }}" \
+            "-Djavafx.test.version=${{ matrix.jdk.javafx }}" \
             "-Djavafx.platform=win" \
             "-Dcef4j.test.extraArgs=--disable-gpu" \
             "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
 
+      - name: Test without JavaFX modules
+        if: matrix.platform.javafx-tests
+        shell: bash
+        run: |
+          ./mvnw -B test \
+            -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
+            "-Dcef.version=${{ matrix.cef.version }}" \
+            "-Dcef.api.version=${{ matrix.cef.api }}" \
+            "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}" \
+            "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}" \
+            "-Dcef4j.test.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}" \
+            "-Dcef4j.runtime.server.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
+
       - name: Java 11 runtime smoke
-        if: matrix.java11-smoke == 'true'
+        if: matrix.cef.api == '146' && matrix.jdk.java == '17'
         run: >-
           ./mvnw -B
           -pl cef4j-remote-core,cef4j-remote-recording-gson,cef4j-remote-recording-jackson,cef4j-remote-frame,cef4j-cdp,cef4j-cdp-gson,cef4j-cdp-jackson,cef4j-remote-cdp-gson,cef4j-remote-cdp-jackson,cef4j-webdriver,cef4j-webdriver-gson,cef4j-webdriver-jackson,cef4j-remote-webdriver
@@ -358,7 +373,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: reports-${{ matrix.os }}-cef${{ matrix.cef-api }}-jdk${{ matrix.java }}-jfx${{ matrix.javafx }}
+          name: reports-${{ matrix.platform.os }}-cef${{ matrix.cef.api }}-jdk${{ matrix.jdk.java }}-jfx${{ matrix.jdk.javafx }}
           path: |
             **/target/surefire-reports/**
             **/hs_err_pid*.log

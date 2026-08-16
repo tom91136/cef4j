@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs on a native Linux runner with CMAKE_SYSROOT pointing at a prepared
 # AlmaLinux 8 sysroot. Env: CEF_VERSION, CEF_API, JAVAFX_VERSION,
-# JAVAFX_TEST_VERSION, JAVA11_SMOKE.
+# JAVAFX_TEST_VERSION, JAVAFX_TESTS, JAVA11_SMOKE.
 set -euo pipefail
 
 RELEASE_BUILD=${RELEASE_BUILD:-false}
@@ -16,9 +16,15 @@ cd "${repo_root}"
 java -version
 clang++ --version
 
+non_javafx_projects='!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample'
+reactor_selection=()
+if [ "${JAVAFX_TESTS}" != "true" ]; then
+    reactor_selection=(-pl "${non_javafx_projects}")
+fi
+
 # Pre-resolve dependencies (wrap in a retry loop — transient Central failures are common).
 for attempt in 1 2 3; do
-    if ./mvnw -B dependency:go-offline \
+    if ./mvnw -B dependency:go-offline "${reactor_selection[@]}" \
             -DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server \
             "-Dcef.version=${CEF_VERSION}" \
             "-Dcef.api.version=${CEF_API}" \
@@ -31,7 +37,7 @@ for attempt in 1 2 3; do
     sleep 10
 done
 
-./mvnw -B clean package -DskipTests \
+./mvnw -B clean package -DskipTests "${reactor_selection[@]}" \
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}" \
@@ -59,7 +65,22 @@ while IFS= read -r LIB; do
 done < <(find cef4j-native/target cef4j-runtime-server/target \
     -type f \( -name 'libcef4j.so' -o -name 'cef4j_launcher' -o -name 'cef4j-runtime-server' \))
 
-xvfb-run -a ./mvnw -B install \
+if [ "${JAVAFX_TESTS}" = "true" ]; then
+    xvfb-run -a ./mvnw -B install \
+        "-Dcef.version=${CEF_VERSION}" \
+        "-Dcef.api.version=${CEF_API}" \
+        "-Djavafx.version=${JAVAFX_VERSION}" \
+        "-Djavafx.test.version=${JAVAFX_TEST_VERSION}" \
+        "-Dcef4j.test.extraArgs=--disable-gpu" \
+        "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
+fi
+
+# Repeat the non-JavaFX reactor under the same native/JDK/CEF combination. Keeping
+# this as an in-job build mode avoids doubling the workflow matrix while proving
+# that core, Swing, remote, CDP, HTTP, recording, frame, and WebDriver modules do
+# not acquire a JavaFX dependency.
+xvfb-run -a ./mvnw -B test \
+    -pl "${non_javafx_projects}" \
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}" \
