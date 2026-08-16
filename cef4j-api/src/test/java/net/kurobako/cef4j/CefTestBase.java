@@ -18,6 +18,7 @@ import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -59,20 +60,7 @@ abstract class CefTestBase {
         }
 
         List<String> args = new ArrayList<>(additionalArgs);
-        if (OS.isLinux()) {
-            String ozonePlatform = System.getProperty("cef4j.test.ozonePlatform");
-            if (ozonePlatform != null && !ozonePlatform.isBlank()) {
-                args.add("--ozone-platform=" + ozonePlatform.trim());
-            }
-        }
-        String extraArgsProperty = System.getProperty("cef4j.test.extraArgs");
-        if (extraArgsProperty != null && !extraArgsProperty.isBlank()) {
-            java.util.regex.Pattern.compile(",")
-                    .splitAsStream(extraArgsProperty)
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .forEach(args::add);
-        }
+        args.addAll(CefTestLaunch.extraArgs());
         Cef.INSTANCE.initialise(settings, args);
     }
 

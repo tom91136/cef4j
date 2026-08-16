@@ -13,13 +13,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -60,12 +58,7 @@ class CefHttpIntegrationTest {
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;
-            List<String> args = new ArrayList<>();
-            if (OS.isLinux()) {
-                String op = System.getProperty("cef4j.test.ozonePlatform");
-                if (op != null && !op.isBlank()) args.add("--ozone-platform=" + op.trim());
-            }
-            Cef.INSTANCE.initialise(settings, args);
+            Cef.INSTANCE.initialise(settings, CefTestLaunch.extraArgs());
         }
 
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);

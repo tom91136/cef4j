@@ -261,6 +261,8 @@ jobs:
 
       # GitHub-hosted Windows and macOS runners are disposable VMs with their own
       # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
+      # Mock the macOS keychain because unsigned Chromium test processes can block
+      # in Security.framework while authorizing a persisted Safe Storage item.
       - name: Build and test in isolated hosted desktop
         if: matrix.javafx-tests == 'true'
         run: >-
@@ -269,8 +271,8 @@ jobs:
           "-Dcef.api.version=${{ matrix.cef-api }}"
           "-Djavafx.version=${{ matrix.javafx }}"
           "-Djavafx.test.version=${{ matrix.javafx }}"
-          "-Dcef4j.test.extraArgs=--disable-gpu"
-          "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
+          "-Dcef4j.test.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
+          "-Dcef4j.runtime.server.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
 
       # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
       # complete reactor, then exercise every non-JavaFX module natively on ARM64.

@@ -14,7 +14,6 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -27,6 +26,7 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessWebDriverServer;
@@ -49,7 +49,7 @@ class InProcessWebDriverIntegrationTest {
         settings.cachePath = Files.createTempDirectory("cef4j-inprocess-webdriver-cache")
                 .toAbsolutePath()
                 .toString();
-        CefWebView.initialise(settings, List.of(), null);
+        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), null);
         startJavaFx();
         Platform.setImplicitExit(false);
     }

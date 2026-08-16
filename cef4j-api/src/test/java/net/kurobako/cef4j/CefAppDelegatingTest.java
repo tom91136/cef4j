@@ -9,11 +9,11 @@ import static org.mockito.Mockito.verify;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowserProcessHandler;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ class CefAppDelegatingTest {
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 1;
         settings.multiThreadedMessageLoop = 0;
-        Cef.INSTANCE.initialise(settings, List.of());
+        Cef.INSTANCE.initialise(settings, CefTestLaunch.extraArgs());
 
         // Pump briefly so onContextInitialized fires before the tests run.
         long deadline = System.currentTimeMillis() + 5_000;

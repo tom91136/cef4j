@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefSettings;
+import net.kurobako.cef4j.test.CefTestLaunch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -61,7 +62,7 @@ class CefWebViewRenderTest {
         settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
                 .toAbsolutePath()
                 .toString();
-        CefWebView.initialise(settings, List.of(), null);
+        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), null);
         try {
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {
