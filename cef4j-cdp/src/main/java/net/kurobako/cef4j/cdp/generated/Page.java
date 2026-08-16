@@ -14,7 +14,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Actions and events related to the inspected page belong to the page domain.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Page.pdl">Pinned protocol source</a>
  */
-@SuppressWarnings({"JavaLangClash", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Page {
     private Page() {}
     @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }

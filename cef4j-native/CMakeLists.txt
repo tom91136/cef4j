@@ -55,7 +55,9 @@ if(APPLE)
     set(CEF_DYLIB_LOADER "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
     set(BUNDLE_FIX_MM "${CMAKE_SOURCE_DIR}/native/runtime/bundle_fix_mac.mm")
     add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES} ${CEF_DYLIB_LOADER} ${BUNDLE_FIX_MM})
-    set_source_files_properties(${CEF_DYLIB_LOADER} PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
+    set_source_files_properties(${CEF_DYLIB_LOADER} PROPERTIES
+        COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED"
+        COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-field-initializers>")
 else()
     add_library(cef4j SHARED ${GENERATED_SOURCES} ${RUNTIME_SOURCES})
 endif()
@@ -129,7 +131,9 @@ if(APPLE)
         ${LAUNCHER_DYLIB_LOADER}
         "${CMAKE_SOURCE_DIR}/native/runtime/bundle_fix_mac.mm"
     )
-    set_source_files_properties(${LAUNCHER_DYLIB_LOADER} PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
+    set_source_files_properties(${LAUNCHER_DYLIB_LOADER} PROPERTIES
+        COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED"
+        COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-field-initializers>")
     target_include_directories(cef4j_launcher PRIVATE ${CEF_ROOT})
     target_link_libraries(cef4j_launcher PRIVATE "-framework Foundation" "-framework AppKit" "-ldl")
 elseif(WIN32)

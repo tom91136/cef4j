@@ -3,6 +3,7 @@ package net.kurobako.cef4j.cdp.generated;
 
 import net.kurobako.cef4j.cdp.CdpClient;
 
+@SuppressWarnings("deprecation")
 public final class CdpDomains {
     private final Accessibility.Client accessibility;
     private final Animation.Client animation;

@@ -226,7 +226,8 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
   }
 
   private def isPrimitive(typ: CType): Boolean = typ match {
-    case CType.Bool | CType.Int | CType.UInt | CType.Char | CType.Long | CType.SizeT | CType.Float | CType.Double =>
+    case CType.Bool | CType.Int | CType.UInt | CType.Char | CType.Long | CType.SizeT | CType.Float | CType.Double |
+        CType.Ptr(_) =>
       true
     case _ => false
   }

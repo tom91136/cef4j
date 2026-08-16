@@ -48,6 +48,8 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(libzmq)
+target_compile_options(objects PRIVATE
+    $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-braces -Wno-missing-field-initializers>)
 
 # ----- CEF runtime server --------------------------------------------------------
 set(CEF4J_RUNTIME_SERVER_SOURCES
@@ -64,8 +66,9 @@ if(APPLE)
     list(APPEND CEF4J_RUNTIME_SERVER_SOURCES
         src/main/macos/MacApplication.mm
         "${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc")
-    set_source_files_properties("${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc"
-        PROPERTIES COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED")
+    set_source_files_properties("${CEF_ROOT}/libcef_dll/wrapper/libcef_dll_dylib.cc" PROPERTIES
+        COMPILE_DEFINITIONS "WRAPPING_CEF_SHARED"
+        COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-field-initializers>")
 endif()
 
 add_executable(cef4j-runtime-server ${CEF4J_RUNTIME_SERVER_SOURCES})

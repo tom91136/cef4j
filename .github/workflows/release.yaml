@@ -85,9 +85,23 @@ jobs:
 
       - name: Set up MSVC
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $install = & $vswhere -latest -products * -property installationPath
+          if (-not $install) { throw "Visual Studio with C++ tools was not found" }
+          $arch = "${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}"
+          $vcvars = Join-Path $install "VC\Auxiliary\Build\vcvarsall.bat"
+          $environment = cmd /d /s /c "`"$vcvars`" $arch >nul && set"
+          $names = @('INCLUDE', 'LIB', 'LIBPATH', 'PATH', 'UCRTVersion', 'UniversalCRTSdkDir',
+                     'VCINSTALLDIR', 'VCToolsInstallDir', 'VCToolsRedistDir', 'VSCMD_ARG_HOST_ARCH',
+                     'VSCMD_ARG_TGT_ARCH', 'WindowsLibPath', 'WindowsSdkBinPath', 'WindowsSdkDir',
+                     'WindowsSDKVersion')
+          foreach ($line in $environment) {
+            if ($line -match '^([^=]+)=(.*)$' -and $names -contains $Matches[1]) {
+              "$($Matches[1])=$($Matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
 
       - name: Prepare compressed CEF archives
         uses: ./.github/actions/cef-archives

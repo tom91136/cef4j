@@ -281,7 +281,9 @@ def emit_domain(domain):
     lines.insert(len(lines) - 1, " * @see <a href=\"" + protocol_source(domain_name) + "\">Pinned protocol source</a>")
     lines += deprecated_annotation(domain, "")
     lines += [
-        "@SuppressWarnings({\"JavaLangClash\", \"UnusedMethod\"})",
+        # Chromium's protocol prose is preserved verbatim. These checks would require
+        # changing that upstream documentation rather than improving our generated API.
+        "@SuppressWarnings({\"EscapedEntity\", \"JavaLangClash\", \"MissingSummary\", \"UnusedMethod\"})",
         "public final class " + domain_name + " {",
         "    private " + domain_name + "() {}",
         "    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }",
@@ -358,6 +360,8 @@ domain_lines = [
     "",
     "import net.kurobako.cef4j.cdp.CdpClient;",
     "",
+    # Deprecated domains remain available for protocol completeness.
+    "@SuppressWarnings(\"deprecation\")",
     "public final class CdpDomains {",
 ]
 for domain in protocol["domains"]:

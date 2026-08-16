@@ -61,9 +61,9 @@ public final class JacksonCdpCodec implements CdpCodec {
             case VALUE_STRING:
                 return parser.getText();
             case VALUE_TRUE:
-                return Boolean.TRUE;
+                return true;
             case VALUE_FALSE:
-                return Boolean.FALSE;
+                return false;
             case VALUE_NUMBER_INT:
                 return parser.getNumberValue();
             case VALUE_NUMBER_FLOAT:

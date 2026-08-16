@@ -549,6 +549,22 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assert(javaCode.contains("package net.kurobako.cef4j.gen.mac;"), s"Expected mac sub-package in:\n$javaCode")
   }
 
+  test("Java record codegen treats raw pointer handles as Java primitives") {
+    given namingContext: Naming.Context   = Naming.Context.empty
+    given docContext: DocComments.Context = DocComments.Context.empty
+
+    val tmpDir = java.nio.file.Files.createTempDirectory("cef4j-record-pointer")
+    JavaRecordCodeGen.emit(
+      CefDecl.DataStruct("cef_string_utf16_t", List(Field("str", CType.Ptr("char16_t")))),
+      tmpDir
+    )
+
+    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefStringUtf16.java"))
+    assert(javaCode.contains("public final long str;"), s"Expected primitive pointer field in:\n$javaCode")
+    assert(javaCode.contains("this.str == other.str"), s"Expected primitive pointer equality in:\n$javaCode")
+    assert(!javaCode.contains("@Nullable long"), s"Unexpected nullability annotation in:\n$javaCode")
+  }
+
   test("Java record codegen can emit shared platform interface with implementation links") {
     given namingContext: Naming.Context = Naming.Context(
       cppClassNames = Map.empty,
