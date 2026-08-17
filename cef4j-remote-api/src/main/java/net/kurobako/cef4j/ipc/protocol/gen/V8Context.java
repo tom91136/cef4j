@@ -49,7 +49,7 @@ public final class V8Context {
      * Returns the task runner associated with this context. V8 handles can only be accessed from the thread on which they are created. This method can be called on any render process thread.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:147</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return session
@@ -62,7 +62,7 @@ public final class V8Context {
      * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:155</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -74,7 +74,7 @@ public final class V8Context {
      * Returns the browser for this context. This method will return an empty reference for WebWorker contexts.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:163</a>
      */
     public CompletableFuture<Browser> getBrowser() {
         return session
@@ -87,7 +87,7 @@ public final class V8Context {
      * Returns the frame for this context. This method will return an empty reference for WebWorker contexts.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:170</a>
      */
     public CompletableFuture<Frame> getFrame() {
         return session
@@ -100,7 +100,7 @@ public final class V8Context {
      * Returns the global object for this context. The context must be entered before calling this method.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     public CompletableFuture<V8Value> getGlobal() {
         return session
@@ -113,7 +113,7 @@ public final class V8Context {
      * Enter this context. A context must be explicitly entered before creating a V8 Object, Array, Function or Date asynchronously. Exit() must be called the same number of times as Enter() before releasing this context. V8 objects belong to the context in which they are created. Returns {@code true} if the scope was entered successfully.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:184</a>
      */
     public CompletableFuture<Integer> enter() {
         return session
@@ -125,7 +125,7 @@ public final class V8Context {
      * Exit this context. Call this method only after calling Enter(). Returns {@code true} if the scope was exited successfully.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:194</a>
      */
     public CompletableFuture<Integer> exit() {
         return session
@@ -137,7 +137,7 @@ public final class V8Context {
      * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:201</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:201</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session

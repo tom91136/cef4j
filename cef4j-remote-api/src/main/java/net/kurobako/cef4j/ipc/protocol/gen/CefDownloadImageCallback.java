@@ -19,7 +19,7 @@ public interface CefDownloadImageCallback {
      *
      * @param image may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:263</a>
      */
     default void onDownloadImageFinished(String imageUrl, int httpStatusCode, net.kurobako.cef4j.ipc.session.RemoteHandle image) {}
 

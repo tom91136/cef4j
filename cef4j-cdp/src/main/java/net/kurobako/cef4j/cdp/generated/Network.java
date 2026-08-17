@@ -12,7 +12,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 
 /**
  * Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Network.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Network.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Network {
@@ -530,7 +530,7 @@ public final class Network {
         public static final String VERYHIGH = "VeryHigh";
     }
     /**
-     * The render blocking behavior of a resource request.
+     * The render-blocking behavior of a resource request.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class RenderBlockingBehavior {
@@ -4220,6 +4220,13 @@ public final class Network {
         @Nullable public Boolean packetReordering() {
             return (Boolean) value("packetReordering");
         }
+        /**
+         * True to emulate internet disconnection.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean offline() {
+            return (Boolean) value("offline");
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -4300,6 +4307,16 @@ public final class Network {
             public Builder packetReordering(@Nullable Boolean value) {
                 if (value == null) values.remove("packetReordering");
                 else values.put("packetReordering", jsonValue(value));
+                return this;
+            }
+            /**
+             * True to emulate internet disconnection.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder offline(@Nullable Boolean value) {
+                if (value == null) values.remove("offline");
+                else values.put("offline", jsonValue(value));
                 return this;
             }
             public NetworkConditions build() {
@@ -4852,6 +4869,180 @@ public final class Network {
                 if (!values.containsKey("initiatorIPAddressSpace")) throw new IllegalStateException("Missing required CDP field: initiatorIPAddressSpace");
                 if (!values.containsKey("localNetworkAccessRequestPolicy")) throw new IllegalStateException("Missing required CDP field: localNetworkAccessRequestPolicy");
                 return new ClientSecurityState(values);
+            }
+        }
+    }
+    /**
+     * Identifies the script on the stack that caused a resource or element to be labeled as an ad. For resources, this indicates the context that triggered the fetch. For elements, this indicates the context that caused the element to be appended to the DOM.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class AdScriptIdentifier extends CdpObject {
+        private AdScriptIdentifier(Map<String, Object> values) { super(values); }
+        @Nullable public static AdScriptIdentifier fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new AdScriptIdentifier(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The script&#x27;s V8 identifier.
+         * @return the protocol field value
+         */
+        @Nullable public String scriptId() {
+            return (String) value("scriptId");
+        }
+        /**
+         * V8&#x27;s debugging ID for the v8::Context.
+         * @return the protocol field value
+         */
+        @Nullable public String debuggerId() {
+            return (String) value("debuggerId");
+        }
+        /**
+         * The script&#x27;s url (or generated name based on id if inline script).
+         * @return the protocol field value
+         */
+        @Nullable public String name() {
+            return (String) value("name");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The script&#x27;s V8 identifier.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder scriptId(@Nullable String value) {
+                if (value == null) values.remove("scriptId");
+                else values.put("scriptId", jsonValue(value));
+                return this;
+            }
+            /**
+             * V8&#x27;s debugging ID for the v8::Context.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder debuggerId(@Nullable String value) {
+                if (value == null) values.remove("debuggerId");
+                else values.put("debuggerId", jsonValue(value));
+                return this;
+            }
+            /**
+             * The script&#x27;s url (or generated name based on id if inline script).
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder name(@Nullable String value) {
+                if (value == null) values.remove("name");
+                else values.put("name", jsonValue(value));
+                return this;
+            }
+            public AdScriptIdentifier build() {
+                if (!values.containsKey("scriptId")) throw new IllegalStateException("Missing required CDP field: scriptId");
+                if (!values.containsKey("debuggerId")) throw new IllegalStateException("Missing required CDP field: debuggerId");
+                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
+                return new AdScriptIdentifier(values);
+            }
+        }
+    }
+    /**
+     * Encapsulates the script ancestry and the root script filter list rule that caused the resource or element to be labeled as an ad.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class AdAncestry extends CdpObject {
+        private AdAncestry(Map<String, Object> values) { super(values); }
+        @Nullable public static AdAncestry fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new AdAncestry(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * A chain of {@code AdScriptIdentifier}s representing the ancestry of an ad script that led to the creation of a resource or element. The chain is ordered from the script itself (lowest level) up to its root ancestor that was flagged by a filter list.
+         * @return the protocol field value
+         */
+        @Nullable public java.util.List<Network.AdScriptIdentifier> ancestryChain() {
+            return list(value("ancestryChain"), element0 -> Network.AdScriptIdentifier.fromMap(objectMap(element0)));
+        }
+        /**
+         * The filter list rule that caused the root (last) script in {@code ancestryChain} to be tagged as an ad.
+         * @return the protocol field value
+         */
+        @Nullable public String rootScriptFilterlistRule() {
+            return (String) value("rootScriptFilterlistRule");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * A chain of {@code AdScriptIdentifier}s representing the ancestry of an ad script that led to the creation of a resource or element. The chain is ordered from the script itself (lowest level) up to its root ancestor that was flagged by a filter list.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder ancestryChain(@Nullable java.util.List<Network.AdScriptIdentifier> value) {
+                if (value == null) values.remove("ancestryChain");
+                else values.put("ancestryChain", jsonValue(value));
+                return this;
+            }
+            /**
+             * The filter list rule that caused the root (last) script in {@code ancestryChain} to be tagged as an ad.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder rootScriptFilterlistRule(@Nullable String value) {
+                if (value == null) values.remove("rootScriptFilterlistRule");
+                else values.put("rootScriptFilterlistRule", jsonValue(value));
+                return this;
+            }
+            public AdAncestry build() {
+                if (!values.containsKey("ancestryChain")) throw new IllegalStateException("Missing required CDP field: ancestryChain");
+                return new AdAncestry(values);
+            }
+        }
+    }
+    /**
+     * Represents the provenance of an ad resource or element. Only one of {@code filterlistRule} or {@code adScriptAncestry} can be set. If {@code filterlistRule} is provided, the resource URL directly matches a filter list rule. If {@code adScriptAncestry} is provided, an ad script initiated the resource fetch or appended the element to the DOM. If neither is provided, the entity is known to be an ad, but provenance tracking information is unavailable.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class AdProvenance extends CdpObject {
+        private AdProvenance(Map<String, Object> values) { super(values); }
+        @Nullable public static AdProvenance fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new AdProvenance(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The filterlist rule that matched, if any.
+         * @return the protocol field value
+         */
+        @Nullable public String filterlistRule() {
+            return (String) value("filterlistRule");
+        }
+        /**
+         * The script ancestry that created the ad, if any.
+         * @return the protocol field value
+         */
+        @Nullable public Network.AdAncestry adScriptAncestry() {
+            return Network.AdAncestry.fromMap(objectMap(value("adScriptAncestry")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The filterlist rule that matched, if any.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder filterlistRule(@Nullable String value) {
+                if (value == null) values.remove("filterlistRule");
+                else values.put("filterlistRule", jsonValue(value));
+                return this;
+            }
+            /**
+             * The script ancestry that created the ad, if any.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder adScriptAncestry(@Nullable Network.AdAncestry value) {
+                if (value == null) values.remove("adScriptAncestry");
+                else values.put("adScriptAncestry", jsonValue(value));
+                return this;
+            }
+            public AdProvenance build() {
+                return new AdProvenance(values);
             }
         }
     }
@@ -5982,6 +6173,7 @@ public final class Network {
         public static final String SUCCESS = "Success";
         public static final String KEYERROR = "KeyError";
         public static final String SIGNINGERROR = "SigningError";
+        public static final String TRANSIENTSIGNINGERROR = "TransientSigningError";
         public static final String SERVERREQUESTEDTERMINATION = "ServerRequestedTermination";
         public static final String INVALIDSESSIONID = "InvalidSessionId";
         public static final String INVALIDCHALLENGE = "InvalidChallenge";
@@ -6047,6 +6239,93 @@ public final class Network {
         public static final String INVALIDFEDERATEDSESSIONPROVIDERFAILEDTORESTOREKEY = "InvalidFederatedSessionProviderFailedToRestoreKey";
         public static final String FAILEDTOUNWRAPKEY = "FailedToUnwrapKey";
         public static final String SESSIONDELETEDDURINGREFRESH = "SessionDeletedDuringRefresh";
+        public static final String CROSSORIGINREGISTRATIONSITENOTINCLUDED = "CrossOriginRegistrationSiteNotIncluded";
+    }
+    /**
+     * Details about a failed device bound session network request.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeviceBoundSessionFailedRequest extends CdpObject {
+        private DeviceBoundSessionFailedRequest(Map<String, Object> values) { super(values); }
+        @Nullable public static DeviceBoundSessionFailedRequest fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new DeviceBoundSessionFailedRequest(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The failed request URL.
+         * @return the protocol field value
+         */
+        @Nullable public String requestUrl() {
+            return (String) value("requestUrl");
+        }
+        /**
+         * The net error of the response if it was not OK.
+         * @return the protocol field value
+         */
+        @Nullable public String netError() {
+            return (String) value("netError");
+        }
+        /**
+         * The response code if the net error was OK and the response code was not 200.
+         * @return the protocol field value
+         */
+        @Nullable public Long responseError() {
+            return numberAsLong(value("responseError"));
+        }
+        /**
+         * The body of the response if the net error was OK, the response code was not 200, and the response body was not empty.
+         * @return the protocol field value
+         */
+        @Nullable public String responseErrorBody() {
+            return (String) value("responseErrorBody");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The failed request URL.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder requestUrl(@Nullable String value) {
+                if (value == null) values.remove("requestUrl");
+                else values.put("requestUrl", jsonValue(value));
+                return this;
+            }
+            /**
+             * The net error of the response if it was not OK.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder netError(@Nullable String value) {
+                if (value == null) values.remove("netError");
+                else values.put("netError", jsonValue(value));
+                return this;
+            }
+            /**
+             * The response code if the net error was OK and the response code was not 200.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder responseError(@Nullable Long value) {
+                if (value == null) values.remove("responseError");
+                else values.put("responseError", jsonValue(value));
+                return this;
+            }
+            /**
+             * The body of the response if the net error was OK, the response code was not 200, and the response body was not empty.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder responseErrorBody(@Nullable String value) {
+                if (value == null) values.remove("responseErrorBody");
+                else values.put("responseErrorBody", jsonValue(value));
+                return this;
+            }
+            public DeviceBoundSessionFailedRequest build() {
+                if (!values.containsKey("requestUrl")) throw new IllegalStateException("Missing required CDP field: requestUrl");
+                return new DeviceBoundSessionFailedRequest(values);
+            }
+        }
     }
     /**
      * Session event details specific to creation.
@@ -6072,6 +6351,13 @@ public final class Network {
         @Nullable public Network.DeviceBoundSession newSession() {
             return Network.DeviceBoundSession.fromMap(objectMap(value("newSession")));
         }
+        /**
+         * Details about a failed device bound session network request if there was one.
+         * @return the protocol field value
+         */
+        @Nullable public Network.DeviceBoundSessionFailedRequest failedRequest() {
+            return Network.DeviceBoundSessionFailedRequest.fromMap(objectMap(value("failedRequest")));
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -6092,6 +6378,16 @@ public final class Network {
             public Builder newSession(@Nullable Network.DeviceBoundSession value) {
                 if (value == null) values.remove("newSession");
                 else values.put("newSession", jsonValue(value));
+                return this;
+            }
+            /**
+             * Details about a failed device bound session network request if there was one.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder failedRequest(@Nullable Network.DeviceBoundSessionFailedRequest value) {
+                if (value == null) values.remove("failedRequest");
+                else values.put("failedRequest", jsonValue(value));
                 return this;
             }
             public CreationEventDetails build() {
@@ -6129,6 +6425,8 @@ public final class Network {
             public static final String REFRESHQUOTAEXCEEDED = "RefreshQuotaExceeded";
             public static final String FATALERROR = "FatalError";
             public static final String SIGNINGQUOTAEXCEEDED = "SigningQuotaExceeded";
+            public static final String REFRESHEDASWAITER = "RefreshedAsWaiter";
+            public static final String TRANSIENTSIGNINGERROR = "TransientSigningError";
         }
         /**
          * If there was a fetch attempt, the result of that.
@@ -6150,6 +6448,13 @@ public final class Network {
          */
         @Nullable public Boolean wasFullyProactiveRefresh() {
             return (Boolean) value("wasFullyProactiveRefresh");
+        }
+        /**
+         * Details about a failed device bound session network request if there was one.
+         * @return the protocol field value
+         */
+        @Nullable public Network.DeviceBoundSessionFailedRequest failedRequest() {
+            return Network.DeviceBoundSessionFailedRequest.fromMap(objectMap(value("failedRequest")));
         }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
@@ -6193,6 +6498,16 @@ public final class Network {
                 else values.put("wasFullyProactiveRefresh", jsonValue(value));
                 return this;
             }
+            /**
+             * Details about a failed device bound session network request if there was one.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder failedRequest(@Nullable Network.DeviceBoundSessionFailedRequest value) {
+                if (value == null) values.remove("failedRequest");
+                else values.put("failedRequest", jsonValue(value));
+                return this;
+            }
             public RefreshEventDetails build() {
                 if (!values.containsKey("refreshResult")) throw new IllegalStateException("Missing required CDP field: refreshResult");
                 if (!values.containsKey("wasFullyProactiveRefresh")) throw new IllegalStateException("Missing required CDP field: wasFullyProactiveRefresh");
@@ -6230,6 +6545,7 @@ public final class Network {
             public static final String SERVERREQUESTED = "ServerRequested";
             public static final String INVALIDSESSIONPARAMS = "InvalidSessionParams";
             public static final String REFRESHFATALERROR = "RefreshFatalError";
+            public static final String DEVTOOLS = "DevTools";
         }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
@@ -7317,11 +7633,20 @@ public final class Network {
         }
         public static Builder builder() { return new Builder(); }
         /**
-         * True to emulate internet disconnection.
+         * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
          * @return the protocol field value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
+        @Deprecated
         @Nullable public Boolean offline() {
             return (Boolean) value("offline");
+        }
+        /**
+         * True to emulate offline service worker.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean emulateOfflineServiceWorker() {
+            return (Boolean) value("emulateOfflineServiceWorker");
         }
         /**
          * Configure conditions for matching requests. If multiple entries match a request, the first entry wins. Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
@@ -7333,13 +7658,25 @@ public final class Network {
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
-             * True to emulate internet disconnection.
+             * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
              * @param value field value; null removes an optional value
              * @return this builder
+             * @deprecated Deprecated by the Chromium DevTools Protocol.
              */
+            @Deprecated
             public Builder offline(@Nullable Boolean value) {
                 if (value == null) values.remove("offline");
                 else values.put("offline", jsonValue(value));
+                return this;
+            }
+            /**
+             * True to emulate offline service worker.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder emulateOfflineServiceWorker(@Nullable Boolean value) {
+                if (value == null) values.remove("emulateOfflineServiceWorker");
+                else values.put("emulateOfflineServiceWorker", jsonValue(value));
                 return this;
             }
             /**
@@ -7353,7 +7690,6 @@ public final class Network {
                 return this;
             }
             public EmulateNetworkConditionsByRuleParams build() {
-                if (!values.containsKey("offline")) throw new IllegalStateException("Missing required CDP field: offline");
                 if (!values.containsKey("matchedNetworkConditions")) throw new IllegalStateException("Missing required CDP field: matchedNetworkConditions");
                 return new EmulateNetworkConditionsByRuleParams(values);
             }
@@ -7527,7 +7863,7 @@ public final class Network {
         }
         public static Builder builder() { return new Builder(); }
         /**
-         * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+         * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return the protocol field value
          */
@@ -7568,7 +7904,7 @@ public final class Network {
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
-             * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+             * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
              * <p><b>Experimental:</b> this part of CDP may change without notice.
              * @param value field value; null removes an optional value
              * @return this builder
@@ -9417,6 +9753,58 @@ public final class Network {
         }
     }
     /**
+     * Deletes a device bound session.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeleteDeviceBoundSessionParams extends CdpObject {
+        private DeleteDeviceBoundSessionParams(Map<String, Object> values) { super(values); }
+        @Nullable public static DeleteDeviceBoundSessionParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new DeleteDeviceBoundSessionParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the key field.
+         * @return the protocol field value
+         */
+        @Nullable public Network.DeviceBoundSessionKey key() {
+            return Network.DeviceBoundSessionKey.fromMap(objectMap(value("key")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the key field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder key(@Nullable Network.DeviceBoundSessionKey value) {
+                if (value == null) values.remove("key");
+                else values.put("key", jsonValue(value));
+                return this;
+            }
+            public DeleteDeviceBoundSessionParams build() {
+                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
+                return new DeleteDeviceBoundSessionParams(values);
+            }
+        }
+    }
+    /**
+     * Deletes a device bound session.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class DeleteDeviceBoundSessionResult extends CdpObject {
+        private DeleteDeviceBoundSessionResult(Map<String, Object> values) { super(values); }
+        @Nullable public static DeleteDeviceBoundSessionResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new DeleteDeviceBoundSessionResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            public DeleteDeviceBoundSessionResult build() {
+                return new DeleteDeviceBoundSessionResult(values);
+            }
+        }
+    }
+    /**
      * Fetches the schemeful site for a specific origin.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -9608,20 +9996,6 @@ public final class Network {
         @Nullable public Boolean enableThirdPartyCookieRestriction() {
             return (Boolean) value("enableThirdPartyCookieRestriction");
         }
-        /**
-         * Whether 3pc grace period exception should be enabled; false by default.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean disableThirdPartyCookieMetadata() {
-            return (Boolean) value("disableThirdPartyCookieMetadata");
-        }
-        /**
-         * Whether 3pc heuristics exceptions should be enabled; false by default.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean disableThirdPartyCookieHeuristics() {
-            return (Boolean) value("disableThirdPartyCookieHeuristics");
-        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -9634,30 +10008,8 @@ public final class Network {
                 else values.put("enableThirdPartyCookieRestriction", jsonValue(value));
                 return this;
             }
-            /**
-             * Whether 3pc grace period exception should be enabled; false by default.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder disableThirdPartyCookieMetadata(@Nullable Boolean value) {
-                if (value == null) values.remove("disableThirdPartyCookieMetadata");
-                else values.put("disableThirdPartyCookieMetadata", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether 3pc heuristics exceptions should be enabled; false by default.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder disableThirdPartyCookieHeuristics(@Nullable Boolean value) {
-                if (value == null) values.remove("disableThirdPartyCookieHeuristics");
-                else values.put("disableThirdPartyCookieHeuristics", jsonValue(value));
-                return this;
-            }
             public SetCookieControlsParams build() {
                 if (!values.containsKey("enableThirdPartyCookieRestriction")) throw new IllegalStateException("Missing required CDP field: enableThirdPartyCookieRestriction");
-                if (!values.containsKey("disableThirdPartyCookieMetadata")) throw new IllegalStateException("Missing required CDP field: disableThirdPartyCookieMetadata");
-                if (!values.containsKey("disableThirdPartyCookieHeuristics")) throw new IllegalStateException("Missing required CDP field: disableThirdPartyCookieHeuristics");
                 return new SetCookieControlsParams(values);
             }
         }
@@ -10458,7 +10810,7 @@ public final class Network {
             return (Boolean) value("hasUserGesture");
         }
         /**
-         * The render blocking behavior of the request.
+         * The render-blocking behavior of the request.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return the protocol field value
          */
@@ -10589,7 +10941,7 @@ public final class Network {
                 return this;
             }
             /**
-             * The render blocking behavior of the request.
+             * The render-blocking behavior of the request.
              * <p><b>Experimental:</b> this part of CDP may change without notice.
              * @param value field value; null removes an optional value
              * @return this builder
@@ -13838,6 +14190,15 @@ public final class Network {
          */
         public CompletionStage<EnableDeviceBoundSessionsResult> enableDeviceBoundSessions(EnableDeviceBoundSessionsParams params) {
             return client.call("Network.enableDeviceBoundSessions", params, EnableDeviceBoundSessionsResult::fromMap);
+        }
+        /**
+         * Deletes a device bound session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param params command parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DeleteDeviceBoundSessionResult> deleteDeviceBoundSession(DeleteDeviceBoundSessionParams params) {
+            return client.call("Network.deleteDeviceBoundSession", params, DeleteDeviceBoundSessionResult::fromMap);
         }
         /**
          * Fetches the schemeful site for a specific origin.

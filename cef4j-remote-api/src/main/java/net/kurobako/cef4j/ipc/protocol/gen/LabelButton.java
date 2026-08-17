@@ -54,7 +54,7 @@ public final class LabelButton {
      * Retrieve this frame's display text as a string sent to the specified visitor.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<String> getText() {
         return session
@@ -73,7 +73,7 @@ public final class LabelButton {
      * Get the image representation of drag data. May return {@code null} if no image representation is available.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
      */
     public CompletableFuture<Image> getImage(int buttonState) {
         return session
@@ -116,7 +116,7 @@ public final class LabelButton {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(@Nonnull String fontList) {
         return session

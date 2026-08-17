@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-codegen</artifactId>
@@ -28,6 +28,10 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala3-library_3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.scalameta</groupId>
@@ -128,7 +132,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Download + extract CEF minimal dist for integration tests (shared cache with cef4j-native/platform).
+            <!-- Download + extract CEF minimal dist for integration tests (shared cache with cef4j-platform/platform).
                  unpackWhenChanged=true extracts only on first download or when the tarball changes. -->
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>

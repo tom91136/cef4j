@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_image_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefImage extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* is_empty)(struct _cef_image_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:62</a>
      */
     boolean isEmpty();
 
@@ -35,7 +35,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_image_t* self, struct _cef_image_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:68</a>
      */
     boolean isSame(@Nullable CefImage that);
 
@@ -47,7 +47,7 @@ public interface CefImage extends CefLibraryObject {
      *
      * @param pixelData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:75</a>
      */
     boolean addBitmap(float scaleFactor, int pixelWidth, int pixelHeight, @Nonnull CefColorType colorType, @Nonnull CefAlphaType alphaType, @Nonnull ByteBuffer pixelData);
 
@@ -59,7 +59,7 @@ public interface CefImage extends CefLibraryObject {
      *
      * @param pngData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:91</a>
      */
     boolean addPng(float scaleFactor, @Nonnull ByteBuffer pngData);
 
@@ -71,7 +71,7 @@ public interface CefImage extends CefLibraryObject {
      *
      * @param jpegData <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:101</a>
      */
     boolean addJpeg(float scaleFactor, @Nonnull ByteBuffer jpegData);
 
@@ -80,7 +80,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>size_t (CEF_CALLBACK* get_width)(struct _cef_image_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:111</a>
      */
     long getWidth();
 
@@ -89,7 +89,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>size_t (CEF_CALLBACK* get_height)(struct _cef_image_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:117</a>
      */
     long getHeight();
 
@@ -98,7 +98,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* has_representation)(struct _cef_image_t* self, float scale_factor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:123</a>
      */
     boolean hasRepresentation(float scaleFactor);
 
@@ -107,7 +107,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* remove_representation)(struct _cef_image_t* self, float scale_factor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:129</a>
      */
     boolean removeRepresentation(float scaleFactor);
 
@@ -116,7 +116,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>int (CEF_CALLBACK* get_representation_info)(struct _cef_image_t* self, float scale_factor, float* actual_scale_factor, int* pixel_width, int* pixel_height);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:135</a>
      */
     boolean getRepresentationInfo(float scaleFactor, float[] actualScaleFactor, int[] pixelWidth, int[] pixelHeight);
 
@@ -125,7 +125,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_as_bitmap)(struct _cef_image_t* self, float scale_factor, cef_color_type_t color_type, cef_alpha_type_t alpha_type, int* pixel_width, int* pixel_height);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:147</a>
      */
     Optional<CefBinaryValue> getAsBitmap(float scaleFactor, @Nonnull CefColorType colorType, @Nonnull CefAlphaType alphaType, int[] pixelWidth, int[] pixelHeight);
 
@@ -134,7 +134,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_as_png)(struct _cef_image_t* self, float scale_factor, int with_transparency, int* pixel_width, int* pixel_height);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:162</a>
      */
     Optional<CefBinaryValue> getAsPng(float scaleFactor, boolean withTransparency, int[] pixelWidth, int[] pixelHeight);
 
@@ -143,7 +143,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_as_jpeg)(struct _cef_image_t* self, float scale_factor, int quality, int* pixel_width, int* pixel_height);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:176</a>
      */
     Optional<CefBinaryValue> getAsJpeg(float scaleFactor, int quality, int[] pixelWidth, int[] pixelHeight);
     /**
@@ -151,7 +151,7 @@ public interface CefImage extends CefLibraryObject {
      * <p>Definition generated from cef_image_capi.h
      * <pre>CEF_EXPORT cef_image_t* cef_image_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:55</a>
      */
     static Optional<CefImage> create() {
       return Optional.ofNullable(NativePeer.create0());

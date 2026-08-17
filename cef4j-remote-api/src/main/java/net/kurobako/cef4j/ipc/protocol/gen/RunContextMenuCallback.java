@@ -39,7 +39,7 @@ public final class RunContextMenuCallback {
      * Complete context menu display by selecting the specified {@code command_id} and {@code event_flags}.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:54</a>
      */
     public CompletableFuture<Void> cont(int commandId, int eventFlags) {
         return session
@@ -51,7 +51,7 @@ public final class RunContextMenuCallback {
      * Cancel context menu display.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:61</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

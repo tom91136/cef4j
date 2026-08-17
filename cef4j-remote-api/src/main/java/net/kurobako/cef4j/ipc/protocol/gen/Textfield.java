@@ -60,7 +60,7 @@ public final class Textfield {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:564</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:564</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -72,7 +72,7 @@ public final class Textfield {
      * Retrieve this frame's display text as a string sent to the specified visitor.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<String> getText() {
         return session
@@ -105,7 +105,7 @@ public final class Textfield {
      * Returns {@code true} if a portion of the document is selected.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:117</a>
      */
     public CompletableFuture<Integer> hasSelection() {
         return session
@@ -124,7 +124,7 @@ public final class Textfield {
      * Execute select all in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     public CompletableFuture<Void> selectAll(int reversed) {
         return session
@@ -160,48 +160,6 @@ public final class Textfield {
             .thenApply(TextfieldGetCursorPositionResponse::result);
     }
 
-    /** Dispatches {@code set_text_color} to the runtime server. */
-    public CompletableFuture<Void> setTextColor(int color) {
-        return session
-            .request(new TextfieldSetTextColorRequest(handle, color), TextfieldSetTextColorResponse.DECODER)
-            .thenApply(r -> null);
-    }
-
-    /** Dispatches {@code get_text_color} to the runtime server. */
-    public CompletableFuture<Integer> getTextColor() {
-        return session
-            .request(new TextfieldGetTextColorRequest(handle), TextfieldGetTextColorResponse.DECODER)
-            .thenApply(TextfieldGetTextColorResponse::result);
-    }
-
-    /** Dispatches {@code set_selection_text_color} to the runtime server. */
-    public CompletableFuture<Void> setSelectionTextColor(int color) {
-        return session
-            .request(new TextfieldSetSelectionTextColorRequest(handle, color), TextfieldSetSelectionTextColorResponse.DECODER)
-            .thenApply(r -> null);
-    }
-
-    /** Dispatches {@code get_selection_text_color} to the runtime server. */
-    public CompletableFuture<Integer> getSelectionTextColor() {
-        return session
-            .request(new TextfieldGetSelectionTextColorRequest(handle), TextfieldGetSelectionTextColorResponse.DECODER)
-            .thenApply(TextfieldGetSelectionTextColorResponse::result);
-    }
-
-    /** Dispatches {@code set_selection_background_color} to the runtime server. */
-    public CompletableFuture<Void> setSelectionBackgroundColor(int color) {
-        return session
-            .request(new TextfieldSetSelectionBackgroundColorRequest(handle, color), TextfieldSetSelectionBackgroundColorResponse.DECODER)
-            .thenApply(r -> null);
-    }
-
-    /** Dispatches {@code get_selection_background_color} to the runtime server. */
-    public CompletableFuture<Integer> getSelectionBackgroundColor() {
-        return session
-            .request(new TextfieldGetSelectionBackgroundColorRequest(handle), TextfieldGetSelectionBackgroundColorResponse.DECODER)
-            .thenApply(TextfieldGetSelectionBackgroundColorResponse::result);
-    }
-
     /**
      * Sets the font list for the specified {@code command_id}. If {@code font_list} is empty the system font will be used. Returns {@code true} on success. The format is "&lt;FONT_FAMILY_LIST&gt;,[STYLES] &lt;SIZE&gt;", where:
      * <ul>
@@ -222,7 +180,7 @@ public final class Textfield {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(@Nonnull String fontList) {
         return session
@@ -255,7 +213,7 @@ public final class Textfield {
      * Perform the action associated with the specified {@code command_id} and optional {@code event_flags}.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
     public CompletableFuture<Void> executeCommand(int commandId) {
         return session
@@ -282,13 +240,6 @@ public final class Textfield {
         return session
             .request(new TextfieldGetPlaceholderTextRequest(handle), TextfieldGetPlaceholderTextResponse.DECODER)
             .thenApply(TextfieldGetPlaceholderTextResponse::result);
-    }
-
-    /** Dispatches {@code set_placeholder_text_color} to the runtime server. */
-    public CompletableFuture<Void> setPlaceholderTextColor(int color) {
-        return session
-            .request(new TextfieldSetPlaceholderTextColorRequest(handle, color), TextfieldSetPlaceholderTextColorResponse.DECODER)
-            .thenApply(r -> null);
     }
 
     /** Dispatches {@code set_accessible_name} to the runtime server. */

@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * Chrome DevTools Protocol Preload domain.
  * <p><b>Experimental:</b> this part of CDP may change without notice.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Preload.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Preload.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Preload {
@@ -258,6 +258,13 @@ public final class Preload {
             return (String) value("url");
         }
         /**
+         * Returns the formSubmission field.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean formSubmission() {
+            return (Boolean) value("formSubmission");
+        }
+        /**
          * Returns the targetHint field.
          * @return the protocol field value
          */
@@ -294,6 +301,16 @@ public final class Preload {
             public Builder url(@Nullable String value) {
                 if (value == null) values.remove("url");
                 else values.put("url", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the formSubmission field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder formSubmission(@Nullable Boolean value) {
+                if (value == null) values.remove("formSubmission");
+                else values.put("formSubmission", jsonValue(value));
                 return this;
             }
             /**
@@ -463,6 +480,8 @@ public final class Preload {
         public static final String PRERENDERFAILEDDURINGPREFETCH = "PrerenderFailedDuringPrefetch";
         public static final String BROWSINGDATAREMOVED = "BrowsingDataRemoved";
         public static final String PRERENDERHOSTREUSED = "PrerenderHostReused";
+        public static final String FORMSUBMITWHENPRERENDERING = "FormSubmitWhenPrerendering";
+        public static final String CROSSDOCUMENTRESTART = "CrossDocumentRestart";
     }
     /**
      * Preloading status values, see also PreloadingTriggeringOutcome. This status is shared by prefetchStatusUpdated and prerenderStatusUpdated.
@@ -515,6 +534,7 @@ public final class Preload {
         public static final String PREFETCHRESPONSEUSED = "PrefetchResponseUsed";
         public static final String PREFETCHSUCCESSFULBUTNOTUSED = "PrefetchSuccessfulButNotUsed";
         public static final String PREFETCHNOTUSEDPROBEFAILED = "PrefetchNotUsedProbeFailed";
+        public static final String PREFETCHCANCELLEDONUSERNAVIGATION = "PrefetchCancelledOnUserNavigation";
     }
     /**
      * Information of headers to be displayed when the header mismatch occurred.

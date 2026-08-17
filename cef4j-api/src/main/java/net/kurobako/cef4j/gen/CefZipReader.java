@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_zip_reader_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefZipReader extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_first_file)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:58</a>
      */
     boolean moveToFirstFile();
 
@@ -35,7 +35,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_next_file)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:65</a>
      */
     boolean moveToNextFile();
 
@@ -44,7 +44,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_file)(struct _cef_zip_reader_t* self, const cef_string_t* fileName, int caseSensitive);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
      */
     boolean moveToFile(@Nullable String fileName, boolean caseSensitive);
 
@@ -53,7 +53,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* close)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     boolean cefClose();
 
@@ -62,7 +62,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_file_name)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
      */
     Optional<String> getFileName();
 
@@ -71,7 +71,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_file_size)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:95</a>
      */
     long getFileSize();
 
@@ -80,7 +80,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>cef_basetime_t* (CEF_CALLBACK* get_file_last_modified)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
      */
     CefBasetime getFileLastModified();
 
@@ -91,7 +91,7 @@ public interface CefZipReader extends CefLibraryObject {
      *
      * @param password may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:107</a>
      */
     boolean openFile(@Nullable String password);
 
@@ -100,7 +100,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* close_file)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:114</a>
      */
     boolean closeFile();
 
@@ -112,7 +112,7 @@ public interface CefZipReader extends CefLibraryObject {
      *
      * @param buffer <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:120</a>
      */
     int readFile(@Nonnull ByteBuffer buffer);
 
@@ -121,7 +121,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int64_t (CEF_CALLBACK* tell)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
      */
     long tell();
 
@@ -130,7 +130,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>int (CEF_CALLBACK* eof)(struct _cef_zip_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
      */
     boolean eof();
     /**
@@ -138,7 +138,7 @@ public interface CefZipReader extends CefLibraryObject {
      * <p>Definition generated from cef_zip_reader_capi.h
      * <pre>CEF_EXPORT cef_zip_reader_t* cef_zip_reader_create(struct _cef_stream_reader_t* stream);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:51</a>
      */
     static Optional<CefZipReader> create(@Nullable CefStreamReader stream) {
       return Optional.ofNullable(NativePeer.create0(stream));

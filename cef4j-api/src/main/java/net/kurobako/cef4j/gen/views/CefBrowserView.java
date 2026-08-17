@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -25,9 +25,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_browser_view_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefBrowserView extends CefView {
 
@@ -36,7 +36,7 @@ public interface CefBrowserView extends CefView {
      * <p>Definition generated from views/cef_browser_view_capi.h
      * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_browser_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:76</a>
      */
     Optional<CefBrowser> getBrowser();
 
@@ -45,7 +45,7 @@ public interface CefBrowserView extends CefView {
      * <p>Definition generated from views/cef_browser_view_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_chrome_toolbar)(struct _cef_browser_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:83</a>
      */
     Optional<CefView> getChromeToolbar();
 
@@ -54,7 +54,7 @@ public interface CefBrowserView extends CefView {
      * <p>Definition generated from views/cef_browser_view_capi.h
      * <pre>void (CEF_CALLBACK* set_prefer_accelerators)(struct _cef_browser_view_t* self, int prefer_accelerators);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:94</a>
      */
     void setPreferAccelerators(boolean preferAccelerators);
 
@@ -65,7 +65,7 @@ public interface CefBrowserView extends CefView {
      *
      * @return the result, or {@code CEF_RUNTIME_STYLE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:111</a>
      */
     CefRuntimeStyle getRuntimeStyle();
     /**
@@ -73,7 +73,7 @@ public interface CefBrowserView extends CefView {
      * <p>Definition generated from views/cef_browser_view_capi.h
      * <pre>CEF_EXPORT cef_browser_view_t* cef_browser_view_create(struct _cef_client_t* client, const cef_string_t* url, const struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t* extra_info, struct _cef_request_context_t* request_context, struct _cef_browser_view_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:52</a>
      */
     static Optional<CefBrowserView> create(@Nullable CefClient client, @Nullable String url, @Nonnull CefBrowserSettings settings, @Nullable CefDictionaryValue extraInfo, @Nullable CefRequestContext requestContext, @Nullable CefBrowserViewDelegate delegate) {
       return Optional.ofNullable(NativePeer.create0(client, url, settings, extraInfo, requestContext, delegate));
@@ -84,7 +84,7 @@ public interface CefBrowserView extends CefView {
      * <p>Definition generated from views/cef_browser_view_capi.h
      * <pre>CEF_EXPORT cef_browser_view_t* cef_browser_view_get_for_browser(struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view_8h.html">views/cef_browser_view.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view_8h.html">views/cef_browser_view.h:70</a>
      */
     static Optional<CefBrowserView> getForBrowser(@Nullable CefBrowser browser) {
       return Optional.ofNullable(NativePeer.getForBrowser0(browser));

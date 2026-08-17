@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -20,9 +20,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_panel_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:49</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:49</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPanel extends CefView {
 
@@ -31,7 +31,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>cef_window_t* (CEF_CALLBACK* as_window)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:63</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:63</a>
      */
     Optional<CefWindow> asWindow();
 
@@ -40,7 +40,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>cef_fill_layout_t* (CEF_CALLBACK* set_to_fill_layout)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:69</a>
      */
     Optional<CefFillLayout> setToFillLayout();
 
@@ -49,7 +49,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>cef_box_layout_t* (CEF_CALLBACK* set_to_box_layout)(struct _cef_panel_t* self, const cef_box_layout_settings_t* settings);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:75</a>
      */
     Optional<CefBoxLayout> setToBoxLayout(@Nonnull CefBoxLayoutSettings settings);
 
@@ -58,7 +58,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>cef_layout_t* (CEF_CALLBACK* get_layout)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:82</a>
      */
     Optional<CefLayout> getLayout();
 
@@ -67,7 +67,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>void (CEF_CALLBACK* layout)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:88</a>
      */
     void layout();
 
@@ -76,7 +76,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>void (CEF_CALLBACK* add_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:95</a>
      */
     void addChildView(@Nullable CefView view);
 
@@ -87,7 +87,7 @@ public interface CefPanel extends CefView {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:101</a>
      */
     void addChildViewAt(@Nullable CefView view, int index);
 
@@ -96,7 +96,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>void (CEF_CALLBACK* reorder_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view, int index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:108</a>
      */
     void reorderChildView(@Nullable CefView view, int index);
 
@@ -105,7 +105,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>void (CEF_CALLBACK* remove_child_view)(struct _cef_panel_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:115</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:115</a>
      */
     void removeChildView(@Nullable CefView view);
 
@@ -114,7 +114,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>void (CEF_CALLBACK* remove_all_child_views)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:121</a>
      */
     void removeAllChildViews();
 
@@ -123,7 +123,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>size_t (CEF_CALLBACK* get_child_view_count)(struct _cef_panel_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:128</a>
      */
     long getChildViewCount();
 
@@ -134,7 +134,7 @@ public interface CefPanel extends CefView {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:134</a>
      */
     Optional<CefView> getChildViewAt(int index);
     /**
@@ -142,7 +142,7 @@ public interface CefPanel extends CefView {
      * <p>Definition generated from views/cef_panel_capi.h
      * <pre>CEF_EXPORT cef_panel_t* cef_panel_create(struct _cef_panel_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__panel_8h.html">views/cef_panel.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__panel_8h.html">views/cef_panel.h:57</a>
      */
     static Optional<CefPanel> create(@Nullable CefPanelDelegate delegate) {
       return Optional.ofNullable(NativePeer.create0(delegate));

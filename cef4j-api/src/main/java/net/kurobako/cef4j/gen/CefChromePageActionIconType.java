@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,11 +14,11 @@ import javax.annotation.processing.Generated;
  *   CEF_CPAIT_FIND = 4,
  *   ...
  * } cef_chrome_page_action_icon_type_t;</pre>
- * <p>Possible values: {@link Kind#BOOKMARK_STAR}, {@link Kind#CLICK_TO_CALL}, {@link Kind#COOKIE_CONTROLS}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#FIND}, {@link Kind#MEMORY_SAVER}, {@link Kind#INTENT_PICKER}, {@link Kind#LOCAL_CARD_MIGRATION}, {@link Kind#MANAGE_PASSWORDS}, {@link Kind#PAYMENTS_OFFER_NOTIFICATION}, {@link Kind#PRICE_TRACKING}, {@link Kind#PWA_INSTALL}, {@link Kind#QR_CODE_GENERATOR_DEPRECATED}, {@link Kind#READER_MODE_DEPRECATED}, {@link Kind#SAVE_AUTOFILL_ADDRESS}, {@link Kind#SAVE_CARD}, {@link Kind#SEND_TAB_TO_SELF_DEPRECATED}, {@link Kind#SHARING_HUB}, {@link Kind#SIDE_SEARCH_DEPRECATED}, {@link Kind#SMS_REMOTE_FETCHER}, {@link Kind#TRANSLATE}, {@link Kind#VIRTUAL_CARD_ENROLL}, {@link Kind#VIRTUAL_CARD_INFORMATION}, {@link Kind#ZOOM}, {@link Kind#SAVE_IBAN}, {@link Kind#MANDATORY_REAUTH}, {@link Kind#PRICE_INSIGHTS}, {@link Kind#READ_ANYTHING_DEPRECATED}, {@link Kind#PRODUCT_SPECIFICATIONS}, {@link Kind#LENS_OVERLAY}, {@link Kind#DISCOUNTS}, {@link Kind#OPTIMIZATION_GUIDE}, {@link Kind#COLLABORATION_MESSAGING}, {@link Kind#CHANGE_PASSWORD}, {@link Kind#LENS_OVERLAY_HOMEWORK}, {@link Kind#AI_MODE}, {@link Kind#READING_MODE}, {@link Kind#CONTEXTUAL_SIDE_PANEL}, {@link Kind#JS_OPTIMIZATIONS}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#BOOKMARK_STAR}, {@link Kind#CLICK_TO_CALL}, {@link Kind#COOKIE_CONTROLS}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#FIND}, {@link Kind#MEMORY_SAVER}, {@link Kind#INTENT_PICKER}, {@link Kind#LOCAL_CARD_MIGRATION}, {@link Kind#MANAGE_PASSWORDS}, {@link Kind#PAYMENTS_OFFER_NOTIFICATION}, {@link Kind#PRICE_TRACKING}, {@link Kind#PWA_INSTALL}, {@link Kind#QR_CODE_GENERATOR_DEPRECATED}, {@link Kind#READER_MODE_DEPRECATED}, {@link Kind#SAVE_AUTOFILL_ADDRESS}, {@link Kind#SAVE_CARD}, {@link Kind#SEND_TAB_TO_SELF_DEPRECATED}, {@link Kind#SHARING_HUB}, {@link Kind#SIDE_SEARCH_DEPRECATED}, {@link Kind#SMS_REMOTE_FETCHER}, {@link Kind#TRANSLATE}, {@link Kind#VIRTUAL_CARD_ENROLL}, {@link Kind#VIRTUAL_CARD_INFORMATION}, {@link Kind#ZOOM}, {@link Kind#SAVE_IBAN}, {@link Kind#MANDATORY_REAUTH}, {@link Kind#PRICE_INSIGHTS}, {@link Kind#READ_ANYTHING_DEPRECATED}, {@link Kind#PRODUCT_SPECIFICATIONS}, {@link Kind#LENS_OVERLAY}, {@link Kind#DISCOUNTS}, {@link Kind#OPTIMIZATION_GUIDE}, {@link Kind#COLLABORATION_MESSAGING}, {@link Kind#CHANGE_PASSWORD}, {@link Kind#LENS_OVERLAY_HOMEWORK}, {@link Kind#AI_MODE}, {@link Kind#READING_MODE}, {@link Kind#CONTEXTUAL_SIDE_PANEL}, {@link Kind#JS_OPTIMIZATIONS}, {@link Kind#RECORD_REPLAY}, {@link Kind#INDIGO}, {@link Kind#FEDERATION}, {@link Kind#GLIC}, {@link Kind#ANCHORED_CONTEXTUAL_CUE}, {@link Kind#WEB_AUTHN_AMBIENT_SIGNIN}, {@link Kind#AUTOFILL_PAYMENT}, {@link Kind#MULTISTEP_FILTER}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefChromePageActionIconType implements CefEnum<CefChromePageActionIconType> {
 
@@ -63,7 +63,15 @@ public final class CefChromePageActionIconType implements CefEnum<CefChromePageA
         READING_MODE(36, "36", "CEF_CPAIT_READING_MODE"),
         CONTEXTUAL_SIDE_PANEL(37, "37", "CEF_CPAIT_CONTEXTUAL_SIDE_PANEL"),
         JS_OPTIMIZATIONS(38, "38", "CEF_CPAIT_JS_OPTIMIZATIONS"),
-        NUM_VALUES(39, "39", "CEF_CPAIT_NUM_VALUES");
+        RECORD_REPLAY(39, "39", "CEF_CPAIT_RECORD_REPLAY"),
+        INDIGO(40, "40", "CEF_CPAIT_INDIGO"),
+        FEDERATION(41, "41", "CEF_CPAIT_FEDERATION"),
+        GLIC(42, "42", "CEF_CPAIT_GLIC"),
+        ANCHORED_CONTEXTUAL_CUE(43, "43", "CEF_CPAIT_ANCHORED_CONTEXTUAL_CUE"),
+        WEB_AUTHN_AMBIENT_SIGNIN(44, "44", "CEF_CPAIT_WEB_AUTHN_AMBIENT_SIGNIN"),
+        AUTOFILL_PAYMENT(45, "45", "CEF_CPAIT_AUTOFILL_PAYMENT"),
+        MULTISTEP_FILTER(46, "46", "CEF_CPAIT_MULTISTEP_FILTER"),
+        NUM_VALUES(47, "47", "CEF_CPAIT_NUM_VALUES");
 
         private static final Kind[] VALUES = Kind.values();
 

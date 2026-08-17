@@ -17,7 +17,7 @@ public interface CefWriteHandler {
      * Seek to the specified offset position. {@code whence} may be any one of SEEK_CUR, SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:158</a>
      */
     @Nullable
     default Boolean seek(long offset, int whence) { return null; }
@@ -26,7 +26,7 @@ public interface CefWriteHandler {
      * Flush the stream.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:172</a>
      */
     @Nullable
     default Boolean flush() { return null; }
@@ -35,7 +35,7 @@ public interface CefWriteHandler {
      * Return {@code true} if this handler performs work like accessing the file system which may block. Used as a hint for determining the thread to access the handler from.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:178</a>
      */
     @Nullable
     default Boolean mayBlock() { return null; }

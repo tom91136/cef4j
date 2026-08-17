@@ -17,7 +17,7 @@ public interface CefNavigationEntryVisitor {
      * Method that will be executed. Do not keep a reference to {@code entry} outside of this callback. Return {@code true} to continue visiting entries or {@code false} to stop. {@code current} is {@code true} if this entry is the currently loaded navigation entry. {@code index} is the 0-based index of this entry and {@code total} is the total number of entries.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:226</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:226</a>
      */
     @Nullable
     default Boolean visit(net.kurobako.cef4j.ipc.session.RemoteHandle entry, int current, int index, int total) { return null; }

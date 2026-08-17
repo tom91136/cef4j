@@ -103,15 +103,14 @@ public final class SessionTrace {
     private SessionTrace() {}
 
     /**
-     * The installed codec used by convenience methods. Add a codec adapter such as {@code cef4j-remote-recording-gson}
-     * or {@code cef4j-remote-recording-jackson} to the runtime class path, or call an overload that accepts a codec.
+     * The installed codec used by convenience methods. Add a codec adapter such as {@code cef4j-codecs-gson} or
+     * {@code cef4j-codecs-jackson} to the runtime class path, or call an overload that accepts a codec.
      */
     public static SessionTraceCodec defaultCodec() {
         return ServiceLoader.load(SessionTraceCodec.class)
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalStateException("No SessionTraceCodec installed; add cef4j-remote-recording-gson or "
-                                + "cef4j-remote-recording-jackson, or supply a codec"));
+                .orElseThrow(() -> new IllegalStateException("No SessionTraceCodec installed; add cef4j-codecs-gson or "
+                        + "cef4j-codecs-jackson, or supply a codec"));
     }
 
     public static SessionTraceWriter writer(@Nonnull Path file) throws IOException {

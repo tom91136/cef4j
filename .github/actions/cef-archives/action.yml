@@ -18,7 +18,7 @@ runs:
   steps:
     - id: target-cache
       name: Restore target CEF archive
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
         key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
@@ -33,7 +33,7 @@ runs:
 
     - name: Save target CEF archive
       if: steps.target-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
         key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
@@ -44,7 +44,7 @@ runs:
     - id: linux-codegen-cache
       name: Restore Linux code-generation archive
       if: inputs.platform != 'linux64'
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
         key: cef-archive-linux64-${{ inputs.version }}
@@ -59,7 +59,7 @@ runs:
 
     - name: Save Linux code-generation archive
       if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
         key: cef-archive-linux64-${{ inputs.version }}
@@ -68,7 +68,7 @@ runs:
     - id: macos-codegen-cache
       name: Restore macOS code-generation archive
       if: inputs.platform != 'macosx64'
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
         key: cef-archive-macosx64-${{ inputs.version }}
@@ -83,7 +83,7 @@ runs:
 
     - name: Save macOS code-generation archive
       if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
         key: cef-archive-macosx64-${{ inputs.version }}
@@ -92,7 +92,7 @@ runs:
     - id: windows-codegen-cache
       name: Restore Windows code-generation archive
       if: inputs.platform != 'windows64'
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
         key: cef-archive-windows64-${{ inputs.version }}
@@ -107,7 +107,7 @@ runs:
 
     - name: Save Windows code-generation archive
       if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_windows64_minimal.tar.bz2
         key: cef-archive-windows64-${{ inputs.version }}

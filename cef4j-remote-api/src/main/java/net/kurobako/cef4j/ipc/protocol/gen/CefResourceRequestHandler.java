@@ -20,7 +20,7 @@ public interface CefResourceRequestHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:78</a>
      */
     @Nullable
     default Boolean onBeforeResourceLoad(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -32,7 +32,7 @@ public interface CefResourceRequestHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:114</a>
      */
     default void onResourceRedirect(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response, String newUrl) {}
 
@@ -45,7 +45,7 @@ public interface CefResourceRequestHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:131</a>
      */
     @Nullable
     default Boolean onResourceResponse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response) { return null; }
@@ -57,7 +57,7 @@ public interface CefResourceRequestHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:168</a>
      */
     default void onResourceLoadComplete(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response, int status, long receivedContentLength) {}
 

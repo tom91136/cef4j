@@ -39,7 +39,7 @@ public final class Component {
      * Returns the ID (media source URN or URL) for this source.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<String> getId() {
         return session
@@ -51,7 +51,7 @@ public final class Component {
      * Returns the human-readable name of this component. Returns an empty string if the component is not installed.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
      */
     public CompletableFuture<String> getName() {
         return session
@@ -63,7 +63,7 @@ public final class Component {
      * Returns the version of this component as a string (e.g., "1.2.3.4"). Returns an empty string if the component is not installed.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
      */
     public CompletableFuture<String> getVersion() {
         return session
@@ -75,7 +75,7 @@ public final class Component {
      * Returns the state of this component at the time this object was created. A component is considered installed when its state is one of: {@code CEF_COMPONENT_STATE_UPDATED}, {@code CEF_COMPONENT_STATE_UP_TO_DATE}, or {@code CEF_COMPONENT_STATE_RUN}.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
      */
     public CompletableFuture<Integer> getState() {
         return session

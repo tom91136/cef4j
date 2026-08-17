@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -19,9 +19,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_scroll_view_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefScrollView extends CefView {
 
@@ -30,7 +30,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>void (CEF_CALLBACK* set_content_view)(struct _cef_scroll_view_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:58</a>
      */
     void setContentView(@Nullable CefView view);
 
@@ -39,7 +39,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_content_view)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:65</a>
      */
     Optional<CefView> getContentView();
 
@@ -48,7 +48,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_visible_content_rect)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:71</a>
      */
     CefRect getVisibleContentRect();
 
@@ -57,7 +57,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>int (CEF_CALLBACK* has_horizontal_scrollbar)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:77</a>
      */
     boolean hasHorizontalScrollbar();
 
@@ -66,7 +66,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>int (CEF_CALLBACK* get_horizontal_scrollbar_height)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:83</a>
      */
     int getHorizontalScrollbarHeight();
 
@@ -75,7 +75,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>int (CEF_CALLBACK* has_vertical_scrollbar)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:89</a>
      */
     boolean hasVerticalScrollbar();
 
@@ -84,7 +84,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>int (CEF_CALLBACK* get_vertical_scrollbar_width)(struct _cef_scroll_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:95</a>
      */
     int getVerticalScrollbarWidth();
     /**
@@ -92,7 +92,7 @@ public interface CefScrollView extends CefView {
      * <p>Definition generated from views/cef_scroll_view_capi.h
      * <pre>CEF_EXPORT cef_scroll_view_t* cef_scroll_view_create(struct _cef_view_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scroll__view_8h.html">views/cef_scroll_view.h:51</a>
      */
     static Optional<CefScrollView> create(@Nullable CefViewDelegate delegate) {
       return Optional.ofNullable(NativePeer.create0(delegate));

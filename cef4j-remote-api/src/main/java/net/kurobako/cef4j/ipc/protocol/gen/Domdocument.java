@@ -49,7 +49,7 @@ public final class Domdocument {
      * Returns the document type.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:75</a>
      */
     public CompletableFuture<Integer> getType() {
         return session
@@ -61,7 +61,7 @@ public final class Domdocument {
      * Returns the root document node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:81</a>
      */
     public CompletableFuture<Domnode> getDocument() {
         return session
@@ -74,7 +74,7 @@ public final class Domdocument {
      * Returns the BODY node of an HTML document.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:87</a>
      */
     public CompletableFuture<Domnode> getBody() {
         return session
@@ -87,7 +87,7 @@ public final class Domdocument {
      * Returns the HEAD node of an HTML document.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:93</a>
      */
     public CompletableFuture<Domnode> getHead() {
         return session
@@ -100,7 +100,7 @@ public final class Domdocument {
      * Returns the title of an HTML document.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:99</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:99</a>
      */
     public CompletableFuture<String> getTitle() {
         return session
@@ -112,7 +112,7 @@ public final class Domdocument {
      * Returns the document element with the specified ID value.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:105</a>
      */
     public CompletableFuture<Domnode> getElementById(@Nonnull String id) {
         return session
@@ -125,7 +125,7 @@ public final class Domdocument {
      * Returns the node that currently has keyboard focus.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:111</a>
      */
     public CompletableFuture<Domnode> getFocusedNode() {
         return session
@@ -138,7 +138,7 @@ public final class Domdocument {
      * Returns {@code true} if a portion of the document is selected.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:117</a>
      */
     public CompletableFuture<Integer> hasSelection() {
         return session
@@ -150,7 +150,7 @@ public final class Domdocument {
      * Returns the selection offset within the start node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:123</a>
      */
     public CompletableFuture<Integer> getSelectionStartOffset() {
         return session
@@ -162,7 +162,7 @@ public final class Domdocument {
      * Returns the selection offset within the end node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:129</a>
      */
     public CompletableFuture<Integer> getSelectionEndOffset() {
         return session
@@ -174,7 +174,7 @@ public final class Domdocument {
      * Returns the contents of this selection as markup.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:135</a>
      */
     public CompletableFuture<String> getSelectionAsMarkup() {
         return session
@@ -186,7 +186,7 @@ public final class Domdocument {
      * Returns the contents of this selection as text.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:141</a>
      */
     public CompletableFuture<String> getSelectionAsText() {
         return session
@@ -198,7 +198,7 @@ public final class Domdocument {
      * Returns the base URL for the document.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:147</a>
      */
     public CompletableFuture<String> getBaseUrl() {
         return session
@@ -210,7 +210,7 @@ public final class Domdocument {
      * Returns a complete URL based on the document base URL and the specified partial URL.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:153</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:153</a>
      */
     public CompletableFuture<String> getCompleteUrl(@Nonnull String partialURL) {
         return session

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import javax.annotation.Nonnull;
  *   ...
  * } cef_permission_prompt_callback_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:69</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:69</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPermissionPromptCallback extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefPermissionPromptCallback extends CefLibraryObject {
      * <p>Definition generated from cef_permission_handler_capi.h
      * <pre>void (CEF_CALLBACK* cont)(struct _cef_permission_prompt_callback_t* self, cef_permission_request_result_t result);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
      */
     void cont(@Nonnull CefPermissionRequestResult result);
     final class NativePeer implements CefPermissionPromptCallback, AutoCloseable {

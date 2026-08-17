@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_cookie_manager_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:50</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:50</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefCookieManager extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * <p>Definition generated from cef_cookie_capi.h
      * <pre>int (CEF_CALLBACK* visit_all_cookies)(struct _cef_cookie_manager_t* self, struct _cef_cookie_visitor_t* visitor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:69</a>
      */
     boolean visitAllCookies(@Nullable CefCookieVisitor visitor);
 
@@ -34,7 +34,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * <p>Definition generated from cef_cookie_capi.h
      * <pre>int (CEF_CALLBACK* visit_url_cookies)(struct _cef_cookie_manager_t* self, const cef_string_t* url, int includeHttpOnly, struct _cef_cookie_visitor_t* visitor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:77</a>
      */
     boolean visitUrlCookies(@Nullable String url, boolean includeHttpOnly, @Nullable CefCookieVisitor visitor);
 
@@ -45,7 +45,7 @@ public interface CefCookieManager extends CefLibraryObject {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:89</a>
      */
     boolean setCookie(@Nullable String url, @Nonnull CefCookie cookie, @Nullable CefSetCookieCallback callback);
 
@@ -58,7 +58,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * @param cookieName may be null
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:103</a>
      */
     boolean deleteCookies(@Nullable String url, @Nullable String cookieName, @Nullable CefDeleteCookiesCallback callback);
 
@@ -69,7 +69,7 @@ public interface CefCookieManager extends CefLibraryObject {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:120</a>
      */
     boolean flushStore(@Nullable CefCompletionCallback callback);
     /**
@@ -77,7 +77,7 @@ public interface CefCookieManager extends CefLibraryObject {
      * <p>Definition generated from cef_cookie_capi.h
      * <pre>CEF_EXPORT cef_cookie_manager_t* cef_cookie_manager_get_global_manager(struct _cef_completion_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:57</a>
      */
     static Optional<CefCookieManager> getGlobalManager(@Nullable CefCompletionCallback callback) {
       return Optional.ofNullable(NativePeer.getGlobalManager0(callback));

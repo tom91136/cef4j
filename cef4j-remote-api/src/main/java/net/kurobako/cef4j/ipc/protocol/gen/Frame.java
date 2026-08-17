@@ -39,7 +39,7 @@ public final class Frame {
      * True if this object is currently attached to a valid frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:62</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class Frame {
      * Execute undo in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:68</a>
      */
     public CompletableFuture<Void> undo() {
         return session
@@ -63,7 +63,7 @@ public final class Frame {
      * Execute redo in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:74</a>
      */
     public CompletableFuture<Void> redo() {
         return session
@@ -75,7 +75,7 @@ public final class Frame {
      * Execute cut in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:80</a>
      */
     public CompletableFuture<Void> cut() {
         return session
@@ -87,7 +87,7 @@ public final class Frame {
      * Execute copy in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:86</a>
      */
     public CompletableFuture<Void> copy() {
         return session
@@ -99,7 +99,7 @@ public final class Frame {
      * Execute paste in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:92</a>
      */
     public CompletableFuture<Void> paste() {
         return session
@@ -111,7 +111,7 @@ public final class Frame {
      * Execute paste and match style in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:98</a>
      */
     public CompletableFuture<Void> pasteAndMatchStyle() {
         return session
@@ -123,7 +123,7 @@ public final class Frame {
      * Execute delete in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:104</a>
      */
     public CompletableFuture<Void> del() {
         return session
@@ -135,7 +135,7 @@ public final class Frame {
      * Execute select all in this frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     public CompletableFuture<Void> selectAll() {
         return session
@@ -147,7 +147,7 @@ public final class Frame {
      * Save this frame's HTML source to a temporary file and open it in the default text viewing application. This method can only be called from the browser process.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:116</a>
      */
     public CompletableFuture<Void> viewSource() {
         return session
@@ -159,7 +159,7 @@ public final class Frame {
      * Retrieve this frame's HTML source as a string sent to the specified visitor.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:124</a>
      */
     public CompletableFuture<Void> getSource(@Nonnull RemoteHandle visitor) {
         return session
@@ -171,7 +171,7 @@ public final class Frame {
      * Retrieve this frame's display text as a string sent to the specified visitor.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     public CompletableFuture<Void> getText(@Nonnull RemoteHandle visitor) {
         return session
@@ -185,7 +185,7 @@ public final class Frame {
      * <b>WARNING:</b> This method will fail with "bad IPC message" reason INVALID_INITIATOR_ORIGIN (213) unless you first navigate to the request origin using some other mechanism (LoadURL, link click, etc).
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:138</a>
      */
     public CompletableFuture<Void> loadRequest(@Nonnull RemoteHandle request) {
         return session
@@ -197,7 +197,7 @@ public final class Frame {
      * Load the specified {@code url}.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:148</a>
      */
     public CompletableFuture<Void> loadUrl(@Nonnull String url) {
         return session
@@ -211,7 +211,7 @@ public final class Frame {
      *
      * @param scriptUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:154</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:154</a>
      */
     public CompletableFuture<Void> executeJavaScript(@Nonnull String code, @Nonnull String scriptUrl, int startLine) {
         return session
@@ -223,7 +223,7 @@ public final class Frame {
      * Returns {@code true} if this is the main (top-level) frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:166</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:166</a>
      */
     public CompletableFuture<Integer> isMain() {
         return session
@@ -235,7 +235,7 @@ public final class Frame {
      * Returns {@code true} if this is the focused frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:172</a>
      */
     public CompletableFuture<Integer> isFocused() {
         return session
@@ -247,7 +247,7 @@ public final class Frame {
      * Returns the name for this frame. If the frame has an assigned name (for example, set via the iframe "name" attribute) then that value will be returned. Otherwise a unique name will be constructed based on the frame parent hierarchy. The main (top-level) frame will always have an empty name value.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:178</a>
      */
     public CompletableFuture<String> getName() {
         return session
@@ -259,7 +259,7 @@ public final class Frame {
      * Returns the globally unique identifier for this frame or empty if the underlying frame does not yet exist.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:188</a>
      */
     public CompletableFuture<String> getIdentifier() {
         return session
@@ -271,7 +271,7 @@ public final class Frame {
      * Returns the parent of this frame or {@code null} if this is the main (top-level) frame.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:195</a>
      */
     public CompletableFuture<Frame> getParent() {
         return session
@@ -284,7 +284,7 @@ public final class Frame {
      * Get the resolved URL after redirects or changed as a result of HSTS.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
         return session
@@ -296,7 +296,7 @@ public final class Frame {
      * Returns the browser that this frame belongs to.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:208</a>
      */
     public CompletableFuture<Browser> getBrowser() {
         return session
@@ -309,7 +309,7 @@ public final class Frame {
      * Get the V8 context associated with the frame. This method can only be called from the render process.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:214</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:214</a>
      */
     public CompletableFuture<V8Context> getV8Context() {
         return session
@@ -322,7 +322,7 @@ public final class Frame {
      * Visit the DOM document. This method can only be called from the render process.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:221</a>
      */
     public CompletableFuture<Void> visitDom(@Nonnull RemoteHandle visitor) {
         return session
@@ -344,7 +344,7 @@ public final class Frame {
      * The {@code request} object will be marked as read-only after calling this method.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:228</a>
      */
     public CompletableFuture<Urlrequest> createUrlrequest(@Nonnull RemoteHandle request, @Nonnull RemoteHandle client) {
         return session
@@ -357,7 +357,7 @@ public final class Frame {
      * Send a message to the specified {@code target_process}. Ownership of the message contents will be transferred and the {@code message} reference will be invalidated. Message delivery is not guaranteed in all cases (for example, if the browser is closing, navigating, or if the target process crashes). Send an ACK message back from the target process if confirmation is required.
      * <p>Definition generated from cef_frame.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:248</a>
      */
     public CompletableFuture<Void> sendProcessMessage(int targetProcess, @Nonnull RemoteHandle message) {
         return session

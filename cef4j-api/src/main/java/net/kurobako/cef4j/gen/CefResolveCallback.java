@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_resolve_callback_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:53</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:53</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResolveCallback extends CefClientHandler {
 
@@ -27,7 +27,7 @@ public interface CefResolveCallback extends CefClientHandler {
      *
      * @param resolvedIps may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:59</a>
      */
     default void onResolveCompleted(@Nonnull CefErrorCode result, @Nullable List<String> resolvedIps) {
     }

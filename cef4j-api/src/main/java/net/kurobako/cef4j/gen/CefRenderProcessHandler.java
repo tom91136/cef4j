@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_render_process_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:50</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:50</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefRenderProcessHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_web_kit_initialized)(struct _cef_render_process_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:60</a>
      */
     default void onWebKitInitialized() {
     }
@@ -37,7 +37,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      *
      * @param extraInfo may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
      */
     default void onBrowserCreated(@Nullable CefBrowser browser, @Nullable CefDictionaryValue extraInfo) {
     }
@@ -47,7 +47,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_browser_destroyed)(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
      */
     default void onBrowserDestroyed(@Nullable CefBrowser browser) {
     }
@@ -57,7 +57,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>cef_load_handler_t* (CEF_CALLBACK* get_load_handler)(struct _cef_render_process_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:84</a>
      */
     default Optional<CefLoadHandler> getLoadHandler() {
         return Optional.empty();
@@ -68,7 +68,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_context_created)(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_v8_context_t* context);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:90</a>
      */
     default void onContextCreated(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
     }
@@ -78,7 +78,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_context_released)(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_v8_context_t* context);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:102</a>
      */
     default void onContextReleased(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
     }
@@ -88,7 +88,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_uncaught_exception)(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_v8_context_t* context, struct _cef_v8_exception_t* exception, struct _cef_v8_stack_trace_t* stackTrace);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:111</a>
      */
     default void onUncaughtException(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context, @Nullable CefV8Exception exception, @Nullable CefV8StackTrace stackTrace) {
     }
@@ -101,7 +101,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * @param frame may be null
      * @param node may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:123</a>
      */
     default void onFocusedNodeChanged(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefDomNode node) {
     }
@@ -111,7 +111,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_process_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_process_message_received)(struct _cef_render_process_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, cef_process_id_t source_process, struct _cef_process_message_t* message);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
      */
     default boolean onProcessMessageReceived(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefProcessId sourceProcess, @Nullable CefProcessMessage message) {
         return false;

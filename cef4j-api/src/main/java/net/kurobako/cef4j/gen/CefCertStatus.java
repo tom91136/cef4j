@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_cert_status_t;</pre>
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#COMMON_NAME_INVALID}, {@link Kind#DATE_INVALID}, {@link Kind#AUTHORITY_INVALID}, {@link Kind#NO_REVOCATION_MECHANISM}, {@link Kind#UNABLE_TO_CHECK_REVOCATION}, {@link Kind#REVOKED}, {@link Kind#INVALID}, {@link Kind#WEAK_SIGNATURE_ALGORITHM}, {@link Kind#NON_UNIQUE_NAME}, {@link Kind#WEAK_KEY}, {@link Kind#PINNED_KEY_MISSING}, {@link Kind#NAME_CONSTRAINT_VIOLATION}, {@link Kind#VALIDITY_TOO_LONG}, {@link Kind#IS_EV}, {@link Kind#REV_CHECKING_ENABLED}, {@link Kind#SHA1_SIGNATURE_PRESENT}, {@link Kind#CT_COMPLIANCE_FAILED}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefCertStatus implements CefEnum<CefCertStatus> {
 

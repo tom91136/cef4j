@@ -39,7 +39,7 @@ public final class MediaAccessCallback {
      * Call to allow or deny media access. If this callback was initiated in response to a getUserMedia (indicated by {@code CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE} and/or {@code CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE} being set) then {@code allowed_permissions} must match {@code required_permissions} passed to OnRequestMediaAccessPermission.
      * <p>Definition generated from cef_permission_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(int allowedPermissions) {
         return session
@@ -51,7 +51,7 @@ public final class MediaAccessCallback {
      * Cancel the media access request.
      * <p>Definition generated from cef_permission_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:62</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

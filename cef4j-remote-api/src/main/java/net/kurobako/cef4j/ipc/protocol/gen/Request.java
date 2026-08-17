@@ -39,7 +39,7 @@ public final class Request {
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:67</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:67</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -51,7 +51,7 @@ public final class Request {
      * Get the resolved URL after redirects or changed as a result of HSTS.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
         return session
@@ -65,7 +65,7 @@ public final class Request {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:161</a>
      */
     public CompletableFuture<Void> setUrl(@Nonnull String url) {
         return session
@@ -77,7 +77,7 @@ public final class Request {
      * Get the request method type. The value will default to POST if post data is provided and GET otherwise.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:85</a>
      */
     public CompletableFuture<String> getMethod() {
         return session
@@ -89,7 +89,7 @@ public final class Request {
      * Set the request method type.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:92</a>
      */
     public CompletableFuture<Void> setMethod(@Nonnull String method) {
         return session
@@ -103,7 +103,7 @@ public final class Request {
      *
      * @param referrerUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:98</a>
      */
     public CompletableFuture<Void> setReferrer(@Nonnull String referrerUrl, int policy) {
         return session
@@ -115,7 +115,7 @@ public final class Request {
      * Get the referrer URL.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:107</a>
      */
     public CompletableFuture<String> getReferrerUrl() {
         return session
@@ -127,7 +127,7 @@ public final class Request {
      * Get the referrer policy.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:113</a>
      */
     public CompletableFuture<Integer> getReferrerPolicy() {
         return session
@@ -139,7 +139,7 @@ public final class Request {
      * Get the post data.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:119</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:119</a>
      */
     public CompletableFuture<PostData> getPostData() {
         return session
@@ -152,7 +152,7 @@ public final class Request {
      * Set the post data.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:125</a>
      */
     public CompletableFuture<Void> setPostData(@Nonnull RemoteHandle postData) {
         return session
@@ -164,7 +164,7 @@ public final class Request {
      * Returns the first header value for {@code name} or an empty string if not found. Will not return the Referer value if any. Use GetHeaderMap instead if {@code name} might have multiple values.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:144</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:144</a>
      */
     public CompletableFuture<String> getHeaderByName(@Nonnull String name) {
         return session
@@ -178,7 +178,7 @@ public final class Request {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:152</a>
      */
     public CompletableFuture<Void> setHeaderByName(@Nonnull String name, @Nonnull String value, int overwrite) {
         return session
@@ -190,7 +190,7 @@ public final class Request {
      * Get the flags used in combination with CefURLRequest. See cef_urlrequest_flags_t for supported values.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:172</a>
      */
     public CompletableFuture<Integer> getFlags() {
         return session
@@ -202,7 +202,7 @@ public final class Request {
      * Set the flags used in combination with CefURLRequest.  See cef_urlrequest_flags_t for supported values.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:179</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:179</a>
      */
     public CompletableFuture<Void> setFlags(int flags) {
         return session
@@ -214,7 +214,7 @@ public final class Request {
      * Get the URL to the first party for cookies used in combination with CefURLRequest.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:186</a>
      */
     public CompletableFuture<String> getFirstPartyForCookies() {
         return session
@@ -228,7 +228,7 @@ public final class Request {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:193</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:193</a>
      */
     public CompletableFuture<Void> setFirstPartyForCookies(@Nonnull String url) {
         return session
@@ -240,7 +240,7 @@ public final class Request {
      * Get the resource type for this request. Only available in the browser process.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:200</a>
      */
     public CompletableFuture<Integer> getResourceType() {
         return session
@@ -252,7 +252,7 @@ public final class Request {
      * Get the transition type for this request. Only available in the browser process and only applies to requests that represent a main frame or sub-frame navigation.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:207</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:207</a>
      */
     public CompletableFuture<Integer> getTransitionType() {
         return session
@@ -264,7 +264,7 @@ public final class Request {
      * Returns the globally unique identifier for this request or 0 if not specified. Can be used by CefResourceRequestHandler implementations in the browser process to track a single request across multiple callbacks.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:215</a>
      */
     public CompletableFuture<Long> getIdentifier() {
         return session

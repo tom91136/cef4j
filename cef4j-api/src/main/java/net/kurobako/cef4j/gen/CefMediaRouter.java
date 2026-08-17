@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_media_router_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:54</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:54</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMediaRouter extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>cef_registration_t* (CEF_CALLBACK* add_observer)(struct _cef_media_router_t* self, struct _cef_media_observer_t* observer);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:72</a>
      */
     Optional<CefRegistration> addObserver(@Nullable CefMediaObserver observer);
 
@@ -33,7 +33,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>cef_media_source_t* (CEF_CALLBACK* get_source)(struct _cef_media_router_t* self, const cef_string_t* urn);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:80</a>
      */
     Optional<CefMediaSource> getSource(@Nullable String urn);
 
@@ -42,7 +42,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* notify_current_sinks)(struct _cef_media_router_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:88</a>
      */
     void notifyCurrentSinks();
 
@@ -51,7 +51,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* create_route)(struct _cef_media_router_t* self, struct _cef_media_source_t* source, struct _cef_media_sink_t* sink, struct _cef_media_route_create_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:95</a>
      */
     void createRoute(@Nullable CefMediaSource source, @Nullable CefMediaSink sink, @Nullable CefMediaRouteCreateCallback callback);
 
@@ -60,7 +60,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* notify_current_routes)(struct _cef_media_router_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:108</a>
      */
     void notifyCurrentRoutes();
     /**
@@ -68,7 +68,7 @@ public interface CefMediaRouter extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>CEF_EXPORT cef_media_router_t* cef_media_router_get_global(struct _cef_completion_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:62</a>
      */
     static Optional<CefMediaRouter> getGlobal(@Nullable CefCompletionCallback callback) {
       return Optional.ofNullable(NativePeer.getGlobal0(callback));

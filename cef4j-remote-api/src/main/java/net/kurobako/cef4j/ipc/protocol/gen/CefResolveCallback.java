@@ -19,7 +19,7 @@ public interface CefResolveCallback {
      *
      * @param resolvedIps may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:59</a>
      */
     default void onResolveCompleted(int result, String[] resolvedIps) {}
 

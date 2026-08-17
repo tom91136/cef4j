@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_v8_context_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:119</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:119</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8Context extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:147</a>
      */
     Optional<CefTaskRunner> getTaskRunner();
 
@@ -34,7 +34,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:155</a>
      */
     boolean isValid();
 
@@ -43,7 +43,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:163</a>
      */
     Optional<CefBrowser> getBrowser();
 
@@ -52,7 +52,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_frame_t* (CEF_CALLBACK* get_frame)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:170</a>
      */
     Optional<CefFrame> getFrame();
 
@@ -61,7 +61,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_v8_value_t* (CEF_CALLBACK* get_global)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:177</a>
      */
     Optional<CefV8Value> getGlobal();
 
@@ -70,7 +70,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* enter)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:184</a>
      */
     boolean enter();
 
@@ -79,7 +79,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* exit)(struct _cef_v8_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:194</a>
      */
     boolean exit();
 
@@ -88,7 +88,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_v8_context_t* self, struct _cef_v8_context_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:201</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:201</a>
      */
     boolean isSame(@Nullable CefV8Context that);
 
@@ -99,7 +99,7 @@ public interface CefV8Context extends CefLibraryObject {
      *
      * @param scriptUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:208</a>
      */
     boolean eval(@Nullable String code, @Nullable String scriptUrl, int startLine, @Nullable AtomicReference<CefV8Value> retval, @Nullable AtomicReference<CefV8Exception> exception);
     /**
@@ -107,7 +107,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>CEF_EXPORT cef_v8_context_t* cef_v8_context_get_current_context(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:129</a>
      */
     static Optional<CefV8Context> getCurrentContext() {
       return Optional.ofNullable(NativePeer.getCurrentContext0());
@@ -118,7 +118,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>CEF_EXPORT cef_v8_context_t* cef_v8_context_get_entered_context(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:135</a>
      */
     static Optional<CefV8Context> getEnteredContext() {
       return Optional.ofNullable(NativePeer.getEnteredContext0());
@@ -129,7 +129,7 @@ public interface CefV8Context extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>CEF_EXPORT int cef_v8_context_in_context(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:141</a>
      */
     static int inContext() {
       return NativePeer.inContext0();

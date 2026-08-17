@@ -22,7 +22,7 @@ import net.kurobako.cef4j.codegen.Param
   * IDs land in {@code [AstIdBase, Int.MaxValue)} via Murmur3 of the generated class name — deterministic across CEF
   * versions while staying clear of the hand-written `[0, AstIdBase)` range.
   *
-  * Against CEF 146 this currently yields ~975 unique specs after dedupe.
+  * Against the current frontier this yields roughly 1,000 unique specs after dedupe.
   */
 object SpecDeriver {
 

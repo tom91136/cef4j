@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_view_delegate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefViewDelegate extends CefClientHandler {
 
@@ -27,7 +27,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_preferred_size)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:54</a>
      */
     default @Nullable CefSize getPreferredSize(@Nullable CefView view) {
         return null;
@@ -38,7 +38,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_minimum_size)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:63</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:63</a>
      */
     default @Nullable CefSize getMinimumSize(@Nullable CefView view) {
         return null;
@@ -49,7 +49,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_maximum_size)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:69</a>
      */
     default @Nullable CefSize getMaximumSize(@Nullable CefView view) {
         return null;
@@ -60,7 +60,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* get_height_for_width)(struct _cef_view_delegate_t* self, struct _cef_view_t* view, int width);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:75</a>
      */
     default int getHeightForWidth(@Nullable CefView view, int width) {
         return 0;
@@ -71,7 +71,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_parent_view_changed)(struct _cef_view_delegate_t* self, struct _cef_view_t* view, int added, struct _cef_view_t* parent);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:86</a>
      */
     default void onParentViewChanged(@Nullable CefView view, boolean added, @Nullable CefView parent) {
     }
@@ -81,7 +81,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_child_view_changed)(struct _cef_view_delegate_t* self, struct _cef_view_t* view, int added, struct _cef_view_t* child);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:98</a>
      */
     default void onChildViewChanged(@Nullable CefView view, boolean added, @Nullable CefView child) {
     }
@@ -91,7 +91,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_changed)(struct _cef_view_delegate_t* self, struct _cef_view_t* view, int added);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:110</a>
      */
     default void onWindowChanged(@Nullable CefView view, boolean added) {
     }
@@ -101,7 +101,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_layout_changed)(struct _cef_view_delegate_t* self, struct _cef_view_t* view, const cef_rect_t* new_bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:116</a>
      */
     default void onLayoutChanged(@Nullable CefView view, @Nonnull CefRect newBounds) {
     }
@@ -111,7 +111,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_focus)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:123</a>
      */
     default void onFocus(@Nullable CefView view) {
     }
@@ -121,7 +121,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_blur)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:129</a>
      */
     default void onBlur(@Nullable CefView view) {
     }
@@ -137,7 +137,7 @@ public interface CefViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_theme_changed)(struct _cef_view_delegate_t* self, struct _cef_view_t* view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:135</a>
      */
     default void onThemeChanged(@Nullable CefView view) {
     }

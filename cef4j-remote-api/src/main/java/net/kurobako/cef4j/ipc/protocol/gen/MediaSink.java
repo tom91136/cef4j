@@ -39,7 +39,7 @@ public final class MediaSink {
      * Returns the ID for this sink.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:231</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:231</a>
      */
     public CompletableFuture<String> getId() {
         return session
@@ -51,7 +51,7 @@ public final class MediaSink {
      * Returns the name of this sink.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:237</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:237</a>
      */
     public CompletableFuture<String> getName() {
         return session
@@ -63,7 +63,7 @@ public final class MediaSink {
      * Returns the icon type for this sink.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:243</a>
      */
     public CompletableFuture<Integer> getIconType() {
         return session
@@ -75,7 +75,7 @@ public final class MediaSink {
      * Asynchronously retrieves device info.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:249</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:249</a>
      */
     public CompletableFuture<Void> getDeviceInfo(@Nonnull RemoteHandle callback) {
         return session
@@ -87,7 +87,7 @@ public final class MediaSink {
      * Returns {@code true} if this sink accepts content via Cast.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:256</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:256</a>
      */
     public CompletableFuture<Integer> isCastSink() {
         return session
@@ -99,7 +99,7 @@ public final class MediaSink {
      * Returns {@code true} if this sink accepts content via DIAL.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:262</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:262</a>
      */
     public CompletableFuture<Integer> isDialSink() {
         return session
@@ -111,7 +111,7 @@ public final class MediaSink {
      * Returns {@code true} if this sink is compatible with {@code source}.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:268</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:268</a>
      */
     public CompletableFuture<Integer> isCompatibleWith(@Nonnull RemoteHandle source) {
         return session

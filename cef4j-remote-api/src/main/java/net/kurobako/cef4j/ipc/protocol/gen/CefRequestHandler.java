@@ -17,7 +17,7 @@ public interface CefRequestHandler {
      * Called on the UI thread before browser navigation. Return {@code true} to cancel the navigation or {@code false} to allow the navigation to proceed. The {@code request} object cannot be modified in this callback. {@code CefLoadHandler.onLoadingStateChange()} will be called twice in all cases. If the navigation is allowed {@code CefLoadHandler.onLoadStart()} and {@code CefLoadHandler.onLoadEnd()} will be called. If the navigation is canceled {@code CefLoadHandler.onLoadError()} will be called with an {@code errorCode} value of {@code ERR_ABORTED}. The {@code user_gesture} value will be {@code true} if the browser navigated via explicit user gesture (e.g. clicking a link) or {@code false} if it navigated automatically (e.g. via the DomContentLoaded event).
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
      */
     @Nullable
     default Boolean onBeforeBrowse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, int userGesture, int isRedirect) { return null; }
@@ -26,7 +26,7 @@ public interface CefRequestHandler {
      * Called on the UI thread before OnBeforeBrowse in certain limited cases where navigating a new or different browser might be desirable. This includes user-initiated navigation that might open in a special way (e.g. links clicked via middle-click or ctrl + left-click) and certain types of cross-origin navigation initiated from the renderer process (e.g. navigating the top-level frame to/from a file URL). The {@code browser} and {@code frame} values represent the source of the navigation. The {@code target_disposition} value indicates where the user intended to navigate the browser based on standard Chromium behaviors (e.g. current tab, new tab, etc). The {@code user_gesture} value will be {@code true} if the browser navigated via explicit user gesture (e.g. clicking a link) or {@code false} if it navigated automatically (e.g. via the DomContentLoaded event). Return {@code true} to cancel the navigation or {@code false} to allow the navigation to proceed in the source browser's top-level frame.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
      */
     @Nullable
     default Boolean onOpenUrlfromTab(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, String targetUrl, int targetDisposition, int userGesture) { return null; }
@@ -38,7 +38,7 @@ public interface CefRequestHandler {
      * @param realm may be null
      * @param scheme may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
      */
     @Nullable
     default Boolean getAuthCredentials(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String originUrl, int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -47,7 +47,7 @@ public interface CefRequestHandler {
      * Called on the UI thread to handle requests for URLs with an invalid SSL certificate. Return {@code true} and call CefCallback methods either in this method or at a later time to continue or cancel the request. Return {@code false} to cancel the request immediately. If cef_settings_t.ignore_certificate_errors is set all invalid certificates will be accepted without calling this method.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
      */
     @Nullable
     default Boolean onCertificateError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int certError, String requestUrl, net.kurobako.cef4j.ipc.session.RemoteHandle sslInfo, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -56,7 +56,7 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the render view associated with {@code browser} is ready to receive/handle IPC messages in the render process.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:220</a>
      */
     default void onRenderViewReady(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -64,7 +64,7 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the render process is unresponsive as indicated by a lack of input event processing for at least 15 seconds. Return {@code false} for the default behavior which is to continue waiting with Alloy style or display of the "Page unresponsive" dialog with Chrome style. Return {@code true} and don't execute the callback to continue waiting without display of the Chrome style dialog. Return {@code true} and call {@code CefUnresponsiveProcessCallback.cefWait()} either in this method or at a later time to reset the wait timer. In cases where you continue waiting there may be another call to this method if the process remains unresponsive. Return {@code true} and call {@code CefUnresponsiveProcessCallback.terminate()} either in this method or at a later time to terminate the unresponsive process, resulting in a call to OnRenderProcessTerminated. OnRenderProcessResponsive will be called if the process becomes responsive after this method is called. This functionality depends on the hang monitor which can be disabled by passing the `--disable-hang-monitor` command-line flag.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
      */
     @Nullable
     default Boolean onRenderProcessUnresponsive(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -73,7 +73,7 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the render process becomes responsive after previously being unresponsive. See documentation on OnRenderProcessUnresponsive.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:253</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:253</a>
      */
     default void onRenderProcessResponsive(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -81,7 +81,7 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the render process terminates unexpectedly. {@code status} indicates how the process terminated. {@code error_code} and {@code error_string} represent the error that would be displayed in Chrome's "Aw, Snap!" view. Possible {@code error_code} values include cef_resultcode_t non-normal exit values and platform-specific crash values (for example, a Posix signal or Windows hardware exception).
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
      */
     default void onRenderProcessTerminated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int status, int errorCode, String errorString) {}
 
@@ -89,7 +89,7 @@ public interface CefRequestHandler {
      * Called on the browser process UI thread when the window.document object of the main frame has been created.
      * <p>Definition generated from cef_request_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:275</a>
      */
     default void onDocumentAvailableInMainFrame(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

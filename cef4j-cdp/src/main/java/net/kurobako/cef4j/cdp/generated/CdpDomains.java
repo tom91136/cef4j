@@ -6,6 +6,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 @SuppressWarnings("deprecation")
 public final class CdpDomains {
     private final Accessibility.Client accessibility;
+    private final Ads.Client ads;
     private final Animation.Client animation;
     private final Audits.Client audits;
     private final Autofill.Client autofill;
@@ -15,6 +16,7 @@ public final class CdpDomains {
     private final CSS.Client cSS;
     private final CacheStorage.Client cacheStorage;
     private final Cast.Client cast;
+    private final CrashReportContext.Client crashReportContext;
     private final DOM.Client dOM;
     private final DOMDebugger.Client dOMDebugger;
     private final DOMSnapshot.Client dOMSnapshot;
@@ -53,6 +55,7 @@ public final class CdpDomains {
     private final Tracing.Client tracing;
     private final WebAudio.Client webAudio;
     private final WebAuthn.Client webAuthn;
+    private final WebMCP.Client webMCP;
     private final Console.Client console;
     private final Debugger.Client debugger;
     private final HeapProfiler.Client heapProfiler;
@@ -61,6 +64,7 @@ public final class CdpDomains {
     private final Schema.Client schema;
     public CdpDomains(CdpClient client) {
         accessibility = new Accessibility.Client(client);
+        ads = new Ads.Client(client);
         animation = new Animation.Client(client);
         audits = new Audits.Client(client);
         autofill = new Autofill.Client(client);
@@ -70,6 +74,7 @@ public final class CdpDomains {
         cSS = new CSS.Client(client);
         cacheStorage = new CacheStorage.Client(client);
         cast = new Cast.Client(client);
+        crashReportContext = new CrashReportContext.Client(client);
         dOM = new DOM.Client(client);
         dOMDebugger = new DOMDebugger.Client(client);
         dOMSnapshot = new DOMSnapshot.Client(client);
@@ -108,6 +113,7 @@ public final class CdpDomains {
         tracing = new Tracing.Client(client);
         webAudio = new WebAudio.Client(client);
         webAuthn = new WebAuthn.Client(client);
+        webMCP = new WebMCP.Client(client);
         console = new Console.Client(client);
         debugger = new Debugger.Client(client);
         heapProfiler = new HeapProfiler.Client(client);
@@ -116,6 +122,7 @@ public final class CdpDomains {
         schema = new Schema.Client(client);
     }
     public Accessibility.Client accessibility() { return accessibility; }
+    public Ads.Client ads() { return ads; }
     public Animation.Client animation() { return animation; }
     public Audits.Client audits() { return audits; }
     public Autofill.Client autofill() { return autofill; }
@@ -125,6 +132,7 @@ public final class CdpDomains {
     public CSS.Client cSS() { return cSS; }
     public CacheStorage.Client cacheStorage() { return cacheStorage; }
     public Cast.Client cast() { return cast; }
+    public CrashReportContext.Client crashReportContext() { return crashReportContext; }
     public DOM.Client dOM() { return dOM; }
     public DOMDebugger.Client dOMDebugger() { return dOMDebugger; }
     public DOMSnapshot.Client dOMSnapshot() { return dOMSnapshot; }
@@ -163,6 +171,7 @@ public final class CdpDomains {
     public Tracing.Client tracing() { return tracing; }
     public WebAudio.Client webAudio() { return webAudio; }
     public WebAuthn.Client webAuthn() { return webAuthn; }
+    public WebMCP.Client webMCP() { return webMCP; }
     public Console.Client console() { return console; }
     public Debugger.Client debugger() { return debugger; }
     public HeapProfiler.Client heapProfiler() { return heapProfiler; }

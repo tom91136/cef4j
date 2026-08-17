@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_sslinfo_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefSslInfo extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefSslInfo extends CefLibraryObject {
      *
      * @return the result, or {@code CERT_STATUS_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
      */
     CefCertStatus getCertStatus();
 
@@ -34,7 +34,7 @@ public interface CefSslInfo extends CefLibraryObject {
      * <p>Definition generated from cef_ssl_info_capi.h
      * <pre>cef_x509_certificate_t* (CEF_CALLBACK* get_x509_certificate)(struct _cef_sslinfo_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
      */
     Optional<CefX509Certificate> getX509Certificate();
     final class NativePeer implements CefSslInfo, AutoCloseable {

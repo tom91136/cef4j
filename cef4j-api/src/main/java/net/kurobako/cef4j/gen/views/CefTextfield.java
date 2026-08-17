@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -22,9 +22,9 @@ import net.kurobako.cef4j.gen.CefTextStyle;
  *   ...
  * } cef_textfield_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefTextfield extends CefView {
 
@@ -33,7 +33,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_password_input)(struct _cef_textfield_t* self, int password_input);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:60</a>
      */
     void setPasswordInput(boolean passwordInput);
 
@@ -42,7 +42,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>int (CEF_CALLBACK* is_password_input)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:66</a>
      */
     boolean isPasswordInput();
 
@@ -51,7 +51,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_read_only)(struct _cef_textfield_t* self, int read_only);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:72</a>
      */
     void setReadOnly(boolean readOnly);
 
@@ -60,7 +60,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:78</a>
      */
     boolean isReadOnly();
 
@@ -69,7 +69,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_text)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:84</a>
      */
     Optional<String> getText();
 
@@ -78,7 +78,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_text)(struct _cef_textfield_t* self, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:90</a>
      */
     void setText(@Nullable String text);
 
@@ -87,7 +87,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* append_text)(struct _cef_textfield_t* self, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:97</a>
      */
     void appendText(@Nullable String text);
 
@@ -96,7 +96,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* insert_or_replace_text)(struct _cef_textfield_t* self, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:103</a>
      */
     void insertOrReplaceText(@Nullable String text);
 
@@ -105,7 +105,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>int (CEF_CALLBACK* has_selection)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:109</a>
      */
     boolean hasSelection();
 
@@ -114,7 +114,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_selected_text)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:115</a>
      */
     Optional<String> getSelectedText();
 
@@ -123,7 +123,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* select_all)(struct _cef_textfield_t* self, int reversed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:121</a>
      */
     void selectAll(boolean reversed);
 
@@ -132,7 +132,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* clear_selection)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:129</a>
      */
     void clearSelection();
 
@@ -141,7 +141,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>cef_range_t* (CEF_CALLBACK* get_selected_range)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:135</a>
      */
     CefRange getSelectedRange();
 
@@ -150,7 +150,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* select_range)(struct _cef_textfield_t* self, const cef_range_t* range);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:141</a>
      */
     void selectRange(@Nonnull CefRange range);
 
@@ -159,63 +159,9 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>size_t (CEF_CALLBACK* get_cursor_position)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:147</a>
      */
     long getCursorPosition();
-
-    /**
-     * Sets the text color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>void (CEF_CALLBACK* set_text_color)(struct _cef_textfield_t* self, cef_color_t color);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:152</a>
-     */
-    void setTextColor(int color);
-
-    /**
-     * Returns the text color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>unsigned int (CEF_CALLBACK* get_text_color)(struct _cef_textfield_t* self);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:158</a>
-     */
-    int getTextColor();
-
-    /**
-     * Sets the selection text color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>void (CEF_CALLBACK* set_selection_text_color)(struct _cef_textfield_t* self, cef_color_t color);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:164</a>
-     */
-    void setSelectionTextColor(int color);
-
-    /**
-     * Returns the selection text color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>unsigned int (CEF_CALLBACK* get_selection_text_color)(struct _cef_textfield_t* self);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:170</a>
-     */
-    int getSelectionTextColor();
-
-    /**
-     * Sets the selection background color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>void (CEF_CALLBACK* set_selection_background_color)(struct _cef_textfield_t* self, cef_color_t color);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:176</a>
-     */
-    void setSelectionBackgroundColor(int color);
-
-    /**
-     * Returns the selection background color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>unsigned int (CEF_CALLBACK* get_selection_background_color)(struct _cef_textfield_t* self);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:182</a>
-     */
-    int getSelectionBackgroundColor();
 
     /**
      * Sets the font list. The format is "&lt;FONT_FAMILY_LIST&gt;,[STYLES] &lt;SIZE&gt;", where:
@@ -236,7 +182,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_font_list)(struct _cef_textfield_t* self, const cef_string_t* font_list);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:191</a>
      */
     void setFontList(@Nullable String fontList);
 
@@ -245,7 +191,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* apply_text_color)(struct _cef_textfield_t* self, cef_color_t color, const cef_range_t* range);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:206</a>
      */
     void applyTextColor(int color, @Nonnull CefRange range);
 
@@ -254,7 +200,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* apply_text_style)(struct _cef_textfield_t* self, cef_text_style_t style, int add, const cef_range_t* range);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:211</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:214</a>
      */
     void applyTextStyle(@Nonnull CefTextStyle style, boolean add, @Nonnull CefRange range);
 
@@ -263,7 +209,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>int (CEF_CALLBACK* is_command_enabled)(struct _cef_textfield_t* self, cef_text_field_commands_t command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:222</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:225</a>
      */
     boolean isCommandEnabled(@Nonnull CefTextFieldCommands commandId);
 
@@ -272,7 +218,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* execute_command)(struct _cef_textfield_t* self, cef_text_field_commands_t command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:229</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:232</a>
      */
     void executeCommand(@Nonnull CefTextFieldCommands commandId);
 
@@ -281,7 +227,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* clear_edit_history)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:235</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:238</a>
      */
     void clearEditHistory();
 
@@ -290,7 +236,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_placeholder_text)(struct _cef_textfield_t* self, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:241</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:244</a>
      */
     void setPlaceholderText(@Nullable String text);
 
@@ -299,25 +245,16 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_placeholder_text)(struct _cef_textfield_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:251</a>
      */
     Optional<String> getPlaceholderText();
-
-    /**
-     * Sets the placeholder text color.
-     * <p>Definition generated from views/cef_textfield_capi.h
-     * <pre>void (CEF_CALLBACK* set_placeholder_text_color)(struct _cef_textfield_t* self, cef_color_t color);</pre>
-     *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:255</a>
-     */
-    void setPlaceholderTextColor(int color);
 
     /**
      * Set the accessible name that will be exposed to assistive technology (AT).
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>void (CEF_CALLBACK* set_accessible_name)(struct _cef_textfield_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:261</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:266</a>
      */
     void setAccessibleName(@Nullable String name);
     /**
@@ -325,7 +262,7 @@ public interface CefTextfield extends CefView {
      * <p>Definition generated from views/cef_textfield_capi.h
      * <pre>CEF_EXPORT cef_textfield_t* cef_textfield_create(struct _cef_textfield_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__textfield_8h.html">views/cef_textfield.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield_8h.html">views/cef_textfield.h:53</a>
      */
     static Optional<CefTextfield> create(@Nullable CefTextfieldDelegate delegate) {
       return Optional.ofNullable(NativePeer.create0(delegate));
@@ -465,42 +402,6 @@ public interface CefTextfield extends CefView {
       }
 
         @Override
-      public void setTextColor(int color) {
-          checkNotClosed();
-          setTextColor0(nativePtr, color);
-      }
-
-        @Override
-      public int getTextColor() {
-          checkNotClosed();
-          return getTextColor0(nativePtr);
-      }
-
-        @Override
-      public void setSelectionTextColor(int color) {
-          checkNotClosed();
-          setSelectionTextColor0(nativePtr, color);
-      }
-
-        @Override
-      public int getSelectionTextColor() {
-          checkNotClosed();
-          return getSelectionTextColor0(nativePtr);
-      }
-
-        @Override
-      public void setSelectionBackgroundColor(int color) {
-          checkNotClosed();
-          setSelectionBackgroundColor0(nativePtr, color);
-      }
-
-        @Override
-      public int getSelectionBackgroundColor() {
-          checkNotClosed();
-          return getSelectionBackgroundColor0(nativePtr);
-      }
-
-        @Override
       public void setFontList(@Nullable String fontList) {
           checkNotClosed();
           setFontList0(nativePtr, fontList);
@@ -546,12 +447,6 @@ public interface CefTextfield extends CefView {
       public Optional<String> getPlaceholderText() {
           checkNotClosed();
           return Optional.ofNullable(getPlaceholderText0(nativePtr));
-      }
-
-        @Override
-      public void setPlaceholderTextColor(int color) {
-          checkNotClosed();
-          setPlaceholderTextColor0(nativePtr, color);
       }
 
         @Override
@@ -905,18 +800,6 @@ public interface CefTextfield extends CefView {
 
         static native long getCursorPosition0(long self);
 
-        static native void setTextColor0(long self, int color);
-
-        static native int getTextColor0(long self);
-
-        static native void setSelectionTextColor0(long self, int color);
-
-        static native int getSelectionTextColor0(long self);
-
-        static native void setSelectionBackgroundColor0(long self, int color);
-
-        static native int getSelectionBackgroundColor0(long self);
-
         static native void setFontList0(long self, @Nullable String fontList);
 
         static native void applyTextColor0(long self, int color, @Nonnull CefRange range);
@@ -932,8 +815,6 @@ public interface CefTextfield extends CefView {
         static native void setPlaceholderText0(long self, @Nullable String text);
 
         static native String getPlaceholderText0(long self);
-
-        static native void setPlaceholderTextColor0(long self, int color);
 
         static native void setAccessibleName0(long self, @Nullable String name);
 

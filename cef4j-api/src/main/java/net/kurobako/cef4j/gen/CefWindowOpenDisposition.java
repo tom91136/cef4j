@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,11 +14,11 @@ import javax.annotation.processing.Generated;
  *   CEF_WOD_NEW_BACKGROUND_TAB = 4,
  *   ...
  * } cef_window_open_disposition_t;</pre>
- * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CURRENT_TAB}, {@link Kind#SINGLETON_TAB}, {@link Kind#NEW_FOREGROUND_TAB}, {@link Kind#NEW_BACKGROUND_TAB}, {@link Kind#NEW_POPUP}, {@link Kind#NEW_WINDOW}, {@link Kind#SAVE_TO_DISK}, {@link Kind#OFF_THE_RECORD}, {@link Kind#IGNORE_ACTION}, {@link Kind#SWITCH_TO_TAB}, {@link Kind#NEW_PICTURE_IN_PICTURE}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#UNKNOWN}, {@link Kind#CURRENT_TAB}, {@link Kind#SINGLETON_TAB}, {@link Kind#NEW_FOREGROUND_TAB}, {@link Kind#NEW_BACKGROUND_TAB}, {@link Kind#NEW_POPUP}, {@link Kind#NEW_WINDOW}, {@link Kind#SAVE_TO_DISK}, {@link Kind#OFF_THE_RECORD}, {@link Kind#IGNORE_ACTION}, {@link Kind#SWITCH_TO_TAB}, {@link Kind#NEW_PICTURE_IN_PICTURE}, {@link Kind#NEW_SPLIT_VIEW}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefWindowOpenDisposition implements CefEnum<CefWindowOpenDisposition> {
 
@@ -47,7 +47,9 @@ public final class CefWindowOpenDisposition implements CefEnum<CefWindowOpenDisp
         SWITCH_TO_TAB(10, "10", "CEF_WOD_SWITCH_TO_TAB"),
         /** Creates a new document picture-in-picture window showing a child WebView.  */
         NEW_PICTURE_IN_PICTURE(11, "11", "CEF_WOD_NEW_PICTURE_IN_PICTURE"),
-        NUM_VALUES(12, "12", "CEF_WOD_NUM_VALUES");
+        /** Opens a link in a split view alongside the current tab.  */
+        NEW_SPLIT_VIEW(12, "12", "CEF_WOD_NEW_SPLIT_VIEW"),
+        NUM_VALUES(13, "13", "CEF_WOD_NUM_VALUES");
 
         private static final Kind[] VALUES = Kind.values();
 

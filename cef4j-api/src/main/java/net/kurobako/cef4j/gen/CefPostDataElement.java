@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_post_data_element_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:286</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:286</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPostDataElement extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_post_data_element_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:304</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:304</a>
      */
     boolean isReadOnly();
 
@@ -35,7 +35,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>void (CEF_CALLBACK* set_to_empty)(struct _cef_post_data_element_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:310</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:310</a>
      */
     void setToEmpty();
 
@@ -44,7 +44,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>void (CEF_CALLBACK* set_to_file)(struct _cef_post_data_element_t* self, const cef_string_t* fileName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:316</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:316</a>
      */
     void setToFile(@Nullable String fileName);
 
@@ -56,7 +56,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *
      * @param bytes <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:322</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:322</a>
      */
     void setToBytes(@Nonnull ByteBuffer bytes);
 
@@ -67,7 +67,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *
      * @return the result, or {@code PDE_TYPE_EMPTY} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:329</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:329</a>
      */
     CefPostdataelementType getType();
 
@@ -76,7 +76,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_file)(struct _cef_post_data_element_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:335</a>
      */
     Optional<String> getFile();
 
@@ -85,7 +85,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>size_t (CEF_CALLBACK* get_bytes_count)(struct _cef_post_data_element_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:341</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:341</a>
      */
     long getBytesCount();
 
@@ -97,7 +97,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      *
      * @param bytes <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:347</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:347</a>
      */
     long getBytes(@Nonnull ByteBuffer bytes);
     /**
@@ -105,7 +105,7 @@ public interface CefPostDataElement extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>CEF_EXPORT cef_post_data_element_t* cef_post_data_element_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:298</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:298</a>
      */
     static Optional<CefPostDataElement> create() {
       return Optional.ofNullable(NativePeer.create0());

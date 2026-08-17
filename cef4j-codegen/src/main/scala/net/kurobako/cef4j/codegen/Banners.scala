@@ -5,7 +5,7 @@ import java.nio.file.Path
 
 /** Centralised file headers for all generated Java and C++ sources. */
 final class Banners(val cefVersion: String) {
-  val regenerateCommand: String = s"mvn generate-sources -pl cef4j-native -Dcef.version=$cefVersion"
+  val regenerateCommand: String = s"mvn generate-sources -pl cef4j-platform -Dcef.version=$cefVersion"
   val java: String              = s"// GENERATED - do not edit. Regenerate via: $regenerateCommand"
   val javaAnnotation: String    =
     s"""@Generated("$regenerateCommand")\n@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})"""

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -20,9 +20,9 @@ import net.kurobako.cef4j.gen.CefState;
  *   ...
  * } cef_window_delegate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefWindowDelegate extends CefClientHandler {
 
@@ -31,7 +31,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_created)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:52</a>
      */
     default void onWindowCreated(@Nullable CefWindow window) {
     }
@@ -41,7 +41,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_closing)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:58</a>
      */
     default void onWindowClosing(@Nullable CefWindow window) {
     }
@@ -51,7 +51,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_destroyed)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:64</a>
      */
     default void onWindowDestroyed(@Nullable CefWindow window) {
     }
@@ -61,7 +61,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_activation_changed)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int active);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:72</a>
      */
     default void onWindowActivationChanged(@Nullable CefWindow window, boolean active) {
     }
@@ -71,7 +71,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_bounds_changed)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, const cef_rect_t* new_bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:79</a>
      */
     default void onWindowBoundsChanged(@Nullable CefWindow window, @Nonnull CefRect newBounds) {
     }
@@ -81,7 +81,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_window_fullscreen_transition)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int is_completed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:87</a>
      */
     default void onWindowFullscreenTransition(@Nullable CefWindow window, boolean isCompleted) {
     }
@@ -91,7 +91,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>cef_window_t* (CEF_CALLBACK* get_parent_window)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int* is_menu, int* can_activate_menu);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:100</a>
      */
     default @Nullable CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
         return null;
@@ -102,7 +102,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* is_window_modal_dialog)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:115</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:115</a>
      */
     default boolean isWindowModalDialog(@Nullable CefWindow window) {
         return false;
@@ -113,7 +113,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_initial_bounds)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:128</a>
      */
     default @Nullable CefRect getInitialBounds(@Nullable CefWindow window) {
         return null;
@@ -126,7 +126,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @return the result, or {@code CEF_SHOW_STATE_NORMAL} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:141</a>
      */
     default @Nullable CefShowState getInitialShowState(@Nullable CefWindow window) {
         return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
@@ -137,7 +137,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* is_frameless)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:149</a>
      */
     default boolean isFrameless(@Nullable CefWindow window) {
         return false;
@@ -148,7 +148,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* with_standard_window_buttons)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:157</a>
      */
     default boolean withStandardWindowButtons(@Nullable CefWindow window) {
         return false;
@@ -159,7 +159,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* get_titlebar_height)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, float* titlebar_height);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:166</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:166</a>
      */
     default boolean getTitlebarHeight(@Nullable CefWindow window, float[] titlebarHeight) {
         return false;
@@ -174,7 +174,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @return the result, or {@code STATE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:179</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:179</a>
      */
     default @Nullable CefState acceptsFirstMouse(@Nullable CefWindow window) {
         return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
@@ -185,7 +185,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* can_resize)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:194</a>
      */
     default boolean canResize(@Nullable CefWindow window) {
         return false;
@@ -196,7 +196,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* can_maximize)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:200</a>
      */
     default boolean canMaximize(@Nullable CefWindow window) {
         return false;
@@ -207,7 +207,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* can_minimize)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:206</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:206</a>
      */
     default boolean canMinimize(@Nullable CefWindow window) {
         return false;
@@ -218,7 +218,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* can_close)(struct _cef_window_delegate_t* self, struct _cef_window_t* window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:212</a>
      */
     default boolean canClose(@Nullable CefWindow window) {
         return false;
@@ -229,7 +229,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* on_accelerator)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:219</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:219</a>
      */
     default boolean onAccelerator(@Nullable CefWindow window, int commandId) {
         return false;
@@ -240,7 +240,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* on_key_event)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, const cef_key_event_t* event);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:229</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:229</a>
      */
     default boolean onKeyEvent(@Nullable CefWindow window, @Nonnull CefKeyEvent event) {
         return false;
@@ -259,7 +259,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_theme_colors_changed)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, int chrome_theme);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:240</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:240</a>
      */
     default void onThemeColorsChanged(@Nullable CefWindow window, boolean chromeTheme) {
     }
@@ -271,7 +271,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      *
      * @return the result, or {@code CEF_RUNTIME_STYLE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:273</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:273</a>
      */
     default @Nullable CefRuntimeStyle getWindowRuntimeStyle() {
         return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
@@ -282,7 +282,7 @@ public interface CefWindowDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_window_delegate_capi.h
      * <pre>int (CEF_CALLBACK* get_linux_window_properties)(struct _cef_window_delegate_t* self, struct _cef_window_t* window, struct _cef_linux_window_properties_t* properties);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:282</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:282</a>
      */
     default boolean getLinuxWindowProperties(@Nullable CefWindow window, @Nonnull CefLinuxWindowProperties.Mutable properties) {
         return false;

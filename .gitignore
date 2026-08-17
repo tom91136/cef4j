@@ -4,6 +4,10 @@ target/
 *.class
 dependency-reduced-pom.xml
 
+# Gradle
+.gradle/
+build/
+
 # IDE
 .idea/
 *.iml

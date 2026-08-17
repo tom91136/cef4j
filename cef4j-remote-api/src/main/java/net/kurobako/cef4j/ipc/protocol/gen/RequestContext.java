@@ -39,7 +39,7 @@ public final class RequestContext {
      * Returns {@code true} if this object is pointing to the same context as {@code that} object.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:134</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle other) {
         return session
@@ -51,7 +51,7 @@ public final class RequestContext {
      * Returns {@code true} if this object is sharing the same storage as {@code that} object.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:141</a>
      */
     public CompletableFuture<Integer> isSharingWith(@Nonnull RemoteHandle other) {
         return session
@@ -63,7 +63,7 @@ public final class RequestContext {
      * Returns {@code true} if this object is the global context. The global context is used by default when creating a browser or URL request with a {@code null} context argument.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:147</a>
      */
     public CompletableFuture<Integer> isGlobal() {
         return session
@@ -75,7 +75,7 @@ public final class RequestContext {
      * Returns the handler for this context if any.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:155</a>
      */
     public CompletableFuture<RemoteHandle> getHandler() {
         return session
@@ -87,7 +87,7 @@ public final class RequestContext {
      * Returns the cache path for this object. If empty an "incognito mode" in-memory cache is being used.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:161</a>
      */
     public CompletableFuture<String> getCachePath() {
         return session
@@ -101,7 +101,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:168</a>
      */
     public CompletableFuture<CookieManager> getCookieManager(@Nonnull RemoteHandle callback) {
         return session
@@ -117,7 +117,7 @@ public final class RequestContext {
      * @param domainName may be null
      * @param factory may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:177</a>
      */
     public CompletableFuture<Integer> registerSchemeHandlerFactory(@Nonnull String schemeName, @Nonnull String domainName, @Nonnull RemoteHandle factory) {
         return session
@@ -129,7 +129,7 @@ public final class RequestContext {
      * Clear all registered scheme handler factories. Returns {@code false} on error. This function may be called on any thread in the browser process.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:196</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:196</a>
      */
     public CompletableFuture<Integer> clearSchemeHandlerFactories() {
         return session
@@ -143,7 +143,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:203</a>
      */
     public CompletableFuture<Void> clearCertificateExceptions(@Nonnull RemoteHandle callback) {
         return session
@@ -157,7 +157,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:224</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:224</a>
      */
     public CompletableFuture<Void> clearHttpAuthCredentials(@Nonnull RemoteHandle callback) {
         return session
@@ -171,7 +171,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:233</a>
      */
     public CompletableFuture<Void> closeAllConnections(@Nonnull RemoteHandle callback) {
         return session
@@ -183,7 +183,7 @@ public final class RequestContext {
      * Attempts to resolve {@code origin} to a list of associated IP addresses. {@code callback} will be executed on the UI thread after completion.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:243</a>
      */
     public CompletableFuture<Void> resolveHost(@Nonnull String origin, @Nonnull RemoteHandle callback) {
         return session
@@ -197,7 +197,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:251</a>
      */
     public CompletableFuture<MediaRouter> getMediaRouter(@Nonnull RemoteHandle callback) {
         return session
@@ -213,7 +213,7 @@ public final class RequestContext {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:260</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:260</a>
      */
     public CompletableFuture<Value> getWebsiteSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType) {
         return session
@@ -232,7 +232,7 @@ public final class RequestContext {
      * @param topLevelUrl may be null
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:272</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:272</a>
      */
     public CompletableFuture<Void> setWebsiteSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType, @Nonnull RemoteHandle value) {
         return session
@@ -247,7 +247,7 @@ public final class RequestContext {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:293</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:293</a>
      */
     public CompletableFuture<Integer> getContentSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType) {
         return session
@@ -264,7 +264,7 @@ public final class RequestContext {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:306</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:306</a>
      */
     public CompletableFuture<Void> setContentSetting(@Nonnull String requestingUrl, @Nonnull String topLevelUrl, int contentType, int value) {
         return session
@@ -276,7 +276,7 @@ public final class RequestContext {
      * Sets the Chrome color scheme for all browsers that share this request context. {@code variant} values of SYSTEM, LIGHT and DARK change the underlying color mode (e.g. light vs dark). Other {@code variant} values determine how {@code user_color} will be applied in the current color mode. If {@code user_color} is transparent (0) the default color will be used.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:337</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:337</a>
      */
     public CompletableFuture<Void> setChromeColorScheme(int variant, int userColor) {
         return session
@@ -288,7 +288,7 @@ public final class RequestContext {
      * Returns the current Chrome color scheme mode (SYSTEM, LIGHT or DARK). Must be called on the browser process UI thread.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:348</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:348</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeMode() {
         return session
@@ -300,7 +300,7 @@ public final class RequestContext {
      * Returns the current Chrome color scheme color, or transparent (0) for the default color. Must be called on the browser process UI thread.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:355</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:355</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeColor() {
         return session
@@ -312,7 +312,7 @@ public final class RequestContext {
      * Returns the current Chrome color scheme variant. Must be called on the browser process UI thread.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:362</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:362</a>
      */
     public CompletableFuture<Integer> getChromeColorSchemeVariant() {
         return session
@@ -325,7 +325,7 @@ public final class RequestContext {
      * <p>Added in CEF API version 13401.
      * <p>Definition generated from cef_request_context.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:327</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:327</a>
      */
     public CompletableFuture<RemoteHandle> addSettingObserver(@Nonnull RemoteHandle observer) {
         return session
@@ -340,7 +340,7 @@ public final class RequestContext {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:216</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:216</a>
      */
     public CompletableFuture<Void> clearHttpCache(@Nonnull RemoteHandle callback) {
         return session

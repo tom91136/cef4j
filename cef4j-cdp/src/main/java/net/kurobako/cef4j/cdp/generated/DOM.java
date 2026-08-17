@@ -12,7 +12,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 
 /**
  * This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an {@code id}. This {@code id} can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client&#x27;s responsibility to collect information about the nodes that were sent to the client. Note that {@code iframe} owner elements will return corresponding document elements as their child nodes.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/DOM.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/DOM.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class DOM {
@@ -99,8 +99,9 @@ public final class DOM {
         public static final String CHECKMARK = "checkmark";
         public static final String BEFORE = "before";
         public static final String AFTER = "after";
+        public static final String EXPAND_ICON = "expand-icon";
         public static final String PICKER_ICON = "picker-icon";
-        public static final String INTEREST_HINT = "interest-hint";
+        public static final String INTEREST_BUTTON = "interest-button";
         public static final String MARKER = "marker";
         public static final String BACKDROP = "backdrop";
         public static final String COLUMN = "column";
@@ -430,6 +431,14 @@ public final class DOM {
          */
         @Nullable public java.util.List<String> adoptedStyleSheets() {
             return list(value("adoptedStyleSheets"), element0 -> (String) element0);
+        }
+        /**
+         * Returns the adProvenance field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public Network.AdProvenance adProvenance() {
+            return Network.AdProvenance.fromMap(objectMap(value("adProvenance")));
         }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
@@ -776,6 +785,17 @@ public final class DOM {
             public Builder adoptedStyleSheets(@Nullable java.util.List<String> value) {
                 if (value == null) values.remove("adoptedStyleSheets");
                 else values.put("adoptedStyleSheets", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the adProvenance field.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder adProvenance(@Nullable Network.AdProvenance value) {
+                if (value == null) values.remove("adProvenance");
+                else values.put("adProvenance", jsonValue(value));
                 return this;
             }
             public Node build() {
@@ -6076,6 +6096,58 @@ public final class DOM {
         }
     }
     /**
+     * Fired when a node&#x27;s ad related state changes.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class AdRelatedStateUpdatedEvent extends CdpObject {
+        private AdRelatedStateUpdatedEvent(Map<String, Object> values) { super(values); }
+        @Nullable public static AdRelatedStateUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new AdRelatedStateUpdatedEvent(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The id of the node.
+         * @return the protocol field value
+         */
+        @Nullable public Long nodeId() {
+            return numberAsLong(value("nodeId"));
+        }
+        /**
+         * The provenance of the ad related node, if it is ad related.
+         * @return the protocol field value
+         */
+        @Nullable public Network.AdProvenance adProvenance() {
+            return Network.AdProvenance.fromMap(objectMap(value("adProvenance")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The id of the node.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder nodeId(@Nullable Long value) {
+                if (value == null) values.remove("nodeId");
+                else values.put("nodeId", jsonValue(value));
+                return this;
+            }
+            /**
+             * The provenance of the ad related node, if it is ad related.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder adProvenance(@Nullable Network.AdProvenance value) {
+                if (value == null) values.remove("adProvenance");
+                else values.put("adProvenance", jsonValue(value));
+                return this;
+            }
+            public AdRelatedStateUpdatedEvent build() {
+                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
+                return new AdRelatedStateUpdatedEvent(values);
+            }
+        }
+    }
+    /**
      * Fired when a node&#x27;s starting styles changes.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -6893,6 +6965,15 @@ public final class DOM {
          */
         public CdpSubscription onScrollableFlagUpdated(Consumer<ScrollableFlagUpdatedEvent> handler) {
             return client.on("DOM.scrollableFlagUpdated", ScrollableFlagUpdatedEvent::fromMap, handler);
+        }
+        /**
+         * Fired when a node&#x27;s ad related state changes.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param handler event callback
+         * @return a removable subscription
+         */
+        public CdpSubscription onAdRelatedStateUpdated(Consumer<AdRelatedStateUpdatedEvent> handler) {
+            return client.on("DOM.adRelatedStateUpdated", AdRelatedStateUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a node&#x27;s starting styles changes.

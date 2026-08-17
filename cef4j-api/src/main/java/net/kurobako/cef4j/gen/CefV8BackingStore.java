@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_v8_backing_store_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:430</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:430</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8BackingStore extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefV8BackingStore extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>size_t (CEF_CALLBACK* byte_length)(struct _cef_v8_backing_store_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:466</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:466</a>
      */
     long byteLength();
 
@@ -34,7 +34,7 @@ public interface CefV8BackingStore extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_backing_store_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:473</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:473</a>
      */
     boolean isValid();
     /**
@@ -42,7 +42,7 @@ public interface CefV8BackingStore extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>CEF_EXPORT cef_v8_backing_store_t* cef_v8_backing_store_create(size_t byte_length);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:445</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:445</a>
      */
     static Optional<CefV8BackingStore> create(long byteLength) {
       return Optional.ofNullable(NativePeer.create0(byteLength));

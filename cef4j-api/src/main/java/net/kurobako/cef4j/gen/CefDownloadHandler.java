@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_download_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:86</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:86</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDownloadHandler extends CefClientHandler {
 
@@ -23,7 +23,7 @@ public interface CefDownloadHandler extends CefClientHandler {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>int (CEF_CALLBACK* can_download)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, const cef_string_t* url, const cef_string_t* request_method);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
      */
     default boolean canDownload(@Nullable CefBrowser browser, @Nullable String url, @Nullable String requestMethod) {
         return false;
@@ -34,7 +34,7 @@ public interface CefDownloadHandler extends CefClientHandler {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_before_download)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, struct _cef_download_item_t* download_item, const cef_string_t* suggested_name, struct _cef_before_download_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
      */
     default boolean onBeforeDownload(@Nullable CefBrowser browser, @Nullable CefDownloadItem downloadItem, @Nullable String suggestedName, @Nullable CefBeforeDownloadCallback callback) {
         return false;
@@ -45,7 +45,7 @@ public interface CefDownloadHandler extends CefClientHandler {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_download_updated)(struct _cef_download_handler_t* self, struct _cef_browser_t* browser, struct _cef_download_item_t* download_item, struct _cef_download_item_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
      */
     default void onDownloadUpdated(@Nullable CefBrowser browser, @Nullable CefDownloadItem downloadItem, @Nullable CefDownloadItemCallback callback) {
     }

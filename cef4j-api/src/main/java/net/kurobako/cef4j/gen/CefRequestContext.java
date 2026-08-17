@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_request_context_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:91</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:91</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefRequestContext extends CefPreferenceManager {
 
@@ -25,7 +25,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_request_context_t* self, struct _cef_request_context_t* other);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:134</a>
      */
     boolean isSame(@Nullable CefRequestContext other);
 
@@ -34,7 +34,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>int (CEF_CALLBACK* is_sharing_with)(struct _cef_request_context_t* self, struct _cef_request_context_t* other);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:141</a>
      */
     boolean isSharingWith(@Nullable CefRequestContext other);
 
@@ -43,7 +43,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>int (CEF_CALLBACK* is_global)(struct _cef_request_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:147</a>
      */
     boolean isGlobal();
 
@@ -52,7 +52,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>cef_request_context_handler_t* (CEF_CALLBACK* get_handler)(struct _cef_request_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:155</a>
      */
     Optional<CefRequestContextHandler> getHandler();
 
@@ -61,7 +61,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_cache_path)(struct _cef_request_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:161</a>
      */
     Optional<String> getCachePath();
 
@@ -72,7 +72,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:168</a>
      */
     Optional<CefCookieManager> getCookieManager(@Nullable CefCompletionCallback callback);
 
@@ -84,7 +84,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * @param domainName may be null
      * @param factory may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:177</a>
      */
     boolean registerSchemeHandlerFactory(@Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory);
 
@@ -93,7 +93,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>int (CEF_CALLBACK* clear_scheme_handler_factories)(struct _cef_request_context_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:196</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:196</a>
      */
     boolean clearSchemeHandlerFactories();
 
@@ -104,7 +104,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:203</a>
      */
     void clearCertificateExceptions(@Nullable CefCompletionCallback callback);
 
@@ -115,7 +115,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:224</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:224</a>
      */
     void clearHttpAuthCredentials(@Nullable CefCompletionCallback callback);
 
@@ -126,7 +126,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:233</a>
      */
     void closeAllConnections(@Nullable CefCompletionCallback callback);
 
@@ -135,7 +135,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>void (CEF_CALLBACK* resolve_host)(struct _cef_request_context_t* self, const cef_string_t* origin, struct _cef_resolve_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:243</a>
      */
     void resolveHost(@Nullable String origin, @Nullable CefResolveCallback callback);
 
@@ -146,7 +146,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:251</a>
      */
     Optional<CefMediaRouter> getMediaRouter(@Nullable CefCompletionCallback callback);
 
@@ -158,7 +158,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:260</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:260</a>
      */
     Optional<CefValue> getWebsiteSetting(@Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
 
@@ -173,7 +173,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * @param topLevelUrl may be null
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:272</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:272</a>
      */
     void setWebsiteSetting(@Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType, @Nullable CefValue value);
 
@@ -187,7 +187,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @return the result, or {@code CEF_CONTENT_SETTING_VALUE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:293</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:293</a>
      */
     CefContentSettingValues getContentSetting(@Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType);
 
@@ -201,7 +201,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:306</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:306</a>
      */
     void setContentSetting(@Nullable String requestingUrl, @Nullable String topLevelUrl, @Nonnull CefContentSettingTypes contentType, @Nonnull CefContentSettingValues value);
 
@@ -210,7 +210,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>void (CEF_CALLBACK* set_chrome_color_scheme)(struct _cef_request_context_t* self, cef_color_variant_t variant, cef_color_t user_color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:337</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:337</a>
      */
     void setChromeColorScheme(@Nonnull CefColorVariant variant, int userColor);
 
@@ -221,7 +221,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @return the result, or {@code CEF_COLOR_VARIANT_SYSTEM} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:348</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:348</a>
      */
     CefColorVariant getChromeColorSchemeMode();
 
@@ -232,7 +232,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @return the result, or {@code 0} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:355</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:355</a>
      */
     int getChromeColorSchemeColor();
 
@@ -243,7 +243,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @return the result, or {@code CEF_COLOR_VARIANT_SYSTEM} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:362</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:362</a>
      */
     CefColorVariant getChromeColorSchemeVariant();
 
@@ -253,7 +253,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>cef_registration_t* (CEF_CALLBACK* add_setting_observer)(struct _cef_request_context_t* self, struct _cef_setting_observer_t* observer);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:327</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:327</a>
      */
     Optional<CefRegistration> addSettingObserver(@Nullable CefSettingObserver observer);
 
@@ -265,7 +265,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:216</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:216</a>
      */
     void clearHttpCache(@Nullable CefCompletionCallback callback);
     /**
@@ -273,7 +273,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>CEF_EXPORT cef_request_context_t* cef_request_context_get_global_context(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:110</a>
      */
     static Optional<CefRequestContext> getGlobalContext() {
       return Optional.ofNullable(NativePeer.getGlobalContext0());
@@ -284,7 +284,7 @@ public interface CefRequestContext extends CefPreferenceManager {
      * <p>Definition generated from cef_request_context_capi.h
      * <pre>CEF_EXPORT cef_request_context_t* cef_request_context_create_context(const struct _cef_request_context_settings_t* settings, struct _cef_request_context_handler_t* handler);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:125</a>
      */
     static Optional<CefRequestContext> createContext(@Nonnull CefRequestContextSettings settings, @Nullable CefRequestContextHandler handler) {
       return Optional.ofNullable(NativePeer.createContext0(settings, handler));

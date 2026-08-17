@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_find_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__find__handler_8h.html">cef_find_handler.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__find__handler_8h.html">cef_find_handler.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefFindHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefFindHandler extends CefClientHandler {
      * <p>Definition generated from cef_find_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_find_result)(struct _cef_find_handler_t* self, struct _cef_browser_t* browser, int identifier, int count, const cef_rect_t* selectionRect, int activeMatchOrdinal, int finalUpdate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
      */
     default void onFindResult(@Nullable CefBrowser browser, int identifier, int count, @Nonnull CefRect selectionRect, int activeMatchOrdinal, boolean finalUpdate) {
     }

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_load_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefLoadHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * <p>Definition generated from cef_load_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_loading_state_change)(struct _cef_load_handler_t* self, struct _cef_browser_t* browser, int isLoading, int canGoBack, int canGoForward);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:56</a>
      */
     default void onLoadingStateChange(@Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
     }
@@ -34,7 +34,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * <p>Definition generated from cef_load_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_load_start)(struct _cef_load_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, cef_transition_type_t transition_type);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
      */
     default void onLoadStart(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefTransitionType transitionType) {
     }
@@ -44,7 +44,7 @@ public interface CefLoadHandler extends CefClientHandler {
      * <p>Definition generated from cef_load_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_load_end)(struct _cef_load_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, int httpStatusCode);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:86</a>
      */
     default void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
     }
@@ -56,7 +56,7 @@ public interface CefLoadHandler extends CefClientHandler {
      *
      * @param errorText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:101</a>
      */
     default void onLoadError(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefErrorCode errorCode, @Nullable String errorText, @Nullable String failedUrl) {
     }

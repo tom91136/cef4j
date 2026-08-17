@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_urlrequest_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:49</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:49</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefUrlRequest extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>cef_request_t* (CEF_CALLBACK* get_request)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:83</a>
      */
     Optional<CefRequest> getRequest();
 
@@ -33,7 +33,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>cef_urlrequest_client_t* (CEF_CALLBACK* get_client)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:90</a>
      */
     Optional<CefUrlRequestClient> getClient();
 
@@ -44,7 +44,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      *
      * @return the result, or {@code UR_UNKNOWN} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:96</a>
      */
     CefUrlRequestStatus getRequestStatus();
 
@@ -55,7 +55,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      *
      * @return the result, or {@code ERR_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:102</a>
      */
     CefErrorCode getRequestError();
 
@@ -64,7 +64,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>cef_response_t* (CEF_CALLBACK* get_response)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:109</a>
      */
     Optional<CefResponse> getResponse();
 
@@ -73,7 +73,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>int (CEF_CALLBACK* response_was_cached)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:117</a>
      */
     boolean responseWasCached();
 
@@ -82,7 +82,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_urlrequest_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:124</a>
      */
     void cancel();
     /**
@@ -103,7 +103,7 @@ public interface CefUrlRequest extends CefLibraryObject {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>CEF_EXPORT cef_urlrequest_t* cef_urlrequest_create(struct _cef_request_t* request, struct _cef_urlrequest_client_t* client, struct _cef_request_context_t* request_context);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:62</a>
      */
     static Optional<CefUrlRequest> create(@Nullable CefRequest request, @Nullable CefUrlRequestClient client, @Nullable CefRequestContext requestContext) {
       return Optional.ofNullable(NativePeer.create0(request, client, requestContext));

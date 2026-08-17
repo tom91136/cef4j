@@ -39,7 +39,7 @@ public final class BrowserHost {
      * Returns the hosted browser object.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:333</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:333</a>
      */
     public CompletableFuture<Browser> getBrowser() {
         return session
@@ -54,7 +54,7 @@ public final class BrowserHost {
      * If {@code force_close} is {@code false} then JavaScript unload handlers, if any, may be fired and the close may be delayed or canceled by the user. If {@code force_close} is {@code true} then the user will not be prompted and the close will proceed immediately (possibly asynchronously). If browser close is delayed and not canceled the default behavior is to call the top-level window close handler once the browser is ready to be closed. This default behavior can be changed for Alloy style browsers by implementing {@code CefLifeSpanHandler.doClose()}. IsReadyToBeClosed() can be used to detect mandatory browser close events when customizing close behavior on the browser process UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:339</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:339</a>
      */
     public CompletableFuture<Void> closeBrowser(int forceClose) {
         return session
@@ -66,7 +66,7 @@ public final class BrowserHost {
      * Helper for closing a browser. This is similar in behavior to CLoseBrowser({@code false}) but returns a boolean to reflect the immediate close status. Call this method from a top-level window close handler such as {@code CefWindowDelegate.canClose()} (or platform-specific equivalent) to request that the browser close, and return the result to indicate if the window close should proceed. Returns {@code false} if the close will be delayed (JavaScript unload handlers triggered but still pending) or {@code true} if the close will proceed immediately (possibly asynchronously). See CloseBrowser() documentation for additional usage information. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:364</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:364</a>
      */
     public CompletableFuture<Integer> tryCloseBrowser() {
         return session
@@ -78,7 +78,7 @@ public final class BrowserHost {
      * Returns {@code true} if the browser is ready to be closed, meaning that the close has already been initiated and that JavaScript unload handlers have already executed or should be ignored. This can be used from a top-level window close handler such as {@code CefWindowDelegate.canClose()} (or platform-specific equivalent) to distringuish between potentially cancelable browser close events (like the user clicking the top-level window close button before browser close has started) and mandatory browser close events (like JavaScript `window.close()` or after browser close has started in response to [Try]CloseBrowser()). Not completing the browser close for mandatory close events (when this method returns {@code true}) will leave the browser in a partially closed state that interferes with proper functioning. See CloseBrowser() documentation for additional usage information. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:379</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:379</a>
      */
     public CompletableFuture<Integer> isReadyToBeClosed() {
         return session
@@ -90,7 +90,7 @@ public final class BrowserHost {
      * Set whether the browser is focused.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:397</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:397</a>
      */
     public CompletableFuture<Void> setFocus(int focus) {
         return session
@@ -102,7 +102,7 @@ public final class BrowserHost {
      * Retrieve the window handle (if any) for this browser. If this browser is wrapped in a CefBrowserView this method should be called on the browser process UI thread and it will return the handle for the top-level native window.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:403</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:403</a>
      */
     public CompletableFuture<Long> getWindowHandle() {
         return session
@@ -114,7 +114,7 @@ public final class BrowserHost {
      * Retrieve the window handle (if any) of the browser that opened this browser. Will return {@code null} for non-popup browsers or if this browser is wrapped in a CefBrowserView. This method can be used in combination with custom handling of modal windows.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:412</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:412</a>
      */
     public CompletableFuture<Long> getOpenerWindowHandle() {
         return session
@@ -126,7 +126,7 @@ public final class BrowserHost {
      * Retrieve the unique identifier of the browser that opened this browser. Will return 0 for non-popup browsers.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:421</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:421</a>
      */
     public CompletableFuture<Integer> getOpenerIdentifier() {
         return session
@@ -138,7 +138,7 @@ public final class BrowserHost {
      * Returns {@code true} if this browser is wrapped in a CefBrowserView.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:428</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:428</a>
      */
     public CompletableFuture<Integer> hasView() {
         return session
@@ -150,7 +150,7 @@ public final class BrowserHost {
      * Returns the client for this browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:434</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:434</a>
      */
     public CompletableFuture<RemoteHandle> getClient() {
         return session
@@ -162,7 +162,7 @@ public final class BrowserHost {
      * Returns the request context for this browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:440</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:440</a>
      */
     public CompletableFuture<RequestContext> getRequestContext() {
         return session
@@ -175,7 +175,7 @@ public final class BrowserHost {
      * Returns {@code true} if this browser can execute the specified zoom command. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:446</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:446</a>
      */
     public CompletableFuture<Integer> canZoom(int command) {
         return session
@@ -187,7 +187,7 @@ public final class BrowserHost {
      * Execute a zoom command in this browser. If called on the UI thread the change will be applied immediately. Otherwise, the change will be applied asynchronously on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:453</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:453</a>
      */
     public CompletableFuture<Void> zoom(int command) {
         return session
@@ -203,7 +203,7 @@ public final class BrowserHost {
      * @param defaultFilePath may be null
      * @param acceptFilters may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:484</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:484</a>
      */
     public CompletableFuture<Void> runFileDialog(int mode, @Nonnull String title, @Nonnull String defaultFilePath, String[] acceptFilters, @Nonnull RemoteHandle callback) {
         return session
@@ -215,7 +215,7 @@ public final class BrowserHost {
      * Download the file at {@code url} using CefDownloadHandler.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:508</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:508</a>
      */
     public CompletableFuture<Void> startDownload(@Nonnull String url) {
         return session
@@ -227,7 +227,7 @@ public final class BrowserHost {
      * Download {@code image_url} and execute {@code callback} on completion with the images received from the renderer. If {@code is_favicon} is {@code true} then cookies are not sent and not accepted during download. Images with density independent pixel (DIP) sizes larger than {@code max_image_size} are filtered out from the image results. Versions of the image at different scale factors may be downloaded up to the maximum scale factor supported by the system. If there are no image results &lt;= {@code max_image_size} then the smallest image is resized to {@code max_image_size} and is the only result. A {@code max_image_size} of 0 means unlimited. If {@code bypass_cache} is {@code true} then {@code image_url} is requested from the server even if it is present in the browser cache.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:514</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:514</a>
      */
     public CompletableFuture<Void> downloadImage(@Nonnull String imageUrl, int isFavicon, int maxImageSize, int bypassCache, @Nonnull RemoteHandle callback) {
         return session
@@ -239,7 +239,7 @@ public final class BrowserHost {
      * Print the current browser contents.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:533</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:533</a>
      */
     public CompletableFuture<Void> print() {
         return session
@@ -251,7 +251,7 @@ public final class BrowserHost {
      * Search for {@code searchText}. {@code forward} indicates whether to search forward or backward within the page. {@code matchCase} indicates whether the search should be case-sensitive. {@code findNext} indicates whether this is the first request or a follow-up. The search will be restarted if {@code searchText} or {@code matchCase} change. The search will be stopped if {@code searchText} is empty. The CefFindHandler instance, if any, returned via {@code CefClient.getFindHandler()} will be called to report find results.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:550</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:550</a>
      */
     public CompletableFuture<Void> find(@Nonnull String searchText, int forward, int matchCase, int findNext) {
         return session
@@ -263,7 +263,7 @@ public final class BrowserHost {
      * Cancel all searches that are currently going on.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:565</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:565</a>
      */
     public CompletableFuture<Void> stopFinding(int clearSelection) {
         return session
@@ -275,7 +275,7 @@ public final class BrowserHost {
      * Explicitly close the associated DevTools browser, if any.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:587</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:587</a>
      */
     public CompletableFuture<Void> closeDevTools() {
         return session
@@ -287,7 +287,7 @@ public final class BrowserHost {
      * Returns {@code true} if this browser currently has an associated DevTools browser. Must be called on the browser process UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:593</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:593</a>
      */
     public CompletableFuture<Integer> hasDevTools() {
         return session
@@ -308,7 +308,7 @@ public final class BrowserHost {
      *
      * @param message <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:600</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:600</a>
      */
     public CompletableFuture<Integer> sendDevToolsMessage(@Nonnull byte[] message) {
         return session
@@ -322,7 +322,7 @@ public final class BrowserHost {
      *
      * @param params may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:636</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:636</a>
      */
     public CompletableFuture<Integer> executeDevToolsMethod(int messageId_, @Nonnull String method, @Nonnull RemoteHandle params) {
         return session
@@ -334,7 +334,7 @@ public final class BrowserHost {
      * Add an observer for DevTools protocol messages (method results and events). The observer will remain registered until the returned Registration object is destroyed. See the SendDevToolsMessage documentation for additional usage information.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:653</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:653</a>
      */
     public CompletableFuture<RemoteHandle> addDevToolsMessageObserver(@Nonnull RemoteHandle observer) {
         return session
@@ -346,7 +346,7 @@ public final class BrowserHost {
      * Retrieve a snapshot of current navigation entries as values sent to the specified visitor. If {@code current_only} is {@code true} only the current navigation entry will be sent, otherwise all navigation entries will be sent.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:663</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:663</a>
      */
     public CompletableFuture<Void> getNavigationEntries(@Nonnull RemoteHandle visitor, int currentOnly) {
         return session
@@ -358,7 +358,7 @@ public final class BrowserHost {
      * If a misspelled word is currently selected in an editable node calling this method will replace it with the specified {@code word}.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:673</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:673</a>
      */
     public CompletableFuture<Void> replaceMisspelling(@Nonnull String word) {
         return session
@@ -370,7 +370,7 @@ public final class BrowserHost {
      * Add the specified {@code word} to the spelling dictionary.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:680</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:680</a>
      */
     public CompletableFuture<Void> addWordToDictionary(@Nonnull String word) {
         return session
@@ -382,7 +382,7 @@ public final class BrowserHost {
      * Returns {@code true} if window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:686</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:686</a>
      */
     public CompletableFuture<Integer> isWindowRenderingDisabled() {
         return session
@@ -394,7 +394,7 @@ public final class BrowserHost {
      * Notify the browser that the widget has been resized. The browser will first call {@code CefRenderHandler.getViewRect()} to get the new size and then call {@code CefRenderHandler.onPaint()} asynchronously with the updated regions. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:692</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:692</a>
      */
     public CompletableFuture<Void> wasResized() {
         return session
@@ -406,7 +406,7 @@ public final class BrowserHost {
      * Notify the browser that it has been hidden or shown. Layouting and {@code CefRenderHandler.onPaint()} notification will stop when the browser is hidden. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:701</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:701</a>
      */
     public CompletableFuture<Void> wasHidden(int hidden) {
         return session
@@ -424,7 +424,7 @@ public final class BrowserHost {
      * With windowed rendering the browser will call {@code CefDisplayHandler.getRootWindowScreenRect()} and use the associated display properties.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:709</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:709</a>
      */
     public CompletableFuture<Void> notifyScreenInfoChanged() {
         return session
@@ -436,7 +436,7 @@ public final class BrowserHost {
      * Invalidate the view. The browser will call {@code CefRenderHandler.onPaint()} asynchronously. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:732</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:732</a>
      */
     public CompletableFuture<Void> invalidate(int type) {
         return session
@@ -448,7 +448,7 @@ public final class BrowserHost {
      * Issue a BeginFrame request to Chromium.  Only valid when net.kurobako.cef4j.ipc.protocol.gen.CefWindowInfo.externalBeginFrameEnabled() is set to {@code true}.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:740</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:740</a>
      */
     public CompletableFuture<Void> sendExternalBeginFrame() {
         return session
@@ -460,7 +460,7 @@ public final class BrowserHost {
      * Send a key event to the browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:747</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:747</a>
      */
     public CompletableFuture<Void> sendKeyEvent(KeyEvent event) {
         return session
@@ -472,7 +472,7 @@ public final class BrowserHost {
      * Send a mouse click event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left corner of the view.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:753</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:753</a>
      */
     public CompletableFuture<Void> sendMouseClickEvent(MouseEvent event, int type, int mouseUp, int clickCount) {
         return session
@@ -484,7 +484,7 @@ public final class BrowserHost {
      * Send a mouse move event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left corner of the view.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:763</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:763</a>
      */
     public CompletableFuture<Void> sendMouseMoveEvent(MouseEvent event, int mouseLeave) {
         return session
@@ -496,7 +496,7 @@ public final class BrowserHost {
      * Send a mouse wheel event to the browser. The {@code x} and {@code y} coordinates are relative to the upper-left corner of the view. The {@code deltaY} and {@code deltaX} values represent the movement delta in the X and Y directions respectively. In order to scroll inside select popups with window rendering disabled {@code CefRenderHandler.getScreenPoint()} should be implemented properly.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:771</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:771</a>
      */
     public CompletableFuture<Void> sendMouseWheelEvent(MouseEvent event, int deltaX, int deltaY) {
         return session
@@ -508,7 +508,7 @@ public final class BrowserHost {
      * Send a capture lost event to the browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:790</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:790</a>
      */
     public CompletableFuture<Void> sendCaptureLostEvent() {
         return session
@@ -520,7 +520,7 @@ public final class BrowserHost {
      * Notify the browser that the window hosting it is about to be moved or resized. This method is only used on Windows and Linux.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:796</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:796</a>
      */
     public CompletableFuture<Void> notifyMoveOrResizeStarted() {
         return session
@@ -532,7 +532,7 @@ public final class BrowserHost {
      * Returns the maximum rate in frames per second (fps) that {@code CefRenderHandler.onPaint()} will be called for a windowless browser. The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum value is 1 and the default value is 30. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:803</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:803</a>
      */
     public CompletableFuture<Integer> getWindowlessFrameRate() {
         return session
@@ -544,7 +544,7 @@ public final class BrowserHost {
      * Set the maximum rate in frames per second (fps) that CefRenderHandler:: OnPaint will be called for a windowless browser. The actual fps may be lower if the browser cannot generate frames at the requested rate. The minimum value is 1 and the default value is 30. Can also be set at browser creation via CefBrowserSettings.windowless_frame_rate.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:813</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:813</a>
      */
     public CompletableFuture<Void> setWindowlessFrameRate(int frameRate) {
         return session
@@ -558,7 +558,7 @@ public final class BrowserHost {
      *
      * @param text may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:855</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:855</a>
      */
     public CompletableFuture<Void> imeCommitText(@Nonnull String text, Range replacementRange, int relativeCursorPos) {
         return session
@@ -570,7 +570,7 @@ public final class BrowserHost {
      * Completes the existing composition by applying the current composition node contents. If {@code keep_selection} is {@code false} the current selection, if any, will be discarded. See comments on ImeSetComposition for usage. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:869</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:869</a>
      */
     public CompletableFuture<Void> imeFinishComposingText(int keepSelection) {
         return session
@@ -582,7 +582,7 @@ public final class BrowserHost {
      * Cancels the existing composition and discards the composition node contents without applying them. See comments on ImeSetComposition for usage. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:878</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:878</a>
      */
     public CompletableFuture<Void> imeCancelComposition() {
         return session
@@ -594,7 +594,7 @@ public final class BrowserHost {
      * Call this method when the user drags the mouse into the web view (before calling DragTargetDragOver/DragTargetLeave/DragTargetDrop). {@code drag_data} should not contain file contents as this type of data is not allowed to be dragged into the web view. File contents can be removed using {@code CefDragData.resetFileContents()} (for example, if {@code drag_data} comes from {@code CefRenderHandler.startDragging()}). This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:887</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:887</a>
      */
     public CompletableFuture<Void> dragTargetDragEnter(@Nonnull RemoteHandle dragData, MouseEvent event, int allowedOps) {
         return session
@@ -606,7 +606,7 @@ public final class BrowserHost {
      * Call this method each time the mouse is moved across the web view during a drag operation (after calling DragTargetDragEnter and before calling DragTargetDragLeave/DragTargetDrop). This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:901</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:901</a>
      */
     public CompletableFuture<Void> dragTargetDragOver(MouseEvent event, int allowedOps) {
         return session
@@ -618,7 +618,7 @@ public final class BrowserHost {
      * Call this method when the user drags the mouse out of the web view (after calling DragTargetDragEnter). This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:911</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:911</a>
      */
     public CompletableFuture<Void> dragTargetDragLeave() {
         return session
@@ -630,7 +630,7 @@ public final class BrowserHost {
      * Call this method when the user completes the drag operation by dropping the object onto the web view (after calling DragTargetDragEnter). The object being dropped is {@code drag_data}, given as an argument to the previous DragTargetDragEnter call. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:919</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:919</a>
      */
     public CompletableFuture<Void> dragTargetDrop(MouseEvent event) {
         return session
@@ -642,7 +642,7 @@ public final class BrowserHost {
      * Call this method when the drag operation started by a {@code CefRenderHandler.startDragging()} call has ended either in a drop or by being cancelled. {@code y} and {@code x} are mouse coordinates relative to the upper-left corner of the view. If the web view is both the drag source and the drag target then all DragTarget* methods should be called before DragSource* mthods. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:929</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:929</a>
      */
     public CompletableFuture<Void> dragSourceEndedAt(int x, int y, int op) {
         return session
@@ -654,7 +654,7 @@ public final class BrowserHost {
      * Call this method when the drag operation started by a {@code CefRenderHandler.startDragging()} call has completed. This method may be called immediately without first calling DragSourceEndedAt to cancel a drag operation. If the web view is both the drag source and the drag target then all DragTarget* methods should be called before DragSource* mthods. This method is only used when window rendering is disabled.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:941</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:941</a>
      */
     public CompletableFuture<Void> dragSourceSystemDragEnded() {
         return session
@@ -666,7 +666,7 @@ public final class BrowserHost {
      * Returns the current visible navigation entry for this browser. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:953</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:953</a>
      */
     public CompletableFuture<NavigationEntry> getVisibleNavigationEntry() {
         return session
@@ -683,7 +683,7 @@ public final class BrowserHost {
      * For windowless browsers accessibility will be enabled in TreeOnly mode (which corresponds to kAccessibilityModeWebContentsOnly in Chromium). In this mode renderer accessibility is enabled, the full tree is computed, and events are passed to CefAccessibiltyHandler, but platform accessibility objects are not created. The client may implement platform accessibility objects using CefAccessibiltyHandler callbacks if desired.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:960</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:960</a>
      */
     public CompletableFuture<Void> setAccessibilityState(int accessibilityState) {
         return session
@@ -695,7 +695,7 @@ public final class BrowserHost {
      * Enable notifications of auto resize via {@code CefDisplayHandler.onAutoResize()}. Notifications are disabled by default. {@code min_size} and {@code max_size} define the range of allowed sizes.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:989</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:989</a>
      */
     public CompletableFuture<Void> setAutoResizeEnabled(int enabled, Size minSize, Size maxSize) {
         return session
@@ -707,7 +707,7 @@ public final class BrowserHost {
      * Set whether the browser's audio is muted.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:999</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:999</a>
      */
     public CompletableFuture<Void> setAudioMuted(int mute) {
         return session
@@ -719,7 +719,7 @@ public final class BrowserHost {
      * Returns {@code true} if the browser's audio is muted.  This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1005</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1005</a>
      */
     public CompletableFuture<Integer> isAudioMuted() {
         return session
@@ -731,7 +731,7 @@ public final class BrowserHost {
      * Returns {@code true} if the renderer is currently in browser fullscreen. This differs from window fullscreen in that browser fullscreen is entered using the JavaScript Fullscreen API and modifies CSS attributes such as the ::backdrop pseudo-element and :fullscreen pseudo-class. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1012</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1012</a>
      */
     public CompletableFuture<Integer> isFullscreen() {
         return session
@@ -743,7 +743,7 @@ public final class BrowserHost {
      * Requests the renderer to exit browser fullscreen. In most cases exiting window fullscreen should also exit browser fullscreen. With Alloy style this method should be called in response to a user action such as clicking the green traffic light button on MacOS ({@code CefWindowDelegate.onWindowFullscreenTransition()} callback) or pressing the "ESC" key ({@code CefKeyboardHandler.onPreKeyEvent()} callback). With Chrome style these standard exit actions are handled internally but new/additional user actions can use this method. Set {@code will_cause_resize} to {@code true} if exiting browser fullscreen will cause a view resize.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1022</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1022</a>
      */
     public CompletableFuture<Void> exitFullscreen(int willCauseResize) {
         return session
@@ -755,7 +755,7 @@ public final class BrowserHost {
      * Returns {@code true} if a Chrome command is supported and enabled. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. This method can only be called on the UI thread. Only used with Chrome style.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1036</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1036</a>
      */
     public CompletableFuture<Integer> canExecuteChromeCommand(int commandId) {
         return session
@@ -767,7 +767,7 @@ public final class BrowserHost {
      * Execute a Chrome command. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. {@code disposition} provides information about the intended command target. Only used with Chrome style.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1046</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1046</a>
      */
     public CompletableFuture<Void> executeChromeCommand(int commandId, int disposition) {
         return session
@@ -779,7 +779,7 @@ public final class BrowserHost {
      * Returns {@code true} if the render process associated with this browser is currently unresponsive as indicated by a lack of input event processing for at least 15 seconds. To receive associated state change notifications and optionally handle an unresponsive render process implement {@code CefRequestHandler.onRenderProcessUnresponsive()}. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1058</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1058</a>
      */
     public CompletableFuture<Integer> isRenderProcessUnresponsive() {
         return session
@@ -791,7 +791,7 @@ public final class BrowserHost {
      * Returns the runtime style for this browser (ALLOY or CHROME). See cef_runtime_style_t documentation for details.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1069</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
         return session

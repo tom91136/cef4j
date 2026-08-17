@@ -39,7 +39,7 @@ public final class DragData {
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -51,7 +51,7 @@ public final class DragData {
      * Returns {@code true} if the drag data is a link.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
      */
     public CompletableFuture<Integer> isLink() {
         return session
@@ -63,7 +63,7 @@ public final class DragData {
      * Returns {@code true} if the drag data is a text or html fragment.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
      */
     public CompletableFuture<Integer> isFragment() {
         return session
@@ -75,7 +75,7 @@ public final class DragData {
      * Returns {@code true} if the drag data is a file.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
      */
     public CompletableFuture<Integer> isFile() {
         return session
@@ -87,7 +87,7 @@ public final class DragData {
      * Returns the URL of the link, if any, that encloses the node that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     public CompletableFuture<String> getLinkUrl() {
         return session
@@ -99,7 +99,7 @@ public final class DragData {
      * Return the title associated with the link being dragged.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
      */
     public CompletableFuture<String> getLinkTitle() {
         return session
@@ -111,7 +111,7 @@ public final class DragData {
      * Return the metadata, if any, associated with the link being dragged.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
      */
     public CompletableFuture<String> getLinkMetadata() {
         return session
@@ -123,7 +123,7 @@ public final class DragData {
      * Return the plain text fragment that is being dragged.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
      */
     public CompletableFuture<String> getFragmentText() {
         return session
@@ -135,7 +135,7 @@ public final class DragData {
      * Return the text/html fragment that is being dragged.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
      */
     public CompletableFuture<String> getFragmentHtml() {
         return session
@@ -147,7 +147,7 @@ public final class DragData {
      * Return the base URL that the fragment came from. This value is used for resolving relative URLs and may be empty.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
      */
     public CompletableFuture<String> getFragmentBaseUrl() {
         return session
@@ -159,7 +159,7 @@ public final class DragData {
      * Return the name of the file being dragged out of the browser window.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
      */
     public CompletableFuture<String> getFileName() {
         return session
@@ -173,7 +173,7 @@ public final class DragData {
      *
      * @param writer may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
      */
     public CompletableFuture<Long> getFileContents(@Nonnull RemoteHandle writer) {
         return session
@@ -185,7 +185,7 @@ public final class DragData {
      * Retrieve the list of file names that are being dragged into the browser window.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
      */
     public CompletableFuture<Integer> getFileNames(String[] names) {
         return session
@@ -197,7 +197,7 @@ public final class DragData {
      * Retrieve the list of file paths that are being dragged into the browser window.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
      */
     public CompletableFuture<Integer> getFilePaths(String[] paths) {
         return session
@@ -211,7 +211,7 @@ public final class DragData {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
      */
     public CompletableFuture<Void> setLinkUrl(@Nonnull String url) {
         return session
@@ -225,7 +225,7 @@ public final class DragData {
      *
      * @param title may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
      */
     public CompletableFuture<Void> setLinkTitle(@Nonnull String title) {
         return session
@@ -239,7 +239,7 @@ public final class DragData {
      *
      * @param data may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
      */
     public CompletableFuture<Void> setLinkMetadata(@Nonnull String data) {
         return session
@@ -253,7 +253,7 @@ public final class DragData {
      *
      * @param text may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
      */
     public CompletableFuture<Void> setFragmentText(@Nonnull String text) {
         return session
@@ -267,7 +267,7 @@ public final class DragData {
      *
      * @param html may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
      */
     public CompletableFuture<Void> setFragmentHtml(@Nonnull String html) {
         return session
@@ -281,7 +281,7 @@ public final class DragData {
      *
      * @param baseUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
      */
     public CompletableFuture<Void> setFragmentBaseUrl(@Nonnull String baseUrl) {
         return session
@@ -293,7 +293,7 @@ public final class DragData {
      * Reset the file contents. You should do this before calling {@code CefBrowserHost.dragTargetDragEnter()} as the web view does not allow us to drag in this kind of data.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
      */
     public CompletableFuture<Void> resetFileContents() {
         return session
@@ -307,7 +307,7 @@ public final class DragData {
      *
      * @param displayName may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
     public CompletableFuture<Void> addFile(@Nonnull String path, @Nonnull String displayName) {
         return session
@@ -319,7 +319,7 @@ public final class DragData {
      * Clear list of filenames.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
      */
     public CompletableFuture<Void> clearFilenames() {
         return session
@@ -331,7 +331,7 @@ public final class DragData {
      * Get the image representation of drag data. May return {@code null} if no image representation is available.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
      */
     public CompletableFuture<Image> getImage() {
         return session
@@ -344,7 +344,7 @@ public final class DragData {
      * Get the image hotspot (drag start location relative to image dimensions).
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
      */
     public CompletableFuture<Point> getImageHotspot() {
         return session
@@ -356,7 +356,7 @@ public final class DragData {
      * Returns {@code true} if an image representation of drag data is available.
      * <p>Definition generated from cef_drag_data.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
      */
     public CompletableFuture<Integer> hasImage() {
         return session

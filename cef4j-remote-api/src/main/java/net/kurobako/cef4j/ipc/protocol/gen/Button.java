@@ -54,7 +54,7 @@ public final class Button {
      * Returns the state of this component at the time this object was created. A component is considered installed when its state is one of: {@code CEF_COMPONENT_STATE_UPDATED}, {@code CEF_COMPONENT_STATE_UP_TO_DATE}, or {@code CEF_COMPONENT_STATE_RUN}.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
      */
     public CompletableFuture<Integer> getState() {
         return session

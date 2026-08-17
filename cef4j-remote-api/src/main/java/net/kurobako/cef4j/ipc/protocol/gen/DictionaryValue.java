@@ -39,7 +39,7 @@ public final class DictionaryValue {
      * Returns {@code true} if this object is valid. This object may become invalid if the underlying data is owned by another object (e.g. list or dictionary) and that other object is then modified or destroyed. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:320</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:320</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class DictionaryValue {
      * Returns {@code true} if this object is currently owned by another object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:329</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:329</a>
      */
     public CompletableFuture<Integer> isOwned() {
         return session
@@ -63,7 +63,7 @@ public final class DictionaryValue {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:335</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -75,7 +75,7 @@ public final class DictionaryValue {
      * Returns {@code true} if this object and {@code that} object have the same underlying data. If {@code true} modifications to this object will also affect {@code that} object and vice-versa.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:342</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:342</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -87,7 +87,7 @@ public final class DictionaryValue {
      * Returns {@code true} if this object and {@code that} object have an equivalent underlying value but are not necessarily the same object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:350</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:350</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
         return session
@@ -99,7 +99,7 @@ public final class DictionaryValue {
      * Returns a writable copy of this object. If {@code exclude_empty_children} is {@code true} any empty dictionaries or lists will be excluded from the copy.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:357</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:357</a>
      */
     public CompletableFuture<DictionaryValue> copy(int excludeEmptyChildren) {
         return session
@@ -112,7 +112,7 @@ public final class DictionaryValue {
      * Returns the number of values.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:364</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:364</a>
      */
     public CompletableFuture<Long> getSize() {
         return session
@@ -124,7 +124,7 @@ public final class DictionaryValue {
      * Removes all values. Returns {@code true} on success.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:370</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:370</a>
      */
     public CompletableFuture<Integer> clear() {
         return session
@@ -136,7 +136,7 @@ public final class DictionaryValue {
      * Returns {@code true} if the current dictionary has a value for the given key.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:376</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:376</a>
      */
     public CompletableFuture<Integer> hasKey(@Nonnull String key) {
         return session
@@ -148,7 +148,7 @@ public final class DictionaryValue {
      * Reads all keys for this dictionary into the specified vector.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:382</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:382</a>
      */
     public CompletableFuture<Integer> getKeys(String[] keys) {
         return session
@@ -160,7 +160,7 @@ public final class DictionaryValue {
      * Removes the value at the specified key. Returns {@code true} is the value was removed successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:388</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:388</a>
      */
     public CompletableFuture<Integer> remove(@Nonnull String key) {
         return session
@@ -172,7 +172,7 @@ public final class DictionaryValue {
      * Returns the value type for the specified key.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:395</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:395</a>
      */
     public CompletableFuture<Integer> getType(@Nonnull String key) {
         return session
@@ -184,7 +184,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key. For simple types the returned value will copy existing data and modifications to the value will not modify this object. For complex types (binary, dictionary and list) the returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:401</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:401</a>
      */
     public CompletableFuture<Value> getValue(@Nonnull String key) {
         return session
@@ -197,7 +197,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type bool.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:411</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:411</a>
      */
     public CompletableFuture<Integer> getBool(@Nonnull String key) {
         return session
@@ -209,7 +209,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type int.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:417</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:417</a>
      */
     public CompletableFuture<Integer> getInt(@Nonnull String key) {
         return session
@@ -221,7 +221,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type string.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:429</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:429</a>
      */
     public CompletableFuture<String> getString(@Nonnull String key) {
         return session
@@ -233,7 +233,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type binary. The returned value will reference existing data.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:435</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:435</a>
      */
     public CompletableFuture<BinaryValue> getBinary(@Nonnull String key) {
         return session
@@ -246,7 +246,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type dictionary. The returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:442</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:442</a>
      */
     public CompletableFuture<DictionaryValue> getDictionary(@Nonnull String key) {
         return session
@@ -259,7 +259,7 @@ public final class DictionaryValue {
      * Returns the value at the specified key as type list. The returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:450</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:450</a>
      */
     public CompletableFuture<ListValue> getList(@Nonnull String key) {
         return session
@@ -272,7 +272,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key. Returns {@code true} if the value was set successfully. If {@code value} represents simple data then the underlying data will be copied and modifications to {@code value} will not modify this object. If {@code value} represents complex data (binary, dictionary or list) then the underlying data will be referenced and modifications to {@code value} will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:458</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:458</a>
      */
     public CompletableFuture<Integer> setValue(@Nonnull String key, @Nonnull RemoteHandle value) {
         return session
@@ -284,7 +284,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type null. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:469</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:469</a>
      */
     public CompletableFuture<Integer> setNull(@Nonnull String key) {
         return session
@@ -296,7 +296,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type bool. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:476</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:476</a>
      */
     public CompletableFuture<Integer> setBool(@Nonnull String key, int value) {
         return session
@@ -308,7 +308,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type int. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:483</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:483</a>
      */
     public CompletableFuture<Integer> setInt(@Nonnull String key, int value) {
         return session
@@ -322,7 +322,7 @@ public final class DictionaryValue {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:497</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:497</a>
      */
     public CompletableFuture<Integer> setString(@Nonnull String key, @Nonnull String value) {
         return session
@@ -334,7 +334,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type binary. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:504</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:504</a>
      */
     public CompletableFuture<Integer> setBinary(@Nonnull String key, @Nonnull RemoteHandle value) {
         return session
@@ -346,7 +346,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type dict. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:515</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:515</a>
      */
     public CompletableFuture<Integer> setDictionary(@Nonnull String key, @Nonnull RemoteHandle value) {
         return session
@@ -358,7 +358,7 @@ public final class DictionaryValue {
      * Sets the value at the specified key as type list. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:526</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:526</a>
      */
     public CompletableFuture<Integer> setList(@Nonnull String key, @Nonnull RemoteHandle value) {
         return session

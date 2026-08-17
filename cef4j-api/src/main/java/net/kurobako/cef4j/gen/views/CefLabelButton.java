@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -22,9 +22,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_label_button_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:47</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:47</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefLabelButton extends CefButton {
 
@@ -33,7 +33,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>cef_menu_button_t* (CEF_CALLBACK* as_menu_button)(struct _cef_label_button_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:64</a>
      */
     Optional<CefMenuButton> asMenuButton();
 
@@ -42,7 +42,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_text)(struct _cef_label_button_t* self, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:71</a>
      */
     void setText(@Nullable String text);
 
@@ -51,7 +51,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_text)(struct _cef_label_button_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:78</a>
      */
     Optional<String> getText();
 
@@ -62,7 +62,7 @@ public interface CefLabelButton extends CefButton {
      *
      * @param image may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:84</a>
      */
     void setImage(@Nonnull CefButtonState buttonState, @Nullable CefImage image);
 
@@ -71,7 +71,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>cef_image_t* (CEF_CALLBACK* get_image)(struct _cef_label_button_t* self, cef_button_state_t button_state);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:93</a>
      */
     Optional<CefImage> getImage(@Nonnull CefButtonState buttonState);
 
@@ -80,7 +80,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_text_color)(struct _cef_label_button_t* self, cef_button_state_t for_state, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:100</a>
      */
     void setTextColor(@Nonnull CefButtonState forState, int color);
 
@@ -89,7 +89,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_enabled_text_colors)(struct _cef_label_button_t* self, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:107</a>
      */
     void setEnabledTextColors(int color);
 
@@ -112,7 +112,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_font_list)(struct _cef_label_button_t* self, const cef_string_t* font_list);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:113</a>
      */
     void setFontList(@Nullable String fontList);
 
@@ -121,7 +121,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_horizontal_alignment)(struct _cef_label_button_t* self, cef_horizontal_alignment_t alignment);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:128</a>
      */
     void setHorizontalAlignment(@Nonnull CefHorizontalAlignment alignment);
 
@@ -130,7 +130,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_minimum_size)(struct _cef_label_button_t* self, const cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:135</a>
      */
     void setMinimumSize(@Nonnull CefSize size);
 
@@ -139,7 +139,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>void (CEF_CALLBACK* set_maximum_size)(struct _cef_label_button_t* self, const cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:141</a>
      */
     void setMaximumSize(@Nonnull CefSize size);
     /**
@@ -147,7 +147,7 @@ public interface CefLabelButton extends CefButton {
      * <p>Definition generated from views/cef_label_button_capi.h
      * <pre>CEF_EXPORT cef_label_button_t* cef_label_button_create(struct _cef_button_delegate_t* delegate, const cef_string_t* text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__label__button_8h.html">views/cef_label_button.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__label__button_8h.html">views/cef_label_button.h:54</a>
      */
     static Optional<CefLabelButton> create(@Nullable CefButtonDelegate delegate, @Nullable String text) {
       return Optional.ofNullable(NativePeer.create0(delegate, text));

@@ -12,7 +12,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 
 /**
  * Actions and events related to the inspected page belong to the page domain.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Page.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Page.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Page {
@@ -88,111 +88,6 @@ public final class Page {
             public AdFrameStatus build() {
                 if (!values.containsKey("adFrameType")) throw new IllegalStateException("Missing required CDP field: adFrameType");
                 return new AdFrameStatus(values);
-            }
-        }
-    }
-    /**
-     * Identifies the script which caused a script or frame to be labelled as an ad.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AdScriptId extends CdpObject {
-        private AdScriptId(Map<String, Object> values) { super(values); }
-        @Nullable public static AdScriptId fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AdScriptId(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Script Id of the script which caused a script or frame to be labelled as an ad.
-         * @return the protocol field value
-         */
-        @Nullable public String scriptId() {
-            return (String) value("scriptId");
-        }
-        /**
-         * Id of scriptId&#x27;s debugger.
-         * @return the protocol field value
-         */
-        @Nullable public String debuggerId() {
-            return (String) value("debuggerId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Script Id of the script which caused a script or frame to be labelled as an ad.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scriptId(@Nullable String value) {
-                if (value == null) values.remove("scriptId");
-                else values.put("scriptId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of scriptId&#x27;s debugger.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder debuggerId(@Nullable String value) {
-                if (value == null) values.remove("debuggerId");
-                else values.put("debuggerId", jsonValue(value));
-                return this;
-            }
-            public AdScriptId build() {
-                if (!values.containsKey("scriptId")) throw new IllegalStateException("Missing required CDP field: scriptId");
-                if (!values.containsKey("debuggerId")) throw new IllegalStateException("Missing required CDP field: debuggerId");
-                return new AdScriptId(values);
-            }
-        }
-    }
-    /**
-     * Encapsulates the script ancestry and the root script filterlist rule that caused the frame to be labelled as an ad. Only created when {@code ancestryChain} is not empty.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AdScriptAncestry extends CdpObject {
-        private AdScriptAncestry(Map<String, Object> values) { super(values); }
-        @Nullable public static AdScriptAncestry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AdScriptAncestry(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * A chain of {@code AdScriptId}s representing the ancestry of an ad script that led to the creation of a frame. The chain is ordered from the script itself (lower level) up to its root ancestor that was flagged by filterlist.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Page.AdScriptId> ancestryChain() {
-            return list(value("ancestryChain"), element0 -> Page.AdScriptId.fromMap(objectMap(element0)));
-        }
-        /**
-         * The filterlist rule that caused the root (last) script in {@code ancestryChain} to be ad-tagged. Only populated if the rule is available.
-         * @return the protocol field value
-         */
-        @Nullable public String rootScriptFilterlistRule() {
-            return (String) value("rootScriptFilterlistRule");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A chain of {@code AdScriptId}s representing the ancestry of an ad script that led to the creation of a frame. The chain is ordered from the script itself (lower level) up to its root ancestor that was flagged by filterlist.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ancestryChain(@Nullable java.util.List<Page.AdScriptId> value) {
-                if (value == null) values.remove("ancestryChain");
-                else values.put("ancestryChain", jsonValue(value));
-                return this;
-            }
-            /**
-             * The filterlist rule that caused the root (last) script in {@code ancestryChain} to be ad-tagged. Only populated if the rule is available.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rootScriptFilterlistRule(@Nullable String value) {
-                if (value == null) values.remove("rootScriptFilterlistRule");
-                else values.put("rootScriptFilterlistRule", jsonValue(value));
-                return this;
-            }
-            public AdScriptAncestry build() {
-                if (!values.containsKey("ancestryChain")) throw new IllegalStateException("Missing required CDP field: ancestryChain");
-                return new AdScriptAncestry(values);
             }
         }
     }
@@ -287,7 +182,6 @@ public final class Page {
         public static final String ENCRYPTED_MEDIA = "encrypted-media";
         public static final String EXECUTION_WHILE_OUT_OF_VIEWPORT = "execution-while-out-of-viewport";
         public static final String EXECUTION_WHILE_NOT_RENDERED = "execution-while-not-rendered";
-        public static final String FENCED_UNPARTITIONED_STORAGE_READ = "fenced-unpartitioned-storage-read";
         public static final String FOCUS_WITHOUT_USER_ACTIVATION = "focus-without-user-activation";
         public static final String FULLSCREEN = "fullscreen";
         public static final String FROBULATE = "frobulate";
@@ -333,6 +227,7 @@ public final class Page {
         public static final String SUB_APPS = "sub-apps";
         public static final String SUMMARIZER = "summarizer";
         public static final String SYNC_XHR = "sync-xhr";
+        public static final String TOOLS = "tools";
         public static final String TRANSLATOR = "translator";
         public static final String UNLOAD = "unload";
         public static final String USB = "usb";
@@ -3696,6 +3591,7 @@ public final class Page {
         public static final String BACKFORWARDCACHEDISABLEDFORPRERENDER = "BackForwardCacheDisabledForPrerender";
         public static final String USERAGENTOVERRIDEDIFFERS = "UserAgentOverrideDiffers";
         public static final String FOREGROUNDCACHELIMIT = "ForegroundCacheLimit";
+        public static final String FORWARDCACHEDISABLED = "ForwardCacheDisabled";
         public static final String BROWSINGINSTANCENOTSWAPPED = "BrowsingInstanceNotSwapped";
         public static final String BACKFORWARDCACHEDISABLEDFORDELEGATE = "BackForwardCacheDisabledForDelegate";
         public static final String UNLOADHANDLEREXISTSINMAINFRAME = "UnloadHandlerExistsInMainFrame";
@@ -3797,6 +3693,7 @@ public final class Page {
         public static final String EMBEDDEREXTENSIONMESSAGING = "EmbedderExtensionMessaging";
         public static final String EMBEDDEREXTENSIONMESSAGINGFOROPENPORT = "EmbedderExtensionMessagingForOpenPort";
         public static final String EMBEDDEREXTENSIONSENTMESSAGETOCACHEDFRAME = "EmbedderExtensionSentMessageToCachedFrame";
+        public static final String EMBEDDEREXTENSIONFRAME = "EmbedderExtensionFrame";
         public static final String REQUESTEDBYWEBVIEWCLIENT = "RequestedByWebViewClient";
         public static final String POSTMESSAGEBYWEBVIEWCLIENT = "PostMessageByWebViewClient";
         public static final String CACHECONTROLNOSTOREDEVICEBOUNDSESSIONTERMINATED = "CacheControlNoStoreDeviceBoundSessionTerminated";
@@ -5269,8 +5166,8 @@ public final class Page {
          * The ancestry chain of ad script identifiers leading to this frame&#x27;s creation, along with the root script&#x27;s filterlist rule. The ancestry chain is ordered from the most immediate script (in the frame creation stack) to more distant ancestors (that created the immediately preceding script). Only sent if frame is labelled as an ad and ids are available.
          * @return the protocol field value
          */
-        @Nullable public Page.AdScriptAncestry adScriptAncestry() {
-            return Page.AdScriptAncestry.fromMap(objectMap(value("adScriptAncestry")));
+        @Nullable public Network.AdAncestry adScriptAncestry() {
+            return Network.AdAncestry.fromMap(objectMap(value("adScriptAncestry")));
         }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
@@ -5279,7 +5176,7 @@ public final class Page {
              * @param value field value; null removes an optional value
              * @return this builder
              */
-            public Builder adScriptAncestry(@Nullable Page.AdScriptAncestry value) {
+            public Builder adScriptAncestry(@Nullable Network.AdAncestry value) {
                 if (value == null) values.remove("adScriptAncestry");
                 else values.put("adScriptAncestry", jsonValue(value));
                 return this;

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -17,9 +17,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_server_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:50</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:50</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefServer extends CefLibraryObject {
 
@@ -28,7 +28,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:82</a>
      */
     Optional<CefTaskRunner> getTaskRunner();
 
@@ -37,7 +37,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* shutdown)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:88</a>
      */
     void shutdown();
 
@@ -46,7 +46,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>int (CEF_CALLBACK* is_running)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:96</a>
      */
     boolean isRunning();
 
@@ -55,7 +55,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_address)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:105</a>
      */
     Optional<String> getAddress();
 
@@ -64,7 +64,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>int (CEF_CALLBACK* has_connection)(struct _cef_server_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:111</a>
      */
     boolean hasConnection();
 
@@ -73,7 +73,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>int (CEF_CALLBACK* is_valid_connection)(struct _cef_server_t* self, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:118</a>
      */
     boolean isValidConnection(int connectionId);
 
@@ -85,7 +85,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:125</a>
      */
     void sendHttp200Response(int connectionId, @Nullable String contentType, @Nonnull ByteBuffer data);
 
@@ -94,7 +94,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* send_http404_response)(struct _cef_server_t* self, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:138</a>
      */
     void sendHttp404Response(int connectionId);
 
@@ -103,7 +103,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* send_http500_response)(struct _cef_server_t* self, int connection_id, const cef_string_t* error_message);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:146</a>
      */
     void sendHttp500Response(int connectionId, @Nullable String errorMessage);
 
@@ -114,7 +114,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @param extraHeaders may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:156</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:156</a>
      */
     void sendHttpResponse(int connectionId, int responseCode, @Nullable String contentType, long contentLength, @Nullable Map<String, List<String>> extraHeaders);
 
@@ -126,7 +126,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:177</a>
      */
     void sendRawData(int connectionId, @Nonnull ByteBuffer data);
 
@@ -135,7 +135,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* close_connection)(struct _cef_server_t* self, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:190</a>
      */
     void closeConnection(int connectionId);
 
@@ -147,7 +147,7 @@ public interface CefServer extends CefLibraryObject {
      *
      * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:197</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:197</a>
      */
     void sendWebSocketMessage(int connectionId, @Nonnull ByteBuffer data);
     /**
@@ -155,7 +155,7 @@ public interface CefServer extends CefLibraryObject {
      * <p>Definition generated from cef_server_capi.h
      * <pre>CEF_EXPORT void cef_server_create(const cef_string_t* address, uint16_t port, int backlog, struct _cef_server_handler_t* handler);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:62</a>
      */
     static void create(@Nullable String address, int port, int backlog, @Nullable CefServerHandler handler) {
       NativePeer.create0(address, port, backlog, handler);

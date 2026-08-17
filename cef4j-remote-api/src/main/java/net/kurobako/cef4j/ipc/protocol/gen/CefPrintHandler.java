@@ -17,7 +17,7 @@ public interface CefPrintHandler {
      * Called when printing has started for the specified {@code browser}. This method will be called before the other OnPrint*() methods and irrespective of how printing was initiated (e.g. {@code CefBrowserHost.print()}, JavaScript window.print() or PDF extension print button).
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:85</a>
      */
     default void onPrintStart(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -25,7 +25,7 @@ public interface CefPrintHandler {
      * Synchronize {@code settings} with client state. If {@code get_defaults} is {@code true} then populate {@code settings} with the default print settings. Do not keep a reference to {@code settings} outside of this callback.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:94</a>
      */
     default void onPrintSettings(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle settings, int getDefaults) {}
 
@@ -33,7 +33,7 @@ public interface CefPrintHandler {
      * Show the print dialog. Execute {@code callback} once the dialog is dismissed. Return {@code true} if the dialog will be displayed or {@code false} to cancel the printing immediately.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
      */
     @Nullable
     default Boolean onPrintDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int hasSelection, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -42,7 +42,7 @@ public interface CefPrintHandler {
      * Send the print job to the printer. Execute {@code callback} once the job is completed. Return {@code true} if the job will proceed or {@code false} to cancel the job immediately.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
      */
     @Nullable
     default Boolean onPrintJob(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String documentName, String pdfFilePath, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -51,7 +51,7 @@ public interface CefPrintHandler {
      * Reset client state related to printing.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:125</a>
      */
     default void onPrintReset(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

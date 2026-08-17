@@ -37,11 +37,27 @@ for attempt in 1 2 3; do
     sleep 10
 done
 
+# Spotless provisions Eclipse CDT lazily from its P2 repository. Prewarm it
+# independently for every pooled CEF lane so transient downloads are retried
+# without retrying a build or test.
+for attempt in 1 2 3; do
+    if ./mvnw -B -pl cef4j-platform spotless:check \
+            "-Dcef.version=${CEF_VERSION}" \
+            "-Dcef.api.version=${CEF_API}"; then
+        break
+    fi
+    [ "$attempt" = "3" ] && exit 1
+    echo "spotless:check attempt ${attempt} failed, retrying..."
+    sleep 10
+done
+
 ./mvnw -B clean install -DskipTests "${reactor_selection[@]}" \
     "-Dcef.version=${CEF_VERSION}" \
     "-Dcef.api.version=${CEF_API}" \
     "-Djavafx.version=${JAVAFX_VERSION}" \
     "-Djavafx.test.version=${JAVAFX_TEST_VERSION}"
+
+.github/ci/verify-thin-platform-jar.sh
 
 # Native portability guard: only libcef + glibc core libs may be linked, and no symbol may
 # require a glibc version above 2.28 (AlmaLinux 8 baseline).
@@ -62,7 +78,7 @@ while IFS= read -r LIB; do
         echo "ERROR: $LIB requires $max (above AlmaLinux 8 baseline 2.28)"
         exit 1
     fi
-done < <(find cef4j-native/target cef4j-runtime-server/target \
+done < <(find cef4j-platform/target cef4j-runtime-server/target \
     -type f \( -name 'libcef4j.so' -o -name 'cef4j_launcher' -o -name 'cef4j-runtime-server' \))
 
 if [ "${JAVAFX_TESTS}" = "true" ]; then

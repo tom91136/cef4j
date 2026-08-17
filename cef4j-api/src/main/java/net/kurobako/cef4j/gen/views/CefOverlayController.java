@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -20,9 +20,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_overlay_controller_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefOverlayController extends CefLibraryObject {
 
@@ -31,7 +31,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:56</a>
      */
     boolean isValid();
 
@@ -40,7 +40,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_overlay_controller_t* self, struct _cef_overlay_controller_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:62</a>
      */
     boolean isSame(@Nullable CefOverlayController that);
 
@@ -49,7 +49,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_contents_view)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:68</a>
      */
     Optional<CefView> getContentsView();
 
@@ -58,7 +58,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_window_t* (CEF_CALLBACK* get_window)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:74</a>
      */
     Optional<CefWindow> getWindow();
 
@@ -69,7 +69,7 @@ public interface CefOverlayController extends CefLibraryObject {
      *
      * @return the result, or {@code CEF_DOCKING_MODE_TOP_LEFT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:81</a>
      */
     CefDockingMode getDockingMode();
 
@@ -78,7 +78,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* destroy)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:87</a>
      */
     void destroy();
 
@@ -87,7 +87,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* set_bounds)(struct _cef_overlay_controller_t* self, const cef_rect_t* bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:93</a>
      */
     void setBounds(@Nonnull CefRect bounds);
 
@@ -96,7 +96,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_bounds)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:106</a>
      */
     CefRect getBounds();
 
@@ -105,7 +105,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_bounds_in_screen)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:113</a>
      */
     CefRect getBoundsInScreen();
 
@@ -114,7 +114,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* set_size)(struct _cef_overlay_controller_t* self, const cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:120</a>
      */
     void setSize(@Nonnull CefSize size);
 
@@ -123,7 +123,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_size)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:133</a>
      */
     CefSize getSize();
 
@@ -132,7 +132,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* set_position)(struct _cef_overlay_controller_t* self, const cef_point_t* position);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:139</a>
      */
     void setPosition(@Nonnull CefPoint position);
 
@@ -141,7 +141,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_point_t* (CEF_CALLBACK* get_position)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:151</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:151</a>
      */
     CefPoint getPosition();
 
@@ -150,7 +150,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* set_insets)(struct _cef_overlay_controller_t* self, const cef_insets_t* insets);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:157</a>
      */
     void setInsets(@Nonnull CefInsets insets);
 
@@ -159,7 +159,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>cef_insets_t* (CEF_CALLBACK* get_insets)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:165</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:165</a>
      */
     CefInsets getInsets();
 
@@ -168,7 +168,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* size_to_preferred_size)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:171</a>
      */
     void sizeToPreferredSize();
 
@@ -177,7 +177,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>void (CEF_CALLBACK* set_visible)(struct _cef_overlay_controller_t* self, int visible);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:182</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:182</a>
      */
     void setVisible(boolean visible);
 
@@ -186,7 +186,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>int (CEF_CALLBACK* is_visible)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:191</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:191</a>
      */
     boolean isVisible();
 
@@ -195,7 +195,7 @@ public interface CefOverlayController extends CefLibraryObject {
      * <p>Definition generated from views/cef_overlay_controller_capi.h
      * <pre>int (CEF_CALLBACK* is_drawn)(struct _cef_overlay_controller_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:200</a>
      */
     boolean isDrawn();
     final class NativePeer implements CefOverlayController, AutoCloseable {

@@ -39,7 +39,7 @@ public final class BinaryValue {
      * Returns {@code true} if this object is valid. This object may become invalid if the underlying data is owned by another object (e.g. list or dictionary) and that other object is then modified or destroyed. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:246</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:246</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class BinaryValue {
      * Returns {@code true} if this object is currently owned by another object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:255</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:255</a>
      */
     public CompletableFuture<Integer> isOwned() {
         return session
@@ -63,7 +63,7 @@ public final class BinaryValue {
      * Returns {@code true} if this object and {@code that} object have the same underlying data.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:261</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:261</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -75,7 +75,7 @@ public final class BinaryValue {
      * Returns {@code true} if this object and {@code that} object have an equivalent underlying value but are not necessarily the same object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:268</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:268</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
         return session
@@ -87,7 +87,7 @@ public final class BinaryValue {
      * Returns a copy of this object. The data in this object will also be copied.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:275</a>
      */
     public CompletableFuture<BinaryValue> copy() {
         return session
@@ -100,7 +100,7 @@ public final class BinaryValue {
      * Returns the data size.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:289</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:289</a>
      */
     public CompletableFuture<Long> getSize() {
         return session

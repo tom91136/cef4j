@@ -49,7 +49,7 @@ public final class V8StackTrace {
      * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1049</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1049</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -61,7 +61,7 @@ public final class V8StackTrace {
      * Returns the number of stack frames.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1057</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1057</a>
      */
     public CompletableFuture<Integer> getFrameCount() {
         return session
@@ -73,7 +73,7 @@ public final class V8StackTrace {
      * Returns the stack frame at the specified 0-based index.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1063</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1063</a>
      */
     public CompletableFuture<V8StackFrame> getFrame(int index) {
         return session

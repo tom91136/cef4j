@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_component_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:65</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:65</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefComponent extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefComponent extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_component_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     Optional<String> getId();
 
@@ -32,7 +32,7 @@ public interface CefComponent extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_component_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
      */
     Optional<String> getName();
 
@@ -41,7 +41,7 @@ public interface CefComponent extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_version)(struct _cef_component_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
      */
     Optional<String> getVersion();
 
@@ -52,7 +52,7 @@ public interface CefComponent extends CefLibraryObject {
      *
      * @return the result, or {@code CEF_COMPONENT_STATE_NEW} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
      */
     CefComponentState getState();
     final class NativePeer implements CefComponent, AutoCloseable {

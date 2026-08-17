@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated {@code id} used in subsequent operations on the related object. Each object type has a specific {@code id} structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the {@code get*ForNode()} calls (which accept a DOM node id). A client can also keep track of stylesheets via the {@code styleSheetAdded}/{@code styleSheetRemoved} events and subsequently load the required stylesheet contents using the {@code getStyleSheet[Text]()} methods.
  * <p><b>Experimental:</b> this part of CDP may change without notice.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/CSS.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/CSS.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class CSS {
@@ -976,6 +976,14 @@ public final class CSS {
         @Nullable public java.util.List<CSS.CSSStartingStyle> startingStyles() {
             return list(value("startingStyles"), element0 -> CSS.CSSStartingStyle.fromMap(objectMap(element0)));
         }
+        /**
+         * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public java.util.List<CSS.CSSNavigation> navigations() {
+            return list(value("navigations"), element0 -> CSS.CSSNavigation.fromMap(objectMap(element0)));
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -1116,6 +1124,17 @@ public final class CSS {
                 else values.put("startingStyles", jsonValue(value));
                 return this;
             }
+            /**
+             * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder navigations(@Nullable java.util.List<CSS.CSSNavigation> value) {
+                if (value == null) values.remove("navigations");
+                else values.put("navigations", jsonValue(value));
+                return this;
+            }
             public CSSRule build() {
                 if (!values.containsKey("selectorList")) throw new IllegalStateException("Missing required CDP field: selectorList");
                 if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
@@ -1137,6 +1156,7 @@ public final class CSS {
         public static final String SCOPERULE = "ScopeRule";
         public static final String STYLERULE = "StyleRule";
         public static final String STARTINGSTYLERULE = "StartingStyleRule";
+        public static final String NAVIGATIONRULE = "NavigationRule";
     }
     /**
      * CSS coverage information.
@@ -2040,9 +2060,11 @@ public final class CSS {
         }
         public static Builder builder() { return new Builder(); }
         /**
-         * Container query text.
+         * Container query text. Contains the query part without the container name for a single query. Deprecated in favor of conditionText which contains the full prelude after &#64;container.
          * @return the protocol field value
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
+        @Deprecated
         @Nullable public String text() {
             return (String) value("text");
         }
@@ -2095,13 +2117,22 @@ public final class CSS {
         @Nullable public Boolean queriesAnchored() {
             return (Boolean) value("queriesAnchored");
         }
+        /**
+         * CSSContainerRule.conditionText
+         * @return the protocol field value
+         */
+        @Nullable public String conditionText() {
+            return (String) value("conditionText");
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
-             * Container query text.
+             * Container query text. Contains the query part without the container name for a single query. Deprecated in favor of conditionText which contains the full prelude after &#64;container.
              * @param value field value; null removes an optional value
              * @return this builder
+             * @deprecated Deprecated by the Chromium DevTools Protocol.
              */
+            @Deprecated
             public Builder text(@Nullable String value) {
                 if (value == null) values.remove("text");
                 else values.put("text", jsonValue(value));
@@ -2177,8 +2208,19 @@ public final class CSS {
                 else values.put("queriesAnchored", jsonValue(value));
                 return this;
             }
+            /**
+             * CSSContainerRule.conditionText
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder conditionText(@Nullable String value) {
+                if (value == null) values.remove("conditionText");
+                else values.put("conditionText", jsonValue(value));
+                return this;
+            }
             public CSSContainerQuery build() {
                 if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
+                if (!values.containsKey("conditionText")) throw new IllegalStateException("Missing required CDP field: conditionText");
                 return new CSSContainerQuery(values);
             }
         }
@@ -2267,6 +2309,92 @@ public final class CSS {
                 if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
                 if (!values.containsKey("active")) throw new IllegalStateException("Missing required CDP field: active");
                 return new CSSSupports(values);
+            }
+        }
+    }
+    /**
+     * CSS Navigation at-rule descriptor.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class CSSNavigation extends CdpObject {
+        private CSSNavigation(Map<String, Object> values) { super(values); }
+        @Nullable public static CSSNavigation fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new CSSNavigation(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Navigation rule text.
+         * @return the protocol field value
+         */
+        @Nullable public String text() {
+            return (String) value("text");
+        }
+        /**
+         * Whether the navigation condition is satisfied.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean active() {
+            return (Boolean) value("active");
+        }
+        /**
+         * The associated rule header range in the enclosing stylesheet (if available).
+         * @return the protocol field value
+         */
+        @Nullable public CSS.SourceRange range() {
+            return CSS.SourceRange.fromMap(objectMap(value("range")));
+        }
+        /**
+         * Identifier of the stylesheet containing this object (if exists).
+         * @return the protocol field value
+         */
+        @Nullable public String styleSheetId() {
+            return (String) value("styleSheetId");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Navigation rule text.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder text(@Nullable String value) {
+                if (value == null) values.remove("text");
+                else values.put("text", jsonValue(value));
+                return this;
+            }
+            /**
+             * Whether the navigation condition is satisfied.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder active(@Nullable Boolean value) {
+                if (value == null) values.remove("active");
+                else values.put("active", jsonValue(value));
+                return this;
+            }
+            /**
+             * The associated rule header range in the enclosing stylesheet (if available).
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder range(@Nullable CSS.SourceRange value) {
+                if (value == null) values.remove("range");
+                else values.put("range", jsonValue(value));
+                return this;
+            }
+            /**
+             * Identifier of the stylesheet containing this object (if exists).
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder styleSheetId(@Nullable String value) {
+                if (value == null) values.remove("styleSheetId");
+                else values.put("styleSheetId", jsonValue(value));
+                return this;
+            }
+            public CSSNavigation build() {
+                if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
+                return new CSSNavigation(values);
             }
         }
     }
@@ -3255,6 +3383,7 @@ public final class CSS {
             public static final String FONT_FACE = "font-face";
             public static final String FONT_FEATURE_VALUES = "font-feature-values";
             public static final String FONT_PALETTE_VALUES = "font-palette-values";
+            public static final String COUNTER_STYLE = "counter-style";
         }
         /**
          * Subsection of font-feature-values, if this is a subsection.
@@ -3543,6 +3672,13 @@ public final class CSS {
             return CSS.CSSSupports.fromMap(objectMap(value("supports")));
         }
         /**
+         * &#64;navigation condition. Only one type of condition should be set.
+         * @return the protocol field value
+         */
+        @Nullable public CSS.CSSNavigation navigation() {
+            return CSS.CSSNavigation.fromMap(objectMap(value("navigation")));
+        }
+        /**
          * Block body.
          * @return the protocol field value
          */
@@ -3586,6 +3722,16 @@ public final class CSS {
             public Builder supports(@Nullable CSS.CSSSupports value) {
                 if (value == null) values.remove("supports");
                 else values.put("supports", jsonValue(value));
+                return this;
+            }
+            /**
+             * &#64;navigation condition. Only one type of condition should be set.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder navigation(@Nullable CSS.CSSNavigation value) {
+                if (value == null) values.remove("navigation");
+                else values.put("navigation", jsonValue(value));
                 return this;
             }
             /**
@@ -3709,6 +3855,14 @@ public final class CSS {
         @Nullable public java.util.List<CSS.CSSFunctionNode> children() {
             return list(value("children"), element0 -> CSS.CSSFunctionNode.fromMap(objectMap(element0)));
         }
+        /**
+         * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public Long originTreeScopeNodeId() {
+            return numberAsLong(value("originTreeScopeNodeId"));
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -3759,6 +3913,17 @@ public final class CSS {
             public Builder children(@Nullable java.util.List<CSS.CSSFunctionNode> value) {
                 if (value == null) values.remove("children");
                 else values.put("children", jsonValue(value));
+                return this;
+            }
+            /**
+             * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder originTreeScopeNodeId(@Nullable Long value) {
+                if (value == null) values.remove("originTreeScopeNodeId");
+                else values.put("originTreeScopeNodeId", jsonValue(value));
                 return this;
             }
             public CSSFunctionRule build() {
@@ -6248,9 +6413,11 @@ public final class CSS {
         }
     }
     /**
-     * Modifies the expression of a container query.
+     * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
      */
+    @Deprecated
     public static final class SetContainerQueryTextParams extends CdpObject {
         private SetContainerQueryTextParams(Map<String, Object> values) { super(values); }
         @Nullable public static SetContainerQueryTextParams fromMap(@Nullable Map<String, Object> values) {
@@ -6319,9 +6486,11 @@ public final class CSS {
         }
     }
     /**
-     * Modifies the expression of a container query.
+     * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
+     * @deprecated Deprecated by the Chromium DevTools Protocol.
      */
+    @Deprecated
     public static final class SetContainerQueryTextResult extends CdpObject {
         private SetContainerQueryTextResult(Map<String, Object> values) { super(values); }
         @Nullable public static SetContainerQueryTextResult fromMap(@Nullable Map<String, Object> values) {
@@ -6350,6 +6519,112 @@ public final class CSS {
             public SetContainerQueryTextResult build() {
                 if (!values.containsKey("containerQuery")) throw new IllegalStateException("Missing required CDP field: containerQuery");
                 return new SetContainerQueryTextResult(values);
+            }
+        }
+    }
+    /**
+     * Parameters for CSS.setContainerQueryConditionText.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetContainerQueryConditionTextParams extends CdpObject {
+        private SetContainerQueryConditionTextParams(Map<String, Object> values) { super(values); }
+        @Nullable public static SetContainerQueryConditionTextParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetContainerQueryConditionTextParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        @Nullable public String styleSheetId() {
+            return (String) value("styleSheetId");
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        @Nullable public CSS.SourceRange range() {
+            return CSS.SourceRange.fromMap(objectMap(value("range")));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        @Nullable public String text() {
+            return (String) value("text");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the styleSheetId field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder styleSheetId(@Nullable String value) {
+                if (value == null) values.remove("styleSheetId");
+                else values.put("styleSheetId", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the range field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder range(@Nullable CSS.SourceRange value) {
+                if (value == null) values.remove("range");
+                else values.put("range", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the text field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder text(@Nullable String value) {
+                if (value == null) values.remove("text");
+                else values.put("text", jsonValue(value));
+                return this;
+            }
+            public SetContainerQueryConditionTextParams build() {
+                if (!values.containsKey("styleSheetId")) throw new IllegalStateException("Missing required CDP field: styleSheetId");
+                if (!values.containsKey("range")) throw new IllegalStateException("Missing required CDP field: range");
+                if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
+                return new SetContainerQueryConditionTextParams(values);
+            }
+        }
+    }
+    /**
+     * Result of CSS.setContainerQueryConditionText.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetContainerQueryConditionTextResult extends CdpObject {
+        private SetContainerQueryConditionTextResult(Map<String, Object> values) { super(values); }
+        @Nullable public static SetContainerQueryConditionTextResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetContainerQueryConditionTextResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The resulting CSS container query rule after modification.
+         * @return the protocol field value
+         */
+        @Nullable public CSS.CSSContainerQuery containerQuery() {
+            return CSS.CSSContainerQuery.fromMap(objectMap(value("containerQuery")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The resulting CSS container query rule after modification.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder containerQuery(@Nullable CSS.CSSContainerQuery value) {
+                if (value == null) values.remove("containerQuery");
+                else values.put("containerQuery", jsonValue(value));
+                return this;
+            }
+            public SetContainerQueryConditionTextResult build() {
+                if (!values.containsKey("containerQuery")) throw new IllegalStateException("Missing required CDP field: containerQuery");
+                return new SetContainerQueryConditionTextResult(values);
             }
         }
     }
@@ -6456,6 +6731,112 @@ public final class CSS {
             public SetSupportsTextResult build() {
                 if (!values.containsKey("supports")) throw new IllegalStateException("Missing required CDP field: supports");
                 return new SetSupportsTextResult(values);
+            }
+        }
+    }
+    /**
+     * Modifies the expression of a navigation at-rule.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetNavigationTextParams extends CdpObject {
+        private SetNavigationTextParams(Map<String, Object> values) { super(values); }
+        @Nullable public static SetNavigationTextParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetNavigationTextParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the styleSheetId field.
+         * @return the protocol field value
+         */
+        @Nullable public String styleSheetId() {
+            return (String) value("styleSheetId");
+        }
+        /**
+         * Returns the range field.
+         * @return the protocol field value
+         */
+        @Nullable public CSS.SourceRange range() {
+            return CSS.SourceRange.fromMap(objectMap(value("range")));
+        }
+        /**
+         * Returns the text field.
+         * @return the protocol field value
+         */
+        @Nullable public String text() {
+            return (String) value("text");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the styleSheetId field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder styleSheetId(@Nullable String value) {
+                if (value == null) values.remove("styleSheetId");
+                else values.put("styleSheetId", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the range field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder range(@Nullable CSS.SourceRange value) {
+                if (value == null) values.remove("range");
+                else values.put("range", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the text field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder text(@Nullable String value) {
+                if (value == null) values.remove("text");
+                else values.put("text", jsonValue(value));
+                return this;
+            }
+            public SetNavigationTextParams build() {
+                if (!values.containsKey("styleSheetId")) throw new IllegalStateException("Missing required CDP field: styleSheetId");
+                if (!values.containsKey("range")) throw new IllegalStateException("Missing required CDP field: range");
+                if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
+                return new SetNavigationTextParams(values);
+            }
+        }
+    }
+    /**
+     * Modifies the expression of a navigation at-rule.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetNavigationTextResult extends CdpObject {
+        private SetNavigationTextResult(Map<String, Object> values) { super(values); }
+        @Nullable public static SetNavigationTextResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetNavigationTextResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * The resulting CSS Navigation rule after modification.
+         * @return the protocol field value
+         */
+        @Nullable public CSS.CSSNavigation navigation() {
+            return CSS.CSSNavigation.fromMap(objectMap(value("navigation")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * The resulting CSS Navigation rule after modification.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder navigation(@Nullable CSS.CSSNavigation value) {
+                if (value == null) values.remove("navigation");
+                else values.put("navigation", jsonValue(value));
+                return this;
+            }
+            public SetNavigationTextResult build() {
+                if (!values.containsKey("navigation")) throw new IllegalStateException("Missing required CDP field: navigation");
+                return new SetNavigationTextResult(values);
             }
         }
     }
@@ -7453,13 +7834,24 @@ public final class CSS {
             return client.call("CSS.setMediaText", params, SetMediaTextResult::fromMap);
         }
         /**
-         * Modifies the expression of a container query.
+         * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param params command parameters
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<SetContainerQueryTextResult> setContainerQueryText(SetContainerQueryTextParams params) {
+            return client.call("CSS.setContainerQueryText", params, SetContainerQueryTextResult::fromMap);
+        }
+        /**
+         * Invokes CSS.setContainerQueryConditionText.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
          * @return a stage completing with the command result
          */
-        public CompletionStage<SetContainerQueryTextResult> setContainerQueryText(SetContainerQueryTextParams params) {
-            return client.call("CSS.setContainerQueryText", params, SetContainerQueryTextResult::fromMap);
+        public CompletionStage<SetContainerQueryConditionTextResult> setContainerQueryConditionText(SetContainerQueryConditionTextParams params) {
+            return client.call("CSS.setContainerQueryConditionText", params, SetContainerQueryConditionTextResult::fromMap);
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -7469,6 +7861,15 @@ public final class CSS {
          */
         public CompletionStage<SetSupportsTextResult> setSupportsText(SetSupportsTextParams params) {
             return client.call("CSS.setSupportsText", params, SetSupportsTextResult::fromMap);
+        }
+        /**
+         * Modifies the expression of a navigation at-rule.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param params command parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetNavigationTextResult> setNavigationText(SetNavigationTextParams params) {
+            return client.call("CSS.setNavigationText", params, SetNavigationTextResult::fromMap);
         }
         /**
          * Modifies the expression of a scope at-rule.

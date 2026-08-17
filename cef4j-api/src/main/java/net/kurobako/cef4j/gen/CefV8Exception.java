@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_v8_exception_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:352</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:352</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8Exception extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_message)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:359</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:359</a>
      */
     Optional<String> getMessage();
 
@@ -32,7 +32,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_source_line)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:365</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:365</a>
      */
     Optional<String> getSourceLine();
 
@@ -41,7 +41,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_script_resource_name)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:371</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:371</a>
      */
     Optional<String> getScriptResourceName();
 
@@ -50,7 +50,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:378</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:378</a>
      */
     int getLineNumber();
 
@@ -59,7 +59,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_start_position)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:385</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:385</a>
      */
     int getStartPosition();
 
@@ -68,7 +68,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_end_position)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:392</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:392</a>
      */
     int getEndPosition();
 
@@ -77,7 +77,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_start_column)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:399</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:399</a>
      */
     int getStartColumn();
 
@@ -86,7 +86,7 @@ public interface CefV8Exception extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_end_column)(struct _cef_v8_exception_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:406</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:406</a>
      */
     int getEndColumn();
     final class NativePeer implements CefV8Exception, AutoCloseable {

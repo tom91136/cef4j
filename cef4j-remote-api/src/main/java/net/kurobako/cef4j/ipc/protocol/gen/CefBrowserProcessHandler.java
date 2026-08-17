@@ -23,7 +23,7 @@ public interface CefBrowserProcessHandler {
      * Do not keep a reference to the {@code registrar} object. This method is called on the browser process UI thread.
      * <p>Definition generated from cef_browser_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
      */
     default void onRegisterCustomPreferences(int type, net.kurobako.cef4j.ipc.session.RemoteHandle registrar) {}
 
@@ -31,7 +31,7 @@ public interface CefBrowserProcessHandler {
      * Called on the browser process UI thread immediately after the CEF context has been initialized.
      * <p>Definition generated from cef_browser_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:82</a>
      */
     default void onContextInitialized() {}
 
@@ -39,7 +39,7 @@ public interface CefBrowserProcessHandler {
      * Called before a child process is launched. Will be called on the browser process UI thread when launching a render process and on the browser process IO thread when launching a GPU process. Provides an opportunity to modify the child process command line. Do not keep a reference to {@code command_line} outside of this method.
      * <p>Definition generated from cef_browser_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:89</a>
      */
     default void onBeforeChildProcessLaunch(net.kurobako.cef4j.ipc.session.RemoteHandle commandLine) {}
 
@@ -53,7 +53,7 @@ public interface CefBrowserProcessHandler {
      *
      * @param currentDirectory may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
      */
     @Nullable
     default Boolean onAlreadyRunningAppRelaunch(net.kurobako.cef4j.ipc.session.RemoteHandle commandLine, String currentDirectory) { return null; }
@@ -62,7 +62,7 @@ public interface CefBrowserProcessHandler {
      * Called from any thread when work has been scheduled for the browser process main (UI) thread. This callback is used in combination with cef_settings_t.external_message_pump and CefDoMessageLoopWork() in cases where the CEF message loop must be integrated into an existing application message loop (see additional comments and warnings on CefDoMessageLoopWork). This callback should schedule a CefDoMessageLoopWork() call to happen on the main (UI) thread. {@code delay_ms} is the requested delay in milliseconds. If {@code delay_ms} is &lt;= 0 then the call should happen reasonably soon. If {@code delay_ms} is > 0 then the call should be scheduled to happen after the specified delay and any currently pending scheduled call should be cancelled.
      * <p>Definition generated from cef_browser_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:125</a>
      */
     default void onScheduleMessagePumpWork(long delayMs) {}
 

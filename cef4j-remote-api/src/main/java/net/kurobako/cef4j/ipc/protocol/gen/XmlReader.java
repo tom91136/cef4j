@@ -39,7 +39,7 @@ public final class XmlReader {
      * Moves the cursor to the next node in the document. This method must be called at least once to set the current cursor position. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
      */
     public CompletableFuture<Integer> moveToNextNode() {
         return session
@@ -51,7 +51,7 @@ public final class XmlReader {
      * Close the document. This should be called directly to ensure that cleanup occurs on the correct thread.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
      */
     public CompletableFuture<Integer> close() {
         return session
@@ -63,7 +63,7 @@ public final class XmlReader {
      * Returns {@code true} if an error has been reported by the XML parser.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
      */
     public CompletableFuture<Integer> hasError() {
         return session
@@ -75,7 +75,7 @@ public final class XmlReader {
      * Returns the error string.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
      */
     public CompletableFuture<String> getError() {
         return session
@@ -87,7 +87,7 @@ public final class XmlReader {
      * Returns the node type.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
      */
     public CompletableFuture<Integer> getType() {
         return session
@@ -99,7 +99,7 @@ public final class XmlReader {
      * Returns the node depth. Depth starts at 0 for the root node.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
      */
     public CompletableFuture<Integer> getDepth() {
         return session
@@ -111,7 +111,7 @@ public final class XmlReader {
      * Returns the local name. See <a href="http://www.w3.org/TR/REC-xml-names/#NT-LocalPart">http://www.w3.org/TR/REC-xml-names/#NT-LocalPart</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
      */
     public CompletableFuture<String> getLocalName() {
         return session
@@ -123,7 +123,7 @@ public final class XmlReader {
      * Returns the namespace prefix. See <a href="http://www.w3.org/TR/REC-xml-names/">http://www.w3.org/TR/REC-xml-names/</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
      */
     public CompletableFuture<String> getPrefix() {
         return session
@@ -135,7 +135,7 @@ public final class XmlReader {
      * Returns the qualified name, equal to (Prefix:)LocalName. See <a href="http://www.w3.org/TR/REC-xml-names/#ns-qualnames">http://www.w3.org/TR/REC-xml-names/#ns-qualnames</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
      */
     public CompletableFuture<String> getQualifiedName() {
         return session
@@ -147,7 +147,7 @@ public final class XmlReader {
      * Returns the URI defining the namespace associated with the node. See <a href="http://www.w3.org/TR/REC-xml-names/">http://www.w3.org/TR/REC-xml-names/</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
      */
     public CompletableFuture<String> getNamespaceUri() {
         return session
@@ -159,7 +159,7 @@ public final class XmlReader {
      * Returns the base URI of the node. See <a href="http://www.w3.org/TR/xmlbase/">http://www.w3.org/TR/xmlbase/</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
      */
     public CompletableFuture<String> getBaseUri() {
         return session
@@ -171,7 +171,7 @@ public final class XmlReader {
      * Returns the xml:lang scope within which the node resides. See <a href="http://www.w3.org/TR/REC-xml/#sec-lang-tag">http://www.w3.org/TR/REC-xml/#sec-lang-tag</a> for additional details.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
      */
     public CompletableFuture<String> getXmlLang() {
         return session
@@ -183,7 +183,7 @@ public final class XmlReader {
      * Returns {@code true} if the node represents an empty element. "&lt;a/&gt;" is considered empty but "&lt;a&gt;&lt;/a&gt;" is not.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
      */
     public CompletableFuture<Integer> isEmptyElement() {
         return session
@@ -195,7 +195,7 @@ public final class XmlReader {
      * Returns {@code true} if the node has a text value.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
      */
     public CompletableFuture<Integer> hasValue() {
         return session
@@ -207,7 +207,7 @@ public final class XmlReader {
      * Returns the text value.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
      */
     public CompletableFuture<String> getValue() {
         return session
@@ -219,7 +219,7 @@ public final class XmlReader {
      * Returns {@code true} if the node has attributes.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
      */
     public CompletableFuture<Integer> hasAttributes() {
         return session
@@ -231,7 +231,7 @@ public final class XmlReader {
      * Returns the number of attributes.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
      */
     public CompletableFuture<Long> getAttributeCount() {
         return session
@@ -245,7 +245,7 @@ public final class XmlReader {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
      */
     public CompletableFuture<String> getAttributeByindex(int index) {
         return session
@@ -257,7 +257,7 @@ public final class XmlReader {
      * Returns the value of the attribute with the specified qualified name.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
      */
     public CompletableFuture<String> getAttributeByqname(@Nonnull String qualifiedName) {
         return session
@@ -269,7 +269,7 @@ public final class XmlReader {
      * Returns the value of the attribute with the specified local name and namespace URI.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
      */
     public CompletableFuture<String> getAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI) {
         return session
@@ -281,7 +281,7 @@ public final class XmlReader {
      * Returns an XML representation of the current node's children.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
      */
     public CompletableFuture<String> getInnerXml() {
         return session
@@ -293,7 +293,7 @@ public final class XmlReader {
      * Returns an XML representation of the current node including its children.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
      */
     public CompletableFuture<String> getOuterXml() {
         return session
@@ -305,7 +305,7 @@ public final class XmlReader {
      * Returns the line number for the current node.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
         return session
@@ -319,7 +319,7 @@ public final class XmlReader {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
      */
     public CompletableFuture<Integer> moveToAttributeByindex(int index) {
         return session
@@ -331,7 +331,7 @@ public final class XmlReader {
      * Moves the cursor to the attribute with the specified qualified name. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
      */
     public CompletableFuture<Integer> moveToAttributeByqname(@Nonnull String qualifiedName) {
         return session
@@ -343,7 +343,7 @@ public final class XmlReader {
      * Moves the cursor to the attribute with the specified local name and namespace URI. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
      */
     public CompletableFuture<Integer> moveToAttributeBylname(@Nonnull String localName, @Nonnull String namespaceURI) {
         return session
@@ -355,7 +355,7 @@ public final class XmlReader {
      * Moves the cursor to the first attribute in the current element. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
      */
     public CompletableFuture<Integer> moveToFirstAttribute() {
         return session
@@ -367,7 +367,7 @@ public final class XmlReader {
      * Moves the cursor to the next attribute in the current element. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
      */
     public CompletableFuture<Integer> moveToNextAttribute() {
         return session
@@ -379,7 +379,7 @@ public final class XmlReader {
      * Moves the cursor back to the carrying element. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_xml_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
      */
     public CompletableFuture<Integer> moveToCarryingElement() {
         return session

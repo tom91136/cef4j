@@ -39,7 +39,7 @@ public final class BrowserView {
      * Returns the browser for this context. This method will return an empty reference for WebWorker contexts.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:163</a>
      */
     public CompletableFuture<Browser> getBrowser() {
         return session
@@ -67,7 +67,7 @@ public final class BrowserView {
      * Returns the runtime style for this browser (ALLOY or CHROME). See cef_runtime_style_t documentation for details.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1069</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
         return session

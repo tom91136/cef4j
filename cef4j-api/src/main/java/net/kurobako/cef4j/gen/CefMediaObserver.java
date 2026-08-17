@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_media_observer_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:116</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:116</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMediaObserver extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefMediaObserver extends CefClientHandler {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* on_sinks)(struct _cef_media_observer_t* self, size_t sinksCount, struct _cef_media_sink_t* const* sinks);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:126</a>
      */
     default void onSinks(long sinksCount, @Nullable CefMediaSink[] sinks) {
     }
@@ -35,7 +35,7 @@ public interface CefMediaObserver extends CefClientHandler {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* on_routes)(struct _cef_media_observer_t* self, size_t routesCount, struct _cef_media_route_t* const* routes);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:133</a>
      */
     default void onRoutes(long routesCount, @Nullable CefMediaRoute[] routes) {
     }
@@ -45,7 +45,7 @@ public interface CefMediaObserver extends CefClientHandler {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* on_route_state_changed)(struct _cef_media_observer_t* self, struct _cef_media_route_t* route, cef_media_route_connection_state_t state);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:141</a>
      */
     default void onRouteStateChanged(@Nullable CefMediaRoute route, @Nonnull CefMediaRouteConnectionState state) {
     }
@@ -58,7 +58,7 @@ public interface CefMediaObserver extends CefClientHandler {
      *
      * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:148</a>
      */
     default void onRouteMessageReceived(@Nullable CefMediaRoute route, @Nonnull ByteBuffer message) {
     }

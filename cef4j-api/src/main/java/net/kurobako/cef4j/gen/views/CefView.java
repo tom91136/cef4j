@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -19,9 +19,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_view_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:50</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:50</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefView extends CefLibraryObject {
 
@@ -30,7 +30,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_browser_view_t* (CEF_CALLBACK* as_browser_view)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:59</a>
      */
     Optional<CefBrowserView> asBrowserView();
 
@@ -39,7 +39,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_button_t* (CEF_CALLBACK* as_button)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:65</a>
      */
     Optional<CefButton> asButton();
 
@@ -48,7 +48,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_panel_t* (CEF_CALLBACK* as_panel)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:71</a>
      */
     Optional<CefPanel> asPanel();
 
@@ -57,7 +57,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_scroll_view_t* (CEF_CALLBACK* as_scroll_view)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:77</a>
      */
     Optional<CefScrollView> asScrollView();
 
@@ -66,7 +66,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_textfield_t* (CEF_CALLBACK* as_textfield)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:83</a>
      */
     Optional<CefTextfield> asTextfield();
 
@@ -75,7 +75,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_type_string)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:89</a>
      */
     Optional<String> getTypeString();
 
@@ -84,7 +84,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* to_string)(struct _cef_view_t* self, int include_children);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:96</a>
      */
     Optional<String> cefToString(boolean includeChildren);
 
@@ -93,7 +93,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:105</a>
      */
     boolean isValid();
 
@@ -102,7 +102,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_attached)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:111</a>
      */
     boolean isAttached();
 
@@ -111,7 +111,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_view_t* self, struct _cef_view_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:118</a>
      */
     boolean isSame(@Nullable CefView that);
 
@@ -120,7 +120,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_view_delegate_t* (CEF_CALLBACK* get_delegate)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:124</a>
      */
     Optional<CefViewDelegate> getDelegate();
 
@@ -129,7 +129,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_window_t* (CEF_CALLBACK* get_window)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:130</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:130</a>
      */
     Optional<CefWindow> getWindow();
 
@@ -138,7 +138,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* get_id)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     int getId();
 
@@ -147,7 +147,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_id)(struct _cef_view_t* self, int id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:142</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:142</a>
      */
     void setId(int id);
 
@@ -156,7 +156,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* get_group_id)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
      */
     int getGroupId();
 
@@ -165,7 +165,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_group_id)(struct _cef_view_t* self, int group_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     void setGroupId(int groupId);
 
@@ -174,7 +174,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_parent_view)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:163</a>
      */
     Optional<CefView> getParentView();
 
@@ -183,7 +183,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_view_for_id)(struct _cef_view_t* self, int id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:169</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:169</a>
      */
     Optional<CefView> getViewForId(int id);
 
@@ -192,7 +192,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_bounds)(struct _cef_view_t* self, const cef_rect_t* bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:177</a>
      */
     void setBounds(@Nonnull CefRect bounds);
 
@@ -201,7 +201,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_bounds)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:184</a>
      */
     CefRect getBounds();
 
@@ -210,7 +210,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_bounds_in_screen)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:191</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:191</a>
      */
     CefRect getBoundsInScreen();
 
@@ -219,7 +219,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_size)(struct _cef_view_t* self, const cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:198</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:198</a>
      */
     void setSize(@Nonnull CefSize size);
 
@@ -228,7 +228,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_size)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:205</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:205</a>
      */
     CefSize getSize();
 
@@ -237,7 +237,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_position)(struct _cef_view_t* self, const cef_point_t* position);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:212</a>
      */
     void setPosition(@Nonnull CefPoint position);
 
@@ -246,7 +246,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_point_t* (CEF_CALLBACK* get_position)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:219</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:219</a>
      */
     CefPoint getPosition();
 
@@ -255,7 +255,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_insets)(struct _cef_view_t* self, const cef_insets_t* insets);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:226</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:226</a>
      */
     void setInsets(@Nonnull CefInsets insets);
 
@@ -264,7 +264,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_insets_t* (CEF_CALLBACK* get_insets)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:233</a>
      */
     CefInsets getInsets();
 
@@ -273,7 +273,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_preferred_size)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:240</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:240</a>
      */
     CefSize getPreferredSize();
 
@@ -282,7 +282,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* size_to_preferred_size)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:248</a>
      */
     void sizeToPreferredSize();
 
@@ -291,7 +291,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_minimum_size)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:255</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:255</a>
      */
     CefSize getMinimumSize();
 
@@ -300,7 +300,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_maximum_size)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:262</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:262</a>
      */
     CefSize getMaximumSize();
 
@@ -309,7 +309,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* get_height_for_width)(struct _cef_view_t* self, int width);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:269</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:269</a>
      */
     int getHeightForWidth(int width);
 
@@ -318,7 +318,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* invalidate_layout)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:275</a>
      */
     void invalidateLayout();
 
@@ -327,7 +327,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_visible)(struct _cef_view_t* self, int visible);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:283</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:283</a>
      */
     void setVisible(boolean visible);
 
@@ -336,7 +336,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_visible)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:295</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:295</a>
      */
     boolean isVisible();
 
@@ -345,7 +345,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_drawn)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:306</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:306</a>
      */
     boolean isDrawn();
 
@@ -354,7 +354,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_enabled)(struct _cef_view_t* self, int enabled);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:316</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:316</a>
      */
     void setEnabled(boolean enabled);
 
@@ -363,7 +363,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_enabled)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:325</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:325</a>
      */
     boolean isEnabled();
 
@@ -372,7 +372,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_focusable)(struct _cef_view_t* self, int focusable);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:331</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:331</a>
      */
     void setFocusable(boolean focusable);
 
@@ -381,7 +381,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_focusable)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:339</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:339</a>
      */
     boolean isFocusable();
 
@@ -390,7 +390,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* is_accessibility_focusable)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:345</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:345</a>
      */
     boolean isAccessibilityFocusable();
 
@@ -399,7 +399,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* has_focus)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:352</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:352</a>
      */
     boolean hasFocus();
 
@@ -408,7 +408,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* request_focus)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:360</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:360</a>
      */
     void requestFocus();
 
@@ -417,7 +417,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>void (CEF_CALLBACK* set_background_color)(struct _cef_view_t* self, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:369</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:369</a>
      */
     void setBackgroundColor(int color);
 
@@ -426,7 +426,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>unsigned int (CEF_CALLBACK* get_background_color)(struct _cef_view_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:376</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:376</a>
      */
     int getBackgroundColor();
 
@@ -435,7 +435,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>unsigned int (CEF_CALLBACK* get_theme_color)(struct _cef_view_t* self, int color_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:386</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:386</a>
      */
     int getThemeColor(int colorId);
 
@@ -444,7 +444,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_to_screen)(struct _cef_view_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:395</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:395</a>
      */
     boolean convertPointToScreen(@Nonnull CefPoint.Mutable point);
 
@@ -453,7 +453,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_from_screen)(struct _cef_view_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:405</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:405</a>
      */
     boolean convertPointFromScreen(@Nonnull CefPoint.Mutable point);
 
@@ -462,7 +462,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_to_window)(struct _cef_view_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:415</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:415</a>
      */
     boolean convertPointToWindow(@Nonnull CefPoint.Mutable point);
 
@@ -471,7 +471,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_from_window)(struct _cef_view_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:423</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:423</a>
      */
     boolean convertPointFromWindow(@Nonnull CefPoint.Mutable point);
 
@@ -480,7 +480,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_to_view)(struct _cef_view_t* self, struct _cef_view_t* view, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:431</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:431</a>
      */
     boolean convertPointToView(@Nullable CefView view, @Nonnull CefPoint.Mutable point);
 
@@ -489,7 +489,7 @@ public interface CefView extends CefLibraryObject {
      * <p>Definition generated from views/cef_view_capi.h
      * <pre>int (CEF_CALLBACK* convert_point_from_view)(struct _cef_view_t* self, struct _cef_view_t* view, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__view_8h.html">views/cef_view.h:440</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view_8h.html">views/cef_view.h:440</a>
      */
     boolean convertPointFromView(@Nullable CefView view, @Nonnull CefPoint.Mutable point);
     final class NativePeer implements CefView, AutoCloseable {

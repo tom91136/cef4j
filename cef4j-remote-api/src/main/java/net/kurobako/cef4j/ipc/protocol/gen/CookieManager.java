@@ -39,7 +39,7 @@ public final class CookieManager {
      * Visit all cookies on the UI thread. The returned cookies are ordered by longest path, then by earliest creation date. Returns {@code false} if cookies cannot be accessed.
      * <p>Definition generated from cef_cookie.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:69</a>
      */
     public CompletableFuture<Integer> visitAllCookies(@Nonnull RemoteHandle visitor) {
         return session
@@ -51,7 +51,7 @@ public final class CookieManager {
      * Visit a subset of cookies on the UI thread. The results are filtered by the given url scheme, host, domain and path. If {@code includeHttpOnly} is {@code true} HTTP-only cookies will also be included in the results. The returned cookies are ordered by longest path, then by earliest creation date. Returns {@code false} if cookies cannot be accessed.
      * <p>Definition generated from cef_cookie.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:77</a>
      */
     public CompletableFuture<Integer> visitUrlCookies(@Nonnull String url, int includeHttpOnly, @Nonnull RemoteHandle visitor) {
         return session
@@ -67,7 +67,7 @@ public final class CookieManager {
      * @param cookieName may be null
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:103</a>
      */
     public CompletableFuture<Integer> deleteCookies(@Nonnull String url, @Nonnull String cookieName, @Nonnull RemoteHandle callback) {
         return session
@@ -81,7 +81,7 @@ public final class CookieManager {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:120</a>
      */
     public CompletableFuture<Integer> flushStore(@Nonnull RemoteHandle callback) {
         return session

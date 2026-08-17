@@ -17,7 +17,7 @@ public interface CefMediaObserver {
      * The connection state of {@code route} has changed.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:141</a>
      */
     default void onRouteStateChanged(net.kurobako.cef4j.ipc.session.RemoteHandle route, int state) {}
 
@@ -28,7 +28,7 @@ public interface CefMediaObserver {
      *
      * @param message <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:148</a>
      */
     default void onRouteMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle route, byte[] message) {}
 

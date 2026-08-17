@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -8,7 +8,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefGlobals {
 
@@ -19,7 +19,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT int cef_execute_process(const cef_main_args_t* args, cef_app_t* application, void* windows_sandbox_info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:50</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:50</a>
      */
     public static int executeProcess(@Nonnull CefMainArgs args, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
       return executeProcess0(args, application, windowsSandboxInfo);
@@ -30,7 +30,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT int cef_initialize(const cef_main_args_t* args, const struct _cef_settings_t* settings, cef_app_t* application, void* windows_sandbox_info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:68</a>
      */
     public static int initialize(@Nonnull CefMainArgs args, @Nonnull CefSettings settings, @Nullable CefApp application, @Nullable NativePointer windowsSandboxInfo) {
       return initialize0(args, settings, application, windowsSandboxInfo);
@@ -41,7 +41,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT int cef_get_exit_code(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:85</a>
      */
     public static int getExitCode() {
       return getExitCode0();
@@ -52,7 +52,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT void cef_shutdown(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:97</a>
      */
     public static void shutdown() {
       shutdown0();
@@ -63,7 +63,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT void cef_do_message_loop_work(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:105</a>
      */
     public static void doMessageLoopWork() {
       doMessageLoopWork0();
@@ -74,7 +74,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT void cef_run_message_loop(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:123</a>
      */
     public static void runMessageLoop() {
       runMessageLoop0();
@@ -85,7 +85,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT void cef_quit_message_loop(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:134</a>
      */
     public static void quitMessageLoop() {
       quitMessageLoop0();
@@ -114,7 +114,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_app_capi.h
      * <pre>CEF_EXPORT void cef_set_nestable_tasks_allowed(int allowed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:143</a>
      */
     public static void setNestableTasksAllowed(int allowed) {
       setNestableTasksAllowed0(allowed);
@@ -152,7 +152,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_crash_util_capi.h
      * <pre>CEF_EXPORT int cef_crash_reporting_enabled(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:41</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__crash__util_8h.html">cef_crash_util.h:41</a>
      */
     public static int crashReportingEnabled() {
       return crashReportingEnabled0();
@@ -163,7 +163,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_crash_util_capi.h
      * <pre>CEF_EXPORT void cef_set_crash_key_value(const cef_string_t* key, const cef_string_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__crash__util_8h.html">cef_crash_util.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__crash__util_8h.html">cef_crash_util.h:139</a>
      */
     public static void setCrashKeyValue(@Nullable String key, @Nullable String value) {
       setCrashKeyValue0(key, value);
@@ -174,7 +174,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_create_directory(const cef_string_t* full_path);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:44</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:44</a>
      */
     public static int createDirectory(@Nullable String fullPath) {
       return createDirectory0(fullPath);
@@ -187,7 +187,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_get_temp_directory(cef_string_t* temp_dir);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:53</a>
      */
     public static int getTempDirectory(@Nullable String tempDir) {
       return getTempDirectory0(tempDir);
@@ -198,7 +198,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_create_new_temp_directory(const cef_string_t* prefix, cef_string_t* new_temp_path);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:64</a>
      */
     public static int createNewTempDirectory(@Nullable String prefix, @Nullable String newTempPath) {
       return createNewTempDirectory0(prefix, newTempPath);
@@ -209,7 +209,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_create_temp_directory_in_directory(const cef_string_t* base_dir, const cef_string_t* prefix, cef_string_t* new_dir);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:75</a>
      */
     public static int createTempDirectoryInDirectory(@Nullable String baseDir, @Nullable String prefix, @Nullable String newDir) {
       return createTempDirectoryInDirectory0(baseDir, prefix, newDir);
@@ -220,7 +220,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_directory_exists(const cef_string_t* path);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:88</a>
      */
     public static int directoryExists(@Nullable String path) {
       return directoryExists0(path);
@@ -231,7 +231,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_delete_file(const cef_string_t* path, int recursive);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:95</a>
      */
     public static int deleteFile(@Nullable String path, int recursive) {
       return deleteFile0(path, recursive);
@@ -242,7 +242,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_file_util_capi.h
      * <pre>CEF_EXPORT int cef_zip_directory(const cef_string_t* src_dir, const cef_string_t* dest_file, int include_hidden_files);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__file__util_8h.html">cef_file_util.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__file__util_8h.html">cef_file_util.h:107</a>
      */
     public static int zipDirectory(@Nullable String srcDir, @Nullable String destFile, int includeHiddenFiles) {
       return zipDirectory0(srcDir, destFile, includeHiddenFiles);
@@ -271,7 +271,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_origin_whitelist_capi.h
      * <pre>CEF_EXPORT int cef_add_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:43</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:43</a>
      */
     public static int addCrossOriginWhitelistEntry(@Nullable String sourceOrigin, @Nullable String targetProtocol, @Nullable String targetDomain, int allowTargetSubdomains) {
       return addCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
@@ -282,7 +282,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_origin_whitelist_capi.h
      * <pre>CEF_EXPORT int cef_remove_cross_origin_whitelist_entry(const cef_string_t* source_origin, const cef_string_t* target_protocol, const cef_string_t* target_domain, int allow_target_subdomains);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:86</a>
      */
     public static int removeCrossOriginWhitelistEntry(@Nullable String sourceOrigin, @Nullable String targetProtocol, @Nullable String targetDomain, int allowTargetSubdomains) {
       return removeCrossOriginWhitelistEntry0(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
@@ -293,7 +293,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_origin_whitelist_capi.h
      * <pre>CEF_EXPORT int cef_clear_cross_origin_whitelist(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__origin__whitelist_8h.html">cef_origin_whitelist.h:96</a>
      */
     public static int clearCrossOriginWhitelist() {
       return clearCrossOriginWhitelist0();
@@ -316,7 +316,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_parser_capi.h
      * <pre>CEF_EXPORT cef_string_userfree_t cef_format_url_for_security_display(const cef_string_t* origin_url);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:70</a>
      */
     public static Optional<String> formatUrlForSecurityDisplay(@Nullable String originUrl) {
       return Optional.ofNullable(formatUrlForSecurityDisplay0(originUrl));
@@ -327,7 +327,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_parser_capi.h
      * <pre>CEF_EXPORT cef_string_userfree_t cef_get_mime_type(const cef_string_t* extension);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:83</a>
      */
     public static Optional<String> getMimeType(@Nullable String extension) {
       return Optional.ofNullable(getMimeType0(extension));
@@ -338,7 +338,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_parser_capi.h
      * <pre>CEF_EXPORT void cef_get_extensions_for_mime_type(const cef_string_t* mime_type, cef_string_list_t extensions);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:90</a>
      */
     public static void getExtensionsForMimeType(@Nullable String mimeType, @Nonnull List<String> extensions) {
       getExtensionsForMimeType0(mimeType, extensions);
@@ -349,7 +349,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_parser_capi.h
      * <pre>CEF_EXPORT cef_string_userfree_t cef_base64_encode(const void* data, size_t data_size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__parser_8h.html">cef_parser.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__parser_8h.html">cef_parser.h:100</a>
      */
     public static Optional<String> base64Encode(@Nonnull ByteBuffer data) {
       return Optional.ofNullable(base64Encode0(data));
@@ -372,7 +372,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_path_util_capi.h
      * <pre>CEF_EXPORT int cef_get_path(cef_path_key_t key, cef_string_t* path);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__path__util_8h.html">cef_path_util.h:45</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__path__util_8h.html">cef_path_util.h:45</a>
      */
     public static int getPath(@Nonnull CefPathKey key, @Nullable String path) {
       return getPath0(key, path);
@@ -393,7 +393,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_process_util_capi.h
      * <pre>CEF_EXPORT int cef_launch_process(struct _cef_command_line_t* command_line);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__util_8h.html">cef_process_util.h:44</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__util_8h.html">cef_process_util.h:44</a>
      */
     public static int launchProcess(@Nullable CefCommandLine commandLine) {
       return launchProcess0(commandLine);
@@ -404,7 +404,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_scheme_capi.h
      * <pre>CEF_EXPORT int cef_register_scheme_handler_factory(const cef_string_t* scheme_name, const cef_string_t* domain_name, cef_scheme_handler_factory_t* factory);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:50</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:50</a>
      */
     public static boolean registerSchemeHandlerFactory(@Nullable String schemeName, @Nullable String domainName, @Nullable CefSchemeHandlerFactory factory) {
       return registerSchemeHandlerFactory0(schemeName, domainName, factory);
@@ -415,7 +415,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_scheme_capi.h
      * <pre>CEF_EXPORT int cef_clear_scheme_handler_factories(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:70</a>
      */
     public static boolean clearSchemeHandlerFactories() {
       return clearSchemeHandlerFactories0();
@@ -426,7 +426,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_ssl_info_capi.h
      * <pre>CEF_EXPORT int cef_is_cert_status_error(cef_cert_status_t status);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:65</a>
      */
     public static int isCertStatusError(@Nonnull CefCertStatus status) {
       return isCertStatusError0(status);
@@ -437,7 +437,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_task_capi.h
      * <pre>CEF_EXPORT int cef_currently_on(cef_thread_id_t threadId);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:124</a>
      */
     public static int currentlyOn(@Nonnull CefThreadId threadId) {
       return currentlyOn0(threadId);
@@ -448,7 +448,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_task_capi.h
      * <pre>CEF_EXPORT int cef_post_task(cef_thread_id_t threadId, cef_task_t* task);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:131</a>
      */
     public static boolean postTask(@Nonnull CefThreadId threadId, @Nullable CefTask task) {
       return postTask0(threadId, task);
@@ -459,7 +459,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_task_capi.h
      * <pre>CEF_EXPORT int cef_post_delayed_task(cef_thread_id_t threadId, cef_task_t* task, int64_t delay_ms);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:138</a>
      */
     public static boolean postDelayedTask(@Nonnull CefThreadId threadId, @Nullable CefTask task, long delayMs) {
       return postDelayedTask0(threadId, task, delayMs);
@@ -483,7 +483,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_trace_capi.h
      * <pre>CEF_EXPORT int cef_begin_tracing(const cef_string_t* categories, struct _cef_completion_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:63</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__trace_8h.html">cef_trace.h:63</a>
      */
     public static int beginTracing(@Nullable String categories, @Nullable CefCompletionCallback callback) {
       return beginTracing0(categories, callback);
@@ -500,7 +500,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_trace_capi.h
      * <pre>CEF_EXPORT int cef_end_tracing(const cef_string_t* tracing_file, cef_end_tracing_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__trace_8h.html">cef_trace.h:86</a>
      */
     public static int endTracing(@Nullable String tracingFile, @Nullable CefEndTracingCallback callback) {
       return endTracing0(tracingFile, callback);
@@ -511,7 +511,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_trace_capi.h
      * <pre>CEF_EXPORT int64_t cef_now_from_system_trace_time(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__trace_8h.html">cef_trace.h:103</a>
      */
     public static long nowFromSystemTraceTime() {
       return nowFromSystemTraceTime0();
@@ -533,7 +533,7 @@ public final class CefGlobals {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>CEF_EXPORT int cef_register_extension(const cef_string_t* extension_name, const cef_string_t* javascript_code, cef_v8_handler_t* handler);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:54</a>
      */
     public static int registerExtension(@Nullable String extensionName, @Nullable String javascriptCode, @Nullable CefV8Handler handler) {
       return registerExtension0(extensionName, javascriptCode, handler);

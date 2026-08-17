@@ -17,7 +17,7 @@ public interface CefDownloadHandler {
      * Called before a download begins in response to a user-initiated action (e.g. alt + link click or link click that returns a `Content-Disposition: attachment` response from the server). {@code url} is the target download URL and {@code request_method} is the target method (GET, POST, etc). Return {@code true} to proceed with the download or {@code false} to cancel the download.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
      */
     @Nullable
     default Boolean canDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String url, String requestMethod) { return null; }
@@ -26,7 +26,7 @@ public interface CefDownloadHandler {
      * Called before a download begins. {@code suggested_name} is the suggested name for the download file. Return {@code true} and execute {@code callback} either asynchronously or in this method to continue or cancel the download. Return {@code false} to proceed with default handling (cancel with Alloy style, download shelf with Chrome style). Do not keep a reference to {@code download_item} outside of this method.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
      */
     @Nullable
     default Boolean onBeforeDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle downloadItem, String suggestedName, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -35,7 +35,7 @@ public interface CefDownloadHandler {
      * Called when a download's status or progress information has been updated. This may be called multiple times before and after OnBeforeDownload(). Execute {@code callback} either asynchronously or in this method to cancel the download if desired. Do not keep a reference to {@code download_item} outside of this method.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:123</a>
      */
     default void onDownloadUpdated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle downloadItem, net.kurobako.cef4j.ipc.session.RemoteHandle callback) {}
 

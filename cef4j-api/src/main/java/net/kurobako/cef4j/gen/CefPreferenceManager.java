@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_preference_manager_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:87</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:87</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPreferenceManager extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>int (CEF_CALLBACK* has_preference)(struct _cef_preference_manager_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:131</a>
      */
     boolean hasPreference(@Nullable String name);
 
@@ -35,7 +35,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>cef_value_t* (CEF_CALLBACK* get_preference)(struct _cef_preference_manager_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:138</a>
      */
     Optional<CefValue> getPreference(@Nullable String name);
 
@@ -44,7 +44,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>cef_dictionary_value_t* (CEF_CALLBACK* get_all_preferences)(struct _cef_preference_manager_t* self, int include_defaults);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:148</a>
      */
     Optional<CefDictionaryValue> getAllPreferences(boolean includeDefaults);
 
@@ -53,7 +53,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>int (CEF_CALLBACK* can_set_preference)(struct _cef_preference_manager_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:160</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:160</a>
      */
     boolean canSetPreference(@Nullable String name);
 
@@ -64,7 +64,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:169</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:169</a>
      */
     boolean setPreference(@Nullable String name, @Nullable CefValue value, @Nullable String error);
 
@@ -76,7 +76,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:183</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:183</a>
      */
     Optional<CefRegistration> addPreferenceObserver(@Nullable String name, @Nullable CefPreferenceObserver observer);
     /**
@@ -84,7 +84,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>CEF_EXPORT void cef_preference_manager_get_chrome_variations_as_switches(cef_string_list_t switches);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:96</a>
      */
     static void getChromeVariationsAsSwitches(@Nonnull List<String> switches) {
       NativePeer.getChromeVariationsAsSwitches0(switches);
@@ -95,7 +95,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>CEF_EXPORT void cef_preference_manager_get_chrome_variations_as_strings(cef_string_list_t strings);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:110</a>
      */
     static void getChromeVariationsAsStrings(@Nonnull List<String> strings) {
       NativePeer.getChromeVariationsAsStrings0(strings);
@@ -106,7 +106,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * <p>Definition generated from cef_preference_capi.h
      * <pre>CEF_EXPORT cef_preference_manager_t* cef_preference_manager_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:125</a>
      */
     static Optional<CefPreferenceManager> getGlobal() {
       return Optional.ofNullable(NativePeer.getGlobal0());

@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * This domain is deprecated.
  * @deprecated Deprecated by the Chromium DevTools Protocol.
- * @see <a href="https://chromium.googlesource.com/v8/v8/+/0e999a528db40a3ef6fa917adf96370a18b87d70/include/js_protocol.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/v8/v8/+/3063ea3a0737a3fc4d4ed3babd595f1cace1e6ac/include/js_protocol.pdl">Pinned protocol source</a>
  */
 @Deprecated
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})

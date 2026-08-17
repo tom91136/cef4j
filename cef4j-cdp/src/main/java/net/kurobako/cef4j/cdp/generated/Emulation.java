@@ -12,7 +12,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 
 /**
  * This domain emulates different environments for the page.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Emulation.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Emulation.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Emulation {
@@ -1467,6 +1467,7 @@ public final class Emulation {
     public static final class DisabledImageType {
         private DisabledImageType() {}
         public static final String AVIF = "avif";
+        public static final String JXL = "jxl";
         public static final String WEBP = "webp";
     }
     /**
@@ -1995,6 +1996,31 @@ public final class Emulation {
         @Nullable public Emulation.DevicePosture devicePosture() {
             return Emulation.DevicePosture.fromMap(objectMap(value("devicePosture")));
         }
+        /**
+         * Scrollbar type. Default: {@code default}.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public String scrollbarType() {
+            return (String) value("scrollbarType");
+        }
+        /**
+         * Scrollbar type. Default: {@code default}.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         */
+        public static final class ScrollbarTypeValues {
+            private ScrollbarTypeValues() {}
+            public static final String OVERLAY = "overlay";
+            public static final String DEFAULT = "default";
+        }
+        /**
+         * If set to true, enables screen orientation lock emulation, which intercepts screen.orientation.lock() calls from the page and reports orientation changes via screenOrientationLockChanged events. This is useful for emulating mobile device orientation lock behavior in responsive design mode.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean screenOrientationLockEmulation() {
+            return (Boolean) value("screenOrientationLockEmulation");
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -2148,6 +2174,28 @@ public final class Emulation {
             public Builder devicePosture(@Nullable Emulation.DevicePosture value) {
                 if (value == null) values.remove("devicePosture");
                 else values.put("devicePosture", jsonValue(value));
+                return this;
+            }
+            /**
+             * Scrollbar type. Default: {@code default}.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder scrollbarType(@Nullable String value) {
+                if (value == null) values.remove("scrollbarType");
+                else values.put("scrollbarType", jsonValue(value));
+                return this;
+            }
+            /**
+             * If set to true, enables screen orientation lock emulation, which intercepts screen.orientation.lock() calls from the page and reports orientation changes via screenOrientationLockChanged events. This is useful for emulating mobile device orientation lock behavior in responsive design mode.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder screenOrientationLockEmulation(@Nullable Boolean value) {
+                if (value == null) values.remove("screenOrientationLockEmulation");
+                else values.put("screenOrientationLockEmulation", jsonValue(value));
                 return this;
             }
             public SetDeviceMetricsOverrideParams build() {
@@ -3172,7 +3220,7 @@ public final class Emulation {
         }
     }
     /**
-     * TODO: OBSOLETE: To remove when setPressureDataOverride is merged. Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
+     * Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class SetPressureStateOverrideParams extends CdpObject {
@@ -3225,7 +3273,7 @@ public final class Emulation {
         }
     }
     /**
-     * TODO: OBSOLETE: To remove when setPressureDataOverride is merged. Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
+     * Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class SetPressureStateOverrideResult extends CdpObject {
@@ -3238,93 +3286,6 @@ public final class Emulation {
             private final Map<String, Object> values = new LinkedHashMap<>();
             public SetPressureStateOverrideResult build() {
                 return new SetPressureStateOverrideResult(values);
-            }
-        }
-    }
-    /**
-     * Provides a given pressure data set that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetPressureDataOverrideParams extends CdpObject {
-        private SetPressureDataOverrideParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetPressureDataOverrideParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetPressureDataOverrideParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the source field.
-         * @return the protocol field value
-         */
-        @Nullable public String source() {
-            return (String) value("source");
-        }
-        /**
-         * Returns the state field.
-         * @return the protocol field value
-         */
-        @Nullable public String state() {
-            return (String) value("state");
-        }
-        /**
-         * Returns the ownContributionEstimate field.
-         * @return the protocol field value
-         */
-        @Nullable public Double ownContributionEstimate() {
-            return numberAsDouble(value("ownContributionEstimate"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the source field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder source(@Nullable String value) {
-                if (value == null) values.remove("source");
-                else values.put("source", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the state field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder state(@Nullable String value) {
-                if (value == null) values.remove("state");
-                else values.put("state", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the ownContributionEstimate field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownContributionEstimate(@Nullable Double value) {
-                if (value == null) values.remove("ownContributionEstimate");
-                else values.put("ownContributionEstimate", jsonValue(value));
-                return this;
-            }
-            public SetPressureDataOverrideParams build() {
-                if (!values.containsKey("source")) throw new IllegalStateException("Missing required CDP field: source");
-                if (!values.containsKey("state")) throw new IllegalStateException("Missing required CDP field: state");
-                return new SetPressureDataOverrideParams(values);
-            }
-        }
-    }
-    /**
-     * Provides a given pressure data set that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetPressureDataOverrideResult extends CdpObject {
-        private SetPressureDataOverrideResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetPressureDataOverrideResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetPressureDataOverrideResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetPressureDataOverrideResult build() {
-                return new SetPressureDataOverrideResult(values);
             }
         }
     }
@@ -4312,7 +4273,7 @@ public final class Emulation {
         }
     }
     /**
-     * Returns device&#x27;s screen configuration.
+     * Returns device&#x27;s screen configuration. In headful mode, the physical screens configuration is returned, whereas in headless mode, a virtual headless screen configuration is provided instead.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class GetScreenInfosParams extends CdpObject {
@@ -4329,7 +4290,7 @@ public final class Emulation {
         }
     }
     /**
-     * Returns device&#x27;s screen configuration.
+     * Returns device&#x27;s screen configuration. In headful mode, the physical screens configuration is returned, whereas in headless mode, a virtual headless screen configuration is provided instead.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class GetScreenInfosResult extends CdpObject {
@@ -4590,6 +4551,246 @@ public final class Emulation {
         }
     }
     /**
+     * Updates specified screen parameters. Only supported in headless mode.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class UpdateScreenParams extends CdpObject {
+        private UpdateScreenParams(Map<String, Object> values) { super(values); }
+        @Nullable public static UpdateScreenParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new UpdateScreenParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Target screen identifier.
+         * @return the protocol field value
+         */
+        @Nullable public String screenId() {
+            return (String) value("screenId");
+        }
+        /**
+         * Offset of the left edge of the screen in pixels.
+         * @return the protocol field value
+         */
+        @Nullable public Long left() {
+            return numberAsLong(value("left"));
+        }
+        /**
+         * Offset of the top edge of the screen in pixels.
+         * @return the protocol field value
+         */
+        @Nullable public Long top() {
+            return numberAsLong(value("top"));
+        }
+        /**
+         * The width of the screen in pixels.
+         * @return the protocol field value
+         */
+        @Nullable public Long width() {
+            return numberAsLong(value("width"));
+        }
+        /**
+         * The height of the screen in pixels.
+         * @return the protocol field value
+         */
+        @Nullable public Long height() {
+            return numberAsLong(value("height"));
+        }
+        /**
+         * Specifies the screen&#x27;s work area.
+         * @return the protocol field value
+         */
+        @Nullable public Emulation.WorkAreaInsets workAreaInsets() {
+            return Emulation.WorkAreaInsets.fromMap(objectMap(value("workAreaInsets")));
+        }
+        /**
+         * Specifies the screen&#x27;s device pixel ratio.
+         * @return the protocol field value
+         */
+        @Nullable public Double devicePixelRatio() {
+            return numberAsDouble(value("devicePixelRatio"));
+        }
+        /**
+         * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270.
+         * @return the protocol field value
+         */
+        @Nullable public Long rotation() {
+            return numberAsLong(value("rotation"));
+        }
+        /**
+         * Specifies the screen&#x27;s color depth in bits.
+         * @return the protocol field value
+         */
+        @Nullable public Long colorDepth() {
+            return numberAsLong(value("colorDepth"));
+        }
+        /**
+         * Specifies the descriptive label for the screen.
+         * @return the protocol field value
+         */
+        @Nullable public String label() {
+            return (String) value("label");
+        }
+        /**
+         * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean isInternal() {
+            return (Boolean) value("isInternal");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Target screen identifier.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder screenId(@Nullable String value) {
+                if (value == null) values.remove("screenId");
+                else values.put("screenId", jsonValue(value));
+                return this;
+            }
+            /**
+             * Offset of the left edge of the screen in pixels.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder left(@Nullable Long value) {
+                if (value == null) values.remove("left");
+                else values.put("left", jsonValue(value));
+                return this;
+            }
+            /**
+             * Offset of the top edge of the screen in pixels.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder top(@Nullable Long value) {
+                if (value == null) values.remove("top");
+                else values.put("top", jsonValue(value));
+                return this;
+            }
+            /**
+             * The width of the screen in pixels.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder width(@Nullable Long value) {
+                if (value == null) values.remove("width");
+                else values.put("width", jsonValue(value));
+                return this;
+            }
+            /**
+             * The height of the screen in pixels.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder height(@Nullable Long value) {
+                if (value == null) values.remove("height");
+                else values.put("height", jsonValue(value));
+                return this;
+            }
+            /**
+             * Specifies the screen&#x27;s work area.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder workAreaInsets(@Nullable Emulation.WorkAreaInsets value) {
+                if (value == null) values.remove("workAreaInsets");
+                else values.put("workAreaInsets", jsonValue(value));
+                return this;
+            }
+            /**
+             * Specifies the screen&#x27;s device pixel ratio.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder devicePixelRatio(@Nullable Double value) {
+                if (value == null) values.remove("devicePixelRatio");
+                else values.put("devicePixelRatio", jsonValue(value));
+                return this;
+            }
+            /**
+             * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder rotation(@Nullable Long value) {
+                if (value == null) values.remove("rotation");
+                else values.put("rotation", jsonValue(value));
+                return this;
+            }
+            /**
+             * Specifies the screen&#x27;s color depth in bits.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder colorDepth(@Nullable Long value) {
+                if (value == null) values.remove("colorDepth");
+                else values.put("colorDepth", jsonValue(value));
+                return this;
+            }
+            /**
+             * Specifies the descriptive label for the screen.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder label(@Nullable String value) {
+                if (value == null) values.remove("label");
+                else values.put("label", jsonValue(value));
+                return this;
+            }
+            /**
+             * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder isInternal(@Nullable Boolean value) {
+                if (value == null) values.remove("isInternal");
+                else values.put("isInternal", jsonValue(value));
+                return this;
+            }
+            public UpdateScreenParams build() {
+                if (!values.containsKey("screenId")) throw new IllegalStateException("Missing required CDP field: screenId");
+                return new UpdateScreenParams(values);
+            }
+        }
+    }
+    /**
+     * Updates specified screen parameters. Only supported in headless mode.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class UpdateScreenResult extends CdpObject {
+        private UpdateScreenResult(Map<String, Object> values) { super(values); }
+        @Nullable public static UpdateScreenResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new UpdateScreenResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the screenInfo field.
+         * @return the protocol field value
+         */
+        @Nullable public Emulation.ScreenInfo screenInfo() {
+            return Emulation.ScreenInfo.fromMap(objectMap(value("screenInfo")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the screenInfo field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder screenInfo(@Nullable Emulation.ScreenInfo value) {
+                if (value == null) values.remove("screenInfo");
+                else values.put("screenInfo", jsonValue(value));
+                return this;
+            }
+            public UpdateScreenResult build() {
+                if (!values.containsKey("screenInfo")) throw new IllegalStateException("Missing required CDP field: screenInfo");
+                return new UpdateScreenResult(values);
+            }
+        }
+    }
+    /**
      * Remove screen from the device. Only supported in headless mode.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -4642,6 +4843,58 @@ public final class Emulation {
         }
     }
     /**
+     * Set primary screen. Only supported in headless mode. Note that this changes the coordinate system origin to the top-left of the new primary screen, updating the bounds and work areas of all existing screens accordingly.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetPrimaryScreenParams extends CdpObject {
+        private SetPrimaryScreenParams(Map<String, Object> values) { super(values); }
+        @Nullable public static SetPrimaryScreenParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetPrimaryScreenParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the screenId field.
+         * @return the protocol field value
+         */
+        @Nullable public String screenId() {
+            return (String) value("screenId");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the screenId field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder screenId(@Nullable String value) {
+                if (value == null) values.remove("screenId");
+                else values.put("screenId", jsonValue(value));
+                return this;
+            }
+            public SetPrimaryScreenParams build() {
+                if (!values.containsKey("screenId")) throw new IllegalStateException("Missing required CDP field: screenId");
+                return new SetPrimaryScreenParams(values);
+            }
+        }
+    }
+    /**
+     * Set primary screen. Only supported in headless mode. Note that this changes the coordinate system origin to the top-left of the new primary screen, updating the bounds and work areas of all existing screens accordingly.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class SetPrimaryScreenResult extends CdpObject {
+        private SetPrimaryScreenResult(Map<String, Object> values) { super(values); }
+        @Nullable public static SetPrimaryScreenResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SetPrimaryScreenResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            public SetPrimaryScreenResult build() {
+                return new SetPrimaryScreenResult(values);
+            }
+        }
+    }
+    /**
      * Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
@@ -4655,6 +4908,58 @@ public final class Emulation {
             private final Map<String, Object> values = new LinkedHashMap<>();
             public VirtualTimeBudgetExpiredEvent build() {
                 return new VirtualTimeBudgetExpiredEvent(values);
+            }
+        }
+    }
+    /**
+     * Fired when a page calls screen.orientation.lock() or screen.orientation.unlock() while device emulation is enabled. This allows the DevTools frontend to update the emulated device orientation accordingly.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public static final class ScreenOrientationLockChangedEvent extends CdpObject {
+        private ScreenOrientationLockChangedEvent(Map<String, Object> values) { super(values); }
+        @Nullable public static ScreenOrientationLockChangedEvent fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new ScreenOrientationLockChangedEvent(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Whether the screen orientation is currently locked.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean locked() {
+            return (Boolean) value("locked");
+        }
+        /**
+         * The orientation lock type requested by the page. Only set when locked is true.
+         * @return the protocol field value
+         */
+        @Nullable public Emulation.ScreenOrientation orientation() {
+            return Emulation.ScreenOrientation.fromMap(objectMap(value("orientation")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Whether the screen orientation is currently locked.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder locked(@Nullable Boolean value) {
+                if (value == null) values.remove("locked");
+                else values.put("locked", jsonValue(value));
+                return this;
+            }
+            /**
+             * The orientation lock type requested by the page. Only set when locked is true.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder orientation(@Nullable Emulation.ScreenOrientation value) {
+                if (value == null) values.remove("orientation");
+                else values.put("orientation", jsonValue(value));
+                return this;
+            }
+            public ScreenOrientationLockChangedEvent build() {
+                if (!values.containsKey("locked")) throw new IllegalStateException("Missing required CDP field: locked");
+                return new ScreenOrientationLockChangedEvent(values);
             }
         }
     }
@@ -4873,22 +5178,13 @@ public final class Emulation {
             return client.call("Emulation.setPressureSourceOverrideEnabled", params, SetPressureSourceOverrideEnabledResult::fromMap);
         }
         /**
-         * TODO: OBSOLETE: To remove when setPressureDataOverride is merged. Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
+         * Provides a given pressure state that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<SetPressureStateOverrideResult> setPressureStateOverride(SetPressureStateOverrideParams params) {
             return client.call("Emulation.setPressureStateOverride", params, SetPressureStateOverrideResult::fromMap);
-        }
-        /**
-         * Provides a given pressure data set that will be processed and eventually be delivered to PressureObserver users. |source| must have been previously overridden by setPressureSourceOverrideEnabled.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
-         */
-        public CompletionStage<SetPressureDataOverrideResult> setPressureDataOverride(SetPressureDataOverrideParams params) {
-            return client.call("Emulation.setPressureDataOverride", params, SetPressureDataOverrideResult::fromMap);
         }
         /**
          * Overrides the Idle state.
@@ -5032,7 +5328,7 @@ public final class Emulation {
             return client.call("Emulation.setSmallViewportHeightDifferenceOverride", params, SetSmallViewportHeightDifferenceOverrideResult::fromMap);
         }
         /**
-         * Returns device&#x27;s screen configuration.
+         * Returns device&#x27;s screen configuration. In headful mode, the physical screens configuration is returned, whereas in headless mode, a virtual headless screen configuration is provided instead.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
@@ -5049,6 +5345,15 @@ public final class Emulation {
             return client.call("Emulation.addScreen", params, AddScreenResult::fromMap);
         }
         /**
+         * Updates specified screen parameters. Only supported in headless mode.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param params command parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<UpdateScreenResult> updateScreen(UpdateScreenParams params) {
+            return client.call("Emulation.updateScreen", params, UpdateScreenResult::fromMap);
+        }
+        /**
          * Remove screen from the device. Only supported in headless mode.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -5058,6 +5363,15 @@ public final class Emulation {
             return client.call("Emulation.removeScreen", params, RemoveScreenResult::fromMap);
         }
         /**
+         * Set primary screen. Only supported in headless mode. Note that this changes the coordinate system origin to the top-left of the new primary screen, updating the bounds and work areas of all existing screens accordingly.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param params command parameters
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetPrimaryScreenResult> setPrimaryScreen(SetPrimaryScreenParams params) {
+            return client.call("Emulation.setPrimaryScreen", params, SetPrimaryScreenResult::fromMap);
+        }
+        /**
          * Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param handler event callback
@@ -5065,6 +5379,15 @@ public final class Emulation {
          */
         public CdpSubscription onVirtualTimeBudgetExpired(Consumer<VirtualTimeBudgetExpiredEvent> handler) {
             return client.on("Emulation.virtualTimeBudgetExpired", VirtualTimeBudgetExpiredEvent::fromMap, handler);
+        }
+        /**
+         * Fired when a page calls screen.orientation.lock() or screen.orientation.unlock() while device emulation is enabled. This allows the DevTools frontend to update the emulated device orientation accordingly.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param handler event callback
+         * @return a removable subscription
+         */
+        public CdpSubscription onScreenOrientationLockChanged(Consumer<ScreenOrientationLockChangedEvent> handler) {
+            return client.on("Emulation.screenOrientationLockChanged", ScreenOrientationLockChangedEvent::fromMap, handler);
         }
     }
 }

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_urlrequest_client_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:131</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:131</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefUrlRequestClient extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>void (CEF_CALLBACK* on_request_complete)(struct _cef_urlrequest_client_t* self, struct _cef_urlrequest_t* request);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:139</a>
      */
     default void onRequestComplete(@Nullable CefUrlRequest request) {
     }
@@ -35,7 +35,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>void (CEF_CALLBACK* on_upload_progress)(struct _cef_urlrequest_client_t* self, struct _cef_urlrequest_t* request, int64_t current, int64_t total);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:147</a>
      */
     default void onUploadProgress(@Nullable CefUrlRequest request, long current, long total) {
     }
@@ -45,7 +45,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      * <p>Definition generated from cef_urlrequest_capi.h
      * <pre>void (CEF_CALLBACK* on_download_progress)(struct _cef_urlrequest_client_t* self, struct _cef_urlrequest_t* request, int64_t current, int64_t total);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:158</a>
      */
     default void onDownloadProgress(@Nullable CefUrlRequest request, long current, long total) {
     }
@@ -58,7 +58,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *
      * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
      */
     default void onDownloadData(@Nullable CefUrlRequest request, @Nonnull ByteBuffer data) {
     }
@@ -70,7 +70,7 @@ public interface CefUrlRequestClient extends CefClientHandler {
      *
      * @param realm may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
      */
     default boolean getAuthCredentials(boolean isProxy, @Nullable String host, int port, @Nullable String realm, @Nullable String scheme, @Nullable CefAuthCallback callback) {
         return false;

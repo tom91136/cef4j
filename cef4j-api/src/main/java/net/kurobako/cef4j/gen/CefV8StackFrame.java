@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_v8_stack_frame_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1070</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1070</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8StackFrame extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1080</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1080</a>
      */
     boolean isValid();
 
@@ -32,7 +32,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_script_name)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1088</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1088</a>
      */
     Optional<String> getScriptName();
 
@@ -41,7 +41,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_script_name_or_source_url)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1094</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1094</a>
      */
     Optional<String> getScriptNameOrSourceUrl();
 
@@ -50,7 +50,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_function_name)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1102</a>
      */
     Optional<String> getFunctionName();
 
@@ -59,7 +59,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1108</a>
      */
     int getLineNumber();
 
@@ -68,7 +68,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_column)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1114</a>
      */
     int getColumn();
 
@@ -77,7 +77,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_eval)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1121</a>
      */
     boolean isEval();
 
@@ -86,7 +86,7 @@ public interface CefV8StackFrame extends CefLibraryObject {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* is_constructor)(struct _cef_v8_stack_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1127</a>
      */
     boolean isConstructor();
     final class NativePeer implements CefV8StackFrame, AutoCloseable {

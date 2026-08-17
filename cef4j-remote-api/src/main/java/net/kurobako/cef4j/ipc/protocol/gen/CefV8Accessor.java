@@ -17,7 +17,7 @@ public interface CefV8Accessor {
      * Handle assignment of the accessor value identified by {@code name}. {@code object} is the receiver ('this' object) of the accessor. {@code value} is the new value being assigned to the accessor. If assignment fails set {@code exception} to the exception that will be thrown. Return {@code true} if accessor assignment was handled.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:270</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:270</a>
      */
     @Nullable
     default Boolean set(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return null; }

@@ -16,7 +16,7 @@ public interface CefCompletionCallback {
      * Method that will be called once the task is complete.
      * <p>Definition generated from cef_callback.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__callback_8h.html">cef_callback.h:68</a>
      */
 
     void onComplete();

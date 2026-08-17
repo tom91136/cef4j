@@ -17,7 +17,7 @@ public interface CefClient {
      * Called when a new message is received from a different process. Return {@code true} if the message was handled or {@code false} otherwise.  It is safe to keep a reference to {@code message} outside of this callback.
      * <p>Definition generated from cef_client.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__client_8h.html">cef_client.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__client_8h.html">cef_client.h:188</a>
      */
     @Nullable
     default Boolean onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return null; }

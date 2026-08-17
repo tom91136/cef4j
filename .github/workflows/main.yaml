@@ -14,24 +14,49 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Exercise every supported native target and CEF API with every supported LTS
-# build JDK. JavaFX follows the JDK axis, while a focused second pass verifies
-# that all non-JavaFX modules build and test without the JavaFX reactor modules.
+# Exercise every supported native target with every supported LTS build JDK.
+# Each job reuses its runner for a fixed list of pinned/LTS legacy CEF releases,
+# then runs the frontier CEF release. JavaFX follows the JDK axis, while a
+# focused second pass verifies that non-JavaFX modules remain independent.
 # Java 11 remains the runtime/bytecode floor; Maven and Scala code generation
 # intentionally run on 17+.
 jobs:
+  packager:
+    name: Runtime packager / ${{ matrix.os }} / JDK ${{ matrix.java }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025-vs2026, macos-26]
+        java: ['11', '17', '21', '25']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: ${{ matrix.java }}
+          cache: maven
+          cache-dependency-path: cef4j-runtime-packager/pom.xml
+      - name: Test the Java 11 runtime packager
+        run: ./mvnw -B -f cef4j-runtime-packager/pom.xml clean verify
+
+      - name: Verify packager release artifacts
+        if: matrix.os == 'ubuntu-24.04' && matrix.java == '11'
+        run: ./mvnw -B -f cef4j-runtime-packager/pom.xml clean verify -Pruntime-packager-release -Dgpg.skip=true
+
   maven-wrapper:
     name: Bootstrap Maven wrapper
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: corretto
           java-version: '17'
       - id: wrapper-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.m2/wrapper
           key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
@@ -45,7 +70,7 @@ jobs:
           command: ./mvnw --version
       - name: Save Maven wrapper distribution
         if: steps.wrapper-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: ~/.m2/wrapper
           key: ${{ steps.wrapper-cache.outputs.cache-primary-key }}
@@ -53,36 +78,21 @@ jobs:
 
   linux:
     needs: maven-wrapper
-    name: Linux ${{ matrix.platform.arch }} / JDK ${{ matrix.jdk.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.jdk.javafx }}
+    name: Linux ${{ matrix.platform.arch }} / JDK ${{ matrix.jdk.java }} / JavaFX ${{ matrix.jdk.javafx }}
     runs-on: ${{ matrix.platform.os }}
-    timeout-minutes: 60
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
         platform:
           - { arch: x86_64, os: ubuntu-24.04, cef-platform: linux64 }
           - { arch: aarch64, os: ubuntu-24.04-arm, cef-platform: linuxarm64 }
-        cef:
-          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
-          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
-          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
-          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
         jdk:
           - { java: '17', javafx: '13.0.2' }
-          - { java: '21', javafx: '21.0.7' }
-          - { java: '25', javafx: '25.0.2' }
+          - { java: '21', javafx: '21.0.12' }
+          - { java: '25', javafx: '25.0.4' }
     steps:
-      - uses: actions/checkout@v6
-
-      # The complete 4-version/6-platform archive set is about 4.9 GiB. Each
-      # immutable archive has one cache entry, shared by target and codegen use.
-      - name: Prepare compressed CEF archives
-        uses: ./.github/actions/cef-archives
-        with:
-          version: ${{ matrix.cef.version }}
-          platform: ${{ matrix.platform.cef-platform }}
-          # PR caches remain read-only so they cannot evict main's entries.
-          save-cache: ${{ github.ref == 'refs/heads/main' }}
+      - uses: actions/checkout@v7
 
       - name: Set up JDKs
         uses: actions/setup-java@v5
@@ -94,8 +104,18 @@ jobs:
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
+      - name: Set up Gradle for consumer examples
+        if: matrix.platform.arch == 'x86_64' && matrix.jdk.java == '17'
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.7.0'
+
+      - name: Set up sbt for consumer examples
+        if: matrix.platform.arch == 'x86_64' && matrix.jdk.java == '17'
+        uses: sbt/setup-sbt@v1
+
       - name: Cache Maven wrapper distribution
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/wrapper
           key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
@@ -114,7 +134,7 @@ jobs:
 
       - id: sysroot-cache
         name: Restore AlmaLinux 8 sysroot
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
           key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.platform.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
@@ -125,7 +145,7 @@ jobs:
 
       - name: Save AlmaLinux 8 sysroot
         if: steps.sysroot-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
           key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
@@ -141,38 +161,133 @@ jobs:
             libxcomposite1 libxdamage1 libxrandr2 libxtst6 \
             libpango-1.0-0 libatk-bridge2.0-0 libdrm2 libgbm1
 
-      # dependency:go-offline cannot see Spotless' lazily provisioned Eclipse CDT
-      # P2 payload. Resolve it separately with retries; the actual build and tests
-      # below still execute exactly once.
-      - name: Prewarm Spotless C++ formatter
-        uses: nick-fields/retry@v4
+      # Each immutable archive has one cache entry, shared by target and codegen
+      # use across all platform/JDK jobs. PR caches remain read-only so they
+      # cannot evict main's entries.
+      - id: cef109-archive
+        name: Prepare CEF 109 archives
+        uses: ./.github/actions/cef-archives
         with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: >-
-            ./mvnw -B -pl cef4j-native spotless:check
-            "-Dcef.version=${{ matrix.cef.version }}"
-            "-Dcef.api.version=${{ matrix.cef.api }}"
+          version: 109.1.18+gf1c41e4+chromium-109.0.5414.120
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Build and test against AlmaLinux 8 sysroot
+      - id: cef116-archive
+        name: Prepare CEF 116 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 116.0.27+gd8c85ac+chromium-116.0.5845.190
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef138-archive
+        name: Prepare CEF 138 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 138.0.62+g6981a09+chromium-138.0.7204.310
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef144-archive
+        name: Prepare CEF 144 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 144.0.19+g937f5c6+chromium-144.0.7559.246
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef150-archive
+        name: Prepare CEF 150 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 150.0.18+gdb11278+chromium-150.0.7871.213
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      # Keep every legacy CEF release as a distinct step while reusing this
+      # platform/JDK runner. A failed lane does not prevent later lanes running.
+      - id: cef109
+        name: Legacy CEF 109
+        if: ${{ !cancelled() && steps.cef109-archive.outcome == 'success' }}
         env:
           CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
-          CEF_VERSION: ${{ matrix.cef.version }}
-          CEF_API: ${{ matrix.cef.api }}
+          CEF_VERSION: 109.1.18+gf1c41e4+chromium-109.0.5414.120
+          CEF_API: '109'
+          JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh linux
+
+      - id: cef116
+        name: Legacy CEF 116
+        if: ${{ !cancelled() && steps.cef116-archive.outcome == 'success' }}
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
+          CEF_VERSION: 116.0.27+gd8c85ac+chromium-116.0.5845.190
+          CEF_API: '116'
+          JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh linux
+
+      - id: cef138
+        name: Legacy LTS CEF 138
+        if: ${{ !cancelled() && steps.cef138-archive.outcome == 'success' }}
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
+          CEF_VERSION: 138.0.62+g6981a09+chromium-138.0.7204.310
+          CEF_API: '138'
+          JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh linux
+
+      - id: cef144
+        name: Legacy LTS CEF 144
+        if: ${{ !cancelled() && steps.cef144-archive.outcome == 'success' }}
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
+          CEF_VERSION: 144.0.19+g937f5c6+chromium-144.0.7559.246
+          CEF_API: '144'
+          JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh linux
+
+      - id: cef150
+        name: Frontier CEF 150
+        if: ${{ !cancelled() && steps.cef150-archive.outcome == 'success' }}
+        env:
+          CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.platform.arch }}
+          CEF_VERSION: 150.0.18+gdb11278+chromium-150.0.7871.213
+          CEF_API: '150'
           JAVAFX_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
           # JavaFX only published a Linux ARM64 build for the initial 21 release,
           # and has no ARM64 artifact compatible with JDK 17.
           JAVAFX_TEST_VERSION: ${{ matrix.platform.arch == 'aarch64' && matrix.jdk.java == '21' && '21.0.1' || matrix.jdk.javafx }}
           JAVAFX_TESTS: ${{ matrix.platform.arch != 'aarch64' || matrix.jdk.java != '17' }}
-          JAVA11_SMOKE: ${{ matrix.cef.api == '146' && matrix.jdk.java == '17' }}
-        run: .github/ci/linux-build.sh
+          JAVA11_SMOKE: ${{ matrix.jdk.java == '17' }}
+        run: .github/ci/run-cef.sh linux
+
+      - name: Test Maven, Gradle, Kotlin DSL, and sbt consumers
+        if: ${{ !cancelled() && matrix.platform.arch == 'x86_64' && matrix.jdk.java == '17' && steps.cef150.outcome == 'success' }}
+        run: .github/ci/test-consumer-builds.sh
 
       - name: Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: reports-linux-${{ matrix.platform.arch }}-jdk${{ matrix.jdk.java }}-cef${{ matrix.cef.api }}-jfx${{ matrix.jdk.javafx }}
+          name: reports-linux-${{ matrix.platform.arch }}-jdk${{ matrix.jdk.java }}-jfx${{ matrix.jdk.javafx }}
           path: |
+            ci-reports/**
             **/target/surefire-reports/**
             **/hs_err_pid*.log
           if-no-files-found: ignore
@@ -180,9 +295,9 @@ jobs:
 
   desktop:
     needs: maven-wrapper
-    name: ${{ matrix.platform.label }} / JDK ${{ matrix.jdk.java }} / CEF ${{ matrix.cef.api }} / JavaFX ${{ matrix.jdk.javafx }}
+    name: ${{ matrix.platform.label }} / JDK ${{ matrix.jdk.java }} / JavaFX ${{ matrix.jdk.javafx }}
     runs-on: ${{ matrix.platform.os }}
-    timeout-minutes: 60
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
@@ -193,17 +308,12 @@ jobs:
           - { label: 'Windows ARM', os: 'windows-11-arm', arch: aarch64, cef-platform: windowsarm64, distribution: zulu, javafx-tests: false }
           - { label: 'macOS Intel', os: 'macos-26-intel', arch: x86_64, cef-platform: macosx64, distribution: corretto, javafx-tests: true }
           - { label: 'macOS ARM', os: 'macos-26', arch: aarch64, cef-platform: macosarm64, distribution: corretto, javafx-tests: true }
-        cef:
-          - { api: '109', version: '109.1.18+gf1c41e4+chromium-109.0.5414.120' }
-          - { api: '116', version: '116.0.27+gd8c85ac+chromium-116.0.5845.190' }
-          - { api: '144', version: '144.0.19+g937f5c6+chromium-144.0.7559.246' }
-          - { api: '146', version: '146.0.9+g3ca6a87+chromium-146.0.7680.165' }
         jdk:
           - { java: '17', javafx: '13.0.2' }
           - { java: '21', javafx: '21.0.7' }
           - { java: '25', javafx: '25.0.2' }
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # setup-java records each installation in Maven's toolchains.xml. Windows
       # ARM needs Microsoft for the Java 11 smoke toolchain because Zulu's native
@@ -224,7 +334,7 @@ jobs:
           cache-dependency-path: '**/pom.xml'
 
       - name: Cache Maven wrapper distribution
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/wrapper
           key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
@@ -250,44 +360,8 @@ jobs:
             }
           }
 
-      - name: Prepare compressed CEF archives
-        uses: ./.github/actions/cef-archives
-        with:
-          version: ${{ matrix.cef.version }}
-          platform: ${{ matrix.platform.cef-platform }}
-          save-cache: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Resolve dependencies
-        if: runner.os != 'Windows' || matrix.platform.arch != 'aarch64'
-        uses: nick-fields/retry@v4
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: >-
-            ./mvnw -B dependency:go-offline
-            "-DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server"
-            "-Dcef.version=${{ matrix.cef.version }}"
-            "-Dcef.api.version=${{ matrix.cef.api }}"
-            "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
-            "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
-
-      - name: Resolve dependencies for Windows ARM
-        if: runner.os == 'Windows' && matrix.platform.arch == 'aarch64'
-        uses: nick-fields/retry@v4
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: >-
-            ./mvnw -B dependency:go-offline
-            "-DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server"
-            "-Dcef.version=${{ matrix.cef.version }}"
-            "-Dcef.api.version=${{ matrix.cef.api }}"
-            "-Djavafx.version=${{ matrix.jdk.javafx }}"
-            "-Djavafx.test.version=${{ matrix.jdk.javafx }}"
-            "-Djavafx.platform=win"
-
-      # Surefire detects its JUnit provider only when tests begin, so dependency:go-offline cannot discover it.
-      # Resolve that lazy provider explicitly while CDN/DNS failures are still covered by retries.
+      # Surefire discovers this provider lazily only when tests begin. Resolve it
+      # once before the pooled CEF lanes so network retries never repeat a test.
       - name: Prewarm Surefire JUnit provider
         uses: nick-fields/retry@v4
         with:
@@ -297,84 +371,136 @@ jobs:
             ./mvnw -B dependency:get
             "-Dartifact=org.apache.maven.surefire:surefire-junit-platform:3.5.6"
 
-      # Spotless provisions Eclipse CDT from its P2 repository only when the C++
-      # formatter first runs, so dependency:go-offline does not protect this CDN
-      # access. Retrying this read-only format check does not retry any test.
-      - name: Prewarm Spotless C++ formatter
-        uses: nick-fields/retry@v4
+      - id: cef109-archive
+        name: Prepare CEF 109 archives
+        uses: ./.github/actions/cef-archives
         with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: >-
-            ./mvnw -B -pl cef4j-native spotless:check
-            "-Dcef.version=${{ matrix.cef.version }}"
-            "-Dcef.api.version=${{ matrix.cef.api }}"
+          version: 109.1.18+gf1c41e4+chromium-109.0.5414.120
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef116-archive
+        name: Prepare CEF 116 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 116.0.27+gd8c85ac+chromium-116.0.5845.190
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef138-archive
+        name: Prepare CEF 138 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 138.0.62+g6981a09+chromium-138.0.7204.310
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef144-archive
+        name: Prepare CEF 144 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 144.0.19+g937f5c6+chromium-144.0.7559.246
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
+
+      - id: cef150-archive
+        name: Prepare CEF 150 archives
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/cef-archives
+        with:
+          version: 150.0.18+gdb11278+chromium-150.0.7871.213
+          platform: ${{ matrix.platform.cef-platform }}
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
 
       # GitHub-hosted Windows and macOS runners are disposable VMs with their own
       # WindowStation/WindowServer session, so GUI tests cannot reach a developer desktop.
       # Mock the macOS keychain because unsigned Chromium test processes can block
       # in Security.framework while authorizing a persisted Safe Storage item.
-      - name: Build and test in isolated hosted desktop
-        if: matrix.platform.javafx-tests
-        run: >-
-          ./mvnw -B clean install
-          "-Dcef.version=${{ matrix.cef.version }}"
-          "-Dcef.api.version=${{ matrix.cef.api }}"
-          "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
-          "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}"
-          "-Dcef4j.test.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
-          "-Dcef4j.runtime.server.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
-
-      # OpenJFX currently publishes no Windows ARM64 native artifacts. Compile the
-      # complete reactor, then exercise every non-JavaFX module natively on ARM64.
-      - name: Build and test on Windows ARM without JavaFX
-        if: ${{ !matrix.platform.javafx-tests }}
+      - id: cef109
+        name: Legacy CEF 109
+        if: ${{ !cancelled() && steps.cef109-archive.outcome == 'success' }}
         shell: bash
-        run: |
-          ./mvnw -B clean install -DskipTests \
-            "-Dcef.version=${{ matrix.cef.version }}" \
-            "-Dcef.api.version=${{ matrix.cef.api }}" \
-            "-Djavafx.version=${{ matrix.jdk.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.jdk.javafx }}" \
-            "-Djavafx.platform=win" \
-            "-Dcef4j.test.extraArgs=--disable-gpu" \
-            "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
-          ./mvnw -B test \
-            -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
-            "-Dcef.version=${{ matrix.cef.version }}" \
-            "-Dcef.api.version=${{ matrix.cef.api }}" \
-            "-Djavafx.version=${{ matrix.jdk.javafx }}" \
-            "-Djavafx.test.version=${{ matrix.jdk.javafx }}" \
-            "-Djavafx.platform=win" \
-            "-Dcef4j.test.extraArgs=--disable-gpu" \
-            "-Dcef4j.runtime.server.extraArgs=--disable-gpu"
+        env:
+          CEF_VERSION: 109.1.18+gf1c41e4+chromium-109.0.5414.120
+          CEF_API: '109'
+          JAVAFX_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
+          JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
+          CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh desktop
 
-      - name: Test without JavaFX modules
-        if: matrix.platform.javafx-tests
+      - id: cef116
+        name: Legacy CEF 116
+        if: ${{ !cancelled() && steps.cef116-archive.outcome == 'success' }}
         shell: bash
-        run: |
-          ./mvnw -B test \
-            -pl '!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample' \
-            "-Dcef.version=${{ matrix.cef.version }}" \
-            "-Dcef.api.version=${{ matrix.cef.api }}" \
-            "-Djavafx.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}" \
-            "-Djavafx.test.version=${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}" \
-            "-Dcef4j.test.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}" \
-            "-Dcef4j.runtime.server.extraArgs=${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}"
+        env:
+          CEF_VERSION: 116.0.27+gd8c85ac+chromium-116.0.5845.190
+          CEF_API: '116'
+          JAVAFX_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
+          JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
+          CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh desktop
 
-      - name: Java 11 runtime smoke
-        if: matrix.cef.api == '146' && matrix.jdk.java == '17'
-        run: >-
-          ./mvnw -B
-          -pl cef4j-remote-core,cef4j-remote-recording-gson,cef4j-remote-recording-jackson,cef4j-remote-frame,cef4j-cdp,cef4j-cdp-gson,cef4j-cdp-jackson,cef4j-remote-cdp-gson,cef4j-remote-cdp-jackson,cef4j-webdriver,cef4j-webdriver-gson,cef4j-webdriver-jackson,cef4j-remote-webdriver
-          test "-Djava11.runtime.smoke=true"
+      - id: cef138
+        name: Legacy LTS CEF 138
+        if: ${{ !cancelled() && steps.cef138-archive.outcome == 'success' }}
+        shell: bash
+        env:
+          CEF_VERSION: 138.0.62+g6981a09+chromium-138.0.7204.310
+          CEF_API: '138'
+          JAVAFX_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
+          JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
+          CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh desktop
+
+      - id: cef144
+        name: Legacy LTS CEF 144
+        if: ${{ !cancelled() && steps.cef144-archive.outcome == 'success' }}
+        shell: bash
+        env:
+          CEF_VERSION: 144.0.19+g937f5c6+chromium-144.0.7559.246
+          CEF_API: '144'
+          JAVAFX_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
+          JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
+          CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+          JAVA11_SMOKE: 'false'
+        run: .github/ci/run-cef.sh desktop
+
+      - id: cef150
+        name: Frontier CEF 150
+        if: ${{ !cancelled() && steps.cef150-archive.outcome == 'success' }}
+        shell: bash
+        env:
+          CEF_VERSION: 150.0.18+gdb11278+chromium-150.0.7871.213
+          CEF_API: '150'
+          JAVAFX_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TEST_VERSION: ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+          JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
+          JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
+          CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+          JAVA11_SMOKE: ${{ matrix.jdk.java == '17' }}
+        run: .github/ci/run-cef.sh desktop
 
       - name: Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: reports-${{ matrix.platform.os }}-cef${{ matrix.cef.api }}-jdk${{ matrix.jdk.java }}-jfx${{ matrix.jdk.javafx }}
+          name: reports-${{ matrix.platform.os }}-jdk${{ matrix.jdk.java }}-jfx${{ matrix.jdk.javafx }}
           path: |
+            ci-reports/**
             **/target/surefire-reports/**
             **/hs_err_pid*.log
           if-no-files-found: ignore

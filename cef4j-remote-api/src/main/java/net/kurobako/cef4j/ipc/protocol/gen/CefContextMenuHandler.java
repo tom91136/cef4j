@@ -17,7 +17,7 @@ public interface CefContextMenuHandler {
      * Called before a context menu is displayed. {@code params} provides information about the context menu state. {@code model} initially contains the default context menu. The {@code model} can be cleared to show no context menu or modified to show a custom menu. Do not keep references to {@code params} or {@code model} outside of this callback.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
      */
     default void onBeforeContextMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, net.kurobako.cef4j.ipc.session.RemoteHandle model) {}
 
@@ -25,7 +25,7 @@ public interface CefContextMenuHandler {
      * Called to allow custom display of the context menu. {@code params} provides information about the context menu state. {@code model} contains the context menu model resulting from OnBeforeContextMenu. For custom display return {@code true} and execute {@code callback} either synchronously or asynchronously with the selected command ID. For default display return {@code false}. Do not keep references to {@code params} or {@code model} outside of this callback.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
      */
     @Nullable
     default Boolean runContextMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, net.kurobako.cef4j.ipc.session.RemoteHandle model, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -34,7 +34,7 @@ public interface CefContextMenuHandler {
      * Called to execute a command selected from the context menu. Return {@code true} if the command was handled or {@code false} for the default implementation. See cef_menu_id_t for the command ids that have default implementations. All user-defined command ids should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. {@code params} will have the same values as what was passed to OnBeforeContextMenu(). Do not keep a reference to {@code params} outside of this callback.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
      */
     @Nullable
     default Boolean onContextMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, int commandId, int eventFlags) { return null; }
@@ -43,7 +43,7 @@ public interface CefContextMenuHandler {
      * Called when the context menu is dismissed irregardless of whether the menu was canceled or a command was selected.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
      */
     default void onContextMenuDismissed(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 
@@ -51,7 +51,7 @@ public interface CefContextMenuHandler {
      * Called to allow custom display of the quick menu for a windowless browser. {@code location} is the top left corner of the selected region. {@code size} is the size of the selected region. {@code edit_state_flags} is a combination of flags that represent the state of the quick menu. Return {@code true} if the menu will be handled and execute {@code callback} either synchronously or asynchronously with the selected command ID. Return {@code false} to cancel the menu.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
      */
     @Nullable
     default Boolean runQuickMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, Point location, Size size, int editStateFlags, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -60,7 +60,7 @@ public interface CefContextMenuHandler {
      * Called to execute a command selected from the quick menu for a windowless browser. Return {@code true} if the command was handled or {@code false} for the default implementation. See cef_menu_id_t for command IDs that have default implementations.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
     @Nullable
     default Boolean onQuickMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int commandId, int eventFlags) { return null; }
@@ -69,7 +69,7 @@ public interface CefContextMenuHandler {
      * Called when the quick menu for a windowless browser is dismissed irregardless of whether the menu was canceled or a command was selected.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
      */
     default void onQuickMenuDismissed(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 

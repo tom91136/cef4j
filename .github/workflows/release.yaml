@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CEF_VERSION: '146.0.9+g3ca6a87+chromium-146.0.7680.165'
-  CEF_API: '146'
+  CEF_VERSION: '150.0.18+gdb11278+chromium-150.0.7871.213'
+  CEF_API: '150'
   # Release artifacts compile against the oldest supported JavaFX API. Newer
   # JavaFX lines are compatibility-tested in main.yaml, never used as the release baseline.
   JAVAFX_VERSION: '13.0.2'
@@ -27,12 +27,13 @@ env:
 jobs:
   validate:
     name: Validate release tag
+    if: startsWith(github.event.release.tag_name || inputs.tag, 'v')
     runs-on: ubuntu-24.04
     outputs:
       tag: ${{ steps.version.outputs.tag }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag }}
       - id: version
@@ -71,7 +72,7 @@ jobs:
           - { label: macOS Intel, os: macos-26-intel, platform: macosx64, classifier: macosx-x86_64, distribution: corretto }
           - { label: macOS ARM, os: macos-26, platform: macosarm64, classifier: macosx-arm64, distribution: corretto }
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate.outputs.tag }}
 
@@ -112,7 +113,7 @@ jobs:
       - id: sysroot-cache
         name: Restore AlmaLinux 8 sysroot
         if: runner.os == 'Linux'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
           key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
@@ -123,7 +124,7 @@ jobs:
 
       - name: Save AlmaLinux 8 sysroot
         if: runner.os == 'Linux' && steps.sysroot-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: sysroot/out/sysroot-al8-${{ matrix.arch }}.tar.xz
           key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
@@ -220,7 +221,7 @@ jobs:
     timeout-minutes: 45
     environment: central
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate.outputs.tag }}
 
@@ -250,7 +251,7 @@ jobs:
 
       - id: sysroot-cache
         name: Restore AlmaLinux 8 x86-64 sysroot
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: sysroot/out/sysroot-al8-x86_64.tar.xz
           key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-x86_64-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
@@ -261,7 +262,7 @@ jobs:
 
       - name: Save AlmaLinux 8 x86-64 sysroot
         if: steps.sysroot-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: sysroot/out/sysroot-al8-x86_64.tar.xz
           key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
@@ -276,7 +277,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/x86_64
         run: |
-          xvfb-run -a ./mvnw -B deploy -Prelease \
+          xvfb-run -a ./mvnw -B deploy -Prelease -pl '!cef4j-runtime-packager' \
             -DskipTests \
             "-Dcef.version=${{ env.CEF_VERSION }}" \
             "-Dcef.api.version=${{ env.CEF_API }}" \
@@ -284,14 +285,14 @@ jobs:
             "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
 
   publish-native-central:
-    name: Upload classified native Maven Central deployments
+    name: Upload classified native Maven Central deployment
     if: github.event_name == 'release'
     needs: [validate, platform]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: central
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.validate.outputs.tag }}
 
@@ -311,7 +312,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Upload size-safe native classifier families for manual publication
+      - name: Upload thin native classifier families for manual publication
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}

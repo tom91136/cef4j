@@ -60,14 +60,14 @@ copy loaded by a test. Rebuild and update the packaged resource or use the CMake
 reproducer. Compare hashes before debugging stale behavior:
 
 ```bash
-md5sum cef4j-native/target/cmake-build/libcef4j.so \
+md5sum cef4j-platform/target/cmake-build/libcef4j.so \
   cef4j-api/src/main/resources/native/linux64/libcef4j.so \
   /tmp/cef4j-cache/linux64/libcef4j.so
-nm -D cef4j-native/target/cmake-build/libcef4j.so | rg 'JNI_OnLoad|cef_api'
+nm -D cef4j-platform/target/cmake-build/libcef4j.so | rg 'JNI_OnLoad|cef_api'
 ```
 
 Paths and suffixes differ on macOS and Windows. The runtime-server launchable unit is
-`cef4j-runtime-server/target/cmake-build/runtime-server/`; keep the executable beside its matching CEF resources.
+`cef4j-runtime-server/target/cmake-build/runtime-server/`; supply a matching CEF distribution when launching it.
 
 ## Standalone and native debuggers
 
@@ -78,7 +78,7 @@ initialization API without comparing it to the current samples.
 AddressSanitizer build pattern on Linux:
 
 ```bash
-cd cef4j-native/target/cmake-build
+cd cef4j-platform/target/cmake-build
 cmake ../.. -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_C_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
   -DCMAKE_CXX_FLAGS='-fsanitize=address -fno-omit-frame-pointer' \
@@ -128,7 +128,7 @@ entries or throw when the caller supplied an immutable collection.
 The first stdout protocol line must resemble:
 
 ```text
-CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=14600 transport=zmq frame=shared-file endpoint=... capabilities=...
+CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=15000 transport=zmq frame=shared-file endpoint=... capabilities=...
 ```
 
 If startup fails:
@@ -136,7 +136,7 @@ If startup fails:
 - run the packaged executable directly with the same `--transport`, `--bind`, and `--frame-transport` arguments;
 - ensure stdout has no banner or logging before the handshake;
 - verify the handshake protocol/API and provider names match the launcher request;
-- confirm the executable can find its sibling CEF libraries/resources;
+- confirm the child environment points to the expected CEF libraries and resources;
 - check the configured startup timeout and the server's stderr;
 - use a fresh writable CEF cache/profile directory.
 

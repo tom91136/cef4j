@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,11 +14,11 @@ import javax.annotation.processing.Generated;
  *   CEF_PERMISSION_TYPE_CAPTURED_SURFACE_CONTROL = 1 &lt;&lt; 3,
  *   ...
  * } cef_permission_request_types_t;</pre>
- * <p>Possible values: {@link Kind#NONE}, {@link Kind#AR_SESSION}, {@link Kind#CAMERA_PAN_TILT_ZOOM}, {@link Kind#CAMERA_STREAM}, {@link Kind#CAPTURED_SURFACE_CONTROL}, {@link Kind#CLIPBOARD}, {@link Kind#TOP_LEVEL_STORAGE_ACCESS}, {@link Kind#DISK_QUOTA}, {@link Kind#LOCAL_FONTS}, {@link Kind#GEOLOCATION}, {@link Kind#HAND_TRACKING}, {@link Kind#IDENTITY_PROVIDER}, {@link Kind#IDLE_DETECTION}, {@link Kind#MIC_STREAM}, {@link Kind#MIDI_SYSEX}, {@link Kind#MULTIPLE_DOWNLOADS}, {@link Kind#NOTIFICATIONS}, {@link Kind#KEYBOARD_LOCK}, {@link Kind#POINTER_LOCK}, {@link Kind#PROTECTED_MEDIA_IDENTIFIER}, {@link Kind#REGISTER_PROTOCOL_HANDLER}, {@link Kind#STORAGE_ACCESS}, {@link Kind#VR_SESSION}, {@link Kind#WEB_APP_INSTALLATION}, {@link Kind#WINDOW_MANAGEMENT}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#LOCAL_NETWORK_ACCESS}, {@link Kind#LOCAL_NETWORK}, {@link Kind#LOOPBACK_NETWORK}
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#AR_SESSION}, {@link Kind#CAMERA_PAN_TILT_ZOOM}, {@link Kind#CAMERA_STREAM}, {@link Kind#CAPTURED_SURFACE_CONTROL}, {@link Kind#CLIPBOARD}, {@link Kind#TOP_LEVEL_STORAGE_ACCESS}, {@link Kind#DISK_QUOTA}, {@link Kind#LOCAL_FONTS}, {@link Kind#GEOLOCATION}, {@link Kind#HAND_TRACKING}, {@link Kind#IDENTITY_PROVIDER}, {@link Kind#IDLE_DETECTION}, {@link Kind#MIC_STREAM}, {@link Kind#MIDI_SYSEX}, {@link Kind#MULTIPLE_DOWNLOADS}, {@link Kind#NOTIFICATIONS}, {@link Kind#KEYBOARD_LOCK}, {@link Kind#POINTER_LOCK}, {@link Kind#PROTECTED_MEDIA_IDENTIFIER}, {@link Kind#REGISTER_PROTOCOL_HANDLER}, {@link Kind#STORAGE_ACCESS}, {@link Kind#VR_SESSION}, {@link Kind#WEB_APP_INSTALLATION}, {@link Kind#WINDOW_MANAGEMENT}, {@link Kind#FILE_SYSTEM_ACCESS}, {@link Kind#LOCAL_NETWORK_ACCESS_DEPRECATED}, {@link Kind#LOCAL_NETWORK}, {@link Kind#LOOPBACK_NETWORK}, {@link Kind#SENSORS}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefPermissionRequestTypes implements CefEnum<CefPermissionRequestTypes> {
 
@@ -50,9 +50,10 @@ public final class CefPermissionRequestTypes implements CefEnum<CefPermissionReq
         WEB_APP_INSTALLATION(1 << 22, "1 << 22", "CEF_PERMISSION_TYPE_WEB_APP_INSTALLATION"),
         WINDOW_MANAGEMENT(1 << 23, "1 << 23", "CEF_PERMISSION_TYPE_WINDOW_MANAGEMENT"),
         FILE_SYSTEM_ACCESS(1 << 24, "1 << 24", "CEF_PERMISSION_TYPE_FILE_SYSTEM_ACCESS"),
-        LOCAL_NETWORK_ACCESS(1 << 25, "1 << 25", "CEF_PERMISSION_TYPE_LOCAL_NETWORK_ACCESS"),
+        LOCAL_NETWORK_ACCESS_DEPRECATED(1 << 25, "1 << 25", "CEF_PERMISSION_TYPE_LOCAL_NETWORK_ACCESS_DEPRECATED"),
         LOCAL_NETWORK(1 << 26, "1 << 26", "CEF_PERMISSION_TYPE_LOCAL_NETWORK"),
-        LOOPBACK_NETWORK(1 << 27, "1 << 27", "CEF_PERMISSION_TYPE_LOOPBACK_NETWORK");
+        LOOPBACK_NETWORK(1 << 27, "1 << 27", "CEF_PERMISSION_TYPE_LOOPBACK_NETWORK"),
+        SENSORS(1 << 28, "1 << 28", "CEF_PERMISSION_TYPE_SENSORS");
 
         private static final Kind[] VALUES = Kind.values();
 

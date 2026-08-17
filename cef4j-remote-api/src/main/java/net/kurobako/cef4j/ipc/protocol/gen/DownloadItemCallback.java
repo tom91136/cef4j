@@ -39,7 +39,7 @@ public final class DownloadItemCallback {
      * Call to cancel the download.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
      */
     public CompletableFuture<Void> cancel() {
         return session
@@ -51,7 +51,7 @@ public final class DownloadItemCallback {
      * Call to pause the download.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:73</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:73</a>
      */
     public CompletableFuture<Void> pause() {
         return session
@@ -63,7 +63,7 @@ public final class DownloadItemCallback {
      * Call to resume the download.
      * <p>Definition generated from cef_download_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:79</a>
      */
     public CompletableFuture<Void> resume() {
         return session

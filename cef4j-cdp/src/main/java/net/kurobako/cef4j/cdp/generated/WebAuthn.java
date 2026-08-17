@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * This domain allows configuring virtual authenticators to test the WebAuthn API.
  * <p><b>Experimental:</b> this part of CDP may change without notice.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/WebAuthn.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/WebAuthn.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class WebAuthn {
@@ -35,6 +35,7 @@ public final class WebAuthn {
         private Ctap2Version() {}
         public static final String CTAP2_0 = "ctap2_0";
         public static final String CTAP2_1 = "ctap2_1";
+        public static final String CTAP2_2 = "ctap2_2";
     }
     /**
      * Wire values for AuthenticatorTransport.
@@ -117,6 +118,20 @@ public final class WebAuthn {
          */
         @Nullable public Boolean hasPrf() {
             return (Boolean) value("hasPrf");
+        }
+        /**
+         * If set to true, the authenticator will support the hmac-secret extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension Defaults to false.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean hasHmacSecret() {
+            return (Boolean) value("hasHmacSecret");
+        }
+        /**
+         * If set to true, the authenticator will support the hmac-secret-mc extension. https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension Defaults to false.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean hasHmacSecretMc() {
+            return (Boolean) value("hasHmacSecretMc");
         }
         /**
          * If set to true, tests of user presence will succeed immediately. Otherwise, they will not be resolved. Defaults to true.
@@ -236,6 +251,26 @@ public final class WebAuthn {
             public Builder hasPrf(@Nullable Boolean value) {
                 if (value == null) values.remove("hasPrf");
                 else values.put("hasPrf", jsonValue(value));
+                return this;
+            }
+            /**
+             * If set to true, the authenticator will support the hmac-secret extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension Defaults to false.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder hasHmacSecret(@Nullable Boolean value) {
+                if (value == null) values.remove("hasHmacSecret");
+                else values.put("hasHmacSecret", jsonValue(value));
+                return this;
+            }
+            /**
+             * If set to true, the authenticator will support the hmac-secret-mc extension. https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension Defaults to false.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder hasHmacSecretMc(@Nullable Boolean value) {
+                if (value == null) values.remove("hasHmacSecretMc");
+                else values.put("hasHmacSecretMc", jsonValue(value));
                 return this;
             }
             /**

@@ -39,7 +39,7 @@ public final class ContextMenuParams {
      * Returns the X coordinate of the mouse where the context menu was invoked. Coords are relative to the associated RenderView's origin.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
      */
     public CompletableFuture<Integer> getXcoord() {
         return session
@@ -51,7 +51,7 @@ public final class ContextMenuParams {
      * Returns the Y coordinate of the mouse where the context menu was invoked. Coords are relative to the associated RenderView's origin.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
      */
     public CompletableFuture<Integer> getYcoord() {
         return session
@@ -63,7 +63,7 @@ public final class ContextMenuParams {
      * Returns flags representing the type of node that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
      */
     public CompletableFuture<Integer> getTypeFlags() {
         return session
@@ -75,7 +75,7 @@ public final class ContextMenuParams {
      * Returns the URL of the link, if any, that encloses the node that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     public CompletableFuture<String> getLinkUrl() {
         return session
@@ -87,7 +87,7 @@ public final class ContextMenuParams {
      * Returns the link URL, if any, to be used ONLY for "copy link address". We don't validate this field in the frontend process.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
      */
     public CompletableFuture<String> getUnfilteredLinkUrl() {
         return session
@@ -99,7 +99,7 @@ public final class ContextMenuParams {
      * Returns the source URL, if any, for the element that the context menu was invoked on. Example of elements with source URLs are img, audio, and video.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
      */
     public CompletableFuture<String> getSourceUrl() {
         return session
@@ -111,7 +111,7 @@ public final class ContextMenuParams {
      * Returns {@code true} if the context menu was invoked on an image which has non-empty contents.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
      */
     public CompletableFuture<Integer> hasImageContents() {
         return session
@@ -123,7 +123,7 @@ public final class ContextMenuParams {
      * Returns the title text or the alt text if the context menu was invoked on an image.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
      */
     public CompletableFuture<String> getTitleText() {
         return session
@@ -135,7 +135,7 @@ public final class ContextMenuParams {
      * Returns the URL of the top level page that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
      */
     public CompletableFuture<String> getPageUrl() {
         return session
@@ -147,7 +147,7 @@ public final class ContextMenuParams {
      * Returns the URL of the subframe that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
      */
     public CompletableFuture<String> getFrameUrl() {
         return session
@@ -159,7 +159,7 @@ public final class ContextMenuParams {
      * Returns the character encoding of the subframe that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
      */
     public CompletableFuture<String> getFrameCharset() {
         return session
@@ -171,7 +171,7 @@ public final class ContextMenuParams {
      * Returns the type of context node that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
      */
     public CompletableFuture<Integer> getMediaType() {
         return session
@@ -183,7 +183,7 @@ public final class ContextMenuParams {
      * Returns flags representing the actions supported by the media element, if any, that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
      */
     public CompletableFuture<Integer> getMediaStateFlags() {
         return session
@@ -195,7 +195,7 @@ public final class ContextMenuParams {
      * Returns the text of the selection, if any, that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
      */
     public CompletableFuture<String> getSelectionText() {
         return session
@@ -207,7 +207,7 @@ public final class ContextMenuParams {
      * Returns the text of the misspelled word, if any, that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
      */
     public CompletableFuture<String> getMisspelledWord() {
         return session
@@ -219,7 +219,7 @@ public final class ContextMenuParams {
      * Returns {@code true} if suggestions exist, {@code false} otherwise. Fills in {@code suggestions} from the spell check service for the misspelled word if there is one.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
     public CompletableFuture<Integer> getDictionarySuggestions(String[] suggestions) {
         return session
@@ -231,7 +231,7 @@ public final class ContextMenuParams {
      * Returns {@code true} if the context menu was invoked on an editable node.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
      */
     public CompletableFuture<Integer> isEditable() {
         return session
@@ -243,7 +243,7 @@ public final class ContextMenuParams {
      * Returns {@code true} if the context menu was invoked on an editable node where spell-check is enabled.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
      */
     public CompletableFuture<Integer> isSpellCheckEnabled() {
         return session
@@ -255,7 +255,7 @@ public final class ContextMenuParams {
      * Returns flags representing the actions supported by the editable node, if any, that the context menu was invoked on.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
      */
     public CompletableFuture<Integer> getEditStateFlags() {
         return session
@@ -267,7 +267,7 @@ public final class ContextMenuParams {
      * Returns {@code true} if the context menu contains items specified by the renderer process.
      * <p>Definition generated from cef_context_menu_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
      */
     public CompletableFuture<Integer> isCustomMenu() {
         return session

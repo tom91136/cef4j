@@ -23,6 +23,6 @@ public interface WebDriverJsonCodec {
         return ServiceLoader.load(WebDriverJsonCodec.class)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
-                        "No WebDriver JSON codec installed; add cef4j-webdriver-gson or cef4j-webdriver-jackson"));
+                        "No WebDriver JSON codec installed; add cef4j-codecs-gson or cef4j-codecs-jackson"));
     }
 }

@@ -39,7 +39,7 @@ public final class TaskManager {
      * Returns the number of tasks currently tracked by the task manager. Returns 0 if the method was called from the incorrect thread.
      * <p>Definition generated from cef_task_manager.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:62</a>
      */
     public CompletableFuture<Long> getTasksCount() {
         return session
@@ -51,7 +51,7 @@ public final class TaskManager {
      * Attempts to terminate a task with {@code task_id}. Returns {@code false} if the {@code task_id} is invalid, the call is made from an incorrect thread, or if the task cannot be terminated.
      * <p>Definition generated from cef_task_manager.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:91</a>
      */
     public CompletableFuture<Integer> killTask(long taskId) {
         return session
@@ -63,7 +63,7 @@ public final class TaskManager {
      * Returns the task ID associated with the main task for {@code browser_id} (value from {@code CefBrowser.getIdentifier()}). Returns -1 if {@code browser_id} is invalid, does not currently have an associated task, or the method was called from the incorrect thread.
      * <p>Definition generated from cef_task_manager.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:99</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:99</a>
      */
     public CompletableFuture<Long> getTaskIdForBrowserId(int browserId) {
         return session

@@ -18,7 +18,7 @@ public interface CefPdfPrintCallback {
      *
      * @param path may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:247</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:247</a>
      */
 
     void onPdfPrintFinished(String path, int ok);

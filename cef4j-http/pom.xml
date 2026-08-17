@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-http</artifactId>
@@ -83,9 +83,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <systemPropertyVariables>
-                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
-                    </systemPropertyVariables>
                     <excludes>
                         <!-- Real-CEF integration test needs a live CEF process; keep it out of
                              the default fork and run it isolated below. -->

@@ -17,7 +17,7 @@ public interface CefMenuModelDelegate {
      * Perform the action associated with the specified {@code command_id} and optional {@code event_flags}.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
     default void executeCommand(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, int commandId, int eventFlags) {}
 
@@ -25,7 +25,7 @@ public interface CefMenuModelDelegate {
      * Called when the user moves the mouse outside the menu and over the owning window.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
      */
     default void mouseOutsideMenu(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, Point screenPoint) {}
 
@@ -33,7 +33,7 @@ public interface CefMenuModelDelegate {
      * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying a right-to-left language.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:70</a>
      */
     default void unhandledOpenSubmenu(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, int isRtl) {}
 
@@ -41,7 +41,7 @@ public interface CefMenuModelDelegate {
      * Called on unhandled close submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying a right-to-left language.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:78</a>
      */
     default void unhandledCloseSubmenu(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, int isRtl) {}
 
@@ -49,7 +49,7 @@ public interface CefMenuModelDelegate {
      * The menu is about to show.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:86</a>
      */
     default void menuWillShow(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel) {}
 
@@ -57,7 +57,7 @@ public interface CefMenuModelDelegate {
      * The menu has closed.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:92</a>
      */
     default void menuClosed(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel) {}
 
@@ -65,7 +65,7 @@ public interface CefMenuModelDelegate {
      * Optionally modify a menu item label. Return {@code true} if {@code label} was modified.
      * <p>Definition generated from cef_menu_model_delegate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
      */
     @Nullable
     default Boolean formatLabel(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, String label) { return null; }

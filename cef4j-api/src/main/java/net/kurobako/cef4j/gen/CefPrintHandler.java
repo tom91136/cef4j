@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_print_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:77</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:77</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPrintHandler extends CefClientHandler {
 
@@ -23,7 +23,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_print_start)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:85</a>
      */
     default void onPrintStart(@Nullable CefBrowser browser) {
     }
@@ -33,7 +33,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_print_settings)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser, struct _cef_print_settings_t* settings, int get_defaults);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:94</a>
      */
     default void onPrintSettings(@Nullable CefBrowser browser, @Nullable CefPrintSettings settings, boolean getDefaults) {
     }
@@ -43,7 +43,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_print_dialog)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser, int has_selection, struct _cef_print_dialog_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
      */
     default boolean onPrintDialog(@Nullable CefBrowser browser, boolean hasSelection, @Nullable CefPrintDialogCallback callback) {
         return false;
@@ -54,7 +54,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_print_job)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser, const cef_string_t* document_name, const cef_string_t* pdf_file_path, struct _cef_print_job_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
      */
     default boolean onPrintJob(@Nullable CefBrowser browser, @Nullable String documentName, @Nullable String pdfFilePath, @Nullable CefPrintJobCallback callback) {
         return false;
@@ -65,7 +65,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_print_reset)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:125</a>
      */
     default void onPrintReset(@Nullable CefBrowser browser) {
     }
@@ -75,7 +75,7 @@ public interface CefPrintHandler extends CefClientHandler {
      * <p>Definition generated from cef_print_handler_capi.h
      * <pre>cef_size_t* (CEF_CALLBACK* get_pdf_paper_size)(struct _cef_print_handler_t* self, struct _cef_browser_t* browser, int device_units_per_inch);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:131</a>
      */
     default @Nullable CefSize getPdfPaperSize(@Nullable CefBrowser browser, int deviceUnitsPerInch) {
         return null;

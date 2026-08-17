@@ -17,7 +17,7 @@ public interface CefAccessibilityHandler {
      * Called after renderer process sends accessibility tree changes to the browser process.
      * <p>Definition generated from cef_accessibility_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:51</a>
      */
     default void onAccessibilityTreeChange(net.kurobako.cef4j.ipc.session.RemoteHandle value) {}
 
@@ -25,7 +25,7 @@ public interface CefAccessibilityHandler {
      * Called after renderer process sends accessibility location changes to the browser process.
      * <p>Definition generated from cef_accessibility_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:58</a>
      */
     default void onAccessibilityLocationChange(net.kurobako.cef4j.ipc.session.RemoteHandle value) {}
 

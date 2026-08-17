@@ -39,7 +39,7 @@ public final class ResourceSkipCallback {
      * Callback for asynchronous continuation of Skip(). If {@code bytes_skipped} > 0 then either Skip() will be called again until the requested number of bytes have been skipped or the request will proceed. If {@code bytes_skipped} &lt;= 0 the request will fail with {@code ERR_REQUEST_RANGE_NOT_SATISFIABLE}.
      * <p>Definition generated from cef_resource_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:54</a>
      */
     public CompletableFuture<Void> cont(long bytesSkipped) {
         return session

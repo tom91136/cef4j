@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-inprocess-swing</artifactId>
@@ -96,9 +96,6 @@
                 <configuration>
                     <reuseForks>false</reuseForks>
                     <argLine>${surefire.argLine} -Djava.awt.headless=false</argLine>
-                    <systemPropertyVariables>
-                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>

@@ -13,6 +13,17 @@ class SystemBootstrapTest {
     Path tempDir;
 
     @Test
+    void packagedRuntimeWinsOverAutoDiscoveryButNotExplicitConfiguration() {
+        Path configured = Path.of("configured");
+        Path discovered = Path.of("discovered");
+
+        assertThat(SystemBootstrap.selectLibcefDir(configured, discovered, true))
+                .isEqualTo(configured);
+        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, true)).isNull();
+        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, false)).isEqualTo(discovered);
+    }
+
+    @Test
     void reactorRuntimeIncludesCefResourcesAndLauncherDependencies() throws Exception {
         Path release = Files.createDirectories(tempDir.resolve("cef/Release"));
         Path runtime = Files.createDirectories(tempDir.resolve("reactor"));

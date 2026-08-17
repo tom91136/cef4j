@@ -39,7 +39,7 @@ public final class PermissionPromptCallback {
      * Complete the permissions request with the specified {@code result}.
      * <p>Definition generated from cef_permission_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:75</a>
      */
     public CompletableFuture<Void> cont(int result) {
         return session

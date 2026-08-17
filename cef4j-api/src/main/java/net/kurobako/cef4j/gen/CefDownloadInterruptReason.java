@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_download_interrupt_reason_t;</pre>
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#FILE_FAILED}, {@link Kind#FILE_ACCESS_DENIED}, {@link Kind#FILE_NO_SPACE}, {@link Kind#FILE_NAME_TOO_LONG}, {@link Kind#FILE_TOO_LARGE}, {@link Kind#FILE_VIRUS_INFECTED}, {@link Kind#FILE_TRANSIENT_ERROR}, {@link Kind#FILE_BLOCKED}, {@link Kind#FILE_SECURITY_CHECK_FAILED}, {@link Kind#FILE_TOO_SHORT}, {@link Kind#FILE_HASH_MISMATCH}, {@link Kind#FILE_SAME_AS_SOURCE}, {@link Kind#NETWORK_FAILED}, {@link Kind#NETWORK_TIMEOUT}, {@link Kind#NETWORK_DISCONNECTED}, {@link Kind#NETWORK_SERVER_DOWN}, {@link Kind#NETWORK_INVALID_REQUEST}, {@link Kind#SERVER_FAILED}, {@link Kind#SERVER_NO_RANGE}, {@link Kind#SERVER_BAD_CONTENT}, {@link Kind#SERVER_UNAUTHORIZED}, {@link Kind#SERVER_CERT_PROBLEM}, {@link Kind#SERVER_FORBIDDEN}, {@link Kind#SERVER_UNREACHABLE}, {@link Kind#SERVER_CONTENT_LENGTH_MISMATCH}, {@link Kind#SERVER_CROSS_ORIGIN_REDIRECT}, {@link Kind#USER_CANCELED}, {@link Kind#USER_SHUTDOWN}, {@link Kind#CRASH}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefDownloadInterruptReason implements CefEnum<CefDownloadInterruptReason> {
 

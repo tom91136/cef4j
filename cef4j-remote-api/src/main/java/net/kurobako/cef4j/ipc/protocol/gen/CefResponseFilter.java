@@ -17,7 +17,7 @@ public interface CefResponseFilter {
      * Initialize the response filter. Will only be called a single time. The filter will not be installed if this method returns {@code false}.
      * <p>Definition generated from cef_response_filter.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response__filter_8h.html">cef_response_filter.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response__filter_8h.html">cef_response_filter.h:52</a>
      */
     @Nullable
     default Boolean initFilter() { return null; }

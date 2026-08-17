@@ -39,7 +39,7 @@ public final class OverlayController {
      * Returns {@code true} if this object is valid. This object may become invalid if the underlying data is owned by another object (e.g. list or dictionary) and that other object is then modified or destroyed. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:549</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class OverlayController {
      * Returns {@code true} if this object and {@code that} object have the same underlying data. If {@code true} modifications to this object will also affect {@code that} object and vice-versa.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:571</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:571</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -114,7 +114,7 @@ public final class OverlayController {
      * Sets the number of values. If the number of values is expanded all new value slots will default to type null. Returns {@code true} on success.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:592</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
     public CompletableFuture<Void> setSize(Size size) {
         return session
@@ -126,7 +126,7 @@ public final class OverlayController {
      * Returns the number of values.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:599</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
     public CompletableFuture<Size> getSize() {
         return session
@@ -173,7 +173,7 @@ public final class OverlayController {
      * Change the visibility of the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Void> setVisible(int visible) {
         return session
@@ -185,7 +185,7 @@ public final class OverlayController {
      * Returns {@code true} if the specified {@code command_id} is visible.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     public CompletableFuture<Integer> isVisible() {
         return session

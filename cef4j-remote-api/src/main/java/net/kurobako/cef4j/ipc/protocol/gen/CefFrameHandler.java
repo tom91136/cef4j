@@ -17,7 +17,7 @@ public interface CefFrameHandler {
      * Called when a new frame is created. This will be the first notification that references {@code frame}. Any commands that require transport to the associated renderer process (LoadRequest, SendProcessMessage, GetSource, etc.) will be queued. The queued commands will be sent before OnFrameAttached or discarded before OnFrameDestroyed if the frame never attaches.
      * <p>Definition generated from cef_frame_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:117</a>
      */
     default void onFrameCreated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 
@@ -25,7 +25,7 @@ public interface CefFrameHandler {
      * Called when an existing frame is destroyed. This will be the last notification that references {@code frame} and {@code CefFrame.isValid()} will return {@code false} for {@code frame}. If called during browser destruction and after {@code CefLifeSpanHandler.onBeforeClose()} then {@code CefBrowser.isValid()} will return {@code false} for {@code browser}. Any queued commands that have not been sent will be discarded before this callback.
      * <p>Definition generated from cef_frame_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:129</a>
      */
     default void onFrameDestroyed(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 
@@ -33,7 +33,7 @@ public interface CefFrameHandler {
      * Called when a frame can begin routing commands to/from the associated renderer process. {@code reattached} will be {@code true} if the frame was re-attached after exiting the BackForwardCache or after encountering a recoverable connection error. Any queued commands will now have been dispatched. This method will not be called for temporary frames created during cross-origin navigation.
      * <p>Definition generated from cef_frame_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:141</a>
      */
     default void onFrameAttached(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int reattached) {}
 
@@ -41,7 +41,7 @@ public interface CefFrameHandler {
      * Called when a frame loses its connection to the renderer process. This may occur when a frame is destroyed, enters the BackForwardCache, or encounters a rare connection error. In the case of frame destruction this call will be followed by a (potentially async) call to OnFrameDestroyed. If frame destruction is occuring synchronously then {@code CefFrame.isValid()} will return {@code false} for {@code frame}. If called during browser destruction and after {@code CefLifeSpanHandler.onBeforeClose()} then {@code CefBrowser.isValid()} will return {@code false} for {@code browser}. If, in the non-destruction case, the same frame later exits the BackForwardCache or recovers from a connection error then there will be a follow-up call to OnFrameAttached. This method will not be called for temporary frames created during cross-origin navigation.
      * <p>Definition generated from cef_frame_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:154</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:154</a>
      */
     default void onFrameDetached(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame) {}
 
@@ -52,7 +52,7 @@ public interface CefFrameHandler {
      * @param oldFrame may be null
      * @param newFrame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame__handler_8h.html">cef_frame_handler.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:171</a>
      */
     default void onMainFrameChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle oldFrame, net.kurobako.cef4j.ipc.session.RemoteHandle newFrame) {}
 

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.mac;
 
 import javax.annotation.processing.Generated;
@@ -22,9 +22,9 @@ import net.kurobako.cef4j.gen.CefRuntimeStyle;
  *   cef_runtime_style_t runtime_style;
  * } cef_window_info_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__mac_8h.html">internal/cef_types_mac.h:91</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__mac_8h.html">internal/cef_types_mac.h:91</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo {
 
@@ -105,7 +105,7 @@ public final class CefWindowInfo implements net.kurobako.cef4j.gen.CefWindowInfo
      * Mutable variant of {@link CefWindowInfo}. Class representing window information.
      * <p>Definition generated from internal/cef_types_mac.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types__mac_8h.html">internal/cef_types_mac.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__mac_8h.html">internal/cef_types_mac.h:91</a>
      */
     public static final class Mutable implements net.kurobako.cef4j.gen.CefWindowInfo.Mutable {
 

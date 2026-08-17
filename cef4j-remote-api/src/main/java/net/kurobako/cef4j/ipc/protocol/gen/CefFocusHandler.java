@@ -17,7 +17,7 @@ public interface CefFocusHandler {
      * Called when the browser component is about to loose focus. For instance, if focus was on the last HTML element and the user pressed the TAB key. {@code next} will be {@code true} if the browser is giving focus to the next component and {@code false} if the browser is giving focus to the previous component.
      * <p>Definition generated from cef_focus_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:55</a>
      */
     default void onTakeFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int next) {}
 
@@ -25,7 +25,7 @@ public interface CefFocusHandler {
      * Called when the browser component is requesting focus. {@code source} indicates where the focus request is originating from. Return {@code false} to allow the focus to be set or {@code true} to cancel setting the focus.
      * <p>Definition generated from cef_focus_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
      */
     @Nullable
     default Boolean onSetFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int source) { return null; }
@@ -34,7 +34,7 @@ public interface CefFocusHandler {
      * Called when the browser component has received focus.
      * <p>Definition generated from cef_focus_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:74</a>
      */
     default void onGotFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

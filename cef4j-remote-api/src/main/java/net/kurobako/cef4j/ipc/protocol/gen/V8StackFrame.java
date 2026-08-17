@@ -49,7 +49,7 @@ public final class V8StackFrame {
      * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1080</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1080</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -61,7 +61,7 @@ public final class V8StackFrame {
      * Returns the name of the resource script that contains the function.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1088</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1088</a>
      */
     public CompletableFuture<String> getScriptName() {
         return session
@@ -73,7 +73,7 @@ public final class V8StackFrame {
      * Returns the name of the resource script that contains the function or the sourceURL value if the script name is undefined and its source ends with a "//@ sourceURL=..." string.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1094</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1094</a>
      */
     public CompletableFuture<String> getScriptNameOrSourceUrl() {
         return session
@@ -85,7 +85,7 @@ public final class V8StackFrame {
      * Returns the name of the function.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1102</a>
      */
     public CompletableFuture<String> getFunctionName() {
         return session
@@ -97,7 +97,7 @@ public final class V8StackFrame {
      * Returns the 1-based line number for the function call or 0 if unknown.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1108</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
         return session
@@ -109,7 +109,7 @@ public final class V8StackFrame {
      * Returns the 1-based column offset on the line for the function call or 0 if unknown.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1114</a>
      */
     public CompletableFuture<Integer> getColumn() {
         return session
@@ -121,7 +121,7 @@ public final class V8StackFrame {
      * Returns {@code true} if the function was compiled using eval().
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1121</a>
      */
     public CompletableFuture<Integer> isEval() {
         return session
@@ -133,7 +133,7 @@ public final class V8StackFrame {
      * Returns {@code true} if the function was called as a constructor via "new".
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1127</a>
      */
     public CompletableFuture<Integer> isConstructor() {
         return session

@@ -43,7 +43,7 @@ public final class SchemeRegistrar {
      * This function may be called on any thread. It should only be called once per unique {@code scheme_name} value. If {@code scheme_name} is already registered or if an error occurs this method will return {@code false}.
      * <p>Definition generated from cef_scheme.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:85</a>
      */
     public CompletableFuture<Integer> addCustomScheme(@Nonnull String schemeName, int options) {
         return session

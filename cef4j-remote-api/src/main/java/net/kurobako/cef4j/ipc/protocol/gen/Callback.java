@@ -39,7 +39,7 @@ public final class Callback {
      * Continue processing.
      * <p>Definition generated from cef_callback.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__callback_8h.html">cef_callback.h:49</a>
      */
     public CompletableFuture<Void> cont() {
         return session
@@ -51,7 +51,7 @@ public final class Callback {
      * Cancel processing.
      * <p>Definition generated from cef_callback.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__callback_8h.html">cef_callback.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__callback_8h.html">cef_callback.h:55</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

@@ -8,74 +8,18 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
-        <!-- Preserve CEF/Chromium licensing and third-party attribution alongside
-             the redistributed native runtime. -->
+        <!-- CEF itself is intentionally not published to Maven Central. Consumers
+             supply a complete CEF runtime externally or package one as resources
+             with cef4j-runtime-packager. -->
         <fileSet>
-            <directory>${cef.dist.dir}</directory>
-            <outputDirectory>cef-runtime/${cef.platform}</outputDirectory>
+            <directory>${project.build.directory}/cmake-build</directory>
+            <outputDirectory>/native/${cef.platform}</outputDirectory>
             <includes>
-                <include>LICENSE.txt</include>
-                <include>CREDITS.html</include>
-            </includes>
-        </fileSet>
-
-        <!-- JNI library and subprocess launcher staged by cef4j-native. -->
-        <fileSet>
-            <directory>${maven.multiModuleProjectDirectory}/target/platform-native</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-
-        <!-- Generated file list for runtime extraction -->
-        <fileSet>
-            <directory>${project.build.directory}/file-list</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>cef-runtime/${cef.platform}/file-list.txt</include>
-            </includes>
-        </fileSet>
-
-        <!-- CEF shared libraries from Release/ — Linux and Windows flat files -->
-        <fileSet>
-            <directory>${cef.dist.dir}/Release</directory>
-            <outputDirectory>cef-runtime/${cef.platform}</outputDirectory>
-            <includes>
-                <!-- Linux -->
-                <include>libcef.so</include>
-                <include>libEGL.so</include>
-                <include>libGLESv2.so</include>
-                <include>libvk_swiftshader.so</include>
-                <include>libvulkan.so.1</include>
-                <include>v8_context_snapshot.bin</include>
-                <include>vk_swiftshader_icd.json</include>
-                <!-- Windows -->
-                <include>libcef.dll</include>
-                <include>chrome_elf.dll</include>
-                <include>d3dcompiler_47.dll</include>
-                <include>vk_swiftshader.dll</include>
-                <include>vulkan-1.dll</include>
-            </includes>
-        </fileSet>
-
-        <!-- macOS: entire CEF framework bundle from Release/ -->
-        <fileSet>
-            <directory>${cef.dist.dir}/Release</directory>
-            <outputDirectory>cef-runtime/${cef.platform}</outputDirectory>
-            <includes>
-                <include>Chromium Embedded Framework.framework/**</include>
-            </includes>
-        </fileSet>
-
-        <!-- Resources: icudtl.dat, .pak files, locales/ — Linux and Windows only -->
-        <!-- macOS resources are embedded inside the framework bundle above -->
-        <fileSet>
-            <directory>${cef.dist.dir}/Resources</directory>
-            <outputDirectory>cef-runtime/${cef.platform}</outputDirectory>
-            <includes>
-                <include>icudtl.dat</include>
-                <include>resources.pak</include>
-                <include>chrome_100_percent.pak</include>
-                <include>chrome_200_percent.pak</include>
-                <include>locales/*.pak</include>
+                <include>libcef4j.so</include>
+                <include>cef4j.dll</include>
+                <include>libcef4j.dylib</include>
+                <include>cef4j_launcher</include>
+                <include>cef4j_launcher.exe</include>
             </includes>
         </fileSet>
     </fileSets>

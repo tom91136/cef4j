@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_audio_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefAudioHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * <p>Definition generated from cef_audio_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_audio_parameters)(struct _cef_audio_handler_t* self, struct _cef_browser_t* browser, cef_audio_parameters_t* params);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:52</a>
      */
     default boolean getAudioParameters(@Nullable CefBrowser browser, @Nonnull CefAudioParameters.Mutable params) {
         return false;
@@ -35,7 +35,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * <p>Definition generated from cef_audio_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_audio_stream_started)(struct _cef_audio_handler_t* self, struct _cef_browser_t* browser, const cef_audio_parameters_t* params, int channels);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
      */
     default void onAudioStreamStarted(@Nullable CefBrowser browser, @Nonnull CefAudioParameters params, int channels) {
     }
@@ -45,7 +45,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * <p>Definition generated from cef_audio_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_audio_stream_packet)(struct _cef_audio_handler_t* self, struct _cef_browser_t* browser, const float** data, int frames, int64_t pts);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:76</a>
      */
     default void onAudioStreamPacket(@Nullable CefBrowser browser, @Nullable NativePointer data, int frames, long pts) {
     }
@@ -55,7 +55,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * <p>Definition generated from cef_audio_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_audio_stream_stopped)(struct _cef_audio_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:92</a>
      */
     default void onAudioStreamStopped(@Nullable CefBrowser browser) {
     }
@@ -65,7 +65,7 @@ public interface CefAudioHandler extends CefClientHandler {
      * <p>Definition generated from cef_audio_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_audio_stream_error)(struct _cef_audio_handler_t* self, struct _cef_browser_t* browser, const cef_string_t* message);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:100</a>
      */
     default void onAudioStreamError(@Nullable CefBrowser browser, @Nullable String message) {
     }

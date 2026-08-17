@@ -39,7 +39,7 @@ public final class Server {
      * Returns the task runner for the dedicated server thread.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:82</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return session
@@ -52,7 +52,7 @@ public final class Server {
      * Stop the server and shut down the dedicated server thread. See {@code CefServerHandler.onServerCreated()} documentation for a description of server lifespan.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:88</a>
      */
     public CompletableFuture<Void> shutdown() {
         return session
@@ -64,7 +64,7 @@ public final class Server {
      * Returns {@code true} if the server is currently running and accepting incoming connections. See {@code CefServerHandler.onServerCreated()} documentation for a description of server lifespan. This method must be called on the dedicated server thread.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:96</a>
      */
     public CompletableFuture<Integer> isRunning() {
         return session
@@ -76,7 +76,7 @@ public final class Server {
      * Returns the server address including the port number.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:105</a>
      */
     public CompletableFuture<String> getAddress() {
         return session
@@ -88,7 +88,7 @@ public final class Server {
      * Returns {@code true} if the server currently has a connection. This method must be called on the dedicated server thread.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:111</a>
      */
     public CompletableFuture<Integer> hasConnection() {
         return session
@@ -100,7 +100,7 @@ public final class Server {
      * Returns {@code true} if {@code connection_id} represents a valid connection. This method must be called on the dedicated server thread.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:118</a>
      */
     public CompletableFuture<Integer> isValidConnection(int connectionId) {
         return session
@@ -115,7 +115,7 @@ public final class Server {
      *
      * @param data <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:125</a>
      */
     public CompletableFuture<Void> sendHttp200Response(int connectionId, @Nonnull String contentType, @Nonnull byte[] data) {
         return session
@@ -127,7 +127,7 @@ public final class Server {
      * Send an HTTP 404 "Not Found" response to the connection identified by {@code connection_id}. The connection will be closed automatically after the response is sent.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:138</a>
      */
     public CompletableFuture<Void> sendHttp404Response(int connectionId) {
         return session
@@ -139,7 +139,7 @@ public final class Server {
      * Send an HTTP 500 "Internal Server Error" response to the connection identified by {@code connection_id}. {@code error_message} is the associated error message. The connection will be closed automatically after the response is sent.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:146</a>
      */
     public CompletableFuture<Void> sendHttp500Response(int connectionId, @Nonnull String errorMessage) {
         return session
@@ -154,7 +154,7 @@ public final class Server {
      *
      * @param data <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:177</a>
      */
     public CompletableFuture<Void> sendRawData(int connectionId, @Nonnull byte[] data) {
         return session
@@ -166,7 +166,7 @@ public final class Server {
      * Close the connection identified by {@code connection_id}. See SendHttpResponse documentation for intended usage.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:190</a>
      */
     public CompletableFuture<Void> closeConnection(int connectionId) {
         return session
@@ -181,7 +181,7 @@ public final class Server {
      *
      * @param data <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:197</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:197</a>
      */
     public CompletableFuture<Void> sendWebSocketMessage(int connectionId, @Nonnull byte[] data) {
         return session

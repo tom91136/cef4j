@@ -19,7 +19,7 @@ public interface CefJsdialogHandler {
      *
      * @param messageText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
      */
     @Nullable
     default Boolean onBeforeUnloadDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String messageText, int isReload, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -28,7 +28,7 @@ public interface CefJsdialogHandler {
      * Called to cancel any pending dialogs and reset any saved dialog state. Will be called due to events like page navigation irregardless of whether any dialogs are currently pending.
      * <p>Definition generated from cef_jsdialog_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:112</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:112</a>
      */
     default void onResetDialogState(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -36,7 +36,7 @@ public interface CefJsdialogHandler {
      * Called when the dialog is closed.
      * <p>Definition generated from cef_jsdialog_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:120</a>
      */
     default void onDialogClosed(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

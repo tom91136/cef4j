@@ -39,7 +39,7 @@ public final class X509Certificate {
      * Returns the subject of the X.509 certificate. For HTTPS server certificates this represents the web server.  The common name of the subject should match the host name of the web server.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:105</a>
      */
     public CompletableFuture<X509CertPrincipal> getSubject() {
         return session
@@ -52,7 +52,7 @@ public final class X509Certificate {
      * Returns the issuer of the X.509 certificate.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:113</a>
      */
     public CompletableFuture<X509CertPrincipal> getIssuer() {
         return session
@@ -65,7 +65,7 @@ public final class X509Certificate {
      * Returns the DER encoded serial number for the X.509 certificate. The value possibly includes a leading 00 byte.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:119</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:119</a>
      */
     public CompletableFuture<BinaryValue> getSerialNumber() {
         return session
@@ -78,7 +78,7 @@ public final class X509Certificate {
      * Returns the date before which the X.509 certificate is invalid. CefBaseTime.GetTimeT() will return 0 if no date was specified.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
      */
     public CompletableFuture<Basetime> getValidStart() {
         return session
@@ -90,7 +90,7 @@ public final class X509Certificate {
      * Returns the date after which the X.509 certificate is invalid. CefBaseTime.GetTimeT() will return 0 if no date was specified.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
      */
     public CompletableFuture<Basetime> getValidExpiry() {
         return session
@@ -102,7 +102,7 @@ public final class X509Certificate {
      * Returns the DER encoded data for the X.509 certificate.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:140</a>
      */
     public CompletableFuture<BinaryValue> getDerencoded() {
         return session
@@ -115,7 +115,7 @@ public final class X509Certificate {
      * Returns the PEM encoded data for the X.509 certificate.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:146</a>
      */
     public CompletableFuture<BinaryValue> getPemencoded() {
         return session
@@ -128,7 +128,7 @@ public final class X509Certificate {
      * Returns the number of certificates in the issuer chain. If 0, the certificate is self-signed.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:152</a>
      */
     public CompletableFuture<Long> getIssuerChainSize() {
         return session

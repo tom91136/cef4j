@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_render_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:48</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:48</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefRenderHandler extends CefClientHandler {
 
@@ -26,7 +26,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>cef_accessibility_handler_t* (CEF_CALLBACK* get_accessibility_handler)(struct _cef_render_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:61</a>
      */
     default Optional<CefAccessibilityHandler> getAccessibilityHandler() {
         return Optional.empty();
@@ -37,7 +37,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_root_screen_rect)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:70</a>
      */
     default boolean getRootScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
         return false;
@@ -48,7 +48,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* get_view_rect)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:80</a>
      */
     default void getViewRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
     }
@@ -58,7 +58,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_screen_point)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, int viewX, int viewY, int* screenX, int* screenY);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:87</a>
      */
     default boolean getScreenPoint(@Nullable CefBrowser browser, int viewX, int viewY, int[] screenX, int[] screenY) {
         return false;
@@ -71,7 +71,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_screen_info)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_screen_info_t* screen_info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:102</a>
      */
     default boolean getScreenInfo(@Nullable CefBrowser browser, @Nonnull CefScreenInfo.Mutable screenInfo) {
         return false;
@@ -82,7 +82,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_popup_show)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, int show);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:117</a>
      */
     default void onPopupShow(@Nullable CefBrowser browser, boolean show) {
     }
@@ -92,7 +92,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_popup_size)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, const cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
      */
     default void onPopupSize(@Nullable CefBrowser browser, @Nonnull CefRect rect) {
     }
@@ -105,7 +105,7 @@ public interface CefRenderHandler extends CefClientHandler {
      *
      * @param buffer <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:132</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:132</a>
      */
     default void onPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nonnull ByteBuffer buffer, int width, int height) {
     }
@@ -117,7 +117,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_accelerated_paint)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_paint_element_type_t type, size_t dirtyRectsCount, cef_rect_t const* dirtyRects, const cef_accelerated_paint_info_t* info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:151</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:151</a>
      */
     default void onAcceleratedPaint(@Nullable CefBrowser browser, @Nonnull CefPaintElementType type, long dirtyRectsCount, @Nonnull CefRect[] dirtyRects, @Nullable CefAcceleratedPaintInfo info) {
     }
@@ -127,7 +127,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* get_touch_handle_size)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_horizontal_alignment_t orientation, cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:175</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:175</a>
      */
     default void getTouchHandleSize(@Nullable CefBrowser browser, @Nonnull CefHorizontalAlignment orientation, @Nonnull CefSize.Mutable size) {
     }
@@ -137,7 +137,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_touch_handle_state_changed)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, const cef_touch_handle_state_t* state);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:184</a>
      */
     default void onTouchHandleStateChanged(@Nullable CefBrowser browser, @Nonnull CefTouchHandleState state) {
     }
@@ -151,7 +151,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>int (CEF_CALLBACK* start_dragging)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, struct _cef_drag_data_t* drag_data, cef_drag_operations_mask_t allowed_ops, int x, int y);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
      */
     default boolean startDragging(@Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask allowedOps, int x, int y) {
         return false;
@@ -162,7 +162,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* update_drag_cursor)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_drag_operations_mask_t operation);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:216</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:216</a>
      */
     default void updateDragCursor(@Nullable CefBrowser browser, @Nonnull CefDragOperationsMask operation) {
     }
@@ -172,7 +172,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_scroll_offset_changed)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, double x, double y);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:225</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:225</a>
      */
     default void onScrollOffsetChanged(@Nullable CefBrowser browser, double x, double y) {
     }
@@ -182,7 +182,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_ime_composition_range_changed)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, const cef_range_t* selected_range, size_t character_boundsCount, cef_rect_t const* character_bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:233</a>
      */
     default void onImeCompositionRangeChanged(@Nullable CefBrowser browser, @Nonnull CefRange selectedRange, long characterBoundsCount, @Nonnull CefRect[] characterBounds) {
     }
@@ -195,7 +195,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * @param selectedText may be null
      * @param selectedRange may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
      */
     default void onTextSelectionChanged(@Nullable CefBrowser browser, @Nullable String selectedText, @Nullable CefRange selectedRange) {
     }
@@ -205,7 +205,7 @@ public interface CefRenderHandler extends CefClientHandler {
      * <p>Definition generated from cef_render_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_virtual_keyboard_requested)(struct _cef_render_handler_t* self, struct _cef_browser_t* browser, cef_text_input_mode_t input_mode);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:253</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:253</a>
      */
     default void onVirtualKeyboardRequested(@Nullable CefBrowser browser, @Nonnull CefTextInputMode inputMode) {
     }

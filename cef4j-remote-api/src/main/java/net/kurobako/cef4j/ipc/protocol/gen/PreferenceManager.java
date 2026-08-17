@@ -39,7 +39,7 @@ public final class PreferenceManager {
      * Returns {@code true} if a preference with the specified {@code name} exists. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:131</a>
      */
     public CompletableFuture<Integer> hasPreference(@Nonnull String name) {
         return session
@@ -51,7 +51,7 @@ public final class PreferenceManager {
      * Returns the value for the preference with the specified {@code name}. Returns {@code null} if the preference does not exist. The returned object contains a copy of the underlying preference value and modifications to the returned object will not modify the underlying preference value. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:138</a>
      */
     public CompletableFuture<Value> getPreference(@Nonnull String name) {
         return session
@@ -64,7 +64,7 @@ public final class PreferenceManager {
      * Returns all preferences as a dictionary. If {@code include_defaults} is {@code true} then preferences currently at their default value will be included. The returned object contains a copy of the underlying preference values and modifications to the returned object will not modify the underlying preference values. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:148</a>
      */
     public CompletableFuture<DictionaryValue> getAllPreferences(int includeDefaults) {
         return session
@@ -77,7 +77,7 @@ public final class PreferenceManager {
      * Returns {@code true} if the preference with the specified {@code name} can be modified using SetPreference. As one example preferences set via the command-line usually cannot be modified. This method must be called on the browser process UI thread.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:160</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:160</a>
      */
     public CompletableFuture<Integer> canSetPreference(@Nonnull String name) {
         return session
@@ -91,7 +91,7 @@ public final class PreferenceManager {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:169</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:169</a>
      */
     public CompletableFuture<Integer> setPreference(@Nonnull String name, @Nonnull RemoteHandle value, @Nonnull String error) {
         return session
@@ -106,7 +106,7 @@ public final class PreferenceManager {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:183</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:183</a>
      */
     public CompletableFuture<RemoteHandle> addPreferenceObserver(@Nonnull String name, @Nonnull RemoteHandle observer) {
         return session

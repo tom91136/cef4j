@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_command_line_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefCommandLine extends CefLibraryObject {
 
@@ -27,7 +27,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:76</a>
      */
     boolean isValid();
 
@@ -36,7 +36,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:83</a>
      */
     boolean isReadOnly();
 
@@ -45,7 +45,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>cef_command_line_t* (CEF_CALLBACK* copy)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:90</a>
      */
     Optional<CefCommandLine> copy();
 
@@ -54,7 +54,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* init_from_argv)(struct _cef_command_line_t* self, int argc, const char* const* argv);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:96</a>
      */
     void initFromArgv(int argc, @Nonnull List<String> argv);
 
@@ -63,7 +63,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* init_from_string)(struct _cef_command_line_t* self, const cef_string_t* command_line);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:104</a>
      */
     void initFromString(@Nullable String commandLine);
 
@@ -72,7 +72,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* reset)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:111</a>
      */
     void reset();
 
@@ -81,7 +81,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* get_argv)(struct _cef_command_line_t* self, cef_string_list_t argv);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
     void getArgv(@Nonnull List<String> argv);
 
@@ -90,7 +90,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_command_line_string)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:126</a>
      */
     Optional<String> getCommandLineString();
 
@@ -99,7 +99,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_program)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:133</a>
      */
     Optional<String> getProgram();
 
@@ -108,7 +108,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* set_program)(struct _cef_command_line_t* self, const cef_string_t* program);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:139</a>
      */
     void setProgram(@Nullable String program);
 
@@ -117,7 +117,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>int (CEF_CALLBACK* has_switches)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:145</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:145</a>
      */
     boolean hasSwitches();
 
@@ -126,7 +126,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>int (CEF_CALLBACK* has_switch)(struct _cef_command_line_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:151</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:151</a>
      */
     boolean hasSwitch(@Nullable String name);
 
@@ -135,7 +135,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_switch_value)(struct _cef_command_line_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:157</a>
      */
     Optional<String> getSwitchValue(@Nullable String name);
 
@@ -144,7 +144,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* get_switches)(struct _cef_command_line_t* self, cef_string_map_t switches);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:164</a>
      */
     void getSwitches(@Nonnull Map<String, String> switches);
 
@@ -153,7 +153,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* append_switch)(struct _cef_command_line_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:171</a>
      */
     void appendSwitch(@Nullable String name);
 
@@ -162,7 +162,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* append_switch_with_value)(struct _cef_command_line_t* self, const cef_string_t* name, const cef_string_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:177</a>
      */
     void appendSwitchWithValue(@Nullable String name, @Nullable String value);
 
@@ -171,7 +171,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>int (CEF_CALLBACK* has_arguments)(struct _cef_command_line_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:194</a>
      */
     boolean hasArguments();
 
@@ -180,7 +180,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* get_arguments)(struct _cef_command_line_t* self, cef_string_list_t arguments);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
     void getArguments(@Nonnull List<String> arguments);
 
@@ -189,7 +189,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* append_argument)(struct _cef_command_line_t* self, const cef_string_t* argument);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:206</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:206</a>
      */
     void appendArgument(@Nullable String argument);
 
@@ -198,7 +198,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* prepend_wrapper)(struct _cef_command_line_t* self, const cef_string_t* wrapper);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:212</a>
      */
     void prependWrapper(@Nullable String wrapper);
 
@@ -208,7 +208,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>void (CEF_CALLBACK* remove_switch)(struct _cef_command_line_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:186</a>
      */
     void removeSwitch(@Nullable String name);
     /**
@@ -216,7 +216,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>CEF_EXPORT cef_command_line_t* cef_command_line_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:63</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:63</a>
      */
     static Optional<CefCommandLine> create() {
       return Optional.ofNullable(NativePeer.create0());
@@ -227,7 +227,7 @@ public interface CefCommandLine extends CefLibraryObject {
      * <p>Definition generated from cef_command_line_capi.h
      * <pre>CEF_EXPORT cef_command_line_t* cef_command_line_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:69</a>
      */
     static Optional<CefCommandLine> getGlobal() {
       return Optional.ofNullable(NativePeer.getGlobal0());

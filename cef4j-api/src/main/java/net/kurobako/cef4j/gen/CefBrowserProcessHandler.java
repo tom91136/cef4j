@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_browser_process_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:48</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:48</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefBrowserProcessHandler extends CefClientHandler {
 
@@ -31,7 +31,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_browser_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_register_custom_preferences)(struct _cef_browser_process_handler_t* self, cef_preferences_type_t type, struct _cef_preference_registrar_t* registrar);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:56</a>
      */
     default void onRegisterCustomPreferences(@Nonnull CefPreferencesType type, @Nullable CefPreferenceRegistrar registrar) {
     }
@@ -41,7 +41,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_browser_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_context_initialized)(struct _cef_browser_process_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:82</a>
      */
     default void onContextInitialized() {
     }
@@ -51,7 +51,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_browser_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_before_child_process_launch)(struct _cef_browser_process_handler_t* self, struct _cef_command_line_t* command_line);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:89</a>
      */
     default void onBeforeChildProcessLaunch(@Nullable CefCommandLine commandLine) {
     }
@@ -67,7 +67,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      *
      * @param currentDirectory may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
      */
     default boolean onAlreadyRunningAppRelaunch(@Nullable CefCommandLine commandLine, @Nullable String currentDirectory) {
         return false;
@@ -78,7 +78,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_browser_process_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_schedule_message_pump_work)(struct _cef_browser_process_handler_t* self, int64_t delay_ms);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:125</a>
      */
     default void onScheduleMessagePumpWork(long delayMs) {
     }
@@ -88,7 +88,7 @@ public interface CefBrowserProcessHandler extends CefClientHandler {
      * <p>Definition generated from cef_browser_process_handler_capi.h
      * <pre>cef_client_t* (CEF_CALLBACK* get_default_client)(struct _cef_browser_process_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:141</a>
      */
     default Optional<CefClient> getDefaultClient() {
         return Optional.empty();

@@ -12,7 +12,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 
 /**
  * Supports additional targets discovery and allows to attach to them.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Target.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Target.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Target {
@@ -63,6 +63,13 @@ public final class Target {
             return (Boolean) value("attached");
         }
         /**
+         * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
+         * @return the protocol field value
+         */
+        @Nullable public String parentId() {
+            return (String) value("parentId");
+        }
+        /**
          * Opener target Id
          * @return the protocol field value
          */
@@ -86,7 +93,7 @@ public final class Target {
             return (String) value("openerFrameId");
         }
         /**
-         * Id of the parent frame, only present for the &quot;iframe&quot; targets.
+         * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return the protocol field value
          */
@@ -108,6 +115,14 @@ public final class Target {
          */
         @Nullable public String subtype() {
             return (String) value("subtype");
+        }
+        /**
+         * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return the protocol field value
+         */
+        @Nullable public java.util.Map<String, Object> embedderData() {
+            return objectMap(value("embedderData"));
         }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
@@ -162,6 +177,16 @@ public final class Target {
                 return this;
             }
             /**
+             * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder parentId(@Nullable String value) {
+                if (value == null) values.remove("parentId");
+                else values.put("parentId", jsonValue(value));
+                return this;
+            }
+            /**
              * Opener target Id
              * @param value field value; null removes an optional value
              * @return this builder
@@ -194,7 +219,7 @@ public final class Target {
                 return this;
             }
             /**
-             * Id of the parent frame, only present for the &quot;iframe&quot; targets.
+             * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
              * <p><b>Experimental:</b> this part of CDP may change without notice.
              * @param value field value; null removes an optional value
              * @return this builder
@@ -224,6 +249,17 @@ public final class Target {
             public Builder subtype(@Nullable String value) {
                 if (value == null) values.remove("subtype");
                 else values.put("subtype", jsonValue(value));
+                return this;
+            }
+            /**
+             * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
+             * <p><b>Experimental:</b> this part of CDP may change without notice.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder embedderData(@Nullable java.util.Map<String, Object> value) {
+                if (value == null) values.remove("embedderData");
+                else values.put("embedderData", jsonValue(value));
                 return this;
             }
             public TargetInfo build() {
@@ -1934,7 +1970,7 @@ public final class Target {
             return (String) value("targetId");
         }
         /**
-         * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources and performance.
+         * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
          * @return the protocol field value
          */
         @Nullable public String panelId() {
@@ -1953,7 +1989,7 @@ public final class Target {
                 return this;
             }
             /**
-             * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources and performance.
+             * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
              * @param value field value; null removes an optional value
              * @return this builder
              */

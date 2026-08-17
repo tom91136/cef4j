@@ -41,7 +41,7 @@ public final class JsdialogCallback {
      *
      * @param userInput may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(int success, @Nonnull String userInput) {
         return session

@@ -23,7 +23,7 @@ public interface CefDialogHandler {
      * @param acceptExtensions may be null
      * @param acceptDescriptions may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:74</a>
      */
     @Nullable
     default Boolean onFileDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int mode, String title, String defaultFilePath, String[] acceptFilters, String[] acceptExtensions, String[] acceptDescriptions, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }

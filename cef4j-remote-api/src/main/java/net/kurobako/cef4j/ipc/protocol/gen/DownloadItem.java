@@ -39,7 +39,7 @@ public final class DownloadItem {
      * Returns {@code true} if this object is valid. Do not call any other methods if this function returns {@code false}.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:49</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class DownloadItem {
      * Returns {@code true} if the download is in progress.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:56</a>
      */
     public CompletableFuture<Integer> isInProgress() {
         return session
@@ -63,7 +63,7 @@ public final class DownloadItem {
      * Returns {@code true} if the download is complete.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:62</a>
      */
     public CompletableFuture<Integer> isComplete() {
         return session
@@ -75,7 +75,7 @@ public final class DownloadItem {
      * Returns {@code true} if the download has been canceled.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:68</a>
      */
     public CompletableFuture<Integer> isCanceled() {
         return session
@@ -87,7 +87,7 @@ public final class DownloadItem {
      * Returns {@code true} if the download has been interrupted.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:74</a>
      */
     public CompletableFuture<Integer> isInterrupted() {
         return session
@@ -99,7 +99,7 @@ public final class DownloadItem {
      * Returns the most recent interrupt reason.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:88</a>
      */
     public CompletableFuture<Integer> getInterruptReason() {
         return session
@@ -111,7 +111,7 @@ public final class DownloadItem {
      * Returns a simple speed estimate in bytes/s.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:94</a>
      */
     public CompletableFuture<Long> getCurrentSpeed() {
         return session
@@ -123,7 +123,7 @@ public final class DownloadItem {
      * Returns the rough percent complete or -1 if the receive total size is unknown.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:100</a>
      */
     public CompletableFuture<Integer> getPercentComplete() {
         return session
@@ -135,7 +135,7 @@ public final class DownloadItem {
      * Returns the total number of bytes.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:107</a>
      */
     public CompletableFuture<Long> getTotalBytes() {
         return session
@@ -147,7 +147,7 @@ public final class DownloadItem {
      * Returns the number of received bytes.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:113</a>
      */
     public CompletableFuture<Long> getReceivedBytes() {
         return session
@@ -159,7 +159,7 @@ public final class DownloadItem {
      * Returns the time that the download started.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:119</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:119</a>
      */
     public CompletableFuture<Basetime> getStartTime() {
         return session
@@ -171,7 +171,7 @@ public final class DownloadItem {
      * Returns the time that the download ended.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:125</a>
      */
     public CompletableFuture<Basetime> getEndTime() {
         return session
@@ -183,7 +183,7 @@ public final class DownloadItem {
      * Returns the full path to the downloaded or downloading file.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:131</a>
      */
     public CompletableFuture<String> getFullPath() {
         return session
@@ -195,7 +195,7 @@ public final class DownloadItem {
      * Returns the unique identifier for this download.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:137</a>
      */
     public CompletableFuture<Integer> getId() {
         return session
@@ -207,7 +207,7 @@ public final class DownloadItem {
      * Get the resolved URL after redirects or changed as a result of HSTS.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
         return session
@@ -219,7 +219,7 @@ public final class DownloadItem {
      * Returns the original URL before any redirections.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:149</a>
      */
     public CompletableFuture<String> getOriginalUrl() {
         return session
@@ -231,7 +231,7 @@ public final class DownloadItem {
      * Returns the suggested file name.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:155</a>
      */
     public CompletableFuture<String> getSuggestedFileName() {
         return session
@@ -243,7 +243,7 @@ public final class DownloadItem {
      * Returns the content disposition.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:161</a>
      */
     public CompletableFuture<String> getContentDisposition() {
         return session
@@ -255,7 +255,7 @@ public final class DownloadItem {
      * Returns the mime type.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:167</a>
      */
     public CompletableFuture<String> getMimeType() {
         return session
@@ -268,7 +268,7 @@ public final class DownloadItem {
      * <p>Added in CEF API version 14400.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:81</a>
      */
     public CompletableFuture<Integer> isPaused() {
         return session

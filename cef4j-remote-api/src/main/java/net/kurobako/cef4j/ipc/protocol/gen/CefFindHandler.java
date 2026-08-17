@@ -17,7 +17,7 @@ public interface CefFindHandler {
      * Called to report find results returned by {@code CefBrowserHost.find()}. {@code identifier} is a unique incremental identifier for the currently active search, {@code count} is the number of matches currently identified, {@code selectionRect} is the location of where the match was found (in window coordinates), {@code activeMatchOrdinal} is the current position in the search results, and {@code finalUpdate} is {@code true} if this is the last find notification.
      * <p>Definition generated from cef_find_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
      */
     default void onFindResult(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int identifier, int count, Rect selectionRect, int activeMatchOrdinal, int finalUpdate) {}
 

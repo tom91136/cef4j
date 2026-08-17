@@ -19,7 +19,7 @@ public interface CefResourceHandler {
      * <b>WARNING:</b> This method is deprecated. Use Open instead.
      * <p>Definition generated from cef_resource_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
      */
     @Nullable
     default Boolean processRequest(net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }
@@ -28,7 +28,7 @@ public interface CefResourceHandler {
      * Request processing has been canceled.
      * <p>Definition generated from cef_resource_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:199</a>
      */
     default void cancel() {}
 

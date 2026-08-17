@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_dev_tools_message_observer_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDevToolsMessageObserver extends CefClientHandler {
 
@@ -30,7 +30,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      *
      * @param message <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
     default boolean onDevToolsMessage(@Nullable CefBrowser browser, @Nonnull ByteBuffer message) {
         return false;
@@ -44,7 +44,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      *
      * @param result may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
      */
     default void onDevToolsMethodResult(@Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
     }
@@ -57,7 +57,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      *
      * @param params may be null, <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
      */
     default void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
     }
@@ -67,7 +67,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      * <pre>void (CEF_CALLBACK* on_dev_tools_agent_attached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
      */
     default void onDevToolsAgentAttached(@Nullable CefBrowser browser) {
     }
@@ -77,7 +77,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
      * <p>Definition generated from cef_devtools_message_observer_capi.h
      * <pre>void (CEF_CALLBACK* on_dev_tools_agent_detached)(struct _cef_dev_tools_message_observer_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
      */
     default void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
     }

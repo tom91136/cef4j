@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_shared_process_message_builder_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_shared_process_message_builder_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
      */
     boolean isValid();
 
@@ -33,7 +33,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      * <pre>size_t (CEF_CALLBACK* size)(struct _cef_shared_process_message_builder_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
      */
     long size();
 
@@ -44,7 +44,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      * <pre>cef_process_message_t* (CEF_CALLBACK* build)(struct _cef_shared_process_message_builder_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:79</a>
      */
     Optional<CefProcessMessage> build();
     /**
@@ -52,7 +52,7 @@ public interface CefSharedProcessMessageBuilder extends CefLibraryObject {
      * <p>Definition generated from cef_shared_process_message_builder_capi.h
      * <pre>CEF_EXPORT cef_shared_process_message_builder_t* cef_shared_process_message_builder_create(const cef_string_t* name, size_t byte_size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:51</a>
      */
     static Optional<CefSharedProcessMessageBuilder> create(@Nullable String name, long byteSize) {
       return Optional.ofNullable(NativePeer.create0(name, byteSize));

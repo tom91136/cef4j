@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-remote-api</artifactId>
@@ -56,12 +56,6 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-recording-jackson</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -79,7 +73,7 @@
                     <propertiesEncoding>UTF-8</propertiesEncoding>
                 </configuration>
             </plugin>
-            <!-- IPC codegen needs the CEF headers; share the same dist cache as cef4j-native. Runs at
+            <!-- IPC codegen needs the CEF headers; share the same dist cache as cef4j-platform. Runs at
                  `initialize` so the headers exist by the time exec-maven-plugin runs `Main` at `generate-sources`. -->
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>

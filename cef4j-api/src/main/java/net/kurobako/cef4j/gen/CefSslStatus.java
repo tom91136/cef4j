@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_sslstatus_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefSslStatus extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefSslStatus extends CefLibraryObject {
      * <p>Definition generated from cef_ssl_status_capi.h
      * <pre>int (CEF_CALLBACK* is_secure_connection)(struct _cef_sslstatus_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:51</a>
      */
     boolean isSecureConnection();
 
@@ -34,7 +34,7 @@ public interface CefSslStatus extends CefLibraryObject {
      *
      * @return the result, or {@code CERT_STATUS_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
      */
     CefCertStatus getCertStatus();
 
@@ -45,7 +45,7 @@ public interface CefSslStatus extends CefLibraryObject {
      *
      * @return the result, or {@code SSL_CONNECTION_VERSION_UNKNOWN} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:64</a>
      */
     CefSslVersion getSslVersion();
 
@@ -56,7 +56,7 @@ public interface CefSslStatus extends CefLibraryObject {
      *
      * @return the result, or {@code SSL_CONTENT_NORMAL_CONTENT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:70</a>
      */
     CefSslContentStatus getContentStatus();
 
@@ -65,7 +65,7 @@ public interface CefSslStatus extends CefLibraryObject {
      * <p>Definition generated from cef_ssl_status_capi.h
      * <pre>cef_x509_certificate_t* (CEF_CALLBACK* get_x509_certificate)(struct _cef_sslstatus_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
      */
     Optional<CefX509Certificate> getX509Certificate();
     final class NativePeer implements CefSslStatus, AutoCloseable {

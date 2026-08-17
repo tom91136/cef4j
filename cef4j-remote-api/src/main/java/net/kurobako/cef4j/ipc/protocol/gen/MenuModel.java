@@ -39,7 +39,7 @@ public final class MenuModel {
      * Returns {@code true} if this menu is a submenu.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
      */
     public CompletableFuture<Integer> isSubMenu() {
         return session
@@ -51,7 +51,7 @@ public final class MenuModel {
      * Clears the menu. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
      */
     public CompletableFuture<Integer> clear() {
         return session
@@ -63,7 +63,7 @@ public final class MenuModel {
      * Returns the number of items in this menu.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
      */
     public CompletableFuture<Long> getCount() {
         return session
@@ -75,7 +75,7 @@ public final class MenuModel {
      * Add a separator to the menu. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
      */
     public CompletableFuture<Integer> addSeparator() {
         return session
@@ -87,7 +87,7 @@ public final class MenuModel {
      * Add an item to the menu. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
      */
     public CompletableFuture<Integer> addItem(int commandId, @Nonnull String label) {
         return session
@@ -99,7 +99,7 @@ public final class MenuModel {
      * Add a check item to the menu. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
      */
     public CompletableFuture<Integer> addCheckItem(int commandId, @Nonnull String label) {
         return session
@@ -111,7 +111,7 @@ public final class MenuModel {
      * Add a radio item to the menu. Only a single item with the specified {@code group_id} can be checked at a time. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
      */
     public CompletableFuture<Integer> addRadioItem(int commandId, @Nonnull String label, int groupId) {
         return session
@@ -123,7 +123,7 @@ public final class MenuModel {
      * Add a sub-menu to the menu. The new sub-menu is returned.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
      */
     public CompletableFuture<MenuModel> addSubMenu(int commandId, @Nonnull String label) {
         return session
@@ -136,7 +136,7 @@ public final class MenuModel {
      * Insert a separator in the menu at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
      */
     public CompletableFuture<Integer> insertSeparatorAt(long index) {
         return session
@@ -148,7 +148,7 @@ public final class MenuModel {
      * Insert an item in the menu at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
      */
     public CompletableFuture<Integer> insertItemAt(long index, int commandId, @Nonnull String label) {
         return session
@@ -160,7 +160,7 @@ public final class MenuModel {
      * Insert a check item in the menu at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
      */
     public CompletableFuture<Integer> insertCheckItemAt(long index, int commandId, @Nonnull String label) {
         return session
@@ -172,7 +172,7 @@ public final class MenuModel {
      * Insert a radio item in the menu at the specified {@code index}. Only a single item with the specified {@code group_id} can be checked at a time. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
      */
     public CompletableFuture<Integer> insertRadioItemAt(long index, int commandId, @Nonnull String label, int groupId) {
         return session
@@ -184,7 +184,7 @@ public final class MenuModel {
      * Insert a sub-menu in the menu at the specified {@code index}. The new sub-menu is returned.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
      */
     public CompletableFuture<MenuModel> insertSubMenuAt(long index, int commandId, @Nonnull String label) {
         return session
@@ -197,7 +197,7 @@ public final class MenuModel {
      * Removes the item with the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
      */
     public CompletableFuture<Integer> remove(int commandId) {
         return session
@@ -209,7 +209,7 @@ public final class MenuModel {
      * Removes the item at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
      */
     public CompletableFuture<Integer> removeAt(long index) {
         return session
@@ -221,7 +221,7 @@ public final class MenuModel {
      * Returns the index associated with the specified {@code command_id} or -1 if not found due to the command id not existing in the menu.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
      */
     public CompletableFuture<Integer> getIndexOf(int commandId) {
         return session
@@ -233,7 +233,7 @@ public final class MenuModel {
      * Returns the command id at the specified {@code index} or -1 if not found due to invalid range or the index being a separator.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
      */
     public CompletableFuture<Integer> getCommandIdAt(long index) {
         return session
@@ -245,7 +245,7 @@ public final class MenuModel {
      * Sets the command id at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
      */
     public CompletableFuture<Integer> setCommandIdAt(long index, int commandId) {
         return session
@@ -257,7 +257,7 @@ public final class MenuModel {
      * Returns the label for the specified {@code command_id} or empty if not found.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
      */
     public CompletableFuture<String> getLabel(int commandId) {
         return session
@@ -269,7 +269,7 @@ public final class MenuModel {
      * Sets the label for the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
      */
     public CompletableFuture<Integer> setLabel(int commandId, @Nonnull String label) {
         return session
@@ -281,7 +281,7 @@ public final class MenuModel {
      * Set the label at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
      */
     public CompletableFuture<Integer> setLabelAt(long index, @Nonnull String label) {
         return session
@@ -293,7 +293,7 @@ public final class MenuModel {
      * Returns the item type for the specified {@code command_id}.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
      */
     public CompletableFuture<Integer> getType(int commandId) {
         return session
@@ -305,7 +305,7 @@ public final class MenuModel {
      * Returns the group id for the specified {@code command_id} or -1 if invalid.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
      */
     public CompletableFuture<Integer> getGroupId(int commandId) {
         return session
@@ -317,7 +317,7 @@ public final class MenuModel {
      * Returns the group id at the specified {@code index} or -1 if invalid.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
      */
     public CompletableFuture<Integer> getGroupIdAt(long index) {
         return session
@@ -329,7 +329,7 @@ public final class MenuModel {
      * Sets the group id for the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     public CompletableFuture<Integer> setGroupId(int commandId, int groupId) {
         return session
@@ -341,7 +341,7 @@ public final class MenuModel {
      * Sets the group id at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
      */
     public CompletableFuture<Integer> setGroupIdAt(long index, int groupId) {
         return session
@@ -353,7 +353,7 @@ public final class MenuModel {
      * Returns the submenu for the specified {@code command_id} or empty if invalid.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
      */
     public CompletableFuture<MenuModel> getSubMenu(int commandId) {
         return session
@@ -366,7 +366,7 @@ public final class MenuModel {
      * Returns the submenu at the specified {@code index} or empty if invalid.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
      */
     public CompletableFuture<MenuModel> getSubMenuAt(long index) {
         return session
@@ -379,7 +379,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code command_id} is visible.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     public CompletableFuture<Integer> isVisible(int commandId) {
         return session
@@ -391,7 +391,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code index} is visible.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
      */
     public CompletableFuture<Integer> isVisibleAt(long index) {
         return session
@@ -403,7 +403,7 @@ public final class MenuModel {
      * Change the visibility of the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Integer> setVisible(int commandId, int visible) {
         return session
@@ -415,7 +415,7 @@ public final class MenuModel {
      * Change the visibility at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
      */
     public CompletableFuture<Integer> setVisibleAt(long index, int visible) {
         return session
@@ -427,7 +427,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code command_id} is enabled.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
      */
     public CompletableFuture<Integer> isEnabled(int commandId) {
         return session
@@ -439,7 +439,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code index} is enabled.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
      */
     public CompletableFuture<Integer> isEnabledAt(long index) {
         return session
@@ -451,7 +451,7 @@ public final class MenuModel {
      * Change the enabled status of the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
     public CompletableFuture<Integer> setEnabled(int commandId, int enabled) {
         return session
@@ -463,7 +463,7 @@ public final class MenuModel {
      * Change the enabled status at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
      */
     public CompletableFuture<Integer> setEnabledAt(long index, int enabled) {
         return session
@@ -475,7 +475,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code command_id} is checked. Only applies to check and radio items.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
      */
     public CompletableFuture<Integer> isChecked(int commandId) {
         return session
@@ -487,7 +487,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code index} is checked. Only applies to check and radio items.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
      */
     public CompletableFuture<Integer> isCheckedAt(long index) {
         return session
@@ -499,7 +499,7 @@ public final class MenuModel {
      * Check the specified {@code command_id}. Only applies to check and radio items. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
      */
     public CompletableFuture<Integer> setChecked(int commandId, int checked) {
         return session
@@ -511,7 +511,7 @@ public final class MenuModel {
      * Check the specified {@code index}. Only applies to check and radio items. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
      */
     public CompletableFuture<Integer> setCheckedAt(long index, int checked) {
         return session
@@ -523,7 +523,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code command_id} has a keyboard accelerator assigned.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
      */
     public CompletableFuture<Integer> hasAccelerator(int commandId) {
         return session
@@ -535,7 +535,7 @@ public final class MenuModel {
      * Returns {@code true} if the specified {@code index} has a keyboard accelerator assigned.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
      */
     public CompletableFuture<Integer> hasAcceleratorAt(long index) {
         return session
@@ -547,7 +547,7 @@ public final class MenuModel {
      * Set the keyboard accelerator for the specified {@code command_id}. {@code key_code} can be any virtual key or character value. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     public CompletableFuture<Integer> setAccelerator(int commandId, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
         return session
@@ -559,7 +559,7 @@ public final class MenuModel {
      * Set the keyboard accelerator at the specified {@code index}. {@code key_code} can be any virtual key or character value. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
      */
     public CompletableFuture<Integer> setAcceleratorAt(long index, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
         return session
@@ -571,7 +571,7 @@ public final class MenuModel {
      * Remove the keyboard accelerator for the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
      */
     public CompletableFuture<Integer> removeAccelerator(int commandId) {
         return session
@@ -583,7 +583,7 @@ public final class MenuModel {
      * Remove the keyboard accelerator at the specified {@code index}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
      */
     public CompletableFuture<Integer> removeAcceleratorAt(long index) {
         return session
@@ -595,7 +595,7 @@ public final class MenuModel {
      * Set the explicit color for {@code command_id} and {@code color_type} to {@code color}. Specify a {@code color} value of 0 to remove the explicit color. If no explicit color or default color is set for {@code color_type} then the system color will be used. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
     public CompletableFuture<Integer> setColor(int commandId, int colorType, int color) {
         return session
@@ -607,7 +607,7 @@ public final class MenuModel {
      * Set the explicit color for {@code command_id} and {@code index} to {@code color}. Specify a {@code color} value of 0 to remove the explicit color. Specify an {@code index} value of -1 to set the default color for items that do not have an explicit color set. If no explicit color or default color is set for {@code color_type} then the system color will be used. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
     public CompletableFuture<Integer> setColorAt(int index, int colorType, int color) {
         return session
@@ -619,7 +619,7 @@ public final class MenuModel {
      * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. If a color was not set then 0 will be returned in {@code color}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
      */
     public CompletableFuture<Integer> getColor(int commandId, int colorType, @Nonnull RemoteHandle color) {
         return session
@@ -631,7 +631,7 @@ public final class MenuModel {
      * Returns in {@code color} the color that was explicitly set for {@code command_id} and {@code color_type}. Specify an {@code index} value of -1 to return the default color in {@code color}. If a color was not set then 0 will be returned in {@code color}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
      */
     public CompletableFuture<Integer> getColorAt(int index, int colorType, @Nonnull RemoteHandle color) {
         return session
@@ -659,7 +659,7 @@ public final class MenuModel {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Integer> setFontList(int commandId, @Nonnull String fontList) {
         return session
@@ -687,7 +687,7 @@ public final class MenuModel {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
      */
     public CompletableFuture<Integer> setFontListAt(int index, @Nonnull String fontList) {
         return session

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_jsdialog_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:59</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:59</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefJsDialogHandler extends CefClientHandler {
 
@@ -28,7 +28,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
      * @param messageText may be null
      * @param defaultPromptText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:68</a>
      */
     default boolean onJsDialog(@Nullable CefBrowser browser, @Nullable String originUrl, @Nonnull CefJsDialogType dialogType, @Nullable String messageText, @Nullable String defaultPromptText, @Nullable CefJsDialogCallback callback, int[] suppressMessage) {
         return false;
@@ -41,7 +41,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
      *
      * @param messageText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
      */
     default boolean onBeforeUnloadDialog(@Nullable CefBrowser browser, @Nullable String messageText, boolean isReload, @Nullable CefJsDialogCallback callback) {
         return false;
@@ -52,7 +52,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
      * <p>Definition generated from cef_jsdialog_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_reset_dialog_state)(struct _cef_jsdialog_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:112</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:112</a>
      */
     default void onResetDialogState(@Nullable CefBrowser browser) {
     }
@@ -62,7 +62,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
      * <p>Definition generated from cef_jsdialog_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_dialog_closed)(struct _cef_jsdialog_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:120</a>
      */
     default void onDialogClosed(@Nullable CefBrowser browser) {
     }

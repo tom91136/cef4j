@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-integration-tests</artifactId>
@@ -16,6 +16,9 @@
     <description>Cross-backend scenarios against the in-process backend and packaged CEF runtime server</description>
 
     <properties>
+        <!-- This module is not published and has only test-scoped dependencies. The parent bytecode
+             rule otherwise asks Maven to resolve reactor test artifacts before their jars exist. -->
+        <bytecode.check.skip>true</bytecode.check.skip>
         <!-- This module needs JFX at test time for NativeBrowserBackend (its session opens a JFX Stage).
              Use 13.0.2 throughout to avoid the JFX-graphics:11 + JFX-base:13.0.2 mix that tripped a SIGSEGV
              in glassgtk3 staticScreen_getScreens (the transitive dep from cef4j-inprocess-jfx forces base to 13.0.2,
@@ -66,25 +69,19 @@
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-recording-jackson</artifactId>
+            <artifactId>cef4j-codecs-jackson</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-remote-cdp-gson</artifactId>
+            <artifactId>cef4j-codecs-gson</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-webdriver</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-webdriver-gson</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -218,18 +215,17 @@
             </plugin>
             <plugin>
                 <!-- Some matrix tests initialise in-process CEF, whose process-global lifecycle cannot be restarted
-                     safely between classes. System properties mirror cef4j-inprocess-jfx: JFX needs headless=false
-                     (surefire default would crash glassgtk3 in XInternAtom) and the native backend needs
-                     cef4j.libcef.dir to find libcef.so. -->
+                     safely between classes. JFX needs headless=false (surefire's default would crash glassgtk3 in
+                     XInternAtom); CEF itself comes from the packager-generated reactor resource tree. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                         <cef4j.disableStderrRedirect>true</cef4j.disableStderrRedirect>
                         <java.awt.headless>false</java.awt.headless>
                         <cef4j.runtime.server.binary>${maven.multiModuleProjectDirectory}/cef4j-runtime-server/target/cmake-build/runtime-server/${runtime.server.executable}</cef4j.runtime.server.binary>
-                        <cef4j.runtime.server.resources>${maven.multiModuleProjectDirectory}/cef4j-runtime-server/target/cmake-build/runtime-server</cef4j.runtime.server.resources>
+                        <!-- The thin server accepts the packager's flat runtime layout directly. -->
+                        <cef4j.runtime.server.resources>${cef4j.reactor.runtime.dir}</cef4j.runtime.server.resources>
                     </systemPropertyVariables>
                     <reuseForks>false</reuseForks>
                 </configuration>
@@ -293,7 +289,7 @@
             <id>javafx-monocle-21</id>
             <activation>
                 <os><name>Mac OS X</name></os>
-                <property><name>javafx.test.version</name><value>21.0.7</value></property>
+                <property><name>javafx.test.version</name><value>21.0.12</value></property>
             </activation>
             <dependencies>
                 <dependency>
@@ -311,7 +307,7 @@
             <id>javafx-monocle-25</id>
             <activation>
                 <os><name>Mac OS X</name></os>
-                <property><name>javafx.test.version</name><value>25.0.2</value></property>
+                <property><name>javafx.test.version</name><value>25.0.4</value></property>
             </activation>
             <dependencies>
                 <dependency>

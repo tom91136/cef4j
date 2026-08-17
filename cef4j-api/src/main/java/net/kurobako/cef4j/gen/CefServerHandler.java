@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_server_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:209</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:209</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefServerHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_server_created)(struct _cef_server_handler_t* self, struct _cef_server_t* server);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:220</a>
      */
     default void onServerCreated(@Nullable CefServer server) {
     }
@@ -35,7 +35,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_server_destroyed)(struct _cef_server_handler_t* self, struct _cef_server_t* server);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:230</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:230</a>
      */
     default void onServerDestroyed(@Nullable CefServer server) {
     }
@@ -45,7 +45,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_client_connected)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:239</a>
      */
     default void onClientConnected(@Nullable CefServer server, int connectionId) {
     }
@@ -55,7 +55,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_client_disconnected)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:248</a>
      */
     default void onClientDisconnected(@Nullable CefServer server, int connectionId) {
     }
@@ -65,7 +65,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_http_request)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id, const cef_string_t* client_address, struct _cef_request_t* request);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:260</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:260</a>
      */
     default void onHttpRequest(@Nullable CefServer server, int connectionId, @Nullable String clientAddress, @Nullable CefRequest request) {
     }
@@ -75,7 +75,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_web_socket_request)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id, const cef_string_t* client_address, struct _cef_request_t* request, struct _cef_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:273</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:273</a>
      */
     default void onWebSocketRequest(@Nullable CefServer server, int connectionId, @Nullable String clientAddress, @Nullable CefRequest request, @Nullable CefCallback callback) {
     }
@@ -85,7 +85,7 @@ public interface CefServerHandler extends CefClientHandler {
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_web_socket_connected)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:294</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:294</a>
      */
     default void onWebSocketConnected(@Nullable CefServer server, int connectionId) {
     }
@@ -98,7 +98,7 @@ public interface CefServerHandler extends CefClientHandler {
      *
      * @param data <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:303</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:303</a>
      */
     default void onWebSocketMessage(@Nullable CefServer server, int connectionId, @Nonnull ByteBuffer data) {
     }

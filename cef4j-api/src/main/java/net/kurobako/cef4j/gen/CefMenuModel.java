@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_menu_model_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMenuModel extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_sub_menu)(struct _cef_menu_model_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:62</a>
      */
     boolean isSubMenu();
 
@@ -34,7 +34,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* clear)(struct _cef_menu_model_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:68</a>
      */
     boolean clear();
 
@@ -43,7 +43,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>size_t (CEF_CALLBACK* get_count)(struct _cef_menu_model_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
      */
     long getCount();
 
@@ -52,7 +52,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* add_separator)(struct _cef_menu_model_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:80</a>
      */
     boolean addSeparator();
 
@@ -61,7 +61,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* add_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:86</a>
      */
     boolean addItem(int commandId, @Nullable String label);
 
@@ -70,7 +70,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* add_check_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:92</a>
      */
     boolean addCheckItem(int commandId, @Nullable String label);
 
@@ -79,7 +79,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* add_radio_item)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label, int group_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:97</a>
      */
     boolean addRadioItem(int commandId, @Nullable String label, int groupId);
 
@@ -88,7 +88,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>cef_menu_model_t* (CEF_CALLBACK* add_sub_menu)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:106</a>
      */
     Optional<CefMenuModel> addSubMenu(int commandId, @Nullable String label);
 
@@ -97,7 +97,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* insert_separator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:113</a>
      */
     boolean insertSeparatorAt(long index);
 
@@ -106,7 +106,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* insert_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:120</a>
      */
     boolean insertItemAt(long index, int commandId, @Nullable String label);
 
@@ -115,7 +115,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* insert_check_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:129</a>
      */
     boolean insertCheckItemAt(long index, int commandId, @Nullable String label);
 
@@ -124,7 +124,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* insert_radio_item_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label, int group_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:138</a>
      */
     boolean insertRadioItemAt(long index, int commandId, @Nullable String label, int groupId);
 
@@ -133,7 +133,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>cef_menu_model_t* (CEF_CALLBACK* insert_sub_menu_at)(struct _cef_menu_model_t* self, size_t index, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:149</a>
      */
     Optional<CefMenuModel> insertSubMenuAt(long index, int commandId, @Nullable String label);
 
@@ -142,7 +142,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* remove)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:158</a>
      */
     boolean remove(int commandId);
 
@@ -151,7 +151,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* remove_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:164</a>
      */
     boolean removeAt(long index);
 
@@ -160,7 +160,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_index_of)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:170</a>
      */
     int getIndexOf(int commandId);
 
@@ -169,7 +169,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_command_id_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:177</a>
      */
     int getCommandIdAt(long index);
 
@@ -178,7 +178,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_command_id_at)(struct _cef_menu_model_t* self, size_t index, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
      */
     boolean setCommandIdAt(long index, int commandId);
 
@@ -187,7 +187,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_label)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:190</a>
      */
     Optional<String> getLabel(int commandId);
 
@@ -196,7 +196,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_label)(struct _cef_menu_model_t* self, int command_id, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
      */
     boolean setLabel(int commandId, @Nullable String label);
 
@@ -205,7 +205,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_label_at)(struct _cef_menu_model_t* self, size_t index, const cef_string_t* label);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
      */
     boolean setLabelAt(long index, @Nullable String label);
 
@@ -216,7 +216,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @return the result, or {@code MENUITEMTYPE_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:215</a>
      */
     CefMenuItemType getType(int commandId);
 
@@ -225,7 +225,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_group_id)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:227</a>
      */
     int getGroupId(int commandId);
 
@@ -234,7 +234,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_group_id_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:233</a>
      */
     int getGroupIdAt(long index);
 
@@ -243,7 +243,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_group_id)(struct _cef_menu_model_t* self, int command_id, int group_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     boolean setGroupId(int commandId, int groupId);
 
@@ -252,7 +252,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_group_id_at)(struct _cef_menu_model_t* self, size_t index, int group_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
      */
     boolean setGroupIdAt(long index, int groupId);
 
@@ -261,7 +261,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>cef_menu_model_t* (CEF_CALLBACK* get_sub_menu)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:251</a>
      */
     Optional<CefMenuModel> getSubMenu(int commandId);
 
@@ -270,7 +270,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>cef_menu_model_t* (CEF_CALLBACK* get_sub_menu_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:257</a>
      */
     Optional<CefMenuModel> getSubMenuAt(long index);
 
@@ -279,7 +279,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_visible)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:263</a>
      */
     boolean isVisible(int commandId);
 
@@ -288,7 +288,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_visible_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:269</a>
      */
     boolean isVisibleAt(long index);
 
@@ -297,7 +297,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_visible)(struct _cef_menu_model_t* self, int command_id, int visible);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     boolean setVisible(int commandId, boolean visible);
 
@@ -306,7 +306,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_visible_at)(struct _cef_menu_model_t* self, size_t index, int visible);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
      */
     boolean setVisibleAt(long index, boolean visible);
 
@@ -315,7 +315,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_enabled)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:288</a>
      */
     boolean isEnabled(int commandId);
 
@@ -324,7 +324,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_enabled_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:294</a>
      */
     boolean isEnabledAt(long index);
 
@@ -333,7 +333,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_enabled)(struct _cef_menu_model_t* self, int command_id, int enabled);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
     boolean setEnabled(int commandId, boolean enabled);
 
@@ -342,7 +342,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_enabled_at)(struct _cef_menu_model_t* self, size_t index, int enabled);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
      */
     boolean setEnabledAt(long index, boolean enabled);
 
@@ -351,7 +351,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_checked)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:314</a>
      */
     boolean isChecked(int commandId);
 
@@ -360,7 +360,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* is_checked_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:321</a>
      */
     boolean isCheckedAt(long index);
 
@@ -369,7 +369,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_checked)(struct _cef_menu_model_t* self, int command_id, int checked);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
      */
     boolean setChecked(int commandId, boolean checked);
 
@@ -378,7 +378,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_checked_at)(struct _cef_menu_model_t* self, size_t index, int checked);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
      */
     boolean setCheckedAt(long index, boolean checked);
 
@@ -387,7 +387,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* has_accelerator)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:342</a>
      */
     boolean hasAccelerator(int commandId);
 
@@ -396,7 +396,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* has_accelerator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:349</a>
      */
     boolean hasAcceleratorAt(long index);
 
@@ -405,7 +405,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_accelerator)(struct _cef_menu_model_t* self, int command_id, int key_code, int shift_pressed, int ctrl_pressed, int alt_pressed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     boolean setAccelerator(int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
@@ -414,7 +414,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_accelerator_at)(struct _cef_menu_model_t* self, size_t index, int key_code, int shift_pressed, int ctrl_pressed, int alt_pressed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
      */
     boolean setAcceleratorAt(long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
@@ -423,7 +423,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* remove_accelerator)(struct _cef_menu_model_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
      */
     boolean removeAccelerator(int commandId);
 
@@ -432,7 +432,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* remove_accelerator_at)(struct _cef_menu_model_t* self, size_t index);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:384</a>
      */
     boolean removeAcceleratorAt(long index);
 
@@ -441,7 +441,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_accelerator)(struct _cef_menu_model_t* self, int command_id, int* key_code, int* shift_pressed, int* ctrl_pressed, int* alt_pressed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:391</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:391</a>
      */
     boolean getAccelerator(int commandId, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
@@ -450,7 +450,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_accelerator_at)(struct _cef_menu_model_t* self, size_t index, int* key_code, int* shift_pressed, int* ctrl_pressed, int* alt_pressed);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:402</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:402</a>
      */
     boolean getAcceleratorAt(long index, int[] keyCode, int[] shiftPressed, int[] ctrlPressed, int[] altPressed);
 
@@ -459,7 +459,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_color)(struct _cef_menu_model_t* self, int command_id, cef_menu_color_type_t color_type, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
     boolean setColor(int commandId, @Nonnull CefMenuColorType colorType, int color);
 
@@ -468,7 +468,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* set_color_at)(struct _cef_menu_model_t* self, int index, cef_menu_color_type_t color_type, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
     boolean setColorAt(int index, @Nonnull CefMenuColorType colorType, int color);
 
@@ -477,7 +477,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_color)(struct _cef_menu_model_t* self, int command_id, cef_menu_color_type_t color_type, cef_color_t* color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:436</a>
      */
     boolean getColor(int commandId, @Nonnull CefMenuColorType colorType, int[] color);
 
@@ -486,7 +486,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>int (CEF_CALLBACK* get_color_at)(struct _cef_menu_model_t* self, int index, cef_menu_color_type_t color_type, cef_color_t* color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:446</a>
      */
     boolean getColorAt(int index, @Nonnull CefMenuColorType colorType, int[] color);
 
@@ -511,7 +511,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     boolean setFontList(int commandId, @Nullable String fontList);
 
@@ -536,7 +536,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @param fontList may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
      */
     boolean setFontListAt(int index, @Nullable String fontList);
     /**
@@ -544,7 +544,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * <p>Definition generated from cef_menu_model_capi.h
      * <pre>CEF_EXPORT cef_menu_model_t* cef_menu_model_create(struct _cef_menu_model_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:55</a>
      */
     static Optional<CefMenuModel> create(@Nullable CefMenuModelDelegate delegate) {
       return Optional.ofNullable(NativePeer.create0(delegate));

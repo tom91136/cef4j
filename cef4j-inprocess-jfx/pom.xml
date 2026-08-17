@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-inprocess-jfx</artifactId>
@@ -104,7 +104,6 @@
                     <!-- Default fork: javafx-only compat tests (no CEF). Surefire defaults
                          java.awt.headless=true; JavaFX needs a real display to start. -->
                     <systemPropertyVariables>
-                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
                         <cef4j.disableStderrRedirect>true</cef4j.disableStderrRedirect>
                         <java.awt.headless>false</java.awt.headless>
                     </systemPropertyVariables>
@@ -341,7 +340,7 @@
             <id>javafx-monocle-21</id>
             <activation>
                 <os><name>Mac OS X</name></os>
-                <property><name>javafx.test.version</name><value>21.0.7</value></property>
+                <property><name>javafx.test.version</name><value>21.0.12</value></property>
             </activation>
             <dependencies>
                 <dependency>
@@ -359,7 +358,7 @@
             <id>javafx-monocle-25</id>
             <activation>
                 <os><name>Mac OS X</name></os>
-                <property><name>javafx.test.version</name><value>25.0.2</value></property>
+                <property><name>javafx.test.version</name><value>25.0.4</value></property>
             </activation>
             <dependencies>
                 <dependency>

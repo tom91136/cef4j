@@ -225,27 +225,41 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                 serverBinary, "zmq", "tcp://127.0.0.1:0", "shared-file", timeout, runtimeEnvironment(cefResources));
     }
 
-    public static Map<String, String> runtimeEnvironment(@Nonnull Path cefResources) {
+    public static Map<String, String> runtimeEnvironment(@Nonnull Path cefRuntime) {
         Map<String, String> environment = new LinkedHashMap<>();
         String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
         if (os.contains("win")) {
-            environment.put("CEF_RESOURCES_DIR", cefResources.toString());
-            environment.put("PATH", cefResources + java.io.File.pathSeparator + System.getenv("PATH"));
+            Path release = releaseDirectory(cefRuntime);
+            environment.put("CEF_RESOURCES_DIR", resourcesDirectory(cefRuntime).toString());
+            environment.put("PATH", release + java.io.File.pathSeparator + System.getenv("PATH"));
         } else if (os.contains("mac")) {
-            environment.put(
-                    "CEF_FRAMEWORK_DIR", frameworkDirectory(cefResources).toString());
+            environment.put("CEF_FRAMEWORK_DIR", frameworkDirectory(cefRuntime).toString());
         } else {
-            environment.put("CEF_RESOURCES_DIR", cefResources.toString());
+            Path release = releaseDirectory(cefRuntime);
+            environment.put("CEF_RESOURCES_DIR", resourcesDirectory(cefRuntime).toString());
             String inherited = System.getenv("LD_LIBRARY_PATH");
             environment.put(
                     "LD_LIBRARY_PATH",
-                    cefResources
-                            + (inherited == null || inherited.isEmpty() ? "" : java.io.File.pathSeparator + inherited));
+                    release + (inherited == null || inherited.isEmpty() ? "" : java.io.File.pathSeparator + inherited));
         }
         return environment;
     }
 
+    static Path releaseDirectory(Path runtimeDirectory) {
+        Path release = runtimeDirectory.resolve("Release");
+        return Files.isDirectory(release) ? release : runtimeDirectory;
+    }
+
+    static Path resourcesDirectory(Path runtimeDirectory) {
+        Path resources = runtimeDirectory.resolve("Resources");
+        return Files.isDirectory(resources) ? resources : runtimeDirectory;
+    }
+
     static Path frameworkDirectory(Path runtimeDirectory) {
+        Path external = runtimeDirectory.resolve("Release").resolve("Chromium Embedded Framework.framework");
+        if (Files.isDirectory(external)) return external;
+        Path direct = runtimeDirectory.resolve("Chromium Embedded Framework.framework");
+        if (Files.isDirectory(direct)) return direct;
         Path bundled = runtimeDirectory
                 .resolve("cef4j-runtime-server.app")
                 .resolve("Contents")

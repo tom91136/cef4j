@@ -19,7 +19,7 @@ public interface CefLifeSpanHandler {
      * Any client state associated with pending popups should be cleared in OnBeforePopupAborted, OnAfterCreated of the popup browser, or OnBeforeClose of the opener browser. OnBeforeClose of the opener browser may be called before this method in cases where the opener is closing during popup creation, in which case net.kurobako.cef4j.ipc.protocol.gen.CefBrowserHost.isValid() will return {@code false} in this method.
      * <p>Definition generated from cef_life_span_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:116</a>
      */
     default void onBeforePopupAborted(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int popupId) {}
 
@@ -27,7 +27,7 @@ public interface CefLifeSpanHandler {
      * Called after a new browser is created. It is now safe to begin performing actions with {@code browser}. CefFrameHandler callbacks related to initial main frame creation will arrive before this callback. See CefFrameHandler documentation for additional usage information.
      * <p>Definition generated from cef_life_span_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:162</a>
      */
     default void onAfterCreated(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -51,7 +51,7 @@ public interface CefLifeSpanHandler {
      * Example 2: Using {@code CefBrowserHost.closeBrowser()}({@code false}) and implementing the DoClose() callback. This is recommended for clients using non-standard close handling or windows that were not created on the browser process UI thread. 1.  User clicks the window close button which sends a close notification to the application's top-level window. 2.  Application's top-level window receives the close notification and: A. Calls {@code CefBrowserHost.closeBrowser()}({@code false}). B. Cancels the window close. 3.  JavaScript 'onbeforeunload' handler executes and shows the close confirmation dialog (which can be overridden via CefJSDialogHandler.onBeforeUnloadDialog()). 4.  User approves the close. 5.  JavaScript 'onunload' handler executes. 6.  Application's DoClose() handler is called. Application will: A. Set a flag to indicate that the next top-level window close attempt will be allowed. B. Return {@code false}. 7.  CEF sends a close notification to the application's top-level window (because DoClose() returned {@code false}). 8.  Application's top-level window receives the close notification and allows the window to close based on the flag from #6A. 9.  Application's top-level window is destroyed, triggering destruction of the child browser window. 10. Application's OnBeforeClose() handler is called and the browser object is destroyed. 11. Application exits by calling CefQuitMessageLoop() if no other browsers exist.
      * <p>Definition generated from cef_life_span_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
      */
     @Nullable
     default Boolean doClose(net.kurobako.cef4j.ipc.session.RemoteHandle browser) { return null; }
@@ -60,7 +60,7 @@ public interface CefLifeSpanHandler {
      * Called just before a browser is destroyed. Release all references to the browser object and do not attempt to execute any methods on the browser object (other than IsValid, GetIdentifier or IsSame) after this callback returns. CefFrameHandler callbacks related to final main frame destruction, and OnBeforePopupAborted callbacks for any pending popups, will arrive after this callback and {@code CefBrowser.isValid()} will return {@code false} at that time. Any in-progress network requests associated with {@code browser} will be aborted when the browser is destroyed, and CefResourceRequestHandler callbacks related to those requests may still arrive on the IO thread after this callback. See CefFrameHandler and DoClose() documentation for additional usage information.
      * <p>Definition generated from cef_life_span_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:279</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:279</a>
      */
     default void onBeforeClose(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

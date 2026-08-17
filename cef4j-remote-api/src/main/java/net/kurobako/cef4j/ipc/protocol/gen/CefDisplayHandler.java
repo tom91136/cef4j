@@ -17,7 +17,7 @@ public interface CefDisplayHandler {
      * Called when a frame's address has changed.
      * <p>Definition generated from cef_display_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:53</a>
      */
     default void onAddressChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, String url) {}
 
@@ -27,7 +27,7 @@ public interface CefDisplayHandler {
      *
      * @param title may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:61</a>
      */
     default void onTitleChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String title) {}
 
@@ -37,7 +37,7 @@ public interface CefDisplayHandler {
      *
      * @param iconUrls may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:68</a>
      */
     default void onFaviconUrlchange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String[] iconUrls) {}
 
@@ -45,7 +45,7 @@ public interface CefDisplayHandler {
      * Called when web content in the page has toggled fullscreen mode. If {@code fullscreen} is {@code true} the content will automatically be sized to fill the browser content area. If {@code fullscreen} is {@code false} the content will automatically return to its original size and position. With Alloy style the client is responsible for triggering the fullscreen transition (for example, by calling {@code CefWindow.setFullscreen()} when using Views). With Chrome style the fullscreen transition will be triggered automatically. The {@code CefWindowDelegate.onWindowFullscreenTransition()} method will be called during the fullscreen transition for notification purposes.
      * <p>Definition generated from cef_display_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:75</a>
      */
     default void onFullscreenModeChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int fullscreen) {}
 
@@ -55,7 +55,7 @@ public interface CefDisplayHandler {
      *
      * @param text may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
      */
     @Nullable
     default Boolean onTooltip(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String text) { return null; }
@@ -66,7 +66,7 @@ public interface CefDisplayHandler {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:103</a>
      */
     default void onStatusMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String value) {}
 
@@ -77,7 +77,7 @@ public interface CefDisplayHandler {
      * @param message may be null
      * @param source may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
      */
     @Nullable
     default Boolean onConsoleMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int level, String message, String source, int line) { return null; }
@@ -86,7 +86,7 @@ public interface CefDisplayHandler {
      * Called when auto-resize is enabled via {@code CefBrowserHost.setAutoResizeEnabled()} and the contents have auto-resized. {@code new_size} will be the desired size in DIP coordinates. Return {@code true} if the resize was handled or {@code false} for default handling.
      * <p>Definition generated from cef_display_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
      */
     @Nullable
     default Boolean onAutoResize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Size newSize) { return null; }
@@ -95,7 +95,7 @@ public interface CefDisplayHandler {
      * Called when the browser's access to an audio and/or video source has changed.
      * <p>Definition generated from cef_display_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:158</a>
      */
     default void onMediaAccessChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int hasVideoAccess, int hasAudioAccess) {}
 
@@ -108,7 +108,7 @@ public interface CefDisplayHandler {
      * <p>Added in CEF API version 13700.
      * <p>Definition generated from cef_display_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
      */
     @Nullable
     default Boolean onContentsBoundsChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Rect newBounds) { return null; }

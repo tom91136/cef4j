@@ -17,7 +17,7 @@ public interface CefServerHandler {
      * Called when {@code server} is created. If the server was started successfully then {@code CefServer.isRunning()} will return {@code true}. The server will continue running until {@code CefServer.shutdown()} is called, after which time OnServerDestroyed will be called. If the server failed to start then OnServerDestroyed will be called immediately after this method returns.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:220</a>
      */
     default void onServerCreated(net.kurobako.cef4j.ipc.session.RemoteHandle server) {}
 
@@ -25,7 +25,7 @@ public interface CefServerHandler {
      * Called when {@code server} is destroyed. The server thread will be stopped after this method returns. The client should release any references to {@code server} when this method is called. See OnServerCreated documentation for a description of server lifespan.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:230</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:230</a>
      */
     default void onServerDestroyed(net.kurobako.cef4j.ipc.session.RemoteHandle server) {}
 
@@ -33,7 +33,7 @@ public interface CefServerHandler {
      * Called when a client connects to {@code server}. {@code connection_id} uniquely identifies the connection. Each call to this method will have a matching call to OnClientDisconnected.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:239</a>
      */
     default void onClientConnected(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId) {}
 
@@ -41,7 +41,7 @@ public interface CefServerHandler {
      * Called when a client disconnects from {@code server}. {@code connection_id} uniquely identifies the connection. The client should release any data associated with {@code connection_id} when this method is called and {@code connection_id} should no longer be passed to CefServer methods. Disconnects can originate from either the client or the server. For example, the server will disconnect automatically after a net.kurobako.cef4j.ipc.protocol.gen.CefServer.sendHttpXxxresponse() method is called.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:248</a>
      */
     default void onClientDisconnected(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId) {}
 
@@ -49,7 +49,7 @@ public interface CefServerHandler {
      * Called when {@code server} receives an HTTP request. {@code connection_id} uniquely identifies the connection, {@code client_address} is the requesting IPv4 or IPv6 client address including port number, and {@code request} contains the request contents (URL, method, headers and optional POST data). Call CefServer methods either synchronously or asynchronusly to send a response.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:260</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:260</a>
      */
     default void onHttpRequest(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId, String clientAddress, net.kurobako.cef4j.ipc.session.RemoteHandle request) {}
 
@@ -57,7 +57,7 @@ public interface CefServerHandler {
      * Called when {@code server} receives a WebSocket request. {@code connection_id} uniquely identifies the connection, {@code client_address} is the requesting IPv4 or IPv6 client address including port number, and {@code request} contains the request contents (URL, method, headers and optional POST data). Execute {@code callback} either synchronously or asynchronously to accept or decline the WebSocket connection. If the request is accepted then OnWebSocketConnected will be called after the WebSocket has connected and incoming messages will be delivered to the OnWebSocketMessage callback. If the request is declined then the client will be disconnected and OnClientDisconnected will be called. Call the {@code CefServer.sendWebSocketMessage()} method after receiving the OnWebSocketConnected callback to respond with WebSocket messages.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:273</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:273</a>
      */
     default void onWebSocketRequest(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId, String clientAddress, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) {}
 
@@ -65,7 +65,7 @@ public interface CefServerHandler {
      * Called after the client has accepted the WebSocket connection for {@code server} and {@code connection_id} via the OnWebSocketRequest callback. See OnWebSocketRequest documentation for intended usage.
      * <p>Definition generated from cef_server.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:294</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:294</a>
      */
     default void onWebSocketConnected(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId) {}
 
@@ -76,7 +76,7 @@ public interface CefServerHandler {
      *
      * @param data <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__server_8h.html">cef_server.h:303</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:303</a>
      */
     default void onWebSocketMessage(net.kurobako.cef4j.ipc.session.RemoteHandle server, int connectionId, byte[] data) {}
 

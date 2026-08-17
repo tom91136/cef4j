@@ -39,7 +39,7 @@ public final class PostDataElement {
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:304</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:304</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -51,7 +51,7 @@ public final class PostDataElement {
      * Remove all contents from the post data element.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:310</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:310</a>
      */
     public CompletableFuture<Void> setToEmpty() {
         return session
@@ -63,7 +63,7 @@ public final class PostDataElement {
      * The post data element will represent a file.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:316</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:316</a>
      */
     public CompletableFuture<Void> setToFile(@Nonnull String fileName) {
         return session
@@ -78,7 +78,7 @@ public final class PostDataElement {
      *
      * @param bytes <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:322</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:322</a>
      */
     public CompletableFuture<Void> setToBytes(@Nonnull byte[] bytes) {
         return session
@@ -90,7 +90,7 @@ public final class PostDataElement {
      * Return the type of this post data element.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:329</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:329</a>
      */
     public CompletableFuture<Integer> getType() {
         return session
@@ -102,7 +102,7 @@ public final class PostDataElement {
      * Return the file name.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:335</a>
      */
     public CompletableFuture<String> getFile() {
         return session
@@ -114,7 +114,7 @@ public final class PostDataElement {
      * Return the number of bytes.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:341</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:341</a>
      */
     public CompletableFuture<Long> getBytesCount() {
         return session

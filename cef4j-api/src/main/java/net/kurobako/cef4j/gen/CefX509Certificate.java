@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import java.util.Optional;
  *   ...
  * } cef_x509_certificate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:97</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:97</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefX509Certificate extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_x509_cert_principal_t* (CEF_CALLBACK* get_subject)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:105</a>
      */
     Optional<CefX509CertPrincipal> getSubject();
 
@@ -35,7 +35,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_x509_cert_principal_t* (CEF_CALLBACK* get_issuer)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:113</a>
      */
     Optional<CefX509CertPrincipal> getIssuer();
 
@@ -44,7 +44,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_serial_number)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:119</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:119</a>
      */
     Optional<CefBinaryValue> getSerialNumber();
 
@@ -53,7 +53,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_basetime_t* (CEF_CALLBACK* get_valid_start)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
      */
     CefBasetime getValidStart();
 
@@ -62,7 +62,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_basetime_t* (CEF_CALLBACK* get_valid_expiry)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
      */
     CefBasetime getValidExpiry();
 
@@ -71,7 +71,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_derencoded)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:140</a>
      */
     Optional<CefBinaryValue> getDerEncoded();
 
@@ -80,7 +80,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_pemencoded)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:146</a>
      */
     Optional<CefBinaryValue> getPemEncoded();
 
@@ -89,7 +89,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>size_t (CEF_CALLBACK* get_issuer_chain_size)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:152</a>
      */
     long getIssuerChainSize();
 
@@ -101,7 +101,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_binary_value_t** (CEF_CALLBACK* get_derencoded_issuer_chain)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:159</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:159</a>
      */
     List<CefBinaryValue> getDerEncodedIssuerChain();
 
@@ -113,7 +113,7 @@ public interface CefX509Certificate extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_binary_value_t** (CEF_CALLBACK* get_pemencoded_issuer_chain)(struct _cef_x509_certificate_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:167</a>
      */
     List<CefBinaryValue> getPemEncodedIssuerChain();
     final class NativePeer implements CefX509Certificate, AutoCloseable {

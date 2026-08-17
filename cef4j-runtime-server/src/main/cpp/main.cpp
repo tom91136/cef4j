@@ -143,7 +143,7 @@ static constexpr std::int32_t kMsgDevToolsAttach       = 27;
 static constexpr std::int32_t kMsgDevToolsDetach       = 30;
 
 // ---------------------------------------------------------------------------
-// CEF ref-counted base helpers (same pattern as cef4j-native subprocess_main).
+// CEF ref-counted base helpers (same pattern as cef4j-platform subprocess_main).
 // ---------------------------------------------------------------------------
 
 // CEF validates {@code base.size == sizeof(cef_*_t)} on every wrap. We must report the parent CEF struct size, not

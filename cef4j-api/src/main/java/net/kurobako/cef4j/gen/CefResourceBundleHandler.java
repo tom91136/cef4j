@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_resource_bundle_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResourceBundleHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_localized_string)(struct _cef_resource_bundle_handler_t* self, int string_id, cef_string_t* string);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
      */
     default boolean getLocalizedString(int stringId, @Nullable String string) {
         return false;
@@ -36,7 +36,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_data_resource)(struct _cef_resource_bundle_handler_t* self, int resource_id, void** data, size_t* data_size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:64</a>
      */
     default boolean getDataResource(int resourceId, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
         return false;
@@ -47,7 +47,7 @@ public interface CefResourceBundleHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_bundle_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_data_resource_for_scale)(struct _cef_resource_bundle_handler_t* self, int resource_id, cef_scale_factor_t scale_factor, void** data, size_t* data_size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:78</a>
      */
     default boolean getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor, @Nonnull AtomicReference<NativePointer> data, long[] dataSize) {
         return false;

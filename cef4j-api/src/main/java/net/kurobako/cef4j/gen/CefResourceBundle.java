@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nonnull;
  *   ...
  * } cef_resource_bundle_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResourceBundle extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * <p>Definition generated from cef_resource_bundle_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_localized_string)(struct _cef_resource_bundle_t* self, int string_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
      */
     Optional<String> getLocalizedString(int stringId);
 
@@ -33,7 +33,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * <p>Definition generated from cef_resource_bundle_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_data_resource)(struct _cef_resource_bundle_t* self, int resource_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
      */
     Optional<CefBinaryValue> getDataResource(int resourceId);
 
@@ -42,7 +42,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * <p>Definition generated from cef_resource_bundle_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_data_resource_for_scale)(struct _cef_resource_bundle_t* self, int resource_id, cef_scale_factor_t scale_factor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
      */
     Optional<CefBinaryValue> getDataResourceForScale(int resourceId, @Nonnull CefScaleFactor scaleFactor);
     /**
@@ -50,7 +50,7 @@ public interface CefResourceBundle extends CefLibraryObject {
      * <p>Definition generated from cef_resource_bundle_capi.h
      * <pre>CEF_EXPORT cef_resource_bundle_t* cef_resource_bundle_get_global(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:56</a>
      */
     static Optional<CefResourceBundle> getGlobal() {
       return Optional.ofNullable(NativePeer.getGlobal0());

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_download_item_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDownloadItem extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:49</a>
      */
     boolean isValid();
 
@@ -32,7 +32,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_in_progress)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:56</a>
      */
     boolean isInProgress();
 
@@ -41,7 +41,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_complete)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:62</a>
      */
     boolean isComplete();
 
@@ -50,7 +50,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_canceled)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:68</a>
      */
     boolean isCanceled();
 
@@ -59,7 +59,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_interrupted)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:74</a>
      */
     boolean isInterrupted();
 
@@ -70,7 +70,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      *
      * @return the result, or {@code CEF_DOWNLOAD_INTERRUPT_REASON_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:88</a>
      */
     CefDownloadInterruptReason getInterruptReason();
 
@@ -79,7 +79,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_current_speed)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:94</a>
      */
     long getCurrentSpeed();
 
@@ -88,7 +88,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* get_percent_complete)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:100</a>
      */
     int getPercentComplete();
 
@@ -97,7 +97,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_total_bytes)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:107</a>
      */
     long getTotalBytes();
 
@@ -106,7 +106,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_received_bytes)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:113</a>
      */
     long getReceivedBytes();
 
@@ -115,7 +115,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_basetime_t* (CEF_CALLBACK* get_start_time)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:119</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:119</a>
      */
     CefBasetime getStartTime();
 
@@ -124,7 +124,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_basetime_t* (CEF_CALLBACK* get_end_time)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:125</a>
      */
     CefBasetime getEndTime();
 
@@ -133,7 +133,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_full_path)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:131</a>
      */
     Optional<String> getFullPath();
 
@@ -142,7 +142,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>unsigned int (CEF_CALLBACK* get_id)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:137</a>
      */
     int getId();
 
@@ -151,7 +151,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:143</a>
      */
     Optional<String> getUrl();
 
@@ -160,7 +160,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_original_url)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:149</a>
      */
     Optional<String> getOriginalUrl();
 
@@ -169,7 +169,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_suggested_file_name)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:155</a>
      */
     Optional<String> getSuggestedFileName();
 
@@ -178,7 +178,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_content_disposition)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:161</a>
      */
     Optional<String> getContentDisposition();
 
@@ -187,7 +187,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_mime_type)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:167</a>
      */
     Optional<String> getMimeType();
 
@@ -197,7 +197,7 @@ public interface CefDownloadItem extends CefLibraryObject {
      * <p>Definition generated from cef_download_item_capi.h
      * <pre>int (CEF_CALLBACK* is_paused)(struct _cef_download_item_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:81</a>
      */
     boolean isPaused();
     final class NativePeer implements CefDownloadItem, AutoCloseable {

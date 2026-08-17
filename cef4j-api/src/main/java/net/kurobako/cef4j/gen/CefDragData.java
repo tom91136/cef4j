@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_drag_data_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:47</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:47</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDragData extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_drag_data_t* (CEF_CALLBACK* clone)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:60</a>
      */
     Optional<CefDragData> cefClone();
 
@@ -35,7 +35,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:66</a>
      */
     boolean isReadOnly();
 
@@ -44,7 +44,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* is_link)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:72</a>
      */
     boolean isLink();
 
@@ -53,7 +53,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* is_fragment)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:78</a>
      */
     boolean isFragment();
 
@@ -62,7 +62,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* is_file)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:84</a>
      */
     boolean isFile();
 
@@ -71,7 +71,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_url)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     Optional<String> getLinkUrl();
 
@@ -80,7 +80,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_title)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:96</a>
      */
     Optional<String> getLinkTitle();
 
@@ -89,7 +89,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_metadata)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:102</a>
      */
     Optional<String> getLinkMetadata();
 
@@ -98,7 +98,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_text)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:108</a>
      */
     Optional<String> getFragmentText();
 
@@ -107,7 +107,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_html)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:114</a>
      */
     Optional<String> getFragmentHtml();
 
@@ -116,7 +116,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_fragment_base_url)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:120</a>
      */
     Optional<String> getFragmentBaseUrl();
 
@@ -125,7 +125,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_file_name)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:127</a>
      */
     Optional<String> getFileName();
 
@@ -136,7 +136,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param writer may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:133</a>
      */
     long getFileContents(@Nullable CefStreamWriter writer);
 
@@ -145,7 +145,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* get_file_names)(struct _cef_drag_data_t* self, cef_string_list_t names);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:142</a>
      */
     boolean getFileNames(@Nonnull List<String> names);
 
@@ -154,7 +154,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* get_file_paths)(struct _cef_drag_data_t* self, cef_string_list_t paths);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:149</a>
      */
     boolean getFilePaths(@Nonnull List<String> paths);
 
@@ -165,7 +165,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
      */
     void setLinkUrl(@Nullable String url);
 
@@ -176,7 +176,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param title may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
      */
     void setLinkTitle(@Nullable String title);
 
@@ -187,7 +187,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param data may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
      */
     void setLinkMetadata(@Nullable String data);
 
@@ -198,7 +198,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param text may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
      */
     void setFragmentText(@Nullable String text);
 
@@ -209,7 +209,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param html may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
      */
     void setFragmentHtml(@Nullable String html);
 
@@ -220,7 +220,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param baseUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
      */
     void setFragmentBaseUrl(@Nullable String baseUrl);
 
@@ -229,7 +229,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>void (CEF_CALLBACK* reset_file_contents)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
      */
     void resetFileContents();
 
@@ -240,7 +240,7 @@ public interface CefDragData extends CefLibraryObject {
      *
      * @param displayName may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
     void addFile(@Nullable String path, @Nullable String displayName);
 
@@ -249,7 +249,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>void (CEF_CALLBACK* clear_filenames)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
      */
     void clearFilenames();
 
@@ -258,7 +258,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_image_t* (CEF_CALLBACK* get_image)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:213</a>
      */
     Optional<CefImage> getImage();
 
@@ -267,7 +267,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>cef_point_t* (CEF_CALLBACK* get_image_hotspot)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
      */
     CefPoint getImageHotspot();
 
@@ -276,7 +276,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>int (CEF_CALLBACK* has_image)(struct _cef_drag_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:226</a>
      */
     boolean hasImage();
     /**
@@ -284,7 +284,7 @@ public interface CefDragData extends CefLibraryObject {
      * <p>Definition generated from cef_drag_data_capi.h
      * <pre>CEF_EXPORT cef_drag_data_t* cef_drag_data_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__data_8h.html">cef_drag_data.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:54</a>
      */
     static Optional<CefDragData> create() {
       return Optional.ofNullable(NativePeer.create0());

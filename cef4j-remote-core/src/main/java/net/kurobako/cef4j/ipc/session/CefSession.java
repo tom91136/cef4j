@@ -10,8 +10,7 @@ import javax.annotation.Nullable;
  * Correlation, routing, and intercept layer above {@link net.kurobako.cef4j.ipc.transport.CefTransport}. Hides the
  * envelope wire format from callers; codegen-emitted message types are the unit of communication.
  *
- * <p>This transport-neutral boundary and its lifecycle constraints are documented in the project {@code README.md} and
- * {@code PLAN.md}.
+ * <p>This transport-neutral boundary and its lifecycle constraints are documented in the project {@code README.md}.
  */
 public interface CefSession extends Closeable {
 

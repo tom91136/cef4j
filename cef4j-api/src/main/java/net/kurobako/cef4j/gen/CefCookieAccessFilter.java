@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_cookie_access_filter_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:209</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:209</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefCookieAccessFilter extends CefClientHandler {
 
@@ -27,7 +27,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:217</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:217</a>
      */
     default boolean canSendCookie(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nonnull CefCookie cookie) {
         return false;
@@ -41,7 +41,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:232</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:232</a>
      */
     default boolean canSaveCookie(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, @Nullable CefResponse response, @Nonnull CefCookie cookie) {
         return false;

@@ -17,7 +17,7 @@ public interface CefRenderProcessHandler {
      * Called after WebKit has been initialized.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:60</a>
      */
     default void onWebKitInitialized() {}
 
@@ -27,7 +27,7 @@ public interface CefRenderProcessHandler {
      *
      * @param extraInfo may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
      */
     default void onBrowserCreated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle extraInfo) {}
 
@@ -35,7 +35,7 @@ public interface CefRenderProcessHandler {
      * Called before a browser is destroyed.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
      */
     default void onBrowserDestroyed(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -43,7 +43,7 @@ public interface CefRenderProcessHandler {
      * Called immediately after the V8 context for a frame has been created. To retrieve the JavaScript 'window' object use the {@code CefV8Context.getGlobal()} method. V8 handles can only be accessed from the thread on which they are created. A task runner for posting tasks on the associated thread can be retrieved via the {@code CefV8Context.getTaskRunner()} method.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:90</a>
      */
     default void onContextCreated(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle context) {}
 
@@ -51,7 +51,7 @@ public interface CefRenderProcessHandler {
      * Called immediately before the V8 context for a frame is released. No references to the context should be kept after this method is called.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:102</a>
      */
     default void onContextReleased(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle context) {}
 
@@ -59,7 +59,7 @@ public interface CefRenderProcessHandler {
      * Called for global uncaught exceptions in a frame. Execution of this callback is disabled by default. To enable set cef_settings_t.uncaught_exception_stack_size > 0.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:111</a>
      */
     default void onUncaughtException(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle context, net.kurobako.cef4j.ipc.session.RemoteHandle exception, net.kurobako.cef4j.ipc.session.RemoteHandle stackTrace) {}
 
@@ -70,7 +70,7 @@ public interface CefRenderProcessHandler {
      * @param frame may be null
      * @param node may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:123</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:123</a>
      */
     default void onFocusedNodeChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle node) {}
 
@@ -78,7 +78,7 @@ public interface CefRenderProcessHandler {
      * Called when a new message is received from a different process. Return {@code true} if the message was handled or {@code false} otherwise. It is safe to keep a reference to {@code message} outside of this callback.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
      */
     @Nullable
     default Boolean onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return null; }

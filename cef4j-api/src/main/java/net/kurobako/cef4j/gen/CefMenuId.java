@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_menu_id_t;</pre>
  * <p>Possible values: {@link Kind#BACK}, {@link Kind#FORWARD}, {@link Kind#RELOAD}, {@link Kind#RELOAD_NOCACHE}, {@link Kind#STOPLOAD}, {@link Kind#UNDO}, {@link Kind#REDO}, {@link Kind#CUT}, {@link Kind#COPY}, {@link Kind#PASTE}, {@link Kind#PASTE_MATCH_STYLE}, {@link Kind#DELETE}, {@link Kind#SELECT_ALL}, {@link Kind#FIND}, {@link Kind#PRINT}, {@link Kind#VIEW_SOURCE}, {@link Kind#SPELLCHECK_SUGGESTION_0}, {@link Kind#SPELLCHECK_SUGGESTION_1}, {@link Kind#SPELLCHECK_SUGGESTION_2}, {@link Kind#SPELLCHECK_SUGGESTION_3}, {@link Kind#SPELLCHECK_SUGGESTION_4}, {@link Kind#SPELLCHECK_SUGGESTION_LAST}, {@link Kind#NO_SPELLING_SUGGESTIONS}, {@link Kind#ADD_TO_DICTIONARY}, {@link Kind#CUSTOM_FIRST}, {@link Kind#CUSTOM_LAST}, {@link Kind#USER_FIRST}, {@link Kind#USER_LAST}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMenuId implements CefEnum<CefMenuId> {
 

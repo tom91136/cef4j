@@ -39,7 +39,7 @@ public final class UnresponsiveProcessCallback {
      * Terminate the unresponsive process.
      * <p>Definition generated from cef_unresponsive_process_callback.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__unresponsive__process__callback_8h.html">cef_unresponsive_process_callback.h:55</a>
      */
     public CompletableFuture<Void> terminate() {
         return session

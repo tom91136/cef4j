@@ -49,7 +49,7 @@ public final class V8Value {
      * Returns {@code true} if the underlying handle is valid and it can be accessed on the current thread. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:632</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:632</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -61,7 +61,7 @@ public final class V8Value {
      * True if the value type is undefined.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:640</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:640</a>
      */
     public CompletableFuture<Integer> isUndefined() {
         return session
@@ -73,7 +73,7 @@ public final class V8Value {
      * True if the value type is null.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:646</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:646</a>
      */
     public CompletableFuture<Integer> isNull() {
         return session
@@ -85,7 +85,7 @@ public final class V8Value {
      * True if the value type is bool.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:652</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:652</a>
      */
     public CompletableFuture<Integer> isBool() {
         return session
@@ -97,7 +97,7 @@ public final class V8Value {
      * True if the value type is int.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:658</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:658</a>
      */
     public CompletableFuture<Integer> isInt() {
         return session
@@ -109,7 +109,7 @@ public final class V8Value {
      * True if the value type is unsigned int.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:664</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:664</a>
      */
     public CompletableFuture<Integer> isUint() {
         return session
@@ -121,7 +121,7 @@ public final class V8Value {
      * True if the value type is double.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:670</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:670</a>
      */
     public CompletableFuture<Integer> isDouble() {
         return session
@@ -133,7 +133,7 @@ public final class V8Value {
      * True if the value type is Date.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:676</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:676</a>
      */
     public CompletableFuture<Integer> isDate() {
         return session
@@ -145,7 +145,7 @@ public final class V8Value {
      * True if the value type is string.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:682</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:682</a>
      */
     public CompletableFuture<Integer> isString() {
         return session
@@ -157,7 +157,7 @@ public final class V8Value {
      * True if the value type is object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:688</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:688</a>
      */
     public CompletableFuture<Integer> isObject() {
         return session
@@ -169,7 +169,7 @@ public final class V8Value {
      * True if the value type is array.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:694</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:694</a>
      */
     public CompletableFuture<Integer> isArray() {
         return session
@@ -181,7 +181,7 @@ public final class V8Value {
      * True if the value type is an ArrayBuffer.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:700</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:700</a>
      */
     public CompletableFuture<Integer> isArrayBuffer() {
         return session
@@ -193,7 +193,7 @@ public final class V8Value {
      * True if the value type is function.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:706</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:706</a>
      */
     public CompletableFuture<Integer> isFunction() {
         return session
@@ -205,7 +205,7 @@ public final class V8Value {
      * True if the value type is a Promise.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:712</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:712</a>
      */
     public CompletableFuture<Integer> isPromise() {
         return session
@@ -217,7 +217,7 @@ public final class V8Value {
      * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:718</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:718</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -229,7 +229,7 @@ public final class V8Value {
      * Return a bool value.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:725</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:725</a>
      */
     public CompletableFuture<Integer> getBoolValue() {
         return session
@@ -241,7 +241,7 @@ public final class V8Value {
      * Return an int value.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:731</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:731</a>
      */
     public CompletableFuture<Integer> getIntValue() {
         return session
@@ -253,7 +253,7 @@ public final class V8Value {
      * Return an unsigned int value.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:737</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:737</a>
      */
     public CompletableFuture<Integer> getUintValue() {
         return session
@@ -265,7 +265,7 @@ public final class V8Value {
      * Return a Date value.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:749</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:749</a>
      */
     public CompletableFuture<Basetime> getDateValue() {
         return session
@@ -277,7 +277,7 @@ public final class V8Value {
      * Return a string value.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:755</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:755</a>
      */
     public CompletableFuture<String> getStringValue() {
         return session
@@ -289,7 +289,7 @@ public final class V8Value {
      * Returns {@code true} if this is a user created object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:765</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:765</a>
      */
     public CompletableFuture<Integer> isUserCreated() {
         return session
@@ -301,7 +301,7 @@ public final class V8Value {
      * Returns {@code true} if the last method call resulted in an exception. This attribute exists only in the scope of the current CEF value object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:771</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:771</a>
      */
     public CompletableFuture<Integer> hasException() {
         return session
@@ -313,7 +313,7 @@ public final class V8Value {
      * Returns the exception resulting from the last method call. This attribute exists only in the scope of the current CEF value object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:778</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:778</a>
      */
     public CompletableFuture<CefV8Exception> getException() {
         return session
@@ -326,7 +326,7 @@ public final class V8Value {
      * Clears the last exception and returns {@code true} on success.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:785</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:785</a>
      */
     public CompletableFuture<Integer> clearException() {
         return session
@@ -338,7 +338,7 @@ public final class V8Value {
      * Returns {@code true} if this object will re-throw future exceptions. This attribute exists only in the scope of the current CEF value object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:791</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:791</a>
      */
     public CompletableFuture<Integer> willRethrowExceptions() {
         return session
@@ -350,7 +350,7 @@ public final class V8Value {
      * Set whether this object will re-throw future exceptions. By default exceptions are not re-thrown. If a exception is re-thrown the current context should not be accessed again until after the exception has been caught and not re-thrown. Returns {@code true} on success. This attribute exists only in the scope of the current CEF value object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:798</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:798</a>
      */
     public CompletableFuture<Integer> setRethrowExceptions(int rethrow) {
         return session
@@ -364,7 +364,7 @@ public final class V8Value {
      *
      * @param key may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:808</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:808</a>
      */
     public CompletableFuture<Integer> hasValueBykey(@Nonnull String key) {
         return session
@@ -378,7 +378,7 @@ public final class V8Value {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:814</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:814</a>
      */
     public CompletableFuture<Integer> hasValueByindex(int index) {
         return session
@@ -392,7 +392,7 @@ public final class V8Value {
      *
      * @param key may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:820</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:820</a>
      */
     public CompletableFuture<Integer> deleteValueBykey(@Nonnull String key) {
         return session
@@ -406,7 +406,7 @@ public final class V8Value {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:829</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:829</a>
      */
     public CompletableFuture<Integer> deleteValueByindex(int index) {
         return session
@@ -420,7 +420,7 @@ public final class V8Value {
      *
      * @param key may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:838</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:838</a>
      */
     public CompletableFuture<V8Value> getValueBykey(@Nonnull String key) {
         return session
@@ -435,7 +435,7 @@ public final class V8Value {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:845</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:845</a>
      */
     public CompletableFuture<V8Value> getValueByindex(int index) {
         return session
@@ -450,7 +450,7 @@ public final class V8Value {
      *
      * @param key may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:852</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:852</a>
      */
     public CompletableFuture<Integer> setValueBykey(@Nonnull String key, @Nonnull RemoteHandle value, int attribute) {
         return session
@@ -464,7 +464,7 @@ public final class V8Value {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:863</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:863</a>
      */
     public CompletableFuture<Integer> setValueByindex(int index, @Nonnull RemoteHandle value) {
         return session
@@ -478,7 +478,7 @@ public final class V8Value {
      *
      * @param key may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:872</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:872</a>
      */
     public CompletableFuture<Integer> setValueByaccessor(@Nonnull String key, int attribute) {
         return session
@@ -490,7 +490,7 @@ public final class V8Value {
      * Read the keys for the object's values into the specified vector. Integer-based keys will also be returned as strings.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:882</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:882</a>
      */
     public CompletableFuture<Integer> getKeys(String[] keys) {
         return session
@@ -504,7 +504,7 @@ public final class V8Value {
      *
      * @param userData may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:889</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:889</a>
      */
     public CompletableFuture<Integer> setUserData(@Nonnull RemoteHandle userData) {
         return session
@@ -516,7 +516,7 @@ public final class V8Value {
      * Returns the user data, if any, assigned to this object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:897</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:897</a>
      */
     public CompletableFuture<RemoteHandle> getUserData() {
         return session
@@ -528,7 +528,7 @@ public final class V8Value {
      * Returns the amount of externally allocated memory registered for the object.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:903</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:903</a>
      */
     public CompletableFuture<Integer> getExternallyAllocatedMemory() {
         return session
@@ -540,7 +540,7 @@ public final class V8Value {
      * Adjusts the amount of registered external memory for the object. Used to give V8 an indication of the amount of externally allocated memory that is kept alive by JavaScript objects. V8 uses this information to decide when to perform global garbage collection. Each CefV8Value tracks the amount of external memory associated with it and automatically decreases the global total by the appropriate amount on its destruction. {@code change_in_bytes} specifies the number of bytes to adjust by. This method returns the number of bytes associated with the object after the adjustment. This method can only be called on user created objects.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:910</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:910</a>
      */
     public CompletableFuture<Integer> adjustExternallyAllocatedMemory(int changeInBytes) {
         return session
@@ -552,7 +552,7 @@ public final class V8Value {
      * Returns the number of elements in the array.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:926</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:926</a>
      */
     public CompletableFuture<Integer> getArrayLength() {
         return session
@@ -571,7 +571,7 @@ public final class V8Value {
      * Prevent the ArrayBuffer from using it's memory block by setting the length to zero. This operation cannot be undone. If the ArrayBuffer was created with CreateArrayBuffer then {@code CefV8ArrayBufferReleaseCallback.releaseBuffer()} will be called to release the underlying buffer.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:942</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:942</a>
      */
     public CompletableFuture<Integer> neuterArrayBuffer() {
         return session
@@ -583,7 +583,7 @@ public final class V8Value {
      * Returns the length (in bytes) of the ArrayBuffer.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:951</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:951</a>
      */
     public CompletableFuture<Long> getArrayBufferByteLength() {
         return session
@@ -595,7 +595,7 @@ public final class V8Value {
      * Returns the function name.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:967</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:967</a>
      */
     public CompletableFuture<String> getFunctionName() {
         return session
@@ -607,7 +607,7 @@ public final class V8Value {
      * Returns the function handler or {@code null} if not a CEF-created function.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:973</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:973</a>
      */
     public CompletableFuture<RemoteHandle> getFunctionHandler() {
         return session
@@ -621,7 +621,7 @@ public final class V8Value {
      *
      * @param arg may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1010</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1010</a>
      */
     public CompletableFuture<Integer> resolvePromise(@Nonnull RemoteHandle arg) {
         return session
@@ -633,7 +633,7 @@ public final class V8Value {
      * Reject the Promise using the current V8 context. This method should only be called from within the scope of a CefV8Handler or CefV8Accessor callback, or in combination with calling Enter() and Exit() on a stored CefV8Context reference. Returns {@code true} on success. Returns {@code false} if this method is called incorrectly or an exception is thrown.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:1021</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:1021</a>
      */
     public CompletableFuture<Integer> rejectPromise(@Nonnull String errorMsg) {
         return session

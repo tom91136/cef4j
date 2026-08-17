@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import net.kurobako.cef4j.gen.CefPoint;
  *   ...
  * } cef_menu_button_delegate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:51</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:51</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMenuButtonDelegate extends CefClientHandler {
 
@@ -26,7 +26,7 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_menu_button_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_menu_button_pressed)(struct _cef_menu_button_delegate_t* self, struct _cef_menu_button_t* menu_button, const cef_point_t* screen_point, struct _cef_menu_button_pressed_lock_t* button_pressed_lock);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:59</a>
      */
     default void onMenuButtonPressed(@Nullable CefMenuButton menuButton, @Nonnull CefPoint screenPoint, @Nullable CefMenuButtonPressedLock buttonPressedLock) {
     }

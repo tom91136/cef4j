@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_event_flags_t;</pre>
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAPS_LOCK_ON}, {@link Kind#SHIFT_DOWN}, {@link Kind#CONTROL_DOWN}, {@link Kind#ALT_DOWN}, {@link Kind#LEFT_MOUSE_BUTTON}, {@link Kind#MIDDLE_MOUSE_BUTTON}, {@link Kind#RIGHT_MOUSE_BUTTON}, {@link Kind#COMMAND_DOWN}, {@link Kind#NUM_LOCK_ON}, {@link Kind#IS_KEY_PAD}, {@link Kind#IS_LEFT}, {@link Kind#IS_RIGHT}, {@link Kind#ALTGR_DOWN}, {@link Kind#IS_REPEAT}, {@link Kind#PRECISION_SCROLLING_DELTA}, {@link Kind#SCROLL_BY_PAGE}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefEventFlags implements CefEnum<CefEventFlags> {
 

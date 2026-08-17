@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_post_data_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:224</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:224</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPostData extends CefLibraryObject {
 
@@ -27,7 +27,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:239</a>
      */
     boolean isReadOnly();
 
@@ -36,7 +36,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>int (CEF_CALLBACK* has_excluded_elements)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:245</a>
      */
     boolean hasExcludedElements();
 
@@ -45,7 +45,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>size_t (CEF_CALLBACK* get_element_count)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:254</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:254</a>
      */
     long getElementCount();
 
@@ -57,7 +57,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>cef_post_data_element_t** (CEF_CALLBACK* get_elements)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:260</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:260</a>
      */
     List<CefPostDataElement> getElements();
 
@@ -66,7 +66,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>int (CEF_CALLBACK* remove_element)(struct _cef_post_data_t* self, struct _cef_post_data_element_t* element);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:266</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:266</a>
      */
     boolean removeElement(@Nullable CefPostDataElement element);
 
@@ -75,7 +75,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>int (CEF_CALLBACK* add_element)(struct _cef_post_data_t* self, struct _cef_post_data_element_t* element);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:273</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:273</a>
      */
     boolean addElement(@Nullable CefPostDataElement element);
 
@@ -84,7 +84,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>void (CEF_CALLBACK* remove_elements)(struct _cef_post_data_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:279</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:279</a>
      */
     void removeElements();
     /**
@@ -92,7 +92,7 @@ public interface CefPostData extends CefLibraryObject {
      * <p>Definition generated from cef_request_capi.h
      * <pre>CEF_EXPORT cef_post_data_t* cef_post_data_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:233</a>
      */
     static Optional<CefPostData> create() {
       return Optional.ofNullable(NativePeer.create0());

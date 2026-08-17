@@ -39,7 +39,7 @@ public final class ListValue {
      * Returns {@code true} if this object is valid. This object may become invalid if the underlying data is owned by another object (e.g. list or dictionary) and that other object is then modified or destroyed. Do not call any other methods if this method returns {@code false}.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:549</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:549</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class ListValue {
      * Returns {@code true} if this object is currently owned by another object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:558</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:558</a>
      */
     public CompletableFuture<Integer> isOwned() {
         return session
@@ -63,7 +63,7 @@ public final class ListValue {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:564</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:564</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -75,7 +75,7 @@ public final class ListValue {
      * Returns {@code true} if this object and {@code that} object have the same underlying data. If {@code true} modifications to this object will also affect {@code that} object and vice-versa.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:571</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:571</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -87,7 +87,7 @@ public final class ListValue {
      * Returns {@code true} if this object and {@code that} object have an equivalent underlying value but are not necessarily the same object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:579</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:579</a>
      */
     public CompletableFuture<Integer> isEqual(@Nonnull RemoteHandle that) {
         return session
@@ -99,7 +99,7 @@ public final class ListValue {
      * Returns a writable copy of this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:586</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:586</a>
      */
     public CompletableFuture<ListValue> copy() {
         return session
@@ -112,7 +112,7 @@ public final class ListValue {
      * Sets the number of values. If the number of values is expanded all new value slots will default to type null. Returns {@code true} on success.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:592</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
     public CompletableFuture<Integer> setSize(long size) {
         return session
@@ -124,7 +124,7 @@ public final class ListValue {
      * Returns the number of values.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:599</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
     public CompletableFuture<Long> getSize() {
         return session
@@ -136,7 +136,7 @@ public final class ListValue {
      * Removes all values. Returns {@code true} on success.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:605</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:605</a>
      */
     public CompletableFuture<Integer> clear() {
         return session
@@ -148,7 +148,7 @@ public final class ListValue {
      * Removes the value at the specified index.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:611</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:611</a>
      */
     public CompletableFuture<Integer> remove(long index) {
         return session
@@ -160,7 +160,7 @@ public final class ListValue {
      * Returns the value type at the specified index.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:617</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:617</a>
      */
     public CompletableFuture<Integer> getType(long index) {
         return session
@@ -172,7 +172,7 @@ public final class ListValue {
      * Returns the value at the specified index. For simple types the returned value will copy existing data and modifications to the value will not modify this object. For complex types (binary, dictionary and list) the returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:623</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:623</a>
      */
     public CompletableFuture<Value> getValue(long index) {
         return session
@@ -185,7 +185,7 @@ public final class ListValue {
      * Returns the value at the specified index as type bool.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:633</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:633</a>
      */
     public CompletableFuture<Integer> getBool(long index) {
         return session
@@ -197,7 +197,7 @@ public final class ListValue {
      * Returns the value at the specified index as type int.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:639</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:639</a>
      */
     public CompletableFuture<Integer> getInt(long index) {
         return session
@@ -209,7 +209,7 @@ public final class ListValue {
      * Returns the value at the specified index as type binary. The returned value will reference existing data.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:657</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:657</a>
      */
     public CompletableFuture<BinaryValue> getBinary(long index) {
         return session
@@ -222,7 +222,7 @@ public final class ListValue {
      * Returns the value at the specified index as type dictionary. The returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:664</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:664</a>
      */
     public CompletableFuture<DictionaryValue> getDictionary(long index) {
         return session
@@ -235,7 +235,7 @@ public final class ListValue {
      * Returns the value at the specified index as type list. The returned value will reference existing data and modifications to the value will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:672</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:672</a>
      */
     public CompletableFuture<ListValue> getList(long index) {
         return session
@@ -248,7 +248,7 @@ public final class ListValue {
      * Sets the value at the specified index. Returns {@code true} if the value was set successfully. If {@code value} represents simple data then the underlying data will be copied and modifications to {@code value} will not modify this object. If {@code value} represents complex data (binary, dictionary or list) then the underlying data will be referenced and modifications to {@code value} will modify this object.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:680</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:680</a>
      */
     public CompletableFuture<Integer> setValue(long index, @Nonnull RemoteHandle value) {
         return session
@@ -260,7 +260,7 @@ public final class ListValue {
      * Sets the value at the specified index as type null. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:691</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:691</a>
      */
     public CompletableFuture<Integer> setNull(long index) {
         return session
@@ -272,7 +272,7 @@ public final class ListValue {
      * Sets the value at the specified index as type bool. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:698</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:698</a>
      */
     public CompletableFuture<Integer> setBool(long index, int value) {
         return session
@@ -284,7 +284,7 @@ public final class ListValue {
      * Sets the value at the specified index as type int. Returns {@code true} if the value was set successfully.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:705</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:705</a>
      */
     public CompletableFuture<Integer> setInt(long index, int value) {
         return session
@@ -298,7 +298,7 @@ public final class ListValue {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:719</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:719</a>
      */
     public CompletableFuture<Integer> setString(long index, @Nonnull String value) {
         return session
@@ -310,7 +310,7 @@ public final class ListValue {
      * Sets the value at the specified index as type binary. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:726</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:726</a>
      */
     public CompletableFuture<Integer> setBinary(long index, @Nonnull RemoteHandle value) {
         return session
@@ -322,7 +322,7 @@ public final class ListValue {
      * Sets the value at the specified index as type dict. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:736</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:736</a>
      */
     public CompletableFuture<Integer> setDictionary(long index, @Nonnull RemoteHandle value) {
         return session
@@ -334,7 +334,7 @@ public final class ListValue {
      * Sets the value at the specified index as type list. Returns {@code true} if the value was set successfully. If {@code value} is currently owned by another object then the value will be copied and the {@code value} reference will not change. Otherwise, ownership will be transferred to this object and the {@code value} reference will be invalidated.
      * <p>Definition generated from cef_values.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:747</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:747</a>
      */
     public CompletableFuture<Integer> setList(long index, @Nonnull RemoteHandle value) {
         return session

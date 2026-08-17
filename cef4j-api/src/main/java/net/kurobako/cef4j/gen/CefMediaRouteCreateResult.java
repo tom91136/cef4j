@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_media_route_create_result_t;</pre>
  * <p>Possible values: {@link Kind#UNKNOWN_ERROR}, {@link Kind#OK}, {@link Kind#TIMED_OUT}, {@link Kind#ROUTE_NOT_FOUND}, {@link Kind#SINK_NOT_FOUND}, {@link Kind#INVALID_ORIGIN}, {@link Kind#OFF_THE_RECORD_MISMATCH_DEPRECATED}, {@link Kind#NO_SUPPORTED_PROVIDER}, {@link Kind#CANCELLED}, {@link Kind#ROUTE_ALREADY_EXISTS}, {@link Kind#DESKTOP_PICKER_FAILED}, {@link Kind#ROUTE_ALREADY_TERMINATED}, {@link Kind#REDUNDANT_REQUEST}, {@link Kind#USER_NOT_ALLOWED}, {@link Kind#NOTIFICATION_DISABLED}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefMediaRouteCreateResult implements CefEnum<CefMediaRouteCreateResult> {
 

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nonnull;
  *   ...
  * } cef_context_menu_params_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:195</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:195</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefContextMenuParams extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_xcoord)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:207</a>
      */
     int getXCoord();
 
@@ -34,7 +34,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_ycoord)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:214</a>
      */
     int getYCoord();
 
@@ -45,7 +45,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      *
      * @return the result, or {@code CM_TYPEFLAG_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:221</a>
      */
     CefContextMenuTypeFlags getTypeFlags();
 
@@ -54,7 +54,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_link_url)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:228</a>
      */
     Optional<String> getLinkUrl();
 
@@ -63,7 +63,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_unfiltered_link_url)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:235</a>
      */
     Optional<String> getUnfilteredLinkUrl();
 
@@ -72,7 +72,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_source_url)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:242</a>
      */
     Optional<String> getSourceUrl();
 
@@ -81,7 +81,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* has_image_contents)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:250</a>
      */
     boolean hasImageContents();
 
@@ -90,7 +90,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_title_text)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:257</a>
      */
     Optional<String> getTitleText();
 
@@ -99,7 +99,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_page_url)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:264</a>
      */
     Optional<String> getPageUrl();
 
@@ -108,7 +108,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_frame_url)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:271</a>
      */
     Optional<String> getFrameUrl();
 
@@ -117,7 +117,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_frame_charset)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:277</a>
      */
     Optional<String> getFrameCharset();
 
@@ -128,7 +128,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      *
      * @return the result, or {@code CM_MEDIATYPE_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:284</a>
      */
     CefContextMenuMediaType getMediaType();
 
@@ -139,7 +139,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      *
      * @return the result, or {@code CM_MEDIAFLAG_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:290</a>
      */
     CefContextMenuMediaStateFlags getMediaStateFlags();
 
@@ -148,7 +148,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_selection_text)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:297</a>
      */
     Optional<String> getSelectionText();
 
@@ -157,7 +157,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_misspelled_word)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:304</a>
      */
     Optional<String> getMisspelledWord();
 
@@ -166,7 +166,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_dictionary_suggestions)(struct _cef_context_menu_params_t* self, cef_string_list_t suggestions);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:311</a>
      */
     boolean getDictionarySuggestions(@Nonnull List<String> suggestions);
 
@@ -175,7 +175,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_editable)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:319</a>
      */
     boolean isEditable();
 
@@ -184,7 +184,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_spell_check_enabled)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:325</a>
      */
     boolean isSpellCheckEnabled();
 
@@ -195,7 +195,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      *
      * @return the result, or {@code CM_EDITFLAG_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:332</a>
      */
     CefContextMenuEditStateFlags getEditStateFlags();
 
@@ -204,7 +204,7 @@ public interface CefContextMenuParams extends CefLibraryObject {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_custom_menu)(struct _cef_context_menu_params_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:339</a>
      */
     boolean isCustomMenu();
     final class NativePeer implements CefContextMenuParams, AutoCloseable {

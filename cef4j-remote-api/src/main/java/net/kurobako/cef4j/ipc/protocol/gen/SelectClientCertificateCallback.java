@@ -41,7 +41,7 @@ public final class SelectClientCertificateCallback {
      *
      * @param cert may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:60</a>
      */
     public CompletableFuture<Void> select(@Nonnull RemoteHandle cert) {
         return session

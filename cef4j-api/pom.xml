@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-api</artifactId>
@@ -60,17 +60,7 @@
             <artifactId>cef4j-platform</artifactId>
             <version>${project.version}</version>
             <classifier>${cef.classifier}</classifier>
-            <optional>true</optional>
-        </dependency>
-        <!-- Build-order edge: cef4j-native generates platform-specific Java types into this module's
-             source tree. Keep this dependency so parallel reactor builds do not race API testCompile. -->
-        <dependency>
-            <groupId>net.kurobako.cef4j</groupId>
-            <artifactId>cef4j-native</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
             <scope>test</scope>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -91,7 +81,7 @@
                             <target>
                                 <!-- Gate CefV144Plus* tests on the CEF major version.
                                      Match against cef.version (the full version string, e.g.
-                                     "146.0.9+g...") so that -Dcef.version=116... overrides
+                                     "150.0.18+g...") so that -Dcef.version=116... overrides
                                      work without also requiring -Dcef.api.version=116. -->
                                 <condition property="cef4j.test.v144plus.excludes"
                                            value="__never__"
@@ -136,9 +126,6 @@
                          one a fresh process makes the lifecycle boundary match an end-user application. -->
                     <reuseForks>false</reuseForks>
                     <forkCount>1</forkCount>
-                    <systemPropertyVariables>
-                        <cef4j.libcef.dir>${cef.dist.dir}/Release</cef4j.libcef.dir>
-                    </systemPropertyVariables>
                     <!-- Tests in this list need a separate execution because they initialise CEF with
                          incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)
                          and CEF cannot be re-initialised once started. The isolated execution below
@@ -201,6 +188,7 @@
                          native payloads belong exclusively to classified cef4j-platform JARs. -->
                     <excludes>
                         <exclude>native/**</exclude>
+                        <exclude>cef-runtime/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

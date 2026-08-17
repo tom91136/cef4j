@@ -39,7 +39,7 @@ public final class PrintDialogCallback {
      * Continue printing with the specified {@code settings}.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(@Nonnull RemoteHandle settings) {
         return session
@@ -51,7 +51,7 @@ public final class PrintDialogCallback {
      * Cancel the printing.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:57</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

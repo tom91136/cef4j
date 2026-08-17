@@ -16,7 +16,7 @@ public interface CefComponentUpdateCallback {
      * Called when the component update operation completes. {@code component_id} is the ID of the component that was updated. {@code error} contains the result of the operation.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:55</a>
      */
 
     void onComplete(String componentId, int error);

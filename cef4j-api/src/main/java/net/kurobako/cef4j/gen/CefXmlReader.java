@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_xml_reader_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefXmlReader extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_next_node)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:64</a>
      */
     boolean moveToNextNode();
 
@@ -34,7 +34,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* close)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:72</a>
      */
     boolean cefClose();
 
@@ -43,7 +43,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* has_error)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:79</a>
      */
     boolean hasError();
 
@@ -52,7 +52,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_error)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:85</a>
      */
     Optional<String> getError();
 
@@ -63,7 +63,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @return the result, or {@code XML_NODE_UNSUPPORTED} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:94</a>
      */
     CefXmlNodeType getType();
 
@@ -72,7 +72,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* get_depth)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:100</a>
      */
     int getDepth();
 
@@ -81,7 +81,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_local_name)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:106</a>
      */
     Optional<String> getLocalName();
 
@@ -90,7 +90,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_prefix)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:113</a>
      */
     Optional<String> getPrefix();
 
@@ -99,7 +99,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_qualified_name)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:120</a>
      */
     Optional<String> getQualifiedName();
 
@@ -108,7 +108,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_namespace_uri)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:127</a>
      */
     Optional<String> getNamespaceUri();
 
@@ -117,7 +117,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_base_uri)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:134</a>
      */
     Optional<String> getBaseUri();
 
@@ -126,7 +126,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_xml_lang)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:141</a>
      */
     Optional<String> getXmlLang();
 
@@ -135,7 +135,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* is_empty_element)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:148</a>
      */
     boolean isEmptyElement();
 
@@ -144,7 +144,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* has_value)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:155</a>
      */
     boolean hasValue();
 
@@ -153,7 +153,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_value)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:161</a>
      */
     Optional<String> getValue();
 
@@ -162,7 +162,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* has_attributes)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:167</a>
      */
     boolean hasAttributes();
 
@@ -171,7 +171,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>size_t (CEF_CALLBACK* get_attribute_count)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:173</a>
      */
     long getAttributeCount();
 
@@ -182,7 +182,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:179</a>
      */
     Optional<String> getAttributeByindex(int index);
 
@@ -191,7 +191,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_attribute_byqname)(struct _cef_xml_reader_t* self, const cef_string_t* qualifiedName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:185</a>
      */
     Optional<String> getAttributeByqname(@Nullable String qualifiedName);
 
@@ -200,7 +200,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_attribute_bylname)(struct _cef_xml_reader_t* self, const cef_string_t* localName, const cef_string_t* namespaceURI);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:191</a>
      */
     Optional<String> getAttributeBylname(@Nullable String localName, @Nullable String namespaceURI);
 
@@ -209,7 +209,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_inner_xml)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:199</a>
      */
     Optional<String> getInnerXml();
 
@@ -218,7 +218,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_outer_xml)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:205</a>
      */
     Optional<String> getOuterXml();
 
@@ -227,7 +227,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* get_line_number)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:211</a>
      */
     int getLineNumber();
 
@@ -238,7 +238,7 @@ public interface CefXmlReader extends CefLibraryObject {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:222</a>
      */
     int moveToAttributeByindex(int index);
 
@@ -247,7 +247,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_attribute_byqname)(struct _cef_xml_reader_t* self, const cef_string_t* qualifiedName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:229</a>
      */
     int moveToAttributeByqname(@Nullable String qualifiedName);
 
@@ -256,7 +256,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_attribute_bylname)(struct _cef_xml_reader_t* self, const cef_string_t* localName, const cef_string_t* namespaceURI);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:236</a>
      */
     int moveToAttributeBylname(@Nullable String localName, @Nullable String namespaceURI);
 
@@ -265,7 +265,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_first_attribute)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:244</a>
      */
     boolean moveToFirstAttribute();
 
@@ -274,7 +274,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_next_attribute)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:251</a>
      */
     boolean moveToNextAttribute();
 
@@ -283,7 +283,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>int (CEF_CALLBACK* move_to_carrying_element)(struct _cef_xml_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:258</a>
      */
     boolean moveToCarryingElement();
     /**
@@ -291,7 +291,7 @@ public interface CefXmlReader extends CefLibraryObject {
      * <p>Definition generated from cef_xml_reader_capi.h
      * <pre>CEF_EXPORT cef_xml_reader_t* cef_xml_reader_create(struct _cef_stream_reader_t* stream, cef_xml_encoding_type_t encodingType, const cef_string_t* URI);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__xml__reader_8h.html">cef_xml_reader.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__xml__reader_8h.html">cef_xml_reader.h:55</a>
      */
     static Optional<CefXmlReader> create(@Nullable CefStreamReader stream, @Nonnull CefXmlEncodingType encodingType, @Nullable String uRI) {
       return Optional.ofNullable(NativePeer.create0(stream, encodingType, uRI));

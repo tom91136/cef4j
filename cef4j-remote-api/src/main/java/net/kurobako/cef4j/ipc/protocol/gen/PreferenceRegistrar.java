@@ -39,7 +39,7 @@ public final class PreferenceRegistrar {
      * Register a preference with the specified {@code name} and {@code default_value}. To avoid conflicts with built-in preferences the {@code name} value should contain an application-specific prefix followed by a period (e.g. "myapp.value"). The contents of {@code default_value} will be copied. The data type for the preference will be inferred from {@code default_value}'s type and cannot be changed after registration. Returns {@code true} on success. Returns {@code false} if {@code name} is already registered or if {@code default_value} has an invalid type. This method must be called from within the scope of the {@code CefBrowserProcessHandler.onRegisterCustomPreferences()} callback.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:53</a>
      */
     public CompletableFuture<Integer> addPreference(@Nonnull String name, @Nonnull RemoteHandle defaultValue) {
         return session

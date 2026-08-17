@@ -49,7 +49,7 @@ public final class V8BackingStore {
      * Returns the size of the allocated memory in bytes, or 0 if the backing store has been consumed.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:466</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:466</a>
      */
     public CompletableFuture<Long> byteLength() {
         return session
@@ -61,7 +61,7 @@ public final class V8BackingStore {
      * Returns {@code true} if this backing store has not yet been consumed by CreateArrayBufferFromBackingStore().
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:473</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:473</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session

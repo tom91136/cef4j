@@ -39,7 +39,7 @@ public final class ZipReader {
      * Moves the cursor to the first file in the archive. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:58</a>
      */
     public CompletableFuture<Integer> moveToFirstFile() {
         return session
@@ -51,7 +51,7 @@ public final class ZipReader {
      * Moves the cursor to the next file in the archive. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:65</a>
      */
     public CompletableFuture<Integer> moveToNextFile() {
         return session
@@ -63,7 +63,7 @@ public final class ZipReader {
      * Moves the cursor to the specified file in the archive. If {@code caseSensitive} is {@code true} then the search will be case sensitive. Returns {@code true} if the cursor position was set successfully.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:72</a>
      */
     public CompletableFuture<Integer> moveToFile(@Nonnull String fileName, int caseSensitive) {
         return session
@@ -75,7 +75,7 @@ public final class ZipReader {
      * Closes the archive. This should be called directly to ensure that cleanup occurs on the correct thread.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     public CompletableFuture<Integer> close() {
         return session
@@ -87,7 +87,7 @@ public final class ZipReader {
      * Returns the name of the file.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:89</a>
      */
     public CompletableFuture<String> getFileName() {
         return session
@@ -99,7 +99,7 @@ public final class ZipReader {
      * Returns the uncompressed size of the file.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:95</a>
      */
     public CompletableFuture<Long> getFileSize() {
         return session
@@ -111,7 +111,7 @@ public final class ZipReader {
      * Returns the last modified timestamp for the file.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
      */
     public CompletableFuture<Basetime> getFileLastModified() {
         return session
@@ -125,7 +125,7 @@ public final class ZipReader {
      *
      * @param password may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:107</a>
      */
     public CompletableFuture<Integer> openFile(@Nonnull String password) {
         return session
@@ -137,7 +137,7 @@ public final class ZipReader {
      * Closes the file.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:114</a>
      */
     public CompletableFuture<Integer> closeFile() {
         return session
@@ -149,7 +149,7 @@ public final class ZipReader {
      * Returns the current offset in the uncompressed file contents.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:127</a>
      */
     public CompletableFuture<Long> tell() {
         return session
@@ -161,7 +161,7 @@ public final class ZipReader {
      * Returns {@code true} if at end of the file contents.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:133</a>
      */
     public CompletableFuture<Integer> eof() {
         return session

@@ -39,7 +39,7 @@ public final class Response {
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:60</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -51,7 +51,7 @@ public final class Response {
      * Get the response error code. Returns {@code ERR_NONE} if there was no error.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:66</a>
      */
     public CompletableFuture<Integer> getError() {
         return session
@@ -63,7 +63,7 @@ public final class Response {
      * Set the response error code. This can be used by custom scheme handlers to return errors during initial request processing.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:72</a>
      */
     public CompletableFuture<Void> setError(int error) {
         return session
@@ -75,7 +75,7 @@ public final class Response {
      * Get the response status code.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:79</a>
      */
     public CompletableFuture<Integer> getStatus() {
         return session
@@ -87,7 +87,7 @@ public final class Response {
      * Set the response status code.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:85</a>
      */
     public CompletableFuture<Void> setStatus(int status) {
         return session
@@ -99,7 +99,7 @@ public final class Response {
      * Get the response status text.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:91</a>
      */
     public CompletableFuture<String> getStatusText() {
         return session
@@ -113,7 +113,7 @@ public final class Response {
      *
      * @param statusText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:97</a>
      */
     public CompletableFuture<Void> setStatusText(@Nonnull String statusText) {
         return session
@@ -125,7 +125,7 @@ public final class Response {
      * Get the response mime type.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:103</a>
      */
     public CompletableFuture<String> getMimeType() {
         return session
@@ -139,7 +139,7 @@ public final class Response {
      *
      * @param mimeType may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:109</a>
      */
     public CompletableFuture<Void> setMimeType(@Nonnull String mimeType) {
         return session
@@ -151,7 +151,7 @@ public final class Response {
      * Get the response charset.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:115</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:115</a>
      */
     public CompletableFuture<String> getCharset() {
         return session
@@ -165,7 +165,7 @@ public final class Response {
      *
      * @param charset may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:121</a>
      */
     public CompletableFuture<Void> setCharset(@Nonnull String charset) {
         return session
@@ -177,7 +177,7 @@ public final class Response {
      * Get the value for the specified response header field.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:127</a>
      */
     public CompletableFuture<String> getHeaderByName(@Nonnull String name) {
         return session
@@ -191,7 +191,7 @@ public final class Response {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:133</a>
      */
     public CompletableFuture<Void> setHeaderByName(@Nonnull String name, @Nonnull String value, int overwrite) {
         return session
@@ -203,7 +203,7 @@ public final class Response {
      * Get the resolved URL after redirects or changed as a result of HSTS.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
         return session
@@ -217,7 +217,7 @@ public final class Response {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:161</a>
      */
     public CompletableFuture<Void> setUrl(@Nonnull String url) {
         return session

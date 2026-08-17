@@ -17,7 +17,7 @@ public interface CefV8Interceptor {
      * Handle assignment of the interceptor value identified by {@code name}. {@code object} is the receiver ('this' object) of the interceptor. {@code value} is the new value being assigned to the interceptor. If assignment fails, set {@code exception} to the exception that will be thrown. This setter will always be called, even when the property has an associated accessor. Return {@code true} if interceptor assignment was handled, {@code false} otherwise.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:324</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:324</a>
      */
     @Nullable
     default Boolean setByname(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return null; }
@@ -28,7 +28,7 @@ public interface CefV8Interceptor {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:338</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:338</a>
      */
     @Nullable
     default Boolean setByindex(int index, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return null; }

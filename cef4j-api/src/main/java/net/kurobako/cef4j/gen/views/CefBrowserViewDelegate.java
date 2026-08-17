@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -21,9 +21,9 @@ import net.kurobako.cef4j.gen.CefRuntimeStyle;
  *   ...
  * } cef_browser_view_delegate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:48</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:48</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefBrowserViewDelegate extends CefClientHandler {
 
@@ -32,7 +32,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_browser_created)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:58</a>
      */
     default void onBrowserCreated(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
     }
@@ -42,7 +42,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_browser_destroyed)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:68</a>
      */
     default void onBrowserDestroyed(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
     }
@@ -54,7 +54,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *
      * @param client may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:78</a>
      */
     default Optional<CefBrowserViewDelegate> getDelegateForPopupBrowserView(@Nullable CefBrowserView browserView, @Nonnull CefBrowserSettings settings, @Nullable CefClient client, boolean isDevtools) {
         return Optional.empty();
@@ -65,7 +65,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* on_popup_browser_view_created)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, struct _cef_browser_view_t* popup_browser_view, int is_devtools);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:94</a>
      */
     default boolean onPopupBrowserViewCreated(@Nullable CefBrowserView browserView, @Nullable CefBrowserView popupBrowserView, boolean isDevtools) {
         return false;
@@ -78,7 +78,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *
      * @return the result, or {@code CEF_CTT_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:111</a>
      */
     default @Nullable CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
         return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
@@ -89,7 +89,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* use_frameless_window_for_picture_in_picture)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:122</a>
      */
     default boolean useFramelessWindowForPictureInPicture(@Nullable CefBrowserView browserView) {
         return false;
@@ -100,7 +100,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* on_gesture_command)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view, cef_gesture_command_t gesture_command);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:157</a>
      */
     default boolean onGestureCommand(@Nullable CefBrowserView browserView, @Nonnull CefGestureCommand gestureCommand) {
         return false;
@@ -113,7 +113,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      *
      * @return the result, or {@code CEF_RUNTIME_STYLE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:169</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:169</a>
      */
     default @Nullable CefRuntimeStyle getBrowserRuntimeStyle() {
         return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
@@ -125,7 +125,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* allow_move_for_picture_in_picture)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:134</a>
      */
     default boolean allowMoveForPictureInPicture(@Nullable CefBrowserView browserView) {
         return false;
@@ -137,7 +137,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_browser_view_delegate_capi.h
      * <pre>int (CEF_CALLBACK* allow_picture_in_picture_without_user_activation)(struct _cef_browser_view_delegate_t* self, struct _cef_browser_view_t* browser_view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:146</a>
      */
     default boolean allowPictureInPictureWithoutUserActivation(@Nullable CefBrowserView browserView) {
         return false;

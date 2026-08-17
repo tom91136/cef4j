@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -20,9 +20,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_button_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefButton extends CefView {
 
@@ -31,7 +31,7 @@ public interface CefButton extends CefView {
      * <p>Definition generated from views/cef_button_capi.h
      * <pre>cef_label_button_t* (CEF_CALLBACK* as_label_button)(struct _cef_button_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:53</a>
      */
     Optional<CefLabelButton> asLabelButton();
 
@@ -40,7 +40,7 @@ public interface CefButton extends CefView {
      * <p>Definition generated from views/cef_button_capi.h
      * <pre>void (CEF_CALLBACK* set_state)(struct _cef_button_t* self, cef_button_state_t state);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:59</a>
      */
     void setState(@Nonnull CefButtonState state);
 
@@ -51,7 +51,7 @@ public interface CefButton extends CefView {
      *
      * @return the result, or {@code CEF_BUTTON_STATE_NORMAL} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:65</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:65</a>
      */
     CefButtonState getState();
 
@@ -60,7 +60,7 @@ public interface CefButton extends CefView {
      * <p>Definition generated from views/cef_button_capi.h
      * <pre>void (CEF_CALLBACK* set_ink_drop_enabled)(struct _cef_button_t* self, int enabled);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:71</a>
      */
     void setInkDropEnabled(boolean enabled);
 
@@ -69,7 +69,7 @@ public interface CefButton extends CefView {
      * <p>Definition generated from views/cef_button_capi.h
      * <pre>void (CEF_CALLBACK* set_tooltip_text)(struct _cef_button_t* self, const cef_string_t* tooltip_text);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:77</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:77</a>
      */
     void setTooltipText(@Nullable String tooltipText);
 
@@ -78,7 +78,7 @@ public interface CefButton extends CefView {
      * <p>Definition generated from views/cef_button_capi.h
      * <pre>void (CEF_CALLBACK* set_accessible_name)(struct _cef_button_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button_8h.html">views/cef_button.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button_8h.html">views/cef_button.h:84</a>
      */
     void setAccessibleName(@Nullable String name);
     final class NativePeer implements CefButton, AutoCloseable {

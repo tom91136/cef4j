@@ -39,7 +39,7 @@ public final class MediaRouter {
      * Add an observer for MediaRouter events. The observer will remain registered until the returned Registration object is destroyed.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:72</a>
      */
     public CompletableFuture<RemoteHandle> addObserver(@Nonnull RemoteHandle observer) {
         return session
@@ -51,7 +51,7 @@ public final class MediaRouter {
      * Returns a MediaSource object for the specified media source URN. Supported URN schemes include "cast:" and "dial:", and will be already known by the client application (e.g. "cast:&lt;appId&gt;?clientId=&lt;clientId&gt;").
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:80</a>
      */
     public CompletableFuture<MediaSource> getSource(@Nonnull String urn) {
         return session
@@ -64,7 +64,7 @@ public final class MediaRouter {
      * Trigger an asynchronous call to {@code CefMediaObserver.onSinks()} on all registered observers.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:88</a>
      */
     public CompletableFuture<Void> notifyCurrentSinks() {
         return session
@@ -76,7 +76,7 @@ public final class MediaRouter {
      * Create a new route between {@code source} and {@code sink}. Source and sink must be valid, compatible (as reported by {@code CefMediaSink.isCompatibleWith()}), and a route between them must not already exist. {@code callback} will be executed on success or failure. If route creation succeeds it will also trigger an asynchronous call to {@code CefMediaObserver.onRoutes()} on all registered observers.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:95</a>
      */
     public CompletableFuture<Void> createRoute(@Nonnull RemoteHandle source, @Nonnull RemoteHandle sink, @Nonnull RemoteHandle callback) {
         return session
@@ -88,7 +88,7 @@ public final class MediaRouter {
      * Trigger an asynchronous call to {@code CefMediaObserver.onRoutes()} on all registered observers.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:108</a>
      */
     public CompletableFuture<Void> notifyCurrentRoutes() {
         return session

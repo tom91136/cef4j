@@ -17,7 +17,7 @@ public interface CefCommandHandler {
      * Called to execute a Chrome command triggered via menu selection or keyboard shortcut. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. {@code disposition} provides information about the intended command target. Return {@code true} if the command was handled or {@code false} for the default implementation. For context menu commands this will be called after {@code CefContextMenuHandler.onContextMenuCommand()}. Only used with Chrome style.
      * <p>Definition generated from cef_command_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
      */
     @Nullable
     default Boolean onChromeCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId, int disposition) { return null; }
@@ -26,7 +26,7 @@ public interface CefCommandHandler {
      * Called to check if a Chrome app menu item should be visible. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. Only called for menu items that would be visible by default. Only used with Chrome style.
      * <p>Definition generated from cef_command_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
      */
     @Nullable
     default Boolean isChromeAppMenuItemVisible(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return null; }
@@ -35,7 +35,7 @@ public interface CefCommandHandler {
      * Called to check if a Chrome app menu item should be enabled. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. Only called for menu items that would be enabled by default. Only used with Chrome style.
      * <p>Definition generated from cef_command_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
      */
     @Nullable
     default Boolean isChromeAppMenuItemEnabled(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return null; }
@@ -44,7 +44,7 @@ public interface CefCommandHandler {
      * Called during browser creation to check if a Chrome page action icon should be visible. Only called for icons that would be visible by default. Only used with Chrome style.
      * <p>Definition generated from cef_command_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
      */
     @Nullable
     default Boolean isChromePageActionIconVisible(int iconType) { return null; }
@@ -53,7 +53,7 @@ public interface CefCommandHandler {
      * Called during browser creation to check if a Chrome toolbar button should be visible. Only called for buttons that would be visible by default. Only used with Chrome style.
      * <p>Definition generated from cef_command_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
      */
     @Nullable
     default Boolean isChromeToolbarButtonVisible(int buttonType) { return null; }

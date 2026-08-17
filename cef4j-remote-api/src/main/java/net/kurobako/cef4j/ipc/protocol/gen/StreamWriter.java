@@ -43,7 +43,7 @@ public final class StreamWriter {
      *
      * @param ptr <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:206</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:206</a>
      */
     public CompletableFuture<Long> write(@Nonnull byte[] ptr, long n) {
         return session
@@ -55,7 +55,7 @@ public final class StreamWriter {
      * Seek to the specified offset position. {@code whence} may be any one of SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on failure.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:212</a>
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
         return session
@@ -67,7 +67,7 @@ public final class StreamWriter {
      * Return the current offset position.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:220</a>
      */
     public CompletableFuture<Long> tell() {
         return session
@@ -79,7 +79,7 @@ public final class StreamWriter {
      * Flush the stream.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:226</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:226</a>
      */
     public CompletableFuture<Integer> flush() {
         return session
@@ -91,7 +91,7 @@ public final class StreamWriter {
      * Returns {@code true} if this writer performs work like accessing the file system which may block. Used as a hint for determining the thread to access the writer from.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:232</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:232</a>
      */
     public CompletableFuture<Integer> mayBlock() {
         return session

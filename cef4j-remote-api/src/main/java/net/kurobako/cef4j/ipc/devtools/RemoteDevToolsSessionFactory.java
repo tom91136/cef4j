@@ -20,6 +20,6 @@ public interface RemoteDevToolsSessionFactory {
         return ServiceLoader.load(RemoteDevToolsSessionFactory.class)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
-                        "No Remote CDP adapter installed; add cef4j-remote-cdp-gson or cef4j-remote-cdp-jackson"));
+                        "No Remote CDP adapter installed; add cef4j-codecs-gson or cef4j-codecs-jackson"));
     }
 }

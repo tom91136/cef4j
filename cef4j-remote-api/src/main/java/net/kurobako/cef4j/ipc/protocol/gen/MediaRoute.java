@@ -39,7 +39,7 @@ public final class MediaRoute {
      * Returns the ID for this route.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:168</a>
      */
     public CompletableFuture<String> getId() {
         return session
@@ -51,7 +51,7 @@ public final class MediaRoute {
      * Returns the source associated with this route.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:174</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:174</a>
      */
     public CompletableFuture<MediaSource> getSource() {
         return session
@@ -64,7 +64,7 @@ public final class MediaRoute {
      * Returns the sink associated with this route.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:180</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:180</a>
      */
     public CompletableFuture<MediaSink> getSink() {
         return session
@@ -80,7 +80,7 @@ public final class MediaRoute {
      *
      * @param message <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:186</a>
      */
     public CompletableFuture<Void> sendRouteMessage(@Nonnull byte[] message) {
         return session
@@ -92,7 +92,7 @@ public final class MediaRoute {
      * Terminate this route. Will result in an asynchronous call to {@code CefMediaObserver.onRoutes()} on all registered observers.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:192</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:192</a>
      */
     public CompletableFuture<Void> terminate() {
         return session

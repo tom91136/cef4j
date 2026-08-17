@@ -6,7 +6,7 @@
 
     <groupId>net.kurobako.cef4j</groupId>
     <artifactId>cef4j-parent</artifactId>
-    <version>146.0.0-SNAPSHOT</version>
+    <version>150.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>cef4j</name>
@@ -19,12 +19,14 @@
         <github.user>tom91136</github.user>
         <github.repo>cef4j</github.repo>
 
-        <cef.version>146.0.9+g3ca6a87+chromium-146.0.7680.165</cef.version>
+        <cef.version>150.0.18+gdb11278+chromium-150.0.7871.213</cef.version>
         <!-- Derived automatically from cef.version by build-helper-maven-plugin below.
              Kept here as a fallback for IDE resolution; the plugin always overrides it. -->
-        <cef.api.version>146</cef.api.version>
+        <cef.api.version>150</cef.api.version>
         <cef.dist.cache>${maven.multiModuleProjectDirectory}/.cef-dist</cef.dist.cache>
         <cef.dist.dir>${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal</cef.dist.dir>
+        <cef4j.packager.version>0.1.0-SNAPSHOT</cef4j.packager.version>
+        <cef4j.reactor.runtime.dir>${maven.multiModuleProjectDirectory}/cef4j-api/target/classes/cef-runtime/${cef.platform}</cef4j.reactor.runtime.dir>
         <runtime.server.executable>cef4j-runtime-server</runtime.server.executable>
 
         <!-- Dependency versions -->
@@ -32,7 +34,7 @@
         <munit.version>1.3.5</munit.version>
         <jsr305.version>3.0.2</jsr305.version>
         <slf4j.version>2.0.18</slf4j.version>
-        <junit.jupiter.version>5.14.3</junit.jupiter.version>
+        <junit.jupiter.version>5.14.4</junit.jupiter.version>
         <assertj.version>3.27.7</assertj.version>
         <mockito.version>5.23.0</mockito.version>
         <javafx.version>11.0.2</javafx.version>
@@ -42,10 +44,10 @@
         <nullaway.version>0.13.8</nullaway.version>
         <autoservice.version>1.1.1</autoservice.version>
         <jeromq.version>0.6.0</jeromq.version>
-        <junixsocket.version>2.10.1</junixsocket.version>
-        <gson.version>2.13.2</gson.version>
-        <jackson.version>2.22.1</jackson.version>
-        <selenium.version>4.46.0</selenium.version>
+        <junixsocket.version>2.11.0</junixsocket.version>
+        <gson.version>2.14.0</gson.version>
+        <jackson.version>2.22.2</jackson.version>
+        <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
         <maven.source.version>3.4.0</maven.source.version>
         <maven.release.version>3.3.1</maven.release.version>
@@ -77,7 +79,6 @@
 
     <modules>
         <module>cef4j-codegen</module>
-        <module>cef4j-native</module>
         <module>cef4j-platform</module>
         <module>cef4j-platform-all</module>
         <module>cef4j-api</module>
@@ -85,22 +86,17 @@
         <module>cef4j-inprocess-jfx</module>
         <module>cef4j-http</module>
         <module>cef4j-cdp</module>
-        <module>cef4j-cdp-gson</module>
-        <module>cef4j-cdp-jackson</module>
+        <module>cef4j-codecs-jackson</module>
+        <module>cef4j-codecs-gson</module>
         <module>cef4j-remote-core</module>
-        <module>cef4j-remote-recording-gson</module>
-        <module>cef4j-remote-recording-jackson</module>
         <module>cef4j-runtime-server</module>
         <module>cef4j-runtime-server-all</module>
+        <module>cef4j-runtime-packager</module>
         <module>cef4j-remote-api</module>
-        <module>cef4j-remote-cdp-gson</module>
-        <module>cef4j-remote-cdp-jackson</module>
         <module>cef4j-remote-frame</module>
         <module>cef4j-remote-jfx</module>
         <module>cef4j-remote-swing</module>
         <module>cef4j-webdriver</module>
-        <module>cef4j-webdriver-gson</module>
-        <module>cef4j-webdriver-jackson</module>
         <module>cef4j-remote-webdriver</module>
         <module>cef4j-inprocess-webdriver</module>
         <module>cef4j-test-shared</module>
@@ -264,12 +260,10 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>false</autoPublish>
-                            <!-- Native classifier families are uploaded separately because combining
-                                 both copies of CEF exceeds Central's 1 GB deployment limit. Build-only,
-                                 aggregator, and test-only reactor modules are excluded here. -->
+                            <!-- Thin native bridges are assembled into one companion Central deployment.
+                                 Build-only, aggregator, and test-only reactor modules are excluded here. -->
                             <excludeArtifacts>
                                 <excludeArtifact>cef4j-codegen</excludeArtifact>
-                                <excludeArtifact>cef4j-native</excludeArtifact>
                                 <excludeArtifact>cef4j-platform</excludeArtifact>
                                 <excludeArtifact>cef4j-runtime-server</excludeArtifact>
                                 <excludeArtifact>cef4j-test-shared</excludeArtifact>
@@ -464,6 +458,18 @@
                             <failIfNoMatch>true</failIfNoMatch>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>derive-chromium-version</id>
+                        <phase>initialize</phase>
+                        <goals><goal>regex-property</goal></goals>
+                        <configuration>
+                            <name>cef.chromium.version</name>
+                            <value>${cef.version}</value>
+                            <regex>^.*chromium-(.*)$</regex>
+                            <replacement>$1</replacement>
+                            <failIfNoMatch>true</failIfNoMatch>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -616,11 +622,6 @@
                         <forkedProcessExitTimeoutInSeconds>10</forkedProcessExitTimeoutInSeconds>
                         <systemPropertyVariables>
                             <cef4j.test.cefApiVersion>${cef.api.version}</cef4j.test.cefApiVersion>
-                            <!-- Reactor tests must use the JNI library built in this invocation. Snapshot
-                                 platform JARs in ~/.m2 may represent a different CEF matrix row while
-                                 retaining the same Maven coordinate. SystemBootstrap ignores this path
-                                 when the staged reactor library does not exist (for downstream builds). -->
-                            <cef4j.reactor.native.dir>${maven.multiModuleProjectDirectory}/target/platform-native/native/${cef.platform}</cef4j.reactor.native.dir>
                             <!-- JUnit 5 per-test timeout (also picked up by IDEs).
                                  Lifecycle gets extra budget so @AfterAll can run Cef.terminate()
                                  cleanly; CEF shutdown closes all outstanding browsers which can

@@ -49,7 +49,7 @@ public final class Domnode {
      * Returns the type for this node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:172</a>
      */
     public CompletableFuture<Integer> getType() {
         return session
@@ -61,7 +61,7 @@ public final class Domnode {
      * Returns {@code true} if this is a text node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:178</a>
      */
     public CompletableFuture<Integer> isText() {
         return session
@@ -73,7 +73,7 @@ public final class Domnode {
      * Returns {@code true} if this is an element node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:184</a>
      */
     public CompletableFuture<Integer> isElement() {
         return session
@@ -85,7 +85,7 @@ public final class Domnode {
      * Returns {@code true} if this is an editable node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:190</a>
      */
     public CompletableFuture<Integer> isEditable() {
         return session
@@ -97,7 +97,7 @@ public final class Domnode {
      * Returns {@code true} if this is a form control element node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:196</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:196</a>
      */
     public CompletableFuture<Integer> isFormControlElement() {
         return session
@@ -109,7 +109,7 @@ public final class Domnode {
      * Returns the type of this form control element node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:202</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:202</a>
      */
     public CompletableFuture<Integer> getFormControlElementType() {
         return session
@@ -121,7 +121,7 @@ public final class Domnode {
      * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:208</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -133,7 +133,7 @@ public final class Domnode {
      * Returns the name of this node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:215</a>
      */
     public CompletableFuture<String> getName() {
         return session
@@ -145,7 +145,7 @@ public final class Domnode {
      * Returns the value of this node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:221</a>
      */
     public CompletableFuture<String> getValue() {
         return session
@@ -157,7 +157,7 @@ public final class Domnode {
      * Set the value of this node. Returns {@code true} on success.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:227</a>
      */
     public CompletableFuture<Integer> setValue(@Nonnull String value) {
         return session
@@ -169,7 +169,7 @@ public final class Domnode {
      * Returns the contents of this node as markup.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:233</a>
      */
     public CompletableFuture<String> getAsMarkup() {
         return session
@@ -181,7 +181,7 @@ public final class Domnode {
      * Returns the document associated with this node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:239</a>
      */
     public CompletableFuture<Domdocument> getDocument() {
         return session
@@ -194,7 +194,7 @@ public final class Domnode {
      * Returns the parent node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:245</a>
      */
     public CompletableFuture<Domnode> getParent() {
         return session
@@ -207,7 +207,7 @@ public final class Domnode {
      * Returns the previous sibling node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:251</a>
      */
     public CompletableFuture<Domnode> getPreviousSibling() {
         return session
@@ -220,7 +220,7 @@ public final class Domnode {
      * Returns the next sibling node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:257</a>
      */
     public CompletableFuture<Domnode> getNextSibling() {
         return session
@@ -233,7 +233,7 @@ public final class Domnode {
      * Returns {@code true} if this node has child nodes.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:263</a>
      */
     public CompletableFuture<Integer> hasChildren() {
         return session
@@ -245,7 +245,7 @@ public final class Domnode {
      * Return the first child node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:269</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:269</a>
      */
     public CompletableFuture<Domnode> getFirstChild() {
         return session
@@ -258,7 +258,7 @@ public final class Domnode {
      * Returns the last child node.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:275</a>
      */
     public CompletableFuture<Domnode> getLastChild() {
         return session
@@ -271,7 +271,7 @@ public final class Domnode {
      * Returns the tag name of this element.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:283</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:283</a>
      */
     public CompletableFuture<String> getElementTagName() {
         return session
@@ -283,7 +283,7 @@ public final class Domnode {
      * Returns {@code true} if this element has attributes.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:289</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:289</a>
      */
     public CompletableFuture<Integer> hasElementAttributes() {
         return session
@@ -295,7 +295,7 @@ public final class Domnode {
      * Returns {@code true} if this element has an attribute named {@code attrName}.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:295</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:295</a>
      */
     public CompletableFuture<Integer> hasElementAttribute(@Nonnull String attrName) {
         return session
@@ -307,7 +307,7 @@ public final class Domnode {
      * Returns the element attribute named {@code attrName}.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:301</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:301</a>
      */
     public CompletableFuture<String> getElementAttribute(@Nonnull String attrName) {
         return session
@@ -319,7 +319,7 @@ public final class Domnode {
      * Set the value for the element attribute named {@code attrName}. Returns {@code true} on success.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:313</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:313</a>
      */
     public CompletableFuture<Integer> setElementAttribute(@Nonnull String attrName, @Nonnull String value) {
         return session
@@ -331,7 +331,7 @@ public final class Domnode {
      * Returns the inner text of the element.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:321</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:321</a>
      */
     public CompletableFuture<String> getElementInnerText() {
         return session
@@ -343,7 +343,7 @@ public final class Domnode {
      * Returns the bounds of the element in device pixels. Use "window.devicePixelRatio" to convert to/from CSS pixels.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:327</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:327</a>
      */
     public CompletableFuture<Rect> getElementBounds() {
         return session

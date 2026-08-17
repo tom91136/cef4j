@@ -158,7 +158,7 @@ public final class WindowDelegate {
      * Called after the renderer and JavaScript in the page has had a chance to handle the event. {@code event} contains information about the keyboard event. {@code os_event} is the operating system event message, if any. Return {@code true} if the keyboard event was handled or {@code false} otherwise.
      * <p>Definition generated from cef_keyboard_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
     public CompletableFuture<Integer> onKeyEvent(@Nonnull RemoteHandle window, KeyEvent event) {
         return session

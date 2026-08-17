@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_task_runner_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:62</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:62</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefTaskRunner extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_task_runner_t* self, struct _cef_task_runner_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:88</a>
      */
     boolean isSame(@Nullable CefTaskRunner that);
 
@@ -34,7 +34,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>int (CEF_CALLBACK* belongs_to_current_thread)(struct _cef_task_runner_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:95</a>
      */
     boolean belongsToCurrentThread();
 
@@ -43,7 +43,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>int (CEF_CALLBACK* belongs_to_thread)(struct _cef_task_runner_t* self, cef_thread_id_t threadId);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:101</a>
      */
     boolean belongsToThread(@Nonnull CefThreadId threadId);
 
@@ -52,7 +52,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>int (CEF_CALLBACK* post_task)(struct _cef_task_runner_t* self, struct _cef_task_t* task);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:107</a>
      */
     boolean postTask(@Nullable CefTask task);
 
@@ -61,7 +61,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>int (CEF_CALLBACK* post_delayed_task)(struct _cef_task_runner_t* self, struct _cef_task_t* task, int64_t delay_ms);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:114</a>
      */
     boolean postDelayedTask(@Nullable CefTask task, long delayMs);
     /**
@@ -69,7 +69,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_current_thread(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:74</a>
      */
     static Optional<CefTaskRunner> getForCurrentThread() {
       return Optional.ofNullable(NativePeer.getForCurrentThread0());
@@ -80,7 +80,7 @@ public interface CefTaskRunner extends CefLibraryObject {
      * <p>Definition generated from cef_task_capi.h
      * <pre>CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_thread(cef_thread_id_t threadId);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:82</a>
      */
     static Optional<CefTaskRunner> getForThread(@Nonnull CefThreadId threadId) {
       return Optional.ofNullable(NativePeer.getForThread0(threadId));

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_command_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefCommandHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * <p>Definition generated from cef_command_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_chrome_command)(struct _cef_command_handler_t* self, struct _cef_browser_t* browser, int command_id, cef_window_open_disposition_t disposition);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
      */
     default boolean onChromeCommand(@Nullable CefBrowser browser, int commandId, @Nonnull CefWindowOpenDisposition disposition) {
         return false;
@@ -35,7 +35,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * <p>Definition generated from cef_command_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_chrome_app_menu_item_visible)(struct _cef_command_handler_t* self, struct _cef_browser_t* browser, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
      */
     default boolean isChromeAppMenuItemVisible(@Nullable CefBrowser browser, int commandId) {
         return false;
@@ -46,7 +46,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * <p>Definition generated from cef_command_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_chrome_app_menu_item_enabled)(struct _cef_command_handler_t* self, struct _cef_browser_t* browser, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
      */
     default boolean isChromeAppMenuItemEnabled(@Nullable CefBrowser browser, int commandId) {
         return false;
@@ -57,7 +57,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * <p>Definition generated from cef_command_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_chrome_page_action_icon_visible)(struct _cef_command_handler_t* self, cef_chrome_page_action_icon_type_t icon_type);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
      */
     default boolean isChromePageActionIconVisible(@Nonnull CefChromePageActionIconType iconType) {
         return false;
@@ -68,7 +68,7 @@ public interface CefCommandHandler extends CefClientHandler {
      * <p>Definition generated from cef_command_handler_capi.h
      * <pre>int (CEF_CALLBACK* is_chrome_toolbar_button_visible)(struct _cef_command_handler_t* self, cef_chrome_toolbar_button_type_t button_type);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
      */
     default boolean isChromeToolbarButtonVisible(@Nonnull CefChromeToolbarButtonType buttonType) {
         return false;

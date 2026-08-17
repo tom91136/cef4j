@@ -17,7 +17,7 @@ public interface CefResourceBundleHandler {
      * Called to retrieve a localized translation for the specified {@code string_id}. To provide the translation set {@code string} to the translation string and return {@code true}. To use the default translation return {@code false}. Use the cef_id_for_pack_string_name() function for version-safe mapping of string IDS names from cef_pack_strings.h to version-specific numerical {@code string_id} values.
      * <p>Definition generated from cef_resource_bundle_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
      */
     @Nullable
     default Boolean getLocalizedString(int stringId, String string) { return null; }

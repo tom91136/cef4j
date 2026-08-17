@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -17,9 +17,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_component_updater_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:104</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:104</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefComponentUpdater extends CefLibraryObject {
 
@@ -28,7 +28,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>size_t (CEF_CALLBACK* get_component_count)(struct _cef_component_updater_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
      */
     long getComponentCount();
 
@@ -40,7 +40,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>cef_component_t** (CEF_CALLBACK* get_components)(struct _cef_component_updater_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:128</a>
      */
     List<CefComponent> getComponents();
 
@@ -49,7 +49,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>cef_component_t* (CEF_CALLBACK* get_component_by_id)(struct _cef_component_updater_t* self, const cef_string_t* component_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
      */
     Optional<CefComponent> getComponentById(@Nullable String componentId);
 
@@ -62,7 +62,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
     void update(@Nullable String componentId, @Nonnull CefComponentUpdatePriority priority, @Nullable CefComponentUpdateCallback callback);
     /**
@@ -70,7 +70,7 @@ public interface CefComponentUpdater extends CefLibraryObject {
      * <p>Definition generated from cef_component_updater_capi.h
      * <pre>CEF_EXPORT cef_component_updater_t* cef_component_updater_get(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:114</a>
      */
     static Optional<CefComponentUpdater> get() {
       return Optional.ofNullable(NativePeer.get0());

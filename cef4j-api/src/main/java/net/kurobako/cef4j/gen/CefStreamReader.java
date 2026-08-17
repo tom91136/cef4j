@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_stream_reader_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:84</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:84</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefStreamReader extends CefLibraryObject {
 
@@ -30,7 +30,7 @@ public interface CefStreamReader extends CefLibraryObject {
      *
      * @param ptr <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:110</a>
      */
     long read(@Nonnull ByteBuffer ptr, long n);
 
@@ -39,7 +39,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>int (CEF_CALLBACK* seek)(struct _cef_stream_reader_t* self, int64_t offset, int whence);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:116</a>
      */
     int seek(long offset, int whence);
 
@@ -48,7 +48,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>int64_t (CEF_CALLBACK* tell)(struct _cef_stream_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:124</a>
      */
     long tell();
 
@@ -57,7 +57,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>int (CEF_CALLBACK* eof)(struct _cef_stream_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:130</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:130</a>
      */
     int eof();
 
@@ -66,7 +66,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>int (CEF_CALLBACK* may_block)(struct _cef_stream_reader_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:136</a>
      */
     boolean mayBlock();
     /**
@@ -74,7 +74,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>CEF_EXPORT cef_stream_reader_t* cef_stream_reader_create_for_file(const cef_string_t* fileName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:91</a>
      */
     static Optional<CefStreamReader> createForFile(@Nullable String fileName) {
       return Optional.ofNullable(NativePeer.createForFile0(fileName));
@@ -85,7 +85,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>CEF_EXPORT cef_stream_reader_t* cef_stream_reader_create_for_data(void* data, size_t size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:97</a>
      */
     static Optional<CefStreamReader> createForData(@Nonnull ByteBuffer data) {
       return Optional.ofNullable(NativePeer.createForData0(data));
@@ -96,7 +96,7 @@ public interface CefStreamReader extends CefLibraryObject {
      * <p>Definition generated from cef_stream_capi.h
      * <pre>CEF_EXPORT cef_stream_reader_t* cef_stream_reader_create_for_handler(cef_read_handler_t* handler);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:103</a>
      */
     static Optional<CefStreamReader> createForHandler(@Nullable CefReadHandler handler) {
       return Optional.ofNullable(NativePeer.createForHandler0(handler));

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import java.util.Optional;
  *   ...
  * } cef_waitable_event_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefWaitableEvent extends CefLibraryObject {
 
@@ -23,7 +23,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>void (CEF_CALLBACK* reset)(struct _cef_waitable_event_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
      */
     void reset();
 
@@ -32,7 +32,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>void (CEF_CALLBACK* signal)(struct _cef_waitable_event_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
      */
     void signal();
 
@@ -41,7 +41,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>int (CEF_CALLBACK* is_signaled)(struct _cef_waitable_event_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
      */
     boolean isSignaled();
 
@@ -50,7 +50,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>void (CEF_CALLBACK* wait)(struct _cef_waitable_event_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
      */
     void cefWait();
 
@@ -59,7 +59,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>int (CEF_CALLBACK* timed_wait)(struct _cef_waitable_event_t* self, int64_t max_ms);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
      */
     boolean timedWait(long maxMs);
     /**
@@ -67,7 +67,7 @@ public interface CefWaitableEvent extends CefLibraryObject {
      * <p>Definition generated from cef_waitable_event_capi.h
      * <pre>CEF_EXPORT cef_waitable_event_t* cef_waitable_event_create(int automatic_reset, int initially_signaled);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:57</a>
      */
     static Optional<CefWaitableEvent> create(int automaticReset, int initiallySignaled) {
       return Optional.ofNullable(NativePeer.create0(automaticReset, initiallySignaled));

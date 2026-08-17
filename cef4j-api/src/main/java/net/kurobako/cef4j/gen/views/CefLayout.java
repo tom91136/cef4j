@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import net.kurobako.cef4j.gen.CefLibraryObject;
  *   ...
  * } cef_layout_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__layout_8h.html">views/cef_layout.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__layout_8h.html">views/cef_layout.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefLayout extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefLayout extends CefLibraryObject {
      * <p>Definition generated from views/cef_layout_capi.h
      * <pre>cef_box_layout_t* (CEF_CALLBACK* as_box_layout)(struct _cef_layout_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__layout_8h.html">views/cef_layout.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__layout_8h.html">views/cef_layout.h:54</a>
      */
     Optional<CefBoxLayout> asBoxLayout();
 
@@ -33,7 +33,7 @@ public interface CefLayout extends CefLibraryObject {
      * <p>Definition generated from views/cef_layout_capi.h
      * <pre>cef_fill_layout_t* (CEF_CALLBACK* as_fill_layout)(struct _cef_layout_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__layout_8h.html">views/cef_layout.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__layout_8h.html">views/cef_layout.h:60</a>
      */
     Optional<CefFillLayout> asFillLayout();
 
@@ -42,7 +42,7 @@ public interface CefLayout extends CefLibraryObject {
      * <p>Definition generated from views/cef_layout_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_layout_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__layout_8h.html">views/cef_layout.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__layout_8h.html">views/cef_layout.h:66</a>
      */
     boolean isValid();
     final class NativePeer implements CefLayout, AutoCloseable {

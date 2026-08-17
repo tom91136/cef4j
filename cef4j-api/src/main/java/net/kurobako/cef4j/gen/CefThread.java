@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_thread_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:44</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:44</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefThread extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefThread extends CefLibraryObject {
      * <p>Definition generated from cef_thread_capi.h
      * <pre>cef_task_runner_t* (CEF_CALLBACK* get_task_runner)(struct _cef_thread_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:87</a>
      */
     Optional<CefTaskRunner> getTaskRunner();
 
@@ -36,7 +36,7 @@ public interface CefThread extends CefLibraryObject {
      *
      * @return the result, or {@code kInvalidPlatformThreadId} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:94</a>
      */
     long getPlatformThreadId();
 
@@ -45,7 +45,7 @@ public interface CefThread extends CefLibraryObject {
      * <p>Definition generated from cef_thread_capi.h
      * <pre>void (CEF_CALLBACK* stop)(struct _cef_thread_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:101</a>
      */
     void stop();
 
@@ -54,7 +54,7 @@ public interface CefThread extends CefLibraryObject {
      * <p>Definition generated from cef_thread_capi.h
      * <pre>int (CEF_CALLBACK* is_running)(struct _cef_thread_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:109</a>
      */
     boolean isRunning();
     /**
@@ -62,7 +62,7 @@ public interface CefThread extends CefLibraryObject {
      * <p>Definition generated from cef_thread_capi.h
      * <pre>CEF_EXPORT cef_thread_t* cef_thread_create(const cef_string_t* display_name, cef_thread_priority_t priority, cef_message_loop_type_t message_loop_type, int stoppable, cef_com_init_mode_t com_init_mode);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:78</a>
      */
     static Optional<CefThread> create(@Nullable String displayName, @Nonnull CefThreadPriority priority, @Nonnull CefMessageLoopType messageLoopType, int stoppable, @Nonnull CefComInitMode comInitMode) {
       return Optional.ofNullable(NativePeer.create0(displayName, priority, messageLoopType, stoppable, comInitMode));

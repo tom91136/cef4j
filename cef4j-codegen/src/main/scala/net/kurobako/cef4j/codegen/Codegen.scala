@@ -93,9 +93,9 @@ object Config {
 
   /** Extract and normalise a CEF API version.
     *
-    * Accepts either a bare major version number ("146") or a full CEF version string
-    * ("146.0.9+g3ca6a87+chromium-146.0.7680.165"). In both cases, the major version is extracted and multiplied by 100
-    * (e.g. 146 → 14600) to match CEF's internal `CEF_API_VERSION_NNNNN` naming convention.
+    * Accepts either a bare major version number ("150") or a full CEF version string
+    * ("150.0.18+gdb11278+chromium-150.0.7871.213"). In both cases, the major version is extracted and multiplied by 100
+    * (e.g. 150 → 15000) to match CEF's internal `CEF_API_VERSION_NNNNN` naming convention.
     */
   def normaliseCefApiVersion(raw: String): String = {
     val trimmed = raw.trim

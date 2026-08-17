@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_scheme_handler_factory_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:99</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:99</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefSchemeHandlerFactory extends CefClientHandler {
 
@@ -27,7 +27,7 @@ public interface CefSchemeHandlerFactory extends CefClientHandler {
      * @param browser may be null
      * @param frame may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__scheme_8h.html">cef_scheme.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:106</a>
      */
     default Optional<CefResourceHandler> create(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String schemeName, @Nullable CefRequest request) {
         return Optional.empty();

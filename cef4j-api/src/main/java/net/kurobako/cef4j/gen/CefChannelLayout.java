@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,11 +14,11 @@ import javax.annotation.processing.Generated;
  *   CEF_CHANNEL_LAYOUT_2_1 = 4,
  *   ...
  * } cef_channel_layout_t;</pre>
- * <p>Possible values: {@link Kind#LAYOUT_NONE}, {@link Kind#LAYOUT_UNSUPPORTED}, {@link Kind#LAYOUT_MONO}, {@link Kind#LAYOUT_STEREO}, {@link Kind#LAYOUT_2_1}, {@link Kind#LAYOUT_SURROUND}, {@link Kind#LAYOUT_4_0}, {@link Kind#LAYOUT_2_2}, {@link Kind#LAYOUT_QUAD}, {@link Kind#LAYOUT_5_0}, {@link Kind#LAYOUT_5_1}, {@link Kind#LAYOUT_5_0_BACK}, {@link Kind#LAYOUT_5_1_BACK}, {@link Kind#LAYOUT_7_0}, {@link Kind#LAYOUT_7_1}, {@link Kind#LAYOUT_7_1_WIDE}, {@link Kind#LAYOUT_STEREO_DOWNMIX}, {@link Kind#LAYOUT_2POINT1}, {@link Kind#LAYOUT_3_1}, {@link Kind#LAYOUT_4_1}, {@link Kind#LAYOUT_6_0}, {@link Kind#LAYOUT_6_0_FRONT}, {@link Kind#LAYOUT_HEXAGONAL}, {@link Kind#LAYOUT_6_1}, {@link Kind#LAYOUT_6_1_BACK}, {@link Kind#LAYOUT_6_1_FRONT}, {@link Kind#LAYOUT_7_0_FRONT}, {@link Kind#LAYOUT_7_1_WIDE_BACK}, {@link Kind#LAYOUT_OCTAGONAL}, {@link Kind#LAYOUT_DISCRETE}, {@link Kind#LAYOUT_STEREO_AND_KEYBOARD_MIC}, {@link Kind#LAYOUT_4_1_QUAD_SIDE}, {@link Kind#LAYOUT_BITSTREAM}, {@link Kind#LAYOUT_5_1_4_DOWNMIX}, {@link Kind#LAYOUT_1_1}, {@link Kind#LAYOUT_3_1_BACK}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#LAYOUT_NONE}, {@link Kind#LAYOUT_UNSUPPORTED}, {@link Kind#LAYOUT_MONO}, {@link Kind#LAYOUT_STEREO}, {@link Kind#LAYOUT_2_1}, {@link Kind#LAYOUT_SURROUND}, {@link Kind#LAYOUT_4_0}, {@link Kind#LAYOUT_2_2}, {@link Kind#LAYOUT_QUAD}, {@link Kind#LAYOUT_5_0}, {@link Kind#LAYOUT_5_1}, {@link Kind#LAYOUT_5_0_BACK}, {@link Kind#LAYOUT_5_1_BACK}, {@link Kind#LAYOUT_7_0}, {@link Kind#LAYOUT_7_1}, {@link Kind#LAYOUT_7_1_WIDE}, {@link Kind#LAYOUT_STEREO_DOWNMIX}, {@link Kind#LAYOUT_2POINT1}, {@link Kind#LAYOUT_3_1}, {@link Kind#LAYOUT_4_1}, {@link Kind#LAYOUT_6_0}, {@link Kind#LAYOUT_6_0_FRONT}, {@link Kind#LAYOUT_HEXAGONAL}, {@link Kind#LAYOUT_6_1}, {@link Kind#LAYOUT_6_1_BACK}, {@link Kind#LAYOUT_6_1_FRONT}, {@link Kind#LAYOUT_7_0_FRONT}, {@link Kind#LAYOUT_7_1_WIDE_BACK}, {@link Kind#LAYOUT_OCTAGONAL}, {@link Kind#LAYOUT_DISCRETE}, {@link Kind#LAYOUT_STEREO_AND_KEYBOARD_MIC}, {@link Kind#LAYOUT_4_1_QUAD_SIDE}, {@link Kind#LAYOUT_BITSTREAM}, {@link Kind#LAYOUT_5_1_4_DOWNMIX}, {@link Kind#LAYOUT_1_1}, {@link Kind#LAYOUT_3_1_BACK}, {@link Kind#LAYOUT_5_1_4}, {@link Kind#LAYOUT_7_1_4}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
 
@@ -94,7 +94,11 @@ public final class CefChannelLayout implements CefEnum<CefChannelLayout> {
         LAYOUT_1_1(34, "34", "CEF_CHANNEL_LAYOUT_1_1"),
         /** Front L, Front R, LFE, Back C */
         LAYOUT_3_1_BACK(35, "35", "CEF_CHANNEL_LAYOUT_3_1_BACK"),
-        NUM_VALUES(36, "36", "CEF_CHANNEL_NUM_VALUES");
+        /** Front L, Front R, Front C, LFE, Side L, Side R, Top Front L, Top Front R, Top Back L, Top Back R */
+        LAYOUT_5_1_4(36, "36", "CEF_CHANNEL_LAYOUT_5_1_4"),
+        /** Front L, Front R, Front C, LFE, Back L, Back R, Side L, Side R, Top Front L, Top Front R, Top Back L, Top Back R */
+        LAYOUT_7_1_4(37, "37", "CEF_CHANNEL_LAYOUT_7_1_4"),
+        NUM_VALUES(38, "38", "CEF_CHANNEL_NUM_VALUES");
 
         private static final Kind[] VALUES = Kind.values();
 

@@ -16,7 +16,7 @@ public interface CefPreferenceObserver {
      * Called when a preference has changed. The new value can be retrieved using {@code CefPreferenceManager.getPreference()}.
      * <p>Definition generated from cef_preference.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__preference_8h.html">cef_preference.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:78</a>
      */
 
     void onPreferenceChanged(String name);

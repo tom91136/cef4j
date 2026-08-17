@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_process_message_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:47</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:47</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefProcessMessage extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:59</a>
      */
     boolean isValid();
 
@@ -33,7 +33,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:66</a>
      */
     boolean isReadOnly();
 
@@ -42,7 +42,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>cef_process_message_t* (CEF_CALLBACK* copy)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:73</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:73</a>
      */
     Optional<CefProcessMessage> copy();
 
@@ -51,7 +51,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:80</a>
      */
     Optional<String> getName();
 
@@ -60,7 +60,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>cef_list_value_t* (CEF_CALLBACK* get_argument_list)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:86</a>
      */
     Optional<CefListValue> getArgumentList();
 
@@ -69,7 +69,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>cef_shared_memory_region_t* (CEF_CALLBACK* get_shared_memory_region)(struct _cef_process_message_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:93</a>
      */
     Optional<CefSharedMemoryRegion> getSharedMemoryRegion();
     /**
@@ -77,7 +77,7 @@ public interface CefProcessMessage extends CefLibraryObject {
      * <p>Definition generated from cef_process_message_capi.h
      * <pre>CEF_EXPORT cef_process_message_t* cef_process_message_create(const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:53</a>
      */
     static Optional<CefProcessMessage> create(@Nullable String name) {
       return Optional.ofNullable(NativePeer.create0(name));

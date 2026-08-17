@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_request_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:68</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:68</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefRequestHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_before_browse)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_request_t* request, int user_gesture, int is_redirect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
      */
     default boolean onBeforeBrowse(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean userGesture, boolean isRedirect) {
         return false;
@@ -36,7 +36,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_open_urlfrom_tab)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_string_t* target_url, cef_window_open_disposition_t target_disposition, int user_gesture);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
      */
     default boolean onOpenUrlFromTab(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String targetUrl, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture) {
         return false;
@@ -49,7 +49,7 @@ public interface CefRequestHandler extends CefClientHandler {
      *
      * @param requestInitiator may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:125</a>
      */
     default Optional<CefResourceRequestHandler> getResourceRequestHandler(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefRequest request, boolean isNavigation, boolean isDownload, @Nullable String requestInitiator, int[] disableDefaultHandling) {
         return Optional.empty();
@@ -63,7 +63,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * @param realm may be null
      * @param scheme may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
      */
     default boolean getAuthCredentials(@Nullable CefBrowser browser, @Nullable String originUrl, boolean isProxy, @Nullable String host, int port, @Nullable String realm, @Nullable String scheme, @Nullable CefAuthCallback callback) {
         return false;
@@ -74,7 +74,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_certificate_error)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, cef_errorcode_t cert_error, const cef_string_t* request_url, struct _cef_sslinfo_t* ssl_info, struct _cef_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
      */
     default boolean onCertificateError(@Nullable CefBrowser browser, @Nonnull CefErrorCode certError, @Nullable String requestUrl, @Nullable CefSslInfo sslInfo, @Nullable CefCallback callback) {
         return false;
@@ -85,7 +85,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_select_client_certificate)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, int isProxy, const cef_string_t* host, int port, size_t certificatesCount, struct _cef_x509_certificate_t* const* certificates, struct _cef_select_client_certificate_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:193</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:193</a>
      */
     default boolean onSelectClientCertificate(@Nullable CefBrowser browser, boolean isProxy, @Nullable String host, int port, long certificatesCount, @Nullable CefX509Certificate[] certificates, @Nullable CefSelectClientCertificateCallback callback) {
         return false;
@@ -96,7 +96,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_render_view_ready)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:220</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:220</a>
      */
     default void onRenderViewReady(@Nullable CefBrowser browser) {
     }
@@ -106,7 +106,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_render_process_unresponsive)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, struct _cef_unresponsive_process_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
      */
     default boolean onRenderProcessUnresponsive(@Nullable CefBrowser browser, @Nullable CefUnresponsiveProcessCallback callback) {
         return false;
@@ -117,7 +117,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_render_process_responsive)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:253</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:253</a>
      */
     default void onRenderProcessResponsive(@Nullable CefBrowser browser) {
     }
@@ -127,7 +127,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_render_process_terminated)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser, cef_termination_status_t status, int error_code, const cef_string_t* error_string);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:261</a>
      */
     default void onRenderProcessTerminated(@Nullable CefBrowser browser, @Nonnull CefTerminationStatus status, int errorCode, @Nullable String errorString) {
     }
@@ -137,7 +137,7 @@ public interface CefRequestHandler extends CefClientHandler {
      * <p>Definition generated from cef_request_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_document_available_in_main_frame)(struct _cef_request_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__handler_8h.html">cef_request_handler.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:275</a>
      */
     default void onDocumentAvailableInMainFrame(@Nullable CefBrowser browser) {
     }

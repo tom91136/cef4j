@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import net.kurobako.cef4j.gen.CefClientHandler;
  *   ...
  * } cef_button_delegate_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefButtonDelegate extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefButtonDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_button_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_button_pressed)(struct _cef_button_delegate_t* self, struct _cef_button_t* button);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:52</a>
      */
     default void onButtonPressed(@Nullable CefButton button) {
     }
@@ -34,7 +34,7 @@ public interface CefButtonDelegate extends CefClientHandler {
      * <p>Definition generated from views/cef_button_delegate_capi.h
      * <pre>void (CEF_CALLBACK* on_button_state_changed)(struct _cef_button_delegate_t* self, struct _cef_button_t* button);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__button__delegate_8h.html">views/cef_button_delegate.h:58</a>
      */
     default void onButtonStateChanged(@Nullable CefButton button) {
     }

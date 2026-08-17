@@ -16,7 +16,7 @@ public interface CefDeleteCookiesCallback {
      * Method that will be called upon completion. {@code num_deleted} will be the number of cookies that were deleted.
      * <p>Definition generated from cef_cookie.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:172</a>
      */
 
     void onComplete(int numDeleted);

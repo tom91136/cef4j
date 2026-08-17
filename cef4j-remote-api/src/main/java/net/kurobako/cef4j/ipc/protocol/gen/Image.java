@@ -39,7 +39,7 @@ public final class Image {
      * Returns {@code true} if this Image is empty.
      * <p>Definition generated from cef_image.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:62</a>
      */
     public CompletableFuture<Integer> isEmpty() {
         return session
@@ -51,7 +51,7 @@ public final class Image {
      * Returns {@code true} if this Image and {@code that} Image share the same underlying storage. Will also return {@code true} if both images are empty.
      * <p>Definition generated from cef_image.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:68</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -63,7 +63,7 @@ public final class Image {
      * Returns the image width in density independent pixel (DIP) units.
      * <p>Definition generated from cef_image.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:111</a>
      */
     public CompletableFuture<Long> getWidth() {
         return session
@@ -75,7 +75,7 @@ public final class Image {
      * Returns the image height in density independent pixel (DIP) units.
      * <p>Definition generated from cef_image.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__image_8h.html">cef_image.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__image_8h.html">cef_image.h:117</a>
      */
     public CompletableFuture<Long> getHeight() {
         return session

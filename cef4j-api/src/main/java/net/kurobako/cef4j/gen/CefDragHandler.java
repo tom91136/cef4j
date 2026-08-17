@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_drag_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDragHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefDragHandler extends CefClientHandler {
      * <p>Definition generated from cef_drag_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_drag_enter)(struct _cef_drag_handler_t* self, struct _cef_browser_t* browser, struct _cef_drag_data_t* dragData, cef_drag_operations_mask_t mask);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
     default boolean onDragEnter(@Nullable CefBrowser browser, @Nullable CefDragData dragData, @Nonnull CefDragOperationsMask mask) {
         return false;
@@ -35,7 +35,7 @@ public interface CefDragHandler extends CefClientHandler {
      * <p>Definition generated from cef_drag_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_draggable_regions_changed)(struct _cef_drag_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, size_t regionsCount, cef_draggable_region_t const* regions);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:68</a>
      */
     default void onDraggableRegionsChanged(@Nullable CefBrowser browser, @Nullable CefFrame frame, long regionsCount, @Nonnull CefDraggableRegion[] regions) {
     }

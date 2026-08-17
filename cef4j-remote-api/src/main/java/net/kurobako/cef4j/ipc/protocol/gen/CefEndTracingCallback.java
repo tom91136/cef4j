@@ -17,7 +17,7 @@ public interface CefEndTracingCallback {
      * Called after all processes have sent their trace data. {@code tracing_file} is the path at which tracing data was written. The client is responsible for deleting {@code tracing_file}.
      * <p>Definition generated from cef_trace.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__trace_8h.html">cef_trace.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__trace_8h.html">cef_trace.h:54</a>
      */
     default void onEndTracingComplete(String tracingFile) {}
 

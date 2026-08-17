@@ -39,7 +39,7 @@ public final class CefThread {
      * Returns the CefTaskRunner that will execute code on this thread's message loop. This method is safe to call from any thread.
      * <p>Definition generated from cef_thread.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:87</a>
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return session
@@ -52,7 +52,7 @@ public final class CefThread {
      * Returns the platform thread ID. It will return the same value after Stop() is called. This method is safe to call from any thread.
      * <p>Definition generated from cef_thread.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:94</a>
      */
     public CompletableFuture<Long> getPlatformThreadId() {
         return session
@@ -64,7 +64,7 @@ public final class CefThread {
      * Stop and join the thread. This method must be called from the same thread that called CreateThread(). Do not call this method if CreateThread() was called with a {@code stoppable} value of {@code false}.
      * <p>Definition generated from cef_thread.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:101</a>
      */
     public CompletableFuture<Void> stop() {
         return session
@@ -76,7 +76,7 @@ public final class CefThread {
      * Returns {@code true} if the thread is currently running. This method must be called from the same thread that called CreateThread().
      * <p>Definition generated from cef_thread.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__thread_8h.html">cef_thread.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:109</a>
      */
     public CompletableFuture<Integer> isRunning() {
         return session

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.processing.Generated;
  * } cef_referrer_policy_t;</pre>
  * <p>Possible values: {@link Kind#CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#DEFAULT}, {@link Kind#REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#NEVER_CLEAR_REFERRER}, {@link Kind#ORIGIN}, {@link Kind#CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN}, {@link Kind#ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE}, {@link Kind#NO_REFERRER}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefReferrerPolicy implements CefEnum<CefReferrerPolicy> {
 

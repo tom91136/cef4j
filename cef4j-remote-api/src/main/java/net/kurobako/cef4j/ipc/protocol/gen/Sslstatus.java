@@ -39,7 +39,7 @@ public final class Sslstatus {
      * Returns {@code true} if the status is related to a secure SSL/TLS connection.
      * <p>Definition generated from cef_ssl_status.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:51</a>
      */
     public CompletableFuture<Integer> isSecureConnection() {
         return session
@@ -51,7 +51,7 @@ public final class Sslstatus {
      * Returns a bitmask containing any and all problems verifying the server certificate.
      * <p>Definition generated from cef_ssl_status.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:57</a>
      */
     public CompletableFuture<Integer> getCertStatus() {
         return session
@@ -63,7 +63,7 @@ public final class Sslstatus {
      * Returns the SSL version used for the SSL connection.
      * <p>Definition generated from cef_ssl_status.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:64</a>
      */
     public CompletableFuture<Integer> getSslversion() {
         return session
@@ -75,7 +75,7 @@ public final class Sslstatus {
      * Returns a bitmask containing the page security content status.
      * <p>Definition generated from cef_ssl_status.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:70</a>
      */
     public CompletableFuture<Integer> getContentStatus() {
         return session
@@ -87,7 +87,7 @@ public final class Sslstatus {
      * Returns the X.509 certificate.
      * <p>Definition generated from cef_ssl_status.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__status_8h.html">cef_ssl_status.h:76</a>
      */
     public CompletableFuture<X509Certificate> getX509Certificate() {
         return session

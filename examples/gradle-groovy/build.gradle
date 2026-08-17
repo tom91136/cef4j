@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+def cef4jVersion = providers.gradleProperty('cef4jVersion').getOrElse('150.0.0')
+def packagerVersion = providers.gradleProperty('cef4jPackagerVersion').getOrElse('0.1.0')
+def platformArtifact = providers.gradleProperty('cef4jPlatformArtifact').getOrElse('cef4j-platform-linux')
+def platformClassifier = providers.gradleProperty('cef4jPlatformClassifier').getOrElse('x86_64')
+def cefVersion = providers.gradleProperty('cefVersion').getOrElse('150.0.18+gdb11278+chromium-150.0.7871.213')
+
+configurations {
+    cefPackager
+}
+
+dependencies {
+    implementation "net.kurobako.cef4j:cef4j-inprocess-swing:${cef4jVersion}"
+    implementation "net.kurobako.cef4j:cef4j-cdp:${cef4jVersion}"
+    implementation "net.kurobako.cef4j:${platformArtifact}:${cef4jVersion}:${platformClassifier}"
+    cefPackager "net.kurobako.cef4j:cef4j-runtime-packager:${packagerVersion}"
+}
+
+def generatedCefResources = layout.buildDirectory.dir('generated/cef4j-resources')
+
+tasks.register('packageCefRuntime', JavaExec) {
+    classpath = configurations.cefPackager
+    mainClass = 'net.kurobako.cef4j.packager.CefPackager'
+    outputs.dir generatedCefResources
+    args 'package', "--cef-version=${cefVersion}", '--platform=linux-x86_64', '--locales=en-US',
+            "--output=${generatedCefResources.get().asFile}"
+}
+
+sourceSets.main.resources.srcDir generatedCefResources
+tasks.processResources.dependsOn tasks.packageCefRuntime
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+application {
+    mainClass = 'example.Main'
+}

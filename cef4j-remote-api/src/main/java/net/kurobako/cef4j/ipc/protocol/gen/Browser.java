@@ -39,7 +39,7 @@ public final class Browser {
      * True if this object is currently valid. This will return {@code false} after {@code CefLifeSpanHandler.onBeforeClose()} is called.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:64</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class Browser {
      * Returns the browser host object. This method can only be called in the browser process.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:71</a>
      */
     public CompletableFuture<BrowserHost> getHost() {
         return session
@@ -64,7 +64,7 @@ public final class Browser {
      * Returns {@code true} if the browser can navigate backwards.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:78</a>
      */
     public CompletableFuture<Integer> canGoBack() {
         return session
@@ -76,7 +76,7 @@ public final class Browser {
      * Navigate backwards.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:84</a>
      */
     public CompletableFuture<Void> goBack() {
         return session
@@ -88,7 +88,7 @@ public final class Browser {
      * Returns {@code true} if the browser can navigate forwards.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:90</a>
      */
     public CompletableFuture<Integer> canGoForward() {
         return session
@@ -100,7 +100,7 @@ public final class Browser {
      * Navigate forwards.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:96</a>
      */
     public CompletableFuture<Void> goForward() {
         return session
@@ -112,7 +112,7 @@ public final class Browser {
      * Returns {@code true} if the browser is currently loading.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:102</a>
      */
     public CompletableFuture<Integer> isLoading() {
         return session
@@ -124,7 +124,7 @@ public final class Browser {
      * Reload the current page.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:108</a>
      */
     public CompletableFuture<Void> reload() {
         return session
@@ -136,7 +136,7 @@ public final class Browser {
      * Reload the current page ignoring any cached data.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:114</a>
      */
     public CompletableFuture<Void> reloadIgnoreCache() {
         return session
@@ -148,7 +148,7 @@ public final class Browser {
      * Stop loading the page.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:120</a>
      */
     public CompletableFuture<Void> stopLoad() {
         return session
@@ -160,7 +160,7 @@ public final class Browser {
      * Returns the globally unique identifier for this browser. This value is also used as the tabId for extension APIs.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:126</a>
      */
     public CompletableFuture<Integer> getIdentifier() {
         return session
@@ -172,7 +172,7 @@ public final class Browser {
      * Returns {@code true} if this object is pointing to the same handle as {@code that} object.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:133</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -184,7 +184,7 @@ public final class Browser {
      * Returns {@code true} if the browser is a popup.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:140</a>
      */
     public CompletableFuture<Integer> isPopup() {
         return session
@@ -196,7 +196,7 @@ public final class Browser {
      * Returns {@code true} if a document has been loaded in the browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:146</a>
      */
     public CompletableFuture<Integer> hasDocument() {
         return session
@@ -208,7 +208,7 @@ public final class Browser {
      * Returns the main (top-level) frame for the browser. In the browser process this will return a valid object until after {@code CefLifeSpanHandler.onBeforeClose()} is called. In the renderer process this will return {@code null} if the main frame is hosted in a different renderer process (e.g. for cross-origin sub-frames). The main frame object will change during cross-origin navigation or re-navigation after renderer process termination (due to crashes, etc).
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:152</a>
      */
     public CompletableFuture<Frame> getMainFrame() {
         return session
@@ -221,7 +221,7 @@ public final class Browser {
      * Returns the focused frame for the browser.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:164</a>
      */
     public CompletableFuture<Frame> getFocusedFrame() {
         return session
@@ -234,7 +234,7 @@ public final class Browser {
      * Returns the frame with the specified identifier, or {@code null} if not found.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:170</a>
      */
     public CompletableFuture<Frame> getFrameByIdentifier(@Nonnull String identifier) {
         return session
@@ -249,7 +249,7 @@ public final class Browser {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:177</a>
      */
     public CompletableFuture<Frame> getFrameByName(@Nonnull String name) {
         return session
@@ -262,7 +262,7 @@ public final class Browser {
      * Returns the number of frames that currently exist.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:183</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:183</a>
      */
     public CompletableFuture<Long> getFrameCount() {
         return session
@@ -274,7 +274,7 @@ public final class Browser {
      * Returns the identifiers of all existing frames.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:189</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:189</a>
      */
     public CompletableFuture<Void> getFrameIdentifiers(String[] identifiers) {
         return session
@@ -286,7 +286,7 @@ public final class Browser {
      * Returns the names of all existing frames.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:195</a>
      */
     public CompletableFuture<Void> getFrameNames(String[] names) {
         return session

@@ -39,7 +39,7 @@ public final class Urlrequest {
      * Returns the request object used to create this URL request. The returned object is read-only and should not be modified.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:83</a>
      */
     public CompletableFuture<Request> getRequest() {
         return session
@@ -52,7 +52,7 @@ public final class Urlrequest {
      * Returns the client.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:90</a>
      */
     public CompletableFuture<RemoteHandle> getClient() {
         return session
@@ -64,7 +64,7 @@ public final class Urlrequest {
      * Returns the request status.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:96</a>
      */
     public CompletableFuture<Integer> getRequestStatus() {
         return session
@@ -76,7 +76,7 @@ public final class Urlrequest {
      * Returns the request error if status is UR_CANCELED or UR_FAILED, or 0 otherwise.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:102</a>
      */
     public CompletableFuture<Integer> getRequestError() {
         return session
@@ -88,7 +88,7 @@ public final class Urlrequest {
      * Returns the response, or {@code null} if no response information is available. Response information will only be available after the upload has completed. The returned object is read-only and should not be modified.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:109</a>
      */
     public CompletableFuture<Response> getResponse() {
         return session
@@ -101,7 +101,7 @@ public final class Urlrequest {
      * Returns {@code true} if the response body was served from the cache. This includes responses for which revalidation was required.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:117</a>
      */
     public CompletableFuture<Integer> responseWasCached() {
         return session
@@ -113,7 +113,7 @@ public final class Urlrequest {
      * Cancel the request.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:124</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

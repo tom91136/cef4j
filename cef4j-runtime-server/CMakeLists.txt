@@ -133,8 +133,8 @@ elseif(MSVC)
         ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}")
 endif()
 
-# Assemble a self-contained runtime-server directory. The JVM launches only this executable; CEF and its native
-# subprocess dependencies remain on the server side and never enter the client classpath or library path.
+# Assemble the thin runtime-server bridge. A complete CEF runtime is supplied by
+# the application or materialized by cef4j-runtime-packager.
 set(CEF4J_RUNTIME_DIST "${CMAKE_BINARY_DIR}/runtime-server")
 add_custom_command(TARGET cef4j-runtime-server POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CEF4J_RUNTIME_DIST}"
@@ -193,29 +193,8 @@ if(APPLE)
             VERBATIM)
     endforeach()
     add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        # Follow CEF's canonical framework layout exactly. In particular, the public framework paths must be
-        # symlinks into Versions/A; copying the framework root directly can flatten that layout and leave macOS
-        # process-identity validation unable to associate the browser with its helper applications.
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CEF_ROOT}/Release/Chromium Embedded Framework.framework"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions/A"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink
-            "Versions/A/Chromium Embedded Framework"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink
-            "Versions/A/Libraries"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink
-            "Versions/A/Resources"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Resources"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink
-            "A"
-            "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>/Contents/Frameworks/Chromium Embedded Framework.framework/Versions/Current"
-        # CEF validates the macOS browser process and its helper tree before creating a renderer. The locally-built
-        # app has no developer identity in CI, but an ad-hoc signature gives the bundle a coherent process identity
-        # without introducing a signing-certificate requirement for downstream users.
+        # Sign the bridge and its helper identities before packaging. The CEF
+        # framework is deliberately external and selected with CEF_FRAMEWORK_DIR.
         COMMAND /usr/bin/codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
         COMMAND /usr/bin/codesign --verify --deep --strict "$<TARGET_BUNDLE_DIR:cef4j-runtime-server>"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -225,27 +204,4 @@ if(APPLE)
         # requires during initialization. Consumers must launch the executable inside the packaged .app.
         COMMAND ${CMAKE_COMMAND} -E rm -f "${CEF4J_RUNTIME_DIST}/cef4j-runtime-server"
         VERBATIM)
-    file(GLOB CEF4J_MAC_GRAPHICS_LIBS
-        "${CEF_ROOT}/Release/Chromium Embedded Framework.framework/Libraries/*.dylib"
-        "${CEF_ROOT}/Release/Chromium Embedded Framework.framework/Libraries/*.json")
-    foreach(runtime_file IN LISTS CEF4J_MAC_GRAPHICS_LIBS)
-        add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${runtime_file}" "${CEF4J_RUNTIME_DIST}/")
-    endforeach()
-else()
-    if(WIN32)
-        file(GLOB CEF4J_RUNTIME_FILES
-            "${CEF_ROOT}/Release/*.dll" "${CEF_ROOT}/Release/*.bin"
-            "${CEF_ROOT}/Release/*.json" "${CEF_ROOT}/Release/*.pak")
-    else()
-        file(GLOB CEF4J_RUNTIME_FILES
-            "${CEF_ROOT}/Release/*.so" "${CEF_ROOT}/Release/*.so.*" "${CEF_ROOT}/Release/*.bin"
-            "${CEF_ROOT}/Release/*.json" "${CEF_ROOT}/Release/*.pak")
-    endif()
-    foreach(runtime_file IN LISTS CEF4J_RUNTIME_FILES)
-        add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${runtime_file}" "${CEF4J_RUNTIME_DIST}/")
-    endforeach()
-    add_custom_command(TARGET cef4j-runtime-server POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CEF_ROOT}/Resources" "${CEF4J_RUNTIME_DIST}")
 endif()

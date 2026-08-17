@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_dictionary_value_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:305</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:305</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDictionaryValue extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_dictionary_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:320</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:320</a>
      */
     boolean isValid();
 
@@ -35,7 +35,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* is_owned)(struct _cef_dictionary_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:329</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:329</a>
      */
     boolean isOwned();
 
@@ -44,7 +44,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_dictionary_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:335</a>
      */
     boolean isReadOnly();
 
@@ -53,7 +53,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_dictionary_value_t* self, struct _cef_dictionary_value_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:342</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:342</a>
      */
     boolean isSame(@Nullable CefDictionaryValue that);
 
@@ -62,7 +62,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* is_equal)(struct _cef_dictionary_value_t* self, struct _cef_dictionary_value_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:350</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:350</a>
      */
     boolean isEqual(@Nullable CefDictionaryValue that);
 
@@ -71,7 +71,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_dictionary_value_t* (CEF_CALLBACK* copy)(struct _cef_dictionary_value_t* self, int exclude_empty_children);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:357</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:357</a>
      */
     Optional<CefDictionaryValue> copy(boolean excludeEmptyChildren);
 
@@ -80,7 +80,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>size_t (CEF_CALLBACK* get_size)(struct _cef_dictionary_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:364</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:364</a>
      */
     long getSize();
 
@@ -89,7 +89,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* clear)(struct _cef_dictionary_value_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:370</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:370</a>
      */
     boolean clear();
 
@@ -98,7 +98,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* has_key)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:376</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:376</a>
      */
     boolean hasKey(@Nullable String key);
 
@@ -107,7 +107,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* get_keys)(struct _cef_dictionary_value_t* self, cef_string_list_t keys);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:382</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:382</a>
      */
     boolean getKeys(@Nonnull List<String> keys);
 
@@ -116,7 +116,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* remove)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:388</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:388</a>
      */
     boolean remove(@Nullable String key);
 
@@ -127,7 +127,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      *
      * @return the result, or {@code VTYPE_INVALID} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:395</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:395</a>
      */
     CefValueType getType(@Nullable String key);
 
@@ -136,7 +136,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_value_t* (CEF_CALLBACK* get_value)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:401</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:401</a>
      */
     Optional<CefValue> getValue(@Nullable String key);
 
@@ -145,7 +145,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* get_bool)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:411</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:411</a>
      */
     boolean getBool(@Nullable String key);
 
@@ -154,7 +154,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* get_int)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:417</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:417</a>
      */
     int getInt(@Nullable String key);
 
@@ -163,7 +163,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>double (CEF_CALLBACK* get_double)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:423</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:423</a>
      */
     double getDouble(@Nullable String key);
 
@@ -172,7 +172,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_string)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:429</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:429</a>
      */
     Optional<String> getString(@Nullable String key);
 
@@ -181,7 +181,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_binary_value_t* (CEF_CALLBACK* get_binary)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:435</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:435</a>
      */
     Optional<CefBinaryValue> getBinary(@Nullable String key);
 
@@ -190,7 +190,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_dictionary_value_t* (CEF_CALLBACK* get_dictionary)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:442</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:442</a>
      */
     Optional<CefDictionaryValue> getDictionary(@Nullable String key);
 
@@ -199,7 +199,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>cef_list_value_t* (CEF_CALLBACK* get_list)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:450</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:450</a>
      */
     Optional<CefListValue> getList(@Nullable String key);
 
@@ -208,7 +208,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_value)(struct _cef_dictionary_value_t* self, const cef_string_t* key, struct _cef_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:458</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:458</a>
      */
     boolean setValue(@Nullable String key, @Nullable CefValue value);
 
@@ -217,7 +217,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_null)(struct _cef_dictionary_value_t* self, const cef_string_t* key);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:469</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:469</a>
      */
     boolean setNull(@Nullable String key);
 
@@ -226,7 +226,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_bool)(struct _cef_dictionary_value_t* self, const cef_string_t* key, int value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:476</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:476</a>
      */
     boolean setBool(@Nullable String key, boolean value);
 
@@ -235,7 +235,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_int)(struct _cef_dictionary_value_t* self, const cef_string_t* key, int value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:483</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:483</a>
      */
     boolean setInt(@Nullable String key, int value);
 
@@ -244,7 +244,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_double)(struct _cef_dictionary_value_t* self, const cef_string_t* key, double value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:490</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:490</a>
      */
     boolean setDouble(@Nullable String key, double value);
 
@@ -255,7 +255,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:497</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:497</a>
      */
     boolean setString(@Nullable String key, @Nullable String value);
 
@@ -264,7 +264,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_binary)(struct _cef_dictionary_value_t* self, const cef_string_t* key, struct _cef_binary_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:504</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:504</a>
      */
     boolean setBinary(@Nullable String key, @Nullable CefBinaryValue value);
 
@@ -273,7 +273,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_dictionary)(struct _cef_dictionary_value_t* self, const cef_string_t* key, struct _cef_dictionary_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:515</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:515</a>
      */
     boolean setDictionary(@Nullable String key, @Nullable CefDictionaryValue value);
 
@@ -282,7 +282,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>int (CEF_CALLBACK* set_list)(struct _cef_dictionary_value_t* self, const cef_string_t* key, struct _cef_list_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:526</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:526</a>
      */
     boolean setList(@Nullable String key, @Nullable CefListValue value);
     /**
@@ -290,7 +290,7 @@ public interface CefDictionaryValue extends CefLibraryObject {
      * <p>Definition generated from cef_values_capi.h
      * <pre>CEF_EXPORT cef_dictionary_value_t* cef_dictionary_value_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__values_8h.html">cef_values.h:314</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:314</a>
      */
     static Optional<CefDictionaryValue> create() {
       return Optional.ofNullable(NativePeer.create0());

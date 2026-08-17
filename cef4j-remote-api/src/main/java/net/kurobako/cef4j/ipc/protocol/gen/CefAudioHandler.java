@@ -17,7 +17,7 @@ public interface CefAudioHandler {
      * Called on a browser audio capture thread when the browser starts streaming audio. OnAudioStreamStopped will always be called after OnAudioStreamStarted; both methods may be called multiple times for the same browser. {@code params} contains the audio parameters like sample rate and channel layout. {@code channels} is the number of channels.
      * <p>Definition generated from cef_audio_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
      */
     default void onAudioStreamStarted(net.kurobako.cef4j.ipc.session.RemoteHandle browser, AudioParameters params, int channels) {}
 
@@ -25,7 +25,7 @@ public interface CefAudioHandler {
      * Called on the UI thread when the stream has stopped. OnAudioSteamStopped will always be called after OnAudioStreamStarted; both methods may be called multiple times for the same stream.
      * <p>Definition generated from cef_audio_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:92</a>
      */
     default void onAudioStreamStopped(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -33,7 +33,7 @@ public interface CefAudioHandler {
      * Called on the UI or audio stream thread when an error occurred. During the stream creation phase this callback will be called on the UI thread while in the capturing phase it will be called on the audio stream thread. The stream will be stopped immediately.
      * <p>Definition generated from cef_audio_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__audio__handler_8h.html">cef_audio_handler.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:100</a>
      */
     default void onAudioStreamError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String message) {}
 

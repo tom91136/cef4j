@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_context_menu_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:88</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:88</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefContextMenuHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_before_context_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, struct _cef_menu_model_t* model);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:98</a>
      */
     default void onBeforeContextMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, @Nullable CefMenuModel model) {
     }
@@ -34,7 +34,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* run_context_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, struct _cef_menu_model_t* model, struct _cef_run_context_menu_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
      */
     default boolean runContextMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, @Nullable CefMenuModel model, @Nullable CefRunContextMenuCallback callback) {
         return false;
@@ -45,7 +45,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_context_menu_command)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, struct _cef_context_menu_params_t* params, int command_id, cef_event_flags_t event_flags);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
      */
     default boolean onContextMenuCommand(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefContextMenuParams params, int commandId, @Nonnull CefEventFlags eventFlags) {
         return false;
@@ -56,7 +56,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_context_menu_dismissed)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:146</a>
      */
     default void onContextMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
     }
@@ -66,7 +66,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* run_quick_menu)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_point_t* location, const cef_size_t* size, cef_quick_menu_edit_state_flags_t edit_state_flags, struct _cef_run_quick_menu_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
      */
     default boolean runQuickMenu(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nonnull CefPoint location, @Nonnull CefSize size, @Nonnull CefQuickMenuEditStateFlags editStateFlags, @Nullable CefRunQuickMenuCallback callback) {
         return false;
@@ -77,7 +77,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_quick_menu_command)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, int command_id, cef_event_flags_t event_flags);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
     default boolean onQuickMenuCommand(@Nullable CefBrowser browser, @Nullable CefFrame frame, int commandId, @Nonnull CefEventFlags eventFlags) {
         return false;
@@ -88,7 +88,7 @@ public interface CefContextMenuHandler extends CefClientHandler {
      * <p>Definition generated from cef_context_menu_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_quick_menu_dismissed)(struct _cef_context_menu_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:186</a>
      */
     default void onQuickMenuDismissed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
     }

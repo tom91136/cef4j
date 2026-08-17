@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_focus_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefFocusHandler extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefFocusHandler extends CefClientHandler {
      * <p>Definition generated from cef_focus_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_take_focus)(struct _cef_focus_handler_t* self, struct _cef_browser_t* browser, int next);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:55</a>
      */
     default void onTakeFocus(@Nullable CefBrowser browser, boolean next) {
     }
@@ -34,7 +34,7 @@ public interface CefFocusHandler extends CefClientHandler {
      * <p>Definition generated from cef_focus_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_set_focus)(struct _cef_focus_handler_t* self, struct _cef_browser_t* browser, cef_focus_source_t source);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
      */
     default boolean onSetFocus(@Nullable CefBrowser browser, @Nonnull CefFocusSource source) {
         return false;
@@ -45,7 +45,7 @@ public interface CefFocusHandler extends CefClientHandler {
      * <p>Definition generated from cef_focus_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_got_focus)(struct _cef_focus_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__focus__handler_8h.html">cef_focus_handler.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:74</a>
      */
     default void onGotFocus(@Nullable CefBrowser browser) {
     }

@@ -39,7 +39,7 @@ public final class CommandLine {
      * Returns {@code true} if this object is valid. Do not call any other methods if this function returns {@code false}.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:76</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:76</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class CommandLine {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:83</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:83</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -63,7 +63,7 @@ public final class CommandLine {
      * Returns a writable copy of this object.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:90</a>
      */
     public CompletableFuture<CommandLine> copy() {
         return session
@@ -76,7 +76,7 @@ public final class CommandLine {
      * Initialize the command line with the string returned by calling GetCommandLineW(). This method is only supported on Windows.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:104</a>
      */
     public CompletableFuture<Void> initFromString(@Nonnull String commandLine) {
         return session
@@ -88,7 +88,7 @@ public final class CommandLine {
      * Reset the command-line switches and arguments but leave the program component unchanged.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:111</a>
      */
     public CompletableFuture<Void> reset() {
         return session
@@ -100,7 +100,7 @@ public final class CommandLine {
      * Retrieve the original command line string as a vector of strings. The argv array: `{ program, [(--{@code -}/)switch[=value]]*, [--], [argument]* }`
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
     public CompletableFuture<Void> getArgv(String[] argv) {
         return session
@@ -112,7 +112,7 @@ public final class CommandLine {
      * Constructs and returns the represented command line string. Use this method cautiously because quoting behavior is unclear.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:126</a>
      */
     public CompletableFuture<String> getCommandLineString() {
         return session
@@ -124,7 +124,7 @@ public final class CommandLine {
      * Get the program part of the command line string (the first item).
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:133</a>
      */
     public CompletableFuture<String> getProgram() {
         return session
@@ -136,7 +136,7 @@ public final class CommandLine {
      * Set the program part of the command line string (the first item).
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:139</a>
      */
     public CompletableFuture<Void> setProgram(@Nonnull String program) {
         return session
@@ -148,7 +148,7 @@ public final class CommandLine {
      * Returns {@code true} if the command line has switches.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:145</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:145</a>
      */
     public CompletableFuture<Integer> hasSwitches() {
         return session
@@ -160,7 +160,7 @@ public final class CommandLine {
      * Returns {@code true} if the command line contains the given switch.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:151</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:151</a>
      */
     public CompletableFuture<Integer> hasSwitch(@Nonnull String name) {
         return session
@@ -172,7 +172,7 @@ public final class CommandLine {
      * Returns the value associated with the given switch. If the switch has no value or isn't present this method returns the empty string.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:157</a>
      */
     public CompletableFuture<String> getSwitchValue(@Nonnull String name) {
         return session
@@ -184,7 +184,7 @@ public final class CommandLine {
      * Add a switch to the end of the command line.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:171</a>
      */
     public CompletableFuture<Void> appendSwitch(@Nonnull String name) {
         return session
@@ -196,7 +196,7 @@ public final class CommandLine {
      * Add a switch with the specified value to the end of the command line. If the switch has no value pass an empty value string.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:177</a>
      */
     public CompletableFuture<Void> appendSwitchWithValue(@Nonnull String name, @Nonnull String value) {
         return session
@@ -208,7 +208,7 @@ public final class CommandLine {
      * True if there are remaining command line arguments.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:194</a>
      */
     public CompletableFuture<Integer> hasArguments() {
         return session
@@ -220,7 +220,7 @@ public final class CommandLine {
      * Get the remaining command line arguments.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:200</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
     public CompletableFuture<Void> getArguments(String[] arguments) {
         return session
@@ -232,7 +232,7 @@ public final class CommandLine {
      * Add an argument to the end of the command line.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:206</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:206</a>
      */
     public CompletableFuture<Void> appendArgument(@Nonnull String argument) {
         return session
@@ -244,7 +244,7 @@ public final class CommandLine {
      * Insert a command before the current command. Common for debuggers, like "valgrind" or "gdb --args".
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:212</a>
      */
     public CompletableFuture<Void> prependWrapper(@Nonnull String wrapper) {
         return session
@@ -257,7 +257,7 @@ public final class CommandLine {
      * <p>Added in CEF API version 14100.
      * <p>Definition generated from cef_command_line.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__command__line_8h.html">cef_command_line.h:186</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:186</a>
      */
     public CompletableFuture<Void> removeSwitch(@Nonnull String name) {
         return session

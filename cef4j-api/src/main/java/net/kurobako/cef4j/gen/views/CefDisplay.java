@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -19,9 +19,9 @@ import net.kurobako.cef4j.gen.CefRect;
  *   ...
  * } cef_display_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDisplay extends CefLibraryObject {
 
@@ -30,7 +30,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_id)(struct _cef_display_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     long getId();
 
@@ -39,7 +39,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>float (CEF_CALLBACK* get_device_scale_factor)(struct _cef_display_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:131</a>
      */
     float getDeviceScaleFactor();
 
@@ -48,7 +48,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>void (CEF_CALLBACK* convert_point_to_pixels)(struct _cef_display_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:142</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:142</a>
      */
     void convertPointToPixels(@Nonnull CefPoint.Mutable point);
 
@@ -57,7 +57,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>void (CEF_CALLBACK* convert_point_from_pixels)(struct _cef_display_t* self, cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:149</a>
      */
     void convertPointFromPixels(@Nonnull CefPoint.Mutable point);
 
@@ -66,7 +66,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_bounds)(struct _cef_display_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:156</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:156</a>
      */
     CefRect getBounds();
 
@@ -75,7 +75,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_work_area)(struct _cef_display_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:163</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:163</a>
      */
     CefRect getWorkArea();
 
@@ -84,7 +84,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>int (CEF_CALLBACK* get_rotation)(struct _cef_display_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:170</a>
      */
     int getRotation();
     /**
@@ -92,7 +92,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT cef_display_t* cef_display_get_primary(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:59</a>
      */
     static Optional<CefDisplay> getPrimary() {
       return Optional.ofNullable(NativePeer.getPrimary0());
@@ -111,7 +111,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT size_t cef_display_get_count(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:74</a>
      */
     static long getCount() {
       return NativePeer.getCount0();
@@ -126,7 +126,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT cef_point_t* cef_display_convert_screen_point_to_pixels(const cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:97</a>
      */
     static CefPoint convertScreenPointToPixels(@Nonnull CefPoint point) {
       return NativePeer.convertScreenPointToPixels0(point);
@@ -137,7 +137,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT cef_point_t* cef_display_convert_screen_point_from_pixels(const cef_point_t* point);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:104</a>
      */
     static CefPoint convertScreenPointFromPixels(@Nonnull CefPoint point) {
       return NativePeer.convertScreenPointFromPixels0(point);
@@ -148,7 +148,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT cef_rect_t* cef_display_convert_screen_rect_to_pixels(const cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:111</a>
      */
     static CefRect convertScreenRectToPixels(@Nonnull CefRect rect) {
       return NativePeer.convertScreenRectToPixels0(rect);
@@ -159,7 +159,7 @@ public interface CefDisplay extends CefLibraryObject {
      * <p>Definition generated from views/cef_display_capi.h
      * <pre>CEF_EXPORT cef_rect_t* cef_display_convert_screen_rect_from_pixels(const cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display_8h.html">views/cef_display.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display_8h.html">views/cef_display.h:118</a>
      */
     static CefRect convertScreenRectFromPixels(@Nonnull CefRect rect) {
       return NativePeer.convertScreenRectFromPixels0(rect);

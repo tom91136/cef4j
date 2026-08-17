@@ -17,7 +17,7 @@ public interface CefDomvisitor {
      * Method executed for visiting the DOM. The document object passed to this method represents a snapshot of the DOM at the time this method is executed. DOM objects are only valid for the scope of this method. Do not keep references to or attempt to access any DOM objects outside the scope of this method.
      * <p>Definition generated from cef_dom.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:55</a>
      */
     default void visit(net.kurobako.cef4j.ipc.session.RemoteHandle document) {}
 

@@ -39,7 +39,7 @@ public final class PostData {
      * Returns {@code true} if this object is read-only.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:239</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -51,7 +51,7 @@ public final class PostData {
      * Returns {@code true} if the underlying POST data includes elements that are not represented by this CefPostData object (for example, multi-part file upload data). Modifying CefPostData objects with excluded elements may result in the request failing.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:245</a>
      */
     public CompletableFuture<Integer> hasExcludedElements() {
         return session
@@ -63,7 +63,7 @@ public final class PostData {
      * Returns the number of existing post data elements.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:254</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:254</a>
      */
     public CompletableFuture<Long> getElementCount() {
         return session
@@ -75,7 +75,7 @@ public final class PostData {
      * Remove the specified post data element.  Returns {@code true} if the removal succeeds.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:266</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:266</a>
      */
     public CompletableFuture<Integer> removeElement(@Nonnull RemoteHandle element) {
         return session
@@ -87,7 +87,7 @@ public final class PostData {
      * Add the specified post data element.  Returns {@code true} if the add succeeds.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:273</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:273</a>
      */
     public CompletableFuture<Integer> addElement(@Nonnull RemoteHandle element) {
         return session
@@ -99,7 +99,7 @@ public final class PostData {
      * Remove all existing post data elements.
      * <p>Definition generated from cef_request.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request_8h.html">cef_request.h:279</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:279</a>
      */
     public CompletableFuture<Void> removeElements() {
         return session

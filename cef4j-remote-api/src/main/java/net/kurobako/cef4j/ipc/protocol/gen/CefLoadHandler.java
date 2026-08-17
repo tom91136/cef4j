@@ -17,7 +17,7 @@ public interface CefLoadHandler {
      * Called when the loading state has changed. This callback will be executed twice -- once when loading is initiated either programmatically or by user action, and once when loading is terminated due to completion, cancellation of failure. It will be called before any calls to OnLoadStart and after all calls to OnLoadError and/or OnLoadEnd.
      * <p>Definition generated from cef_load_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:56</a>
      */
     default void onLoadingStateChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int isLoading, int canGoBack, int canGoForward) {}
 
@@ -25,7 +25,7 @@ public interface CefLoadHandler {
      * Called after a navigation has been committed and before the browser begins loading contents in the frame. The {@code frame} value will never be empty --call the IsMain() method to check if this frame is the main frame. {@code transition_type} provides information about the source of the navigation and an accurate value is only available in the browser process. Multiple frames may be loading at the same time. Sub-frames may start or continue loading after the main frame load has ended. This method will not be called for same page navigations (fragments, history state, etc.) or for navigations that fail or are canceled before commit. For notification of overall browser load status use OnLoadingStateChange instead.
      * <p>Definition generated from cef_load_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:69</a>
      */
     default void onLoadStart(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int transitionType) {}
 
@@ -33,7 +33,7 @@ public interface CefLoadHandler {
      * Called when the browser is done loading a frame. The {@code frame} value will never be empty -- call the IsMain() method to check if this frame is the main frame. Multiple frames may be loading at the same time. Sub-frames may start or continue loading after the main frame load has ended. This method will not be called for same page navigations (fragments, history state, etc.) or for navigations that fail or are canceled before commit. For notification of overall browser load status use OnLoadingStateChange instead.
      * <p>Definition generated from cef_load_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:86</a>
      */
     default void onLoadEnd(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int httpStatusCode) {}
 
@@ -43,7 +43,7 @@ public interface CefLoadHandler {
      *
      * @param errorText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__load__handler_8h.html">cef_load_handler.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:101</a>
      */
     default void onLoadError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int errorCode, String errorText, String failedUrl) {}
 

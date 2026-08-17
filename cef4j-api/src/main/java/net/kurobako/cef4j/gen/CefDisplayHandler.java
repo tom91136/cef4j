@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_display_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDisplayHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_address_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, struct _cef_frame_t* frame, const cef_string_t* url);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:53</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:53</a>
      */
     default void onAddressChange(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {
     }
@@ -37,7 +37,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *
      * @param title may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:61</a>
      */
     default void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
     }
@@ -49,7 +49,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *
      * @param iconUrls may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:68</a>
      */
     default void onFaviconUrlChange(@Nullable CefBrowser browser, @Nullable List<String> iconUrls) {
     }
@@ -59,7 +59,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_fullscreen_mode_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, int fullscreen);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:75</a>
      */
     default void onFullscreenModeChange(@Nullable CefBrowser browser, boolean fullscreen) {
     }
@@ -71,7 +71,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *
      * @param text may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
      */
     default boolean onTooltip(@Nullable CefBrowser browser, @Nullable String text) {
         return false;
@@ -84,7 +84,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:103</a>
      */
     default void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {
     }
@@ -97,7 +97,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * @param message may be null
      * @param source may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
      */
     default boolean onConsoleMessage(@Nullable CefBrowser browser, @Nonnull CefLogSeverity level, @Nullable String message, @Nullable String source, int line) {
         return false;
@@ -108,7 +108,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_auto_resize)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, const cef_size_t* new_size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
      */
     default boolean onAutoResize(@Nullable CefBrowser browser, @Nonnull CefSize newSize) {
         return false;
@@ -119,7 +119,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_loading_progress_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, double progress);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:136</a>
      */
     default void onLoadingProgressChange(@Nullable CefBrowser browser, double progress) {
     }
@@ -129,7 +129,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_cursor_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, cef_cursor_handle_t cursor, cef_cursor_type_t type, const cef_cursor_info_t* custom_cursor_info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:144</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:144</a>
      */
     default boolean onCursorChange(@Nullable CefBrowser browser, long cursor, @Nonnull CefCursorType type, @Nullable CefCursorInfo customCursorInfo) {
         return false;
@@ -140,7 +140,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_media_access_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, int has_video_access, int has_audio_access);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:158</a>
      */
     default void onMediaAccessChange(@Nullable CefBrowser browser, boolean hasVideoAccess, boolean hasAudioAccess) {
     }
@@ -155,7 +155,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>int (CEF_CALLBACK* on_contents_bounds_change)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, const cef_rect_t* new_bounds);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
      */
     default boolean onContentsBoundsChange(@Nullable CefBrowser browser, @Nonnull CefRect newBounds) {
         return false;
@@ -167,7 +167,7 @@ public interface CefDisplayHandler extends CefClientHandler {
      * <p>Definition generated from cef_display_handler_capi.h
      * <pre>int (CEF_CALLBACK* get_root_window_screen_rect)(struct _cef_display_handler_t* self, struct _cef_browser_t* browser, cef_rect_t* rect);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__display__handler_8h.html">cef_display_handler.h:193</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:193</a>
      */
     default boolean getRootWindowScreenRect(@Nullable CefBrowser browser, @Nonnull CefRect.Mutable rect) {
         return false;

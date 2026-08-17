@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,11 +14,11 @@ import javax.annotation.processing.Generated;
  *   CEF_RESULT_CODE_GPU_DEAD_ON_ARRIVAL = 4,
  *   ...
  * } cef_resultcode_t;</pre>
- * <p>Possible values: {@link Kind#NORMAL_EXIT}, {@link Kind#KILLED}, {@link Kind#HUNG}, {@link Kind#KILLED_BAD_MESSAGE}, {@link Kind#GPU_DEAD_ON_ARRIVAL}, {@link Kind#CHROME_FIRST}, {@link Kind#BAD_PROCESS_TYPE}, {@link Kind#MISSING_DATA}, {@link Kind#UNSUPPORTED_PARAM}, {@link Kind#PROFILE_IN_USE}, {@link Kind#PACK_EXTENSION_ERROR}, {@link Kind#NORMAL_EXIT_PROCESS_NOTIFIED}, {@link Kind#INVALID_SANDBOX_STATE}, {@link Kind#CLOUD_POLICY_ENROLLMENT_FAILED}, {@link Kind#GPU_EXIT_ON_CONTEXT_LOST}, {@link Kind#NORMAL_EXIT_PACK_EXTENSION_SUCCESS}, {@link Kind#SYSTEM_RESOURCE_EXHAUSTED}, {@link Kind#NORMAL_EXIT_AUTO_DE_ELEVATED}, {@link Kind#TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE}, {@link Kind#CHROME_LAST}, {@link Kind#SANDBOX_FATAL_FIRST}, {@link Kind#SANDBOX_FATAL_INTEGRITY}, {@link Kind#SANDBOX_FATAL_DROPTOKEN}, {@link Kind#SANDBOX_FATAL_FLUSHANDLES}, {@link Kind#SANDBOX_FATAL_CACHEDISABLE}, {@link Kind#SANDBOX_FATAL_CLOSEHANDLES}, {@link Kind#SANDBOX_FATAL_MITIGATION}, {@link Kind#SANDBOX_FATAL_MEMORY_EXCEEDED}, {@link Kind#SANDBOX_FATAL_WARMUP}, {@link Kind#SANDBOX_FATAL_BROKER_SHUTDOWN_HUNG}, {@link Kind#SANDBOX_FATAL_LAST}, {@link Kind#NUM_VALUES}
+ * <p>Possible values: {@link Kind#NORMAL_EXIT}, {@link Kind#KILLED}, {@link Kind#HUNG}, {@link Kind#KILLED_BAD_MESSAGE}, {@link Kind#GPU_DEAD_ON_ARRIVAL}, {@link Kind#CHROME_FIRST}, {@link Kind#BAD_PROCESS_TYPE}, {@link Kind#MISSING_DATA}, {@link Kind#UNSUPPORTED_PARAM}, {@link Kind#PROFILE_IN_USE}, {@link Kind#PACK_EXTENSION_ERROR}, {@link Kind#NORMAL_EXIT_PROCESS_NOTIFIED}, {@link Kind#INVALID_SANDBOX_STATE}, {@link Kind#CLOUD_POLICY_ENROLLMENT_FAILED}, {@link Kind#GPU_EXIT_ON_CONTEXT_LOST}, {@link Kind#NORMAL_EXIT_PACK_EXTENSION_SUCCESS}, {@link Kind#SYSTEM_RESOURCE_EXHAUSTED}, {@link Kind#NORMAL_EXIT_AUTO_DE_ELEVATED}, {@link Kind#TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE}, {@link Kind#INVALID_ISOLATED_BROWSER_PROCESS}, {@link Kind#CHROME_LAST}, {@link Kind#SANDBOX_FATAL_FIRST}, {@link Kind#SANDBOX_FATAL_INTEGRITY}, {@link Kind#SANDBOX_FATAL_DROPTOKEN}, {@link Kind#SANDBOX_FATAL_FLUSHANDLES}, {@link Kind#SANDBOX_FATAL_CACHEDISABLE}, {@link Kind#SANDBOX_FATAL_CLOSEHANDLES}, {@link Kind#SANDBOX_FATAL_MITIGATION}, {@link Kind#SANDBOX_FATAL_MEMORY_EXCEEDED}, {@link Kind#SANDBOX_FATAL_WARMUP}, {@link Kind#SANDBOX_FATAL_BROKER_SHUTDOWN_HUNG}, {@link Kind#SANDBOX_FATAL_LAST}, {@link Kind#NUM_VALUES}
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__types_8h.html">cef_types.h</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public final class CefResultcode implements CefEnum<CefResultcode> {
 
@@ -60,7 +60,9 @@ public final class CefResultcode implements CefEnum<CefResultcode> {
         NORMAL_EXIT_AUTO_DE_ELEVATED(38, "38", "CEF_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED"),
         /** Upon encountering a commit failure in a process, PartitionAlloc terminated another process deemed less important. */
         TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE(39, "39", "CEF_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE"),
-        CHROME_LAST(40, "40", "CEF_RESULT_CODE_CHROME_LAST"),
+        /** The isolated browser process launched but it was not possible to wait on the exit of the process, so the browser must exit. */
+        INVALID_ISOLATED_BROWSER_PROCESS(40, "40", "CEF_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS"),
+        CHROME_LAST(41, "41", "CEF_RESULT_CODE_CHROME_LAST"),
         SANDBOX_FATAL_FIRST(7006, "7006", "CEF_RESULT_CODE_SANDBOX_FATAL_FIRST"),
         /** Windows sandbox could not set the integrity level. */
         SANDBOX_FATAL_INTEGRITY(7006L, "CEF_RESULT_CODE_SANDBOX_FATAL_FIRST", "CEF_RESULT_CODE_SANDBOX_FATAL_INTEGRITY"),

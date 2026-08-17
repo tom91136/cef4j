@@ -39,7 +39,7 @@ public final class ResourceReadCallback {
      * Callback for asynchronous continuation of Read(). If {@code bytes_read} == 0 the response will be considered complete. If {@code bytes_read} > 0 then Read() will be called again until the request is complete (based on either the result or the expected content length). If {@code bytes_read} &lt; 0 then the request will fail and the {@code bytes_read} value will be treated as the error code.
      * <p>Definition generated from cef_resource_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:70</a>
      */
     public CompletableFuture<Void> cont(int bytesRead) {
         return session

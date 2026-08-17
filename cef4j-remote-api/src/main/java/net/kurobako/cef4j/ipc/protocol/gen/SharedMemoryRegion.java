@@ -39,7 +39,7 @@ public final class SharedMemoryRegion {
      * Returns {@code true} if the mapping is valid.
      * <p>Definition generated from cef_shared_memory_region.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:49</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:49</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class SharedMemoryRegion {
      * Returns the size of the mapping in bytes. Returns 0 for invalid instances.
      * <p>Definition generated from cef_shared_memory_region.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__memory__region_8h.html">cef_shared_memory_region.h:55</a>
      */
     public CompletableFuture<Long> size() {
         return session

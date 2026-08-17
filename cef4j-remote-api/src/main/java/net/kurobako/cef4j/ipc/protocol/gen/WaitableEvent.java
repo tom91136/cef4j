@@ -39,7 +39,7 @@ public final class WaitableEvent {
      * Put the event in the un-signaled state.
      * <p>Definition generated from cef_waitable_event.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
      */
     public CompletableFuture<Void> reset() {
         return session
@@ -51,7 +51,7 @@ public final class WaitableEvent {
      * Put the event in the signaled state. This causes any thread blocked on Wait to be woken up.
      * <p>Definition generated from cef_waitable_event.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
      */
     public CompletableFuture<Void> signal() {
         return session
@@ -63,7 +63,7 @@ public final class WaitableEvent {
      * Returns {@code true} if the event is in the signaled state, else {@code false}. If the event was created with {@code automatic_reset} set to {@code true} then calling this method will also cause a reset.
      * <p>Definition generated from cef_waitable_event.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:82</a>
      */
     public CompletableFuture<Integer> isSignaled() {
         return session
@@ -75,7 +75,7 @@ public final class WaitableEvent {
      * Wait up to {@code max_ms} milliseconds for the event to be signaled. Returns {@code true} if the event was signaled. A return value of {@code false} does not necessarily mean that {@code max_ms} was exceeded. This method will not return until after the call to Signal() has completed. This method cannot be called on the browser process UI or IO threads.
      * <p>Definition generated from cef_waitable_event.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:98</a>
      */
     public CompletableFuture<Integer> timedWait(long maxMs) {
         return session

@@ -39,7 +39,7 @@ public final class ResourceBundle {
      * Returns the localized string for the specified {@code string_id} or an empty string if the value is not found. Use the cef_id_for_pack_string_name() function for version-safe mapping of string IDS names from cef_pack_strings.h to version-specific numerical {@code string_id} values.
      * <p>Definition generated from cef_resource_bundle.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:62</a>
      */
     public CompletableFuture<String> getLocalizedString(int stringId) {
         return session
@@ -51,7 +51,7 @@ public final class ResourceBundle {
      * Returns a CefBinaryValue containing the decompressed contents of the specified scale independent {@code resource_id} or {@code null} if not found. Use the cef_id_for_pack_resource_name() function for version-safe mapping of resource IDR names from cef_pack_resources.h to version-specific numerical {@code resource_id} values.
      * <p>Definition generated from cef_resource_bundle.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:71</a>
      */
     public CompletableFuture<BinaryValue> getDataResource(int resourceId) {
         return session
@@ -64,7 +64,7 @@ public final class ResourceBundle {
      * Returns a CefBinaryValue containing the decompressed contents of the specified {@code resource_id} nearest the scale factor {@code scale_factor} or {@code null} if not found. Use a {@code scale_factor} value of SCALE_FACTOR_NONE for scale independent resources or call GetDataResource instead. Use the cef_id_for_pack_resource_name() function for version-safe mapping of resource IDR names from cef_pack_resources.h to version-specific numerical {@code resource_id} values.
      * <p>Definition generated from cef_resource_bundle.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle_8h.html">cef_resource_bundle.h:81</a>
      */
     public CompletableFuture<BinaryValue> getDataResourceForScale(int resourceId, int scaleFactor) {
         return session

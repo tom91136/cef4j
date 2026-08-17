@@ -35,21 +35,27 @@ sign_and_checksum() {
   sha1sum "${file}.asc" | awk '{print $1}' > "${file}.asc.sha1"
 }
 
-publish_component() {
+staging=${work}/staging
+repository_path=${staging}/net/kurobako/cef4j
+bundle=${work}/cef4j-native-${version}-central.zip
+
+stage_component() {
   local source_artifact=$1
   local public_artifact=$2
   local extension=$3
   shift 3
   local component_classifiers=("$@")
-  local staging=${work}/${public_artifact}
-  local repository_path=${staging}/net/kurobako/cef4j
   local component_path=${repository_path}/${public_artifact}/${version}
-  local bundle=${work}/${public_artifact}-${version}-central.zip
 
   mkdir -p "${component_path}"
-  # The reactor modules are build machinery. Publish OS-family coordinates so no
-  # Central deployment has to contain every large CEF classifier under one GAV.
-  sed "0,/<artifactId>${source_artifact}<\/artifactId>/s//<artifactId>${public_artifact}<\/artifactId>/" \
+  # Publish stable OS-family coordinates and consumer metadata, excluding the
+  # reactor-only machinery used to compile and assemble these native artifacts.
+  sed \
+    -e "0,/<artifactId>${source_artifact}<\/artifactId>/s//<artifactId>${public_artifact}<\/artifactId>/" \
+    -e '/    <properties>/,/    <\/properties>/d' \
+    -e '/    <dependencies>/,/    <\/dependencies>/d' \
+    -e '/    <build>/,/    <\/build>/d' \
+    -e '/    <profiles>/,/    <\/profiles>/d' \
     "${source_artifact}/pom.xml" > "${component_path}/${public_artifact}-${version}.pom"
 
   local classifier source
@@ -59,30 +65,29 @@ publish_component() {
     cp "${source}" "${component_path}/${public_artifact}-${version}-${classifier#*-}.${extension}"
   done
 
-  while IFS= read -r -d '' file; do
-    sign_and_checksum "${file}"
-  done < <(find "${repository_path}" -type f \( -name '*.pom' -o -name '*.jar' -o -name '*.zip' \) -print0)
-
-  (cd "${staging}" && zip -q -r "${bundle}" .)
-  local size
-  size=$(stat -c '%s' "${bundle}")
-  if (( size >= 1000000000 )); then
-    echo "${public_artifact} Central bundle is ${size} bytes; the limit is 1000000000" >&2
-    return 1
-  fi
-
-  local token deployment_id
-  token=$(printf '%s:%s' "${CENTRAL_USERNAME}" "${CENTRAL_TOKEN}" | base64 -w0)
-  deployment_id=$(curl --fail-with-body --silent --show-error --request POST \
-    --header "Authorization: Bearer ${token}" \
-    --form "bundle=@${bundle};type=application/octet-stream" \
-    "https://central.sonatype.com/api/v1/publisher/upload?name=${public_artifact}-${version}&publishingType=USER_MANAGED")
-  echo "Uploaded ${public_artifact} (${size} bytes) as Central deployment ${deployment_id}"
 }
 
-publish_component cef4j-platform cef4j-platform-linux jar linux-x86_64 linux-arm64
-publish_component cef4j-platform cef4j-platform-windows jar windows-x86_64 windows-arm64
-publish_component cef4j-platform cef4j-platform-macos jar macosx-x86_64 macosx-arm64
-publish_component cef4j-runtime-server cef4j-runtime-server-linux zip linux-x86_64 linux-arm64
-publish_component cef4j-runtime-server cef4j-runtime-server-windows zip windows-x86_64 windows-arm64
-publish_component cef4j-runtime-server cef4j-runtime-server-macos zip macosx-x86_64 macosx-arm64
+stage_component cef4j-platform cef4j-platform-linux jar linux-x86_64 linux-arm64
+stage_component cef4j-platform cef4j-platform-windows jar windows-x86_64 windows-arm64
+stage_component cef4j-platform cef4j-platform-macos jar macosx-x86_64 macosx-arm64
+stage_component cef4j-runtime-server cef4j-runtime-server-linux zip linux-x86_64 linux-arm64
+stage_component cef4j-runtime-server cef4j-runtime-server-windows zip windows-x86_64 windows-arm64
+stage_component cef4j-runtime-server cef4j-runtime-server-macos zip macosx-x86_64 macosx-arm64
+
+while IFS= read -r -d '' file; do
+  sign_and_checksum "${file}"
+done < <(find "${repository_path}" -type f \( -name '*.pom' -o -name '*.jar' -o -name '*.zip' \) -print0)
+
+(cd "${staging}" && zip -q -r "${bundle}" .)
+size=$(stat -c '%s' "${bundle}")
+if (( size >= 1000000000 )); then
+  echo "native Central bundle is ${size} bytes; the limit is 1000000000" >&2
+  exit 1
+fi
+
+token=$(printf '%s:%s' "${CENTRAL_USERNAME}" "${CENTRAL_TOKEN}" | base64 -w0)
+deployment_id=$(curl --fail-with-body --silent --show-error --request POST \
+  --header "Authorization: Bearer ${token}" \
+  --form "bundle=@${bundle};type=application/octet-stream" \
+  "https://central.sonatype.com/api/v1/publisher/upload?name=cef4j-native-${version}&publishingType=USER_MANAGED")
+echo "Uploaded all native bridges (${size} bytes) as Central deployment ${deployment_id}"

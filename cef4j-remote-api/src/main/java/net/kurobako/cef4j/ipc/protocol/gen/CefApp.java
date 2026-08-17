@@ -19,7 +19,7 @@ public interface CefApp {
      *
      * @param processType may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:195</a>
      */
     default void onBeforeCommandLineProcessing(String processType, net.kurobako.cef4j.ipc.session.RemoteHandle commandLine) {}
 
@@ -27,7 +27,7 @@ public interface CefApp {
      * Provides an opportunity to register custom schemes. Do not keep a reference to the {@code registrar} object. This method is called on the main thread for each process and the registered schemes should be the same across all processes.
      * <p>Definition generated from cef_app.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:212</a>
      */
     default void onRegisterCustomSchemes(net.kurobako.cef4j.ipc.session.RemoteHandle registrar) {}
 

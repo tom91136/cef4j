@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_app_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:188</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:188</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefApp extends CefClientHandler {
 
@@ -26,7 +26,7 @@ public interface CefApp extends CefClientHandler {
      *
      * @param processType may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:195</a>
      */
     default void onBeforeCommandLineProcessing(@Nullable String processType, @Nullable CefCommandLine commandLine) {
     }
@@ -36,7 +36,7 @@ public interface CefApp extends CefClientHandler {
      * <p>Definition generated from cef_app_capi.h
      * <pre>void (CEF_CALLBACK* on_register_custom_schemes)(struct _cef_app_t* self, struct _cef_scheme_registrar_t* registrar);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:212</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:212</a>
      */
     default void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
     }
@@ -46,7 +46,7 @@ public interface CefApp extends CefClientHandler {
      * <p>Definition generated from cef_app_capi.h
      * <pre>cef_resource_bundle_handler_t* (CEF_CALLBACK* get_resource_bundle_handler)(struct _cef_app_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:222</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:222</a>
      */
     default Optional<CefResourceBundleHandler> getResourceBundleHandler() {
         return Optional.empty();
@@ -57,7 +57,7 @@ public interface CefApp extends CefClientHandler {
      * <p>Definition generated from cef_app_capi.h
      * <pre>cef_browser_process_handler_t* (CEF_CALLBACK* get_browser_process_handler)(struct _cef_app_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:232</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:232</a>
      */
     default Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
         return Optional.empty();
@@ -68,7 +68,7 @@ public interface CefApp extends CefClientHandler {
      * <p>Definition generated from cef_app_capi.h
      * <pre>cef_render_process_handler_t* (CEF_CALLBACK* get_render_process_handler)(struct _cef_app_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__app_8h.html">cef_app.h:241</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:241</a>
      */
     default Optional<CefRenderProcessHandler> getRenderProcessHandler() {
         return Optional.empty();

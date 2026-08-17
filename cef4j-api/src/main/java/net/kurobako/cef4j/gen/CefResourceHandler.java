@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_resource_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:82</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:82</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResourceHandler extends CefClientHandler {
 
@@ -25,7 +25,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>int (CEF_CALLBACK* open)(struct _cef_resource_handler_t* self, struct _cef_request_t* request, int* handle_request, struct _cef_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:89</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:89</a>
      */
     default boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
         return false;
@@ -38,7 +38,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>int (CEF_CALLBACK* process_request)(struct _cef_resource_handler_t* self, struct _cef_request_t* request, struct _cef_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
      */
     default boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
         return false;
@@ -49,7 +49,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>void (CEF_CALLBACK* get_response_headers)(struct _cef_resource_handler_t* self, struct _cef_response_t* response, int64_t* response_length, cef_string_t* redirectUrl);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:122</a>
      */
     default void getResponseHeaders(@Nullable CefResponse response, long[] responseLength, @Nullable String redirectUrl) {
     }
@@ -59,7 +59,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>int (CEF_CALLBACK* skip)(struct _cef_resource_handler_t* self, int64_t bytes_to_skip, int64_t* bytes_skipped, struct _cef_resource_skip_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:142</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:142</a>
      */
     default boolean skip(long bytesToSkip, long[] bytesSkipped, @Nullable CefResourceSkipCallback callback) {
         return false;
@@ -73,7 +73,7 @@ public interface CefResourceHandler extends CefClientHandler {
      *
      * @param dataOut <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:159</a>
      */
     default boolean read(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
         return false;
@@ -89,7 +89,7 @@ public interface CefResourceHandler extends CefClientHandler {
      *
      * @param dataOut <b>a direct {@link java.nio.ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:181</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:181</a>
      */
     default boolean readResponse(@Nonnull ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
         return false;
@@ -100,7 +100,7 @@ public interface CefResourceHandler extends CefClientHandler {
      * <p>Definition generated from cef_resource_handler_capi.h
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_resource_handler_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__resource__handler_8h.html">cef_resource_handler.h:199</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:199</a>
      */
     default void cancel() {
     }

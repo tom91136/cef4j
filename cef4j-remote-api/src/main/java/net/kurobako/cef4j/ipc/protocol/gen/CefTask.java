@@ -16,7 +16,7 @@ public interface CefTask {
      * Method that will be executed on the target thread.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:55</a>
      */
 
     void execute();

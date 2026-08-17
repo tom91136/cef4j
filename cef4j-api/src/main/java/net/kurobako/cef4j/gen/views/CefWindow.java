@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
 import javax.annotation.processing.Generated;
@@ -27,9 +27,9 @@ import net.kurobako.cef4j.gen.CefSize;
  *   ...
  * } cef_window_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:51</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:51</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefWindow extends CefPanel {
 
@@ -38,7 +38,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* show)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:68</a>
      */
     void show();
 
@@ -47,7 +47,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* show_as_browser_modal_dialog)(struct _cef_window_t* self, struct _cef_browser_view_t* browser_view);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:74</a>
      */
     void showAsBrowserModalDialog(@Nullable CefBrowserView browserView);
 
@@ -56,7 +56,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* hide)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:88</a>
      */
     void hide();
 
@@ -65,7 +65,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* center_window)(struct _cef_window_t* self, const cef_size_t* size);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:94</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:94</a>
      */
     void centerWindow(@Nonnull CefSize size);
 
@@ -74,7 +74,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* close)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:100</a>
      */
     void cefClose();
 
@@ -83,7 +83,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_closed)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:106</a>
      */
     boolean isClosed();
 
@@ -92,7 +92,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* activate)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:112</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:112</a>
      */
     void activate();
 
@@ -101,7 +101,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* deactivate)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:118</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:118</a>
      */
     void deactivate();
 
@@ -110,7 +110,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_active)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:125</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:125</a>
      */
     boolean isActive();
 
@@ -119,7 +119,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* bring_to_top)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:131</a>
      */
     void bringToTop();
 
@@ -128,7 +128,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_always_on_top)(struct _cef_window_t* self, int on_top);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:137</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:137</a>
      */
     void setAlwaysOnTop(boolean onTop);
 
@@ -137,7 +137,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_always_on_top)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:143</a>
      */
     boolean isAlwaysOnTop();
 
@@ -146,7 +146,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* maximize)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:150</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:150</a>
      */
     void maximize();
 
@@ -155,7 +155,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* minimize)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:156</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:156</a>
      */
     void minimize();
 
@@ -164,7 +164,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* restore)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:162</a>
      */
     void restore();
 
@@ -173,7 +173,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_fullscreen)(struct _cef_window_t* self, int fullscreen);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:168</a>
      */
     void setFullscreen(boolean fullscreen);
 
@@ -182,7 +182,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_maximized)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:176</a>
      */
     boolean isMaximized();
 
@@ -191,7 +191,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_minimized)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:182</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:182</a>
      */
     boolean isMinimized();
 
@@ -200,7 +200,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int (CEF_CALLBACK* is_fullscreen)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:188</a>
      */
     boolean isFullscreen();
 
@@ -209,7 +209,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_view_t* (CEF_CALLBACK* get_focused_view)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:194</a>
      */
     Optional<CefView> getFocusedView();
 
@@ -220,7 +220,7 @@ public interface CefWindow extends CefPanel {
      *
      * @param title may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:203</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:203</a>
      */
     void setTitle(@Nullable String title);
 
@@ -229,7 +229,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_title)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:209</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:209</a>
      */
     Optional<String> getTitle();
 
@@ -238,7 +238,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_window_icon)(struct _cef_window_t* self, struct _cef_image_t* image);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:215</a>
      */
     void setWindowIcon(@Nullable CefImage image);
 
@@ -247,7 +247,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_image_t* (CEF_CALLBACK* get_window_icon)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:222</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:222</a>
      */
     Optional<CefImage> getWindowIcon();
 
@@ -256,7 +256,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_window_app_icon)(struct _cef_window_t* self, struct _cef_image_t* image);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:228</a>
      */
     void setWindowAppIcon(@Nullable CefImage image);
 
@@ -265,7 +265,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_image_t* (CEF_CALLBACK* get_window_app_icon)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:237</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:237</a>
      */
     Optional<CefImage> getWindowAppIcon();
 
@@ -280,7 +280,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_overlay_controller_t* (CEF_CALLBACK* add_overlay_view)(struct _cef_window_t* self, struct _cef_view_t* view, cef_docking_mode_t docking_mode, int can_activate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:243</a>
      */
     Optional<CefOverlayController> addOverlayView(@Nullable CefView view, @Nonnull CefDockingMode dockingMode, boolean canActivate);
 
@@ -289,7 +289,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* show_menu)(struct _cef_window_t* self, struct _cef_menu_model_t* menu_model, const cef_point_t* screen_point, cef_menu_anchor_position_t anchor_position);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:279</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:279</a>
      */
     void showMenu(@Nullable CefMenuModel menuModel, @Nonnull CefPoint screenPoint, @Nonnull CefMenuAnchorPosition anchorPosition);
 
@@ -298,7 +298,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* cancel_menu)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:289</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:289</a>
      */
     void cancelMenu();
 
@@ -307,7 +307,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_display_t* (CEF_CALLBACK* get_display)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:295</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:295</a>
      */
     Optional<CefDisplay> getDisplay();
 
@@ -316,7 +316,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_client_area_bounds_in_screen)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:302</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:302</a>
      */
     CefRect getClientAreaBoundsInScreen();
 
@@ -327,7 +327,7 @@ public interface CefWindow extends CefPanel {
      *
      * @param regions may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:309</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:309</a>
      */
     void setDraggableRegions(long regionsCount, @Nullable CefDraggableRegion[] regions);
 
@@ -336,7 +336,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_window_handle)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:319</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:319</a>
      */
     long getWindowHandle();
 
@@ -345,7 +345,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* send_key_press)(struct _cef_window_t* self, int key_code, uint32_t event_flags);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:325</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:325</a>
      */
     void sendKeyPress(int keyCode, int eventFlags);
 
@@ -354,7 +354,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* send_mouse_move)(struct _cef_window_t* self, int screen_x, int screen_y);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:335</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:335</a>
      */
     void sendMouseMove(int screenX, int screenY);
 
@@ -363,7 +363,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* send_mouse_events)(struct _cef_window_t* self, cef_mouse_button_type_t button, int mouse_down, int mouse_up);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:343</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:343</a>
      */
     void sendMouseEvents(@Nonnull CefMouseButtonType button, boolean mouseDown, boolean mouseUp);
 
@@ -374,7 +374,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_accelerator)(struct _cef_window_t* self, int command_id, int key_code, int shift_pressed, int ctrl_pressed, int alt_pressed, int high_priority);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:357</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:357</a>
      */
     void setAccelerator(int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed, boolean highPriority);
 
@@ -383,7 +383,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* remove_accelerator)(struct _cef_window_t* self, int command_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:379</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:379</a>
      */
     void removeAccelerator(int commandId);
 
@@ -392,7 +392,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* remove_all_accelerators)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:385</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:385</a>
      */
     void removeAllAccelerators();
 
@@ -407,7 +407,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* set_theme_color)(struct _cef_window_t* self, int color_id, cef_color_t color);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:391</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:391</a>
      */
     void setThemeColor(int colorId, int color);
 
@@ -418,7 +418,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>void (CEF_CALLBACK* theme_changed)(struct _cef_window_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:416</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:416</a>
      */
     void themeChanged();
 
@@ -429,7 +429,7 @@ public interface CefWindow extends CefPanel {
      *
      * @return the result, or {@code CEF_RUNTIME_STYLE_DEFAULT} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:428</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:428</a>
      */
     CefRuntimeStyle getRuntimeStyle();
     /**
@@ -437,7 +437,7 @@ public interface CefWindow extends CefPanel {
      * <p>Definition generated from views/cef_window_capi.h
      * <pre>CEF_EXPORT cef_window_t* cef_window_create_top_level(struct _cef_window_delegate_t* delegate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__window_8h.html">views/cef_window.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window_8h.html">views/cef_window.h:61</a>
      */
     static Optional<CefWindow> createTopLevel(@Nullable CefWindowDelegate delegate) {
       return Optional.ofNullable(NativePeer.createTopLevel0(delegate));

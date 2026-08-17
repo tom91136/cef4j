@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * Defines commands and events for browser extensions.
  * <p><b>Experimental:</b> this part of CDP may change without notice.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Extensions.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Extensions.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Extensions {
@@ -31,7 +31,113 @@ public final class Extensions {
         public static final String MANAGED = "managed";
     }
     /**
-     * Runs an extension default action. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+     * Detailed information about an extension.
+     */
+    public static final class ExtensionInfo extends CdpObject {
+        private ExtensionInfo(Map<String, Object> values) { super(values); }
+        @Nullable public static ExtensionInfo fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new ExtensionInfo(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Extension id.
+         * @return the protocol field value
+         */
+        @Nullable public String id() {
+            return (String) value("id");
+        }
+        /**
+         * Extension name.
+         * @return the protocol field value
+         */
+        @Nullable public String name() {
+            return (String) value("name");
+        }
+        /**
+         * Extension version.
+         * @return the protocol field value
+         */
+        @Nullable public String version() {
+            return (String) value("version");
+        }
+        /**
+         * The path from which the extension was loaded.
+         * @return the protocol field value
+         */
+        @Nullable public String path() {
+            return (String) value("path");
+        }
+        /**
+         * Extension enabled status.
+         * @return the protocol field value
+         */
+        @Nullable public Boolean enabled() {
+            return (Boolean) value("enabled");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Extension id.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder id(@Nullable String value) {
+                if (value == null) values.remove("id");
+                else values.put("id", jsonValue(value));
+                return this;
+            }
+            /**
+             * Extension name.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder name(@Nullable String value) {
+                if (value == null) values.remove("name");
+                else values.put("name", jsonValue(value));
+                return this;
+            }
+            /**
+             * Extension version.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder version(@Nullable String value) {
+                if (value == null) values.remove("version");
+                else values.put("version", jsonValue(value));
+                return this;
+            }
+            /**
+             * The path from which the extension was loaded.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder path(@Nullable String value) {
+                if (value == null) values.remove("path");
+                else values.put("path", jsonValue(value));
+                return this;
+            }
+            /**
+             * Extension enabled status.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder enabled(@Nullable Boolean value) {
+                if (value == null) values.remove("enabled");
+                else values.put("enabled", jsonValue(value));
+                return this;
+            }
+            public ExtensionInfo build() {
+                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
+                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
+                if (!values.containsKey("version")) throw new IllegalStateException("Missing required CDP field: version");
+                if (!values.containsKey("path")) throw new IllegalStateException("Missing required CDP field: path");
+                if (!values.containsKey("enabled")) throw new IllegalStateException("Missing required CDP field: enabled");
+                return new ExtensionInfo(values);
+            }
+        }
+    }
+    /**
+     * Runs an extension default action.
      */
     public static final class TriggerActionParams extends CdpObject {
         private TriggerActionParams(Map<String, Object> values) { super(values); }
@@ -83,7 +189,7 @@ public final class Extensions {
         }
     }
     /**
-     * Runs an extension default action. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+     * Runs an extension default action.
      */
     public static final class TriggerActionResult extends CdpObject {
         private TriggerActionResult(Map<String, Object> values) { super(values); }
@@ -99,7 +205,7 @@ public final class Extensions {
         }
     }
     /**
-     * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+     * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed.
      */
     public static final class LoadUnpackedParams extends CdpObject {
         private LoadUnpackedParams(Map<String, Object> values) { super(values); }
@@ -150,7 +256,7 @@ public final class Extensions {
         }
     }
     /**
-     * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+     * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed.
      */
     public static final class LoadUnpackedResult extends CdpObject {
         private LoadUnpackedResult(Map<String, Object> values) { super(values); }
@@ -184,7 +290,57 @@ public final class Extensions {
         }
     }
     /**
-     * Uninstalls an unpacked extension (others not supported) from the profile. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging.
+     * Gets a list of all unpacked extensions.
+     */
+    public static final class GetExtensionsParams extends CdpObject {
+        private GetExtensionsParams(Map<String, Object> values) { super(values); }
+        @Nullable public static GetExtensionsParams fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new GetExtensionsParams(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            public GetExtensionsParams build() {
+                return new GetExtensionsParams(values);
+            }
+        }
+    }
+    /**
+     * Gets a list of all unpacked extensions.
+     */
+    public static final class GetExtensionsResult extends CdpObject {
+        private GetExtensionsResult(Map<String, Object> values) { super(values); }
+        @Nullable public static GetExtensionsResult fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new GetExtensionsResult(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the extensions field.
+         * @return the protocol field value
+         */
+        @Nullable public java.util.List<Extensions.ExtensionInfo> extensions() {
+            return list(value("extensions"), element0 -> Extensions.ExtensionInfo.fromMap(objectMap(element0)));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the extensions field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder extensions(@Nullable java.util.List<Extensions.ExtensionInfo> value) {
+                if (value == null) values.remove("extensions");
+                else values.put("extensions", jsonValue(value));
+                return this;
+            }
+            public GetExtensionsResult build() {
+                if (!values.containsKey("extensions")) throw new IllegalStateException("Missing required CDP field: extensions");
+                return new GetExtensionsResult(values);
+            }
+        }
+    }
+    /**
+     * Uninstalls an unpacked extension (others not supported) from the profile.
      */
     public static final class UninstallParams extends CdpObject {
         private UninstallParams(Map<String, Object> values) { super(values); }
@@ -218,7 +374,7 @@ public final class Extensions {
         }
     }
     /**
-     * Uninstalls an unpacked extension (others not supported) from the profile. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging.
+     * Uninstalls an unpacked extension (others not supported) from the profile.
      */
     public static final class UninstallResult extends CdpObject {
         private UninstallResult(Map<String, Object> values) { super(values); }
@@ -580,7 +736,7 @@ public final class Extensions {
         private final CdpClient client;
         public Client(CdpClient client) { this.client = client; }
         /**
-         * Runs an extension default action. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+         * Runs an extension default action.
          * @param params command parameters
          * @return a stage completing with the command result
          */
@@ -588,7 +744,7 @@ public final class Extensions {
             return client.call("Extensions.triggerAction", params, TriggerActionResult::fromMap);
         }
         /**
-         * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging flag is set.
+         * Installs an unpacked extension from the filesystem similar to --load-extension CLI flags. Returns extension ID once the extension has been installed.
          * @param params command parameters
          * @return a stage completing with the command result
          */
@@ -596,7 +752,14 @@ public final class Extensions {
             return client.call("Extensions.loadUnpacked", params, LoadUnpackedResult::fromMap);
         }
         /**
-         * Uninstalls an unpacked extension (others not supported) from the profile. Available if the client is connected using the --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging.
+         * Gets a list of all unpacked extensions.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetExtensionsResult> getExtensions() {
+            return client.call("Extensions.getExtensions", null, GetExtensionsResult::fromMap);
+        }
+        /**
+         * Uninstalls an unpacked extension (others not supported) from the profile.
          * @param params command parameters
          * @return a stage completing with the command result
          */

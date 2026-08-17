@@ -17,7 +17,7 @@ public interface CefRenderHandler {
      * Called when the browser wants to show or hide the popup widget. The popup should be shown if {@code show} is {@code true} and hidden if {@code show} is {@code false}.
      * <p>Definition generated from cef_render_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:117</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:117</a>
      */
     default void onPopupShow(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int show) {}
 
@@ -25,7 +25,7 @@ public interface CefRenderHandler {
      * Called when the browser wants to move or resize the popup widget. {@code rect} contains the new location and size in view coordinates.
      * <p>Definition generated from cef_render_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
      */
     default void onPopupSize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Rect rect) {}
 
@@ -37,7 +37,7 @@ public interface CefRenderHandler {
      * Return {@code true} to handle the drag operation. Call {@code CefBrowserHost.dragSourceEndedAt()} and DragSourceSystemDragEnded either synchronously or asynchronously to inform the web view that the drag operation has ended.
      * <p>Definition generated from cef_render_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
      */
     @Nullable
     default Boolean startDragging(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int allowedOps, int x, int y) { return null; }
@@ -46,7 +46,7 @@ public interface CefRenderHandler {
      * Called when the web view wants to update the mouse cursor during a drag &amp; drop operation. {@code operation} describes the allowed operation (none, move, copy, link).
      * <p>Definition generated from cef_render_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:216</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:216</a>
      */
     default void updateDragCursor(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int operation) {}
 
@@ -57,7 +57,7 @@ public interface CefRenderHandler {
      * @param selectedText may be null
      * @param selectedRange may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
      */
     default void onTextSelectionChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String selectedText, Range selectedRange) {}
 
@@ -65,7 +65,7 @@ public interface CefRenderHandler {
      * Called when an on-screen keyboard should be shown or hidden for the specified {@code browser}. {@code input_mode} specifies what kind of keyboard should be opened. If {@code input_mode} is {@code CEF_TEXT_INPUT_MODE_NONE}, any existing keyboard for this browser should be hidden.
      * <p>Definition generated from cef_render_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__handler_8h.html">cef_render_handler.h:253</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:253</a>
      */
     default void onVirtualKeyboardRequested(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int inputMode) {}
 

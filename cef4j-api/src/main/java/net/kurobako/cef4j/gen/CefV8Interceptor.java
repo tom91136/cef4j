@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_v8_interceptor_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:284</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:284</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefV8Interceptor extends CefClientHandler {
 
@@ -24,7 +24,7 @@ public interface CefV8Interceptor extends CefClientHandler {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* get_byname)(struct _cef_v8_interceptor_t* self, const cef_string_t* name, struct _cef_v8_value_t* object, struct _cef_v8_value_t** retval, cef_string_t* exception);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:295</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:295</a>
      */
     default int getByname(@Nullable String name, @Nullable CefV8Value object, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
         return 0;
@@ -37,7 +37,7 @@ public interface CefV8Interceptor extends CefClientHandler {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:310</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:310</a>
      */
     default int getByindex(int index, @Nullable CefV8Value object, @Nullable AtomicReference<CefV8Value> retval, @Nullable String exception) {
         return 0;
@@ -48,7 +48,7 @@ public interface CefV8Interceptor extends CefClientHandler {
      * <p>Definition generated from cef_v8_capi.h
      * <pre>int (CEF_CALLBACK* set_byname)(struct _cef_v8_interceptor_t* self, const cef_string_t* name, struct _cef_v8_value_t* object, struct _cef_v8_value_t* value, cef_string_t* exception);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:324</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:324</a>
      */
     default int setByname(@Nullable String name, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
         return 0;
@@ -61,7 +61,7 @@ public interface CefV8Interceptor extends CefClientHandler {
      *
      * @param index zero-based index
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:338</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:338</a>
      */
     default int setByindex(int index, @Nullable CefV8Value object, @Nullable CefV8Value value, @Nullable String exception) {
         return 0;

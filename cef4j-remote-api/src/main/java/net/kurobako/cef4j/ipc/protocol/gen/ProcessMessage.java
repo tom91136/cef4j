@@ -39,7 +39,7 @@ public final class ProcessMessage {
      * Returns {@code true} if this object is valid. Do not call any other methods if this function returns {@code false}.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:59</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:59</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class ProcessMessage {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:66</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -63,7 +63,7 @@ public final class ProcessMessage {
      * Returns a writable copy of this object. Returns {@code null} when message contains a shared memory region.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:73</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:73</a>
      */
     public CompletableFuture<ProcessMessage> copy() {
         return session
@@ -76,7 +76,7 @@ public final class ProcessMessage {
      * Returns the message name.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:80</a>
      */
     public CompletableFuture<String> getName() {
         return session
@@ -88,7 +88,7 @@ public final class ProcessMessage {
      * Returns the list of arguments. Returns {@code null} when message contains a shared memory region.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:86</a>
      */
     public CompletableFuture<ListValue> getArgumentList() {
         return session
@@ -101,7 +101,7 @@ public final class ProcessMessage {
      * Returns the shared memory region. Returns {@code null} when message contains an argument list.
      * <p>Definition generated from cef_process_message.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__process__message_8h.html">cef_process_message.h:93</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__process__message_8h.html">cef_process_message.h:93</a>
      */
     public CompletableFuture<SharedMemoryRegion> getSharedMemoryRegion() {
         return session

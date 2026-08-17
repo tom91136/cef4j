@@ -17,7 +17,7 @@ public interface CefDragHandler {
      * Called when an external drag event enters the browser window. {@code dragData} contains the drag event data and {@code mask} represents the type of drag operation. Return {@code false} for default drag handling behavior or {@code true} to cancel the drag event.
      * <p>Definition generated from cef_drag_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
     @Nullable
     default Boolean onDragEnter(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int mask) { return null; }

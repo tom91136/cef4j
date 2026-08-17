@@ -39,7 +39,7 @@ public final class TaskRunner {
      * Returns {@code true} if this object is pointing to the same task runner as {@code that} object.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:88</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:88</a>
      */
     public CompletableFuture<Integer> isSame(@Nonnull RemoteHandle that) {
         return session
@@ -51,7 +51,7 @@ public final class TaskRunner {
      * Returns {@code true} if this task runner belongs to the current thread.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:95</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:95</a>
      */
     public CompletableFuture<Integer> belongsToCurrentThread() {
         return session
@@ -63,7 +63,7 @@ public final class TaskRunner {
      * Returns {@code true} if this task runner is for the specified CEF thread.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:101</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:101</a>
      */
     public CompletableFuture<Integer> belongsToThread(int threadId) {
         return session
@@ -75,7 +75,7 @@ public final class TaskRunner {
      * Post a task for execution on the thread associated with this task runner. Execution will occur asynchronously.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:107</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:107</a>
      */
     public CompletableFuture<Integer> postTask(@Nonnull RemoteHandle task) {
         return session
@@ -87,7 +87,7 @@ public final class TaskRunner {
      * Post a task for delayed execution on the thread associated with this task runner. Execution will occur asynchronously. Delayed tasks are not supported on V8 WebWorker threads and will be executed without the specified delay.
      * <p>Definition generated from cef_task.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task_8h.html">cef_task.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task_8h.html">cef_task.h:114</a>
      */
     public CompletableFuture<Integer> postDelayedTask(@Nonnull RemoteHandle task, long delayMs) {
         return session

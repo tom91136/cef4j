@@ -39,7 +39,7 @@ public final class NavigationEntry {
      * Returns {@code true} if this object is valid. Do not call any other methods if this function returns {@code false}.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:52</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class NavigationEntry {
      * Get the resolved URL after redirects or changed as a result of HSTS.
      * <p>Definition generated from cef_response.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     public CompletableFuture<String> getUrl() {
         return session
@@ -63,7 +63,7 @@ public final class NavigationEntry {
      * Returns a display-friendly version of the URL.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:66</a>
      */
     public CompletableFuture<String> getDisplayUrl() {
         return session
@@ -75,7 +75,7 @@ public final class NavigationEntry {
      * Returns the original URL before any redirections.
      * <p>Definition generated from cef_download_item.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__item_8h.html">cef_download_item.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:149</a>
      */
     public CompletableFuture<String> getOriginalUrl() {
         return session
@@ -87,7 +87,7 @@ public final class NavigationEntry {
      * Returns the title set by the page. This value may be empty.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
      */
     public CompletableFuture<String> getTitle() {
         return session
@@ -99,7 +99,7 @@ public final class NavigationEntry {
      * Returns the transition type which indicates what the user did to move to this page from the previous page.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:85</a>
      */
     public CompletableFuture<Integer> getTransitionType() {
         return session
@@ -111,7 +111,7 @@ public final class NavigationEntry {
      * Returns {@code true} if this navigation includes post data.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:92</a>
      */
     public CompletableFuture<Integer> hasPostData() {
         return session
@@ -123,7 +123,7 @@ public final class NavigationEntry {
      * Returns the time for the last known successful navigation completion. A navigation may be completed more than once if the page is reloaded. May be 0 if the navigation has not yet completed.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:98</a>
      */
     public CompletableFuture<Basetime> getCompletionTime() {
         return session
@@ -135,7 +135,7 @@ public final class NavigationEntry {
      * Returns the HTTP status code for the last known successful navigation response. May be 0 if the response has not yet been received or if the navigation has not yet completed.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:106</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:106</a>
      */
     public CompletableFuture<Integer> getHttpStatusCode() {
         return session
@@ -147,7 +147,7 @@ public final class NavigationEntry {
      * Returns the SSL information for this navigation entry.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:114</a>
      */
     public CompletableFuture<Sslstatus> getSslstatus() {
         return session

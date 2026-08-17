@@ -39,7 +39,7 @@ public final class Sslinfo {
      * Returns a bitmask containing any and all problems verifying the server certificate.
      * <p>Definition generated from cef_ssl_info.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:51</a>
      */
     public CompletableFuture<Integer> getCertStatus() {
         return session
@@ -51,7 +51,7 @@ public final class Sslinfo {
      * Returns the X.509 certificate.
      * <p>Definition generated from cef_ssl_info.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__ssl__info_8h.html">cef_ssl_info.h:58</a>
      */
     public CompletableFuture<X509Certificate> getX509Certificate() {
         return session

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -17,9 +17,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_print_settings_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefPrintSettings extends CefLibraryObject {
 
@@ -28,7 +28,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:61</a>
      */
     boolean isValid();
 
@@ -37,7 +37,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
      */
     boolean isReadOnly();
 
@@ -46,7 +46,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_orientation)(struct _cef_print_settings_t* self, int landscape);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
      */
     void setOrientation(boolean landscape);
 
@@ -55,7 +55,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* is_landscape)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:81</a>
      */
     boolean isLandscape();
 
@@ -64,7 +64,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_printer_printable_area)(struct _cef_print_settings_t* self, const cef_size_t* physical_size_device_units, const cef_rect_t* printable_area_device_units, int landscape_needs_flip);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
      */
     void setPrinterPrintableArea(@Nonnull CefSize physicalSizeDeviceUnits, @Nonnull CefRect printableAreaDeviceUnits, boolean landscapeNeedsFlip);
 
@@ -75,7 +75,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
      */
     void setDeviceName(@Nullable String name);
 
@@ -84,7 +84,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_device_name)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:104</a>
      */
     Optional<String> getDeviceName();
 
@@ -93,7 +93,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_dpi)(struct _cef_print_settings_t* self, int dpi);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
      */
     void setDpi(int dpi);
 
@@ -102,7 +102,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* get_dpi)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:116</a>
      */
     int getDpi();
 
@@ -111,7 +111,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_page_ranges)(struct _cef_print_settings_t* self, size_t rangesCount, cef_range_t const* ranges);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:122</a>
      */
     void setPageRanges(long rangesCount, @Nonnull CefRange[] ranges);
 
@@ -120,7 +120,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>size_t (CEF_CALLBACK* get_page_ranges_count)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:128</a>
      */
     long getPageRangesCount();
 
@@ -132,7 +132,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>const cef_range_t** (CEF_CALLBACK* get_page_ranges)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:134</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:134</a>
      */
     List<CefRange> getPageRanges();
 
@@ -141,7 +141,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_selection_only)(struct _cef_print_settings_t* self, int selection_only);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
      */
     void setSelectionOnly(boolean selectionOnly);
 
@@ -150,7 +150,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* is_selection_only)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:146</a>
      */
     boolean isSelectionOnly();
 
@@ -159,7 +159,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_collate)(struct _cef_print_settings_t* self, int collate);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
      */
     void setCollate(boolean collate);
 
@@ -168,7 +168,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* will_collate)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:158</a>
      */
     boolean willCollate();
 
@@ -177,7 +177,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_color_model)(struct _cef_print_settings_t* self, cef_color_model_t model);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
      */
     void setColorModel(@Nonnull CefColorModel model);
 
@@ -188,7 +188,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      *
      * @return the result, or {@code COLOR_MODEL_UNKNOWN} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:170</a>
      */
     CefColorModel getColorModel();
 
@@ -197,7 +197,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_copies)(struct _cef_print_settings_t* self, int copies);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
      */
     void setCopies(int copies);
 
@@ -206,7 +206,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>int (CEF_CALLBACK* get_copies)(struct _cef_print_settings_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:182</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:182</a>
      */
     int getCopies();
 
@@ -215,7 +215,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>void (CEF_CALLBACK* set_duplex_mode)(struct _cef_print_settings_t* self, cef_duplex_mode_t mode);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
      */
     void setDuplexMode(@Nonnull CefDuplexMode mode);
 
@@ -226,7 +226,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      *
      * @return the result, or {@code DUPLEX_MODE_UNKNOWN} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:194</a>
      */
     CefDuplexMode getDuplexMode();
     /**
@@ -234,7 +234,7 @@ public interface CefPrintSettings extends CefLibraryObject {
      * <p>Definition generated from cef_print_settings_capi.h
      * <pre>CEF_EXPORT cef_print_settings_t* cef_print_settings_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:55</a>
      */
     static Optional<CefPrintSettings> create() {
       return Optional.ofNullable(NativePeer.create0());

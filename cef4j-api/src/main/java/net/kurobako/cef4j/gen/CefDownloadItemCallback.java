@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -11,9 +11,9 @@ import javax.annotation.processing.Generated;
  *   ...
  * } cef_download_item_callback_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:61</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:61</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDownloadItemCallback extends CefLibraryObject {
 
@@ -22,7 +22,7 @@ public interface CefDownloadItemCallback extends CefLibraryObject {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>void (CEF_CALLBACK* cancel)(struct _cef_download_item_callback_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
      */
     void cancel();
 
@@ -31,7 +31,7 @@ public interface CefDownloadItemCallback extends CefLibraryObject {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>void (CEF_CALLBACK* pause)(struct _cef_download_item_callback_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:73</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:73</a>
      */
     void pause();
 
@@ -40,7 +40,7 @@ public interface CefDownloadItemCallback extends CefLibraryObject {
      * <p>Definition generated from cef_download_handler_capi.h
      * <pre>void (CEF_CALLBACK* resume)(struct _cef_download_item_callback_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:79</a>
      */
     void resume();
     final class NativePeer implements CefDownloadItemCallback, AutoCloseable {

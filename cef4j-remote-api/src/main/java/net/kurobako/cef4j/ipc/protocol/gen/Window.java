@@ -67,7 +67,7 @@ public final class Window {
      * Closes the archive. This should be called directly to ensure that cleanup occurs on the correct thread.
      * <p>Definition generated from cef_zip_reader.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:80</a>
      */
     public CompletableFuture<Void> close() {
         return session
@@ -170,7 +170,7 @@ public final class Window {
      * Returns {@code true} if the renderer is currently in browser fullscreen. This differs from window fullscreen in that browser fullscreen is entered using the JavaScript Fullscreen API and modifies CSS attributes such as the ::backdrop pseudo-element and :fullscreen pseudo-class. This method can only be called on the UI thread.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1012</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1012</a>
      */
     public CompletableFuture<Integer> isFullscreen() {
         return session
@@ -197,7 +197,7 @@ public final class Window {
      * Returns the title set by the page. This value may be empty.
      * <p>Definition generated from cef_navigation_entry.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:79</a>
      */
     public CompletableFuture<String> getTitle() {
         return session
@@ -276,7 +276,7 @@ public final class Window {
      * Retrieve the window handle (if any) for this browser. If this browser is wrapped in a CefBrowserView this method should be called on the browser process UI thread and it will return the handle for the top-level native window.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:403</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:403</a>
      */
     public CompletableFuture<Long> getWindowHandle() {
         return session
@@ -309,7 +309,7 @@ public final class Window {
      * Set the keyboard accelerator for the specified {@code command_id}. {@code key_code} can be any virtual key or character value. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
     public CompletableFuture<Void> setAccelerator(int commandId, int keyCode, int shiftPressed, int ctrlPressed, int altPressed, int highPriority) {
         return session
@@ -321,7 +321,7 @@ public final class Window {
      * Remove the keyboard accelerator for the specified {@code command_id}. Returns {@code true} on success.
      * <p>Definition generated from cef_menu_model.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:377</a>
      */
     public CompletableFuture<Void> removeAccelerator(int commandId) {
         return session
@@ -354,7 +354,7 @@ public final class Window {
      * Returns the runtime style for this browser (ALLOY or CHROME). See cef_runtime_style_t documentation for details.
      * <p>Definition generated from cef_browser.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:1069</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1069</a>
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
         return session

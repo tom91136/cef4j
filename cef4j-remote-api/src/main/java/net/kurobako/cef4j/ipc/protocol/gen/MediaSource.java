@@ -39,7 +39,7 @@ public final class MediaSource {
      * Returns the ID (media source URN or URL) for this source.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
      */
     public CompletableFuture<String> getId() {
         return session
@@ -51,7 +51,7 @@ public final class MediaSource {
      * Returns {@code true} if this source outputs its content via Cast.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:305</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:305</a>
      */
     public CompletableFuture<Integer> isCastSource() {
         return session
@@ -63,7 +63,7 @@ public final class MediaSource {
      * Returns {@code true} if this source outputs its content via DIAL.
      * <p>Definition generated from cef_media_router.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:311</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:311</a>
      */
     public CompletableFuture<Integer> isDialSource() {
         return session

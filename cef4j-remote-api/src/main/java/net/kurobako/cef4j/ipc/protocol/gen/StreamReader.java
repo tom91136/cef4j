@@ -39,7 +39,7 @@ public final class StreamReader {
      * Seek to the specified offset position. {@code whence} may be any one of SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on failure.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:116</a>
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
         return session
@@ -51,7 +51,7 @@ public final class StreamReader {
      * Return the current offset position.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:124</a>
      */
     public CompletableFuture<Long> tell() {
         return session
@@ -63,7 +63,7 @@ public final class StreamReader {
      * Return non-zero if at end of file.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:130</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:130</a>
      */
     public CompletableFuture<Integer> eof() {
         return session
@@ -75,7 +75,7 @@ public final class StreamReader {
      * Returns {@code true} if this reader performs work like accessing the file system which may block. Used as a hint for determining the thread to access the reader from.
      * <p>Definition generated from cef_stream.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__stream_8h.html">cef_stream.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:136</a>
      */
     public CompletableFuture<Integer> mayBlock() {
         return session

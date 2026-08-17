@@ -39,7 +39,7 @@ public final class ComponentUpdater {
      * Returns the number of registered components, or 0 if the service is not available.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:121</a>
      */
     public CompletableFuture<Long> getComponentCount() {
         return session
@@ -51,7 +51,7 @@ public final class ComponentUpdater {
      * Returns the component with the specified {@code component_id}, or {@code null} if not found or the service is not available.
      * <p>Definition generated from cef_component_updater.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:136</a>
      */
     public CompletableFuture<Component> getComponentById(@Nonnull String componentId) {
         return session
@@ -68,7 +68,7 @@ public final class ComponentUpdater {
      *
      * @param callback may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
     public CompletableFuture<Void> update(@Nonnull String componentId, int priority, @Nonnull RemoteHandle callback) {
         return session

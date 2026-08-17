@@ -49,7 +49,7 @@ public final class CefV8Exception {
      * Returns the exception message.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:359</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:359</a>
      */
     public CompletableFuture<String> getMessage() {
         return session
@@ -61,7 +61,7 @@ public final class CefV8Exception {
      * Returns the line of source code that the exception occurred within.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:365</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:365</a>
      */
     public CompletableFuture<String> getSourceLine() {
         return session
@@ -73,7 +73,7 @@ public final class CefV8Exception {
      * Returns the resource name for the script from where the function causing the error originates.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:371</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:371</a>
      */
     public CompletableFuture<String> getScriptResourceName() {
         return session
@@ -85,7 +85,7 @@ public final class CefV8Exception {
      * Returns the 1-based number of the line where the error occurred or 0 if the line number is unknown.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:378</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:378</a>
      */
     public CompletableFuture<Integer> getLineNumber() {
         return session
@@ -97,7 +97,7 @@ public final class CefV8Exception {
      * Returns the index within the script of the first character where the error occurred.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:385</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:385</a>
      */
     public CompletableFuture<Integer> getStartPosition() {
         return session
@@ -109,7 +109,7 @@ public final class CefV8Exception {
      * Returns the index within the script of the last character where the error occurred.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:392</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:392</a>
      */
     public CompletableFuture<Integer> getEndPosition() {
         return session
@@ -121,7 +121,7 @@ public final class CefV8Exception {
      * Returns the index within the line of the first character where the error occurred.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:399</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:399</a>
      */
     public CompletableFuture<Integer> getStartColumn() {
         return session
@@ -133,7 +133,7 @@ public final class CefV8Exception {
      * Returns the index within the line of the last character where the error occurred.
      * <p>Definition generated from cef_v8.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__v8_8h.html">cef_v8.h:406</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:406</a>
      */
     public CompletableFuture<Integer> getEndColumn() {
         return session

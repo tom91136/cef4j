@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_media_sink_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:221</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:221</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefMediaSink extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:231</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:231</a>
      */
     Optional<String> getId();
 
@@ -33,7 +33,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:237</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:237</a>
      */
     Optional<String> getName();
 
@@ -44,7 +44,7 @@ public interface CefMediaSink extends CefLibraryObject {
      *
      * @return the result, or {@code CEF_MSIT_GENERIC} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:243</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:243</a>
      */
     CefMediaSinkIconType getIconType();
 
@@ -53,7 +53,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>void (CEF_CALLBACK* get_device_info)(struct _cef_media_sink_t* self, struct _cef_media_sink_device_info_callback_t* callback);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:249</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:249</a>
      */
     void getDeviceInfo(@Nullable CefMediaSinkDeviceInfoCallback callback);
 
@@ -62,7 +62,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>int (CEF_CALLBACK* is_cast_sink)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:256</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:256</a>
      */
     boolean isCastSink();
 
@@ -71,7 +71,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>int (CEF_CALLBACK* is_dial_sink)(struct _cef_media_sink_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:262</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:262</a>
      */
     boolean isDialSink();
 
@@ -80,7 +80,7 @@ public interface CefMediaSink extends CefLibraryObject {
      * <p>Definition generated from cef_media_router_capi.h
      * <pre>int (CEF_CALLBACK* is_compatible_with)(struct _cef_media_sink_t* self, struct _cef_media_source_t* source);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__media__router_8h.html">cef_media_router.h:268</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:268</a>
      */
     boolean isCompatibleWith(@Nullable CefMediaSource source);
     final class NativePeer implements CefMediaSink, AutoCloseable {

@@ -7,13 +7,13 @@
     <parent>
         <groupId>net.kurobako.cef4j</groupId>
         <artifactId>cef4j-parent</artifactId>
-        <version>146.0.0-SNAPSHOT</version>
+        <version>150.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cef4j-platform-all</artifactId>
     <packaging>pom</packaging>
     <name>cef4j-platform-all</name>
-    <description>Convenience artifact containing every supported in-process CEF runtime</description>
+    <description>Convenience artifact containing every supported in-process JNI bridge</description>
 
     <properties>
         <bytecode.check.skip>true</bytecode.check.skip>

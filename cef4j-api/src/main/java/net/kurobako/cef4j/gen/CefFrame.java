@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_frame_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:53</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:53</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefFrame extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:62</a>
      */
     boolean isValid();
 
@@ -34,7 +34,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* undo)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:68</a>
      */
     void undo();
 
@@ -43,7 +43,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* redo)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:74</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:74</a>
      */
     void redo();
 
@@ -52,7 +52,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* cut)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:80</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:80</a>
      */
     void cut();
 
@@ -61,7 +61,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* copy)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:86</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:86</a>
      */
     void copy();
 
@@ -70,7 +70,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* paste)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:92</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:92</a>
      */
     void paste();
 
@@ -79,7 +79,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* paste_and_match_style)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:98</a>
      */
     void pasteAndMatchStyle();
 
@@ -88,7 +88,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* del)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:104</a>
      */
     void del();
 
@@ -97,7 +97,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* select_all)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     void selectAll();
 
@@ -106,7 +106,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* view_source)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:116</a>
      */
     void viewSource();
 
@@ -115,7 +115,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* get_source)(struct _cef_frame_t* self, struct _cef_string_visitor_t* visitor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:124</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:124</a>
      */
     void getSource(@Nullable CefStringVisitor visitor);
 
@@ -124,7 +124,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* get_text)(struct _cef_frame_t* self, struct _cef_string_visitor_t* visitor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:131</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:131</a>
      */
     void getText(@Nullable CefStringVisitor visitor);
 
@@ -135,7 +135,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* load_request)(struct _cef_frame_t* self, struct _cef_request_t* request);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:138</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:138</a>
      */
     void loadRequest(@Nullable CefRequest request);
 
@@ -144,7 +144,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* load_url)(struct _cef_frame_t* self, const cef_string_t* url);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:148</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:148</a>
      */
     void loadUrl(@Nullable String url);
 
@@ -155,7 +155,7 @@ public interface CefFrame extends CefLibraryObject {
      *
      * @param scriptUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:154</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:154</a>
      */
     void executeJavaScript(@Nullable String code, @Nullable String scriptUrl, int startLine);
 
@@ -164,7 +164,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>int (CEF_CALLBACK* is_main)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:166</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:166</a>
      */
     boolean isMain();
 
@@ -173,7 +173,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>int (CEF_CALLBACK* is_focused)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:172</a>
      */
     boolean isFocused();
 
@@ -182,7 +182,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:178</a>
      */
     Optional<String> getName();
 
@@ -191,7 +191,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_identifier)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:188</a>
      */
     Optional<String> getIdentifier();
 
@@ -200,7 +200,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_frame_t* (CEF_CALLBACK* get_parent)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:195</a>
      */
     Optional<CefFrame> getParent();
 
@@ -209,7 +209,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:202</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:202</a>
      */
     Optional<String> getUrl();
 
@@ -218,7 +218,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_browser_t* (CEF_CALLBACK* get_browser)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:208</a>
      */
     Optional<CefBrowser> getBrowser();
 
@@ -227,7 +227,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_v8_context_t* (CEF_CALLBACK* get_v8_context)(struct _cef_frame_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:214</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:214</a>
      */
     Optional<CefV8Context> getV8Context();
 
@@ -236,7 +236,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* visit_dom)(struct _cef_frame_t* self, struct _cef_domvisitor_t* visitor);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:221</a>
      */
     void visitDom(@Nullable CefDomVisitor visitor);
 
@@ -255,7 +255,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>cef_urlrequest_t* (CEF_CALLBACK* create_urlrequest)(struct _cef_frame_t* self, struct _cef_request_t* request, struct _cef_urlrequest_client_t* client);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:228</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:228</a>
      */
     Optional<CefUrlRequest> createUrlRequest(@Nullable CefRequest request, @Nullable CefUrlRequestClient client);
 
@@ -264,7 +264,7 @@ public interface CefFrame extends CefLibraryObject {
      * <p>Definition generated from cef_frame_capi.h
      * <pre>void (CEF_CALLBACK* send_process_message)(struct _cef_frame_t* self, cef_process_id_t target_process, struct _cef_process_message_t* message);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__frame_8h.html">cef_frame.h:248</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:248</a>
      */
     void sendProcessMessage(@Nonnull CefProcessId targetProcess, @Nullable CefProcessMessage message);
     final class NativePeer implements CefFrame, AutoCloseable {

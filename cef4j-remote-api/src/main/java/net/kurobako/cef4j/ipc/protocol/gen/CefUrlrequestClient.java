@@ -17,7 +17,7 @@ public interface CefUrlrequestClient {
      * Notifies the client that the request has completed. Use the CefURLRequest.getRequestStatus() method to determine if the request was successful or not.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:139</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:139</a>
      */
     default void onRequestComplete(net.kurobako.cef4j.ipc.session.RemoteHandle request) {}
 
@@ -25,7 +25,7 @@ public interface CefUrlrequestClient {
      * Notifies the client of upload progress. {@code current} denotes the number of bytes sent so far and {@code total} is the total size of uploading data (or -1 if chunked upload is enabled). This method will only be called if the UR_FLAG_REPORT_UPLOAD_PROGRESS flag is set on the request.
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:147</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:147</a>
      */
     default void onUploadProgress(net.kurobako.cef4j.ipc.session.RemoteHandle request, long current, long total) {}
 
@@ -33,7 +33,7 @@ public interface CefUrlrequestClient {
      * Notifies the client of download progress. {@code current} denotes the number of bytes received up to the call and {@code total} is the expected total size of the response (or -1 if not determined).
      * <p>Definition generated from cef_urlrequest.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:158</a>
      */
     default void onDownloadProgress(net.kurobako.cef4j.ipc.session.RemoteHandle request, long current, long total) {}
 
@@ -44,7 +44,7 @@ public interface CefUrlrequestClient {
      *
      * @param data <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:168</a>
      */
     default void onDownloadData(net.kurobako.cef4j.ipc.session.RemoteHandle request, byte[] data) {}
 
@@ -54,7 +54,7 @@ public interface CefUrlrequestClient {
      *
      * @param realm may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
      */
     @Nullable
     default Boolean getAuthCredentials(int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return null; }

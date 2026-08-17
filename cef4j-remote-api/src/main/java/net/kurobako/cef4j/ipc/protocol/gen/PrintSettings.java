@@ -39,7 +39,7 @@ public final class PrintSettings {
      * Returns {@code true} if this object is valid. Do not call any other methods if this function returns {@code false}.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:61</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:61</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class PrintSettings {
      * Returns {@code true} if the values of this object are read-only. Some APIs may expose read-only objects.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:68</a>
      */
     public CompletableFuture<Integer> isReadOnly() {
         return session
@@ -63,7 +63,7 @@ public final class PrintSettings {
      * Set the page orientation.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
      */
     public CompletableFuture<Void> setOrientation(int landscape) {
         return session
@@ -75,7 +75,7 @@ public final class PrintSettings {
      * Returns {@code true} if the orientation is landscape.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:81</a>
      */
     public CompletableFuture<Integer> isLandscape() {
         return session
@@ -87,7 +87,7 @@ public final class PrintSettings {
      * Set the printer printable area in device units. Some platforms already provide flipped area. Set {@code landscape_needs_flip} to {@code false} on those platforms to avoid double flipping.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
      */
     public CompletableFuture<Void> setPrinterPrintableArea(Size physicalSizeDeviceUnits, Rect printableAreaDeviceUnits, int landscapeNeedsFlip) {
         return session
@@ -101,7 +101,7 @@ public final class PrintSettings {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
      */
     public CompletableFuture<Void> setDeviceName(@Nonnull String name) {
         return session
@@ -113,7 +113,7 @@ public final class PrintSettings {
      * Get the device name.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:104</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:104</a>
      */
     public CompletableFuture<String> getDeviceName() {
         return session
@@ -125,7 +125,7 @@ public final class PrintSettings {
      * Set the DPI (dots per inch).
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
      */
     public CompletableFuture<Void> setDpi(int dpi) {
         return session
@@ -137,7 +137,7 @@ public final class PrintSettings {
      * Get the DPI (dots per inch).
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:116</a>
      */
     public CompletableFuture<Integer> getDpi() {
         return session
@@ -149,7 +149,7 @@ public final class PrintSettings {
      * Returns the number of page ranges that currently exist.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:128</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:128</a>
      */
     public CompletableFuture<Long> getPageRangesCount() {
         return session
@@ -161,7 +161,7 @@ public final class PrintSettings {
      * Set whether only the selection will be printed.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
      */
     public CompletableFuture<Void> setSelectionOnly(int selectionOnly) {
         return session
@@ -173,7 +173,7 @@ public final class PrintSettings {
      * Returns {@code true} if only the selection will be printed.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:146</a>
      */
     public CompletableFuture<Integer> isSelectionOnly() {
         return session
@@ -185,7 +185,7 @@ public final class PrintSettings {
      * Set whether pages will be collated.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
      */
     public CompletableFuture<Void> setCollate(int collate) {
         return session
@@ -197,7 +197,7 @@ public final class PrintSettings {
      * Returns {@code true} if pages will be collated.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:158</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:158</a>
      */
     public CompletableFuture<Integer> willCollate() {
         return session
@@ -209,7 +209,7 @@ public final class PrintSettings {
      * Set the color model.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
      */
     public CompletableFuture<Void> setColorModel(int model) {
         return session
@@ -221,7 +221,7 @@ public final class PrintSettings {
      * Get the color model.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:170</a>
      */
     public CompletableFuture<Integer> getColorModel() {
         return session
@@ -233,7 +233,7 @@ public final class PrintSettings {
      * Set the number of copies.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
      */
     public CompletableFuture<Void> setCopies(int copies) {
         return session
@@ -245,7 +245,7 @@ public final class PrintSettings {
      * Get the number of copies.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:182</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:182</a>
      */
     public CompletableFuture<Integer> getCopies() {
         return session
@@ -257,7 +257,7 @@ public final class PrintSettings {
      * Set the duplex mode.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
      */
     public CompletableFuture<Void> setDuplexMode(int mode) {
         return session
@@ -269,7 +269,7 @@ public final class PrintSettings {
      * Get the duplex mode.
      * <p>Definition generated from cef_print_settings.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__settings_8h.html">cef_print_settings.h:194</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:194</a>
      */
     public CompletableFuture<Integer> getDuplexMode() {
         return session

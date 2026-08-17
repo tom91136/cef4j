@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_domnode_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:161</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:161</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefDomNode extends CefLibraryObject {
 
@@ -28,7 +28,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @return the result, or {@code DOM_NODE_TYPE_UNSUPPORTED} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:172</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:172</a>
      */
     CefDomNodeType getType();
 
@@ -37,7 +37,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* is_text)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:178</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:178</a>
      */
     boolean isText();
 
@@ -46,7 +46,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* is_element)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:184</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:184</a>
      */
     boolean isElement();
 
@@ -55,7 +55,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* is_editable)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:190</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:190</a>
      */
     boolean isEditable();
 
@@ -66,7 +66,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @return the result, or {@code DOM_NODE_TYPE_UNSUPPORTED} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:196</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:196</a>
      */
     boolean isFormControlElement();
 
@@ -77,7 +77,7 @@ public interface CefDomNode extends CefLibraryObject {
      *
      * @return the result, or {@code DOM_FORM_CONTROL_TYPE_UNSUPPORTED} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:202</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:202</a>
      */
     CefDomFormControlType getFormControlElementType();
 
@@ -86,7 +86,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_domnode_t* self, struct _cef_domnode_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:208</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:208</a>
      */
     boolean isSame(@Nullable CefDomNode that);
 
@@ -95,7 +95,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:215</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:215</a>
      */
     Optional<String> getName();
 
@@ -104,7 +104,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_value)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:221</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:221</a>
      */
     Optional<String> getValue();
 
@@ -113,7 +113,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* set_value)(struct _cef_domnode_t* self, const cef_string_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:227</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:227</a>
      */
     boolean setValue(@Nullable String value);
 
@@ -122,7 +122,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_as_markup)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:233</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:233</a>
      */
     Optional<String> getAsMarkup();
 
@@ -131,7 +131,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domdocument_t* (CEF_CALLBACK* get_document)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:239</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:239</a>
      */
     Optional<CefDomDocument> getDocument();
 
@@ -140,7 +140,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_parent)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:245</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:245</a>
      */
     Optional<CefDomNode> getParent();
 
@@ -149,7 +149,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_previous_sibling)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:251</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:251</a>
      */
     Optional<CefDomNode> getPreviousSibling();
 
@@ -158,7 +158,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_next_sibling)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:257</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:257</a>
      */
     Optional<CefDomNode> getNextSibling();
 
@@ -167,7 +167,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* has_children)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:263</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:263</a>
      */
     boolean hasChildren();
 
@@ -176,7 +176,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_first_child)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:269</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:269</a>
      */
     Optional<CefDomNode> getFirstChild();
 
@@ -185,7 +185,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_domnode_t* (CEF_CALLBACK* get_last_child)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:275</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:275</a>
      */
     Optional<CefDomNode> getLastChild();
 
@@ -194,7 +194,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_element_tag_name)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:283</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:283</a>
      */
     Optional<String> getElementTagName();
 
@@ -203,7 +203,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* has_element_attributes)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:289</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:289</a>
      */
     boolean hasElementAttributes();
 
@@ -212,7 +212,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* has_element_attribute)(struct _cef_domnode_t* self, const cef_string_t* attrName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:295</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:295</a>
      */
     boolean hasElementAttribute(@Nullable String attrName);
 
@@ -221,7 +221,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_element_attribute)(struct _cef_domnode_t* self, const cef_string_t* attrName);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:301</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:301</a>
      */
     Optional<String> getElementAttribute(@Nullable String attrName);
 
@@ -230,7 +230,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>void (CEF_CALLBACK* get_element_attributes)(struct _cef_domnode_t* self, cef_string_map_t attrMap);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:307</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:307</a>
      */
     void getElementAttributes(@Nonnull Map<String, String> attrMap);
 
@@ -239,7 +239,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>int (CEF_CALLBACK* set_element_attribute)(struct _cef_domnode_t* self, const cef_string_t* attrName, const cef_string_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:313</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:313</a>
      */
     boolean setElementAttribute(@Nullable String attrName, @Nullable String value);
 
@@ -248,7 +248,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_element_inner_text)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:321</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:321</a>
      */
     Optional<String> getElementInnerText();
 
@@ -257,7 +257,7 @@ public interface CefDomNode extends CefLibraryObject {
      * <p>Definition generated from cef_dom_capi.h
      * <pre>cef_rect_t* (CEF_CALLBACK* get_element_bounds)(struct _cef_domnode_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dom_8h.html">cef_dom.h:327</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:327</a>
      */
     CefRect getElementBounds();
     final class NativePeer implements CefDomNode, AutoCloseable {

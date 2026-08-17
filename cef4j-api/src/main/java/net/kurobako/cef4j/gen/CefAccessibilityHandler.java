@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_accessibility_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:43</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:43</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefAccessibilityHandler extends CefClientHandler {
 
@@ -23,7 +23,7 @@ public interface CefAccessibilityHandler extends CefClientHandler {
      * <p>Definition generated from cef_accessibility_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_accessibility_tree_change)(struct _cef_accessibility_handler_t* self, struct _cef_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:51</a>
      */
     default void onAccessibilityTreeChange(@Nullable CefValue value) {
     }
@@ -33,7 +33,7 @@ public interface CefAccessibilityHandler extends CefClientHandler {
      * <p>Definition generated from cef_accessibility_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_accessibility_location_change)(struct _cef_accessibility_handler_t* self, struct _cef_value_t* value);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__accessibility__handler_8h.html">cef_accessibility_handler.h:58</a>
      */
     default void onAccessibilityLocationChange(@Nullable CefValue value) {
     }

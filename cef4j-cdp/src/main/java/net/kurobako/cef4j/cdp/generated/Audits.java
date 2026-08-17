@@ -13,7 +13,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
 /**
  * Audits domain allows investigation of page violations and possible improvements.
  * <p><b>Experimental:</b> this part of CDP may change without notice.
- * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/146.0.7680.165/third_party/blink/public/devtools_protocol/domains/Audits.pdl">Pinned protocol source</a>
+ * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Audits.pdl">Pinned protocol source</a>
  */
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Audits {
@@ -447,6 +447,64 @@ public final class Audits {
                 if (!values.containsKey("cookieExclusionReasons")) throw new IllegalStateException("Missing required CDP field: cookieExclusionReasons");
                 if (!values.containsKey("operation")) throw new IllegalStateException("Missing required CDP field: operation");
                 return new CookieIssueDetails(values);
+            }
+        }
+    }
+    /**
+     * Wire values for PerformanceIssueType.
+     */
+    public static final class PerformanceIssueType {
+        private PerformanceIssueType() {}
+        public static final String DOCUMENTCOOKIE = "DocumentCookie";
+    }
+    /**
+     * Details for a performance issue.
+     */
+    public static final class PerformanceIssueDetails extends CdpObject {
+        private PerformanceIssueDetails(Map<String, Object> values) { super(values); }
+        @Nullable public static PerformanceIssueDetails fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new PerformanceIssueDetails(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the performanceIssueType field.
+         * @return the protocol field value
+         */
+        @Nullable public String performanceIssueType() {
+            return (String) value("performanceIssueType");
+        }
+        /**
+         * Returns the sourceCodeLocation field.
+         * @return the protocol field value
+         */
+        @Nullable public Audits.SourceCodeLocation sourceCodeLocation() {
+            return Audits.SourceCodeLocation.fromMap(objectMap(value("sourceCodeLocation")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the performanceIssueType field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder performanceIssueType(@Nullable String value) {
+                if (value == null) values.remove("performanceIssueType");
+                else values.put("performanceIssueType", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the sourceCodeLocation field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder sourceCodeLocation(@Nullable Audits.SourceCodeLocation value) {
+                if (value == null) values.remove("sourceCodeLocation");
+                else values.put("sourceCodeLocation", jsonValue(value));
+                return this;
+            }
+            public PerformanceIssueDetails build() {
+                if (!values.containsKey("performanceIssueType")) throw new IllegalStateException("Missing required CDP field: performanceIssueType");
+                return new PerformanceIssueDetails(values);
             }
         }
     }
@@ -1115,147 +1173,6 @@ public final class Audits {
         }
     }
     /**
-     */
-    public static final class LowTextContrastIssueDetails extends CdpObject {
-        private LowTextContrastIssueDetails(Map<String, Object> values) { super(values); }
-        @Nullable public static LowTextContrastIssueDetails fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LowTextContrastIssueDetails(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the violatingNodeId field.
-         * @return the protocol field value
-         */
-        @Nullable public Long violatingNodeId() {
-            return numberAsLong(value("violatingNodeId"));
-        }
-        /**
-         * Returns the violatingNodeSelector field.
-         * @return the protocol field value
-         */
-        @Nullable public String violatingNodeSelector() {
-            return (String) value("violatingNodeSelector");
-        }
-        /**
-         * Returns the contrastRatio field.
-         * @return the protocol field value
-         */
-        @Nullable public Double contrastRatio() {
-            return numberAsDouble(value("contrastRatio"));
-        }
-        /**
-         * Returns the thresholdAA field.
-         * @return the protocol field value
-         */
-        @Nullable public Double thresholdAA() {
-            return numberAsDouble(value("thresholdAA"));
-        }
-        /**
-         * Returns the thresholdAAA field.
-         * @return the protocol field value
-         */
-        @Nullable public Double thresholdAAA() {
-            return numberAsDouble(value("thresholdAAA"));
-        }
-        /**
-         * Returns the fontSize field.
-         * @return the protocol field value
-         */
-        @Nullable public String fontSize() {
-            return (String) value("fontSize");
-        }
-        /**
-         * Returns the fontWeight field.
-         * @return the protocol field value
-         */
-        @Nullable public String fontWeight() {
-            return (String) value("fontWeight");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the violatingNodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder violatingNodeId(@Nullable Long value) {
-                if (value == null) values.remove("violatingNodeId");
-                else values.put("violatingNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the violatingNodeSelector field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder violatingNodeSelector(@Nullable String value) {
-                if (value == null) values.remove("violatingNodeSelector");
-                else values.put("violatingNodeSelector", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the contrastRatio field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contrastRatio(@Nullable Double value) {
-                if (value == null) values.remove("contrastRatio");
-                else values.put("contrastRatio", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the thresholdAA field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder thresholdAA(@Nullable Double value) {
-                if (value == null) values.remove("thresholdAA");
-                else values.put("thresholdAA", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the thresholdAAA field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder thresholdAAA(@Nullable Double value) {
-                if (value == null) values.remove("thresholdAAA");
-                else values.put("thresholdAAA", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the fontSize field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder fontSize(@Nullable String value) {
-                if (value == null) values.remove("fontSize");
-                else values.put("fontSize", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the fontWeight field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder fontWeight(@Nullable String value) {
-                if (value == null) values.remove("fontWeight");
-                else values.put("fontWeight", jsonValue(value));
-                return this;
-            }
-            public LowTextContrastIssueDetails build() {
-                if (!values.containsKey("violatingNodeId")) throw new IllegalStateException("Missing required CDP field: violatingNodeId");
-                if (!values.containsKey("violatingNodeSelector")) throw new IllegalStateException("Missing required CDP field: violatingNodeSelector");
-                if (!values.containsKey("contrastRatio")) throw new IllegalStateException("Missing required CDP field: contrastRatio");
-                if (!values.containsKey("thresholdAA")) throw new IllegalStateException("Missing required CDP field: thresholdAA");
-                if (!values.containsKey("thresholdAAA")) throw new IllegalStateException("Missing required CDP field: thresholdAAA");
-                if (!values.containsKey("fontSize")) throw new IllegalStateException("Missing required CDP field: fontSize");
-                if (!values.containsKey("fontWeight")) throw new IllegalStateException("Missing required CDP field: fontWeight");
-                return new LowTextContrastIssueDetails(values);
-            }
-        }
-    }
-    /**
      * Details for a CORS related issue, e.g. a warning or error related to CORS RFC1918 enforcement.
      */
     public static final class CorsIssueDetails extends CdpObject {
@@ -1444,6 +1361,7 @@ public final class Audits {
         public static final String WRITEERRORNONSECURECONTEXT = "WriteErrorNonSecureContext";
         public static final String WRITEERRORNONSTRINGIDFIELD = "WriteErrorNonStringIdField";
         public static final String WRITEERRORNONSTRINGINMATCHDESTLIST = "WriteErrorNonStringInMatchDestList";
+        public static final String WRITEERRORINVALIDMATCHDESTLIST = "WriteErrorInvalidMatchDestList";
         public static final String WRITEERRORNONSTRINGMATCHFIELD = "WriteErrorNonStringMatchField";
         public static final String WRITEERRORNONTOKENTYPEFIELD = "WriteErrorNonTokenTypeField";
         public static final String WRITEERRORREQUESTABORTED = "WriteErrorRequestAborted";
@@ -1477,6 +1395,10 @@ public final class Audits {
         public static final String VALIDATIONFAILEDINVALIDLENGTH = "ValidationFailedInvalidLength";
         public static final String VALIDATIONFAILEDSIGNATUREMISMATCH = "ValidationFailedSignatureMismatch";
         public static final String VALIDATIONFAILEDINTEGRITYMISMATCH = "ValidationFailedIntegrityMismatch";
+        public static final String SIGNATUREBASEUNKNOWNDERIVEDCOMPONENT = "SignatureBaseUnknownDerivedComponent";
+        public static final String SIGNATUREBASEMISSINGHEADER = "SignatureBaseMissingHeader";
+        public static final String SIGNATUREBASEINVALIDUNENCODEDDIGEST = "SignatureBaseInvalidUnencodedDigest";
+        public static final String SIGNATUREBASEUNSUPPORTEDCOMPONENT = "SignatureBaseUnsupportedComponent";
     }
     /**
      * Wire values for UnencodedDigestError.
@@ -2000,9 +1922,15 @@ public final class Audits {
         public static final String FORMINPUTHASWRONGBUTWELLINTENDEDAUTOCOMPLETEVALUEERROR = "FormInputHasWrongButWellIntendedAutocompleteValueError";
         public static final String RESPONSEWASBLOCKEDBYORB = "ResponseWasBlockedByORB";
         public static final String NAVIGATIONENTRYMARKEDSKIPPABLE = "NavigationEntryMarkedSkippable";
+        public static final String BACKUINAVIGATIONWOULDSKIPAD = "BackUINavigationWouldSkipAd";
         public static final String AUTOFILLANDMANUALTEXTPOLICYCONTROLLEDFEATURESINFO = "AutofillAndManualTextPolicyControlledFeaturesInfo";
         public static final String AUTOFILLPOLICYCONTROLLEDFEATUREINFO = "AutofillPolicyControlledFeatureInfo";
         public static final String MANUALTEXTPOLICYCONTROLLEDFEATUREINFO = "ManualTextPolicyControlledFeatureInfo";
+        public static final String FORMMODELCONTEXTPARAMETERMISSINGTITLEANDDESCRIPTION = "FormModelContextParameterMissingTitleAndDescription";
+        public static final String FORMMODELCONTEXTMISSINGTOOLNAME = "FormModelContextMissingToolName";
+        public static final String FORMMODELCONTEXTMISSINGTOOLDESCRIPTION = "FormModelContextMissingToolDescription";
+        public static final String FORMMODELCONTEXTREQUIREDPARAMETERMISSINGNAME = "FormModelContextRequiredParameterMissingName";
+        public static final String FORMMODELCONTEXTPARAMETERMISSINGNAME = "FormModelContextParameterMissingName";
     }
     /**
      * Depending on the concrete errorType, different properties are set.
@@ -2356,10 +2284,6 @@ public final class Audits {
         public static final String CONFIGNORESPONSE = "ConfigNoResponse";
         public static final String CONFIGINVALIDRESPONSE = "ConfigInvalidResponse";
         public static final String CONFIGINVALIDCONTENTTYPE = "ConfigInvalidContentType";
-        public static final String CLIENTMETADATAHTTPNOTFOUND = "ClientMetadataHttpNotFound";
-        public static final String CLIENTMETADATANORESPONSE = "ClientMetadataNoResponse";
-        public static final String CLIENTMETADATAINVALIDRESPONSE = "ClientMetadataInvalidResponse";
-        public static final String CLIENTMETADATAINVALIDCONTENTTYPE = "ClientMetadataInvalidContentType";
         public static final String IDPNOTPOTENTIALLYTRUSTWORTHY = "IdpNotPotentiallyTrustworthy";
         public static final String DISABLEDINSETTINGS = "DisabledInSettings";
         public static final String DISABLEDINFLAGS = "DisabledInFlags";
@@ -2381,11 +2305,9 @@ public final class Audits {
         public static final String CANCELED = "Canceled";
         public static final String RPPAGENOTVISIBLE = "RpPageNotVisible";
         public static final String SILENTMEDIATIONFAILURE = "SilentMediationFailure";
-        public static final String THIRDPARTYCOOKIESBLOCKED = "ThirdPartyCookiesBlocked";
         public static final String NOTSIGNEDINWITHIDP = "NotSignedInWithIdp";
         public static final String MISSINGTRANSIENTUSERACTIVATION = "MissingTransientUserActivation";
         public static final String REPLACEDBYACTIVEMODE = "ReplacedByActiveMode";
-        public static final String INVALIDFIELDSSPECIFIED = "InvalidFieldsSpecified";
         public static final String RELYINGPARTYORIGINISOPAQUE = "RelyingPartyOriginIsOpaque";
         public static final String TYPENOTMATCHING = "TypeNotMatching";
         public static final String UIDISMISSEDNOEMBARGO = "UiDismissedNoEmbargo";
@@ -2439,6 +2361,101 @@ public final class Audits {
         public static final String INVALIDCONFIGORWELLKNOWN = "InvalidConfigOrWellKnown";
         public static final String INVALIDACCOUNTSRESPONSE = "InvalidAccountsResponse";
         public static final String NORETURNINGUSERFROMFETCHEDACCOUNTS = "NoReturningUserFromFetchedAccounts";
+    }
+    /**
+     */
+    public static final class EmailVerificationRequestIssueDetails extends CdpObject {
+        private EmailVerificationRequestIssueDetails(Map<String, Object> values) { super(values); }
+        @Nullable public static EmailVerificationRequestIssueDetails fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new EmailVerificationRequestIssueDetails(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Returns the emailVerificationRequestIssueReason field.
+         * @return the protocol field value
+         */
+        @Nullable public String emailVerificationRequestIssueReason() {
+            return (String) value("emailVerificationRequestIssueReason");
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Sets the emailVerificationRequestIssueReason field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder emailVerificationRequestIssueReason(@Nullable String value) {
+                if (value == null) values.remove("emailVerificationRequestIssueReason");
+                else values.put("emailVerificationRequestIssueReason", jsonValue(value));
+                return this;
+            }
+            public EmailVerificationRequestIssueDetails build() {
+                if (!values.containsKey("emailVerificationRequestIssueReason")) throw new IllegalStateException("Missing required CDP field: emailVerificationRequestIssueReason");
+                return new EmailVerificationRequestIssueDetails(values);
+            }
+        }
+    }
+    /**
+     * Represents the failure reason when an email verification request fails. Should be updated alongside EmailVerificationRequestResult in third_party/blink/public/mojom/devtools/inspector_issue.mojom.
+     */
+    public static final class EmailVerificationRequestIssueReason {
+        private EmailVerificationRequestIssueReason() {}
+        public static final String INVALIDEMAIL = "InvalidEmail";
+        public static final String DNSFETCHFAILED = "DnsFetchFailed";
+        public static final String DNSINVALIDRECORD = "DnsInvalidRecord";
+        public static final String WELLKNOWNHTTPNOTFOUND = "WellKnownHttpNotFound";
+        public static final String WELLKNOWNNORESPONSE = "WellKnownNoResponse";
+        public static final String WELLKNOWNINVALIDRESPONSE = "WellKnownInvalidResponse";
+        public static final String WELLKNOWNLISTEMPTY = "WellKnownListEmpty";
+        public static final String WELLKNOWNINVALIDCONTENTTYPE = "WellKnownInvalidContentType";
+        public static final String WELLKNOWNMISSINGISSUANCEENDPOINT = "WellKnownMissingIssuanceEndpoint";
+        public static final String WELLKNOWNISSUANCEENDPOINTCROSSORIGIN = "WellKnownIssuanceEndpointCrossOrigin";
+        public static final String WELLKNOWNUNSUPPORTEDSIGNINGALGORITHM = "WellKnownUnsupportedSigningAlgorithm";
+        public static final String TOKENHTTPNOTFOUND = "TokenHttpNotFound";
+        public static final String TOKENNORESPONSE = "TokenNoResponse";
+        public static final String TOKENINVALIDRESPONSE = "TokenInvalidResponse";
+        public static final String TOKENINVALIDCONTENTTYPE = "TokenInvalidContentType";
+        public static final String TOKENMALFORMEDSDJWT = "TokenMalformedSdJwt";
+        public static final String TOKENINVALIDSDJWT = "TokenInvalidSdJwt";
+        public static final String KEYBINDINGSIGNINGFAILED = "KeyBindingSigningFailed";
+        public static final String RPORIGINISOPAQUE = "RpOriginIsOpaque";
+        public static final String WELLKNOWNMISSINGACCOUNTSENDPOINT = "WellKnownMissingAccountsEndpoint";
+        public static final String USERLOGGEDOUT = "UserLoggedOut";
+        public static final String WELLKNOWNACCOUNTSENDPOINTCROSSORIGIN = "WellKnownAccountsEndpointCrossOrigin";
+        public static final String ACCOUNTSHTTPNOTFOUND = "AccountsHttpNotFound";
+        public static final String ACCOUNTSNORESPONSE = "AccountsNoResponse";
+        public static final String ACCOUNTSINVALIDRESPONSE = "AccountsInvalidResponse";
+        public static final String ACCOUNTSINVALIDCONTENTTYPE = "AccountsInvalidContentType";
+        public static final String ACCOUNTSEMPTYLIST = "AccountsEmptyList";
+        public static final String EMAILVERIFICATIONWELLKNOWNHTTPNOTFOUND = "EmailVerificationWellKnownHttpNotFound";
+        public static final String EMAILVERIFICATIONWELLKNOWNNORESPONSE = "EmailVerificationWellKnownNoResponse";
+        public static final String EMAILVERIFICATIONWELLKNOWNINVALIDRESPONSE = "EmailVerificationWellKnownInvalidResponse";
+        public static final String EMAILVERIFICATIONWELLKNOWNINVALIDCONTENTTYPE = "EmailVerificationWellKnownInvalidContentType";
+        public static final String JWKSHTTPNOTFOUND = "JwksHttpNotFound";
+        public static final String JWKSINVALIDRESPONSE = "JwksInvalidResponse";
+        public static final String TOKENVERIFICATIONSDJWTUNSUPPORTEDHEADERALG = "TokenVerificationSdJwtUnsupportedHeaderAlg";
+        public static final String TOKENVERIFICATIONSDJWTMISSINGISS = "TokenVerificationSdJwtMissingIss";
+        public static final String TOKENVERIFICATIONSDJWTMISSINGIAT = "TokenVerificationSdJwtMissingIat";
+        public static final String TOKENVERIFICATIONSDJWTMISSINGCNF = "TokenVerificationSdJwtMissingCnf";
+        public static final String TOKENVERIFICATIONSDJWTMISSINGEMAIL = "TokenVerificationSdJwtMissingEmail";
+        public static final String TOKENVERIFICATIONSDJWTINVALIDISSUEDAT = "TokenVerificationSdJwtInvalidIssuedAt";
+        public static final String TOKENVERIFICATIONSDJWTINVALIDISSUER = "TokenVerificationSdJwtInvalidIssuer";
+        public static final String TOKENVERIFICATIONSDJWTJWKSMISSINGKEYS = "TokenVerificationSdJwtJwksMissingKeys";
+        public static final String TOKENVERIFICATIONSDJWTSIGNATUREFAILED = "TokenVerificationSdJwtSignatureFailed";
+        public static final String TOKENVERIFICATIONSDJWTINVALIDEMAILVERIFIED = "TokenVerificationSdJwtInvalidEmailVerified";
+        public static final String TOKENVERIFICATIONSDJWTINVALIDEMAIL = "TokenVerificationSdJwtInvalidEmail";
+        public static final String TOKENVERIFICATIONSDJWTINVALIDHOLDERKEY = "TokenVerificationSdJwtInvalidHolderKey";
+        public static final String TOKENVERIFICATIONKBINVALIDTYP = "TokenVerificationKbInvalidTyp";
+        public static final String TOKENVERIFICATIONKBMISSINGAUD = "TokenVerificationKbMissingAud";
+        public static final String TOKENVERIFICATIONKBMISSINGNONCE = "TokenVerificationKbMissingNonce";
+        public static final String TOKENVERIFICATIONKBMISSINGIAT = "TokenVerificationKbMissingIat";
+        public static final String TOKENVERIFICATIONKBMISSINGSDHASH = "TokenVerificationKbMissingSdHash";
+        public static final String TOKENVERIFICATIONKBINVALIDISSUEDAT = "TokenVerificationKbInvalidIssuedAt";
+        public static final String TOKENVERIFICATIONKBINVALIDAUDIENCE = "TokenVerificationKbInvalidAudience";
+        public static final String TOKENVERIFICATIONKBINVALIDNONCE = "TokenVerificationKbInvalidNonce";
+        public static final String TOKENVERIFICATIONKBINVALIDSDHASH = "TokenVerificationKbInvalidSdHash";
+        public static final String TOKENVERIFICATIONKBMISSINGCNF = "TokenVerificationKbMissingCnf";
+        public static final String TOKENVERIFICATIONKBSIGNATUREFAILED = "TokenVerificationKbSignatureFailed";
     }
     /**
      * This issue tracks client hints related issues. It&#x27;s used to deprecate old features, encourage the use of new ones, and provide general guidance.
@@ -3115,6 +3132,75 @@ public final class Audits {
         }
     }
     /**
+     * The issue warns about blocked calls to privacy sensitive APIs via the Selective Permissions Intervention.
+     */
+    public static final class SelectivePermissionsInterventionIssueDetails extends CdpObject {
+        private SelectivePermissionsInterventionIssueDetails(Map<String, Object> values) { super(values); }
+        @Nullable public static SelectivePermissionsInterventionIssueDetails fromMap(@Nullable Map<String, Object> values) {
+            return values == null ? null : new SelectivePermissionsInterventionIssueDetails(values);
+        }
+        public static Builder builder() { return new Builder(); }
+        /**
+         * Which API was intervened on.
+         * @return the protocol field value
+         */
+        @Nullable public String apiName() {
+            return (String) value("apiName");
+        }
+        /**
+         * Why the ad script using the API is considered an ad.
+         * @return the protocol field value
+         */
+        @Nullable public Network.AdAncestry adAncestry() {
+            return Network.AdAncestry.fromMap(objectMap(value("adAncestry")));
+        }
+        /**
+         * The stack trace at the time of the intervention.
+         * @return the protocol field value
+         */
+        @Nullable public Runtime.StackTrace stackTrace() {
+            return Runtime.StackTrace.fromMap(objectMap(value("stackTrace")));
+        }
+        public static final class Builder {
+            private final Map<String, Object> values = new LinkedHashMap<>();
+            /**
+             * Which API was intervened on.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder apiName(@Nullable String value) {
+                if (value == null) values.remove("apiName");
+                else values.put("apiName", jsonValue(value));
+                return this;
+            }
+            /**
+             * Why the ad script using the API is considered an ad.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder adAncestry(@Nullable Network.AdAncestry value) {
+                if (value == null) values.remove("adAncestry");
+                else values.put("adAncestry", jsonValue(value));
+                return this;
+            }
+            /**
+             * The stack trace at the time of the intervention.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder stackTrace(@Nullable Runtime.StackTrace value) {
+                if (value == null) values.remove("stackTrace");
+                else values.put("stackTrace", jsonValue(value));
+                return this;
+            }
+            public SelectivePermissionsInterventionIssueDetails build() {
+                if (!values.containsKey("apiName")) throw new IllegalStateException("Missing required CDP field: apiName");
+                if (!values.containsKey("adAncestry")) throw new IllegalStateException("Missing required CDP field: adAncestry");
+                return new SelectivePermissionsInterventionIssueDetails(values);
+            }
+        }
+    }
+    /**
      * A unique identifier for the type of issue. Each type may use one of the optional fields in InspectorIssueDetails to convey more specific information about the kind of issue.
      */
     public static final class InspectorIssueCode {
@@ -3125,7 +3211,6 @@ public final class Audits {
         public static final String HEAVYADISSUE = "HeavyAdIssue";
         public static final String CONTENTSECURITYPOLICYISSUE = "ContentSecurityPolicyIssue";
         public static final String SHAREDARRAYBUFFERISSUE = "SharedArrayBufferIssue";
-        public static final String LOWTEXTCONTRASTISSUE = "LowTextContrastIssue";
         public static final String CORSISSUE = "CorsIssue";
         public static final String ATTRIBUTIONREPORTINGISSUE = "AttributionReportingIssue";
         public static final String QUIRKSMODEISSUE = "QuirksModeIssue";
@@ -3147,6 +3232,9 @@ public final class Audits {
         public static final String CONNECTIONALLOWLISTISSUE = "ConnectionAllowlistIssue";
         public static final String USERREIDENTIFICATIONISSUE = "UserReidentificationIssue";
         public static final String PERMISSIONELEMENTISSUE = "PermissionElementIssue";
+        public static final String PERFORMANCEISSUE = "PerformanceIssue";
+        public static final String SELECTIVEPERMISSIONSINTERVENTIONISSUE = "SelectivePermissionsInterventionIssue";
+        public static final String EMAILVERIFICATIONREQUESTISSUE = "EmailVerificationRequestIssue";
     }
     /**
      * This struct holds a list of optional fields with additional information specific to the kind of issue. When adding a new issue code, please also add a new optional field to this type.
@@ -3198,13 +3286,6 @@ public final class Audits {
          */
         @Nullable public Audits.SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails() {
             return Audits.SharedArrayBufferIssueDetails.fromMap(objectMap(value("sharedArrayBufferIssueDetails")));
-        }
-        /**
-         * Returns the lowTextContrastIssueDetails field.
-         * @return the protocol field value
-         */
-        @Nullable public Audits.LowTextContrastIssueDetails lowTextContrastIssueDetails() {
-            return Audits.LowTextContrastIssueDetails.fromMap(objectMap(value("lowTextContrastIssueDetails")));
         }
         /**
          * Returns the corsIssueDetails field.
@@ -3355,6 +3436,27 @@ public final class Audits {
         @Nullable public Audits.PermissionElementIssueDetails permissionElementIssueDetails() {
             return Audits.PermissionElementIssueDetails.fromMap(objectMap(value("permissionElementIssueDetails")));
         }
+        /**
+         * Returns the performanceIssueDetails field.
+         * @return the protocol field value
+         */
+        @Nullable public Audits.PerformanceIssueDetails performanceIssueDetails() {
+            return Audits.PerformanceIssueDetails.fromMap(objectMap(value("performanceIssueDetails")));
+        }
+        /**
+         * Returns the selectivePermissionsInterventionIssueDetails field.
+         * @return the protocol field value
+         */
+        @Nullable public Audits.SelectivePermissionsInterventionIssueDetails selectivePermissionsInterventionIssueDetails() {
+            return Audits.SelectivePermissionsInterventionIssueDetails.fromMap(objectMap(value("selectivePermissionsInterventionIssueDetails")));
+        }
+        /**
+         * Returns the emailVerificationRequestIssueDetails field.
+         * @return the protocol field value
+         */
+        @Nullable public Audits.EmailVerificationRequestIssueDetails emailVerificationRequestIssueDetails() {
+            return Audits.EmailVerificationRequestIssueDetails.fromMap(objectMap(value("emailVerificationRequestIssueDetails")));
+        }
         public static final class Builder {
             private final Map<String, Object> values = new LinkedHashMap<>();
             /**
@@ -3415,16 +3517,6 @@ public final class Audits {
             public Builder sharedArrayBufferIssueDetails(@Nullable Audits.SharedArrayBufferIssueDetails value) {
                 if (value == null) values.remove("sharedArrayBufferIssueDetails");
                 else values.put("sharedArrayBufferIssueDetails", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the lowTextContrastIssueDetails field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lowTextContrastIssueDetails(@Nullable Audits.LowTextContrastIssueDetails value) {
-                if (value == null) values.remove("lowTextContrastIssueDetails");
-                else values.put("lowTextContrastIssueDetails", jsonValue(value));
                 return this;
             }
             /**
@@ -3637,6 +3729,36 @@ public final class Audits {
             public Builder permissionElementIssueDetails(@Nullable Audits.PermissionElementIssueDetails value) {
                 if (value == null) values.remove("permissionElementIssueDetails");
                 else values.put("permissionElementIssueDetails", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the performanceIssueDetails field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder performanceIssueDetails(@Nullable Audits.PerformanceIssueDetails value) {
+                if (value == null) values.remove("performanceIssueDetails");
+                else values.put("performanceIssueDetails", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the selectivePermissionsInterventionIssueDetails field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder selectivePermissionsInterventionIssueDetails(@Nullable Audits.SelectivePermissionsInterventionIssueDetails value) {
+                if (value == null) values.remove("selectivePermissionsInterventionIssueDetails");
+                else values.put("selectivePermissionsInterventionIssueDetails", jsonValue(value));
+                return this;
+            }
+            /**
+             * Sets the emailVerificationRequestIssueDetails field.
+             * @param value field value; null removes an optional value
+             * @return this builder
+             */
+            public Builder emailVerificationRequestIssueDetails(@Nullable Audits.EmailVerificationRequestIssueDetails value) {
+                if (value == null) values.remove("emailVerificationRequestIssueDetails");
+                else values.put("emailVerificationRequestIssueDetails", jsonValue(value));
                 return this;
             }
             public InspectorIssueDetails build() {
@@ -3942,55 +4064,6 @@ public final class Audits {
         }
     }
     /**
-     * Runs the contrast check for the target page. Found issues are reported using Audits.issueAdded event.
-     */
-    public static final class CheckContrastParams extends CdpObject {
-        private CheckContrastParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CheckContrastParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CheckContrastParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Whether to report WCAG AAA level issues. Default is false.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean reportAAA() {
-            return (Boolean) value("reportAAA");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether to report WCAG AAA level issues. Default is false.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder reportAAA(@Nullable Boolean value) {
-                if (value == null) values.remove("reportAAA");
-                else values.put("reportAAA", jsonValue(value));
-                return this;
-            }
-            public CheckContrastParams build() {
-                return new CheckContrastParams(values);
-            }
-        }
-    }
-    /**
-     * Runs the contrast check for the target page. Found issues are reported using Audits.issueAdded event.
-     */
-    public static final class CheckContrastResult extends CdpObject {
-        private CheckContrastResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CheckContrastResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CheckContrastResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public CheckContrastResult build() {
-                return new CheckContrastResult(values);
-            }
-        }
-    }
-    /**
      * Runs the form issues check for the target page. Found issues are reported using Audits.issueAdded event.
      */
     public static final class CheckFormsIssuesParams extends CdpObject {
@@ -4098,14 +4171,6 @@ public final class Audits {
          */
         public CompletionStage<EnableResult> enable() {
             return client.call("Audits.enable", null, EnableResult::fromMap);
-        }
-        /**
-         * Runs the contrast check for the target page. Found issues are reported using Audits.issueAdded event.
-         * @param params command parameters
-         * @return a stage completing with the command result
-         */
-        public CompletionStage<CheckContrastResult> checkContrast(CheckContrastParams params) {
-            return client.call("Audits.checkContrast", params, CheckContrastResult::fromMap);
         }
         /**
          * Runs the form issues check for the target page. Found issues are reported using Audits.issueAdded event.

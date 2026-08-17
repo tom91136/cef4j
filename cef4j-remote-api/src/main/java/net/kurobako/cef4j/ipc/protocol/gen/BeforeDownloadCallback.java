@@ -41,7 +41,7 @@ public final class BeforeDownloadCallback {
      *
      * @param downloadPath may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(@Nonnull String downloadPath, int showDialog) {
         return session

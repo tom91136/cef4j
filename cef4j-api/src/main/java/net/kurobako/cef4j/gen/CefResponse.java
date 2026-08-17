@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -16,9 +16,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_response_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefResponse extends CefLibraryObject {
 
@@ -27,7 +27,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>int (CEF_CALLBACK* is_read_only)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:60</a>
      */
     boolean isReadOnly();
 
@@ -38,7 +38,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @return the result, or {@code ERR_NONE} for default handling
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:66</a>
      */
     CefErrorCode getError();
 
@@ -47,7 +47,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>void (CEF_CALLBACK* set_error)(struct _cef_response_t* self, cef_errorcode_t error);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:72</a>
      */
     void setError(@Nonnull CefErrorCode error);
 
@@ -56,7 +56,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>int (CEF_CALLBACK* get_status)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:79</a>
      */
     int getStatus();
 
@@ -65,7 +65,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>void (CEF_CALLBACK* set_status)(struct _cef_response_t* self, int status);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:85</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:85</a>
      */
     void setStatus(int status);
 
@@ -74,7 +74,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_status_text)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:91</a>
      */
     Optional<String> getStatusText();
 
@@ -85,7 +85,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @param statusText may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:97</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:97</a>
      */
     void setStatusText(@Nullable String statusText);
 
@@ -94,7 +94,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_mime_type)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:103</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:103</a>
      */
     Optional<String> getMimeType();
 
@@ -105,7 +105,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @param mimeType may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:109</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:109</a>
      */
     void setMimeType(@Nullable String mimeType);
 
@@ -114,7 +114,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_charset)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:115</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:115</a>
      */
     Optional<String> getCharset();
 
@@ -125,7 +125,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @param charset may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:121</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:121</a>
      */
     void setCharset(@Nullable String charset);
 
@@ -134,7 +134,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_header_by_name)(struct _cef_response_t* self, const cef_string_t* name);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:127</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:127</a>
      */
     Optional<String> getHeaderByName(@Nullable String name);
 
@@ -145,7 +145,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @param value may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:133</a>
      */
     void setHeaderByName(@Nullable String name, @Nullable String value, boolean overwrite);
 
@@ -154,7 +154,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>void (CEF_CALLBACK* get_header_map)(struct _cef_response_t* self, cef_string_multimap_t headerMap);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:143</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:143</a>
      */
     void getHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
@@ -163,7 +163,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>void (CEF_CALLBACK* set_header_map)(struct _cef_response_t* self, cef_string_multimap_t headerMap);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:149</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:149</a>
      */
     void setHeaderMap(@Nonnull Map<String, List<String>> headerMap);
 
@@ -172,7 +172,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_url)(struct _cef_response_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:155</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:155</a>
      */
     Optional<String> getUrl();
 
@@ -183,7 +183,7 @@ public interface CefResponse extends CefLibraryObject {
      *
      * @param url may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:161</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:161</a>
      */
     void setUrl(@Nullable String url);
     /**
@@ -191,7 +191,7 @@ public interface CefResponse extends CefLibraryObject {
      * <p>Definition generated from cef_response_capi.h
      * <pre>CEF_EXPORT cef_response_t* cef_response_create(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__response_8h.html">cef_response.h:54</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:54</a>
      */
     static Optional<CefResponse> create() {
       return Optional.ofNullable(NativePeer.create0());

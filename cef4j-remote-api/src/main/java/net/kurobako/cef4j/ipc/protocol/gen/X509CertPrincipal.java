@@ -39,7 +39,7 @@ public final class X509CertPrincipal {
      * Returns a name that can be used to represent the issuer. It tries in this order: Common Name (CN), Organization Name (O) and Organizational Unit Name (OU) and returns the first non-empty one found.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:52</a>
      */
     public CompletableFuture<String> getDisplayName() {
         return session
@@ -51,7 +51,7 @@ public final class X509CertPrincipal {
      * Returns the common name.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:60</a>
      */
     public CompletableFuture<String> getCommonName() {
         return session
@@ -63,7 +63,7 @@ public final class X509CertPrincipal {
      * Returns the locality name.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:66</a>
      */
     public CompletableFuture<String> getLocalityName() {
         return session
@@ -75,7 +75,7 @@ public final class X509CertPrincipal {
      * Returns the state or province name.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:72</a>
      */
     public CompletableFuture<String> getStateOrProvinceName() {
         return session
@@ -87,7 +87,7 @@ public final class X509CertPrincipal {
      * Returns the country name.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:78</a>
      */
     public CompletableFuture<String> getCountryName() {
         return session
@@ -99,7 +99,7 @@ public final class X509CertPrincipal {
      * Retrieve the list of organization names.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
     public CompletableFuture<Void> getOrganizationNames(String[] names) {
         return session
@@ -111,7 +111,7 @@ public final class X509CertPrincipal {
      * Retrieve the list of organization unit names.
      * <p>Definition generated from cef_x509_certificate.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
     public CompletableFuture<Void> getOrganizationUnitNames(String[] names) {
         return session

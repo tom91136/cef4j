@@ -22,7 +22,7 @@ public interface CefDevToolsMessageObserver {
      *
      * @param message <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
     @Nullable
     default Boolean onDevToolsMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, byte[] message) { return null; }
@@ -34,7 +34,7 @@ public interface CefDevToolsMessageObserver {
      *
      * @param result may be null, <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:81</a>
      */
     default void onDevToolsMethodResult(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int messageId_, int success, byte[] result) {}
 
@@ -45,7 +45,7 @@ public interface CefDevToolsMessageObserver {
      *
      * @param params may be null, <b>a direct {@code ByteBuffer} whose capacity is the buffer size. This buffer is not reference-counted; its lifetime is not predictable beyond the scope of this callback. Storing a reference to it is unsafe unless explicitly permitted by the CEF documentation and may lead to native crashes.</b>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:100</a>
      */
     default void onDevToolsEvent(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String method, byte[] params) {}
 
@@ -53,7 +53,7 @@ public interface CefDevToolsMessageObserver {
      * Method that will be called when the DevTools agent has attached. {@code browser} is the originating browser instance. This will generally occur in response to the first message sent while the agent is detached.
      * <p>Definition generated from cef_devtools_message_observer.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:114</a>
      */
     default void onDevToolsAgentAttached(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 
@@ -61,7 +61,7 @@ public interface CefDevToolsMessageObserver {
      * Method that will be called when the DevTools agent has detached. {@code browser} is the originating browser instance. Any method results that were pending before the agent became detached will not be delivered, and any active event subscriptions will be canceled.
      * <p>Definition generated from cef_devtools_message_observer.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:122</a>
      */
     default void onDevToolsAgentDetached(net.kurobako.cef4j.ipc.session.RemoteHandle browser) {}
 

@@ -39,7 +39,7 @@ public final class PrintJobCallback {
      * Indicate completion of the print job.
      * <p>Definition generated from cef_print_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__print__handler_8h.html">cef_print_handler.h:70</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:70</a>
      */
     public CompletableFuture<Void> cont() {
         return session

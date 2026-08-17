@@ -18,7 +18,7 @@ public interface CefStringVisitor {
      *
      * @param string may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__string__visitor_8h.html">cef_string_visitor.h:48</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__string__visitor_8h.html">cef_string_visitor.h:48</a>
      */
 
     void visit(String string);

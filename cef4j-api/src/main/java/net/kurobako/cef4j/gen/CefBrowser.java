@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_browser_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:55</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:55</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefBrowser extends CefLibraryObject {
 
@@ -26,7 +26,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* is_valid)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:64</a>
      */
     boolean isValid();
 
@@ -35,7 +35,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>cef_browser_host_t* (CEF_CALLBACK* get_host)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:71</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:71</a>
      */
     Optional<CefBrowserHost> getHost();
 
@@ -44,7 +44,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* can_go_back)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:78</a>
      */
     boolean canGoBack();
 
@@ -53,7 +53,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* go_back)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:84</a>
      */
     void goBack();
 
@@ -62,7 +62,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* can_go_forward)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:90</a>
      */
     boolean canGoForward();
 
@@ -71,7 +71,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* go_forward)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:96</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:96</a>
      */
     void goForward();
 
@@ -80,7 +80,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* is_loading)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:102</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:102</a>
      */
     boolean isLoading();
 
@@ -89,7 +89,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* reload)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:108</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:108</a>
      */
     void reload();
 
@@ -98,7 +98,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* reload_ignore_cache)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:114</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:114</a>
      */
     void reloadIgnoreCache();
 
@@ -107,7 +107,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* stop_load)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:120</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:120</a>
      */
     void stopLoad();
 
@@ -116,7 +116,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* get_identifier)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:126</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:126</a>
      */
     int getIdentifier();
 
@@ -125,7 +125,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* is_same)(struct _cef_browser_t* self, struct _cef_browser_t* that);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:133</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:133</a>
      */
     boolean isSame(@Nullable CefBrowser that);
 
@@ -134,7 +134,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* is_popup)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:140</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:140</a>
      */
     boolean isPopup();
 
@@ -143,7 +143,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>int (CEF_CALLBACK* has_document)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:146</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:146</a>
      */
     boolean hasDocument();
 
@@ -152,7 +152,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>cef_frame_t* (CEF_CALLBACK* get_main_frame)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:152</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:152</a>
      */
     Optional<CefFrame> getMainFrame();
 
@@ -161,7 +161,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>cef_frame_t* (CEF_CALLBACK* get_focused_frame)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:164</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:164</a>
      */
     Optional<CefFrame> getFocusedFrame();
 
@@ -170,7 +170,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>cef_frame_t* (CEF_CALLBACK* get_frame_by_identifier)(struct _cef_browser_t* self, const cef_string_t* identifier);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:170</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:170</a>
      */
     Optional<CefFrame> getFrameByIdentifier(@Nullable String identifier);
 
@@ -181,7 +181,7 @@ public interface CefBrowser extends CefLibraryObject {
      *
      * @param name may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:177</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:177</a>
      */
     Optional<CefFrame> getFrameByName(@Nullable String name);
 
@@ -190,7 +190,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>size_t (CEF_CALLBACK* get_frame_count)(struct _cef_browser_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:183</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:183</a>
      */
     long getFrameCount();
 
@@ -199,7 +199,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* get_frame_identifiers)(struct _cef_browser_t* self, cef_string_list_t identifiers);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:189</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:189</a>
      */
     void getFrameIdentifiers(@Nonnull List<String> identifiers);
 
@@ -208,7 +208,7 @@ public interface CefBrowser extends CefLibraryObject {
      * <p>Definition generated from cef_browser_capi.h
      * <pre>void (CEF_CALLBACK* get_frame_names)(struct _cef_browser_t* self, cef_string_list_t names);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__browser_8h.html">cef_browser.h:195</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:195</a>
      */
     void getFrameNames(@Nonnull List<String> names);
     final class NativePeer implements CefBrowser, AutoCloseable {

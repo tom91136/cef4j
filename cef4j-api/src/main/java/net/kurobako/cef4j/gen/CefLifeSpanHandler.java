@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  *   ...
  * } cef_life_span_handler_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefLifeSpanHandler extends CefClientHandler {
 
@@ -38,7 +38,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * @param targetUrl may be null
      * @param targetFrameName may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:56</a>
      */
     default boolean onBeforePopup(@Nullable CefBrowser browser, @Nullable CefFrame frame, int popupId, @Nullable String targetUrl, @Nullable String targetFrameName, @Nonnull CefWindowOpenDisposition targetDisposition, boolean userGesture, @Nullable CefPopupFeatures popupFeatures, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] noJavascriptAccess) {
         return false;
@@ -51,7 +51,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Definition generated from cef_life_span_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_before_popup_aborted)(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser, int popup_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:116</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:116</a>
      */
     default void onBeforePopupAborted(@Nullable CefBrowser browser, int popupId) {
     }
@@ -65,7 +65,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Definition generated from cef_life_span_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_before_dev_tools_popup)(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser, struct _cef_window_info_t* windowInfo, struct _cef_client_t** client, struct _cef_browser_settings_t* settings, struct _cef_dictionary_value_t** extra_info, int* use_default_window);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:135</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:135</a>
      */
     default void onBeforeDevToolsPopup(@Nullable CefBrowser browser, @Nonnull CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> client, @Nonnull CefBrowserSettings.Mutable settings, @Nullable AtomicReference<CefDictionaryValue> extraInfo, int[] useDefaultWindow) {
     }
@@ -75,7 +75,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Definition generated from cef_life_span_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_after_created)(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:162</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:162</a>
      */
     default void onAfterCreated(@Nullable CefBrowser browser) {
     }
@@ -101,7 +101,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Definition generated from cef_life_span_handler_capi.h
      * <pre>int (CEF_CALLBACK* do_close)(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
      */
     default boolean doClose(@Nullable CefBrowser browser) {
         return false;
@@ -112,7 +112,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
      * <p>Definition generated from cef_life_span_handler_capi.h
      * <pre>void (CEF_CALLBACK* on_before_close)(struct _cef_life_span_handler_t* self, struct _cef_browser_t* browser);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:279</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:279</a>
      */
     default void onBeforeClose(@Nullable CefBrowser browser) {
     }

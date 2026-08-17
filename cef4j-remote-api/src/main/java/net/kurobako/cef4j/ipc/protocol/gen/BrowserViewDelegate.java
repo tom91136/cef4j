@@ -39,7 +39,7 @@ public final class BrowserViewDelegate {
      * Called after a browser has been created. When browsing cross-origin a new browser will be created before the old browser with the same identifier is destroyed. {@code extra_info} is an optional read-only value originating from net.kurobako.cef4j.ipc.protocol.gen.CefBrowserHost.createBrowser(), net.kurobako.cef4j.ipc.protocol.gen.CefBrowserHost.createBrowserSync(), {@code CefLifeSpanHandler.onBeforePopup()} or net.kurobako.cef4j.ipc.protocol.gen.CefBrowserView.createBrowserView().
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
      */
     public CompletableFuture<Void> onBrowserCreated(@Nonnull RemoteHandle browserView, @Nonnull RemoteHandle browser) {
         return session
@@ -51,7 +51,7 @@ public final class BrowserViewDelegate {
      * Called before a browser is destroyed.
      * <p>Definition generated from cef_render_process_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
      */
     public CompletableFuture<Void> onBrowserDestroyed(@Nonnull RemoteHandle browserView, @Nonnull RemoteHandle browser) {
         return session

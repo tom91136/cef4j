@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -14,9 +14,9 @@ import javax.annotation.Nonnull;
  *   ...
  * } cef_x509_cert_principal_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:46</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:46</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefX509CertPrincipal extends CefLibraryObject {
 
@@ -25,7 +25,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_display_name)(struct _cef_x509_cert_principal_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:52</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:52</a>
      */
     Optional<String> getDisplayName();
 
@@ -34,7 +34,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_common_name)(struct _cef_x509_cert_principal_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:60</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:60</a>
      */
     Optional<String> getCommonName();
 
@@ -43,7 +43,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_locality_name)(struct _cef_x509_cert_principal_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:66</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:66</a>
      */
     Optional<String> getLocalityName();
 
@@ -52,7 +52,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_state_or_province_name)(struct _cef_x509_cert_principal_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:72</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:72</a>
      */
     Optional<String> getStateOrProvinceName();
 
@@ -61,7 +61,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>cef_string_userfree_t (CEF_CALLBACK* get_country_name)(struct _cef_x509_cert_principal_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:78</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:78</a>
      */
     Optional<String> getCountryName();
 
@@ -70,7 +70,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>void (CEF_CALLBACK* get_organization_names)(struct _cef_x509_cert_principal_t* self, cef_string_list_t names);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
     void getOrganizationNames(@Nonnull List<String> names);
 
@@ -79,7 +79,7 @@ public interface CefX509CertPrincipal extends CefLibraryObject {
      * <p>Definition generated from cef_x509_certificate_capi.h
      * <pre>void (CEF_CALLBACK* get_organization_unit_names)(struct _cef_x509_cert_principal_t* self, cef_string_list_t names);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
     void getOrganizationUnitNames(@Nonnull List<String> names);
     final class NativePeer implements CefX509CertPrincipal, AutoCloseable {

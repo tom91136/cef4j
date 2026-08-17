@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen;
 
 import javax.annotation.processing.Generated;
@@ -13,9 +13,9 @@ import javax.annotation.Nonnull;
  *   ...
  * } cef_task_manager_t;</pre>
  *
- * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:45</a>
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:45</a>
  */
-@Generated("mvn generate-sources -pl cef4j-native -Dcef.version=146.0.9+g3ca6a87+chromium-146.0.7680.165")
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 public interface CefTaskManager extends CefLibraryObject {
 
@@ -24,7 +24,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>size_t (CEF_CALLBACK* get_tasks_count)(struct _cef_task_manager_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:62</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:62</a>
      */
     long getTasksCount();
 
@@ -36,7 +36,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>int64_t* (CEF_CALLBACK* get_task_ids_list)(struct _cef_task_manager_t* self);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:69</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:69</a>
      */
     long[] getTaskIdsList();
 
@@ -45,7 +45,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>int (CEF_CALLBACK* get_task_info)(struct _cef_task_manager_t* self, int64_t task_id, struct _cef_task_info_t* info);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:82</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:82</a>
      */
     boolean getTaskInfo(long taskId, @Nonnull CefTaskInfo.Mutable info);
 
@@ -54,7 +54,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>int (CEF_CALLBACK* kill_task)(struct _cef_task_manager_t* self, int64_t task_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:91</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:91</a>
      */
     boolean killTask(long taskId);
 
@@ -63,7 +63,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>int64_t (CEF_CALLBACK* get_task_id_for_browser_id)(struct _cef_task_manager_t* self, int browser_id);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:99</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:99</a>
      */
     long getTaskIdForBrowserId(int browserId);
     /**
@@ -71,7 +71,7 @@ public interface CefTaskManager extends CefLibraryObject {
      * <p>Definition generated from cef_task_manager_capi.h
      * <pre>CEF_EXPORT cef_task_manager_t* cef_task_manager_get(void);</pre>
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__task__manager_8h.html">cef_task_manager.h:55</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__task__manager_8h.html">cef_task_manager.h:55</a>
      */
     static Optional<CefTaskManager> get() {
       return Optional.ofNullable(NativePeer.get0());

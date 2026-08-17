@@ -41,7 +41,7 @@ public final class FileDialogCallback {
      *
      * @param filePaths may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:50</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:50</a>
      */
     public CompletableFuture<Void> cont(String[] filePaths) {
         return session
@@ -53,7 +53,7 @@ public final class FileDialogCallback {
      * Cancel the file selection.
      * <p>Definition generated from cef_dialog_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:58</a>
      */
     public CompletableFuture<Void> cancel() {
         return session

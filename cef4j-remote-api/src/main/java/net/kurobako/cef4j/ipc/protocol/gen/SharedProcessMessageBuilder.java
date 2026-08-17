@@ -39,7 +39,7 @@ public final class SharedProcessMessageBuilder {
      * Returns {@code true} if the builder is valid.
      * <p>Definition generated from cef_shared_process_message_builder.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:58</a>
      */
     public CompletableFuture<Integer> isValid() {
         return session
@@ -51,7 +51,7 @@ public final class SharedProcessMessageBuilder {
      * Returns the size of the shared memory region in bytes. Returns 0 for invalid instances.
      * <p>Definition generated from cef_shared_process_message_builder.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:64</a>
      */
     public CompletableFuture<Long> size() {
         return session
@@ -63,7 +63,7 @@ public final class SharedProcessMessageBuilder {
      * Creates a new CefProcessMessage from the data provided to the builder. Returns {@code null} for invalid instances. Invalidates the builder instance.
      * <p>Definition generated from cef_shared_process_message_builder.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__shared__process__message__builder_8h.html">cef_shared_process_message_builder.h:79</a>
      */
     public CompletableFuture<ProcessMessage> build() {
         return session

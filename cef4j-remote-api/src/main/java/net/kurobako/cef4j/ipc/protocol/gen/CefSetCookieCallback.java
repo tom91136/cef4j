@@ -16,7 +16,7 @@ public interface CefSetCookieCallback {
      * Method that will be called upon completion. {@code success} will be {@code true} if the cookie was set successfully.
      * <p>Definition generated from cef_cookie.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__cookie_8h.html">cef_cookie.h:157</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__cookie_8h.html">cef_cookie.h:157</a>
      */
 
     void onComplete(int success);

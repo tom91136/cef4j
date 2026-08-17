@@ -19,7 +19,7 @@ public interface CefSettingObserver {
      * @param requestingUrl may be null
      * @param topLevelUrl may be null
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context_8h.html">cef_request_context.h:79</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:79</a>
      */
 
     void onSettingChanged(String requestingUrl, String topLevelUrl, int contentType);

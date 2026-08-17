@@ -17,7 +17,7 @@ public interface CefRequestContextHandler {
      * Called on the browser process UI thread immediately after the request context has been initialized.
      * <p>Definition generated from cef_request_context_handler.h
      *
-     * @see <a href="https://cef-builds.spotifycdn.com/docs/146.0/cef__request__context__handler_8h.html">cef_request_context_handler.h:56</a>
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context__handler_8h.html">cef_request_context_handler.h:56</a>
      */
     default void onRequestContextInitialized(net.kurobako.cef4j.ipc.session.RemoteHandle requestContext) {}
 
