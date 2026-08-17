@@ -1,0 +1,36 @@
+name: Prepare AlmaLinux sysroot
+description: Restore or build the shared AlmaLinux 8 compilation sysroot
+
+inputs:
+  arch:
+    description: Target architecture
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - id: cache
+      uses: actions/cache/restore@v6
+      with:
+        path: sysroot/out/sysroot-al8-${{ inputs.arch }}.tar.xz
+        key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ inputs.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
+
+    - name: Build AlmaLinux 8 sysroot
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        TARGET_ARCH: ${{ inputs.arch }}
+      run: sysroot/manage.sh build "${TARGET_ARCH}"
+
+    - name: Save AlmaLinux 8 sysroot
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: sysroot/out/sysroot-al8-${{ inputs.arch }}.tar.xz
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+
+    - name: Prepare AlmaLinux 8 sysroot
+      shell: bash
+      env:
+        TARGET_ARCH: ${{ inputs.arch }}
+      run: sysroot/manage.sh prepare "${TARGET_ARCH}"

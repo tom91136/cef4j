@@ -18,6 +18,7 @@ concurrency:
 jobs:
   packager:
     name: Runtime packager / ${{ matrix.os }} / JDK ${{ matrix.java }}
+    needs: maven-wrapper
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     strategy:
@@ -33,7 +34,8 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
           cache-dependency-path: cef4j-runtime-packager/pom.xml
-      - name: Test the Java 11 runtime packager
+      - uses: ./.github/actions/maven-wrapper
+      - name: Test runtime packager
         run: ./mvnw -B -f cef4j-runtime-packager/pom.xml clean verify
 
       - name: Verify packager release artifacts
@@ -50,26 +52,7 @@ jobs:
         with:
           distribution: corretto
           java-version: '17'
-      - id: wrapper-cache
-        uses: actions/cache/restore@v6
-        with:
-          path: ~/.m2/wrapper
-          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
-          enableCrossOsArchive: true
-      - name: Download Maven wrapper distribution once
-        if: steps.wrapper-cache.outputs.cache-hit != 'true'
-        uses: nick-fields/retry@v4
-        with:
-          timeout_minutes: 3
-          max_attempts: 3
-          command: ./mvnw --version
-      - name: Save Maven wrapper distribution
-        if: steps.wrapper-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
-        with:
-          path: ~/.m2/wrapper
-          key: ${{ steps.wrapper-cache.outputs.cache-primary-key }}
-          enableCrossOsArchive: true
+      - uses: ./.github/actions/maven-wrapper
 
   linux:
     needs: maven-wrapper
@@ -119,12 +102,7 @@ jobs:
         if: matrix.track == 'frontier' && matrix.platform.arch == 'x86_64' && matrix.jdk.java == '17'
         uses: sbt/setup-sbt@v1
 
-      - name: Cache Maven wrapper distribution
-        uses: actions/cache@v6
-        with:
-          path: ~/.m2/wrapper
-          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
-          enableCrossOsArchive: true
+      - uses: ./.github/actions/maven-wrapper
 
       # dependency:go-offline cannot discover Surefire's lazily selected provider.
       - name: Prewarm Surefire JUnit provider
@@ -136,26 +114,9 @@ jobs:
             ./mvnw -B dependency:get
             "-Dartifact=org.apache.maven.surefire:surefire-junit-platform:3.5.6"
 
-      - id: sysroot-cache
-        name: Restore AlmaLinux 8 sysroot
-        uses: actions/cache/restore@v6
+      - uses: ./.github/actions/almalinux-sysroot
         with:
-          path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
-          key: sysroot-al8-${{ runner.os }}-${{ runner.arch }}-${{ matrix.platform.arch }}-${{ hashFiles('sysroot/Dockerfile', 'sysroot/manage.sh') }}
-
-      - name: Build AlmaLinux 8 sysroot
-        if: steps.sysroot-cache.outputs.cache-hit != 'true'
-        run: sysroot/manage.sh build ${{ matrix.platform.arch }}
-
-      - name: Save AlmaLinux 8 sysroot
-        if: steps.sysroot-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
-        with:
-          path: sysroot/out/sysroot-al8-${{ matrix.platform.arch }}.tar.xz
-          key: ${{ steps.sysroot-cache.outputs.cache-primary-key }}
-
-      - name: Prepare AlmaLinux 8 sysroot
-        run: sysroot/manage.sh prepare ${{ matrix.platform.arch }}
+          arch: ${{ matrix.platform.arch }}
 
       - name: Install Linux build and runtime prerequisites
         run: |
@@ -393,32 +354,13 @@ jobs:
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
-      - name: Cache Maven wrapper distribution
-        uses: actions/cache@v6
-        with:
-          path: ~/.m2/wrapper
-          key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
-          enableCrossOsArchive: true
+      - uses: ./.github/actions/maven-wrapper
 
       - name: Set up MSVC
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $install = & $vswhere -latest -products * -property installationPath
-          if (-not $install) { throw "Visual Studio with C++ tools was not found" }
-          $arch = "${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}"
-          $vcvars = Join-Path $install "VC\Auxiliary\Build\vcvarsall.bat"
-          $environment = cmd /d /s /c "`"$vcvars`" $arch >nul && set"
-          $names = @('INCLUDE', 'LIB', 'LIBPATH', 'PATH', 'UCRTVersion', 'UniversalCRTSdkDir',
-                     'VCINSTALLDIR', 'VCToolsInstallDir', 'VCToolsRedistDir', 'VSCMD_ARG_HOST_ARCH',
-                     'VSCMD_ARG_TGT_ARCH', 'WindowsLibPath', 'WindowsSdkBinPath', 'WindowsSdkDir',
-                     'WindowsSDKVersion')
-          foreach ($line in $environment) {
-            if ($line -match '^([^=]+)=(.*)$' -and $names -contains $Matches[1]) {
-              "$($Matches[1])=$($Matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            }
-          }
+        uses: ./.github/actions/msvc
+        with:
+          arch: ${{ matrix.platform.arch }}
 
       # Surefire discovers this provider lazily only when tests begin. Resolve it
       # once before the pooled CEF lanes so network retries never repeat a test.

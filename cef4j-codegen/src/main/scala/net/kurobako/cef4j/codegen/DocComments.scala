@@ -313,7 +313,7 @@ object DocComments {
 
   private def resolveCppRef(cppName: String, member: String)(using Naming.Context, Context): String = {
     val javaClass  = summon[Context].classNameMap.getOrElse(cppName, cppName)
-    val javaMethod = Naming.toCamelCase(member.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase)
+    val javaMethod = Naming.cppMethodName(member)
     java.util.regex.Matcher.quoteReplacement(resolveMethodLink(javaClass, javaMethod))
   }
 

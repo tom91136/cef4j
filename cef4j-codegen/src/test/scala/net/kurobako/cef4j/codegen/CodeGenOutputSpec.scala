@@ -514,6 +514,11 @@ class CodeGenOutputSpec extends munit.FunSuite {
     assertEquals(sym, "Java_net_kurobako_cef4j_gen_CefBrowserHost_00024NativePeer_sendMouseClickEvent0")
   }
 
+  test("C++ method acronyms retain Java word boundaries") {
+    assertEquals(Naming.cppMethodName("CreateURLRequest"), "createUrlRequest")
+    assertEquals(Naming.cppMethodName("external_begin_frame_enabled"), "externalBeginFrameEnabled")
+  }
+
   test("generated Java package is configurable through Naming context") {
     given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
     given emptyDocContext: DocComments.Context    = DocComments.Context.empty

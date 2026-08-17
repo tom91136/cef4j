@@ -58,7 +58,7 @@ verify_thin_platform_jar() {
 
     artifact=${artifacts[0]}
     entries=$(mktemp "${RUNNER_TEMP:-/tmp}/cef4j-platform-entries.XXXXXX")
-    if ! jar tf "${artifact}" > "${entries}"; then
+    if ! jar tf "${artifact}" | tr -d '\r' > "${entries}"; then
         rm -f "${entries}"
         return 1
     fi
@@ -101,16 +101,15 @@ java -version
 [ "${mode}" = desktop ] || clang++ --version
 
 non_javafx='!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample'
-reactor_selection=()
-if [ "${mode}" = linux ] && [ "${JAVAFX_TESTS}" != true ]; then
-    reactor_selection=(-pl "${non_javafx}")
-fi
 properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
     "-Djavafx.version=${JAVAFX_VERSION}"
     "-Djavafx.test.version=${JAVAFX_TEST_VERSION}"
 )
+if [ "${mode}" = linux ] && [ "$(uname -m)" = aarch64 ] && [ "${CEF_API}" -lt 150 ]; then
+    properties+=("-Dcef4j.test.ldPreload=${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_linuxarm64_minimal/Release/libcef.so")
+fi
 if [ "${mode}" = desktop ]; then
     properties+=(
         "-Dcef4j.test.extraArgs=${CEF4J_TEST_EXTRA_ARGS:---disable-gpu}"
@@ -119,31 +118,45 @@ if [ "${mode}" = desktop ]; then
     [ -z "${JAVAFX_PLATFORM:-}" ] || properties+=("-Djavafx.platform=${JAVAFX_PLATFORM}")
 fi
 
-retry ./mvnw -B dependency:go-offline "${reactor_selection[@]}" \
+run_reactor() {
+    if [ "${mode}" = linux ] && [ "${JAVAFX_TESTS}" != true ]; then
+        "$@" -pl "${non_javafx}"
+    else
+        "$@"
+    fi
+}
+
+run_with_display() {
+    if [ "${mode}" = linux ]; then
+        xvfb-run -a "$@"
+    else
+        "$@"
+    fi
+}
+
+run_reactor retry ./mvnw -B dependency:go-offline \
     -DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server "${properties[@]}"
 retry ./mvnw -B -pl cef4j-platform spotless:check "${properties[@]}"
 
-build_options=()
+build_options=(-DskipTests=false)
 if [ "${mode}" = linux ] || [ "${JAVAFX_TESTS}" != true ]; then
     build_options=(-DskipTests)
 fi
-./mvnw -B clean install "${build_options[@]}" "${reactor_selection[@]}" "${properties[@]}"
+run_reactor ./mvnw -B clean install "${build_options[@]}" "${properties[@]}"
 verify_thin_platform_jar
 [ "${mode}" = desktop ] || verify_linux_abi
 
 test_properties=("${properties[@]}")
-test_prefix=()
 if [ "${mode}" = linux ]; then
-    test_prefix=(xvfb-run -a)
     test_properties+=(
         -Dcef4j.test.extraArgs=--disable-gpu
         -Dcef4j.runtime.server.extraArgs=--disable-gpu
     )
     if [ "${JAVAFX_TESTS}" = true ]; then
-        "${test_prefix[@]}" ./mvnw -B install "${test_properties[@]}"
+        run_with_display ./mvnw -B install "${test_properties[@]}"
     fi
 fi
-"${test_prefix[@]}" ./mvnw -B test -pl "${non_javafx}" "${test_properties[@]}"
+run_with_display ./mvnw -B test -pl "${non_javafx}" "${test_properties[@]}"
 
 if [ "${JAVA11_SMOKE:-false}" = true ]; then
     ./mvnw -B -pl cef4j-remote-core,cef4j-remote-frame,cef4j-cdp,cef4j-webdriver,cef4j-codecs-gson,cef4j-codecs-jackson,cef4j-remote-webdriver test \

@@ -1,0 +1,28 @@
+name: Prepare Maven wrapper
+description: Restore the shared Maven distribution or download and cache it once
+
+runs:
+  using: composite
+  steps:
+    - id: cache
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.m2/wrapper
+        key: maven-wrapper-${{ hashFiles('.mvn/wrapper/maven-wrapper.properties') }}
+        enableCrossOsArchive: true
+
+    - name: Download Maven wrapper distribution
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: nick-fields/retry@v4
+      with:
+        timeout_minutes: 3
+        max_attempts: 3
+        command: ./mvnw --version
+
+    - name: Save Maven wrapper distribution
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ~/.m2/wrapper
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+        enableCrossOsArchive: true

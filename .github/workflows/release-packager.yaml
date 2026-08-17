@@ -44,6 +44,8 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
+      - uses: ./.github/actions/maven-wrapper
+
       - name: Match tag to packager version
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}

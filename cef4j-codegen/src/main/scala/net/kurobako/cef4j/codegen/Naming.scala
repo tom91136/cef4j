@@ -83,8 +83,11 @@ object Naming {
     if (ReservedMethods.contains(name)) s"cef${capitalise(name)}" else name
   }
 
+  def cppMethodName(cpp: String)(using Context): String =
+    if (cpp.contains('_')) toCamelCase(cpp) else pascalToCamel(cpp)
+
   def javaMethodName(fn: FnPtr)(using Context): String = fn.cppName match {
-    case Some(cpp) => pascalToCamel(cpp)
+    case Some(cpp) => cppMethodName(cpp)
     case None      => toCamelCase(fn.name)
   }
 

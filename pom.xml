@@ -454,6 +454,31 @@
                 <runtime.server.executable>cef4j-runtime-server.exe</runtime.server.executable>
             </properties>
         </profile>
+        <profile>
+            <id>linux-aarch64-static-tls</id>
+            <activation>
+                <os>
+                    <name>Linux</name>
+                    <arch>aarch64</arch>
+                </os>
+                <property>
+                    <name>cef4j.test.ldPreload</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <environmentVariables>
+                                <LD_PRELOAD>${cef4j.test.ldPreload}</LD_PRELOAD>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>

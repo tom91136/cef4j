@@ -51,7 +51,7 @@ public interface CefServerHandler extends CefClientHandler {
     }
 
     /**
-     * Called when a client disconnects from {@code server}. {@code connection_id} uniquely identifies the connection. The client should release any data associated with {@code connection_id} when this method is called and {@code connection_id} should no longer be passed to CefServer methods. Disconnects can originate from either the client or the server. For example, the server will disconnect automatically after a net.kurobako.cef4j.gen.CefServer.sendHttpXxxresponse() method is called.
+     * Called when a client disconnects from {@code server}. {@code connection_id} uniquely identifies the connection. The client should release any data associated with {@code connection_id} when this method is called and {@code connection_id} should no longer be passed to CefServer methods. Disconnects can originate from either the client or the server. For example, the server will disconnect automatically after a net.kurobako.cef4j.gen.CefServer.sendHttpXxxResponse() method is called.
      * <p>Definition generated from cef_server_capi.h
      * <pre>void (CEF_CALLBACK* on_client_disconnected)(struct _cef_server_handler_t* self, struct _cef_server_t* server, int connection_id);</pre>
      *
