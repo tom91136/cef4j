@@ -355,11 +355,11 @@ jobs:
     runs-on: ${{ matrix.platform.os }}
     timeout-minutes: 330
     env:
-      JAVAFX_VERSION: &desktop-javafx-version ${{ runner.os == 'macOS' && matrix.platform.arch == 'aarch64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
+      JAVAFX_VERSION: &desktop-javafx-version ${{ matrix.platform.cef-platform == 'macosarm64' && matrix.jdk.java == '17' && '17.0.15' || matrix.jdk.javafx }}
       JAVAFX_TEST_VERSION: *desktop-javafx-version
       JAVAFX_TESTS: ${{ matrix.platform.javafx-tests }}
-      JAVAFX_PLATFORM: ${{ runner.os == 'Windows' && matrix.platform.arch == 'aarch64' && 'win' || '' }}
-      CEF4J_TEST_EXTRA_ARGS: ${{ runner.os == 'macOS' && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
+      JAVAFX_PLATFORM: ${{ matrix.platform.cef-platform == 'windowsarm64' && 'win' || '' }}
+      CEF4J_TEST_EXTRA_ARGS: ${{ startsWith(matrix.platform.cef-platform, 'macos') && '--disable-gpu,--use-mock-keychain' || '--disable-gpu' }}
     strategy:
       fail-fast: false
       matrix:
