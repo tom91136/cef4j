@@ -78,22 +78,22 @@ ${allLines.mkString("\n")}
   private def render(
       javaName: String,
       fields: List[Field],
-      classDoc: String = "",
-      needsMutable: Boolean = false,
-      sourceHeader: String = "",
-      cPrototype: String = "",
-      fieldDocs: Map[String, String] = Map.empty,
-      subPackage: String = "",
-      emitAsPlatformInterface: Boolean = false,
-      platformImplSubPackages: List[String] = Nil,
-      implementSharedType: Boolean = false
-  )(using Naming.Context, DocComments.Context, Banners): String = {
+      classDoc: String,
+      needsMutable: Boolean,
+      sourceHeader: String,
+      cPrototype: String,
+      fieldDocs: Map[String, String],
+      subPackage: String,
+      emitAsPlatformInterface: Boolean,
+      platformImplSubPackages: List[String],
+      implementSharedType: Boolean
+  )(using Naming.Context, DocComments.Context, Banners): String =
     if (emitAsPlatformInterface) {
       val rootPkg       = Naming.javaPackage
       val impls         = platformImplSubPackages.distinct.map(p => s"{@link $rootPkg.$p.$javaName}")
       val suffix        = if (impls.nonEmpty) s"Platform-specific implementations: ${impls.mkString(", ")}." else ""
       val mutableNested = if (needsMutable) "\n    public interface Mutable {}\n" else ""
-      return JavaCodeGen.renderJavaFile(
+      JavaCodeGen.renderJavaFile(
         declaration = s"public interface $javaName",
         body = mutableNested,
         classDoc = classDoc,
@@ -103,53 +103,52 @@ ${allLines.mkString("\n")}
         classDocSuffix = suffix,
         subPackage = subPackage
       )
-    }
+    } else {
+      val userFields = fields.filterNot(isSizeField)
+      val hasSize    = fields.exists(isSizeField)
+      val allTypes   = fields.map(_.typ)
 
-    val userFields = fields.filterNot(isSizeField)
-    val hasSize    = fields.exists(isSizeField)
-    val allTypes   = fields.map(_.typ)
+      val fieldDecls  = renderFieldDecls(userFields, fieldDocs, "    ", "    public final ")
+      val ctorParams  = renderCtorParams(userFields)
+      val ctorAssigns = renderCtorAssigns(userFields, "        ")
 
-    val fieldDecls  = renderFieldDecls(userFields, fieldDocs, "    ", "    public final ")
-    val ctorParams  = renderCtorParams(userFields)
-    val ctorAssigns = renderCtorAssigns(userFields, "        ")
+      val nullableImport = if (userFields.exists(f => !isPrimitive(f.typ))) List("javax.annotation.Nullable") else Nil
+      val typeImports = (allTypes.flatMap(Naming.javaImports) ++ nullableImport).distinct.sorted.map(i => s"import $i;")
+      val crossPkgImports = if (subPackage.nonEmpty) {
+        val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
+        val basePkg       = Naming.javaPackage
+        val thisPkg       = s"$basePkg.$subPackage"
+        val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
+        val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
+        val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
+        (fromTypes ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
+      } else Nil
+      val allImports = (typeImports ++ crossPkgImports).distinct.sorted
 
-    val nullableImport = if (userFields.exists(f => !isPrimitive(f.typ))) List("javax.annotation.Nullable") else Nil
-    val typeImports = (allTypes.flatMap(Naming.javaImports) ++ nullableImport).distinct.sorted.map(i => s"import $i;")
-    val crossPkgImports = if (subPackage.nonEmpty) {
-      val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
-      val basePkg       = Naming.javaPackage
-      val thisPkg       = s"$basePkg.$subPackage"
-      val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
-      val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
-      val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
-      (fromTypes ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
-    } else Nil
-    val allImports = (typeImports ++ crossPkgImports).distinct.sorted
-
-    val toMutableMethod = if (needsMutable) {
-      val args = renderThisArgs(userFields)
-      s"""
+      val toMutableMethod = if (needsMutable) {
+        val args = renderThisArgs(userFields)
+        s"""
          |
          |    /** Create a mutable copy of this instance. */
          |    public Mutable toMutable() {
          |        return new Mutable($args);
          |    }""".stripMargin
-    } else ""
+      } else ""
 
-    val mutableInnerClass = if (needsMutable) {
-      s"""
+      val mutableInnerClass = if (needsMutable) {
+        s"""
          |
          |${renderMutableInner(javaName, fields, classDoc, fieldDocs, implementSharedType)}""".stripMargin
-    } else ""
+      } else ""
 
-    val declaration = if (implementSharedType) {
-      s"public final class $javaName implements ${Naming.javaPackage}.$javaName"
-    } else s"public final class $javaName"
+      val declaration = if (implementSharedType) {
+        s"public final class $javaName implements ${Naming.javaPackage}.$javaName"
+      } else s"public final class $javaName"
 
-    JavaCodeGen.renderJavaFile(
-      declaration = declaration,
-      body =
-        s"""${if (hasSize) NativeSizeDecl else ""}$fieldDecls
+      JavaCodeGen.renderJavaFile(
+        declaration = declaration,
+        body =
+          s"""${if (hasSize) NativeSizeDecl else ""}$fieldDecls
 			 |
 			 |    public $javaName($ctorParams) {
 			 |$ctorAssigns
@@ -160,21 +159,21 @@ ${allLines.mkString("\n")}
 			 |${renderHashCode(userFields)}
 			 |
 			 |${renderToString(javaName, fields)}$mutableInnerClass""".stripMargin,
-      classDoc = classDoc,
-      capiSource = sourceHeader,
-      cPrototype = cPrototype,
-      cppSource = sourceHeader,
-      imports = allImports,
-      subPackage = subPackage
-    )
-  }
+        classDoc = classDoc,
+        capiSource = sourceHeader,
+        cPrototype = cPrototype,
+        cppSource = sourceHeader,
+        imports = allImports,
+        subPackage = subPackage
+      )
+    }
 
   private def renderMutableInner(
       immutableName: String,
       fields: List[Field],
       classDoc: String,
-      fieldDocs: Map[String, String] = Map.empty,
-      implementSharedType: Boolean = false
+      fieldDocs: Map[String, String],
+      implementSharedType: Boolean
   )(using Naming.Context, DocComments.Context): String = {
     val userFields = fields.filterNot(isSizeField)
     val hasSize    = fields.exists(isSizeField)

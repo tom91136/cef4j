@@ -2,6 +2,7 @@ package net.kurobako.cef4j.packager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,6 +16,9 @@ class CefPackagerTest {
     void packagesAndVerifiesALocalArchiveThroughTheCli() throws Exception {
         Path archive = TestArchives.create(temporary.resolve("cef.tar.bz2"), CefPlatform.LINUX_X86_64);
         Path output = temporary.resolve("resources");
+        Path bridge = Files.createDirectories(temporary.resolve("bridge"));
+        Files.writeString(bridge.resolve("libcef4j.so"), "fixture bridge");
+        Files.writeString(bridge.resolve("cef4j_launcher"), "fixture launcher");
         CommandLine cli = new CommandLine(new CefPackager());
 
         int packaged = cli.execute(
@@ -22,6 +26,7 @@ class CefPackagerTest {
                 "--cef-version=150.0.0+fixture",
                 "--platform=linux-x86_64",
                 "--archive=" + archive,
+                "--bridge-directory=" + bridge,
                 "--locales=en-US",
                 "--without-swiftshader",
                 "--output=" + output);
@@ -32,6 +37,8 @@ class CefPackagerTest {
         assertThat(output.resolve("cef-runtime/linux64/libcef.so")).isRegularFile();
         assertThat(output.resolve("cef-runtime/linux64/locales/en-US.pak")).isRegularFile();
         assertThat(output.resolve("cef-runtime/linux64/libvk_swiftshader.so")).doesNotExist();
+        assertThat(output.resolve("native/linux64/libcef4j.so")).hasContent("fixture bridge");
+        assertThat(output.resolve("native/linux64/cef4j_launcher")).hasContent("fixture launcher");
     }
 
     @Test

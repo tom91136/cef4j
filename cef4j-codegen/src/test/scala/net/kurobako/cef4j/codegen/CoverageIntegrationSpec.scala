@@ -4,7 +4,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import scala.concurrent.duration.*
-import scala.jdk.StreamConverters._
 
 class CoverageIntegrationSpec extends munit.FunSuite {
 
@@ -12,10 +11,9 @@ class CoverageIntegrationSpec extends munit.FunSuite {
   override val munitTimeout = 5.minutes
 
   private val cefRoot: Path = {
-    val prop = System.getProperty("cef.root")
-    assume(prop != null, "cef.root system property not set - run via `mvn verify`")
+    val prop = Option(System.getProperty("cef.root")).getOrElse(fail("cef.root is not set; run mvn verify"))
     val path = Paths.get(prop)
-    assume(Files.isDirectory(path), s"cef.root does not exist: $path")
+    assert(Files.isDirectory(path), s"cef.root does not exist: $path")
     path
   }
 
@@ -29,17 +27,17 @@ class CoverageIntegrationSpec extends munit.FunSuite {
 
   private lazy val capiHeaders: List[Path] = {
     val capiDir = cefInclude.resolve("capi")
-    assume(Files.isDirectory(capiDir), s"capi directory does not exist: $capiDir")
+    assert(Files.isDirectory(capiDir), s"capi directory does not exist: $capiDir")
     List(capiDir, capiDir.resolve("views")).filter(Files.isDirectory(_))
       .flatMap(dir =>
-        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
+        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
       )
       .sorted
   }
 
   private lazy val typesHeader: Path = {
     val p = cefInclude.resolve("internal/cef_types.h")
-    assume(Files.isRegularFile(p), s"cef_types.h not found: $p")
+    assert(Files.isRegularFile(p), s"cef_types.h not found: $p")
     p
   }
 
@@ -93,8 +91,7 @@ class CoverageIntegrationSpec extends munit.FunSuite {
 
   test("cef_browser_t is parsed as ObjectStruct with known methods") {
     val browser = allDecls.collectFirst { case d: CefDecl.ObjectStruct if d.name == "cef_browser_t" => d }
-    assert(browser.isDefined, "cef_browser_t not found")
-    val fns = browser.get.fns.map(_.name)
+    val fns     = browser.getOrElse(fail("cef_browser_t not found")).fns.map(_.name)
     assert(fns.contains("is_valid"), s"is_valid not found in cef_browser_t; got: $fns")
     assert(fns.contains("go_back"), s"go_back not found in cef_browser_t; got: $fns")
     assert(fns.contains("go_forward"), s"go_forward not found in cef_browser_t; got: $fns")
@@ -103,8 +100,7 @@ class CoverageIntegrationSpec extends munit.FunSuite {
 
   test("cef_browser_host_t is parsed as ObjectStruct") {
     val host = allDecls.collectFirst { case d: CefDecl.ObjectStruct if d.name == "cef_browser_host_t" => d }
-    assert(host.isDefined, "cef_browser_host_t not found")
-    assert(host.get.fns.nonEmpty, "cef_browser_host_t has no function pointers")
+    assert(host.getOrElse(fail("cef_browser_host_t not found")).fns.nonEmpty, "cef_browser_host_t has no functions")
   }
 
   test("handler annotation parsing finds known handlers") {
@@ -121,10 +117,8 @@ class CoverageIntegrationSpec extends munit.FunSuite {
     val renderHandler = allDecls.collectFirst {
       case d: CefDecl.HandlerStruct if d.name == "cef_render_handler_t" => d
     }
-    assert(renderHandler.isDefined, "cef_render_handler_t not found")
-    val onPaint = renderHandler.get.fns.find(_.name == "on_paint")
-    assert(onPaint.isDefined, "on_paint not found in render handler")
-    assertEquals(onPaint.get.isSpecial, Some(SpecialFn.OnPaint))
+    val onPaint = renderHandler.getOrElse(fail("cef_render_handler_t not found")).fns.find(_.name == "on_paint")
+    assertEquals(onPaint.getOrElse(fail("on_paint not found")).isSpecial, Some(SpecialFn.OnPaint))
   }
 
   test("all object struct function pointers have self stripped") {

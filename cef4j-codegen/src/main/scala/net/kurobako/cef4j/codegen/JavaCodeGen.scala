@@ -1,6 +1,5 @@
 package net.kurobako.cef4j.codegen
 
-import java.nio.file.Files
 import java.nio.file.Path
 
 object JavaCodeGen {
@@ -17,8 +16,7 @@ object JavaCodeGen {
         if (classDoc.nonEmpty) DocComments.convertCefDoc(classDoc, capiSource, cPrototype, cppSource) else ""
       val (docText, sourceRefTags) = DocComments.extractSourceTags(converted)
       val contentLines             = docText.linesIterator.filter(_.nonEmpty).map(line => s" * $line").toList
-      // Insert the suffix as-is between converted content and source references.
-      val suffixLines =
+      val suffixLines              =
         if (classDocSuffix.nonEmpty) classDocSuffix.linesIterator.filter(_.nonEmpty).map(l => s" * $l").toList else Nil
       val seeTags    = sourceRefTags.map(tag => s" * @see $tag")
       val allContent = contentLines ++ suffixLines
@@ -58,7 +56,7 @@ $body
   def writeJavaFile(outDir: Path, className: String, content: String, subPackage: String = ""): Unit = {
     val dir  = if (subPackage.nonEmpty) outDir.resolve(subPackage.replace('.', '/')) else outDir
     val file = dir.resolve(s"$className.java")
-    Files.createDirectories(file.getParent)
+    FileSystem.createDirectories(file.getParent)
     AtomicFiles.writeString(file, content.replace("\r\n", "\n").replace("\r", "\n"))
   }
 
@@ -80,11 +78,7 @@ $body
     case _ => false
   }
 
-  // Types where null is almost certainly a programming error on the Java side.
-  // JString, ObjectPtr, OpaquePtr, and Handler types are excluded because CEF
-  // frequently accepts NULL for these (e.g. NULL browser/frame in service worker
-  // contexts, NULL strings for defaults) but upstream metacomments only annotate
-  // ~10% of nullable parameters.
+  // CEF often permits null reference types without optional metadata.
   def isStrictNullCheck(ct: CType): Boolean = ct match {
     case CType.Enum(_) | CType.ByValueIn(_) | CType.ByValueOut(_) | CType.ByValueArray(_) |
         CType.Buffer(_) | CType.PixelBuffer | CType.ConstCStringArray | CType.CStringArray |

@@ -10,9 +10,6 @@ class SpecDeriverSpec extends munit.FunSuite {
   private def handler(name: String, fns: FnPtr*): CefDecl.HandlerStruct =
     CefDecl.HandlerStruct(name, fns.toList)
 
-  private def obj(name: String, fns: FnPtr*): CefDecl.ObjectStruct =
-    CefDecl.ObjectStruct(name, fns.toList)
-
   private def fn(name: String, params: (String, CType)*): FnPtr =
     FnPtr(name, CType.Void, params.toList.map((n, t) => Param(n, t)))
 
@@ -50,9 +47,6 @@ class SpecDeriverSpec extends munit.FunSuite {
   }
 
   test("BufferSize companion params are filtered before eligibility check") {
-    // CEF C API often pairs a buffer ptr with a size param; the size param shouldn't gate eligibility for
-    // methods we'd otherwise translate. The buffer itself is unsupported so the method still skips here, but
-    // the test guards the filter logic.
     val decl = handler(
       "cef_some_handler_t",
       fn("on_data", "len" -> CType.BufferSize("data"), "count" -> CType.Int)

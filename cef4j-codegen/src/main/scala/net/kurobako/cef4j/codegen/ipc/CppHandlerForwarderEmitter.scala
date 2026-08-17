@@ -1,46 +1,25 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits one C++ class per CEF HandlerStruct that the runtime server can hand back from `cef_client_t::get_X_handler`.
-  * Each struct subclasses the corresponding `cef_<name>_t`, sets every callback to a lambda that encodes the matching
-  * AST event and sends it via the runtime server's `IpcServer`.
-  *
-  * Callback param conversion mirrors the dispatcher in reverse:
-  *   - `cef_browser_t*`/`cef_frame_t*`/etc. → `tables::X.insert(ptr)` to mint or reuse a handle id (dedupe is done
-  *     inside HandleTable)
-  *   - `cef_string_t*` (in callbacks) → `std::string` via `cef_string_to_utf8`
-  *   - primitive scalars → as-is
-  *
-  * Output is a single `HandlerForwarders.h` that the runtime server includes once. The runtime server is responsible
-  * for instantiating and exposing whichever forwarders it cares about (typically via `CefClient::get_X_handler`).
-  *
-  * Methods whose param shape isn't supported get an empty callback (no-op), so the forwarder still satisfies the CEF
-  * struct's contract and won't crash if CEF invokes it.
-  */
 object CppHandlerForwarderEmitter {
 
   case class ForwarderInputs(
       handlers: List[HandlerSpec],
-      facadeStructs: Set[String], // structs that have HandleTables (live in `tables::`)
+      facadeStructs: Set[String],
       capiHeaders: List[String],
       packageName: String,
-      // (handler struct name, cef_client_t getter name) pairs — used by wireClient to bind every forwarder
-      // we have for a CefClient getter. Empty means wireClient is omitted.
       clientGetters: Map[String, String] = Map.empty
   )
 
   def emit(in: ForwarderInputs): String = {
-    val ns           = in.packageName.replace('.', '_').toLowerCase
-    val capiIncludes = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
-    // Each handler references one Event class per supported method; deduplicate.
+    val ns            = in.packageName.replace('.', '_').toLowerCase
+    val capiIncludes  = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
     val eventIncludes = in.handlers
       .flatMap(_.methods.flatMap(m => m.eventClassName :: m.responseClassName.toList))
       .distinct
       .sorted
       .map(c => s"""#include "$c.h"""")
       .mkString("\n")
-    val classes = in.handlers.map(h => renderHandlerClass(h, ns, in.facadeStructs)).mkString("\n\n")
-    // wireClient binds every forwarder whose handler is exposed via cef_client_t::get_X_handler. Only emit
-    // entries we actually have a forwarder for, so partial codegen runs (or filtered handler sets) work too.
+    val classes      = in.handlers.map(h => renderHandlerClass(h, in.facadeStructs)).mkString("\n\n")
     val handlerSet   = in.handlers.map(_.cefStructName).toSet
     val wireBindings = in.clientGetters.toList.collect {
       case (handlerStruct, getterName) if handlerSet.contains(handlerStruct) =>
@@ -160,9 +139,6 @@ object CppHandlerForwarderEmitter {
        |""".stripMargin
   }
 
-  /** Per-handler class name: `cef_load_handler_t` → `LoadHandlerForwarder`. The CEF "Cef" prefix on the JVM-side
-    * interface is dropped here for brevity since these are internal runtime-server types.
-    */
   private def forwarderClassName(spec: HandlerSpec): String = forwarderClassName(spec.cefStructName)
 
   private def forwarderClassName(cefStruct: String): String =
@@ -173,7 +149,7 @@ object CppHandlerForwarderEmitter {
   private def toCamelCase(s: String): String =
     s.split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
 
-  private def renderHandlerClass(spec: HandlerSpec, ns: String, facadeStructs: Set[String]): String = {
+  private def renderHandlerClass(spec: HandlerSpec, facadeStructs: Set[String]): String = {
     val cls       = forwarderClassName(spec)
     val cefStruct = spec.cefStructName
     val callbacks = spec.methods.map(m => renderCallbackInit(m, cefStruct, facadeStructs)).mkString("\n")
@@ -194,12 +170,7 @@ object CppHandlerForwarderEmitter {
   private def decapitalize(s: String): String =
     if (s.isEmpty) s else s.head.toLower +: s.tail
 
-  /** Renders a single callback assignment like `on_load_end = [](...) { ... };`. If a param uses an unsupported shape
-    * (e.g. RemoteHandle to a non-facade struct), the callback is set to a no-op so the forwarder still satisfies the
-    * CEF struct's contract.
-    */
   private def renderCallbackInit(m: HandlerMethod, cefStruct: String, facadeStructs: Set[String]): String = {
-    // Determine whether every param is something we know how to encode.
     val unsupported = m.params.exists { p =>
       p.ty match {
         case FieldType.RemoteHandle => !m.handleStructByField.get(p.name).exists(facadeStructs.contains)
@@ -208,59 +179,49 @@ object CppHandlerForwarderEmitter {
       }
     }
     if (unsupported) {
-      // Empty no-op signature: build the lambda using the CEF callback's actual params (we only have field
-      // names + types, not the C type strings). Use `auto...` template params and ignore them.
-      // Actually CEF callbacks take specific C types; can't use `auto...`. Skip emitting this callback.
-      return s"        // ${m.cefMethodName}: skipped (unsupported param shape)"
-    }
-    // CEF callback signatures use scoped enum types (cef_transition_type_t, cef_event_flags_t, etc.) that
-    // don't accept implicit int conversion under -fpermissive. Pull each param's declared type straight off
-    // the function-pointer field via `fn_args<decltype(struct::method)>::template arg<N>` so the lambda
-    // signature matches CEF exactly. Index 0 is `self`; user params start at 1.
-    val fnTypeRef =
-      s"gendisp::fn_args<decltype(static_cast<::$cefStruct*>(nullptr)->${m.cefMethodName})>"
-    val cefParams = m.params.zipWithIndex.map { case (p, i) =>
-      val argIdx = i + 1
-      s"$fnTypeRef::template arg<$argIdx> ${p.name}"
-    }
-    val lambdaParams = (s"$fnTypeRef::template arg<0> /*self*/" :: cefParams).mkString(", ")
-    val fieldAssigns = m.params.map { p =>
-      p.ty match {
-        case FieldType.I32          => s"            ev.${p.name} = static_cast<std::int32_t>(${p.name});"
-        case FieldType.I64          => s"            ev.${p.name} = toI64(${p.name});"
-        case FieldType.Bool         => s"            ev.${p.name} = ${p.name} != 0;"
-        case FieldType.Utf8String   => s"            ev.${p.name} = utf16ToUtf8(${p.name});"
-        case FieldType.RemoteHandle =>
-          val struct = m.handleStructByField(p.name)
-          val tbl    = decapitalize(toCamelCase(stripCefPrefix(struct)))
-          s"            ev.${p.name} = gendisp::tables::$tbl.insert(${p.name});"
-        case FieldType.Bytes         => "" // unreachable
-        case FieldType.StringList    => "" // unreachable; deriveHandlerMethod skips StringList
-        case FieldType.DataStruct(_) => "" // unreachable
+      s"        // ${m.cefMethodName}: skipped (unsupported param shape)"
+    } else {
+      // Derive exact callback types; scoped CEF enums do not accept int parameters.
+      val fnTypeRef =
+        s"gendisp::fn_args<decltype(static_cast<::$cefStruct*>(nullptr)->${m.cefMethodName})>"
+      val cefParams = m.params.zipWithIndex.map { case (p, i) =>
+        val argIdx = i + 1
+        s"$fnTypeRef::template arg<$argIdx> ${p.name}"
       }
-    }.mkString("\n")
-    val eventEncode =
-      s"""            gen::${m.eventClassName} ev;
+      val lambdaParams = (s"$fnTypeRef::template arg<0> /*self*/" :: cefParams).mkString(", ")
+      val fieldAssigns = m.params.map { p =>
+        p.ty match {
+          case FieldType.I32          => s"            ev.${p.name} = static_cast<std::int32_t>(${p.name});"
+          case FieldType.I64          => s"            ev.${p.name} = toI64(${p.name});"
+          case FieldType.Bool         => s"            ev.${p.name} = ${p.name} != 0;"
+          case FieldType.Utf8String   => s"            ev.${p.name} = utf16ToUtf8(${p.name});"
+          case FieldType.RemoteHandle =>
+            val struct = m.handleStructByField(p.name)
+            val tbl    = decapitalize(toCamelCase(stripCefPrefix(struct)))
+            s"            ev.${p.name} = gendisp::tables::$tbl.insert(${p.name});"
+          case FieldType.Bytes         => "" // unreachable
+          case FieldType.StringList    => "" // unreachable; deriveHandlerMethod skips StringList
+          case FieldType.DataStruct(_) => "" // unreachable
+        }
+      }.mkString("\n")
+      val eventEncode =
+        s"""            gen::${m.eventClassName} ev;
          |$fieldAssigns
          |            std::vector<std::uint8_t> payload(ev.encodedSize());
          |            ev.encodeInto(payload.data());""".stripMargin
-    m.returnType match {
-      case None =>
-        // Void-returning handler: send Kind::Event, fire-and-forget.
-        s"""        ${m.cefMethodName} = []($lambdaParams) {
+      m.returnType match {
+        case None =>
+          s"""        ${m.cefMethodName} = []($lambdaParams) {
            |            if (!g_ipc) return;
            |$eventEncode
            |            g_ipc->send(cef4j::ipc::Kind::Event, 0, cef4j::ipc::kNoCorrId,
            |                        gen::${m.eventClassName}::kMessageId, payload.data(), payload.size());
            |        };""".stripMargin
-      case Some(FieldType.Bool) =>
-        // Non-void handler: encode the request, allocate a corrId, send Kind::Intercept, block on
-        // InterceptRegistry::awaitResponse, decode the reply, return to CEF. Default-on-timeout = 0 (treat
-        // CEF's "no JVM opinion" as the conservative default — don't block popups, allow navigation, etc.).
-        // gendisp::cefRet handles the int→cef_X_t cast for the (rare) enum-typed return slots.
-        val fnRef   = s"decltype(static_cast<::$cefStruct*>(nullptr)->${m.cefMethodName})"
-        val respCls = m.responseClassName.getOrElse(m.eventClassName + "Response")
-        s"""        ${m.cefMethodName} = []($lambdaParams) -> typename gendisp::fn_args<$fnRef>::result {
+        case Some(FieldType.Bool) =>
+          // Timeout defaults to CEF's non-blocking false result.
+          val fnRef   = s"decltype(static_cast<::$cefStruct*>(nullptr)->${m.cefMethodName})"
+          val respCls = m.responseClassName.getOrElse(m.eventClassName + "Response")
+          s"""        ${m.cefMethodName} = []($lambdaParams) -> typename gendisp::fn_args<$fnRef>::result {
            |            if (!g_ipc) return gendisp::cefRet<$fnRef>(0);
            |$eventEncode
            |            std::int32_t corrId = g_intercepts.allocateCorrId();
@@ -275,9 +236,9 @@ object CppHandlerForwarderEmitter {
            |            }
            |            return gendisp::cefRet<$fnRef>(answer);
            |        };""".stripMargin
-      case Some(_) =>
-        // Should be filtered out by SpecDeriver, but keep a safe no-op fallback.
-        s"        // ${m.cefMethodName}: skipped (unsupported return type)"
+        case Some(_) =>
+          s"        // ${m.cefMethodName}: skipped (unsupported return type)"
+      }
     }
   }
 }

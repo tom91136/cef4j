@@ -1,24 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a Java facade class per CEF object: holds a `RemoteHandle` + `CefSession`, exposes typed methods that dispatch
-  * through `session.request`. Companion to `JavaEmitter`, which produces the wire-format types the facade methods
-  * reference.
-  *
-  * Example output for `cef_browser_t::can_go_back() -> int`:
-  * {{{
-  *   public CompletableFuture<Boolean> canGoBack() {
-  *       return session.request(new BrowserCanGoBackRequest(handle), BrowserCanGoBackResponse.DECODER)
-  *               .thenApply(BrowserCanGoBackResponse::result);
-  *   }
-  * }}}
-  *
-  * Void methods return `CompletableFuture<Void>` (the empty Response is mapped to `null`).
-  */
 object JavaFacadeEmitter {
 
-  /** {@code facadeByCefStruct} maps CEF struct names (e.g. `"cef_frame_t"`) to the JVM facade class (e.g. `"Frame"`) so
-    * methods returning a RemoteHandle can be typed as the wrapper.
-    */
   def emit(
       spec: FacadeSpec,
       facadeByCefStruct: Map[String, String] = Map.empty,
@@ -26,7 +9,7 @@ object JavaFacadeEmitter {
   ): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
-    val importsBlock = renderImports(spec)
+    val importsBlock = renderImports
     val isRenderer   = spec.affinity == ProcessAffinity.Renderer
     val ctor         = renderConstructor(spec)
     val methods = spec.methods.map(m => renderMethod(spec, m, facadeByCefStruct, affinityByCefStruct)).mkString("\n\n")
@@ -73,20 +56,9 @@ object JavaFacadeEmitter {
        |""".stripMargin
   }
 
-  /** Sends a `ReleaseHandleRequest` keyed by the facade's CEF struct name; the runtime server's `dispatchRelease`
-    * routes to the matching `tables::X.release(id)`. After this future completes, the runtime-server-side handle is
-    * gone and any subsequent method call on this facade will fail with "no receiver". Caller is responsible for not
-    * double-releasing.
-    *
-    * Named `releaseHandle()` rather than `close()` because some CEF facades (`cef_window_t`, `cef_xml_reader_t`,
-    * `cef_zip_reader_t`) already define a `close()` C-API method and we mustn't shadow them.
-    */
   private def renderClose(spec: FacadeSpec): String =
     if (spec.affinity == ProcessAffinity.Renderer)
-      // Renderer-affinity handles live in the renderer subprocess's `tables::X`, not the browser's. Plain
-      // ReleaseHandleRequest dispatches in the browser and would silently no-op. RendererReleaseHandleRequest
-      // carries the frame so the browser-side relay ships it to the right renderer; the renderer-side
-      // runtime server turns it into a dispatchRelease against its own table state.
+      // Renderer-owned handles must be released through their frame.
       s"""    /** Releases the runtime-server-side handle this facade points at. Routed via the renderer relay since
          |      * ${spec.cefStructName} only exists in the renderer subprocess's table state. */
          |    public java.util.concurrent.CompletableFuture<Void> releaseHandle() {
@@ -105,24 +77,12 @@ object JavaFacadeEmitter {
          |            .thenApply(r -> null);
          |    }""".stripMargin
 
-  private def snakeOf(camel: String): String = {
-    val sb = new StringBuilder
-    camel.zipWithIndex.foreach { case (c, i) =>
-      if (c.isUpper && i > 0) sb.append('_')
-      sb.append(c.toLower)
-    }
-    sb.toString
-  }
-
-  private def renderImports(spec: FacadeSpec): String = {
-    val sb = List.newBuilder[String]
-    sb += "import java.util.concurrent.CompletableFuture;"
-    sb += "import javax.annotation.Nonnull;"
-    sb += "import net.kurobako.cef4j.ipc.session.CefSession;"
-    sb += "import net.kurobako.cef4j.ipc.session.RemoteHandle;"
-    // Each method references a generated Request + Response in the same package; no extra imports needed.
-    sb.result().mkString("\n")
-  }
+  private def renderImports: String = List(
+    "import java.util.concurrent.CompletableFuture;",
+    "import javax.annotation.Nonnull;",
+    "import net.kurobako.cef4j.ipc.session.CefSession;",
+    "import net.kurobako.cef4j.ipc.session.RemoteHandle;"
+  ).mkString("\n")
 
   private def renderConstructor(spec: FacadeSpec): String =
     if (spec.affinity == ProcessAffinity.Renderer)
@@ -143,8 +103,6 @@ object JavaFacadeEmitter {
       facadeByCefStruct: Map[String, String],
       affinityByCefStruct: Map[String, ProcessAffinity]
   ): String = {
-    // Renderer-affinity Requests start with `frame: RemoteHandle` ahead of `self`. The facade injects
-    // its constructor-stored frame transparently — the user-facing method signature is unchanged.
     val frameLead                  = if (facade.affinity == ProcessAffinity.Renderer) List("frame") else Nil
     val ctorArgs                   = (frameLead ++ ("handle" :: m.explicitParams.map(_.name))).mkString(", ")
     val (returnType, mapperSuffix) = m.resultField match {
@@ -152,16 +110,8 @@ object JavaFacadeEmitter {
       case Some(f) =>
         f.ty match {
           case FieldType.RemoteHandle =>
-            // If we know which facade wraps the result struct, return the typed wrapper instead of the bare
-            // handle. The user gets a `CompletableFuture<Frame>` from `Browser.getMainFrame()` rather than
-            // having to wrap manually, and the returned facade carries the same `session` for chained calls.
             m.handleStructByField.get("result").flatMap(facadeByCefStruct.get) match {
               case Some(facadeCls) =>
-                // Decide what frame the child facade should carry, if it's renderer-affinity:
-                //   - parent renderer  → propagate parent's `frame` field (same V8 context).
-                //   - parent is `cef_frame_t` → the parent's own `handle` IS the frame.
-                //   - any other browser parent returning a renderer child → no clean frame to attach.
-                //     Skip the typed wrapper and return RemoteHandle so the user can construct manually.
                 val childAffinity = m.handleStructByField
                   .get("result")
                   .flatMap(affinityByCefStruct.get)

@@ -1,6 +1,5 @@
 package net.kurobako.cef4j.codegen
 
-import java.nio.file.Files
 import java.nio.file.Path
 import scala.annotation.tailrec
 
@@ -13,7 +12,6 @@ class JniCppCodeGen(
     structHeaderMap: Map[String, String] = Map.empty
 )(using Naming.Context, Banners) {
 
-  import JniCppByValueCodeGen.*
   import JniNaming.addRefExpr
   import JniNaming.jniMutableName
   import JniNaming.jniName
@@ -32,16 +30,14 @@ class JniCppCodeGen(
 
   private def isHandlerPtr(ct: CType): Boolean = JniNaming.isHandlerPtr(ct, handlerNames)
 
-  // String collection conversion info: (suffix, javaToC, freeFunc, writeBackFunc)
   private def strCollInfo(ct: CType): (String, String, String, String) = ct match {
     case CType.StringList     => ("_csl", "JavaListToCefStringList", "cef_string_list_free", "CefStringListWriteBack")
     case CType.StringMap      => ("_csm", "JavaMapToCefStringMap", "cef_string_map_free", "CefStringMapWriteBack")
     case CType.StringMultimap =>
       ("_csmm", "JavaMapToCefStringMultimap", "cef_string_multimap_free", "CefStringMultimapWriteBack")
-    case _ => throw new RuntimeException(s"Not a string collection type: $ct")
+    case _ => throw IllegalArgumentException(s"Not a string collection type: $ct")
   }
 
-  // Convert a string collection param (JNI-to-native direction, for object/free functions).
   private def convertStringCollectionParam(
       paramName: String,
       jniParamName: String,
@@ -58,7 +54,6 @@ class JniCppCodeGen(
     )
   }
 
-  // Convert Java List<String> -> C string array (const or mutable).
   private def convertCStringArrayParam(
       paramName: String,
       jniParamName: String,
@@ -81,10 +76,9 @@ class JniCppCodeGen(
     )
   }
 
-  // Collect handler-typed parameters so wrapper files can forward-declare their factory functions.
   private def collectHandlerParamFactories(
       fns: List[FnPtr],
-      ffs: List[CefDecl.FreeFunction] = Nil
+      ffs: List[CefDecl.FreeFunction]
   ): List[(String, String)] = {
     val fromFns = fns.flatMap(_.params).collect {
       case Param(_, CType.ObjectPtr(cefName), _, _) if handlerNames.contains(cefName) =>
@@ -109,21 +103,21 @@ class JniCppCodeGen(
   def emitHandler(decl: CefDecl.HandlerStruct, outDir: Path): Unit =
     writeCppFile(outDir, s"${Naming.cefBaseName(decl.name)}.cpp", emitHandlerToString(decl))
 
-  // Emit a standalone C++ file for orphan free functions bound to CefGlobals.
-  def emitGlobals(freeFunctions: List[CefDecl.FreeFunction], outDir: Path): Unit = {
-    if (freeFunctions.isEmpty) return
-    val refs    = freeFunctions.flatMap(ff => collectReferencedStructsFromParams(ff.ret, ff.params)).toSet
-    val headers = freeFunctions.flatMap(ff => structHeaderMap.get(ff.ownerStruct)).distinct ++
-      freeFunctions.map(_.sourceHeader).distinct
-    val includes        = renderIncludesForFreeFunc(headers.distinct, refs)
-    val handlerFwdDecls = renderHandlerFactoryForwardDecls(collectHandlerParamFactories(Nil, freeFunctions))
-    val functions = freeFunctions.map(ff => renderFreeFunction("CefGlobals", ff, isDirectClass = true)).mkString("\n\n")
-    writeCppFile(outDir, "cef_globals_N.cpp", renderGeneratedCpp(includes, s"$handlerFwdDecls$functions"))
-  }
+  def emitGlobals(freeFunctions: List[CefDecl.FreeFunction], outDir: Path): Unit =
+    if (freeFunctions.nonEmpty) {
+      val refs    = freeFunctions.flatMap(ff => collectReferencedStructsFromParams(ff.ret, ff.params)).toSet
+      val headers = freeFunctions.flatMap(ff => structHeaderMap.get(ff.ownerStruct)).distinct ++
+        freeFunctions.map(_.sourceHeader).distinct
+      val includes        = renderIncludesForFreeFunc(headers.distinct, refs)
+      val handlerFwdDecls = renderHandlerFactoryForwardDecls(collectHandlerParamFactories(Nil, freeFunctions))
+      val functions       =
+        freeFunctions.map(ff => renderFreeFunction("CefGlobals", ff, isDirectClass = true)).mkString("\n\n")
+      writeCppFile(outDir, "cef_globals_N.cpp", renderGeneratedCpp(includes, s"$handlerFwdDecls$functions"))
+    }
 
   private def writeCppFile(outDir: Path, fileName: String, content: String): Unit = {
     val file = outDir.resolve(fileName)
-    Files.createDirectories(file.getParent)
+    FileSystem.createDirectories(file.getParent)
     AtomicFiles.writeString(file, content.replace("\r\n", "\n").replace("\r", "\n"))
   }
 
@@ -144,7 +138,6 @@ class JniCppCodeGen(
     renderGeneratedCpp(includes, s"$handlerFwdDecls$releaseFn\n\n$functions$ffFunctions")
   }
 
-  // Generate the N_Release JNI function used by NativeCleaner cleanup.
   private def renderRelease(structName: String, scoped: Boolean): String = {
     val exportSig = Naming.jniExportPeerStatic(Naming.jniClassPrefix(structName), "release", "void")
     val body      = if (scoped) "    // Scoped struct - no ref-counting, release is a no-op."
@@ -159,7 +152,7 @@ $body
   def emitHandlerToString(decl: CefDecl.HandlerStruct): String = {
     val javaName = Naming.structToJavaName(decl.name)
     val refs     = collectReferencedStructs(decl.fns) - decl.name
-    val includes = renderIncludes(decl.name, decl.sourceHeader, refs)
+    val includes = renderIncludes(decl.name, decl.sourceHeader, refs, Nil)
 
     val initAssignments = joinIndentedLines(decl.fns.map(fn => s"${fn.name} = &_${fn.name};"), "        ")
 
@@ -185,7 +178,6 @@ struct Jni$javaName : public ${decl.name} {
     })
     val vectorInclude = if (hasByValueArray) "\n#include <vector>" else ""
 
-    // Forward-declare factory functions for handler types returned by or used as out-params in trampolines
     val handlerPtrReturns = decl.fns.flatMap { fn =>
       val fromRet = if (isHandlerPtr(fn.ret)) {
         val cefName = fn.ret match {
@@ -229,12 +221,11 @@ ${body.stripPrefix("\n").stripSuffix("\n")}
   private def renderIncludes(
       cefStructName: String,
       sourceHeader: String,
-      referencedStructs: Set[String] = Set.empty,
-      additionalHeaders: List[String] = Nil
+      referencedStructs: Set[String],
+      additionalHeaders: List[String]
   ): String = {
     val header = if (sourceHeader.nonEmpty) sourceHeader
     else {
-      // Fallback: derive from struct name (may be wrong for grouped headers)
       val headerName = Naming.cefBaseName(cefStructName)
       s"cef_${headerName}_capi.h"
     }
@@ -248,7 +239,6 @@ ${body.stripPrefix("\n").stripSuffix("\n")}
 """
   }
 
-  // Render includes for standalone free function files bound to CefGlobals.
   private def renderIncludesForFreeFunc(
       sourceHeaders: List[String],
       referencedStructs: Set[String]
@@ -262,7 +252,6 @@ $headerIncludes
   }
 
   private def renderObjectFunction(structName: String, fn: FnPtr): String = {
-    val javaName  = Naming.structToJavaName(structName)
     val retJni    = Naming.jniType(fn.ret)
     val exportSig = Naming.jniExportPeer(structName, fn, retJni)
     val jniParams =
@@ -277,11 +266,9 @@ $headerIncludes
     val optionalParams = collectOptionalParams(fn.metaAttrs)
     val npeChecks      = renderStrictNullChecks(fn.params, optionalParams, fn.ret)
 
-    // Generate (preCallLines, argExpr, postCallLines) for each param
     val argConversions = fn.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
       p.typ match {
-        // Object-function-specific cases (not in shared converter)
         case CType.ByValueArray(cefName) =>
           val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count").map(_.name).getOrElse("0")
           val arrVar   = s"_${p.name}_arr"
@@ -334,7 +321,6 @@ $headerIncludes
           )
           (pre, s"&$tmp", post)
         case CType.ObjectPtrArray(cefName) =>
-          // Out-param array: allocate native array from adjacent count, fill, convert to Java NativePeer array
           val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count")
             .map { cp =>
               cp.typ match {
@@ -372,7 +358,6 @@ $headerIncludes
       s"s->${fn.name}(s, ${blocks.callArgs})"
     }
 
-    // count_func: pre-call to size arrays, only when a CountFuncArray param consumes it
     val hasCountFuncArray = fn.params.exists(_.typ match {
       case CType.CountFuncArray(_, _, _, _) => true; case _ => false
     })
@@ -393,14 +378,12 @@ $headerIncludes
 ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       case cfa @ CType.CountFuncArray(_, _, _, _) =>
         renderCountFuncArrayBody(
-          structName,
           fn,
           cfa,
           castSelf,
           nullGuard,
           blocks.npeBlock,
-          blocks.preBlock,
-          blocks.postBlock
+          blocks.preBlock
         )
       case _ =>
         preamble + renderReturnDispatch(fn.ret, retJni, fnCall, blocks.npeBlock, blocks.preBlock, blocks.postBlock)
@@ -409,7 +392,6 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
     renderGeneratedFunction(exportSig, jniParams, body)
   }
 
-  // Shared return-type dispatch for both object functions and free functions.
   private def renderReturnDispatch(
       ret: CType,
       retJni: String,
@@ -467,23 +449,18 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
       s"""$npeBlock$preBlock    return static_cast<$retJni>($fnCall);"""
   }
 
-  // Generate the CountFuncArray two-pass JNI path: count, allocate, fill, marshal.
   private def renderCountFuncArrayBody(
-      structName: String,
       fn: FnPtr,
       cfa: CType.CountFuncArray,
       castSelf: String,
       nullGuard: String,
       npeBlock: String,
-      preBlock: String,
-      postBlock: String
+      preBlock: String
   ): String = {
     val CType.CountFuncArray(elemType, countFuncC, countParamName, arrayParamName) = cfa
 
-    // 1. Call count function
     val countCall = s"    size_t _count = s->$countFuncC(s);"
 
-    // 2-3. Allocate + call depending on element type
     val (allocAndCall, convertAndReturn) = elemType match {
       case CType.ObjectPtr(cefName) =>
         val javaFqn = jniName(cefName)
@@ -507,7 +484,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
         val bvCefName = elemType match {
           case CType.ByValueIn(n)  => n
           case CType.ByValueOut(n) => n
-          case _                   => throw new RuntimeException("unreachable")
+          case _                   => throw IllegalStateException("unreachable")
         }
         val javaFqn   = jniName(bvCefName)
         val alloc     = s"    $bvCefName* _arr = _count > 0 ? new $bvCefName[_count]() : nullptr;"
@@ -557,7 +534,7 @@ ${blocks.preBlock}    $fnCall;${blocks.postBlock}"""
         (s"$alloc\n$call", convert)
 
       case other =>
-        throw new RuntimeException(s"CountFuncArray: unsupported element type $other in ${fn.name}")
+        throw IllegalArgumentException(s"CountFuncArray: unsupported element type $other in ${fn.name}")
     }
 
     s"""$castSelf
@@ -567,7 +544,6 @@ $allocAndCall
 $convertAndReturn"""
   }
 
-  // Render a C++ JNI wrapper for a free function, used by globals and object-associated static helpers.
   def renderFreeFunction(
       javaClassName: String,
       ff: CefDecl.FreeFunction,
@@ -586,7 +562,6 @@ $convertAndReturn"""
     val optionalParams = collectOptionalParams(ff.metaAttrs)
     val npeChecks      = renderStrictNullChecks(ff.params, optionalParams, ff.ret)
 
-    // Reuse the same arg conversion logic as renderObjectFunction
     val argConversions = ff.params.map { p =>
       val isOpt = optionalParams.contains(p.name)
       val isOut = ff.cName.contains("_get_") || ff.cName.startsWith("cef_get_")
@@ -594,11 +569,7 @@ $convertAndReturn"""
     }
     val blocks = renderCallBlocks(argConversions, npeChecks)
 
-    // Older CEF releases predate cef_settings_t.disable_signal_handlers and
-    // overwrite the JVM's fatal-signal handlers during cef_initialize(). Route
-    // every generated initialize binding through the runtime compatibility
-    // wrapper; on newer CEF it is a harmless snapshot/restore around an init
-    // that already leaves the handlers alone.
+    // Preserve JVM fatal-signal handlers across cef_initialize on old CEF.
     val nativeFunction = if (ff.cName == "cef_initialize") "Cef4jInitialize" else ff.cName
     val fnCall         = s"$nativeFunction(${blocks.callArgs})"
 
@@ -719,7 +690,7 @@ $cleanBody
         (s"$alloc\n$call", convert)
 
       case other =>
-        throw new RuntimeException(s"CountFuncArray: unsupported element type $other in ${ff.cName}")
+        throw IllegalArgumentException(s"CountFuncArray: unsupported element type $other in ${ff.cName}")
     }
 
     s"""$npeBlock$preBlock$countCall
@@ -727,7 +698,6 @@ $allocAndCall$postBlock
 $convertAndReturn"""
   }
 
-  // Shared param conversion (JNI-to-native) used by both object functions and free functions.
   private def convertParamShared(
       p: Param,
       isOpt: Boolean,
@@ -752,7 +722,7 @@ $convertAndReturn"""
         )
         (pre, tmp, Nil)
       case CType.ObjectPtr(cefName) =>
-        // add_ref before passing: CEF's CppToC::Unwrap() consumes a reference
+        // CppToC::Unwrap consumes a reference.
         val tmp     = s"_${p.name}_ptr"
         val extract =
           s"""reinterpret_cast<$cefName*>(env->GetLongField(${p.name}, env->GetFieldID(env->GetObjectClass(${p.name}), "nativePtr", "J")))"""
@@ -931,7 +901,6 @@ $convertAndReturn"""
       case _ => (Nil, p.name, Nil)
     }
 
-  // Extract a referenced struct name from a CType when present.
   @tailrec
   private def structNameFromType(ct: CType): Option[String] = ct match {
     case CType.ObjectPtr(n)                  => Some(n)
@@ -945,11 +914,9 @@ $convertAndReturn"""
     case _                                   => None
   }
 
-  // Collect the struct names referenced by a function's params and return type.
   private def collectReferencedStructsFromParams(ret: CType, params: List[Param]): Set[String] =
     (structNameFromType(ret) ++ params.flatMap(p => structNameFromType(p.typ))).toSet
 
-  // Collect all struct names referenced by function params and return types.
   private def collectReferencedStructs(fns: List[FnPtr]): Set[String] =
     fns.flatMap(fn => structNameFromType(fn.ret) ++ fn.params.flatMap(p => structNameFromType(p.typ))).toSet
 

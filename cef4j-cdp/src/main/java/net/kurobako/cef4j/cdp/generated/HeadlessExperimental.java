@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/HeadlessExperimental.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class HeadlessExperimental {
     private HeadlessExperimental() {}
@@ -313,6 +315,13 @@ public final class HeadlessExperimental {
          */
         public CompletionStage<BeginFrameResult> beginFrame(BeginFrameParams params) {
             return client.call("HeadlessExperimental.beginFrame", params, BeginFrameResult::fromMap);
+        }
+        /**
+         * Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gle/chrome-headless-rendering for more background.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<BeginFrameResult> beginFrame() {
+            return beginFrame(BeginFrameParams.builder().build());
         }
         /**
          * Disables headless events for the target.

@@ -23,15 +23,16 @@ object JavaInterfaceCodeGen {
         javaName,
         decl.fns,
         docs,
-        isObject = true,
-        classDoc = classDoc,
-        nativePeerBody = nativePeerBody,
-        freeFunctions = freeFunctions,
-        sourceHeader = decl.sourceHeader,
-        cefStructName = decl.name,
-        subPackage = subPkg,
-        parentCefName = parentCefName,
-        ancestorDecls = ancestorDecls
+        true,
+        classDoc,
+        nativePeerBody,
+        handlerNames,
+        freeFunctions,
+        decl.sourceHeader,
+        decl.name,
+        subPkg,
+        parentCefName,
+        ancestorDecls
       )
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
@@ -40,11 +41,11 @@ object JavaInterfaceCodeGen {
       freeFunctions: List[CefDecl.FreeFunction],
       outDir: Path,
       docs: Map[String, String] = Map.empty
-  )(using Naming.Context, DocComments.Context, Banners): Unit = {
-    if (freeFunctions.isEmpty) return
-    val content = renderGlobalsClass(freeFunctions, docs)
-    JavaCodeGen.writeJavaFile(outDir, "CefGlobals", content)
-  }
+  )(using Naming.Context, DocComments.Context, Banners): Unit =
+    if (freeFunctions.nonEmpty) {
+      val content = renderGlobalsClass(freeFunctions, docs)
+      JavaCodeGen.writeJavaFile(outDir, "CefGlobals", content)
+    }
 
   def emitHandler(
       decl: CefDecl.HandlerStruct,
@@ -60,12 +61,16 @@ object JavaInterfaceCodeGen {
         javaName,
         decl.fns,
         docs,
-        isObject = false,
-        classDoc = classDoc,
-        handlerNames = handlerNames,
-        sourceHeader = decl.sourceHeader,
-        cefStructName = decl.name,
-        subPackage = subPkg
+        false,
+        classDoc,
+        "",
+        handlerNames,
+        Nil,
+        decl.sourceHeader,
+        decl.name,
+        subPkg,
+        None,
+        Nil
       )
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
@@ -87,15 +92,15 @@ object JavaInterfaceCodeGen {
       fns: List[FnPtr],
       docs: Map[String, String],
       isObject: Boolean,
-      classDoc: String = "",
-      nativePeerBody: String = "",
-      handlerNames: Set[String] = Set.empty,
-      freeFunctions: List[CefDecl.FreeFunction] = Nil,
-      sourceHeader: String = "",
-      cefStructName: String = "",
-      subPackage: String = "",
-      parentCefName: Option[String] = None,
-      ancestorDecls: List[CefDecl.ObjectStruct] = Nil
+      classDoc: String,
+      nativePeerBody: String,
+      handlerNames: Set[String],
+      freeFunctions: List[CefDecl.FreeFunction],
+      sourceHeader: String,
+      cefStructName: String,
+      subPackage: String,
+      parentCefName: Option[String],
+      ancestorDecls: List[CefDecl.ObjectStruct]
   )(using Naming.Context, DocComments.Context, Banners): String = {
     val ancestorFns    = ancestorDecls.flatMap(_.fns)
     val hasNullableRet = !isObject && fns.exists(fn => handlerReturnIsNullable(fn, handlerNames))
@@ -113,7 +118,7 @@ object JavaInterfaceCodeGen {
       (isObject && ancestorFns.exists(JavaCodeGen.isOptionalReturn))
 
     val (staticMethodsBlock, _) = if (freeFunctions.nonEmpty) {
-      renderStaticMethods(javaName, freeFunctions, docs)
+      renderStaticMethods(freeFunctions, docs)
     } else ("", List.empty[String])
 
     val staticMethodsSection = if (staticMethodsBlock.nonEmpty) s"\n$staticMethodsBlock\n" else ""
@@ -124,32 +129,27 @@ object JavaInterfaceCodeGen {
       "\n" + renderDelegatingClass(javaName, fns, handlerNames) + "\n"
     } else ""
 
-    // Check if free functions need additional imports
     val ffHasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
     val ffHasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
     val ffHasOptional = freeFunctions.exists(ff => JavaCodeGen.isOptionalReturn(FnPtr("_", ff.ret, ff.params)))
 
-    // Collect type imports from all return types and parameter types (including ancestor overrides)
     val fnTypes       = fns.flatMap(fn => fn.ret :: fn.params.map(_.typ))
     val ffTypes       = freeFunctions.flatMap(ff => ff.ret :: ff.params.map(_.typ))
     val ancestorTypes = ancestorDecls.flatMap(a => a.fns.flatMap(fn => fn.ret :: fn.params.map(_.typ)))
     val allTypes      = fnTypes ++ ffTypes ++ ancestorTypes
     val typeImports   = renderTypeImports(allTypes)
 
-    // Cross-package imports: if this class is in a sub-package, import referenced types from other packages
     val crossPkgImports = if (subPackage.nonEmpty) {
-      val cefNames  = allTypes.flatMap(Naming.referencedCefNames).distinct
-      val basePkg   = Naming.javaPackage
-      val thisPkg   = s"$basePkg.$subPackage"
-      val fromTypes = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
-      // Import marker interface or parent interface from base/other package if needed
+      val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
+      val basePkg       = Naming.javaPackage
+      val thisPkg       = s"$basePkg.$subPackage"
+      val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
       val markerImports = if (isObject) {
         parentCefName match {
           case Some(pName) =>
             val parentPkg    = Naming.javaPackageFor(pName)
             val parentImport = if (parentPkg != thisPkg) List(s"$parentPkg.${Naming.structToJavaName(pName)}") else Nil
-            // CefLibraryObject.requireOpen is referenced in ancestor override arg-checks
-            val cloImport = if (ancestorDecls.nonEmpty) List(s"$basePkg.CefLibraryObject") else Nil
+            val cloImport    = if (ancestorDecls.nonEmpty) List(s"$basePkg.CefLibraryObject") else Nil
             parentImport ++ cloImport
           case None => List(s"$basePkg.CefLibraryObject")
         }
@@ -196,7 +196,7 @@ object JavaInterfaceCodeGen {
       case _ => defaultReturnForType(ret)
     }
 
-  private def defaultReturnForType(ret: CType)(using Naming.Context): String = ret match {
+  private def defaultReturnForType(ret: CType): String = ret match {
     case CType.Void                          => ""
     case CType.Bool                          => "\n        return false;"
     case CType.Int | CType.UInt | CType.Char => "\n        return 0;"
@@ -216,8 +216,7 @@ object JavaInterfaceCodeGen {
   ): List[String] =
     freeFunctions.map(ff => renderNativeDecl(ff, "        static native "))
 
-  private def renderSimpleJavadoc(text: String, capiSource: String = "", cPrototype: String = "")(using
-      Naming.Context,
+  private def renderSimpleJavadoc(text: String, capiSource: String, cPrototype: String)(using
       DocComments.Context
   ): String = {
     val cleaned                  = text.replaceAll("""--cef\([^)]*\)--""", "").trim
@@ -237,7 +236,6 @@ ${allLines.mkString("\n")}
   }
 
   private def renderStaticMethods(
-      javaName: String,
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String],
       isClass: Boolean = false
@@ -259,7 +257,7 @@ ${allLines.mkString("\n")}
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String]
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val (staticMethods, _) = renderStaticMethods("CefGlobals", freeFunctions, docs, isClass = true)
+    val (staticMethods, _) = renderStaticMethods(freeFunctions, docs, isClass = true)
 
     val hasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
     val hasNonnull  = freeFunctions.exists(fn => JavaMethods.hasNonnullParam(fn.params, fn.metaAttrs))
@@ -348,7 +346,6 @@ ${allLines.mkString("\n")}
        |        }""".stripMargin
   }
 
-  /** Normalise a default return snippet (produced for 8-space indent) to the 12-space indent used inside Delegating. */
   private def reindentDefaultReturn(snippet: String): String =
     if (snippet.isEmpty) snippet else snippet.replace("\n        ", "\n            ")
 
@@ -387,7 +384,7 @@ ${allLines.mkString("\n")}
   /** Handler defaults (and Delegating fallbacks) emit {@code return null;} for reference-typed, non-Optional returns.
     * Those signatures must advertise the nullability to NullAway.
     */
-  private def handlerReturnIsNullable(fn: FnPtr, handlerNames: Set[String])(using Naming.Context): Boolean =
+  private def handlerReturnIsNullable(fn: FnPtr, handlerNames: Set[String]): Boolean =
     if (isHandlerPtrReturn(fn.ret, handlerNames)) false
     else
       fn.ret match {
@@ -438,6 +435,6 @@ ${allLines.mkString("\n")}
     s"$prefix${shape.nativeRetType} $nativeName(${shape.nativeParamsDecl});"
   }
 
-  private def renderTypeImports(types: List[CType])(using Naming.Context): List[String] =
+  private def renderTypeImports(types: List[CType]): List[String] =
     types.flatMap(Naming.javaImports).distinct.sorted.map(i => s"import $i;")
 }

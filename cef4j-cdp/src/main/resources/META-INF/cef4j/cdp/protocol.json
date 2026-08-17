@@ -2855,27 +2855,6 @@
           ]
         }
       ],
-      "events": [
-        {
-          "name": "addressFormFilled",
-          "description": "Emitted when an address form is filled.",
-          "parameters": [
-            {
-              "name": "filledFields",
-              "description": "Information about the fields that were filled",
-              "type": "array",
-              "items": {
-                "$ref": "FilledField"
-              }
-            },
-            {
-              "name": "addressUi",
-              "description": "An UI representation of the address used to fill the form.\nConsists of a 2D array where each child represents an address/profile line.",
-              "$ref": "AddressUI"
-            }
-          ]
-        }
-      ],
       "commands": [
         {
           "name": "trigger",
@@ -2926,6 +2905,27 @@
         {
           "name": "enable",
           "description": "Enables autofill domain notifications."
+        }
+      ],
+      "events": [
+        {
+          "name": "addressFormFilled",
+          "description": "Emitted when an address form is filled.",
+          "parameters": [
+            {
+              "name": "filledFields",
+              "description": "Information about the fields that were filled",
+              "type": "array",
+              "items": {
+                "$ref": "FilledField"
+              }
+            },
+            {
+              "name": "addressUi",
+              "description": "An UI representation of the address used to fill the form.\nConsists of a 2D array where each child represents an address/profile line.",
+              "$ref": "AddressUI"
+            }
+          ]
         }
       ]
     },
@@ -9341,14 +9341,14 @@
           "description": "Removes breakpoint on particular native event.",
           "experimental": true,
           "deprecated": true,
-          "redirect": "EventBreakpoints",
           "parameters": [
             {
               "name": "eventName",
               "description": "Instrumentation name to stop on.",
               "type": "string"
             }
-          ]
+          ],
+          "redirect": "EventBreakpoints"
         },
         {
           "name": "removeXHRBreakpoint",
@@ -9415,14 +9415,14 @@
           "description": "Sets breakpoint on particular native event.",
           "experimental": true,
           "deprecated": true,
-          "redirect": "EventBreakpoints",
           "parameters": [
             {
               "name": "eventName",
               "description": "Instrumentation name to stop on.",
               "type": "string"
             }
-          ]
+          ],
+          "redirect": "EventBreakpoints"
         },
         {
           "name": "setXHRBreakpoint",
@@ -12349,48 +12349,6 @@
           ]
         }
       ],
-      "events": [
-        {
-          "name": "dialogShown",
-          "parameters": [
-            {
-              "name": "dialogId",
-              "type": "string"
-            },
-            {
-              "name": "dialogType",
-              "$ref": "DialogType"
-            },
-            {
-              "name": "accounts",
-              "type": "array",
-              "items": {
-                "$ref": "Account"
-              }
-            },
-            {
-              "name": "title",
-              "description": "These exist primarily so that the caller can verify the\nRP context was used appropriately.",
-              "type": "string"
-            },
-            {
-              "name": "subtitle",
-              "optional": true,
-              "type": "string"
-            }
-          ]
-        },
-        {
-          "name": "dialogClosed",
-          "description": "Triggered when a dialog is closed, either by user action, JS abort,\nor a command below.",
-          "parameters": [
-            {
-              "name": "dialogId",
-              "type": "string"
-            }
-          ]
-        }
-      ],
       "commands": [
         {
           "name": "enable",
@@ -12466,6 +12424,48 @@
         {
           "name": "resetCooldown",
           "description": "Resets the cooldown time, if any, to allow the next FedCM call to show\na dialog even if one was recently dismissed by the user."
+        }
+      ],
+      "events": [
+        {
+          "name": "dialogShown",
+          "parameters": [
+            {
+              "name": "dialogId",
+              "type": "string"
+            },
+            {
+              "name": "dialogType",
+              "$ref": "DialogType"
+            },
+            {
+              "name": "accounts",
+              "type": "array",
+              "items": {
+                "$ref": "Account"
+              }
+            },
+            {
+              "name": "title",
+              "description": "These exist primarily so that the caller can verify the\nRP context was used appropriately.",
+              "type": "string"
+            },
+            {
+              "name": "subtitle",
+              "optional": true,
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "dialogClosed",
+          "description": "Triggered when a dialog is closed, either by user action, JS abort,\nor a command below.",
+          "parameters": [
+            {
+              "name": "dialogId",
+              "type": "string"
+            }
+          ]
         }
       ]
     },
@@ -15232,6 +15232,16 @@
           ]
         }
       ],
+      "commands": [
+        {
+          "name": "enable",
+          "description": "Enables the Media domain"
+        },
+        {
+          "name": "disable",
+          "description": "Disables the Media domain."
+        }
+      ],
       "events": [
         {
           "name": "playerPropertiesChanged",
@@ -15310,16 +15320,6 @@
               "$ref": "Player"
             }
           ]
-        }
-      ],
-      "commands": [
-        {
-          "name": "enable",
-          "description": "Enables the Media domain"
-        },
-        {
-          "name": "disable",
-          "description": "Disables the Media domain."
         }
       ]
     },
@@ -18962,7 +18962,6 @@
         {
           "name": "setUserAgentOverride",
           "description": "Allows overriding user agent with the given string.",
-          "redirect": "Emulation",
           "parameters": [
             {
               "name": "userAgent",
@@ -18988,7 +18987,8 @@
               "optional": true,
               "$ref": "Emulation.UserAgentMetadata"
             }
-          ]
+          ],
+          "redirect": "Emulation"
         },
         {
           "name": "streamResourceContent",
@@ -23535,7 +23535,6 @@
           "description": "Deletes browser cookie with given name, domain and path.",
           "experimental": true,
           "deprecated": true,
-          "redirect": "Network",
           "parameters": [
             {
               "name": "cookieName",
@@ -23547,7 +23546,8 @@
               "description": "URL to match cooke domain and path.",
               "type": "string"
             }
-          ]
+          ],
+          "redirect": "Network"
         },
         {
           "name": "disable",
@@ -24177,7 +24177,6 @@
           "description": "Overrides the values of device screen dimensions (window.screen.width, window.screen.height,\nwindow.innerWidth, window.innerHeight, and \"device-width\"/\"device-height\"-related CSS media\nquery results).",
           "experimental": true,
           "deprecated": true,
-          "redirect": "Emulation",
           "parameters": [
             {
               "name": "width",
@@ -24247,14 +24246,14 @@
               "optional": true,
               "$ref": "Viewport"
             }
-          ]
+          ],
+          "redirect": "Emulation"
         },
         {
           "name": "setDeviceOrientationOverride",
           "description": "Overrides the Device Orientation.",
           "experimental": true,
           "deprecated": true,
-          "redirect": "DeviceOrientation",
           "parameters": [
             {
               "name": "alpha",
@@ -24271,7 +24270,8 @@
               "description": "Mock gamma",
               "type": "number"
             }
-          ]
+          ],
+          "redirect": "DeviceOrientation"
         },
         {
           "name": "setFontFamilies",
@@ -24350,7 +24350,6 @@
           "name": "setGeolocationOverride",
           "description": "Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position\nunavailable.",
           "deprecated": true,
-          "redirect": "Emulation",
           "parameters": [
             {
               "name": "latitude",
@@ -24370,7 +24369,8 @@
               "optional": true,
               "type": "number"
             }
-          ]
+          ],
+          "redirect": "Emulation"
         },
         {
           "name": "setLifecycleEventsEnabled",
@@ -24388,7 +24388,6 @@
           "description": "Toggles mouse event-based touch event emulation.",
           "experimental": true,
           "deprecated": true,
-          "redirect": "Emulation",
           "parameters": [
             {
               "name": "enabled",
@@ -24405,7 +24404,8 @@
                 "desktop"
               ]
             }
-          ]
+          ],
+          "redirect": "Emulation"
         },
         {
           "name": "startScreencast",
@@ -34605,14 +34605,14 @@
         {
           "name": "setAsyncCallStackDepth",
           "description": "Enables or disables async call stacks tracking.",
-          "redirect": "Debugger",
           "parameters": [
             {
               "name": "maxDepth",
               "description": "Maximum depth of async call stacks. Setting to `0` will effectively disable collecting async\ncall stacks (default).",
               "type": "integer"
             }
-          ]
+          ],
+          "redirect": "Debugger"
         },
         {
           "name": "setCustomObjectFormatterEnabled",

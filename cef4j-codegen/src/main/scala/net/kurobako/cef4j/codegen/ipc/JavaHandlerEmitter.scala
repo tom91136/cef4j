@@ -1,13 +1,5 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a Java interface per CEF HandlerStruct (e.g. `cef_load_handler_t` → `CefLoadHandler`). The interface exposes
-  * one default-`{}` method per callback so implementers only override what they care about, plus a static
-  * `register(CefSession, Handler)` that wires `session.on(...)` for every event the handler covers.
-  *
-  * Runtime-server-side wiring (setting these handlers on a `CefClient` and forwarding C callbacks to IPC events) is a
-  * separate concern; these interfaces are useful even before that lands as a typed dispatch surface for any future
-  * runtime-server code that emits the corresponding events.
-  */
 object JavaHandlerEmitter {
 
   def emit(spec: HandlerSpec): String = {
@@ -48,8 +40,7 @@ object JavaHandlerEmitter {
         val doc = methodDoc(m, s"Mirrors the {@code ${snakeOf(m.methodName)}} callback on the CEF struct.")
         s"""$doc    default void ${m.methodName}($params) {}""".stripMargin
       case Some(FieldType.Bool) =>
-        // Returns Boolean (boxed) so a `null` answer can mean "no opinion → don't bind"; falls through to
-        // CEF's default-zero behavior. Otherwise true→1 (block popup, suppress dialog, cancel navigation).
+        // Null means no JVM opinion and maps to CEF's false default.
         val doc = methodDoc(
           m,
           s"Mirrors the {@code ${snakeOf(m.methodName)}} callback. A null result selects CEF's default behavior."
@@ -57,8 +48,6 @@ object JavaHandlerEmitter {
         s"""$doc    @Nullable
            |    default Boolean ${m.methodName}($params) { return null; }""".stripMargin
       case Some(_) =>
-        // SpecDeriver currently only emits Bool returns, but keep a safe default-void in case the model
-        // grows other return shapes (e.g. int64_t for stream-read sizes).
         s"""    default void ${m.methodName}($params) {}""".stripMargin
     }
   }
@@ -77,8 +66,6 @@ object JavaHandlerEmitter {
         s"""        session.$subscription(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER,
            |                ev -> handler.${m.methodName}($args));""".stripMargin
       case Some(FieldType.Bool) =>
-        // Non-void: bind via session.intercept(). The handler returns Boolean — null means default (0)
-        // and is encoded as a Response with result=false; non-null becomes the explicit answer.
         val respCls = m.responseClassName.getOrElse(m.eventClassName + "Response")
         s"""        session.intercept(${m.eventClassName}.MESSAGE_ID, ${m.eventClassName}.DECODER, ev -> {
            |            Boolean answer = handler.${m.methodName}($args);
@@ -100,12 +87,7 @@ object JavaHandlerEmitter {
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
-  private def snakeOf(camel: String): String = {
-    val sb = new StringBuilder
-    camel.zipWithIndex.foreach { case (c, i) =>
-      if (c.isUpper && i > 0) sb.append('_')
-      sb.append(c.toLower)
-    }
-    sb.toString
-  }
+  private def snakeOf(camel: String): String = camel.zipWithIndex.flatMap { case (c, index) =>
+    if (c.isUpper && index > 0) s"_${c.toLower}" else c.toLower.toString
+  }.mkString
 }

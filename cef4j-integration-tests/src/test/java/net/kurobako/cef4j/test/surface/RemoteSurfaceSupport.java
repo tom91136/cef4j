@@ -1,8 +1,6 @@
 package net.kurobako.cef4j.test.surface;
 
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,24 +19,24 @@ import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
 final class RemoteSurfaceSupport {
     private RemoteSurfaceSupport() {}
 
     static boolean available() {
-        String binary = System.getProperty("cef4j.runtime.server.binary");
-        String resources = System.getProperty("cef4j.runtime.server.resources");
-        if (binary == null || resources == null) return false;
-        if (!Files.isExecutable(Paths.get(binary)) || !Files.isDirectory(Paths.get(resources))) return false;
         String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
-        return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
+        boolean display =
+                !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
+        if (display) RuntimeServerTestEnvironment.require();
+        return display;
     }
 
     static RuntimeFixture open(Duration timeout) throws Exception {
-        java.nio.file.Path binary = Paths.get(System.getProperty("cef4j.runtime.server.binary"));
-        java.nio.file.Path resources = Paths.get(System.getProperty("cef4j.runtime.server.resources"));
-        RuntimeServerProcess server = RemoteCefBrowserBackend.launchServer(binary, resources, timeout);
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        RuntimeServerProcess server =
+                RemoteCefBrowserBackend.launchServer(environment.binary(), environment.resources(), timeout);
         ZmqTransport transport = ZmqTransport.connect(server.endpoint());
         CefSession session = new CefSessionImpl(transport, timeout);
         return new RuntimeFixture(server, transport, session);

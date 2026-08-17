@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Base64;
@@ -49,7 +48,7 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
-import org.junit.jupiter.api.Assumptions;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,14 +63,9 @@ class RuntimeServerDevToolsIntegrationTest {
 
     @BeforeAll
     static void resolveBinary() {
-        String binary = System.getProperty("cef4j.runtime.server.binary");
-        String resources = System.getProperty("cef4j.runtime.server.resources");
-        Assumptions.assumeTrue(binary != null, "cef4j.runtime.server.binary system property not set");
-        Assumptions.assumeTrue(resources != null, "cef4j.runtime.server.resources system property not set");
-        serverBinary = Path.of(binary);
-        cefResources = Path.of(resources);
-        Assumptions.assumeTrue(Files.isExecutable(serverBinary), "runtime server binary not built at " + serverBinary);
-        Assumptions.assumeTrue(Files.isDirectory(cefResources), "CEF resources missing at " + cefResources);
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        serverBinary = environment.binary();
+        cefResources = environment.resources();
     }
 
     static List<RuntimeCase> transports() {
@@ -140,7 +134,7 @@ class RuntimeServerDevToolsIntegrationTest {
                 CdpSubscription ignoredRequests = network.onRequestWillBeSent(requests::add);
                 CdpSubscription ignoredResponses = network.onResponseReceived(responses::add);
                 CdpSubscription ignoredExceptions = runtime.onExceptionThrown(exceptions::add)) {
-            get(page.enable(Page.EnableParams.builder().build()));
+            get(page.enable());
             get(network.enable(Network.EnableParams.builder().build()));
             get(runtime.enable());
             get(dom.enable(DOM.EnableParams.builder().build()));

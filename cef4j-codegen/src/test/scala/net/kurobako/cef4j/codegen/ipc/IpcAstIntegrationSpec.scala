@@ -4,27 +4,20 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import scala.concurrent.duration.*
-import scala.jdk.StreamConverters.*
 
 import net.kurobako.cef4j.codegen.CHeaderParser
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.FileSystem
 import net.kurobako.cef4j.codegen.Preprocessor
 
-/** Exercises {@link SpecDeriver} against a real CEF dist. Skipped when {@code cef.root} is unset (so it doesn't gate
-  * the regular `mvn test` run); enabled by `mvn verify` which Surefire's failsafe binding picks up.
-  *
-  * Asserts that {@code SpecDeriver} produces a non-trivial set of message specs against a real CEF distribution and
-  * that emitting Java + C++ for any one of them does not throw.
-  */
 class IpcAstIntegrationSpec extends munit.FunSuite {
 
   override val munitTimeout = 2.minutes
 
   private val cefRoot: Path = {
-    val prop = System.getProperty("cef.root")
-    assume(prop != null, "cef.root system property not set — run via `mvn verify`")
+    val prop = Option(System.getProperty("cef.root")).getOrElse(fail("cef.root is not set; run mvn verify"))
     val path = Paths.get(prop)
-    assume(Files.isDirectory(path), s"cef.root does not exist: $path")
+    assert(Files.isDirectory(path), s"cef.root does not exist: $path")
     path
   }
   private val cefInclude: Path   = cefRoot.resolve("include")
@@ -37,7 +30,7 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
     val headers     = List(capiDir, capiDir.resolve("views"))
       .filter(Files.isDirectory(_))
       .flatMap(dir =>
-        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
+        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
       )
       .sorted
     val handlers = CHeaderParser.parseHandlerAnnotations(cefInclude)
@@ -81,7 +74,6 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
 
   test("SpecDeriver.deriveFacades produces a non-trivial set of facades from real CEF headers") {
     val facades = SpecDeriver.deriveFacades(decls, "net.kurobako.cef4j.ipc.protocol.gen")
-    // CEF exposes ~80+ ObjectStruct types; even with skipping for unsupported sigs we expect a meaningful chunk.
     assert(facades.size >= 30, s"expected many derived facades, got ${facades.size}")
     val knownFacade = facades.find(_.className == "Browser")
     assert(
@@ -136,7 +128,6 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       assert(java.contains(s"interface ${h.className}"), s"Java handler emit missing interface for ${h.className}")
       assert(java.contains("CefSession"), s"Java handler ${h.className} missing CefSession reference")
       h.methods.foreach { m =>
-        // Void-returning callbacks land as `default void`; non-void (Bool returns) become `default Boolean`.
         val voidShape = java.contains(s"default void ${m.methodName}(")
         val boolShape = java.contains(s"default Boolean ${m.methodName}(")
         assert(

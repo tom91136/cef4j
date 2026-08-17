@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
-import net.kurobako.cef4j.test.CefTestLifecycle;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -77,8 +76,7 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         assertThat(pumpUntil(closedA, 10_000)).as("browser A closed").isTrue();
         if (browserB != null && browserB.isValid()) closeBrowser(browserB);
         assertThat(closedB.await(10, TimeUnit.SECONDS)).as("browser B closed").isTrue();
-        if (!OS.isMacOS() && CefTestLifecycle.explicitShutdownSafe() && Cef.INSTANCE.state() == Cef.State.INITIALISED)
-            Cef.INSTANCE.terminate();
+        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

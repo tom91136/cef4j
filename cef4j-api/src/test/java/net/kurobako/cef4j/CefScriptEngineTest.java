@@ -10,7 +10,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
-import net.kurobako.cef4j.test.CefTestLifecycle;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -90,8 +89,7 @@ class CefScriptEngineTest extends CefTestBase {
             browser.getHost().ifPresent(host -> host.closeBrowser(true));
         }
         assertThat(pumpUntil(browserClosed, 10_000)).as("browser closed").isTrue();
-        if (!OS.isMacOS() && CefTestLifecycle.explicitShutdownSafe() && Cef.INSTANCE.state() == Cef.State.INITIALISED)
-            Cef.INSTANCE.terminate();
+        if (!OS.isMacOS() && Cef.INSTANCE.state() == Cef.State.INITIALISED) Cef.INSTANCE.terminate();
     }
 
     @Test

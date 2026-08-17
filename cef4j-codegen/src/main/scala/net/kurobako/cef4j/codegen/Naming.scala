@@ -34,22 +34,18 @@ object Naming {
       )
   }
 
-  /** Derive sub-package from sourceHeader directory, e.g. "views/cef_display_capi.h" -> "views". */
   def subPackageFromHeader(sourceHeader: String): Option[String] = {
     val normalized = sourceHeader.replace('\\', '/')
     val slashIdx   = normalized.lastIndexOf('/')
     if (slashIdx > 0) Some(normalized.substring(0, slashIdx).replace('/', '.')) else None
   }
 
-  /** Build subPackages map from structHeaderMap. */
   def buildSubPackages(structHeaderMap: Map[String, String]): Map[String, String] =
     structHeaderMap.flatMap { case (structName, header) =>
       subPackageFromHeader(header).map(structName -> _)
     }
 
   def toCamelCase(snake: String)(using context: Context): String = {
-    // If there are no underscores, the name is already camelCase (e.g. "dirtyRectsCount") -
-    // just lowercase the first character.  Otherwise, split on underscores and reassemble.
     val name = if (!snake.contains('_')) {
       if (snake.isEmpty) "" else s"${snake.head.toLower}${snake.tail}"
     } else {
@@ -63,33 +59,21 @@ object Naming {
     if (ReservedMethods.contains(name)) s"cef${capitalise(name)}" else name
   }
 
-  // Split a PascalCase string, preserving acronym boundaries such as DOM -> Document.
   def splitPascalWords(s: String): List[String] = {
-    val buf    = new StringBuilder
-    val result = List.newBuilder[String]
-    for (i <- s.indices) {
-      val c = s(i)
-      if (c.isUpper && buf.nonEmpty) {
-        val prev          = s(i - 1)
-        val nextIsLower   = i + 1 < s.length && s(i + 1).isLower
-        val startsNewWord = prev.isLower || prev.isDigit || (prev.isUpper && nextIsLower)
-        if (startsNewWord) {
-          result += buf.toString
-          buf.clear()
-        }
-      }
-      buf += c
-    }
-    if (buf.nonEmpty) result += buf.toString
-    result.result()
+    val starts = s.indices.drop(1).filter { index =>
+      val current     = s(index)
+      val previous    = s(index - 1)
+      val nextIsLower = index + 1 < s.length && s(index + 1).isLower
+      current.isUpper && (previous.isLower || previous.isDigit || (previous.isUpper && nextIsLower))
+    }.toList
+    if (s.isEmpty) Nil
+    else (0 :: starts).zip(starts :+ s.length).map { case (from, until) => s.substring(from, until) }
   }
 
   private def titleCase(s: String): String = if (s.isEmpty) s else s"${s.head.toUpper}${s.tail.toLowerCase}"
 
-  // Normalise a C++ PascalCase name with acronyms to regular PascalCase.
   private def normalizePascal(cpp: String): String = splitPascalWords(cpp).map(titleCase).mkString
 
-  // Derive camelCase Java method names from C++ PascalCase names.
   private def pascalToCamel(pascal: String): String = {
     val words = splitPascalWords(pascal)
     val name  = words match {
@@ -99,42 +83,35 @@ object Naming {
     if (ReservedMethods.contains(name)) s"cef${capitalise(name)}" else name
   }
 
-  // Prefer the recovered C++ name when available so acronyms map consistently.
   def javaMethodName(fn: FnPtr)(using Context): String = fn.cppName match {
     case Some(cpp) => pascalToCamel(cpp)
     case None      => toCamelCase(fn.name)
   }
 
-  // PascalCase name matching the C++ method name, used for doc comment lookup.
   def cppPascalName(fn: FnPtr)(using Context): String = fn.cppName match {
     case Some(cpp) => normalizePascal(cpp)
     case None      => toPascalCase(fn.name)
   }
 
-  // Derive the camelCase0 native method name (JDK convention).
   def nativeMethodName(fn: FnPtr)(using Context): String = javaMethodName(fn) + "0"
 
-  // Derive camelCase0 from a plain Java method name (for release, statics, etc.).
   def nativeMethodName(javaName: String): String = javaName + "0"
 
-  // Compound segments derived from C++ class names.
   private def compoundSegments(using context: Context): Map[String, List[String]] = context.compoundSegments
 
-  // Find the longest common underscore-delimited prefix that can be stripped safely.
-  def computeEnumPrefix(names: List[String]): String = {
-    if (names.size < 2) return ""
-    val raw = names.reduce { (a, b) =>
-      a.zip(b).takeWhile { case (x, y) => x == y }.map(_._1).mkString
+  def computeEnumPrefix(names: List[String]): String =
+    if (names.size < 2) ""
+    else {
+      val raw = names.reduce { (a, b) =>
+        a.zip(b).takeWhile { case (x, y) => x == y }.map(_._1).mkString
+      }
+      val lastUnderscore = raw.lastIndexOf('_')
+      if (lastUnderscore <= 0) ""
+      else {
+        val prefix = raw.substring(0, lastUnderscore + 1)
+        if (names.forall(name => name.stripPrefix(prefix).headOption.exists(_.isLetter))) prefix else ""
+      }
     }
-    val lastUs = raw.lastIndexOf('_')
-    if (lastUs <= 0) return ""
-    val prefix   = raw.substring(0, lastUs + 1)
-    val allValid = names.forall { n =>
-      val stripped = n.stripPrefix(prefix)
-      stripped.nonEmpty && stripped.head.isLetter
-    }
-    if (allValid) prefix else ""
-  }
 
   def toPascalCase(snake: String)(using Context): String =
     snake.split("_").toList
@@ -143,13 +120,11 @@ object Naming {
 
   def cefBaseName(cefName: String): String = cefName.stripPrefix("cef_").stripSuffix("_t")
 
-  // cef_rect_t -> CefRect.Mutable (for Java source)
   private def mutableJavaName(cefName: String)(using Context): String =
     s"${structToJavaName(cefName)}.Mutable"
 
   def capitalise(s: String): String = if (s.isEmpty) s else s"${s.head.toUpper}${s.tail}"
 
-  // cef_browser_t -> CefBrowser, cef_domvisitor_t -> CefDomVisitor (from C++ class name, normalised)
   def structToJavaName(cefName: String)(using context: Context): String =
     context.cppClassNames.get(cefName).map(normalizePascal).getOrElse(toPascalCase(cefName.stripSuffix("_t")))
 
@@ -168,7 +143,6 @@ object Naming {
 
   def javaPackage(using context: Context): String = context.javaPackage
 
-  /** Package for a specific struct, including sub-package if configured. */
   def javaPackageFor(cefStructName: String)(using context: Context): String =
     context.subPackages.get(cefStructName) match {
       case Some(sub) => s"${context.javaPackage}.$sub"
@@ -179,26 +153,19 @@ object Naming {
 
   private def jniPackagePrefix(using context: Context): String = javaPackage.replace('.', '_')
 
-  // cef_browser_t -> configured.package.CefBrowser (or configured.package.views.CefDisplay for sub-packages)
   def fullyQualifiedJavaName(cefStructName: String)(using Context): String =
     s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}"
 
-  // cef_browser_t -> configured.package.CefBrowser (always root package, no sub-package)
   def fullyQualifiedSharedJavaName(cefStructName: String)(using Context): String =
     s"$javaPackage.${structToJavaName(cefStructName)}"
 
-  // cef_rect_t -> configured.package.CefRect$Mutable (JNI internal name uses $ for inner class)
   def fullyQualifiedMutableName(cefStructName: String)(using Context): String =
     s"${javaPackageFor(cefStructName)}.${structToJavaName(cefStructName)}$$Mutable"
 
   private def isSyntheticPlatformSubPackage(sub: String): Boolean =
     sub == "linux" || sub == "mac" || sub == "win"
 
-  // JNI class lookups: when generating platform-specific C++ (platformCppMode),
-  // use the actual platform-qualified class only for types whose shared root is
-  // a marker interface implemented by platform-specific records. For duplicated
-  // concrete DTOs like CefMainArgs, always use the shared root class because the
-  // public Java API passes that root type into JNI.
+  // Only marker interfaces use platform-qualified JNI class names.
   def fullyQualifiedJavaNameForJniLookup(cefStructName: String)(using context: Context): String =
     context.subPackages.get(cefStructName) match {
       case Some(sub)
@@ -228,14 +195,11 @@ object Naming {
     s"Java_${jniPackagePrefix}_${outerClass}_00024NativePeer_${nativeMethodName(fn)}"
   }
 
-  // Macro-based JNI export signatures (emit CEF4J_JNI_EXPORT instead of raw extern "C").
-
   private def jniExport(retJni: String, clsExpr: String, methodName: String): String =
     s"CEF4J_JNI_EXPORT($retJni, $clsExpr, $methodName)"
 
   private def peerExpr(javaClass: String): String = s"CEF4J_PEER($javaClass)"
 
-  /** JNI class prefix for macros, e.g. "CefBrowser" or "views_CefDisplay" for sub-packages. */
   def jniClassPrefix(cefStructName: String)(using context: Context): String = {
     val javaName = structToJavaName(cefStructName)
     context.subPackages.get(cefStructName) match {
@@ -244,16 +208,12 @@ object Naming {
     }
   }
 
-  // Method on NativePeer inner class: CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefBrowser), isValid0)
   def jniExportPeer(cefStructName: String, fn: FnPtr, retJni: String)(using Context): String =
     jniExport(retJni, peerExpr(jniClassPrefix(cefStructName)), nativeMethodName(fn))
 
-  // Static method on NativePeer inner class (by name): CEF4J_JNI_EXPORT($ret, CEF4J_PEER(CefX), release0)
-  // The jniClassPrefix should already include sub-package prefix if needed.
   def jniExportPeerStatic(jniClassPrefix: String, javaMethodName: String, retJni: String): String =
     jniExport(retJni, peerExpr(jniClassPrefix), nativeMethodName(javaMethodName))
 
-  // Static method on a top-level class: CEF4J_JNI_EXPORT($ret, CefGlobals, initialize0)
   def jniExportStatic(javaClass: String, javaMethodName: String, retJni: String): String =
     jniExport(retJni, javaClass, nativeMethodName(javaMethodName))
 
@@ -298,8 +258,7 @@ object Naming {
       else s"List<${javaType(elem)}>"
   }
 
-  // Collect Java imports required by a CType.
-  def javaImports(ct: CType)(using Context): Set[String] = ct match {
+  def javaImports(ct: CType): Set[String] = ct match {
     case CType.OutObjectPtr(_)                        => Set("java.util.concurrent.atomic.AtomicReference")
     case CType.OutOpaquePtr                           => Set("java.util.concurrent.atomic.AtomicReference")
     case CType.PixelBuffer | CType.Buffer(_)          => Set("java.nio.ByteBuffer")
@@ -313,7 +272,6 @@ object Naming {
     case _ => Set.empty
   }
 
-  /** Extract CEF struct names referenced by a CType (for cross-package imports). */
   @tailrec
   def referencedCefNames(ct: CType): List[String] = ct match {
     case CType.ObjectPtr(name)               => List(name)
@@ -329,14 +287,12 @@ object Naming {
     case _                                   => Nil
   }
 
-  // Whether a CountFuncArray element type maps to a primitive Java array.
   def isPrimitiveElement(ct: CType): Boolean = ct match {
     case CType.Bool | CType.Int | CType.UInt | CType.Char |
         CType.Long | CType.SizeT | CType.Float | CType.Double => true
     case _ => false
   }
 
-  // JNI methods always expose CountFuncArray as arrays, even when the Java API wraps them as List.
   def jniNativeReturnType(ct: CType)(using Context): String = ct match {
     case CType.CountFuncArray(elem, _, _, _) => s"${javaType(elem)}[]"
     case other                               => javaType(other)

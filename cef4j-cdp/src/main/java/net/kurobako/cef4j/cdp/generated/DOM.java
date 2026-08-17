@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an {@code id}. This {@code id} can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client&#x27;s responsibility to collect information about the nodes that were sent to the client. Note that {@code iframe} owner elements will return corresponding document elements as their child nodes.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/DOM.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class DOM {
     private DOM() {}
@@ -6441,12 +6443,26 @@ public final class DOM {
             return client.call("DOM.describeNode", params, DescribeNodeResult::fromMap);
         }
         /**
+         * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DescribeNodeResult> describeNode() {
+            return describeNode(DescribeNodeParams.builder().build());
+        }
+        /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<ScrollIntoViewIfNeededResult> scrollIntoViewIfNeeded(ScrollIntoViewIfNeededParams params) {
             return client.call("DOM.scrollIntoViewIfNeeded", params, ScrollIntoViewIfNeededResult::fromMap);
+        }
+        /**
+         * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ScrollIntoViewIfNeededResult> scrollIntoViewIfNeeded() {
+            return scrollIntoViewIfNeeded(ScrollIntoViewIfNeededParams.builder().build());
         }
         /**
          * Disables DOM agent for the given page.
@@ -6473,12 +6489,26 @@ public final class DOM {
             return client.call("DOM.enable", params, EnableResult::fromMap);
         }
         /**
+         * Enables DOM agent for the given page.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<EnableResult> enable() {
+            return enable(EnableParams.builder().build());
+        }
+        /**
          * Focuses the given element.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<FocusResult> focus(FocusParams params) {
             return client.call("DOM.focus", params, FocusResult::fromMap);
+        }
+        /**
+         * Focuses the given element.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<FocusResult> focus() {
+            return focus(FocusParams.builder().build());
         }
         /**
          * Returns attributes for the specified node.
@@ -6497,6 +6527,13 @@ public final class DOM {
             return client.call("DOM.getBoxModel", params, GetBoxModelResult::fromMap);
         }
         /**
+         * Returns boxes for the given node.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetBoxModelResult> getBoxModel() {
+            return getBoxModel(GetBoxModelParams.builder().build());
+        }
+        /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -6504,6 +6541,14 @@ public final class DOM {
          */
         public CompletionStage<GetContentQuadsResult> getContentQuads(GetContentQuadsParams params) {
             return client.call("DOM.getContentQuads", params, GetContentQuadsResult::fromMap);
+        }
+        /**
+         * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetContentQuadsResult> getContentQuads() {
+            return getContentQuads(GetContentQuadsParams.builder().build());
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
@@ -6514,6 +6559,13 @@ public final class DOM {
             return client.call("DOM.getDocument", params, GetDocumentResult::fromMap);
         }
         /**
+         * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetDocumentResult> getDocument() {
+            return getDocument(GetDocumentParams.builder().build());
+        }
+        /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -6522,6 +6574,15 @@ public final class DOM {
         @Deprecated
         public CompletionStage<GetFlattenedDocumentResult> getFlattenedDocument(GetFlattenedDocumentParams params) {
             return client.call("DOM.getFlattenedDocument", params, GetFlattenedDocumentResult::fromMap);
+        }
+        /**
+         * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<GetFlattenedDocumentResult> getFlattenedDocument() {
+            return getFlattenedDocument(GetFlattenedDocumentParams.builder().build());
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -6547,6 +6608,13 @@ public final class DOM {
          */
         public CompletionStage<GetOuterHTMLResult> getOuterHTML(GetOuterHTMLParams params) {
             return client.call("DOM.getOuterHTML", params, GetOuterHTMLResult::fromMap);
+        }
+        /**
+         * Returns node&#x27;s HTML markup.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetOuterHTMLResult> getOuterHTML() {
+            return getOuterHTML(GetOuterHTMLParams.builder().build());
         }
         /**
          * Returns the id of the nearest ancestor that is a relayout boundary.
@@ -6710,6 +6778,13 @@ public final class DOM {
          */
         public CompletionStage<ResolveNodeResult> resolveNode(ResolveNodeParams params) {
             return client.call("DOM.resolveNode", params, ResolveNodeResult::fromMap);
+        }
+        /**
+         * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ResolveNodeResult> resolveNode() {
+            return resolveNode(ResolveNodeParams.builder().build());
         }
         /**
          * Sets attribute for an element with given id.

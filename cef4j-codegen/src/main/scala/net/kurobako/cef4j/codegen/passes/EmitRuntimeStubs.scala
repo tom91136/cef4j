@@ -2,14 +2,11 @@ package net.kurobako.cef4j.codegen.passes
 
 import java.nio.file.Files
 import java.nio.file.Path
-import scala.jdk.StreamConverters._
 
+import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.Banners
+import net.kurobako.cef4j.codegen.FileSystem
 
-/** Scans hand-written Java source files for `native` method declarations and emits a C++ header with
-  * `CEF4J_JNI_EXPORT_RT` macro stubs, so hand-written C++ implementations can include it for correct symbol names and
-  * signatures.
-  */
 object EmitRuntimeStubs {
 
   private case class NativeMethod(
@@ -21,7 +18,6 @@ object EmitRuntimeStubs {
       params: List[(String, String)] // (type, name)
   )
 
-  // Regex matching a native method declaration in Java source.
   private val NativeMethodRe =
     """(?:(?:private|public|protected|static|final|synchronized)\s+)*native\s+(\S+(?:\[])?)\s+(\w+)\s*\(([^)]*)\)\s*;""".r
 
@@ -30,8 +26,7 @@ object EmitRuntimeStubs {
   private val StaticRe  = """\bstatic\b""".r
 
   def apply(javaSourceRoot: Path, generatedPackageDir: Path, outCpp: Path)(using Banners): Unit = {
-    val javaFiles = Files.walk(javaSourceRoot)
-      .toScala(List)
+    val javaFiles = FileSystem.descendants(javaSourceRoot)
       .filter(p => p.toString.endsWith(".java") && !p.startsWith(generatedPackageDir))
 
     val methods = javaFiles
@@ -46,46 +41,44 @@ object EmitRuntimeStubs {
           if (m.isStatic) "1" else "0"
         )
       )
-    if (methods.isEmpty) return
+    if (methods.nonEmpty) {
+      val declarations = methods.map { m =>
+        val jniRet    = jniType(m.returnType)
+        val jniParams = jniParamList(m)
+        s"CEF4J_JNI_EXPORT_RT($jniRet, ${m.className}, ${m.name})($jniParams);\n\n"
+      }.mkString
+      val header =
+        s"${Banners.cpp}\n" +
+          "// JNI stubs for hand-written native methods.\n" +
+          "// Include this header and jni_util.h, then implement each function.\n\n" +
+          "#pragma once\n" +
+          "#include <jni.h>\n\n" +
+          declarations
 
-    val sb = new StringBuilder
-    sb.append(s"${Banners.cpp}\n")
-    sb.append("// JNI stubs for hand-written native methods.\n")
-    sb.append("// Include this header and jni_util.h, then implement each function.\n\n")
-    sb.append("#pragma once\n")
-    sb.append("#include <jni.h>\n\n")
+      // Force link-time validation of every native symbol.
+      val symbols      = methods.map(m => s"    reinterpret_cast<FnPtr_>(&${jniSymbol(m)}),\n").mkString
+      val verification =
+        s"${Banners.cpp}\n" +
+          "#include \"jni_util.h\"\n" +
+          "#include \"runtime_stubs.gen.h\"\n\n" +
+          "using FnPtr_ = void (*)();\n" +
+          "#ifdef _MSC_VER\n" +
+          "#pragma warning(disable: 4100)\n" +
+          "static FnPtr_ runtime_stubs_verify_[] = {\n" +
+          "#else\n" +
+          "__attribute__((used)) static FnPtr_ runtime_stubs_verify_[] = {\n" +
+          "#endif\n" +
+          symbols +
+          "};\n"
 
-    methods.foreach { m =>
-      val jniRet    = jniType(m.returnType)
-      val jniParams = jniParamList(m)
-      sb.append(s"CEF4J_JNI_EXPORT_RT($jniRet, ${m.className}, ${m.name})($jniParams);\n\n")
+      val outFile = outCpp.resolve("runtime_stubs.gen.h")
+      FileSystem.createDirectories(outFile.getParent)
+
+      def normalize(s: String) = s.replace("\r\n", "\n").replace("\r", "\n")
+      AtomicFiles.writeString(outCpp.resolve("runtime_stubs_verify.gen.cpp"), normalize(verification))
+      AtomicFiles.writeString(outFile, normalize(header))
+      println(s"  runtime stubs: ${methods.size} native methods -> ${outFile.getFileName}")
     }
-
-    // Emit a .cpp that forces the linker to resolve each stub symbol.
-    // A missing or mis-typed implementation becomes an undefined-symbol linker error.
-    val verifySb = new StringBuilder
-    verifySb.append(s"${Banners.cpp}\n")
-    verifySb.append("#include \"jni_util.h\"\n")
-    verifySb.append("#include \"runtime_stubs.gen.h\"\n\n")
-    verifySb.append("using FnPtr_ = void (*)();\n")
-    verifySb.append("#ifdef _MSC_VER\n")
-    verifySb.append("#pragma warning(disable: 4100)\n")
-    verifySb.append("static FnPtr_ runtime_stubs_verify_[] = {\n")
-    verifySb.append("#else\n")
-    verifySb.append("__attribute__((used)) static FnPtr_ runtime_stubs_verify_[] = {\n")
-    verifySb.append("#endif\n")
-    methods.foreach { m =>
-      verifySb.append(s"    reinterpret_cast<FnPtr_>(&${jniSymbol(m)}),\n")
-    }
-    verifySb.append("};\n")
-
-    val outFile = outCpp.resolve("runtime_stubs.gen.h")
-    Files.createDirectories(outFile.getParent)
-
-    def normalize(s: String) = s.replace("\r\n", "\n").replace("\r", "\n")
-    Files.writeString(outCpp.resolve("runtime_stubs_verify.gen.cpp"), normalize(verifySb.toString))
-    Files.writeString(outFile, normalize(sb.toString))
-    println(s"  runtime stubs: ${methods.size} native methods -> ${outFile.getFileName}")
   }
 
   private def scanFile(path: Path): List[NativeMethod] = {
@@ -96,8 +89,7 @@ object EmitRuntimeStubs {
       case None      => Nil
       case Some(cls) =>
         NativeMethodRe.findAllMatchIn(source).map { m =>
-          val line = source.substring(0, m.start).count(_ == '\n')
-          // Check if "static" appears on the same logical line
+          val line       = source.substring(0, m.start).count(_ == '\n')
           val lineStart  = source.lastIndexOf('\n', m.start) + 1
           val linePrefix = source.substring(lineStart, m.start)
           val isStatic   = StaticRe.findFirstIn(linePrefix + m.matched).isDefined
@@ -116,7 +108,6 @@ object EmitRuntimeStubs {
     }
   }
 
-  // Raw JNI symbol - still needed for the linker verification table
   private def jniSymbol(m: NativeMethod): String = {
     val pkgPart = m.packageName.replace('.', '_')
     s"Java_${pkgPart}_${m.className}_${m.name}"

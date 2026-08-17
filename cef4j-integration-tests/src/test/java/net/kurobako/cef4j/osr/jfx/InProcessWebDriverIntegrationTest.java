@@ -6,7 +6,6 @@ import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.onFxThread;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.startJavaFx;
 import static net.kurobako.cef4j.osr.jfx.CefWebViewTestSupport.waitUntil;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetAddress;
@@ -23,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
-import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
@@ -43,22 +41,20 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 class InProcessWebDriverIntegrationTest {
     @BeforeAll
     static void initialiseCef() throws Exception {
-        assumeFalse(OS.isMacOS(), "JavaFX startup is not supported from this JUnit launcher on macOS");
         assumeDisplayServer();
+        startJavaFx();
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = Files.createTempDirectory("cef4j-inprocess-webdriver-cache")
                 .toAbsolutePath()
                 .toString();
         CefWebView.initialise(settings, CefTestLaunch.extraArgs(), null);
-        startJavaFx();
         Platform.setImplicitExit(false);
     }
 
     @AfterAll
     static void terminateCef() throws Exception {
         closeAllWindows();
-        if (net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()
-                && Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
+        if (Cef.INSTANCE.state() == Cef.State.INITIALISED) CefWebView.terminate();
     }
 
     @Test

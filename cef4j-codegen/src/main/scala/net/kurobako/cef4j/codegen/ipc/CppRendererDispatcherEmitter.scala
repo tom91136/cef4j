@@ -1,24 +1,5 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits `RendererDispatcher.h` — the renderer-side counterpart to {@link CppDispatcherEmitter}. The browser-side
-  * dispatcher relays renderer-affinity Requests via `cef4j_renderer_req` process_message; the runtime server, when
-  * running as the renderer subprocess, calls into this dispatcher on receipt to decode the Request, look up the
-  * receiver in the per-struct HandleTable, enter the frame's V8 context, invoke the C-API method, encode the Response,
-  * and ship it back as `cef4j_renderer_resp` to the browser. The browser-side `Client::on_process_message_received`
-  * then decodes the envelope and replies as Kind::Response on the IPC wire.
-  *
-  * Reuses the `${ns}_dispatcher::tables::*` HandleTables — the runtime server binary is the same executable for both
-  * browser and renderer subprocess, but the address spaces are independent so each process has its own table state.
-  *
-  * Supported method shapes (similar to {@link CppDispatcherEmitter#isDispatchable}):
-  *   - Receiver: a renderer-affinity facade struct (cef_v8_*, cef_dom*).
-  *   - Params: I32/I64/Bool/Utf8String, plus RemoteHandle when the C struct is itself a facade (browser- or
-  *     renderer-affinity — the table exists for both).
-  *   - Return: Void or any of the same primitive/string types, or RemoteHandle when the result struct is a known
-  *     facade.
-  *
-  * Anything else is skipped — we don't ship partial dispatchers.
-  */
 object CppRendererDispatcherEmitter {
 
   case class RendererInputs(
@@ -80,10 +61,7 @@ object CppRendererDispatcherEmitter {
        |using ScopedCefString = ${ns}_dispatcher::ScopedCefString;
        |using ${ns}_dispatcher::insertOrRelease;
        |
-       |/** Wraps a `cef_v8_context_t*` so callers can `if (ctx) ctx->enter(...)` and have the matching `exit` and
-       |  * release fire as scope ends. The C-API `cef_v8_context_t::enter`/`exit` are paired; missing `exit` would
-       |  * leave the renderer in a sticky V8 state. The release happens regardless of enter success.
-       |  */
+       |// Pairs V8 context enter/exit and releases the retained context.
        |class ScopedV8Context {
        |public:
        |    explicit ScopedV8Context(cef_v8_context_t* ctx) : ctx_(ctx), entered_(false) {
@@ -104,10 +82,7 @@ object CppRendererDispatcherEmitter {
        |    bool entered_;
        |};
        |
-       |/** Sends a packaged response back to the browser process via `frame->send_process_message`. Mirrors the
-       |  * envelope format the browser-side relay sends: args = [corrId, messageId, payload bytes]. CEF takes
-       |  * ownership of `msg` — do not release it ourselves.
-       |  */
+       |// Sends [corrId, messageId, payload] and transfers message ownership to CEF.
        |inline void sendResponseEnvelope(cef_frame_t* frame, const char* envelopeName, std::int32_t corrId,
        |                                 std::int32_t messageId, const std::uint8_t* payload, std::size_t size) {
        |    cef_string_t name{};
@@ -120,8 +95,7 @@ object CppRendererDispatcherEmitter {
        |        args->set_int(args, 1, messageId);
        |        cef_binary_value_t* binary = cef_binary_value_create(payload, size);
        |        if (binary) {
-       |            // `set_binary` adopts our +1 — releasing here is a double-decrement that crashes the
-       |            // renderer subprocess. Same contract as `set_string`.
+       |            // set_binary adopts the retained value.
        |            args->set_binary(args, 2, binary);
        |        }
        |        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
@@ -130,18 +104,14 @@ object CppRendererDispatcherEmitter {
        |    frame->send_process_message(frame, PID_BROWSER, msg);
        |}
        |
-       |/** Sends an empty `cef4j_renderer_err` response (8-byte ReceiverGone payload) so the JVM-side future fails
-       |  * with CefRemoteException. The browser-side translates `_err` to Kind::Error on the IPC wire.
-       |  */
+       |// Sends ReceiverGone through the renderer error envelope.
        |inline void sendReceiverGone(cef_frame_t* frame, std::int32_t corrId, std::int32_t messageId) {
        |    static const std::uint8_t kReceiverGonePayload[8] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
        |    sendResponseEnvelope(frame, "cef4j_renderer_err", corrId, messageId,
        |                          kReceiverGonePayload, sizeof(kReceiverGonePayload));
        |}
        |
-       |/** Returns true iff the messageId was recognised and a response (success or error) was sent back to the
-       |  * browser process. Caller (renderer's on_process_message_received) should fall through for unknown ids.
-       |  */
+       |// Returns whether the message was dispatched and answered.
        |inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messageId,
        |                     const std::vector<std::uint8_t>& payload) {
        |    namespace gen = $ns;
@@ -158,9 +128,6 @@ object CppRendererDispatcherEmitter {
        |""".stripMargin
   }
 
-  /** Filter to methods we can codegen on the renderer side. Same shape rules as the browser dispatcher's, just scoped
-    * to renderer-affinity receivers.
-    */
   private def isDispatchable(m: FacadeMethod, facadeStructs: Set[String]): Boolean = {
     def fieldOk(name: String, ty: FieldType): Boolean = ty match {
       case FieldType.I32 | FieldType.I64 | FieldType.Bool | FieldType.Utf8String => true
@@ -176,9 +143,6 @@ object CppRendererDispatcherEmitter {
     paramsOk && resultOk
   }
 
-  /** Same camelCase rule as `CppDispatcherEmitter.tableFieldName` — kept private so the two emitters can drift
-    * independently if needed, but they currently match.
-    */
   private def tableFieldName(cefStruct: String): String = {
     val core = cefStruct.stripPrefix("cef_").stripSuffix("_t")
     core.split('_').iterator.zipWithIndex.map { case (p, i) =>
@@ -198,7 +162,6 @@ object CppRendererDispatcherEmitter {
     val cFn       = m.cefMethodName
     val msgIdExpr = s"gen::$req::kMessageId"
 
-    // Param decode + per-param prelude (string materialise / handle lookup).
     val paramPrelude = m.explicitParams.flatMap { p =>
       p.ty match {
         case FieldType.Utf8String =>
@@ -226,9 +189,6 @@ object CppRendererDispatcherEmitter {
       }
     }
 
-    // CEF's enum-typed args need a static_cast from int32_t to the receiver method's exact arg type. The
-    // browser dispatcher uses the `cefArg<F, N>` template from Dispatcher.h (which we re-import via the
-    // included header). Same pattern here so cef_v8_propertyattribute_t etc. accept our wire ints.
     val cFnRef  = s"receiver->$cFn"
     val argList = ("receiver" :: m.explicitParams.zipWithIndex.map { case (p, idx) =>
       val cArgIdx = idx + 1 // self at index 0
@@ -259,8 +219,10 @@ object CppRendererDispatcherEmitter {
           case FieldType.Utf8String =>
             ("cef_string_userfree_t", "ScopedCefString::take(rawResult).toUtf8()")
           case FieldType.RemoteHandle =>
-            val tbl = resultStruct.map(tableFieldName).getOrElse("nullptr_table")
-            (s"${resultStruct.get}*", s"insertOrRelease(&tables::$tbl, rawResult)")
+            val struct = resultStruct.getOrElse(
+              throw IllegalArgumentException(s"${m.cefMethodName}: missing remote-handle result type")
+            )
+            (s"$struct*", s"insertOrRelease(&tables::${tableFieldName(struct)}, rawResult)")
           case _ => ("int", "0")
         }
         val fieldName =

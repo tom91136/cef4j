@@ -20,7 +20,7 @@ object JavaMethods {
       case _                                  => false
     }
 
-  def usesArraysAsList(ret: CType)(using Naming.Context): Boolean =
+  def usesArraysAsList(ret: CType): Boolean =
     ret match {
       case CType.CountFuncArray(elem, _, _, _) => !Naming.isPrimitiveElement(elem)
       case _                                   => false
@@ -28,8 +28,7 @@ object JavaMethods {
 
   def hasNullableParam(params: List[Param], metaAttrs: List[(String, String)]): Boolean = {
     val optionals = optionalParams(metaAttrs)
-    // @Nullable is used for: explicitly optional params, AND non-strict reference types
-    // (JString, ObjectPtr, OpaquePtr, etc.) where CEF may accept NULL.
+    // CEF accepts null for non-strict reference types even without optional metadata.
     params.exists { p =>
       val isRef = JavaCodeGen.isReferenceType(p.typ)
       (optionals.contains(p.name) && isRef) || (isRef && !JavaCodeGen.isStrictNullCheck(p.typ))
@@ -56,8 +55,7 @@ object JavaMethods {
     val argsExpr      = visibleParams.map(p => Naming.toCamelCase(p.name)).mkString(", ")
     val nativeRetType = Naming.jniNativeReturnType(ret)
 
-    // Native stubs carry the same nullness annotations as the Java-facing signature so
-    // NullAway doesn't flag call sites that legitimately forward @Nullable arguments.
+    // Native stubs preserve facade nullness for NullAway.
     MethodShape(
       retType = effectiveRet,
       paramsDecl = paramsDecl,

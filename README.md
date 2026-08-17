@@ -84,8 +84,8 @@ platforms, and can retain selected locales or omit SwiftShader. Complete CI-test
 - [Gradle Kotlin](examples/gradle-kotlin/build.gradle.kts)
 - [sbt](examples/sbt/build.sbt)
 
-They invoke the ordinary Java 11 CLI dependency; no custom build plugin is required. Direct invocation:
-Each example packages a small CEF fixture in CI, verifies the resource layout, and reads the generated CDP schema.
+They invoke the ordinary Java 11 CLI dependency; no custom build plugin is required. CI runs each example against a
+small fixture and verifies the packaged resource layout. The CLI can also be invoked directly:
 
 ```bash
 java -jar cef4j-runtime-packager-0.1.0.jar package \
@@ -154,8 +154,7 @@ Runtime.EvaluateResult result = cdp.domains().runtime()
     .toCompletableFuture().join();
 ```
 
-The platform build caches the matching Chromium/V8 schema beside CEF and regenerates CDP bindings. Maintainers can
-refresh them directly with `scripts/update-cdp-schema.sh`.
+The platform build caches the matching Chromium/V8 PDL sources beside CEF and regenerates the CDP bindings.
 
 ## Modules
 
@@ -182,7 +181,7 @@ refresh them directly with `scripts/update-cdp-schema.sh`.
 Linux native/UI tests must use a private X server:
 
 ```bash
-xvfb-run -a ./mvnw clean verify -Dspotless.skip=true
+xvfb-run -a ./mvnw clean verify -Dspotless.check.skip=true
 ```
 
 Windows uses `mvnw.cmd`. The build downloads minimal CEF archives into `.cef-dist/`. See [DEBUG.md](DEBUG.md) for
@@ -202,7 +201,7 @@ Each row is one test representative, not support for every patch build. Applicat
 CEF patch they ship. cef4j targets one CEF API major per bridge release; compatible patch updates do not require a new
 bridge publication. Legacy lanes show compatibility, not security support.
 
-CI runs 18 native platform/JDK jobs with named legacy CEF steps, a 12-job OS/JDK packager matrix, JavaFX variants,
+CI runs 30 native platform/JDK jobs with named legacy CEF steps, a 12-job OS/JDK packager matrix, JavaFX variants,
 actual JDK 11 runtime forks, and the four consumer builds above. Linux uses AlmaLinux 8 sysroots for a glibc 2.28 floor
 and Xvfb for all GUI tests.
 

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
-import net.kurobako.cef4j.test.CefTestLifecycle;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -99,19 +98,11 @@ class CefScriptEngineMultiThreadedTest {
     static void cleanup() throws Exception {
         if (engineA != null) engineA.dispose();
         if (engineB != null) engineB.dispose();
-        // Close one browser completely before starting the next close. Older CEF
-        // releases can race their multi-threaded browser destruction when both
-        // close requests are posted together.
+        // Serialize browser destruction on legacy multi-threaded CEF.
         closeBrowser(browserA, closedA);
         closeBrowser(browserB, closedB);
-        // Shut down CEF synchronously so the internal threads release the cache files before
-        // @TempDir cleanup runs; otherwise JUnit fails to delete the leveldb LOCK and lists it
-        // as a synthetic extra test.
-        // CEF 116 on Windows crashes inside cef_shutdown even after both onBeforeClose callbacks.
-        // This class owns its Surefire JVM, so normal process teardown is the safe lifecycle boundary there.
-        if (!OS.isWindows()
-                && CefTestLifecycle.explicitShutdownSafe()
-                && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
+        // XXX: CEF 116 Windows crashes in cef_shutdown after both onBeforeClose callbacks.
+        if (!OS.isWindows() && Cef.INSTANCE.state() == Cef.State.INITIALISED) {
             Cef.INSTANCE.terminate();
         }
     }

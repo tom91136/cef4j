@@ -1,22 +1,4 @@
-// cef4j-runtime-server: transport-selectable host for the generated Remote CEF API.
-//
-// Multi-process: the same binary is re-execed by CEF for renderer/GPU/utility
-// subprocesses. cef_execute_process at entry routes them; non-zero return
-// means we were a sub-process and should exit. Otherwise we are the browser
-// process and run the CEF message loop.
-//
-// Hand-written code is now minimal — most of the protocol comes from codegen:
-//   - gen/Dispatcher.h dispatches ~685 AST-derived requests onto CEF UI-thread
-//     calls, manages per-struct HandleTable<T> globals, routes ReleaseHandle.
-//   - gen/HandlerForwarders.h provides 33 cef_X_handler_t subclasses; wireClient
-//     binds each to the appropriate cef_client_t::get_X_handler.
-//
-// The remaining hand-written code in this file is just:
-//   - ScopedCefString helper (RAII for cef_string_t)
-//   - RenderHandler stub (view-rect bounds + on_paint no-op; OSR contract that
-//     can't ride the event-only forwarder pattern)
-//   - CefClient + App lifecycle and the kMsgReleaseHandle dispatch case.
-//
+// Transport-selectable CEF host; CEF re-executes this binary for its subprocesses.
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -107,19 +89,8 @@ extern "C" void cef4jQuitMacMessageLoop();
 #include "gen/TriggerInterceptResponse.h"
 #include "gen/V8ContextCreatedEvent.h"
 
-// Generated AST-driven dispatcher; covers hundreds of ObjectStruct methods across all CEF facades. Hand-written
-// cases below take precedence; gendisp::dispatch is consulted afterwards for ids the hand-written switch
-// doesn't claim. The dispatcher namespace also holds the per-struct HandleTable<T> static globals.
 #include "gen/Dispatcher.h"
-
-// Generated AST-driven handler forwarders. One C++ class per CEF HandlerStruct; each callback encodes the
-// matching AST event and sends it via gendisp::tables + IpcServer. The server hands them out from CefClient
-// instead of writing per-handler boilerplate.
 #include "gen/HandlerForwarders.h"
-
-// Generated AST-driven renderer-side dispatcher. Mirrors gen/Dispatcher.h but scoped to renderer-affinity
-// facades (cef_v8_*, cef_dom*); the renderer subprocess calls into it on receipt of "cef4j_renderer_req"
-// process_messages relayed by the browser-side dispatcher.
 #include "gen/RendererDispatcher.h"
 
 namespace gendisp     = net_kurobako_cef4j_ipc_protocol_gen_dispatcher;
@@ -132,8 +103,6 @@ using cef4j::ipc::Kind;
 using cef4j::ipc::kHeaderSize;
 using cef4j::ipc::kNoCorrId;
 
-// Mirrors hand-written specs in cef4j-codegen/src/main/scala/.../ipc/Specs.scala. IDs in [0, AstIdBase) are
-// hand-allocated; codegen-derived AST ids start at AstIdBase=10000.
 static constexpr std::int32_t kMsgSessionReady         = 0;
 static constexpr std::int32_t kMsgReleaseHandle        = 6;
 static constexpr std::int32_t kMsgCreateBrowser        = 7;
@@ -141,10 +110,6 @@ static constexpr std::int32_t kMsgTriggerIntercept     = 8;
 static constexpr std::int32_t kMsgSetViewportSize      = 25;
 static constexpr std::int32_t kMsgDevToolsAttach       = 27;
 static constexpr std::int32_t kMsgDevToolsDetach       = 30;
-
-// ---------------------------------------------------------------------------
-// CEF ref-counted base helpers (same pattern as cef4j-platform subprocess_main).
-// ---------------------------------------------------------------------------
 
 // CEF validates {@code base.size == sizeof(cef_*_t)} on every wrap. We must report the parent CEF struct size, not
 // our subclass size. T is our wrapper class (carries refCount); CefStruct is the cef_*_t we're implementing.
@@ -205,19 +170,11 @@ private:
     cef_string_t s_;
 };
 
-// ---------------------------------------------------------------------------
-// Globals (browser-process only, accessed only on CEF UI thread unless noted).
-// ---------------------------------------------------------------------------
-
-static IpcServer* g_ipc       = nullptr;     // accessed from many threads after start
-static cef_client_t* g_client = nullptr;     // shared by the initial browser + any JVM-triggered creates
-// Server→client sync callback waiter; lives in InterceptRegistry.h's process-wide singleton so generated
-// handler forwarders share the same waiter map without needing an extern.
+static IpcServer* g_ipc       = nullptr;
+static cef_client_t* g_client = nullptr;
 inline cef4j::ipc::InterceptRegistry& g_intercepts = cef4j::ipc::intercepts();
 
-// Browser lifetime tracking exists independently of the generated handle table. A client can disappear without
-// explicitly releasing facade handles, but the owning RuntimeServerProcess must still be able to close every browser
-// and let Chromium reap its subprocesses before cef_shutdown(). Mutations happen on CEF's UI thread.
+// Track browser ownership independently of client-released facade handles.
 static std::unordered_map<int, cef_browser_t*> g_liveBrowsers;
 static bool g_runtimeShuttingDown = false;
 static bool g_runtimeQuitPosted = false;
@@ -298,8 +255,7 @@ static void installLifeSpanHooks() {
         if (g_runtimeShuttingDown && removed && g_liveBrowsers.empty() && !g_runtimeQuitPosted) {
             g_runtimeQuitPosted = true;
             std::fprintf(stderr, "[cef4j-runtime-server] shutdown: final browser closed\n");
-            // CEF invokes OnBeforeClose on TID_UI and explicitly permits CefQuitMessageLoop from the final callback.
-            // An additional posted task can be stranded when this callback is the last runnable item in the loop.
+            // Quit directly from the final TID_UI callback; a posted task may never run.
             finishRuntimeShutdown();
         }
     };
@@ -1586,10 +1542,7 @@ struct JvmJsHandler : cef_v8_handler_t {
                      cef_v8_value_t* const* arguments, cef_v8_value_t** retval,
                      cef_string_t* /*exception*/) -> int {
             auto* self = reinterpret_cast<JvmJsHandler*>(selfPtr);
-            // Build a JS array of the args, then JSON.stringify it via the live context's JSON global.
-            // V8 GC handles the lifetime of the temporaries we touch — calling C-API release on them in
-            // this dispatch context can deadlock the renderer (same root cause as the register-time
-            // hang on fnVal->release). So we don't release any v8 value handles here.
+            // XXX: releasing V8 temporaries in this callback deadlocks; renderer exit owns them.
             std::string argsJson;
             auto* ctx = cef_v8_context_get_current_context();
             if (ctx) {
@@ -1650,9 +1603,7 @@ struct JvmJsHandler : cef_v8_handler_t {
                         }
                         frame->send_process_message(frame, PID_BROWSER, m);
                     }
-                    // Skip frame->release here too; V8/IPC manage the frame's lifetime.
                 }
-                // Skip ctx release — same V8 GC reasoning.
             }
             // Fire-and-forget: return undefined to JS.
             *retval = cef_v8_value_create_undefined();
@@ -1688,10 +1639,7 @@ static void handleJsRegisterFuncReq(cef_frame_t* frame, cef_process_message_t* m
             global->set_value_bykey(global, &cefFnName, fnVal,
                                     static_cast<cef_v8_propertyattribute_t>(0));
             cef_string_clear(&cefFnName);
-            // NOTE: NOT calling release on fnVal/global/ctx/etc. CEF's CToCpp wrappers handle V8 value
-            // lifetime via V8's own GC; the C-API release functions can deadlock the renderer in this
-            // dispatch context (observed: register hung at fnVal->release; execute hung at arr->release).
-            // Leaking the C-API +1 ref is fine because V8's GC reclaims when the context unwinds.
+            // XXX: retained V8 C-API references live until renderer exit; releasing them here deadlocks.
         }
         ctx->exit(ctx);
     }
@@ -1848,10 +1796,7 @@ struct App : cef_app_t {
             return a->renderProcessHandler;
         };
 #if defined(__APPLE__) && CEF_VERSION_MAJOR <= 109
-        // CEF 109's GPU subprocess does not make progress on the headless Apple Silicon CI host. The in-process
-        // test surface already uses this Chromium switch on macOS; applying it here preserves windowless software
-        // rendering and lets the remote server exercise the same OSR/API paths. Keep the workaround narrowly scoped
-        // to the old CEF release where it is required.
+        // XXX: CEF 109 GPU subprocess stalls on headless Apple Silicon.
         on_before_command_line_processing = [](cef_app_t*, const cef_string_t*, cef_command_line_t* commandLine) {
             ScopedCefString disableGpu("disable-gpu");
             commandLine->append_switch(commandLine, disableGpu.get());
@@ -1877,9 +1822,7 @@ struct CreateBrowserTask : cef_task_t {
         initRef<CreateBrowserTask, cef_task_t>(reinterpret_cast<cef_base_ref_counted_t*>(this));
         execute = [](cef_task_t* self) {
             auto* t = reinterpret_cast<CreateBrowserTask*>(self);
-            // A request can be queued just before the parent shutdown command reaches TID_UI. Never begin a new
-            // browser after shutdown has started: the existing final browser may already have posted the message-loop
-            // quit, leaving CEF browser creation racing teardown.
+            // Reject browser creation once UI-thread shutdown begins.
             if (!g_client || g_runtimeShuttingDown) return;
 
             cef_window_info_t windowInfo{};
@@ -1942,16 +1885,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
 
     switch (h.messageId) {
         case kMsgSessionReady: {
-            // Browser creation is deliberately behind a client-originated barrier. Without this, fast CEF startup
-            // can emit on_after_created after the server handshake but before the client's session receive handler
-            // exists, making startup depend on scheduler timing (especially on loaded CI runners).
-            //
-            // Send the acknowledgement from the UI task itself. Publishing the process endpoint does not prove that
-            // CEF's message loop is accepting cross-thread tasks yet (most visibly on macOS), while acknowledging on
-            // the IPC worker can let the client issue browser work that an older CEF strands before its loop starts.
-            // The JVM retransmits SessionReady until it receives this idempotent acknowledgement, so post every
-            // attempt: if an early task is stranded, a later retry made after the loop starts can still establish the
-            // session. Browser bootstrap remains one-shot among the tasks that actually execute.
+            // Acknowledge every idempotent readiness probe from TID_UI; bootstrap the browser once.
             const auto corrId = h.corrId;
             const auto messageId = h.messageId;
             cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, messageId]() {
@@ -2072,9 +2006,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
                 auto* host = browser->get_host(browser);
                 cef_registration_t* registration = nullptr;
                 if (host) {
-                    // The CEF C API transfers the incoming observer reference into its C++ CefRefPtr wrapper.
-                    // The returned registration owns that observer for the rest of its lifetime; retaining the raw
-                    // pointer here and releasing it after the registration is destroyed is a use-after-free.
+                    // The returned registration owns the observer reference.
                     auto* observer = new DevToolsObserver(browserHandle);
                     registration = host->add_dev_tools_message_observer(host, observer);
                     auto* hostBase = reinterpret_cast<cef_base_ref_counted_t*>(host);
@@ -2103,9 +2035,7 @@ static void onIpcFrameUnchecked(const Header& h, std::vector<std::uint8_t>&& pay
             std::int32_t msgId = h.messageId;
             cef_post_task(TID_UI, new gendisp::LambdaTask([browserHandle, corrId, msgId]() {
                 releaseDevToolsRegistration(browserHandle);
-                // Releasing the registration queues Chromium-side agent cleanup. Acknowledge from the next UI
-                // task so a client that immediately shuts down after the response cannot race browser destruction
-                // against that cleanup.
+                // Acknowledge after Chromium's queued observer cleanup.
                 cef_post_task(TID_UI, new gendisp::LambdaTask([corrId, msgId]() {
                     if (g_ipc) g_ipc->send(Kind::Response, 0, corrId, msgId, nullptr, 0);
                 }));
@@ -2410,11 +2340,7 @@ int main(int argc, char* argv[]) {
     if (frameworkDirectory.empty()) {
         const std::filesystem::path executableDirectory = std::filesystem::absolute(argv[0]).parent_path();
         const auto frameworkName = std::filesystem::path("Chromium Embedded Framework.framework");
-        // The browser executable is in <App>.app/Contents/MacOS, whereas CEF launches renderer/GPU processes from
-        // <App>.app/Contents/Frameworks/<Helper>.app/Contents/MacOS. Resolve the framework from the normal
-        // browser location first, then from the enclosing application when this is a helper process. Without the
-        // latter, the helper looks in its own Contents/Frameworks directory and starts without the parent app's CEF
-        // framework, leaving browser creation and session-ready callbacks permanently pending.
+        // Resolve CEF from either the browser app or its nested helper app.
         const auto browserFramework = executableDirectory.parent_path() / "Frameworks" / frameworkName;
         if (std::filesystem::exists(browserFramework)) {
             frameworkDirectory = browserFramework.string();
@@ -2544,11 +2470,7 @@ int main(int argc, char* argv[]) {
         ScopedCefString locPath(localesPath);
         cef_string_set(locPath.get()->str, locPath.get()->length, &settings.locales_dir_path, 1);
     }
-    // Subprocesses re-exec this program. On macOS they must not use the browser-process
-    // executable inside the top-level .app: recent Chromium releases can deadlock in
-    // cef_initialize while trying to establish process identity that way. The packaged
-    // distribution includes a byte-identical executable in a proper helper application bundle.
-    // It enters cef_execute_process above before any browser-only server setup.
+    // macOS subprocesses require the packaged helper-app identity.
     {
         std::filesystem::path subprocessPath = std::filesystem::absolute(argv[0]);
 #ifdef __APPLE__
@@ -2595,18 +2517,13 @@ int main(int argc, char* argv[]) {
     g_ipc                 = ipc.get();
     genhandlers::g_ipc    = ipc.get(); // Generated forwarders fire events through this pointer.
 
-    // Publish the CEF client before the IPC worker can receive SessionReady. Otherwise a fast client can consume the
-    // one-shot bootstrap barrier, post CreateBrowserTask, and have that task observe a null g_client before main gets
-    // here. The task then returns without creating a browser and subsequent SessionReady messages cannot retry it.
+    // Publish the CEF client before SessionReady can reach the IPC worker.
     installLifeSpanHooks();
     auto* client = new Client();
     g_client     = client;
     ipc->start(onIpcFrame);
 
-    // Publish the bound endpoint as soon as the IPC worker is available. SessionReady is the stronger barrier: its
-    // acknowledgement is emitted by a task that has executed on CEF's UI loop, and the JVM retransmits it until that
-    // happens. Keeping transport discovery separate from UI readiness gives ZMTP time to establish under load while
-    // still preventing callers from using a CEF loop that has not started processing work.
+    // Endpoint discovery precedes the stronger TID_UI readiness barrier.
     std::printf(
         "CEF4J_RUNTIME_SERVER protocol=1 api=remote-cef cef-api=%d transport=%s frame=%s endpoint=%s "
         "capabilities=remote-cef-api,devtools,osr,input,graceful-shutdown\n",
@@ -2616,9 +2533,7 @@ int main(int argc, char* argv[]) {
         ipc->endpoint().c_str());
     std::fflush(stdout);
 
-    // RuntimeServerProcess owns this private control pipe. It deliberately sits below every IPC backend so a wedged
-    // or already-disconnected ZMQ/UDS/WebSocket session cannot prevent orderly native teardown. The command reader is
-    // detached because process exit is the final lifetime boundary; an exact command posts all CEF work to TID_UI.
+    // The transport-independent parent pipe remains usable after an IPC failure.
     std::thread([] {
         std::string command;
         if (std::getline(std::cin, command) && command == "CEF4J_SHUTDOWN") {

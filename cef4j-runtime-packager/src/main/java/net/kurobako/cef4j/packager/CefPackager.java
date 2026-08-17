@@ -1,7 +1,10 @@
 package net.kurobako.cef4j.packager;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -52,6 +55,9 @@ public final class CefPackager implements Runnable {
         @Option(names = "--archive", description = "Use a local archive (valid with one platform only).")
         Path archive;
 
+        @Option(names = "--bridge-directory", description = "Add cef4j native bridge files from this directory.")
+        Path bridgeDirectory;
+
         @Option(names = "--cache", description = "Download cache directory.")
         Path cache = defaultCache();
 
@@ -85,6 +91,9 @@ public final class CefPackager implements Runnable {
             if (sha256 != null && targets.size() != 1) {
                 throw new CommandLine.ParameterException(new CommandLine(this), "--sha256 requires one platform");
             }
+            if (bridgeDirectory != null && targets.size() != 1) {
+                throw new CommandLine.ParameterException(new CommandLine(this), "--bridge-directory requires one platform");
+            }
             CefArchiveResolver resolver = new CefArchiveResolver();
             CefRuntimePackager packager = new CefRuntimePackager();
             for (CefPlatform platform : targets) {
@@ -102,14 +111,31 @@ public final class CefPackager implements Runnable {
                         resolved.upstreamVerified);
                 if (skipIfCurrent && packager.isCurrent(request)) {
                     System.out.printf("Reusing packaged CEF %s for %s in %s%n", cefVersion, platform.externalName(), output);
-                    continue;
+                } else {
+                    CefRuntimePackager.Result result = packager.packageArchive(request);
+                    System.out.printf(
+                            "Packaged CEF %s for %s: %d files in %s%n",
+                            cefVersion, platform.externalName(), result.files().size(), result.runtimeRoot());
                 }
-                CefRuntimePackager.Result result = packager.packageArchive(request);
-                System.out.printf(
-                        "Packaged CEF %s for %s: %d files in %s%n",
-                        cefVersion, platform.externalName(), result.files().size(), result.runtimeRoot());
+                if (bridgeDirectory != null) stageBridge(bridgeDirectory, output, platform);
             }
             return 0;
+        }
+
+        private static void stageBridge(Path sourceDirectory, Path output, CefPlatform platform) throws IOException {
+            String library = platform.isWindows()
+                    ? "cef4j.dll"
+                    : platform.isMacOS() ? "libcef4j.dylib" : "libcef4j.so";
+            if (!Files.isRegularFile(sourceDirectory.resolve(library))) {
+                throw new IOException("cef4j bridge is missing: " + sourceDirectory.resolve(library));
+            }
+            Path destination = Files.createDirectories(output.resolve("native").resolve(platform.cefName()));
+            for (String name : List.of(library, "cef4j_launcher", "cef4j_launcher.exe")) {
+                Path source = sourceDirectory.resolve(name);
+                if (Files.isRegularFile(source)) {
+                    Files.copy(source, destination.resolve(name), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
         }
     }
 

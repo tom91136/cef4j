@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Actions and events related to the inspected page belong to the page domain.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Page.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Page {
     private Page() {}
@@ -10448,6 +10450,13 @@ public final class Page {
             return client.call("Page.captureScreenshot", params, CaptureScreenshotResult::fromMap);
         }
         /**
+         * Capture page screenshot.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CaptureScreenshotResult> captureScreenshot() {
+            return captureScreenshot(CaptureScreenshotParams.builder().build());
+        }
+        /**
          * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -10455,6 +10464,14 @@ public final class Page {
          */
         public CompletionStage<CaptureSnapshotResult> captureSnapshot(CaptureSnapshotParams params) {
             return client.call("Page.captureSnapshot", params, CaptureSnapshotResult::fromMap);
+        }
+        /**
+         * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CaptureSnapshotResult> captureSnapshot() {
+            return captureSnapshot(CaptureSnapshotParams.builder().build());
         }
         /**
          * Clears the overridden device metrics.
@@ -10520,12 +10537,26 @@ public final class Page {
             return client.call("Page.enable", params, EnableResult::fromMap);
         }
         /**
+         * Enables page domain notifications.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<EnableResult> enable() {
+            return enable(EnableParams.builder().build());
+        }
+        /**
          * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAppManifestResult> getAppManifest(GetAppManifestParams params) {
             return client.call("Page.getAppManifest", params, GetAppManifestResult::fromMap);
+        }
+        /**
+         * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetAppManifestResult> getAppManifest() {
+            return getAppManifest(GetAppManifestParams.builder().build());
         }
         /**
          * Invokes Page.getInstallabilityErrors.
@@ -10640,12 +10671,26 @@ public final class Page {
             return client.call("Page.printToPDF", params, PrintToPDFResult::fromMap);
         }
         /**
+         * Print page as PDF.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<PrintToPDFResult> printToPDF() {
+            return printToPDF(PrintToPDFParams.builder().build());
+        }
+        /**
          * Reloads given page optionally ignoring the cache.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<ReloadResult> reload(ReloadParams params) {
             return client.call("Page.reload", params, ReloadResult::fromMap);
+        }
+        /**
+         * Reloads given page optionally ignoring the cache.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ReloadResult> reload() {
+            return reload(ReloadParams.builder().build());
         }
         /**
          * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
@@ -10789,6 +10834,15 @@ public final class Page {
             return client.call("Page.setGeolocationOverride", params, SetGeolocationOverrideResult::fromMap);
         }
         /**
+         * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
+         * @return a stage completing with the command result
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<SetGeolocationOverrideResult> setGeolocationOverride() {
+            return setGeolocationOverride(SetGeolocationOverrideParams.builder().build());
+        }
+        /**
          * Controls whether page will emit lifecycle events.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -10815,6 +10869,14 @@ public final class Page {
          */
         public CompletionStage<StartScreencastResult> startScreencast(StartScreencastParams params) {
             return client.call("Page.startScreencast", params, StartScreencastResult::fromMap);
+        }
+        /**
+         * Starts sending each frame using the {@code screencastFrame} event.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StartScreencastResult> startScreencast() {
+            return startScreencast(StartScreencastParams.builder().build());
         }
         /**
          * Force the page stop all navigations and pending resource fetches.
@@ -10943,6 +11005,14 @@ public final class Page {
          */
         public CompletionStage<GetAnnotatedPageContentResult> getAnnotatedPageContent(GetAnnotatedPageContentParams params) {
             return client.call("Page.getAnnotatedPageContent", params, GetAnnotatedPageContentResult::fromMap);
+        }
+        /**
+         * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetAnnotatedPageContentResult> getAnnotatedPageContent() {
+            return getAnnotatedPageContent(GetAnnotatedPageContentParams.builder().build());
         }
         /**
          * Subscribes to Page.domContentEventFired.

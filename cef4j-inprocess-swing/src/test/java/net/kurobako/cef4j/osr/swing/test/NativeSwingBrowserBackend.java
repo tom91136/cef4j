@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
+import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefBrowserHost;
 import net.kurobako.cef4j.gen.CefBrowserSettings;
@@ -48,9 +49,18 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
-        if (!net.kurobako.cef4j.test.CefTestLifecycle.nativeSwingContractAvailable()) return false;
+        // XXX: CEF 109/116 macOS Swing contract has no root-caused hosted-runner failure.
+        if (OS.isMacOS() && cefApiVersion() <= 116) return false;
         String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
         return !os.contains("linux") || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
+    }
+
+    private static int cefApiVersion() {
+        String value = System.getProperty("cef.api.version", System.getProperty("cef4j.test.cefApiVersion"));
+        if (value == null || value.isBlank()) value = System.getProperty("cef.version");
+        if (value == null || value.isBlank()) return Integer.MAX_VALUE;
+        int separator = value.indexOf('.');
+        return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
     }
 
     @Override
@@ -119,9 +129,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
                             @Override
                             public void onAfterCreated(@Nullable CefBrowser created) {
                                 if (created == null) return;
-                                // browser() publishes the initial viewport and invalidates the OSR surface on the EDT.
-                                // Do not release the constructor until that work has run. On slower ARM hosts the old
-                                // asynchronous attach let navigation finish before CEF received a usable view size.
+                                // Publish the browser and initial viewport atomically on the EDT.
                                 SwingUtilities.invokeLater(() -> {
                                     browser.set(created);
                                     nextPanel.browser(created);

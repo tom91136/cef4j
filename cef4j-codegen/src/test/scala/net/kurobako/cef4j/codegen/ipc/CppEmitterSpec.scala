@@ -41,8 +41,6 @@ class CppEmitterSpec extends munit.FunSuite {
 
   test("encodedSize for fixed+variable mix sums fixed bytes plus variable .size() expressions") {
     val src = CppEmitter.emit(mixedSpec)
-    // url string: 4 (len) + bytes; transitionType: 4; bool: 1; nonce: 8; digest: 4 (len) + bytes.
-    // Fixed sum = 4 + 4 + 1 + 8 + 4 = 21.
     assert(
       src.contains("return 21 + url.size() + digest.size();"),
       s"unexpected encodedSize body in:\n$src"
@@ -56,7 +54,6 @@ class CppEmitterSpec extends munit.FunSuite {
   }
 
   test("Specs.all produces both Java and C++ output without overlap") {
-    // Pure Scala check that emitting both sides for the same spec list doesn't error.
     val specs = Specs.all("net.kurobako.cef4j.ipc.protocol.gen")
     specs.foreach { s =>
       val cpp  = CppEmitter.emit(s)
@@ -68,12 +65,8 @@ class CppEmitterSpec extends munit.FunSuite {
     }
   }
 
-  /** If a system C++17 compiler is available, attempt to compile the emitted header to catch outright syntax errors.
-    * Skipped silently when no compiler is on PATH (e.g. CI containers without build-essential).
-    */
-  test("emitted header compiles via system C++17 compiler when one is available") {
-    val cxx = locateCxx()
-    assume(cxx.isDefined, "no g++/clang++ on PATH")
+  test("emitted header compiles via a system C++17 compiler") {
+    val cxx = locateCxx().getOrElse(fail("no g++/clang++ on PATH"))
 
     val tmp    = Files.createTempDirectory("cef4j-cppgen-")
     val header = tmp.resolve("LoadUrlRequest.h")
@@ -98,7 +91,7 @@ class CppEmitterSpec extends munit.FunSuite {
          |""".stripMargin
     )
 
-    val pb = new ProcessBuilder(cxx.get, "-std=c++17", "-Wall", "-Werror", "-o", outBin.toString, source.toString)
+    val pb = new ProcessBuilder(cxx, "-std=c++17", "-Wall", "-Werror", "-o", outBin.toString, source.toString)
     pb.directory(tmp.toFile)
     pb.redirectErrorStream(true)
     val proc      = pb.start()

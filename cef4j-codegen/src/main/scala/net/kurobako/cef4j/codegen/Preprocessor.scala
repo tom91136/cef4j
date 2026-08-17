@@ -96,8 +96,7 @@ object Preprocessor {
       |#endif
       |""".stripMargin
 
-  // Minimal POSIX header stubs so MSVC can cross-preprocess Linux/macOS CEF headers.
-  // The codegen only cares about type declarations, not actual POSIX implementations.
+  // MSVC needs declaration-only POSIX shims for cross-preprocessing.
   private val linuxShimHeaders: List[(String, String)] = List(
     "unistd.h" -> "#pragma once\n",
     "pthread.h" -> "#pragma once\ntypedef unsigned long pthread_t;\ntypedef union { char __size[56]; long __align; } pthread_mutex_t;\n"
@@ -136,22 +135,17 @@ object Preprocessor {
     val extraIncludes =
       (if (hasWindowsTarget(defines)) List(windowsShimIncludeDir) else Nil) ++
         (if (hasMacTarget(defines)) List(macShimIncludeDir) else Nil)
-    // When cross-preprocessing (e.g. Linux headers on a macOS host), the host
-    // compiler's built-in platform macros (__APPLE__, __linux__, etc.) must be
-    // undefined so that CEF's platform-guarded #includes resolve correctly.
-    // Only apply when a target platform is explicitly specified via OS_* defines.
+    // Explicit targets must override the host compiler's platform macros.
     val platformOverrides = {
       val hasLinux = defines.exists(d => d == "OS_LINUX" || d.startsWith("OS_LINUX="))
       val hasMac   = defines.exists(d => d == "OS_MAC" || d.startsWith("OS_MAC="))
       val hasWin   = defines.exists(d => d == "OS_WIN" || d.startsWith("OS_WIN="))
       if (!hasLinux && !hasMac && !hasWin) Nil
       else {
-        // Undefine host platform macros that don't match the target
         val undefs =
           (if (!hasMac) List("-U__APPLE__", "-U__MACH__") else Nil) ++
             (if (!hasLinux) List("-U__linux__", "-U__linux", "-U__gnu_linux__") else Nil) ++
             (if (!hasWin) List("-U_WIN32", "-U_WIN64") else Nil)
-        // Define target platform macros so cef_build.h resolves correctly
         val defs =
           (if (hasLinux) List("-D__linux__", "-D__linux", "-D__gnu_linux__") else Nil) ++
             (if (hasMac) List("-D__APPLE__", "-D__MACH__") else Nil) ++
@@ -168,15 +162,12 @@ object Preprocessor {
   }
 
   private def msvcCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] = {
-    val hasLinux = defines.exists(d => d == "OS_LINUX" || d.startsWith("OS_LINUX="))
-    val hasMac   = defines.exists(d => d == "OS_MAC" || d.startsWith("OS_MAC="))
-    // Include platform shim dirs for headers that don't exist on the host (Windows).
+    val hasLinux      = defines.exists(d => d == "OS_LINUX" || d.startsWith("OS_LINUX="))
+    val hasMac        = defines.exists(d => d == "OS_MAC" || d.startsWith("OS_MAC="))
     val extraIncludes =
       (if (hasLinux || hasMac) List(linuxShimIncludeDir) else Nil) ++
         (if (hasMac) List(macShimIncludeDir) else Nil)
-    // MSVC always defines _WIN32 and _MSC_VER. When cross-preprocessing
-    // Linux/macOS headers, we must undefine them and define the correct target
-    // platform + compiler macros so CEF's cef_build.h resolves correctly.
+    // MSVC built-ins must not leak into non-Windows target headers.
     val platformOverrides = {
       val hasWin = defines.exists(d => d == "OS_WIN" || d.startsWith("OS_WIN="))
       if (!hasLinux && !hasMac && !hasWin) Nil

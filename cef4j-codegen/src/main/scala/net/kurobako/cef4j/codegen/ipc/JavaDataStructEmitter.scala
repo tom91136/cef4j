@@ -1,12 +1,5 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a Java POJO per CEF by-value data struct (`cef_browser_settings_t` → `BrowserSettings`). Unlike MessageSpec,
-  * there's no message id — these aren't messages, they're values that ride inside other messages once dispatcher
-  * integration lands. The wire layout matches MessageSpec: same little-endian field order, length-prefixed strings.
-  *
-  * Output: an immutable Java class with a constructor taking every field, getters, `encodedSize`, `encodeInto` (writes
-  * the wire bytes), and a `DECODER` static. No `messageId()` since these never travel as standalone messages.
-  */
 object JavaDataStructEmitter {
 
   def emit(spec: DataStructSpec): String = {
@@ -71,15 +64,11 @@ object JavaDataStructEmitter {
        |""".stripMargin
   }
 
-  /** A mutable builder. Default values: 0 / false / "" / RemoteHandle.NULL. Each setter returns the builder for chained
-    * calls. CEF tends to use 0 / "" as a "use default" sentinel, so a `BrowserSettings.builder() .build()` instance
-    * hands the runtime server a request to use CEF's defaults for everything.
-    */
   private def renderBuilder(spec: DataStructSpec): String = {
     val cls     = spec.className
     val bFields =
       spec.fields.map(f => s"        private ${javaType(f.ty)} ${f.name} = ${defaultValue(f.ty)};").mkString("\n")
-    val setters   = spec.fields.map(renderSetter(cls)).mkString("\n\n")
+    val setters   = spec.fields.map(renderSetter).mkString("\n\n")
     val buildArgs = spec.fields.map(_.name).mkString(", ")
     s"""    /** Lombok-style builder. */
        |    public static final class Builder {
@@ -94,7 +83,7 @@ object JavaDataStructEmitter {
        |    }""".stripMargin
   }
 
-  private def renderSetter(cls: String)(f: FieldSpec): String = {
+  private def renderSetter(f: FieldSpec): String = {
     val annot = f.ty match {
       case FieldType.Utf8String | FieldType.Bytes | FieldType.RemoteHandle | FieldType.DataStruct(_) =>
         "@Nonnull "

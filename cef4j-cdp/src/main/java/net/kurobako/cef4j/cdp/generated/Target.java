@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Supports additional targets discovery and allows to attach to them.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Target.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Target {
     private Target() {}
@@ -2466,6 +2468,13 @@ public final class Target {
             return client.call("Target.createBrowserContext", params, CreateBrowserContextResult::fromMap);
         }
         /**
+         * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<CreateBrowserContextResult> createBrowserContext() {
+            return createBrowserContext(CreateBrowserContextParams.builder().build());
+        }
+        /**
          * Returns all browser contexts created with {@code Target.createBrowserContext} method.
          * @return a stage completing with the command result
          */
@@ -2489,6 +2498,13 @@ public final class Target {
             return client.call("Target.detachFromTarget", params, DetachFromTargetResult::fromMap);
         }
         /**
+         * Detaches session with given id.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DetachFromTargetResult> detachFromTarget() {
+            return detachFromTarget(DetachFromTargetParams.builder().build());
+        }
+        /**
          * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -2506,12 +2522,27 @@ public final class Target {
             return client.call("Target.getTargetInfo", params, GetTargetInfoResult::fromMap);
         }
         /**
+         * Returns information about a target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetTargetInfoResult> getTargetInfo() {
+            return getTargetInfo(GetTargetInfoParams.builder().build());
+        }
+        /**
          * Retrieves a list of available targets.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<GetTargetsResult> getTargets(GetTargetsParams params) {
             return client.call("Target.getTargets", params, GetTargetsResult::fromMap);
+        }
+        /**
+         * Retrieves a list of available targets.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetTargetsResult> getTargets() {
+            return getTargets(GetTargetsParams.builder().build());
         }
         /**
          * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.

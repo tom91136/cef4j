@@ -3,7 +3,6 @@ package net.kurobako.cef4j.codegen
 import java.nio.file.Files
 import java.nio.file.Path
 import scala.annotation.tailrec
-import scala.jdk.StreamConverters._
 
 case class HeaderMetadataIndex(
     handlerNames: Set[String],
@@ -81,14 +80,14 @@ object HeaderMetadataIndex {
   private def cppHeaders(dir: Path, extraCppDirs: List[String]): List[Path] =
     publicHeaderDirs(dir, extraCppDirs)
       .flatMap(headerDir =>
-        Files.list(headerDir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+        FileSystem.children(headerDir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
       )
       .sorted
 
   private def capiHeaders(dir: Path, extraCapiDirs: List[String]): List[Path] =
     publicCapiHeaderDirs(dir, extraCapiDirs)
       .flatMap(headerDir =>
-        Files.list(headerDir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+        FileSystem.children(headerDir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
       )
       .sorted
 
@@ -108,10 +107,9 @@ object HeaderMetadataIndex {
       lines.zipWithIndex.collect {
         case (line, j) if line.contains("source=client") =>
           lines.drop(j + 1)
-            .collectFirst {
-              case l if CppClassDeclRe.findFirstMatchIn(l).isDefined =>
-                cppNameToCapiName(CppClassDeclRe.findFirstMatchIn(l).get.group(1))
-            }
+            .collectFirst(Function.unlift(line =>
+              CppClassDeclRe.findFirstMatchIn(line).map(matched => cppNameToCapiName(matched.group(1)))
+            ))
       }.flatten
     }.toSet
 
@@ -122,7 +120,7 @@ object HeaderMetadataIndex {
       extractDocComments(lines, fileName)
     }
 
-    val capiAliases = entries.flatMap { case (name, text) =>
+    val capiAliases = entries.flatMap { case (_, text) =>
       val capiNamePattern = """capi_name=(\w+)""".r
       capiNamePattern.findFirstMatchIn(text).map(m => (m.group(1), text))
     }
@@ -137,12 +135,12 @@ object HeaderMetadataIndex {
   ): Map[String, String] = {
     val allHeaders = {
       val topLevel = publicHeaderDirs(cefIncludeDir, extraCppDirs).flatMap(dir =>
-        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
       )
       val capi        = capiHeaders(cefIncludeDir, extraCapiDirs)
       val internalDir = cefIncludeDir.resolve("internal")
       val internal    =
-        if (Files.exists(internalDir)) Files.list(internalDir).toScala(List).filter(_.toString.endsWith(".h")) else Nil
+        if (Files.exists(internalDir)) FileSystem.children(internalDir).filter(_.toString.endsWith(".h")) else Nil
       topLevel ++ capi ++ internal
     }
 
@@ -164,7 +162,6 @@ object HeaderMetadataIndex {
       val content = Files.readString(header)
       val lines   = content.linesIterator.toVector
 
-      // Track enclosing class by scanning brace depth
       case class ClassState(depth: Int, cls: String, clsDepth: Int)
       val classAtLine = lines
         .scanLeft(ClassState(0, "", 0)) { (s, raw) =>
@@ -185,7 +182,6 @@ object HeaderMetadataIndex {
         val name    = m.group(2).trim
         val params  = m.group(3).trim
 
-        // Find line index of this match to determine enclosing class
         val matchLine = content.substring(0, m.start).count(_ == '\n')
         val cls       = if (matchLine < classAtLine.length) classAtLine(matchLine) else ""
 
@@ -223,7 +219,7 @@ object HeaderMetadataIndex {
   private def parseStructFieldDocs(cefIncludeDir: Path): Map[String, Map[String, String]] = {
     val internalDir = cefIncludeDir.resolve("internal")
     val headers     = if (Files.exists(internalDir))
-      Files.list(internalDir).toScala(List).filter(_.toString.endsWith(".h"))
+      FileSystem.children(internalDir).filter(_.toString.endsWith(".h"))
     else Nil
 
     headers.flatMap { header =>
@@ -274,10 +270,8 @@ object HeaderMetadataIndex {
           val docLine = line.stripPrefix("///").trim
           docLine match {
             case BeginMarkerRe(suffix) =>
-              // Remaining doc text after BEGIN line becomes the next field's doc
               loop(idx + 1, docs, currentDoc, suffix.trim)
             case EndMarkerRe(_) =>
-              // Remaining doc text after END line becomes the next field's doc, clear section
               loop(idx + 1, docs, currentDoc, "")
             case _ =>
               val newDoc = if (currentDoc.isEmpty) docLine else s"$currentDoc $docLine"
@@ -319,12 +313,11 @@ object HeaderMetadataIndex {
     (fromClasses ++ fromWrappers).toMap
   }
 
-  private def extractDocComments(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+  private def extractDocComments(lines: Vector[String], fileName: String): List[(String, String)] = {
     def withSrc(comment: String, lineIdx: Int): String =
       if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
 
-    // Pre-compute the enclosing C++ class name at each line by scanning brace depth and class declarations.
-    // This avoids brace-counting drift when the main loop jumps over lines during comment collection.
+    // Precompute class scope because comment collection skips source lines.
     val classAtLine: Vector[String] = {
       case class State(depth: Int, cls: String, clsDepth: Int)
       lines
@@ -342,7 +335,6 @@ object HeaderMetadataIndex {
         .map(_.cls)
     }
 
-    // Emit both a qualified key ("CefBrowser::IsValid") and an unqualified key ("IsValid").
     def emitKeys(
         name: String,
         value: String,
@@ -400,7 +392,7 @@ object HeaderMetadataIndex {
     loop(0, Nil).reverse
   }
 
-  private def extractClassDocs(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+  private def extractClassDocs(lines: Vector[String], fileName: String): List[(String, String)] = {
     def withSrc(comment: String, lineIdx: Int): String =
       if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
 
@@ -432,7 +424,7 @@ object HeaderMetadataIndex {
     loop(0, Nil).reverse
   }
 
-  private def extractStructDocs(lines: Vector[String], fileName: String = ""): List[(String, String)] = {
+  private def extractStructDocs(lines: Vector[String], fileName: String): List[(String, String)] = {
     def withSrc(comment: String, lineIdx: Int): String =
       if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
 

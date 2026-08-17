@@ -1,18 +1,5 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a typed Java interface per JVM-owned visitor type (see {@link JvmVisitorSpec}). The interface mirrors the
-  * single-method shape of the underlying CEF callback struct (e.g. `cef_string_visitor_t::visit(text)`) plus a static
-  * `route(session, table)` helper that wires inbound `XxxCallbackEvent` frames to the visitor stored in the
-  * caller-supplied {@code JvmCallbackTable<T>} keyed by `callbackId`.
-  *
-  * Usage from caller code:
-  * {{{
-  *   JvmCallbackTable<CefStringVisitor> visitors = new JvmCallbackTable<>();
-  *   CefStringVisitor.route(session, visitors);
-  *   int callbackId = visitors.register(text -> System.out.println(text));
-  *   frame.getSource(new RemoteHandle(callbackId));   // runtime server synthesises cef_string_visitor_t bound to id
-  * }}}
-  */
 object JavaJvmVisitorEmitter {
 
   def emit(spec: JvmVisitorSpec): String = {

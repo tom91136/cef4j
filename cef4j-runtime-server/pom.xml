@@ -60,9 +60,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
-                    <!-- Generate C++ headers from Specs.scala (and AST-derived Dispatcher.h) into
-                         src/main/cpp/gen/ before CMake configures. The cef-include flag enables AST mode so
-                         the Dispatcher.h covering hundreds of methods gets emitted. -->
+                    <!-- Generate protocol and AST-derived C++ headers before CMake configures. -->
                     <execution>
                         <id>run-ipc-codegen-cpp</id>
                         <phase>generate-sources</phase>

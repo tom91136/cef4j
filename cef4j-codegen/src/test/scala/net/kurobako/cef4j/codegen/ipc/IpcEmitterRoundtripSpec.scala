@@ -1,16 +1,15 @@
 package net.kurobako.cef4j.codegen.ipc
 
-import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.nio.ByteBuffer
-import javax.tools.ForwardingJavaFileManager
+import java.nio.file.Files
 import javax.tools.JavaCompiler
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
-import javax.tools.StandardLocation
 import javax.tools.ToolProvider
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
+
+import net.kurobako.cef4j.codegen.FileSystem
 
 class IpcEmitterRoundtripSpec extends munit.FunSuite {
 
@@ -34,7 +33,6 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     val cls         = classes.get(spec.packageName + "." + spec.className)
     val handleClass = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.RemoteHandle")
 
-    // Construct: matches generated constructor (String, int, boolean, long, byte[], RemoteHandle)
     val script   = "alert('hello')"
     val timeout  = 5000
     val isAsync  = true
@@ -59,17 +57,14 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
       handle
     )
 
-    // encode
     val encodedSize = cls.getMethod("encodedSize").invoke(instance).asInstanceOf[Int]
     val buf         = ByteBuffer.allocate(encodedSize)
     cls.getMethod("encodeInto", classOf[ByteBuffer]).invoke(instance, buf)
     assertEquals(buf.position(), encodedSize, "encodeInto must write exactly encodedSize bytes")
     buf.flip()
 
-    // decode via static DECODER field
     val decoderField = cls.getField("DECODER").get(null)
-    // The DECODER is a lambda; its synthetic runtime class is not reflectively accessible. Invoke through
-    // the declared interface instead.
+    // Synthetic lambda classes must be invoked through their declared interface.
     val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
     val decodeMethod = decoderIface.getMethod("decode", classOf[ByteBuffer])
     val decoded      = decodeMethod.invoke(decoderField, buf)
@@ -106,8 +101,7 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     buf.flip()
 
     val decoderField = cls.getField("DECODER").get(null)
-    // The DECODER is a lambda; its synthetic runtime class is not reflectively accessible. Invoke through
-    // the declared interface instead.
+    // Synthetic lambda classes must be invoked through their declared interface.
     val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
     val decodeMethod = decoderIface.getMethod("decode", classOf[ByteBuffer])
     val decoded      = decodeMethod.invoke(decoderField, buf)
@@ -143,14 +137,7 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     assert(!source.contains("decode(const std::uint8_t* src, std::size_t len) noexcept"))
   }
 
-  // ---------------------------------------------------------------------------
-  // In-memory Java compilation harness.
-  //
-  // The generated code references {@code net.kurobako.cef4j.ipc.session.CefMessage*} and
-  // {@code javax.annotation.Nonnull}. cef4j-codegen has no compile dep on cef4j-remote-core (and can't
-  // — codegen builds first in the reactor). Instead we co-compile minimal stub interfaces here so the
-  // generated source is type-checkable in isolation.
-  // ---------------------------------------------------------------------------
+  // Co-compile stubs because codegen precedes remote-core in the reactor.
 
   private val stubSources: Map[String, String] = Map(
     "javax.annotation.Nonnull"                    -> "package javax.annotation; public @interface Nonnull {}",
@@ -191,32 +178,6 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
     override def getCharContent(ignoreEncoding: Boolean): CharSequence = code
   }
 
-  private final class InMemoryClass(name: String)
-      extends SimpleJavaFileObject(
-        URI.create(s"mem:///${name.replace('.', '/')}.class"),
-        JavaFileObject.Kind.CLASS
-      ) {
-    private val baos                                      = new ByteArrayOutputStream()
-    override def openOutputStream(): java.io.OutputStream = baos
-    def bytes: Array[Byte]                                = baos.toByteArray
-  }
-
-  private final class CapturingFileManager(
-      delegate: javax.tools.JavaFileManager,
-      captured: mutable.Map[String, InMemoryClass]
-  ) extends ForwardingJavaFileManager[javax.tools.JavaFileManager](delegate) {
-    override def getJavaFileForOutput(
-        location: javax.tools.JavaFileManager.Location,
-        className: String,
-        kind: JavaFileObject.Kind,
-        sibling: javax.tools.FileObject
-    ): JavaFileObject = {
-      val obj = new InMemoryClass(className)
-      captured.put(className, obj)
-      obj
-    }
-  }
-
   private final class InMemoryClassLoader(blobs: Map[String, Array[Byte]], parent: ClassLoader)
       extends ClassLoader(parent) {
     override def findClass(name: String): Class[?] =
@@ -226,9 +187,6 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
       }
   }
 
-  /** Compiles the given (FQN -> source) pairs together with the standing stub set, returns a class loader for the
-    * resulting classes.
-    */
   private final class CompiledClasses(loader: ClassLoader) {
     def get(fqn: String): Class[?] = loader.loadClass(fqn)
   }
@@ -243,15 +201,20 @@ class IpcEmitterRoundtripSpec extends munit.FunSuite {
       .toList
       .asJava
 
-    val captured = mutable.Map.empty[String, InMemoryClass]
-    val baseFm   = javac.getStandardFileManager(null, null, null)
-    val fm       = new CapturingFileManager(baseFm, captured)
+    val output = Files.createTempDirectory("cef4j-codegen-javac-")
+    try {
+      val fileManager = javac.getStandardFileManager(null, null, null)
+      val options     = List("-Xlint:none", "-d", output.toString).asJava
+      val ok          =
+        try javac.getTask(null, fileManager, null, options, null, sources).call()
+        finally fileManager.close()
+      if (!ok) fail("javac failed for emitted sources")
 
-    val task = javac.getTask(null, fm, null, java.util.Arrays.asList("-Xlint:none"), null, sources)
-    val ok   = task.call()
-    if (!ok) fail("javac failed for emitted sources")
-
-    val blobs = captured.iterator.map { case (name, mem) => name -> mem.bytes }.toMap
-    new CompiledClasses(new InMemoryClassLoader(blobs, getClass.getClassLoader))
+      val blobs = FileSystem.descendants(output).filter(_.toString.endsWith(".class")).map { path =>
+        val relative = output.relativize(path).toString.stripSuffix(".class").replace(java.io.File.separatorChar, '.')
+        relative -> Files.readAllBytes(path)
+      }.toMap
+      new CompiledClasses(new InMemoryClassLoader(blobs, getClass.getClassLoader))
+    } finally FileSystem.deleteTree(output)
   }
 }

@@ -1,14 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a Java source file implementing {@code CefMessageView} + {@code CefMessageEncoder} plus a static
-  * {@code DECODER} matching the layout spec.
-  *
-  * Output mirrors the hand-written shape of {@code LoadUrlRequest} / {@code OnLoadEndEvent} from Slice C, so the
-  * session layer needs no changes when generated types replace hand-written ones.
-  */
 object JavaEmitter {
 
-  /** Returns a complete Java compilation unit. */
   def emit(spec: MessageSpec): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
@@ -52,16 +45,17 @@ object JavaEmitter {
   private def renderImports(spec: MessageSpec): String = {
     val needsString = spec.fields.exists(f => f.ty == FieldType.Utf8String || f.ty == FieldType.StringList)
     val needsHandle = spec.fields.exists(_.ty == FieldType.RemoteHandle)
-    val builder     = List.newBuilder[String]
-    builder += "import java.nio.ByteBuffer;"
-    builder += "import java.nio.ByteOrder;"
-    if (needsString) builder += "import java.nio.charset.StandardCharsets;"
-    builder += "import javax.annotation.Nonnull;"
-    builder += "import net.kurobako.cef4j.ipc.session.CefMessageDecoder;"
-    builder += "import net.kurobako.cef4j.ipc.session.CefMessageEncoder;"
-    builder += "import net.kurobako.cef4j.ipc.session.CefMessageView;"
-    if (needsHandle) builder += "import net.kurobako.cef4j.ipc.session.RemoteHandle;"
-    builder.result().mkString("\n")
+    (
+      List("import java.nio.ByteBuffer;", "import java.nio.ByteOrder;") ++
+        Option.when(needsString)("import java.nio.charset.StandardCharsets;") ++
+        List(
+          "import javax.annotation.Nonnull;",
+          "import net.kurobako.cef4j.ipc.session.CefMessageDecoder;",
+          "import net.kurobako.cef4j.ipc.session.CefMessageEncoder;",
+          "import net.kurobako.cef4j.ipc.session.CefMessageView;"
+        ) ++
+        Option.when(needsHandle)("import net.kurobako.cef4j.ipc.session.RemoteHandle;")
+    ).mkString("\n")
   }
 
   private def javaType(ty: FieldType): String = ty match {
@@ -75,7 +69,6 @@ object JavaEmitter {
     case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
   }
 
-  /** {@code @Nonnull} only on reference-typed parameters. */
   private def constructorParam(field: FieldSpec): String =
     field.ty match {
       case FieldType.Utf8String | FieldType.Bytes | FieldType.StringList | FieldType.RemoteHandle |
@@ -88,7 +81,6 @@ object JavaEmitter {
     spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.Utf8String =>
-          // Cache the UTF-8 bytes so encodedSize() doesn't re-encode on every call.
           List(s"    private final String ${f.name};", s"    private final byte[] ${f.name}Bytes;")
         case _ =>
           List(s"    private final ${javaType(f.ty)} ${f.name};")
@@ -144,7 +136,6 @@ object JavaEmitter {
     case FieldType.Utf8String => Some(s"${field.name}Bytes.length")
     case FieldType.Bytes      => Some(s"${field.name}.length")
     case FieldType.StringList =>
-      // 4 bytes per element for the per-string length prefix + total UTF-8 byte count across all strings.
       Some(
         s"java.util.Arrays.stream(${field.name}).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum()"
       )
@@ -164,7 +155,6 @@ object JavaEmitter {
 
   private def renderEncodeInto(spec: MessageSpec): String = {
     val writes = spec.fields.flatMap(encodeWrite).mkString("\n")
-    // `__dst` keeps the parameter name from clashing with any CEF field that snakeToCamel might produce as `dst`.
     s"""    @Override
        |    public void encodeInto(@Nonnull ByteBuffer __dst) {
        |        ByteOrder originalOrder = __dst.order();
@@ -202,16 +192,12 @@ object JavaEmitter {
       )
     case FieldType.RemoteHandle  => List(s"            __dst.putInt(${field.name}.id());")
     case FieldType.DataStruct(_) =>
-      // The data struct's own encoder rides inline. ByteOrder is already LE on __dst; the nested encoder
-      // saves/restores its own buffer order.
       List(s"            ${field.name}.encodeInto(__dst);")
   }
 
   private def renderDecoder(spec: MessageSpec): String = {
     val reads = spec.fields.flatMap(decodeRead).mkString("\n")
     val args  = spec.fields.map(_.name).mkString(", ")
-    // Use `__buf` (double-underscore prefix) for the local ByteBuffer so it can't collide with a CEF field name —
-    // snakeToCamel never produces leading underscores.
     s"""    public static final CefMessageDecoder<${spec.className}> DECODER = payload -> {
        |        ByteBuffer __buf = payload.duplicate();
        |        __buf.order(ByteOrder.LITTLE_ENDIAN);

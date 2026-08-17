@@ -57,15 +57,12 @@ object RefineTree {
       decl: CefDecl,
       cppTypeInfo: Map[String, CppMethodTypeInfo]
   )(using ctx: Naming.Context): CefDecl = {
-    // Resolve the C++ class name for this struct (e.g., "cef_menu_model_t" -> "CefMenuModel")
-    val cppClassName = decl.namedStruct.flatMap(ctx.cppClassNames.get)
-    // Case-insensitive fallback lookup: pre-lower once per decl instead of scanning per function.
+    val cppClassName    = decl.namedStruct.flatMap(ctx.cppClassNames.get)
     lazy val lowerToKey = cppTypeInfo.keysIterator.map(k => k.toLowerCase -> k).toMap
 
     def recover(fn: FnPtr): FnPtr = {
-      val pascal   = Naming.toPascalCase(fn.name)
-      val capiName = fn.metaAttrs.collectFirst { case ("capi_name", n) => n }
-      // Prefer class-qualified lookup (e.g., "CefMenuModel::SetVisible") over unqualified
+      val pascal       = Naming.toPascalCase(fn.name)
+      val capiName     = fn.metaAttrs.collectFirst { case ("capi_name", n) => n }
       val qualifiedKey = cppClassName.map(cls => s"$cls::$pascal")
       val matchedKey   = qualifiedKey.filter(cppTypeInfo.contains)
         .orElse(cppTypeInfo.get(pascal).map(_ => pascal))
@@ -85,7 +82,6 @@ object RefineTree {
               case None          => p
             }
           }
-          // Store unqualified C++ method name (strip "ClassName::" prefix if present)
           val unqualifiedName = matchedKey.map(k =>
             k.lastIndexOf("::") match {
               case -1  => k
@@ -186,7 +182,6 @@ object RefineTree {
     case _                            => None
   }
 
-  /** Shared logic for promoting count_func params into a CountFuncArray return type. */
   private def promoteCountFunc(
       metaAttrs: List[(String, String)],
       params: List[Param],
@@ -212,9 +207,7 @@ object RefineTree {
                 )
                 None
             }
-          // CEF's C++ vector + count_func convention is flattened by the C API generator to a
-          // single cef_string_list_t parameter. It already carries its own size, so no promotion
-          // is needed and the absent synthetic count parameter is expected.
+          // cef_string_list_t already carries the flattened vector count.
           case (None, Some(Param(_, CType.StringList, _, _))) => None
           case _                                              =>
             System.err.println(

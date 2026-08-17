@@ -177,19 +177,6 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>fetch-cdp-schema</id>
-                        <phase>initialize</phase>
-                        <goals><goal>exec</goal></goals>
-                        <configuration>
-                            <executable>bash</executable>
-                            <arguments>
-                                <argument>${maven.multiModuleProjectDirectory}/scripts/fetch-cdp-schema.sh</argument>
-                                <argument>${cef.version}</argument>
-                                <argument>${cef.dist.cache}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>run-codegen</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -294,9 +281,8 @@
                             <includePluginDependencies>true</includePluginDependencies>
                             <mainClass>net.kurobako.cef4j.codegen.cdp.Main</mainClass>
                             <arguments>
-                                <argument>--browser-schema=${cef.dist.cache}/cdp-${cef.chromium.version}/browser_protocol.json</argument>
-                                <argument>--javascript-schema=${cef.dist.cache}/cdp-${cef.chromium.version}/js_protocol.json</argument>
-                                <argument>--schema-metadata=${cef.dist.cache}/cdp-${cef.chromium.version}/schema.properties</argument>
+                                <argument>--cef-version=${cef.version}</argument>
+                                <argument>--schema-cache=${cef.dist.cache}</argument>
                                 <argument>--out-java=${project.basedir}/../cef4j-cdp/src/main/java</argument>
                                 <argument>--out-resources=${project.basedir}/../cef4j-cdp/src/main/resources</argument>
                                 <argument>--java-package=net.kurobako.cef4j.cdp.generated</argument>
@@ -355,12 +341,13 @@
                                 <argument>--cef-version=${cef.version}</argument>
                                 <argument>--platform=${cef.platform}</argument>
                                 <argument>--archive=${cef.dist.cache}/cef_binary_${cef.version}_${cef.platform}_minimal.tar.bz2</argument>
+                                <argument>--bridge-directory=${project.build.directory}/cmake-build</argument>
                                 <argument>--cache=${cef.dist.cache}</argument>
                                 <argument>--offline</argument>
                                 <argument>--locales=en-US</argument>
                                 <argument>--without-swiftshader</argument>
                                 <argument>--skip-if-current</argument>
-                                <argument>--output=${project.basedir}/../cef4j-api/target/classes</argument>
+                                <argument>--output=${cef4j.reactor.runtime.root}</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -379,38 +366,6 @@
                 </dependencies>
             </plugin>
 
-            <!-- Stage only cef4j's JNI bridge and launcher. CEF itself is prepared above by
-                 the same runtime packager and classpath layout used by downstream applications. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>stage-reactor-classpath-bridge</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <!-- The classified platform JAR is attached at package. Staging into the API
-                                 output makes reactor tests exercise classpath extraction using this build's bridge. -->
-                            <outputDirectory>${project.basedir}/../cef4j-api/target/classes/native/${cef.platform}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/cmake-build</directory>
-                                    <includes>
-                                        <include>libcef4j.so</include>
-                                        <include>cef4j.dll</include>
-                                        <include>libcef4j.dylib</include>
-                                        <include>cef4j_launcher</include>
-                                        <include>cef4j_launcher.exe</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

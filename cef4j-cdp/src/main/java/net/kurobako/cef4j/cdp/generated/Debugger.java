@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc.
  * @see <a href="https://chromium.googlesource.com/v8/v8/+/3063ea3a0737a3fc4d4ed3babd595f1cace1e6ac/include/js_protocol.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Debugger {
     private Debugger() {}
@@ -4589,6 +4591,13 @@ public final class Debugger {
             return client.call("Debugger.enable", params, EnableResult::fromMap);
         }
         /**
+         * Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<EnableResult> enable() {
+            return enable(EnableParams.builder().build());
+        }
+        /**
          * Evaluates expression on a given call frame.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -4692,6 +4701,13 @@ public final class Debugger {
          */
         public CompletionStage<ResumeResult> resume(ResumeParams params) {
             return client.call("Debugger.resume", params, ResumeResult::fromMap);
+        }
+        /**
+         * Resumes JavaScript execution.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ResumeResult> resume() {
+            return resume(ResumeParams.builder().build());
         }
         /**
          * Searches for given string in script content.
@@ -4828,6 +4844,13 @@ public final class Debugger {
             return client.call("Debugger.stepInto", params, StepIntoResult::fromMap);
         }
         /**
+         * Steps into the function call.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StepIntoResult> stepInto() {
+            return stepInto(StepIntoParams.builder().build());
+        }
+        /**
          * Steps out of the function call.
          * @return a stage completing with the command result
          */
@@ -4841,6 +4864,13 @@ public final class Debugger {
          */
         public CompletionStage<StepOverResult> stepOver(StepOverParams params) {
             return client.call("Debugger.stepOver", params, StepOverResult::fromMap);
+        }
+        /**
+         * Steps over the statement.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StepOverResult> stepOver() {
+            return stepOver(StepOverParams.builder().build());
         }
         /**
          * Fired when breakpoint is resolved to an actual script and location. Deprecated in favor of {@code resolvedBreakpoints} in the {@code scriptParsed} event.

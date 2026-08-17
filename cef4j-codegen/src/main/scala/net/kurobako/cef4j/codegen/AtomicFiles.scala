@@ -7,16 +7,21 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 object AtomicFiles {
-  def writeString(target: Path, content: String): Unit = {
-    Files.createDirectories(target.getParent)
-    val temporary = Files.createTempFile(target.getParent, target.getFileName.toString, ".part")
+  def writeString(target: Path, content: String): Unit =
+    writeBytes(target, content.getBytes(StandardCharsets.UTF_8))
+
+  def writeBytes(target: Path, content: Array[Byte]): Unit = {
+    val parent = target.toAbsolutePath.normalize().getParent
+    FileSystem.createDirectories(parent)
+    val temporary = Files.createTempFile(parent, target.getFileName.toString, ".part")
     try {
-      Files.writeString(temporary, content, StandardCharsets.UTF_8)
-      try Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
-      catch {
+      val _ = Files.write(temporary, content)
+      try {
+        val _ = Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+      } catch {
         case _: AtomicMoveNotSupportedException =>
-          Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING)
+          val _ = Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING)
       }
-    } finally Files.deleteIfExists(temporary)
+    } finally FileSystem.deleteIfExists(temporary)
   }
 }

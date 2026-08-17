@@ -109,7 +109,7 @@ final class FxWebViewRuntimeTestSupport {
         // error by attempting to start JavaFX from the shutdown path.
         if (!started) return;
         try {
-            if (isCefCompatHarness() && net.kurobako.cef4j.test.CefTestLifecycle.explicitShutdownSafe()) {
+            if (isCefCompatHarness()) {
                 drainJavaFx();
                 Cef.INSTANCE.terminate();
             }

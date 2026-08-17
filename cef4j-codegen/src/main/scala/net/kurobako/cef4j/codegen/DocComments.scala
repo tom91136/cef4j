@@ -15,7 +15,6 @@ object DocComments {
 
   private val CefMetaPattern = """--cef\(([^)]*)\)--""".r
 
-  /** Find a doc entry qualified by C++ class where capi_name matches the given alias. */
   private def findByCapiAlias(
       cppClassName: Option[String],
       docs: Map[String, String],
@@ -29,7 +28,6 @@ object DocComments {
           text
       }
     }
-  // Matches any HTML-like tag: <tag>, </tag>, <tag/>, <tag attr=val>
   private val AnyTagLiteralRe = """<(/?[A-Za-z][A-Za-z0-9:_-]*(?:/|\s[^>]*)?)>""".r
 
   def baseContext(cefMajor: Int, cefMinor: Int): Context =
@@ -41,16 +39,15 @@ object DocComments {
       .replace("<", "&lt;")
       .replace(">", "&gt;")
 
-  // Convert a C++ header filename to its Doxygen URL. Doxygen uses only the filename
-  // (no directory) and replaces _ with __ and . with _8.
-  private def doxygenUrl(headerFile: String)(using context: Context): String = {
-    if (context.docsBaseUrl.isEmpty) return ""
-    val baseName = headerFile.replace("\\", "/").split("/").last
-    val doxyName = baseName
-      .replace("_", "__")
-      .replace(".", "_8") + ".html"
-    s"${context.docsBaseUrl}/$doxyName"
-  }
+  // Doxygen doubles underscores and encodes dots in header URLs.
+  private def doxygenUrl(headerFile: String)(using context: Context): String =
+    Option.when(context.docsBaseUrl.nonEmpty) {
+      val baseName = headerFile.replace("\\", "/").split("/").last
+      val doxyName = baseName
+        .replace("_", "__")
+        .replace(".", "_8") + ".html"
+      s"${context.docsBaseUrl}/$doxyName"
+    }.getOrElse("")
 
   def withEnumConstants(context: Context, enums: List[CefDecl.Enum])(using Naming.Context): Context =
     context.copy(enumConstantMap = enums.flatMap { e =>
@@ -64,7 +61,6 @@ object DocComments {
       }
     }.toMap)
 
-  // Resolve a C enum constant name to its fully qualified Java form.
   def resolveEnumConstant(cConstName: String)(using context: Context): String =
     context.enumConstantMap.get(cConstName) match {
       case Some(qualified) => qualified.replace('#', '.')
@@ -101,8 +97,6 @@ object DocComments {
     )
   }
 
-  // Resolve a method cross-reference to a Javadoc link when the target signature is known.
-  // Uses the fully-qualified Java class name so cross-package references resolve correctly.
   private def resolveMethodLink(javaClass: String, javaMethod: String)(using context: Context): String = {
     val fqn = context.javaClassFqnMap.getOrElse(javaClass, javaClass)
     context.methodSigMap.get((javaClass, javaMethod)) match {
@@ -116,9 +110,7 @@ object DocComments {
 
   private val PipeRefRe = """\|([^|]+)\|""".r
 
-  // Correct typos in |pipeRefs| where the referenced name is one Levenshtein edit away from an actual
-  // parameter name. CEF headers occasionally contain typos (e.g. |identifer| for identifier) that would
-  // otherwise trip Error Prone's InvalidParam check on the emitted {@code ...} javadoc reference.
+  // Repair one-edit CEF parameter typos before Error Prone validates Javadoc.
   private def correctPipeRefTypos(text: String, paramNames: List[String]): String =
     if (paramNames.isEmpty) text
     else PipeRefRe.replaceAllIn(
@@ -255,7 +247,6 @@ object DocComments {
     current.fold(joined)(joined :+ _)
   }
 
-  // Convert CEF C++ doc comment syntax to Javadoc syntax.
   def convertCefDoc(
       text: String,
       capiSource: String = "",
@@ -390,18 +381,17 @@ object DocComments {
   private val SeeMarkerRe = """@_see:(.+)""".r
 
   def extractSourceTags(text: String): (String, List[String]) = {
-    val lines   = text.linesIterator.toList
-    val seeTags = List.newBuilder[String]
-    val clean   = lines.flatMap { line =>
-      SeeMarkerRe.findFirstMatchIn(line) match {
-        case Some(m) => seeTags += m.group(1); None
-        case None    => Some(line)
-      }
+    val (clean, seeTags) = text.linesIterator.foldLeft((List.empty[String], List.empty[String])) {
+      case ((lines, tags), line) =>
+        SeeMarkerRe.findFirstMatchIn(line) match {
+          case Some(matched) => lines           -> (tags :+ matched.group(1))
+          case None          => (lines :+ line) -> tags
+        }
     }
-    (clean.mkString("\n"), seeTags.result())
+    (clean.mkString("\n"), seeTags)
   }
 
-  def cPrototypeForMethod(structName: String, fn: FnPtr)(using Naming.Context): String = {
+  def cPrototypeForMethod(structName: String, fn: FnPtr): String = {
     val ret       = cReturnType(fn.ret)
     val self      = s"struct _$structName* self"
     val params    = fn.params.map(cParamDecl).mkString(", ")
@@ -409,24 +399,24 @@ object DocComments {
     s"$ret (CEF_CALLBACK* ${fn.name})($allParams);"
   }
 
-  def cPrototypeForFreeFunction(ff: CefDecl.FreeFunction)(using Naming.Context): String = {
+  def cPrototypeForFreeFunction(ff: CefDecl.FreeFunction): String = {
     val ret    = cReturnType(ff.ret)
     val params = if (ff.params.isEmpty) "void" else ff.params.map(cParamDecl).mkString(", ")
     s"CEF_EXPORT $ret ${ff.cName}($params);"
   }
 
-  def cPrototypeForStruct(structName: String, hasBase: Boolean)(using Naming.Context): String = {
+  def cPrototypeForStruct(structName: String, hasBase: Boolean): String = {
     val base = if (hasBase) "\n  cef_base_ref_counted_t base;\n  ...\n" else "\n  ...\n"
     s"typedef struct _$structName {$base} $structName;"
   }
 
-  private def cReturnType(ct: CType)(using Naming.Context): String = ct match {
+  private def cReturnType(ct: CType): String = ct match {
     case CType.JString => "cef_string_userfree_t"
     case CType.Bool    => "int"
     case other         => Naming.cType(other)
   }
 
-  private def cParamDecl(p: Param)(using Naming.Context): String = {
+  private def cParamDecl(p: Param): String = {
     val cType = if (p.rawCType.nonEmpty) p.rawCType else Naming.cType(p.typ)
     s"$cType ${p.name}"
   }
@@ -437,7 +427,7 @@ object DocComments {
     s"typedef enum {\n$members$ellipsis\n} $cefName;"
   }
 
-  def cPrototypeForDataStruct(d: CefDecl.DataStruct)(using Naming.Context): String = {
+  def cPrototypeForDataStruct(d: CefDecl.DataStruct): String = {
     val fields = d.fields.map { f =>
       val cType = Naming.cType(f.typ)
       s"  $cType ${f.name};"
@@ -476,10 +466,8 @@ object DocComments {
     if (bufferParams.isEmpty) Nil
     else {
       val hiddenSizes = params.filter(isBufferSizeParam)
-      // Use snake_case (C API) names in the note so Error Prone's InvalidParam fuzzy-match doesn't
-      // mis-flag these hidden size names as typos of similarly-named Java parameters.
-      val sizeNames = hiddenSizes.map(p => s"{@code ${p.name}}").mkString(", ")
-      // Detect array-count params: a SizeT named <array>Count immediately before an ObjectPtrArray/ByValueArray.
+      // Snake-case hidden names avoid Error Prone's parameter typo heuristic.
+      val sizeNames       = hiddenSizes.map(p => s"{@code ${p.name}}").mkString(", ")
       val arrayCountNames = params.zip(params.drop(1)).collect {
         case (count, arr)
             if (count.typ == CType.SizeT || count.typ == CType.OutPrimitivePtr(CType.SizeT)) &&
@@ -497,8 +485,7 @@ object DocComments {
           case _                        => false
         })
       )
-      // Only emit fread/fwrite note when remaining size params look like the actual fread convention
-      // (param named "n" - the element count in fread(ptr, size, n, stream)).
+      // Only `n` identifies the fread-style hidden count convention.
       val freadParams = remainingSizeParams.filter(p => p.name.toLowerCase == "n")
       val freadNote   = if (freadParams.nonEmpty) {
         val names = freadParams.map(p => s"{@code ${Naming.toCamelCase(p.name)}}").mkString(", ")
@@ -541,7 +528,7 @@ object DocComments {
         val convertedText            = convertCefDoc(paramCorrectedText, capiSource, cPrototype)
         val (docText, sourceRefTags) = extractSourceTags(convertedText)
 
-        val metaSentences = metaAttrsToSentences(metaAttrs, fn)
+        val metaSentences = metaAttrsToSentences(metaAttrs)
 
         val docLines      = docText.linesIterator.filter(_.nonEmpty).toList
         val countFuncNote = fn.ret match {
@@ -599,7 +586,6 @@ ${sections.mkString("\n")}
     }
   }
 
-  // Extract --cef(...)-- meta attributes as key/value pairs, preserving repeated keys.
   def extractAttrsList(docText: String): List[(String, String)] =
     CefMetaPattern.findAllMatchIn(docText)
       .flatMap(m => parseMetaAttrs(m.group(1)))
@@ -620,7 +606,7 @@ ${sections.mkString("\n")}
       }
     }
 
-  private def metaAttrsToSentences(attrs: List[(String, String)], fn: FnPtr): List[String] =
+  private def metaAttrsToSentences(attrs: List[(String, String)]): List[String] =
     attrs.flatMap {
       case ("count_func", _) =>
         None

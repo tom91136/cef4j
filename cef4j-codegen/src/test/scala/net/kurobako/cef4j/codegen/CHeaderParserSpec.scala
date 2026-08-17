@@ -14,7 +14,8 @@ class CHeaderParserSpec extends munit.FunSuite {
 
   test("parses object struct function pointers") {
     val decls   = CHeaderParser.parse(browserStub, handlerNames = Set.empty)
-    val browser = decls.collectFirst { case s: CefDecl.ObjectStruct => s }.get
+    val browser = decls.collectFirst { case struct: CefDecl.ObjectStruct => struct }
+      .getOrElse(fail("object struct not found"))
     assertEquals(browser.name, "cef_browser_t")
     assertEquals(browser.fns.map(_.name), List("is_valid", "go_back", "get_url"))
   }

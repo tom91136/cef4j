@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * A domain for letting clients substitute browser&#x27;s network layer with client code.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Fetch.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Fetch {
     private Fetch() {}
@@ -1413,6 +1415,13 @@ public final class Fetch {
          */
         public CompletionStage<EnableResult> enable(EnableParams params) {
             return client.call("Fetch.enable", params, EnableResult::fromMap);
+        }
+        /**
+         * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<EnableResult> enable() {
+            return enable(EnableParams.builder().build());
         }
         /**
          * Causes the request to fail with specified reason.

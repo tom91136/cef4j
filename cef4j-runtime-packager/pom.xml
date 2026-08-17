@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Aggregated by the root build, but versioned and released independently from the CEF-major bridge. -->
     <groupId>net.kurobako.cef4j</groupId>
     <artifactId>cef4j-runtime-packager</artifactId>
     <version>0.1.0-SNAPSHOT</version>
@@ -38,7 +37,6 @@
         <jackson.version>2.22.2</jackson.version>
         <junit.version>5.14.4</junit.version>
         <assertj.version>3.27.7</assertj.version>
-        <!-- A bridge release aggregates this project for normal builds but must never deploy it. -->
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 

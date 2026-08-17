@@ -5,18 +5,17 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
-import java.util.Properties
-import scala.collection.mutable
+import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
-import scala.jdk.StreamConverters.*
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import net.kurobako.cef4j.codegen.AtomicFiles
+import net.kurobako.cef4j.codegen.Banners
+import net.kurobako.cef4j.codegen.FileSystem
+import upickle.default.read
+import upickle.default.write
 
-/** Generates cef4j's map-backed Java CDP API from pinned Chromium protocol JSON files. */
+/** Generates cef4j's map-backed Java CDP API from pinned Chromium protocol schemas. */
 object Main {
-  private val mapper       = ObjectMapper()
   private val javaKeywords = Set(
     "abstract",
     "assert",
@@ -82,6 +81,8 @@ object Main {
       browserSchema: Path = Paths.get("browser_protocol.json"),
       javascriptSchema: Path = Paths.get("js_protocol.json"),
       schemaMetadata: Path = Paths.get("schema.properties"),
+      cefVersion: Option[String] = None,
+      schemaCache: Option[Path] = None,
       outJava: Path = Paths.get("."),
       outResources: Path = Paths.get("."),
       javaPackage: String = "net.kurobako.cef4j.cdp.generated"
@@ -89,32 +90,46 @@ object Main {
 
   private case class Resolved(javaType: String, kind: String)
 
-  def main(args: Array[String]): Unit = generate(parseArgs(args.toList))
+  def main(args: Array[String]): Unit = {
+    val parsed = parseArgs(args.toList)
+    val config = (parsed.cefVersion, parsed.schemaCache) match {
+      case (Some(cefVersion), Some(cache)) =>
+        val schema = SchemaFetcher.fetch(cefVersion, cache)
+        parsed.copy(
+          browserSchema = schema.browser,
+          javascriptSchema = schema.javascript,
+          schemaMetadata = schema.metadata
+        )
+      case (None, None) => parsed
+      case _            => throw IllegalArgumentException("--cef-version and --schema-cache must be specified together")
+    }
+    generate(config)
+  }
 
   private def generate(cfg: Config): Unit = {
-    val browser = mapper.readTree(cfg.browserSchema.toFile)
-    val js      = mapper.readTree(cfg.javascriptSchema.toFile)
-    val props   = Properties()
-    val reader  = Files.newBufferedReader(cfg.schemaMetadata, StandardCharsets.UTF_8)
-    try props.load(reader)
-    finally reader.close()
+    val browser = readProtocol(cfg.browserSchema)
+    val js      = readProtocol(cfg.javascriptSchema)
+    val props   = Files.readAllLines(cfg.schemaMetadata, StandardCharsets.UTF_8).asScala.toList
+      .map(_.trim)
+      .filter(line => line.nonEmpty && !line.startsWith("#") && !line.startsWith("!"))
+      .map { line =>
+        val separator = line.indexWhere(char => char == '=' || char == ':')
+        if (separator < 1) throw IllegalArgumentException(s"Invalid schema property: $line")
+        line.substring(0, separator).trim -> line.substring(separator + 1).trim
+      }.toMap
 
     val chromiumVersion = requiredProperty(props, "chromium.version")
     val v8Revision      = requiredProperty(props, "v8.revision")
-    val protocol        = mapper.createObjectNode()
-    protocol.set[JsonNode]("version", browser.path("version").deepCopy())
-    val mergedDomains = protocol.putArray("domains")
-    elements(browser.path("domains")).foreach(mergedDomains.add)
-    elements(js.path("domains")).foreach(mergedDomains.add)
+    val protocol        = Protocol(browser.version, browser.domains ++ js.domains)
 
-    val schemaBytes = (prettyJson(protocol) + "\n").getBytes(StandardCharsets.UTF_8)
+    val schemaBytes = (write(protocol, indent = 2) + "\n").getBytes(StandardCharsets.UTF_8)
     val fingerprint = MessageDigest.getInstance("SHA-256").digest(schemaBytes).map("%02x".format(_)).mkString
     val output      = cfg.outJava.resolve(cfg.javaPackage.replace('.', '/'))
     val resources   = cfg.outResources.resolve("META-INF/cef4j/cdp")
     cleanDirectory(output)
-    Files.createDirectories(output)
-    Files.createDirectories(resources)
-    Files.write(resources.resolve("protocol.json"), schemaBytes)
+    FileSystem.createDirectories(output)
+    FileSystem.createDirectories(resources)
+    AtomicFiles.writeBytes(resources.resolve("protocol.json"), schemaBytes)
     AtomicFiles.writeString(
       resources.resolve("schema.properties"),
       s"""chromium.version=$chromiumVersion
@@ -126,14 +141,19 @@ object Main {
          |""".stripMargin
     )
 
-    val domains        = elements(protocol.path("domains"))
-    val browserDomains = elements(browser.path("domains")).map(_.path("domain").asText()).toSet
+    val domains        = protocol.domains
+    val browserDomains = browser.domains.map(_.domain).toSet
     val types          = domains.flatMap(domain =>
-      elements(domain.path("types")).map(item => (domain.path("domain").asText(), item.path("id").asText()) -> item)
+      domain.types.map(item =>
+        (domain.domain, item.id.getOrElse(throw IllegalArgumentException("CDP type without id"))) -> item
+      )
     ).toMap
-    val emitter = Emitter(cfg.javaPackage, chromiumVersion, v8Revision, browserDomains, types)
+    val banners = cfg.cefVersion
+      .map(Banners.forCefVersion)
+      .getOrElse(Banners.forCommand("mvn generate-sources -pl cef4j-platform"))
+    val emitter = Emitter(cfg.javaPackage, chromiumVersion, v8Revision, browserDomains, types, banners)
     domains.foreach(domain =>
-      AtomicFiles.writeString(output.resolve(s"${domain.path("domain").asText()}.java"), emitter.emitDomain(domain))
+      AtomicFiles.writeString(output.resolve(s"${domain.domain}.java"), emitter.emitDomain(domain))
     )
     AtomicFiles.writeString(output.resolve("CdpDomains.java"), emitter.emitDomains(domains))
     println(s"cef4j CDP codegen complete: ${domains.size} domains for Chromium $chromiumVersion")
@@ -144,7 +164,8 @@ object Main {
       chromiumVersion: String,
       v8Revision: String,
       browserDomains: Set[String],
-      types: Map[(String, String), JsonNode]
+      types: Map[(String, String), Item],
+      banners: Banners
   ) {
     private def cap(name: String): String = {
       val value = name.replaceAll("[^A-Za-z0-9_$$]", "_")
@@ -160,60 +181,62 @@ object Main {
     private def modelName(domain: String, name: String): String =
       if (cap(name) == domain) s"${cap(name)}Value" else cap(name)
 
-    private def resolve(domain: String, spec: JsonNode, seen: Set[(String, String)] = Set.empty): Resolved =
-      if (spec.has("$ref")) {
-        val ref   = spec.path("$ref").asText()
-        val parts = ref.split("\\.", 2)
-        val key   = if (parts.length == 2) parts(0) -> parts(1) else domain -> parts(0)
-        types.get(key) match {
-          case None                      => Resolved("Object", "any")
-          case Some(target) if seen(key) => Resolved(s"${key._1}.${modelName(key._1, key._2)}", "model")
-          case Some(target) if target.path("type").asText() == "object" && target.path("properties").size() > 0 =>
-            Resolved(s"${key._1}.${modelName(key._1, key._2)}", "model")
-          case Some(target) => resolve(key._1, target, seen + key)
-        }
-      } else if (spec.path("type").asText("any") == "array") {
-        val inner = resolve(domain, spec.path("items"), seen)
-        Resolved(s"java.util.List<${inner.javaType}>", s"list:${inner.kind}:${inner.javaType}")
-      } else
-        spec.path("type").asText("any") match {
-          case "string" | "binary" => Resolved("String", "string")
-          case "integer"           => Resolved("Long", "integer")
-          case "number"            => Resolved("Double", "number")
-          case "boolean"           => Resolved("Boolean", "boolean")
-          case "object"            => Resolved("java.util.Map<String, Object>", "object")
-          case _                   => Resolved("Object", "any")
-        }
+    private def resolve(domain: String, spec: Item, seen: Set[(String, String)] = Set.empty): Resolved =
+      spec.reference match {
+        case Some(ref) =>
+          val parts = ref.split("\\.", 2)
+          val key   = if (parts.length == 2) parts(0) -> parts(1) else domain -> parts(0)
+          types.get(key) match {
+            case None                 => Resolved("Object", "any")
+            case Some(_) if seen(key) => Resolved(s"${key._1}.${modelName(key._1, key._2)}", "model")
+            case Some(target) if target.kind.contains("object") && target.properties.nonEmpty =>
+              Resolved(s"${key._1}.${modelName(key._1, key._2)}", "model")
+            case Some(target) => resolve(key._1, target, seen + key)
+          }
+        case None if spec.kind.contains("array") =>
+          val inner = resolve(domain, spec.items.getOrElse(Item()), seen)
+          Resolved(s"java.util.List<${inner.javaType}>", s"list:${inner.kind}:${inner.javaType}")
+        case None =>
+          spec.kind.getOrElse("any") match {
+            case "string" | "binary" => Resolved("String", "string")
+            case "integer"           => Resolved("Long", "integer")
+            case "number"            => Resolved("Double", "number")
+            case "boolean"           => Resolved("Boolean", "boolean")
+            case "object"            => Resolved("java.util.Map<String, Object>", "object")
+            case _                   => Resolved("Object", "any")
+          }
+      }
 
     private def decode(
         domain: String,
-        spec: JsonNode,
+        spec: Item,
         source: String,
         depth: Int = 0,
         seen: Set[(String, String)] = Set.empty
     ): String =
-      if (spec.has("$ref")) {
-        val parts = spec.path("$ref").asText().split("\\.", 2)
-        val key   = if (parts.length == 2) parts(0) -> parts(1) else domain -> parts(0)
-        types.get(key) match {
-          case None => source
-          case Some(target) if target.path("type").asText() == "object" && target.path("properties").size() > 0 =>
-            s"${resolve(domain, spec).javaType}.fromMap(objectMap($source))"
-          case Some(_) if seen(key) => source
-          case Some(target)         => decode(key._1, target, source, depth, seen + key)
-        }
-      } else {
-        resolve(domain, spec).kind match {
-          case "string"                         => s"(String) $source"
-          case "boolean"                        => s"(Boolean) $source"
-          case "integer"                        => s"numberAsLong($source)"
-          case "number"                         => s"numberAsDouble($source)"
-          case "object"                         => s"objectMap($source)"
-          case kind if kind.startsWith("list:") =>
-            val variable = s"element$depth"
-            s"list($source, $variable -> ${decode(domain, spec.path("items"), variable, depth + 1, seen)})"
-          case _ => source
-        }
+      spec.reference match {
+        case Some(reference) =>
+          val parts = reference.split("\\.", 2)
+          val key   = if (parts.length == 2) parts(0) -> parts(1) else domain -> parts(0)
+          types.get(key) match {
+            case None                                                                         => source
+            case Some(target) if target.kind.contains("object") && target.properties.nonEmpty =>
+              s"${resolve(domain, spec).javaType}.fromMap(objectMap($source))"
+            case Some(_) if seen(key) => source
+            case Some(target)         => decode(key._1, target, source, depth, seen + key)
+          }
+        case None =>
+          resolve(domain, spec).kind match {
+            case "string"                         => s"(String) $source"
+            case "boolean"                        => s"(Boolean) $source"
+            case "integer"                        => s"numberAsLong($source)"
+            case "number"                         => s"numberAsDouble($source)"
+            case "object"                         => s"objectMap($source)"
+            case kind if kind.startsWith("list:") =>
+              val variable = s"element$depth"
+              s"list($source, $variable -> ${decode(domain, spec.items.getOrElse(Item()), variable, depth + 1, seen)})"
+            case _ => source
+          }
       }
 
     private def normalizeDoc(text: String): String = {
@@ -223,122 +246,126 @@ object Main {
     }
 
     private def javadoc(
-        spec: JsonNode,
+        spec: Item,
         indent: String,
-        fallback: String = "",
-        params: List[(String, String)] = Nil,
-        returns: Option[String] = None
+        fallback: String,
+        params: List[(String, String)],
+        returns: Option[String]
     ): List[String] = {
-      val text =
-        Option(spec.get("description")).map(_.asText()).filter(_.nonEmpty).getOrElse(fallback).replace("*/", "*&#47;")
+      val text       = spec.description.filter(_.nonEmpty).getOrElse(fallback).replace("*/", "*&#47;")
       val paragraphs = text.split("\\n\\s*\\n").iterator.map(_.trim).filter(_.nonEmpty).map(normalizeDoc).toList
-      val lines      = mutable.ListBuffer(indent + "/**")
-      paragraphs.zipWithIndex.foreach { case (paragraph, index) =>
-        lines += s"$indent * ${if (index == 0) "" else "<p>"}$paragraph"
-      }
-      if (spec.path("experimental").asBoolean(false))
-        lines += s"$indent * <p><b>Experimental:</b> this part of CDP may change without notice."
-      params.foreach { case (name, description) =>
-        lines += s"$indent * @param $name ${normalizeDoc(if (description.nonEmpty) description else "protocol value")}"
-      }
-      returns.foreach(value => lines += s"$indent * @return ${normalizeDoc(value)}")
-      if (spec.path("deprecated").asBoolean(false))
-        lines += s"$indent * @deprecated Deprecated by the Chromium DevTools Protocol."
-      lines += s"$indent */"
-      lines.toList
+      List(indent + "/**") ++
+        paragraphs.zipWithIndex.map { case (paragraph, index) =>
+          s"$indent * ${if (index == 0) "" else "<p>"}$paragraph"
+        } ++
+        Option.when(spec.experimental)(
+          s"$indent * <p><b>Experimental:</b> this part of CDP may change without notice."
+        ) ++
+        params.map { case (name, description) =>
+          s"$indent * @param $name ${normalizeDoc(if (description.nonEmpty) description else "protocol value")}"
+        } ++
+        returns.map(value => s"$indent * @return ${normalizeDoc(value)}") ++
+        Option.when(spec.deprecated)(s"$indent * @deprecated Deprecated by the Chromium DevTools Protocol.") ++
+        List(s"$indent */")
     }
 
-    private def deprecated(spec: JsonNode, indent: String): List[String] =
-      if (spec.path("deprecated").asBoolean(false)) List(s"${indent}@Deprecated") else Nil
+    private def deprecated(spec: Item, indent: String): List[String] =
+      if (spec.deprecated) List(s"${indent}@Deprecated") else Nil
 
-    private def enumConstants(name: String, values: JsonNode, indent: String = "    ", spec: JsonNode): List[String] = {
-      val lines = mutable.ListBuffer.from(javadoc(spec, indent, s"Wire values for $name."))
-      lines ++= deprecated(spec, indent)
-      lines ++= List(s"${indent}public static final class $name {", s"$indent    private $name() {}")
-      val used = mutable.Set.empty[String]
-      elements(values).foreach { valueNode =>
-        val value = valueNode.asText()
-        val raw   = value.replaceAll("[^A-Za-z0-9]", "_").toUpperCase.stripPrefix("_").stripSuffix("_") match {
+    private def enumConstants(name: String, values: List[String], indent: String = "    ", spec: Item): List[String] = {
+      @tailrec
+      def available(base: String, used: Set[String], suffix: Int = 1): String = {
+        val candidate = if (suffix == 1) base else s"${base}_$suffix"
+        if (used(candidate)) available(base, used, suffix + 1) else candidate
+      }
+
+      val (_, constants) = values.foldLeft(Set.empty[String] -> List.empty[String]) { case ((used, lines), value) =>
+        val raw = value.replaceAll("[^A-Za-z0-9]", "_").toUpperCase.stripPrefix("_").stripSuffix("_") match {
           case "" => "EMPTY"
           case v  => v
         }
         val base      = if (raw.head.isDigit) s"_$raw" else raw
-        var candidate = base
-        var suffix    = 2
-        while (used(candidate)) { candidate = s"${base}_$suffix"; suffix += 1 }
-        used += candidate
-        lines += s"$indent    public static final String $candidate = ${mapper.writeValueAsString(value)};"
+        val candidate = available(base, used)
+        (used + candidate) -> (lines :+ s"$indent    public static final String $candidate = ${jsonString(value)};")
       }
-      lines += s"$indent}"
-      lines.toList
+      javadoc(spec, indent, s"Wire values for $name.", Nil, None) ++
+        deprecated(spec, indent) ++
+        List(s"${indent}public static final class $name {", s"$indent    private $name() {}") ++
+        constants ++
+        List(s"$indent}")
     }
 
     private def model(
         name: String,
         domain: String,
-        properties: JsonNode,
-        spec: JsonNode,
+        properties: List[Item],
+        spec: Item,
         fallback: String
     ): List[String] = {
-      val props = elements(properties)
-      val lines = mutable.ListBuffer.from(javadoc(spec, "    ", fallback))
-      lines ++= deprecated(spec, "    ")
-      lines ++= List(
-        s"    public static final class $name extends CdpObject {",
-        s"        private $name(Map<String, Object> values) { super(values); }",
-        s"        @Nullable public static $name fromMap(@Nullable Map<String, Object> values) {",
-        s"            return values == null ? null : new $name(values);",
-        "        }",
-        "        public static Builder builder() { return new Builder(); }"
-      )
-      props.foreach { prop =>
-        val javaType = resolve(domain, prop).javaType
-        val accessor = ident(prop.path("name").asText())
-        lines ++= javadoc(
+      val props     = properties
+      val accessors = props.flatMap { prop =>
+        val javaType  = resolve(domain, prop).javaType
+        val fieldName = prop.name.getOrElse(throw IllegalArgumentException("CDP property without name"))
+        val accessor  = ident(fieldName)
+        javadoc(
           prop,
           "        ",
-          s"Returns the ${prop.path("name").asText()} field.",
-          returns = Some("the protocol field value")
-        )
-        lines ++= deprecated(prop, "        ")
-        lines ++= List(
-          s"        @Nullable public $javaType $accessor() {",
-          s"            return ${decode(domain, prop, s"value(${mapper.writeValueAsString(prop.path("name").asText())})")};",
-          "        }"
-        )
-        if (prop.has("enum"))
-          lines ++= enumConstants(s"${cap(prop.path("name").asText())}Values", prop.path("enum"), "        ", prop)
+          s"Returns the $fieldName field.",
+          Nil,
+          Some("the protocol field value")
+        ) ++
+          deprecated(prop, "        ") ++
+          List(
+            s"        @Nullable public $javaType $accessor() {",
+            s"            return ${decode(domain, prop, s"value(${jsonString(fieldName)})")};",
+            "        }"
+          ) ++
+          Option.when(prop.enumValues.nonEmpty)(
+            enumConstants(s"${cap(fieldName)}Values", prop.enumValues, "        ", prop)
+          ).toList.flatten
       }
-      lines ++= List(
-        "        public static final class Builder {",
-        "            private final Map<String, Object> values = new LinkedHashMap<>();"
-      )
-      props.foreach { prop =>
-        val fieldName = prop.path("name").asText()
+      val setters = props.flatMap { prop =>
+        val fieldName = prop.name.getOrElse(throw IllegalArgumentException("CDP property without name"))
         val javaType  = resolve(domain, prop).javaType
-        lines ++= javadoc(
+        javadoc(
           prop,
           "            ",
           s"Sets the $fieldName field.",
           List("value" -> "field value; null removes an optional value"),
           Some("this builder")
-        )
-        lines ++= deprecated(prop, "            ")
-        lines ++= List(
-          s"            public Builder ${ident(fieldName)}(@Nullable $javaType value) {",
-          s"                if (value == null) values.remove(${mapper.writeValueAsString(fieldName)});",
-          s"                else values.put(${mapper.writeValueAsString(fieldName)}, jsonValue(value));",
-          "                return this;",
-          "            }"
-        )
+        ) ++
+          deprecated(prop, "            ") ++
+          List(
+            s"            public Builder ${ident(fieldName)}(@Nullable $javaType value) {",
+            s"                if (value == null) values.remove(${jsonString(fieldName)});",
+            s"                else values.put(${jsonString(fieldName)}, jsonValue(value));",
+            "                return this;",
+            "            }"
+          )
       }
-      lines += s"            public $name build() {"
-      props.filterNot(_.path("optional").asBoolean(false)).foreach { prop =>
-        val fieldName = prop.path("name").asText()
-        lines += s"                if (!values.containsKey(${mapper.writeValueAsString(fieldName)})) throw new IllegalStateException(\"Missing required CDP field: $fieldName\");"
+      val required = props.filterNot(_.optional).map { prop =>
+        val fieldName = prop.name.getOrElse(throw IllegalArgumentException("CDP property without name"))
+        s"                if (!values.containsKey(${jsonString(fieldName)})) throw new IllegalStateException(\"Missing required CDP field: $fieldName\");"
       }
-      lines ++= List(s"                return new $name(values);", "            }", "        }", "    }")
-      lines.toList
+      javadoc(spec, "    ", fallback, Nil, None) ++
+        deprecated(spec, "    ") ++
+        List(
+          s"    public static final class $name extends CdpObject {",
+          s"        private $name(Map<String, Object> values) { super(values); }",
+          s"        @Nullable public static $name fromMap(@Nullable Map<String, Object> values) {",
+          s"            return values == null ? null : new $name(values);",
+          "        }",
+          "        public static Builder builder() { return new Builder(); }"
+        ) ++
+        accessors ++
+        List(
+          "        public static final class Builder {",
+          "            private final Map<String, Object> values = new LinkedHashMap<>();"
+        ) ++
+        setters ++
+        List(s"            public $name build() {") ++
+        required ++
+        List(s"                return new $name(values);", "            }", "        }", "    }")
     }
 
     private def protocolSource(domain: String): String =
@@ -346,12 +373,12 @@ object Main {
         s"https://chromium.googlesource.com/chromium/src/+/refs/tags/$chromiumVersion/third_party/blink/public/devtools_protocol/domains/$domain.pdl"
       else s"https://chromium.googlesource.com/v8/v8/+/$v8Revision/include/js_protocol.pdl"
 
-    def emitDomain(domainNode: JsonNode): String = {
-      val domain   = domainNode.path("domain").asText()
-      val commands = elements(domainNode.path("commands"))
-      val events   = elements(domainNode.path("events"))
-      val lines    = mutable.ListBuffer(
-        "// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.",
+    def emitDomain(domainNode: Domain): String = {
+      val domain   = domainNode.domain
+      val commands = domainNode.commands
+      val events   = domainNode.events
+      val header   = List(
+        banners.java,
         s"package $javaPackage;",
         "",
         "import java.util.LinkedHashMap;",
@@ -359,165 +386,175 @@ object Main {
         "import java.util.concurrent.CompletionStage;",
         "import java.util.function.Consumer;",
         "import javax.annotation.Nullable;",
+        Banners.javaAnnotationImport,
         "import net.kurobako.cef4j.cdp.CdpClient;",
         "import net.kurobako.cef4j.cdp.CdpObject;",
         "import net.kurobako.cef4j.cdp.CdpSubscription;",
         ""
       )
-      val docs = mutable.ListBuffer.from(javadoc(domainNode, "", s"Chrome DevTools Protocol $domain domain."))
-      docs.insert(docs.size - 1, s" * @see <a href=\"${protocolSource(domain)}\">Pinned protocol source</a>")
-      lines ++= docs
-      lines ++= deprecated(domainNode, "")
-      lines ++= List(
-        "@SuppressWarnings({\"EscapedEntity\", \"JavaLangClash\", \"MissingSummary\", \"UnusedMethod\"})",
+      val domainSpec = Item(
+        description = domainNode.description,
+        experimental = domainNode.experimental,
+        deprecated = domainNode.deprecated
+      )
+      val rawDocs = javadoc(domainSpec, "", s"Chrome DevTools Protocol $domain domain.", Nil, None)
+      val docs    = rawDocs.init ++
+        List(s" * @see <a href=\"${protocolSource(domain)}\">Pinned protocol source</a>") ++
+        rawDocs.takeRight(1)
+      val classHeader = List(
+        banners.javaAnnotations("EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"),
         s"public final class $domain {",
         s"    private $domain() {}",
         "    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }",
         "    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }"
       )
-      elements(domainNode.path("types")).foreach { item =>
-        if (item.path("type").asText() == "object" && item.path("properties").size() > 0)
-          lines ++= model(modelName(domain, item.path("id").asText()), domain, item.path("properties"), item, "")
-        else if (item.has("enum"))
-          lines ++= enumConstants(modelName(domain, item.path("id").asText()), item.path("enum"), spec = item)
+      val types = domainNode.types.flatMap { item =>
+        val id = item.id.getOrElse(throw IllegalArgumentException("CDP type without id"))
+        if (item.kind.contains("object") && item.properties.nonEmpty)
+          model(modelName(domain, id), domain, item.properties, item, "")
+        else if (item.enumValues.nonEmpty)
+          enumConstants(modelName(domain, id), item.enumValues, spec = item)
+        else Nil
       }
-      commands.foreach { command =>
-        val operation = s"$domain.${command.path("name").asText()}"
-        val prefix    = cap(command.path("name").asText())
-        lines ++= model(s"${prefix}Params", domain, command.path("parameters"), command, s"Parameters for $operation.")
-        lines ++= model(s"${prefix}Result", domain, command.path("returns"), command, s"Result of $operation.")
+      val commandModels = commands.flatMap { command =>
+        val commandName = command.name.getOrElse(throw IllegalArgumentException("CDP command without name"))
+        val operation   = s"$domain.$commandName"
+        val prefix      = cap(commandName)
+        model(s"${prefix}Params", domain, command.parameters, command, s"Parameters for $operation.") ++
+          model(s"${prefix}Result", domain, command.returns, command, s"Result of $operation.")
       }
-      events.foreach { event =>
-        val name = event.path("name").asText()
-        lines ++= model(
+      val eventModels = events.flatMap { event =>
+        val name = event.name.getOrElse(throw IllegalArgumentException("CDP event without name"))
+        model(
           s"${cap(name)}Event",
           domain,
-          event.path("parameters"),
+          event.parameters,
           event,
           s"Payload of the $domain.$name event."
         )
       }
-      lines ++= List(
+      val clientHeader = List(
         "    public static final class Client {",
         "        private final CdpClient client;",
         "        public Client(CdpClient client) { this.client = client; }"
       )
-      commands.foreach { command =>
-        val name          = command.path("name").asText()
+      val commandMethods = commands.flatMap { command =>
+        val name          = command.name.getOrElse(throw IllegalArgumentException("CDP command without name"))
         val prefix        = cap(name)
-        val hasParameters = command.path("parameters").size() > 0
-        lines ++= javadoc(
+        val hasParameters = command.parameters.nonEmpty
+        val allOptional   = hasParameters && command.parameters.forall(_.optional)
+        val docs          = javadoc(
           command,
           "        ",
           s"Invokes $domain.$name.",
           if (hasParameters) List("params" -> "command parameters") else Nil,
           Some("a stage completing with the command result")
         )
-        lines ++= deprecated(command, "        ")
-        if (hasParameters)
-          lines ++= List(
-            s"        public CompletionStage<${prefix}Result> ${ident(name)}(${prefix}Params params) {",
-            s"            return client.call(\"$domain.$name\", params, ${prefix}Result::fromMap);",
-            "        }"
-          )
-        else
-          lines ++= List(
-            s"        public CompletionStage<${prefix}Result> ${ident(name)}() {",
-            s"            return client.call(\"$domain.$name\", null, ${prefix}Result::fromMap);",
-            "        }"
-          )
+        val invocation =
+          if (hasParameters)
+            List(
+              s"        public CompletionStage<${prefix}Result> ${ident(name)}(${prefix}Params params) {",
+              s"            return client.call(\"$domain.$name\", params, ${prefix}Result::fromMap);",
+              "        }"
+            )
+          else
+            List(
+              s"        public CompletionStage<${prefix}Result> ${ident(name)}() {",
+              s"            return client.call(\"$domain.$name\", null, ${prefix}Result::fromMap);",
+              "        }"
+            )
+        val defaultInvocation = Option.when(allOptional)(
+          javadoc(
+            command,
+            "        ",
+            s"Invokes $domain.$name with default parameters.",
+            Nil,
+            Some("a stage completing with the command result")
+          ) ++
+            deprecated(command, "        ") ++
+            List(
+              s"        public CompletionStage<${prefix}Result> ${ident(name)}() {",
+              s"            return ${ident(name)}(${prefix}Params.builder().build());",
+              "        }"
+            )
+        ).toList.flatten
+        docs ++ deprecated(command, "        ") ++ invocation ++ defaultInvocation
       }
-      events.foreach { event =>
-        val name      = event.path("name").asText()
+      val eventMethods = events.flatMap { event =>
+        val name      = event.name.getOrElse(throw IllegalArgumentException("CDP event without name"))
         val eventType = s"${cap(name)}Event"
-        lines ++= javadoc(
+        javadoc(
           event,
           "        ",
           s"Subscribes to $domain.$name.",
           List("handler" -> "event callback"),
           Some("a removable subscription")
-        )
-        lines ++= deprecated(event, "        ")
-        lines ++= List(
-          s"        public CdpSubscription on${cap(name)}(Consumer<$eventType> handler) {",
-          s"            return client.on(\"$domain.$name\", $eventType::fromMap, handler);",
-          "        }"
-        )
+        ) ++
+          deprecated(event, "        ") ++
+          List(
+            s"        public CdpSubscription on${cap(name)}(Consumer<$eventType> handler) {",
+            s"            return client.on(\"$domain.$name\", $eventType::fromMap, handler);",
+            "        }"
+          )
       }
-      lines ++= List("    }", "}", "")
-      lines.mkString("\n")
+      (
+        header ++ docs ++ deprecated(domainSpec, "") ++ classHeader ++ types ++ commandModels ++ eventModels ++
+          clientHeader ++ commandMethods ++ eventMethods ++ List("    }", "}", "")
+      ).mkString("\n")
     }
 
-    def emitDomains(domains: List[JsonNode]): String = {
-      val lines = mutable.ListBuffer(
-        "// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.",
+    def emitDomains(domains: List[Domain]): String = {
+      val header = List(
+        banners.java,
         s"package $javaPackage;",
         "",
+        Banners.javaAnnotationImport,
         "import net.kurobako.cef4j.cdp.CdpClient;",
         "",
-        "@SuppressWarnings(\"deprecation\")",
+        banners.javaAnnotations("deprecation"),
         "public final class CdpDomains {"
       )
-      domains.foreach { domain =>
-        val name  = domain.path("domain").asText()
+      val fields = domains.map { domain =>
+        val name  = domain.domain
         val field = ident(name.head.toLower +: name.tail)
-        lines += s"    private final $name.Client $field;"
+        s"    private final $name.Client $field;"
       }
-      lines += "    public CdpDomains(CdpClient client) {"
-      domains.foreach { domain =>
-        val name  = domain.path("domain").asText()
+      val initializers = domains.map { domain =>
+        val name  = domain.domain
         val field = ident(name.head.toLower +: name.tail)
-        lines += s"        $field = new $name.Client(client);"
+        s"        $field = new $name.Client(client);"
       }
-      lines += "    }"
-      domains.foreach { domain =>
-        val name  = domain.path("domain").asText()
+      val accessors = domains.map { domain =>
+        val name  = domain.domain
         val field = ident(name.head.toLower +: name.tail)
-        lines += s"    public $name.Client $field() { return $field; }"
+        s"    public $name.Client $field() { return $field; }"
       }
-      lines ++= List("}", "")
-      lines.mkString("\n")
+      (
+        header ++ fields ++ List("    public CdpDomains(CdpClient client) {") ++ initializers ++ List("    }") ++
+          accessors ++ List("}", "")
+      ).mkString("\n")
     }
   }
 
-  private def elements(node: JsonNode): List[JsonNode] =
-    if (node != null && node.isArray) node.elements().asScala.toList else Nil
+  private def readProtocol(path: Path): Protocol =
+    if (path.getFileName.toString.endsWith(".pdl")) PdlParser.parse(path)
+    else read[Protocol](Files.readString(path, StandardCharsets.UTF_8))
 
-  /** Match Python's json.dumps(indent=2, ensure_ascii=False), which was used by the original generator. */
-  private def prettyJson(node: JsonNode, depth: Int = 0): String = {
-    val indent = "  " * depth
-    if (node.isObject) {
-      val fields = node.fields().asScala.toList
-      if (fields.isEmpty) "{}"
-      else {
-        val body = fields.map { entry =>
-          s"${"  " * (depth + 1)}${mapper.writeValueAsString(entry.getKey)}: ${prettyJson(entry.getValue, depth + 1)}"
-        }.mkString(",\n")
-        s"{\n$body\n$indent}"
-      }
-    } else if (node.isArray) {
-      val values = elements(node)
-      if (values.isEmpty) "[]"
-      else {
-        val body = values.map(value => s"${"  " * (depth + 1)}${prettyJson(value, depth + 1)}").mkString(",\n")
-        s"[\n$body\n$indent]"
-      }
-    } else mapper.writeValueAsString(node)
-  }
+  private def jsonString(value: String): String = ujson.Str(value).render()
 
   private def cleanDirectory(path: Path): Unit =
-    if (Files.exists(path)) Files.walk(path).toScala(List).sortBy(_.getNameCount).reverse.foreach(Files.delete)
+    FileSystem.deleteTree(path)
 
-  private def requiredProperty(properties: Properties, name: String): String =
-    Option(
-      properties.getProperty(name)
-    ).filter(_.nonEmpty).getOrElse(throw IllegalArgumentException(s"Missing property: $name"))
+  private def requiredProperty(properties: Map[String, String], name: String): String =
+    properties.get(name).filter(_.nonEmpty).getOrElse(throw IllegalArgumentException(s"Missing property: $name"))
 
   private def parseArgs(args: List[String]): Config = args.foldLeft(Config()) { (cfg, arg) =>
     arg match {
       case s"--browser-schema=$value"    => cfg.copy(browserSchema = Paths.get(value))
       case s"--javascript-schema=$value" => cfg.copy(javascriptSchema = Paths.get(value))
       case s"--schema-metadata=$value"   => cfg.copy(schemaMetadata = Paths.get(value))
+      case s"--cef-version=$value"       => cfg.copy(cefVersion = Some(value))
+      case s"--schema-cache=$value"      => cfg.copy(schemaCache = Some(Paths.get(value)))
       case s"--out-java=$value"          => cfg.copy(outJava = Paths.get(value))
       case s"--out-resources=$value"     => cfg.copy(outResources = Paths.get(value))
       case s"--java-package=$value"      => cfg.copy(javaPackage = value)

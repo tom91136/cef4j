@@ -1,0 +1,24 @@
+version
+  major 1
+  minor 3
+
+# A small `Page` fixture.
+domain Page
+  type FrameId extends string
+  type Frame extends object
+    properties
+      FrameId id
+
+  command enable
+    parameters
+      optional boolean includeDebug
+
+  command navigate
+    parameters
+      string url
+    returns
+      FrameId frameId
+
+  deprecated event loadEventFired
+    parameters
+      number time

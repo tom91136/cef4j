@@ -24,7 +24,7 @@ class SystemBootstrapTest {
     }
 
     @Test
-    void reactorRuntimeIncludesCefResourcesAndLauncherDependencies() throws Exception {
+    void externalRuntimeIncludesCefResourcesAndLauncherDependencies() throws Exception {
         Path release = Files.createDirectories(tempDir.resolve("cef/Release"));
         Path runtime = Files.createDirectories(tempDir.resolve("reactor"));
 
@@ -36,7 +36,7 @@ class SystemBootstrapTest {
             touch(libraries.resolve("libvk_swiftshader.dylib"));
             touch(libraries.resolve("vk_swiftshader_icd.json"));
 
-            SystemBootstrap.prepareReactorRuntime(release, runtime);
+            SystemBootstrap.prepareExternalRuntime(release, runtime);
 
             assertThat(runtime.resolve("Chromium Embedded Framework.framework")).exists();
             assertThat(runtime.resolve("libEGL.dylib")).exists();
@@ -62,7 +62,7 @@ class SystemBootstrapTest {
         }
         Files.createDirectories(resources.resolve("locales"));
 
-        SystemBootstrap.prepareReactorRuntime(release, runtime);
+        SystemBootstrap.prepareExternalRuntime(release, runtime);
 
         for (String library : libraries) assertThat(runtime.resolve(library)).exists();
         assertThat(release.resolve("icudtl.dat")).exists();

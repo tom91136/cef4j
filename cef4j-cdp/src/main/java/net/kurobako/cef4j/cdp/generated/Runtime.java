@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group.
  * @see <a href="https://chromium.googlesource.com/v8/v8/+/3063ea3a0737a3fc4d4ed3babd595f1cace1e6ac/include/js_protocol.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Runtime {
     private Runtime() {}
@@ -4621,6 +4623,13 @@ public final class Runtime {
          */
         public CompletionStage<GlobalLexicalScopeNamesResult> globalLexicalScopeNames(GlobalLexicalScopeNamesParams params) {
             return client.call("Runtime.globalLexicalScopeNames", params, GlobalLexicalScopeNamesResult::fromMap);
+        }
+        /**
+         * Returns all let, const and class variables from global scope.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GlobalLexicalScopeNamesResult> globalLexicalScopeNames() {
+            return globalLexicalScopeNames(GlobalLexicalScopeNamesParams.builder().build());
         }
         /**
          * Invokes Runtime.queryObjects.

@@ -14,7 +14,7 @@ final class CdpSchemaTest {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(stream.readAllBytes());
             assertThat(hex(digest)).isEqualTo(CdpSchema.sha256());
         }
-        assertThat(CdpSchema.chromiumVersion()).isEqualTo("150.0.7871.213");
+        assertThat(CdpSchema.chromiumVersion()).isEqualTo(System.getProperty("cef4j.test.chromiumVersion"));
     }
 
     private static String hex(byte[] bytes) {

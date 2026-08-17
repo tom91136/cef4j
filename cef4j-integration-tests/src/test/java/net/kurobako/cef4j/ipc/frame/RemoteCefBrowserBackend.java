@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.frame;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -18,7 +17,6 @@ import javax.annotation.Nonnull;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.Frame;
 import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
@@ -28,22 +26,11 @@ import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/**
- * IPC-backed {@link BrowserBackend} for the cross-backend test SPI. Spawns a fresh server subprocess per session,
- * connects via ZMQ, opens the auto-bootstrapped browser, and exposes the codegen-generated facade methods
- * ({@link Browser#getMainFrame}, {@link Frame#loadUrl}, {@link EvaluateJavascriptRequest}) behind the small
- * {@link BrowserSession} surface.
- *
- * <p>Discovered by {@code BrowserBackend.discover()} via the corresponding ServiceLoader file. Lives in test scope so
- * it doesn't bleed into production classpaths.
- *
- * <p>Availability: requires the server binary path and CEF resources path passed as system properties (same vars the
- * {@code MmapFrameTransportIntegrationTest} uses); on systems without a built server the backend reports unavailable
- * and parameterised tests skip the {@code ipc} row gracefully.
- */
+/** Packaged-runtime implementation of the shared browser test SPI. */
 public final class RemoteCefBrowserBackend implements BrowserBackend {
 
     @Override
@@ -54,10 +41,8 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
-        String bin = System.getProperty("cef4j.runtime.server.binary");
-        String res = System.getProperty("cef4j.runtime.server.resources");
-        if (bin == null || res == null) return false;
-        return Files.isExecutable(Paths.get(bin)) && Files.isDirectory(Paths.get(res));
+        RuntimeServerTestEnvironment.require();
+        return true;
     }
 
     @Override
@@ -76,10 +61,6 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         }
     }
 
-    /**
-     * The session glues together: server process + ZMQ transport + CEF session + codegen Browser/Frame facades +
-     * SharedFileFrameTransport. Each test gets its own server, so we don't need to worry about cross-test leakage.
-     */
     private static final class IpcSession implements BrowserSession {
 
         private final RuntimeServerProcess server;
@@ -93,9 +74,8 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         private final LinkedBlockingQueue<PaintInfo> paintQueue = new LinkedBlockingQueue<>();
 
         IpcSession(SessionConfig config) throws Exception {
-            String bin = System.getProperty("cef4j.runtime.server.binary");
-            String res = System.getProperty("cef4j.runtime.server.resources");
-            this.server = launchServer(Paths.get(bin), Paths.get(res), config.startupTimeout());
+            RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+            this.server = launchServer(environment.binary(), environment.resources(), config.startupTimeout());
             this.transport = ZmqTransport.connect(server.endpoint());
             this.session = new CefSessionImpl(transport, Duration.ofSeconds(30));
 

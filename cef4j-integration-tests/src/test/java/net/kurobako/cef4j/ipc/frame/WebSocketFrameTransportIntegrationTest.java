@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.frame;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
@@ -16,7 +15,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
-import org.junit.jupiter.api.Assumptions;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -26,14 +25,9 @@ final class WebSocketFrameTransportIntegrationTest {
 
     @BeforeAll
     static void locateServer() {
-        String serverPath = System.getProperty("cef4j.runtime.server.binary", "");
-        String resourcesPath = System.getProperty("cef4j.runtime.server.resources", "");
-        Assumptions.assumeFalse(serverPath.isBlank(), "native server path is not configured");
-        Assumptions.assumeFalse(resourcesPath.isBlank(), "CEF resources path is not configured");
-        serverBinary = Path.of(serverPath);
-        cefResources = Path.of(resourcesPath);
-        Assumptions.assumeTrue(Files.isExecutable(serverBinary), "native server is not built");
-        Assumptions.assumeTrue(Files.isDirectory(cefResources), "CEF resources are unavailable");
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        serverBinary = environment.binary();
+        cefResources = environment.resources();
     }
 
     @Test

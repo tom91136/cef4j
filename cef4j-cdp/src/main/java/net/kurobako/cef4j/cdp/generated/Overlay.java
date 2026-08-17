@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Overlay.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Overlay {
     private Overlay() {}
@@ -3942,6 +3944,13 @@ public final class Overlay {
             return client.call("Overlay.setPausedInDebuggerMessage", params, SetPausedInDebuggerMessageResult::fromMap);
         }
         /**
+         * Invokes Overlay.setPausedInDebuggerMessage with default parameters.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetPausedInDebuggerMessageResult> setPausedInDebuggerMessage() {
+            return setPausedInDebuggerMessage(SetPausedInDebuggerMessageParams.builder().build());
+        }
+        /**
          * Requests that backend shows debug borders on layers
          * @param params command parameters
          * @return a stage completing with the command result
@@ -4058,6 +4067,13 @@ public final class Overlay {
             return client.call("Overlay.setShowHinge", params, SetShowHingeResult::fromMap);
         }
         /**
+         * Add a dual screen device hinge
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetShowHingeResult> setShowHinge() {
+            return setShowHinge(SetShowHingeParams.builder().build());
+        }
+        /**
          * Show elements in isolation mode with overlays.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -4072,6 +4088,13 @@ public final class Overlay {
          */
         public CompletionStage<SetShowWindowControlsOverlayResult> setShowWindowControlsOverlay(SetShowWindowControlsOverlayParams params) {
             return client.call("Overlay.setShowWindowControlsOverlay", params, SetShowWindowControlsOverlayResult::fromMap);
+        }
+        /**
+         * Show Window Controls Overlay for PWA
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetShowWindowControlsOverlayResult> setShowWindowControlsOverlay() {
+            return setShowWindowControlsOverlay(SetShowWindowControlsOverlayParams.builder().build());
         }
         /**
          * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.

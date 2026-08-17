@@ -346,10 +346,7 @@ namespace tables = net_kurobako_cef4j_ipc_protocol_gen_dispatcher::tables;
 using ScopedCefString = net_kurobako_cef4j_ipc_protocol_gen_dispatcher::ScopedCefString;
 using net_kurobako_cef4j_ipc_protocol_gen_dispatcher::insertOrRelease;
 
-/** Wraps a `cef_v8_context_t*` so callers can `if (ctx) ctx->enter(...)` and have the matching `exit` and
-  * release fire as scope ends. The C-API `cef_v8_context_t::enter`/`exit` are paired; missing `exit` would
-  * leave the renderer in a sticky V8 state. The release happens regardless of enter success.
-  */
+// Pairs V8 context enter/exit and releases the retained context.
 class ScopedV8Context {
 public:
     explicit ScopedV8Context(cef_v8_context_t* ctx) : ctx_(ctx), entered_(false) {
@@ -370,10 +367,7 @@ private:
     bool entered_;
 };
 
-/** Sends a packaged response back to the browser process via `frame->send_process_message`. Mirrors the
-  * envelope format the browser-side relay sends: args = [corrId, messageId, payload bytes]. CEF takes
-  * ownership of `msg` — do not release it ourselves.
-  */
+// Sends [corrId, messageId, payload] and transfers message ownership to CEF.
 inline void sendResponseEnvelope(cef_frame_t* frame, const char* envelopeName, std::int32_t corrId,
                                  std::int32_t messageId, const std::uint8_t* payload, std::size_t size) {
     cef_string_t name{};
@@ -386,8 +380,7 @@ inline void sendResponseEnvelope(cef_frame_t* frame, const char* envelopeName, s
         args->set_int(args, 1, messageId);
         cef_binary_value_t* binary = cef_binary_value_create(payload, size);
         if (binary) {
-            // `set_binary` adopts our +1 — releasing here is a double-decrement that crashes the
-            // renderer subprocess. Same contract as `set_string`.
+            // set_binary adopts the retained value.
             args->set_binary(args, 2, binary);
         }
         auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
@@ -396,18 +389,14 @@ inline void sendResponseEnvelope(cef_frame_t* frame, const char* envelopeName, s
     frame->send_process_message(frame, PID_BROWSER, msg);
 }
 
-/** Sends an empty `cef4j_renderer_err` response (8-byte ReceiverGone payload) so the JVM-side future fails
-  * with CefRemoteException. The browser-side translates `_err` to Kind::Error on the IPC wire.
-  */
+// Sends ReceiverGone through the renderer error envelope.
 inline void sendReceiverGone(cef_frame_t* frame, std::int32_t corrId, std::int32_t messageId) {
     static const std::uint8_t kReceiverGonePayload[8] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     sendResponseEnvelope(frame, "cef4j_renderer_err", corrId, messageId,
                           kReceiverGonePayload, sizeof(kReceiverGonePayload));
 }
 
-/** Returns true iff the messageId was recognised and a response (success or error) was sent back to the
-  * browser process. Caller (renderer's on_process_message_received) should fall through for unknown ids.
-  */
+// Returns whether the message was dispatched and answered.
 inline bool dispatch(cef_frame_t* frame, std::int32_t corrId, std::int32_t messageId,
                      const std::vector<std::uint8_t>& payload) {
     namespace gen = net_kurobako_cef4j_ipc_protocol_gen;

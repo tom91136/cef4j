@@ -22,24 +22,9 @@ import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
-/**
- * In-process {@link BrowserBackend} that wraps the existing {@link CefWebView}. Lives in the same package as
- * {@code CefWebView} so it can reach {@code framesPainted} (package-private paint counter) without exposing it
- * publicly.
- *
- * <p>Each session opens a new {@link Stage} containing a fresh {@code CefWebView}. CEF itself is a process-wide
- * singleton — the first call to {@link CefWebView#initialise} establishes it; subsequent sessions reuse the existing
- * init. JFX runtime is started lazily by {@link CefWebViewTestSupport#startJavaFx()}.
- *
- * <p>Availability: skips on macOS where {@code Platform.startup()} is incompatible with JUnit driving (see
- * {@code CefWebViewRenderTest} class javadoc). Also requires a display server (DISPLAY env or xvfb) on Linux.
- */
+/** In-process JavaFX implementation of the shared browser test SPI. */
 public final class NativeBrowserBackend implements BrowserBackend {
 
-    /**
-     * Track CEF init across sessions in this JVM. {@link CefWebView#initialise} is idempotent but we still want to skip
-     * the SettingsBuilder churn on subsequent sessions.
-     */
     private static volatile boolean cefInitialised;
 
     @Override
@@ -50,9 +35,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
     @Override
     public boolean isAvailable() {
-        if (OS.isMacOS()) return false; // Platform.startup() is incompatible with JUnit on macOS
-        // Linux/Windows: rely on a running display server. xvfb-run wraps headless CI runs.
-        return System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
+        return !OS.isLinux() || System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
     }
 
     @Override
@@ -94,9 +77,6 @@ public final class NativeBrowserBackend implements BrowserBackend {
             onFxThread(() -> {
                 CefWebView v = new CefWebView();
                 Stage s = new Stage();
-                // This stage models a browser viewport, not application window chrome. An
-                // undecorated stage also makes resize dimensions deterministic on X11: a
-                // decorated stage's insets are reported asynchronously after show().
                 s.initStyle(StageStyle.UNDECORATED);
                 s.setScene(new Scene(new StackPane(v), w, h));
                 s.show();
@@ -135,15 +115,12 @@ public final class NativeBrowserBackend implements BrowserBackend {
         @Override
         @Nonnull
         public CompletableFuture<String> evaluateJavascript(@Nonnull String script) {
-            // CefWebEngine.evaluateScriptAsync returns CompletableFuture<String> — JSON-stringified value.
-            // Same coercion expectations as the IPC backend.
             return webView.getEngine().evaluateScriptAsync(script);
         }
 
         @Override
         @Nonnull
         public PaintInfo awaitFirstPaint(@Nonnull Duration timeout) throws InterruptedException {
-            // CefWebView increments framesPainted (package-private) on each non-popup paint. Poll.
             long deadline = System.nanoTime() + timeout.toNanos();
             while (webView.framesPainted.sum() == 0) {
                 if (System.nanoTime() > deadline) {
@@ -151,8 +128,6 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 }
                 Thread.sleep(50);
             }
-            // Stage scene dimensions are what we asked for at construction; CefWebView sizes its frame buffer
-            // to match so byteCount = w*h*4 BGRA matches the IPC backend's reporting.
             int w = (int) stage.getScene().getWidth();
             int h = (int) stage.getScene().getHeight();
             return new PaintInfo(w, h, (long) w * h * 4);

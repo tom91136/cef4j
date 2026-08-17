@@ -25,8 +25,6 @@ public final class BrowserContract {
     }
 
     private static void verify(BrowserBackend backend, FixtureSite site) throws Exception {
-        // Native browser startup can exceed 20 seconds on contended hosted macOS runners.
-        // Keep the paint/evaluation assertions intact while allowing that startup variance.
         Duration timeout = Duration.ofSeconds(40);
         BrowserBackend.SessionConfig config = new BrowserBackend.SessionConfig(site.url("/first"), 640, 480, timeout);
 
@@ -37,8 +35,14 @@ public final class BrowserContract {
                     .isEqualTo("6");
             assertThat(session.evaluateJavascript("true").get(20, TimeUnit.SECONDS))
                     .isEqualTo("true");
+            assertThat(session.evaluateJavascript("false").get(20, TimeUnit.SECONDS))
+                    .isEqualTo("false");
+            assertThat(session.evaluateJavascript("-7").get(20, TimeUnit.SECONDS))
+                    .isEqualTo("-7");
             assertThat(Double.parseDouble(session.evaluateJavascript("Math.PI").get(20, TimeUnit.SECONDS)))
                     .isEqualTo(Math.PI);
+            assertThat(session.evaluateJavascript("'hello'").get(20, TimeUnit.SECONDS))
+                    .isIn("hello", "\"hello\"");
             assertThat(unquote(session.evaluateJavascript("document.getElementById('marker').textContent")
                             .get(20, TimeUnit.SECONDS)))
                     .isEqualTo("first");
@@ -54,7 +58,6 @@ public final class BrowserContract {
         }
     }
 
-    /** A real loopback origin avoids legacy CEF's special-case renderer transition between consecutive data URLs. */
     private static final class FixtureSite implements AutoCloseable {
         private final HttpServer server;
 

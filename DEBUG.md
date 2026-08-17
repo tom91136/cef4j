@@ -18,7 +18,7 @@ Useful baseline commands:
 
 ```bash
 xvfb-run -a ./mvnw test
-xvfb-run -a ./mvnw clean verify -Dspotless.skip=true
+xvfb-run -a ./mvnw clean verify -Dspotless.check.skip=true
 find /tmp -name chrome_debug.log -mmin -10 2>/dev/null
 find . -name 'hs_err_pid*.log' -o -path '*/surefire-reports/*-output.txt'
 ```
@@ -61,13 +61,14 @@ reproducer. Compare hashes before debugging stale behavior:
 
 ```bash
 md5sum cef4j-platform/target/cmake-build/libcef4j.so \
-  cef4j-api/src/main/resources/native/linux64/libcef4j.so \
-  /tmp/cef4j-cache/linux64/libcef4j.so
+  cef4j-platform/target/reactor-runtime/native/linux64/libcef4j.so \
+  /tmp/cef4j-cache/linux64/*/libcef4j.so
 nm -D cef4j-platform/target/cmake-build/libcef4j.so | rg 'JNI_OnLoad|cef_api'
 ```
 
-Paths and suffixes differ on macOS and Windows. The runtime-server launchable unit is
-`cef4j-runtime-server/target/cmake-build/runtime-server/`; supply a matching CEF distribution when launching it.
+Paths and suffixes differ on macOS and Windows. The runtime-server executable is under
+`cef4j-runtime-server/target/cmake-build/runtime-server/`; its CEF resources are staged in
+`cef4j-platform/target/reactor-runtime/cef-runtime/<platform>/`.
 
 ## Standalone and native debuggers
 

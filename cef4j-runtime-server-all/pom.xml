@@ -20,7 +20,7 @@
     </properties>
 
     <profiles>
-        <!-- See cef4j-platform-all: consumers get every classifier while reactor builds stay local. -->
+        <!-- Reactor builds suppress cross-platform consumer dependencies. -->
         <profile>
             <id>all-platforms</id>
             <activation><activeByDefault>true</activeByDefault></activation>

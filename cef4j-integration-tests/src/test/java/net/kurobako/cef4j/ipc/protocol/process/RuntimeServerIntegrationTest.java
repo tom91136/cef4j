@@ -32,18 +32,13 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.CefTransport;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-/**
- * End-to-end through the native {@code cef4j-runtime-server}: start the server, fetch a URL served by a local
- * {@link HttpServer}, observe {@link OnLoadEndEvent} arriving back over the IPC channel.
- *
- * <p>Skipped if the server binary has not been built. On Linux, requires xvfb (CEF's GPU process initialises X even in
- * windowless mode); run via {@code xvfb-run --auto-servernum ./mvnw -pl cef4j-remote-core -am test}.
- */
+/** End-to-end runtime-server lifecycle and transport coverage. */
 @Timeout(60)
 class RuntimeServerIntegrationTest {
 
@@ -52,14 +47,9 @@ class RuntimeServerIntegrationTest {
 
     @BeforeAll
     static void resolveBinary() {
-        String bin = System.getProperty("cef4j.runtime.server.binary");
-        String res = System.getProperty("cef4j.runtime.server.resources");
-        Assumptions.assumeTrue(bin != null, "cef4j.runtime.server.binary system property not set");
-        Assumptions.assumeTrue(res != null, "cef4j.runtime.server.resources system property not set");
-        serverBinary = Path.of(bin);
-        cefResources = Path.of(res);
-        Assumptions.assumeTrue(Files.isExecutable(serverBinary), "runtime server binary not built at " + serverBinary);
-        Assumptions.assumeTrue(Files.isDirectory(cefResources), "CEF resources dir missing at " + cefResources);
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        serverBinary = environment.binary();
+        cefResources = environment.resources();
     }
 
     private static HttpServer startFixture() throws IOException {

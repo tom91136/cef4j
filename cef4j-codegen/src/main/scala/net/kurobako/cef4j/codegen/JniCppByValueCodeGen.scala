@@ -1,7 +1,5 @@
 package net.kurobako.cef4j.codegen
 
-// By-value struct marshalling utilities for JNI C++ code generation.
-// Handles reading/writing C struct fields from/to Java objects.
 class JniCppByValueCodeGen(
     dataStructs: Map[String, CefDecl.DataStruct]
 )(using Naming.Context) {
@@ -39,14 +37,14 @@ class JniCppByValueCodeGen(
             case CType.OpaquePtr =>
               BvFieldType.OpaquePtr
             case other =>
-              throw new RuntimeException(
+              throw IllegalArgumentException(
                 s"Unsupported field type $other for by-value struct $cefName field ${f.name}"
               )
           }
           BvField(f.name, javaName, bvType)
         }
       case None =>
-        throw new RuntimeException(
+        throw IllegalArgumentException(
           s"No DataStruct declaration found for by-value struct $cefName - is it parsed from headers?"
         )
     }
@@ -82,10 +80,9 @@ class JniCppByValueCodeGen(
     case BvFieldType.Double => s"""env->GetDoubleField($obj, env->GetFieldID($cls, "$javaName", "D"))"""
     case BvFieldType.Long   =>
       s"""env->GetLongField($obj, env->GetFieldID($cls, "$javaName", "J"))"""
-    case _ => throw new RuntimeException(s"bvGetAndCast called on $t - use bvCopyJavaToCStruct for strings/nested")
+    case _ => throw IllegalArgumentException(s"bvGetAndCast called on $t; use bvCopyJavaToCStruct for strings/nested")
   }
 
-  // Format a NewObject call, breaking args across lines when there are many.
   def fmtNewObject(clsVar: String, ctorVar: String, args: List[String], guard: String = ""): String =
     if (args.length <= 4) {
       val argsStr = args.mkString(", ")
@@ -109,8 +106,7 @@ class JniCppByValueCodeGen(
       case BvFieldType.String =>
         (List(s"""auto $varPrefix = CefStringToJString(env, &$cExpr);"""), varPrefix)
       case BvFieldType.CStringArray(_) =>
-        // No reliable element count exists for raw C string arrays in generic by-value conversion.
-        // Keep the Java-side field null on native->Java paths; Java->native conversion is supported.
+        // Raw C string arrays expose no reliable native element count.
         (Nil, "nullptr")
       case BvFieldType.Enum(enumCefName) =>
         val enumFqn = jniName(enumCefName)
@@ -150,7 +146,6 @@ class JniCppByValueCodeGen(
         )
     }
 
-  // Return the ctor signature, ctor args list, and any pre-creation lines for nested JNI objects.
   def byValueCtorFromPtr(cefName: String, ptrName: String): (String, List[String], List[String]) = {
     val fields    = byValueFields(cefName)
     val baseToken = sanitiseIdent(ptrName)
@@ -163,7 +158,6 @@ class JniCppByValueCodeGen(
     (sig, argsList, preLines)
   }
 
-  // Copy fields from a Java object into a C struct via pointer or by-value access.
   def bvCopyJavaToCStruct(
       cefName: String,
       dest: String,
@@ -345,8 +339,6 @@ class JniCppByValueCodeGen(
   def bvWriteBackLines(cefName: String, ptrName: String, javaObj: String, clsVar: String): List[String] =
     bvCopyCStructToJava(cefName, ptrName, javaObj, clsVar, "wb")
 
-  // Copy fields from a Java mutable by-value object back into an existing native struct pointer.
-  // Used by handler trampolines after invoking Java callbacks with ByValueOut params.
   def bvWriteBackToNativeLines(cefName: String, ptrName: String, javaObj: String, clsVar: String): List[String] =
     bvCopyJavaToCStruct(cefName, s"($ptrName)", "->", javaObj, clsVar, "wbn")
 
@@ -361,15 +353,15 @@ class JniCppByValueCodeGen(
     val fields = byValueFields(cefName)
     fields.map {
       case BvField(_, _, BvFieldType.NestedStruct(_)) =>
-        throw new RuntimeException(s"Nested struct in ByValueArray not supported: $cefName")
+        throw IllegalArgumentException(s"Nested struct in ByValueArray not supported: $cefName")
       case BvField(_, _, BvFieldType.String) =>
-        throw new RuntimeException(s"String field in ByValueArray not supported: $cefName")
+        throw IllegalArgumentException(s"String field in ByValueArray not supported: $cefName")
       case BvField(_, _, BvFieldType.CStringArray(_)) =>
-        throw new RuntimeException(s"C string array field in ByValueArray not supported: $cefName")
+        throw IllegalArgumentException(s"C string array field in ByValueArray not supported: $cefName")
       case BvField(_, _, BvFieldType.Enum(_)) =>
-        throw new RuntimeException(s"Enum field in ByValueArray not supported: $cefName")
+        throw IllegalArgumentException(s"Enum field in ByValueArray not supported: $cefName")
       case BvField(_, _, BvFieldType.OpaquePtr) =>
-        throw new RuntimeException(s"Opaque pointer field in ByValueArray not supported: $cefName")
+        throw IllegalArgumentException(s"Opaque pointer field in ByValueArray not supported: $cefName")
       case BvField(cName, _, typ) => bvCastToJni(typ, s"$ptrName[$idxVar].$cName")
     }.mkString(", ")
   }
@@ -380,7 +372,6 @@ class JniCppByValueCodeGen(
       case None    => ("()V", Nil, Nil)
     }
 
-  // Count local refs created by nested by-value struct construction.
   def byValueLocalRefs(cefName: String): Int =
     dataStructs.get(cefName) match {
       case Some(ds) =>
@@ -398,7 +389,6 @@ class JniCppByValueCodeGen(
       case None => 0
     }
 
-  // Count local refs created by write-back phase of a ByValueOut param.
   def byValueWriteBackRefs(cefName: String): Int =
     dataStructs.get(cefName) match {
       case Some(ds) =>

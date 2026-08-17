@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Network.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Network {
     private Network() {}
@@ -13992,6 +13994,13 @@ public final class Network {
             return client.call("Network.enable", params, EnableResult::fromMap);
         }
         /**
+         * Enables network tracking, network events will now be delivered to the client.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<EnableResult> enable() {
+            return enable(EnableParams.builder().build());
+        }
+        /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -13999,6 +14008,14 @@ public final class Network {
          */
         public CompletionStage<ConfigureDurableMessagesResult> configureDurableMessages(ConfigureDurableMessagesParams params) {
             return client.call("Network.configureDurableMessages", params, ConfigureDurableMessagesResult::fromMap);
+        }
+        /**
+         * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ConfigureDurableMessagesResult> configureDurableMessages() {
+            return configureDurableMessages(ConfigureDurableMessagesParams.builder().build());
         }
         /**
          * Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the {@code cookies} field. Deprecated. Use Storage.getCookies instead.
@@ -14025,6 +14042,13 @@ public final class Network {
          */
         public CompletionStage<GetCookiesResult> getCookies(GetCookiesParams params) {
             return client.call("Network.getCookies", params, GetCookiesResult::fromMap);
+        }
+        /**
+         * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetCookiesResult> getCookies() {
+            return getCookies(GetCookiesParams.builder().build());
         }
         /**
          * Returns content served for the given request.
@@ -14086,6 +14110,14 @@ public final class Network {
          */
         public CompletionStage<SetBlockedURLsResult> setBlockedURLs(SetBlockedURLsParams params) {
             return client.call("Network.setBlockedURLs", params, SetBlockedURLsResult::fromMap);
+        }
+        /**
+         * Blocks URLs from loading.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetBlockedURLsResult> setBlockedURLs() {
+            return setBlockedURLs(SetBlockedURLsParams.builder().build());
         }
         /**
          * Toggles ignoring of service worker for each request.
@@ -14172,6 +14204,14 @@ public final class Network {
          */
         public CompletionStage<GetSecurityIsolationStatusResult> getSecurityIsolationStatus(GetSecurityIsolationStatusParams params) {
             return client.call("Network.getSecurityIsolationStatus", params, GetSecurityIsolationStatusResult::fromMap);
+        }
+        /**
+         * Returns information about the COEP/COOP isolation status.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetSecurityIsolationStatusResult> getSecurityIsolationStatus() {
+            return getSecurityIsolationStatus(GetSecurityIsolationStatusParams.builder().build());
         }
         /**
          * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.

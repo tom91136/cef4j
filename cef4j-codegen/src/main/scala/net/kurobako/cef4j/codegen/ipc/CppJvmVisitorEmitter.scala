@@ -1,15 +1,5 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a single C++ header `JvmVisitors.h` containing one synthetic `cef_X_t` subclass per JVM-owned visitor. Each
-  * synthetic carries a `callbackId` that identifies the JVM-side {@link JvmCallbackTable} entry to invoke. When CEF
-  * fires the callback method, the synthetic encodes the matching `XxxCallbackEvent` (with `callbackId` + the invocation
-  * args) and ships it via the runtime server's `IpcServer`.
-  *
-  * Pattern verified end-to-end by the hand-written {@code JvmStringVisitor.h}; this emitter generalises it so every
-  * visitor-shaped CEF callback gets the same treatment without per-type hand code. The dispatcher (see
-  * {@link CppDispatcherEmitter}) recognises facade-method params whose CEF struct matches a known visitor and emits
-  * `new ${forwarderClassName}(handle, g_ipc)` instead of the usual `tables::xxx.retain` lookup.
-  */
 object CppJvmVisitorEmitter {
 
   case class Inputs(
@@ -18,7 +8,6 @@ object CppJvmVisitorEmitter {
       packageName: String
   )
 
-  /** Resolves the synthetic class name for a visitor — public so {@link CppDispatcherEmitter} can refer to it. */
   def syntheticClassName(spec: JvmVisitorSpec): String =
     "Jvm" + spec.cefStructName.stripPrefix("cef_").stripSuffix("_t")
       .split('_').iterator.filter(_.nonEmpty).map(p => p.head.toUpper +: p.tail).mkString
@@ -88,9 +77,7 @@ object CppJvmVisitorEmitter {
     val cefStruct      = v.cefStructName
     val syntheticCls   = syntheticClassName(v)
     val callbackMethod = v.cefMethodName
-    // Lambda param types mirror CEF's exact callback signature so the function-pointer slot accepts our
-    // captureless lambda. arg<0> is `self`, arg<1>+ are the visit args. We use the dispatcher's fn_args
-    // template (re-exported here via a using-alias to keep the header self-contained).
+    // Use exact CEF callback types, including scoped enums.
     val fnTypeRef = s"jvm_fn_args<decltype($cefStruct::$callbackMethod)>"
     val cefParams = v.params.zipWithIndex.map { case (p, i) =>
       s"$fnTypeRef::template arg<${i + 1}> ${p.name}"

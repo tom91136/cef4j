@@ -98,8 +98,7 @@ object Config {
     * (e.g. 150 → 15000) to match CEF's internal `CEF_API_VERSION_NNNNN` naming convention.
     */
   def normaliseCefApiVersion(raw: String): String = {
-    val trimmed = raw.trim
-    // Accept full version string: extract major version from "NNN.x.y+..."
+    val trimmed  = raw.trim
     val majorStr = if (trimmed.contains(".")) trimmed.takeWhile(_.isDigit) else trimmed
     require(majorStr.matches("^[0-9]+$"), s"CEF API version must be numeric or a version string: $raw")
     val value = BigInt(majorStr)

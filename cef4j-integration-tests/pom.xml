@@ -16,19 +16,14 @@
     <description>Cross-backend scenarios against the in-process backend and packaged CEF runtime server</description>
 
     <properties>
-        <!-- This module is not published and has only test-scoped dependencies. The parent bytecode
-             rule otherwise asks Maven to resolve reactor test artifacts before their jars exist. -->
+        <!-- Test-only reactor module; no distributable bytecode to inspect. -->
         <bytecode.check.skip>true</bytecode.check.skip>
-        <!-- This module needs JFX at test time for NativeBrowserBackend (its session opens a JFX Stage).
-             Use 13.0.2 throughout to avoid the JFX-graphics:11 + JFX-base:13.0.2 mix that tripped a SIGSEGV
-             in glassgtk3 staticScreen_getScreens (the transitive dep from cef4j-inprocess-jfx forces base to 13.0.2,
-             so graphics must match). -->
+        <!-- Keep JavaFX artifacts aligned; mixed 11/13 binaries crash glassgtk3. -->
         <javafx.version>13.0.2</javafx.version>
         <javafx.test.version>13.0.2</javafx.test.version>
     </properties>
 
     <dependencies>
-        <!-- The SPI itself. -->
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-test-shared</artifactId>
@@ -36,7 +31,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Remote CEF client layers exercised by the packaged-runtime suites. -->
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-core</artifactId>
@@ -124,8 +118,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- libcef.so / Chromium runtime files for the native backend. Same classifier-based selection as
-             cef4j-inprocess-jfx; the classifier is set per-platform by profiles in the parent pom. -->
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
@@ -134,10 +126,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Transitive runtime needs: each backend's session pulls in its own runtime deps, but we still
-             need test-scoped JUnit/AssertJ for the matrix tests themselves. -->
-        <!-- JavaFX runtime for the native backend's Stage. Keep graphics and controls aligned with the
-             cef4j-inprocess-jfx test runtime to avoid mixing incompatible JavaFX versions. -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
@@ -214,9 +202,7 @@
                 <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <!-- Some matrix tests initialise in-process CEF, whose process-global lifecycle cannot be restarted
-                     safely between classes. JFX needs headless=false (surefire's default would crash glassgtk3 in
-                     XInternAtom); CEF itself comes from the packager-generated reactor resource tree. -->
+                <!-- In-process CEF cannot restart safely between test classes. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -224,7 +210,6 @@
                         <cef4j.disableStderrRedirect>true</cef4j.disableStderrRedirect>
                         <java.awt.headless>false</java.awt.headless>
                         <cef4j.runtime.server.binary>${maven.multiModuleProjectDirectory}/cef4j-runtime-server/target/cmake-build/runtime-server/${runtime.server.executable}</cef4j.runtime.server.binary>
-                        <!-- The thin server accepts the packager's flat runtime layout directly. -->
                         <cef4j.runtime.server.resources>${cef4j.reactor.runtime.dir}</cef4j.runtime.server.resources>
                     </systemPropertyVariables>
                     <reuseForks>false</reuseForks>
@@ -300,9 +285,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        <!-- TestFX has not published a JavaFX 25-specific Monocle artifact. Its
-             latest JavaFX 21 build remains compatible with the Monocle APIs used
-             by these headless scene-graph tests. -->
+        <!-- TestFX has no JavaFX 25 Monocle artifact; its JavaFX 21 build is compatible. -->
         <profile>
             <id>javafx-monocle-25</id>
             <activation>

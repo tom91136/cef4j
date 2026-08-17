@@ -2,7 +2,6 @@ package net.kurobako.cef4j.codegen
 
 object JavaNativeCodeGen {
 
-  // Render the NativePeer inner class body without the surrounding file wrapper.
   def renderInnerClass(
       decl: CefDecl.ObjectStruct,
       extraNativeDecls: List[String] = Nil,
@@ -16,9 +15,9 @@ object JavaNativeCodeGen {
   private def renderBody(
       javaName: String,
       fns: List[FnPtr],
-      extraNativeDecls: List[String] = Nil,
-      handlerNames: Set[String] = Set.empty,
-      ancestorDecls: List[CefDecl.ObjectStruct] = Nil
+      extraNativeDecls: List[String],
+      handlerNames: Set[String],
+      ancestorDecls: List[CefDecl.ObjectStruct]
   )(using Naming.Context): String = {
     val overrides =
       fns.map(fn => renderOverride(fn, handlerNames, javaName => s"${Naming.nativeMethodName(fn)}($javaName)"))

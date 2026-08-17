@@ -1,0 +1,10 @@
+version
+  major 1
+  minor 3
+
+domain Runtime
+  type RemoteObject extends object
+    properties
+      optional string class
+
+  command enable

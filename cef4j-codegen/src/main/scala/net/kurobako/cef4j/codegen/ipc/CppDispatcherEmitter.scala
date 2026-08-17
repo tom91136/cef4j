@@ -1,56 +1,20 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a single self-contained C++ header — `Dispatcher.h` — that the runtime server includes to handle JVM → runtime
-  * server `Request` messages without hand-written switch cases.
-  *
-  * Supported method shapes (see {@link isDispatchable}):
-  *   - params: `I32`/`I64`/`Bool`/`Utf8String`, plus the implicit `self` RemoteHandle (always present)
-  *   - return: `Void` or any of the same primitive/string types
-  *
-  * Supported method shapes:
-  *   - params: I32/I64/Bool/Utf8String, plus RemoteHandle when the C struct is a facade
-  *   - return: Void or any of the same primitive/string/RemoteHandle types
-  *
-  * Byte-arrays and handles to non-facade structs (e.g. by-value data structs the IR maps to RemoteHandle) stay
-  * deferred. Each dispatched call posts a LambdaTask onto the CEF UI thread (mandatory for almost all CEF C-API calls),
-  * which performs the call, releases retains, and sends the response. The dispatcher itself runs on the IpcServer
-  * worker thread and only does decode + post.
-  *
-  * String params arrive as std::string and materialise into a ScopedCefString inside the lambda so the cef_string_t
-  * buffer lives across the call. String returns are taken via ScopedCefString::take so the cef_string_userfree_t is
-  * freed before the response is encoded. RemoteHandle params arrive as std::int32_t; the lambda looks them up in the
-  * matching HandleTable<T>, retains, passes the pointer, and releases after. RemoteHandle returns get inserted via
-  * insertOrRelease, which rebalances the +1 the C-API returned against the +1 the table holds.
-  */
 object CppDispatcherEmitter {
 
   case class DispatchInputs(
       facades: List[FacadeSpec],
       messageSpecs: List[MessageSpec],
-      // Relative include paths from the CEF dist root, e.g. "include/capi/cef_browser_capi.h" or
-      // "include/capi/views/cef_box_layout_capi.h" — emitted verbatim into `#include "..."` lines.
       capiHeaders: List[String],
       packageName: String,
-      // Lookup for by-value data struct params: cefStructName → DataStructSpec. Used by the dispatcher to
-      // emit per-field copy from the wire-decoded overlay into a stack-local cef_X_t before the C call.
       dataStructByCef: Map[String, DataStructSpec] = Map.empty,
-      // cefStructName → JvmVisitorSpec for visitor-typed RemoteHandle params: the dispatcher emits a
-      // `new JvmXxxVisitor(handle, ipc)` call instead of `tables::xxx.retain` so JVM-owned callbacks fire
-      // through the visitor wire.
       jvmVisitorByCef: Map[String, JvmVisitorSpec] = Map.empty,
-      // Hand-written renderer-relay messageIds — Requests that are not tied to a per-facade method but
-      // still need to be shipped to the renderer subprocess via `cef4j_renderer_req`. Currently used for
-      // RendererReleaseHandleRequest, which the renderer-side runtime server turns into a dispatchRelease call on
-      // its own handle tables.
       manualRendererRelayIds: List[Int] = Nil
   )
 
-  /** Returns the full text of the generated `Dispatcher.h`. */
   def emit(in: DispatchInputs): String = {
     val ns = in.packageName.replace('.', '_').toLowerCase
-    // Browser-process dispatch only handles browser-affinity facades. Renderer-affinity facades (cef_v8_*,
-    // cef_dom_*) are handled by the renderer dispatcher emitted separately; the browser side relays their
-    // Requests to the renderer via cef_process_message rather than dispatching them here.
+    // Renderer-affinity requests are relayed rather than dispatched here.
     val browserFacades     = in.facades.filter(_.affinity == ProcessAffinity.Browser)
     val rendererMessageIds = in.facades
       .filter(_.affinity == ProcessAffinity.Renderer)
@@ -63,18 +27,9 @@ object CppDispatcherEmitter {
       browserFacades
         .map(f => f -> f.methods.filter(m => isDispatchable(m, facadeStructs, dataStructNames, visitorStructs)))
         .filter(_._2.nonEmpty)
-    // A facade gets a static table when either it has its own dispatched methods (so `self` lookups work) or it's
-    // referenced as a non-self handle by some dispatched method elsewhere. Without this, `getMainFrame` would
-    // compile but the frame return wouldn't have a table to live in.
-    // Renderer-affinity Requests are relayed by frame; force `tables::frame` to exist whenever any renderer
-    // method exists so the relay can find a cef_frame_t* by id even if no browser-affinity method happens to
-    // reference cef_frame_t (defensive — Browser::getMainFrame currently keeps it referenced anyway).
+    // Every receiver, parameter, result, and renderer frame needs a handle table.
     val frameAlwaysNeeded = rendererMessageIds.nonEmpty
-    // Tables include renderer-affinity facades too — they don't get dispatched cases here, but the runtime server's
-    // hand-written code (and the auto-generated HandlerForwarders) still need a `tables::v8Value` etc. so
-    // V8 handles passed through render-process handler callbacks can be inserted/looked up uniformly. The
-    // renderer dispatcher uses the same tables when the runtime server runs as the renderer subprocess.
-    val tableStructs = in.facades.filter { f =>
+    val tableStructs      = in.facades.filter { f =>
       val hasOwnDispatchable = dispatchableByFac.exists(_._1.cefStructName == f.cefStructName)
       val referencedByOther  = dispatchableByFac.exists { case (_, ms) =>
         ms.exists(_.handleStructByField.values.toSet.contains(f.cefStructName))
@@ -84,9 +39,7 @@ object CppDispatcherEmitter {
       hasOwnDispatchable || referencedByOther || isFrameForRelay || isRenderer
     }
     val tableFields = tableStructs.map(tableField)
-    // CEF < 133 spelled this type cef_v8value_t, which naturally generates
-    // tables::v8value. Hand-written runtime code uses the normalized post-133
-    // spelling; retain that stable internal name across both API eras.
+    // CEF < 133 used cef_v8value_t; keep one stable internal table name.
     val tableAliases =
       if (tableStructs.exists(_.cefStructName == "cef_v8value_t")) "    inline auto& v8Value = v8value;"
       else ""
@@ -95,15 +48,12 @@ object CppDispatcherEmitter {
       ms.flatMap(m => List(m.requestClassName, m.responseClassName))
     }.distinct.sorted.map(c => s"""#include "$c.h"""").mkString("\n")
     val cases = dispatchableByFac.flatMap { case (f, ms) =>
-      ms.map(m => renderCase(f, m, ns, in.messageSpecs, in.dataStructByCef, in.jvmVisitorByCef))
+      ms.map(m => renderCase(f, m, in.messageSpecs, in.dataStructByCef, in.jvmVisitorByCef))
     }.mkString("\n")
     val dispatchableCount = dispatchableByFac.map(_._2.size).sum
     val skippedCount      = browserFacades.flatMap(_.methods).size - dispatchableCount
     val rendererCount     = in.facades.filter(_.affinity == ProcessAffinity.Renderer).flatMap(_.methods).size
 
-    // Case-label list of renderer-affinity Request message ids, all falling through to relayToRenderer.
-    // Generated from the messageSpecs index so we don't depend on each Request header being included in the
-    // dispatcher (the relay only needs the id and the payload bytes — it never instantiates the Request).
     val perFacadeRendererLabels: List[String] = in.facades
       .filter(_.affinity == ProcessAffinity.Renderer)
       .flatMap { f =>
@@ -368,22 +318,17 @@ object CppDispatcherEmitter {
        |""".stripMargin
   }
 
-  /** Methods that fit our supported subset. Byte-arrays remain deferred. RemoteHandle params and returns are supported
-    * when their CEF struct type is itself a facade (so the dispatcher's `DispatcherContext` carries the matching
-    * `HandleTable<T>*`); methods referencing non-facade struct types (e.g. by-value data structs that the IR maps to
-    * RemoteHandle) get skipped.
-    */
   private def isDispatchable(
       m: FacadeMethod,
       facadeStructs: Set[String],
       dataStructNames: Set[String],
-      visitorStructs: Set[String] = Set.empty
+      visitorStructs: Set[String]
   ): Boolean = {
     def fieldOk(name: String, ty: FieldType): Boolean = ty match {
       case FieldType.I32 | FieldType.I64 | FieldType.Bool | FieldType.Utf8String => true
-      case FieldType.Bytes        => true // raw buffer; BufferSize companion rebuilt at the call via cCallArgs
-      case FieldType.StringList   => true // cef_string_list_t — built transiently inside the lambda
-      case FieldType.RemoteHandle =>
+      case FieldType.Bytes                                                       => true
+      case FieldType.StringList                                                  => true
+      case FieldType.RemoteHandle                                                =>
         m.handleStructByField.get(name).exists(s => facadeStructs.contains(s) || visitorStructs.contains(s))
       case FieldType.DataStruct(cefName) => dataStructNames.contains(cefName)
     }
@@ -395,9 +340,6 @@ object CppDispatcherEmitter {
     paramsOk && resultOk
   }
 
-  /** Inside `namespace tables`, field name is just the struct's short camelCase form: `cef_browser_t` → `browser`,
-    * `cef_browser_host_t` → `browserHost`. The `tables::` namespace makes the suffix redundant.
-    */
   private def tableFieldName(cefStruct: String): String = {
     val core = stripCefPrefix(cefStruct)
     core.split('_').iterator.zipWithIndex.map { case (p, i) =>
@@ -405,11 +347,9 @@ object CppDispatcherEmitter {
     }.mkString
   }
 
-  /** `inline` lets the table be defined in this header without ODR violations across multiple translation units. */
   private def tableField(f: FacadeSpec): String =
     s"    inline cef4j::ipc::HandleTable<${f.cefStructName}> ${tableFieldName(f.cefStructName)};"
 
-  /** One `if (kind == "cef_X_t") { tables::x.release(id); return true; }` clause per facade. */
   private def releaseCase(f: FacadeSpec): String =
     s"""    if (kind == "${f.cefStructName}") { tables::${tableFieldName(
         f.cefStructName
@@ -421,34 +361,26 @@ object CppDispatcherEmitter {
   private def renderCase(
       f: FacadeSpec,
       m: FacadeMethod,
-      ns: String,
       messageSpecs: List[MessageSpec],
       dataStructByCef: Map[String, DataStructSpec],
-      jvmVisitorByCef: Map[String, JvmVisitorSpec] = Map.empty
+      jvmVisitorByCef: Map[String, JvmVisitorSpec]
   ): String = {
-    val req       = m.requestClassName
-    val resp      = m.responseClassName
-    val table     = tableFieldName(f.cefStructName)
-    val cFn       = m.cefMethodName
-    val msgIdExpr = s"gen::$req::kMessageId"
-    // Per-param decode + capture. RemoteHandle params snapshot the int32 id; the lambda then looks up + retains via
-    // the right HandleTable inside its body. Bool narrows to int at the call site to match CEF's C-API. String
-    // params arrive as std::string and materialise into a ScopedCefString inside the lambda so the cef_string_t
-    // buffer outlives the call.
+    val req           = m.requestClassName
+    val resp          = m.responseClassName
+    val table         = tableFieldName(f.cefStructName)
+    val cFn           = m.cefMethodName
+    val msgIdExpr     = s"gen::$req::kMessageId"
     val captureExtras = m.explicitParams.map { p =>
       val cppTy = p.ty match {
-        case FieldType.I32          => "std::int32_t"
-        case FieldType.I64          => "std::int64_t"
-        case FieldType.Bool         => "bool"
-        case FieldType.Utf8String   => "std::string"
-        case FieldType.Bytes        => "std::vector<std::uint8_t>"
-        case FieldType.StringList   => "std::vector<std::string>"
-        case FieldType.RemoteHandle => "std::int32_t"
-        // Qualify with the generated namespace (`gen` is aliased near the top of dispatch()) so the
-        // dispatcher case body resolves the overlay class regardless of the current namespace context.
+        case FieldType.I32                 => "std::int32_t"
+        case FieldType.I64                 => "std::int64_t"
+        case FieldType.Bool                => "bool"
+        case FieldType.Utf8String          => "std::string"
+        case FieldType.Bytes               => "std::vector<std::uint8_t>"
+        case FieldType.StringList          => "std::vector<std::string>"
+        case FieldType.RemoteHandle        => "std::int32_t"
         case FieldType.DataStruct(cefName) => "gen::" + SpecDeriver.cefStructToClassName(cefName)
       }
-      // Move-construct overlays/byte vectors (which can be large) so we don't deep-copy out of the request.
       val rhs = p.ty match {
         case FieldType.DataStruct(_) => s"std::move(req.${p.name})"
         case FieldType.Bytes         => s"std::move(req.${p.name})"
@@ -457,8 +389,6 @@ object CppDispatcherEmitter {
       }
       s"            $cppTy ${p.name} = $rhs;"
     }.mkString("\n")
-    // Inside the lambda: materialise strings, look up RemoteHandle params, build native cef_X_t structs from
-    // by-value data struct overlays before the call.
     val lambdaPrelude = m.explicitParams.flatMap { p =>
       p.ty match {
         case FieldType.Utf8String =>
@@ -467,8 +397,7 @@ object CppDispatcherEmitter {
           val struct = m.handleStructByField(p.name)
           jvmVisitorByCef.get(struct) match {
             case Some(vSpec) =>
-              // JVM-owned visitor: synthesise a fresh cef_X_t bound to the JVM callback id. CEF holds the
-              // resulting +1 retain; when CEF eventually releases, the synthetic deletes itself.
+              // CEF owns the synthetic visitor's initial reference.
               val syntheticCls = CppJvmVisitorEmitter.syntheticClassName(vSpec)
               List(
                 s"                $struct* ${p.name}_ptr = ${p.name} != 0 ?",
@@ -487,8 +416,6 @@ object CppDispatcherEmitter {
           val initLines = s"                $cefName $nativeVar{};" :: nativeStructFieldCopies(spec, p.name, nativeVar)
           initLines
         case FieldType.StringList =>
-          // Build a transient cef_string_list_t from the std::vector<std::string>. cef_string_list_append
-          // takes a cef_string_t* — convert each std::string via cef_string_utf8_to_utf16 into a temp.
           List(
             s"                cef_string_list_t ${p.name}_list = cef_string_list_alloc();",
             s"                for (const auto& __s : ${p.name}) {",
@@ -501,15 +428,12 @@ object CppDispatcherEmitter {
         case _ => Nil
       }
     }.mkString("\n")
-    // After the call: release retained RemoteHandle param pointers and clear cef_string_t fields in any
-    // native structs we built (so their UTF-16 buffers don't leak).
     val lambdaPostlude = m.explicitParams.flatMap { p =>
       p.ty match {
         case FieldType.RemoteHandle =>
           val struct = m.handleStructByField(p.name)
           if (jvmVisitorByCef.contains(struct)) {
-            // Visitor synthetics are handed to CEF with refcount=1; CEF owns the lifecycle from here. No
-            // release on our side — that would double-decrement and crash on the next callback.
+            // Releasing here would steal CEF's ownership.
             Nil
           } else {
             List(
@@ -527,19 +451,15 @@ object CppDispatcherEmitter {
         case _ => Nil
       }
     }.mkString("\n")
-    // Tables are static globals in `tables::`, so the lambda doesn't need to capture pointers to them.
     val captureNames   = m.explicitParams.map(_.name)
     val lambdaCaptures = ("receiver" :: "ipc" :: "corrId" :: "msgId" :: captureNames).mkString(", ")
-    // Each explicit param goes at C-arg index N+1 (self is at 0). CEF enum-typed args need a cast from
-    // int32 → cef_X_t; the cefArg<F, N> template handles all cases (int → int is no-op). When `cCallArgs`
-    // is supplied (Buffer/BufferSize-pair methods), walk the original CEF signature instead so the size
-    // companion lands at its real C-arg index.
+    // C arguments retain their original indices after hidden sizes are restored.
     val cFnRef  = s"receiver->$cFn"
     val argList = m.cCallArgs match {
       case Some(orig) =>
         val byName = m.explicitParams.map(p => p.name -> p).toMap
         val pieces = orig.zipWithIndex.map { case (entry, idx) =>
-          val cArgIdx = idx + 1 // self is at 0
+          val cArgIdx = idx + 1
           entry match {
             case CCallArg.Explicit(name) =>
               val p = byName(name)
@@ -570,8 +490,6 @@ object CppDispatcherEmitter {
           messageSpecs.find(_.className == resp).flatMap(_.fields.headOption.map(_.name)).getOrElse(field.name)
         field.ty match {
           case FieldType.DataStruct(cefName) =>
-            // Returned-by-value cef_X_t: copy each field into the response's overlay member, then encode.
-            // No `auto* base; base->release(base)` for the result — by-value structs aren't refcounted.
             val spec   = dataStructByCef(cefName)
             val copies = nativeStructToOverlayCopies(spec, "rawResult", s"resp.$fieldName").mkString("\n")
             s"""$preludeBlock                $cefName rawResult = receiver->$cFn($argList);
@@ -595,7 +513,7 @@ object CppDispatcherEmitter {
               case FieldType.RemoteHandle =>
                 val tbl = resultStruct.map(tableFieldName).getOrElse("nullptr_table")
                 s"insertOrRelease(&tables::$tbl, rawResult)"
-              case _ => "0" // unreachable per isDispatchable
+              case _ => "0"
             }
             s"""$preludeBlock                auto rawResult = receiver->$cFn($argList);
                |                auto* base = reinterpret_cast<cef_base_ref_counted_t*>(receiver);
@@ -611,9 +529,7 @@ object CppDispatcherEmitter {
         }
     }
     val captureBlock = if (captureExtras.isEmpty) "" else s"\n$captureExtras"
-    // When the receiver is missing, raise a structured Kind::Error(ReceiverGone) so the JVM-side future
-    // fails with CefRemoteException instead of decoding a zero-default response. Payload: int32 code,
-    // int32 utf8MessageLength, utf8 bytes — fixed for now (no message text, len = 0).
+    // Missing receivers must fail the pending JVM future.
     val emptyAck =
       """static const std::uint8_t kReceiverGonePayload[8] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         |                if (ipc) ipc->send(cef4j::ipc::Kind::Error, 0, corrId, msgId,
@@ -635,11 +551,6 @@ object CppDispatcherEmitter {
        |        }""".stripMargin
   }
 
-  /** Per-param expression at the call site. Primitives go through `cefArg<F, N>` so int32 wire values land as the right
-    * CEF enum/int type (CEF's enums are scoped C-style typedefs that don't accept implicit int conversion under
-    * -Wno-permissive). Strings, handles, and data structs already build to native shapes via their preludes — they pass
-    * through directly.
-    */
   private def paramArgExpr(p: FieldSpec, cFnRef: String, argIdx: Int): String = p.ty match {
     case FieldType.Bool                => s"cefArg<decltype($cFnRef), $argIdx>(${p.name} ? 1 : 0)"
     case FieldType.I32 | FieldType.I64 =>
@@ -651,21 +562,12 @@ object CppDispatcherEmitter {
     case FieldType.DataStruct(_) => s"&${p.name}_native"
   }
 
-  /** Per-field copy from a wire-decoded overlay into a native `cef_X_t` value. Uses `decltype`-cast for
-    * primitives/enums (handles `cef_state_t`, `cef_color_t`, etc. uniformly) and `cef_string_utf8_to_utf16` for
-    * strings. The native struct's `size` field gets `sizeof(...)` so CEF's struct-version checks pass.
-    */
   private def nativeStructFieldCopies(spec: DataStructSpec, overlayVar: String, nativeVar: String): List[String] = {
-    // Some CEF data structs (cef_browser_settings_t, cef_window_info_t…) start with `size_t size` for ABI
-    // versioning; others (cef_mouse_event_t, cef_rect_t) don't. Only emit the size-init line when the
-    // struct actually has the field — otherwise we emit `event_native.size = sizeof(...)` for a struct
-    // that has no `size` member and the runtime server doesn't compile.
+    // CEF uses an optional size field for struct-version ABI checks.
     val hasSizeField = spec.fields.exists(f => SpecDeriver.camelToSnake(f.name) == "size")
     val sizeAssign   = if (hasSizeField) List(s"                $nativeVar.size = sizeof($nativeVar);") else Nil
     val copies       = spec.fields.flatMap { f =>
       val nativeField = SpecDeriver.camelToSnake(f.name)
-      // Skip `size` — we set it explicitly above when present. CEF treats it as the struct-version
-      // sentinel and the overlay's value (zero by default) would clobber that.
       if (nativeField == "size") Nil
       else f.ty match {
         case FieldType.I32 | FieldType.I64 | FieldType.Bool =>
@@ -676,16 +578,12 @@ object CppDispatcherEmitter {
           List(
             s"                if (!$overlayVar.${f.name}.empty()) cef_string_utf8_to_utf16($overlayVar.${f.name}.data(), $overlayVar.${f.name}.size(), &$nativeVar.$nativeField);"
           )
-        case _ => Nil // RemoteHandle / DataStruct fields can't appear in the overlay (deriveDataStructs filters)
+        case _ => Nil
       }
     }
     sizeAssign ++ copies
   }
 
-  /** Per-string-field `cef_string_clear` for any cef_string_t members of a native struct we built. CEF copies settings
-    * strings internally during `cef_browser_host_create_browser` etc., so clearing them right after the call is safe
-    * and avoids leaking the UTF-16 buffer.
-    */
   private def nativeStructStringClears(spec: DataStructSpec, nativeVar: String): List[String] =
     spec.fields.collect {
       case f if f.ty == FieldType.Utf8String =>
@@ -693,11 +591,6 @@ object CppDispatcherEmitter {
         s"                cef_string_clear(&$nativeVar.$nativeField);"
     }
 
-  /** Reverse of {@link nativeStructFieldCopies}: copies a native `cef_X_t` value (returned from a CEF method) into an
-    * overlay so it can be encoded back to the JVM. Primitives go through `decltype` casts to the overlay field's
-    * `std::int32_t`/`std::int64_t`/`bool` type; cef_string_t members are utf16-decoded into `std::string` and the
-    * native string buffer is cleared right after (CEF returns ownership of by-value-struct strings to the caller).
-    */
   private def nativeStructToOverlayCopies(
       spec: DataStructSpec,
       nativeVar: String,
@@ -705,7 +598,6 @@ object CppDispatcherEmitter {
   ): List[String] =
     spec.fields.flatMap { f =>
       val nativeField = SpecDeriver.camelToSnake(f.name)
-      // Skip the struct-version `size` field — it's an implementation detail of CEF's struct ABI, not user data.
       if (nativeField == "size") Nil
       else f.ty match {
         case FieldType.I32 | FieldType.I64 | FieldType.Bool =>
@@ -717,7 +609,7 @@ object CppDispatcherEmitter {
             s"                $overlayVar.${f.name} = cef4j_dispatcher_utf16ToStdString($nativeVar.$nativeField);",
             s"                cef_string_clear(&$nativeVar.$nativeField);"
           )
-        case _ => Nil // RemoteHandle / nested DataStruct fields are filtered out by deriveDataStructs
+        case _ => Nil
       }
     }
 }

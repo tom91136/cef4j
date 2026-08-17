@@ -24,42 +24,12 @@ runs:
         key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
         enableCrossOsArchive: true
 
-    - name: Fetch and validate target CEF archive
-      if: steps.target-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: >-
-        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
-        '${{ inputs.version }}' '${{ inputs.platform }}'
-
-    - name: Save target CEF archive
-      if: steps.target-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v6
-      with:
-        path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
-        key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
-        enableCrossOsArchive: true
-
     # The generator normalises API metadata across all three desktop CEF
     # distributions, regardless of the current build platform.
     - id: linux-codegen-cache
       name: Restore Linux code-generation archive
       if: inputs.platform != 'linux64'
       uses: actions/cache/restore@v6
-      with:
-        path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
-        key: cef-archive-linux64-${{ inputs.version }}
-        enableCrossOsArchive: true
-
-    - name: Fetch Linux code-generation archive
-      if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: >-
-        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
-        '${{ inputs.version }}' linux64
-
-    - name: Save Linux code-generation archive
-      if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v6
       with:
         path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
         key: cef-archive-linux64-${{ inputs.version }}
@@ -74,21 +44,6 @@ runs:
         key: cef-archive-macosx64-${{ inputs.version }}
         enableCrossOsArchive: true
 
-    - name: Fetch macOS code-generation archive
-      if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: >-
-        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
-        '${{ inputs.version }}' macosx64
-
-    - name: Save macOS code-generation archive
-      if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
-      uses: actions/cache/save@v6
-      with:
-        path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
-        key: cef-archive-macosx64-${{ inputs.version }}
-        enableCrossOsArchive: true
-
     - id: windows-codegen-cache
       name: Restore Windows code-generation archive
       if: inputs.platform != 'windows64'
@@ -98,12 +53,49 @@ runs:
         key: cef-archive-windows64-${{ inputs.version }}
         enableCrossOsArchive: true
 
-    - name: Fetch Windows code-generation archive
-      if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true'
+    - name: Fetch and validate missing CEF archives
       shell: bash
-      run: >-
-        "${{ github.workspace }}/.github/ci/fetch-cef.sh"
-        '${{ inputs.version }}' windows64
+      env:
+        CEF_VERSION: ${{ inputs.version }}
+        TARGET_PLATFORM: ${{ inputs.platform }}
+      run: |
+        set -euo pipefail
+        mkdir -p .cef-dist
+        for platform in "${TARGET_PLATFORM}" linux64 macosx64 windows64; do
+          name="cef_binary_${CEF_VERSION}_${platform}_minimal.tar.bz2"
+          archive=".cef-dist/${name}"
+          test -f "${archive}" && continue
+          partial="${archive}.part"
+          rm -f "${partial}"
+          curl --fail --location --retry 5 --retry-all-errors --connect-timeout 30 \
+            --output "${partial}" "https://cef-builds.spotifycdn.com/${name}"
+          tar -tjf "${partial}" >/dev/null
+          mv "${partial}" "${archive}"
+        done
+
+    - name: Save target CEF archive
+      if: steps.target-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_${{ inputs.platform }}_minimal.tar.bz2
+        key: cef-archive-${{ inputs.platform }}-${{ inputs.version }}
+        enableCrossOsArchive: true
+
+    - name: Save Linux code-generation archive
+      if: inputs.platform != 'linux64' && steps.linux-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_linux64_minimal.tar.bz2
+        key: cef-archive-linux64-${{ inputs.version }}
+        enableCrossOsArchive: true
+
+    - name: Save macOS code-generation archive
+      if: inputs.platform != 'macosx64' && steps.macos-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: .cef-dist/cef_binary_${{ inputs.version }}_macosx64_minimal.tar.bz2
+        key: cef-archive-macosx64-${{ inputs.version }}
+        enableCrossOsArchive: true
 
     - name: Save Windows code-generation archive
       if: inputs.platform != 'windows64' && steps.windows-codegen-cache.outputs.cache-hit != 'true' && inputs.save-cache == 'true'

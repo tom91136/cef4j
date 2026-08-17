@@ -1,12 +1,10 @@
 package net.kurobako.cef4j.codegen
 
-import JniCppByValueCodeGen.*
 import JniNaming.addRefExpr
 import JniNaming.jniMutableName
 import JniNaming.jniName
 import JniNaming.outPrimInfo
 
-// Generates C++ trampoline functions for handler structs (Java -> native callbacks).
 class JniCppHandlerTrampolineGen(
     handlerNames: Set[String],
     scopedNames: Set[String],
@@ -32,11 +30,7 @@ class JniCppHandlerTrampolineGen(
     "unsigned long"
   )
 
-  // Platform handle typedefs are #define'd in older CEF versions (pre-133) and
-  // expand to platform-specific types during preprocessing (e.g. unsigned long
-  // on Linux X11, void* on macOS).  The generated trampolines must use the
-  // portable typedef name so they compile on all platforms.  This map reverses
-  // the expansion for known platform-resolved raw types.
+  // Recover portable typedefs expanded by CEF < 133 preprocessing.
   private val PlatformHandlePortableType: Map[String, String] = Map(
     "cef_cursor_handle_t"          -> "cef_cursor_handle_t",
     "cef_event_handle_t"           -> "cef_event_handle_t",
@@ -46,9 +40,6 @@ class JniCppHandlerTrampolineGen(
     "cef_shared_texture_handle_t"  -> "cef_shared_texture_handle_t"
   )
 
-  /** If rawCType is already a portable typedef, return it. Otherwise, if it is a known platform expansion, look up the
-    * portable name by matching the parameter name against CEF conventions.
-    */
   private def portableCType(p: Param): Option[String] = {
     val raw = p.rawCType.trim
     PlatformHandlePortableType.get(raw).orElse {
@@ -57,7 +48,7 @@ class JniCppHandlerTrampolineGen(
         p.name match {
           case "cursor"   => Some("cef_cursor_handle_t")
           case "os_event" => Some("cef_event_handle_t")
-          case _          => None // not a known handler callback handle param
+          case _          => None
         }
     }
   }
@@ -128,7 +119,7 @@ class JniCppHandlerTrampolineGen(
       s"""        env->CallVoidMethod(h->javaHandler, mid$argsStr);
         if (CheckJNIException(env)) { env->PopLocalFrame(nullptr); return; }"""
     } else if (handlerPtrCefName.isDefined) {
-      val cefName     = handlerPtrCefName.get
+      val cefName     = handlerPtrCefName.getOrElse(throw IllegalStateException("missing handler pointer type"))
       val javaName    = Naming.structToJavaName(cefName)
       val factoryName = s"Create_Jni$javaName"
       val callExpr    = s"(jobject)env->CallObjectMethod(h->javaHandler, mid$argsStr)"
@@ -183,7 +174,6 @@ $callAndReturn$popAndReturn
     }"""
   }
 
-  // Convert a native C param to its JNI equivalent for handler trampolines.
   private def convertNativeToJni(
       p: Param,
       allParams: List[Param],
@@ -335,9 +325,7 @@ $callAndReturn$popAndReturn
       case CType.Bool =>
         (Nil, s"static_cast<jboolean>(${p.name})", Nil)
       case _ if portableCType(p).isDefined =>
-        // Platform handle — underlying type varies (void*, unsigned long, HCURSOR) so
-        // use a C-style cast that handles both pointers and integers. The Java side is
-        // `long` (J), so we must widen to jlong to avoid truncating 64-bit pointers.
+        // Widen pointer-or-integer platform handles through intptr_t.
         (Nil, s"(jlong)(intptr_t)(${p.name})", Nil)
       case CType.Int | CType.UInt =>
         (Nil, s"static_cast<jint>(${p.name})", Nil)
@@ -462,13 +450,13 @@ $callAndReturn$popAndReturn
       case CType.Void =>
         (Nil, "0", Nil)
       case other =>
-        throw new RuntimeException(s"convertNativeToJni: unhandled type $other for param ${p.name}")
+        throw IllegalArgumentException(s"convertNativeToJni: unhandled type $other for param ${p.name}")
     }
   }
 
   def localRefCount(fn: FnPtr): Int = {
     val fixed     = 1
-    val paramRefs = fn.params.zipWithIndex.map { case (p, idx) =>
+    val paramRefs = fn.params.map { p =>
       p.typ match {
         case CType.ObjectPtr(_)                                        => 3
         case CType.OutObjectPtr(_)                                     => 7

@@ -1,8 +1,8 @@
 package net.kurobako.cef4j.codegen.passes
 
-import java.nio.file.Files
 import java.nio.file.Path
 
+import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.Banners
 
 object EmitMarkerInterfaces {
@@ -10,7 +10,7 @@ object EmitMarkerInterfaces {
     val banner     = Banners.java
     val importLine = s"import ${Banners.javaAnnotationClass};"
     val annotation = Banners.javaAnnotation
-    Files.writeString(
+    AtomicFiles.writeString(
       outJava.resolve("CefLibraryObject.java"),
       s"""$banner
 package $javaPackage;
@@ -48,7 +48,7 @@ public interface CefLibraryObject extends AutoCloseable {
 }
 """
     )
-    Files.writeString(
+    AtomicFiles.writeString(
       outJava.resolve("CefClientHandler.java"),
       s"""$banner
 package $javaPackage;
@@ -72,7 +72,7 @@ $annotation
 public interface CefClientHandler {}
 """
     )
-    Files.writeString(
+    AtomicFiles.writeString(
       outJava.resolve("CefEnum.java"),
       s"""$banner
 package $javaPackage;

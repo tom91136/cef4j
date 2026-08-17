@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * The Browser domain defines methods and events for browser managing.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Browser.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Browser {
     private Browser() {}
@@ -2200,6 +2202,13 @@ public final class Browser {
             return client.call("Browser.resetPermissions", params, ResetPermissionsResult::fromMap);
         }
         /**
+         * Reset all permission management for all origins.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ResetPermissionsResult> resetPermissions() {
+            return resetPermissions(ResetPermissionsParams.builder().build());
+        }
+        /**
          * Set the behavior when downloading a file.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -2265,6 +2274,14 @@ public final class Browser {
             return client.call("Browser.getHistograms", params, GetHistogramsResult::fromMap);
         }
         /**
+         * Get Chrome histograms.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetHistogramsResult> getHistograms() {
+            return getHistograms(GetHistogramsParams.builder().build());
+        }
+        /**
          * Get a Chrome histogram by name.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -2292,6 +2309,14 @@ public final class Browser {
             return client.call("Browser.getWindowForTarget", params, GetWindowForTargetResult::fromMap);
         }
         /**
+         * Get the browser window that contains the devtools target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetWindowForTargetResult> getWindowForTarget() {
+            return getWindowForTarget(GetWindowForTargetParams.builder().build());
+        }
+        /**
          * Set position and/or size of the browser window.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -2317,6 +2342,14 @@ public final class Browser {
          */
         public CompletionStage<SetDockTileResult> setDockTile(SetDockTileParams params) {
             return client.call("Browser.setDockTile", params, SetDockTileResult::fromMap);
+        }
+        /**
+         * Set dock tile details, platform-specific.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetDockTileResult> setDockTile() {
+            return setDockTile(SetDockTileParams.builder().build());
         }
         /**
          * Invoke custom browser commands used by telemetry.

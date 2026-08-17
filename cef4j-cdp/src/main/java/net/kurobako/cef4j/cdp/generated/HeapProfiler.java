@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/v8/v8/+/3063ea3a0737a3fc4d4ed3babd595f1cace1e6ac/include/js_protocol.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class HeapProfiler {
     private HeapProfiler() {}
@@ -1259,12 +1261,26 @@ public final class HeapProfiler {
             return client.call("HeapProfiler.startSampling", params, StartSamplingResult::fromMap);
         }
         /**
+         * Invokes HeapProfiler.startSampling with default parameters.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StartSamplingResult> startSampling() {
+            return startSampling(StartSamplingParams.builder().build());
+        }
+        /**
          * Invokes HeapProfiler.startTrackingHeapObjects.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<StartTrackingHeapObjectsResult> startTrackingHeapObjects(StartTrackingHeapObjectsParams params) {
             return client.call("HeapProfiler.startTrackingHeapObjects", params, StartTrackingHeapObjectsResult::fromMap);
+        }
+        /**
+         * Invokes HeapProfiler.startTrackingHeapObjects with default parameters.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StartTrackingHeapObjectsResult> startTrackingHeapObjects() {
+            return startTrackingHeapObjects(StartTrackingHeapObjectsParams.builder().build());
         }
         /**
          * Invokes HeapProfiler.stopSampling.
@@ -1282,12 +1298,26 @@ public final class HeapProfiler {
             return client.call("HeapProfiler.stopTrackingHeapObjects", params, StopTrackingHeapObjectsResult::fromMap);
         }
         /**
+         * Invokes HeapProfiler.stopTrackingHeapObjects with default parameters.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<StopTrackingHeapObjectsResult> stopTrackingHeapObjects() {
+            return stopTrackingHeapObjects(StopTrackingHeapObjectsParams.builder().build());
+        }
+        /**
          * Invokes HeapProfiler.takeHeapSnapshot.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<TakeHeapSnapshotResult> takeHeapSnapshot(TakeHeapSnapshotParams params) {
             return client.call("HeapProfiler.takeHeapSnapshot", params, TakeHeapSnapshotResult::fromMap);
+        }
+        /**
+         * Invokes HeapProfiler.takeHeapSnapshot with default parameters.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<TakeHeapSnapshotResult> takeHeapSnapshot() {
+            return takeHeapSnapshot(TakeHeapSnapshotParams.builder().build());
         }
         /**
          * Subscribes to HeapProfiler.addHeapSnapshotChunk.

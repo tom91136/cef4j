@@ -6,7 +6,7 @@ class CodeGenOutputSpec extends munit.FunSuite {
     intercept[IllegalArgumentException](Main.main(Array("--not-a-real-option=true")))
   }
 
-  private given Banners = new Banners("test")
+  private given Banners = Banners.forCefVersion("test")
 
   private val codegen        = new JniCppCodeGen(Map.empty)
   private val byValueCodegen = new JniCppCodeGen(
@@ -800,13 +800,15 @@ class CodeGenOutputSpec extends munit.FunSuite {
 
     val decls = CHeaderParser.parse(header)
 
-    val commandLine  = decls.collectFirst { case d: CefDecl.ObjectStruct if d.name == "cef_command_line_t" => d }.get
-    val initFromArgv = commandLine.fns.find(_.name == "init_from_argv").get
-    val argvParam    = initFromArgv.params.find(_.name == "argv").get
+    val commandLine = decls.collectFirst { case d: CefDecl.ObjectStruct if d.name == "cef_command_line_t" => d }
+      .getOrElse(fail("cef_command_line_t not found"))
+    val initFromArgv = commandLine.fns.find(_.name == "init_from_argv").getOrElse(fail("init_from_argv not found"))
+    val argvParam    = initFromArgv.params.find(_.name == "argv").getOrElse(fail("argv parameter not found"))
     assertEquals(argvParam.typ, CType.ConstCStringArray)
 
-    val mainArgs  = decls.collectFirst { case d: CefDecl.DataStruct if d.name == "cef_main_args_t" => d }.get
-    val argvField = mainArgs.fields.find(_.name == "argv").get
+    val mainArgs = decls.collectFirst { case d: CefDecl.DataStruct if d.name == "cef_main_args_t" => d }
+      .getOrElse(fail("cef_main_args_t not found"))
+    val argvField = mainArgs.fields.find(_.name == "argv").getOrElse(fail("argv field not found"))
     assertEquals(argvField.typ, CType.CStringArray)
   }
 

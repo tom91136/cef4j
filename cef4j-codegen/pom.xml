@@ -30,8 +30,16 @@
             <artifactId>scala3-library_3</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>org.typelevel</groupId>
+            <artifactId>cats-core_3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lihaoyi</groupId>
+            <artifactId>upickle_3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
         </dependency>
         <dependency>
             <groupId>org.scalameta</groupId>
@@ -61,6 +69,13 @@
                         <arg>-Xmax-inlines</arg>
                         <arg>64</arg>
                         <arg>-no-indent</arg>
+                        <arg>-deprecation</arg>
+                        <arg>-feature</arg>
+                        <arg>-unchecked</arg>
+                        <arg>-Wunused:all</arg>
+                        <arg>-Wvalue-discard</arg>
+                        <arg>-Wnonunit-statement</arg>
+                        <arg>-Werror</arg>
                         <arg>-Wconf:cat=unchecked:error</arg>
                         <arg>-Wconf:name=MatchCaseUnreachable:error</arg>
                         <arg>-Wconf:name=PatternMatchExhaustivity:error</arg>

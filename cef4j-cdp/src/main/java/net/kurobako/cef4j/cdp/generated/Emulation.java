@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -14,6 +15,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * This domain emulates different environments for the page.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Emulation.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Emulation {
     private Emulation() {}
@@ -5016,6 +5018,14 @@ public final class Emulation {
             return client.call("Emulation.setAutoDarkModeOverride", params, SetAutoDarkModeOverrideResult::fromMap);
         }
         /**
+         * Automatically render all web contents using a dark theme.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetAutoDarkModeOverrideResult> setAutoDarkModeOverride() {
+            return setAutoDarkModeOverride(SetAutoDarkModeOverrideParams.builder().build());
+        }
+        /**
          * Enables CPU throttling to emulate slow CPUs.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -5030,6 +5040,13 @@ public final class Emulation {
          */
         public CompletionStage<SetDefaultBackgroundColorOverrideResult> setDefaultBackgroundColorOverride(SetDefaultBackgroundColorOverrideParams params) {
             return client.call("Emulation.setDefaultBackgroundColorOverride", params, SetDefaultBackgroundColorOverrideResult::fromMap);
+        }
+        /**
+         * Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetDefaultBackgroundColorOverrideResult> setDefaultBackgroundColorOverride() {
+            return setDefaultBackgroundColorOverride(SetDefaultBackgroundColorOverrideParams.builder().build());
         }
         /**
          * Overrides the values for env(safe-area-inset-*) and env(safe-area-max-inset-*). Unset values will cause the respective variables to be undefined, even if previously overridden.
@@ -5118,6 +5135,13 @@ public final class Emulation {
             return client.call("Emulation.setEmulatedMedia", params, SetEmulatedMediaResult::fromMap);
         }
         /**
+         * Emulates the given media type or media feature for CSS media queries.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetEmulatedMediaResult> setEmulatedMedia() {
+            return setEmulatedMedia(SetEmulatedMediaParams.builder().build());
+        }
+        /**
          * Emulates the given vision deficiency.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -5134,12 +5158,26 @@ public final class Emulation {
             return client.call("Emulation.setEmulatedOSTextScale", params, SetEmulatedOSTextScaleResult::fromMap);
         }
         /**
+         * Emulates the given OS text scale.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetEmulatedOSTextScaleResult> setEmulatedOSTextScale() {
+            return setEmulatedOSTextScale(SetEmulatedOSTextScaleParams.builder().build());
+        }
+        /**
          * Overrides the Geolocation Position or Error. Omitting latitude, longitude or accuracy emulates position unavailable.
          * @param params command parameters
          * @return a stage completing with the command result
          */
         public CompletionStage<SetGeolocationOverrideResult> setGeolocationOverride(SetGeolocationOverrideParams params) {
             return client.call("Emulation.setGeolocationOverride", params, SetGeolocationOverrideResult::fromMap);
+        }
+        /**
+         * Overrides the Geolocation Position or Error. Omitting latitude, longitude or accuracy emulates position unavailable.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetGeolocationOverrideResult> setGeolocationOverride() {
+            return setGeolocationOverride(SetGeolocationOverrideParams.builder().build());
         }
         /**
          * Invokes Emulation.getOverriddenSensorInformation.
@@ -5256,6 +5294,14 @@ public final class Emulation {
             return client.call("Emulation.setLocaleOverride", params, SetLocaleOverrideResult::fromMap);
         }
         /**
+         * Overrides default host system locale with the specified one.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetLocaleOverrideResult> setLocaleOverride() {
+            return setLocaleOverride(SetLocaleOverrideParams.builder().build());
+        }
+        /**
          * Overrides default host system timezone with the specified one.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -5291,6 +5337,14 @@ public final class Emulation {
          */
         public CompletionStage<SetDataSaverOverrideResult> setDataSaverOverride(SetDataSaverOverrideParams params) {
             return client.call("Emulation.setDataSaverOverride", params, SetDataSaverOverrideResult::fromMap);
+        }
+        /**
+         * Override the value of navigator.connection.saveData
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<SetDataSaverOverrideResult> setDataSaverOverride() {
+            return setDataSaverOverride(SetDataSaverOverrideParams.builder().build());
         }
         /**
          * Invokes Emulation.setHardwareConcurrencyOverride.

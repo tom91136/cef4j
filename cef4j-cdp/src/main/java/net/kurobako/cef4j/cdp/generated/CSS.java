@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/CSS.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class CSS {
     private CSS() {}
@@ -7783,6 +7785,14 @@ public final class CSS {
          */
         public CompletionStage<TrackComputedStyleUpdatesForNodeResult> trackComputedStyleUpdatesForNode(TrackComputedStyleUpdatesForNodeParams params) {
             return client.call("CSS.trackComputedStyleUpdatesForNode", params, TrackComputedStyleUpdatesForNodeResult::fromMap);
+        }
+        /**
+         * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<TrackComputedStyleUpdatesForNodeResult> trackComputedStyleUpdatesForNode() {
+            return trackComputedStyleUpdatesForNode(TrackComputedStyleUpdatesForNodeParams.builder().build());
         }
         /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.

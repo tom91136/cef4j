@@ -20,8 +20,7 @@
     </properties>
 
     <profiles>
-        <!-- This profile is active for consumers. The repository-wide Maven config activates
-             cef4j-reactor instead so local builds do not try to resolve other OS classifiers. -->
+        <!-- Reactor builds suppress cross-platform consumer dependencies. -->
         <profile>
             <id>all-platforms</id>
             <activation><activeByDefault>true</activeByDefault></activation>

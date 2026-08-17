@@ -3,11 +3,9 @@ package net.kurobako.cef4j.codegen
 import java.nio.file.Files
 import java.nio.file.Path
 import scala.annotation.tailrec
-import scala.jdk.StreamConverters._
 
 object CHeaderParser {
 
-  // Structs marshalled by value between Java and native.
   private val ByValueStructs: Set[String] =
     Set(
       "cef_rect_t",
@@ -30,8 +28,6 @@ object CHeaderParser {
       "cef_settings_t",
       "cef_request_context_settings_t",
       "cef_box_layout_settings_t",
-      // Additional by-value structs that currently arrive as pointers in callbacks/APIs
-      // but are safer and more ergonomic as typed Java records.
       "cef_main_args_t",
       "cef_urlparts_t",
       "cef_task_info_t",
@@ -179,7 +175,7 @@ object CHeaderParser {
         val line                 = lines(i)
         val newAcc               = acc + line + " "
         val (newDepth, newFound) = line.foldLeft((depth, foundOpen)) {
-          case ((d, fo), '(') => (d + 1, true)
+          case ((d, _), '(')  => (d + 1, true)
           case ((d, fo), ')') => (d - 1, fo)
           case (s, _)         => s
         }
@@ -260,8 +256,7 @@ object CHeaderParser {
       .replaceAll("\\s+", " ")
       .replaceAll("\\b_(?=cef_)", "")
       .replaceAll("\\s*\\*\\s*", "*")
-      // Normalize intermediate const-pointer qualifiers like T* const* to T**.
-      // We only care about pointee topology for codegen classification.
+      // Classification depends on pointer topology, not intermediate constness.
       .replaceAll("\\*const\\*", "**")
       .trim
 
@@ -291,15 +286,13 @@ object CHeaderParser {
       case "cef_window_handle_t" | "cef_cursor_handle_t" | "cef_event_handle_t"
           | "cef_platform_thread_id_t" | "cef_platform_thread_handle_t"
           | "cef_shared_texture_handle_t"
-          // Windows handle types (pointer-width) that survive preprocessing as typedefs
+          // Windows handle typedefs are pointer-width.
           | "HWND" | "HMENU" | "HCURSOR" | "HINSTANCE" | "HANDLE" => CType.Long
       case "cef_color_t"                                                           => CType.UInt
       case t if ByValueStructs.exists(g => t == s"const $g*" || t == s"$g const*") =>
-        val cefName = ByValueStructs.find(g => t.contains(g)).get
-        CType.ByValueIn(cefName)
+        CType.ByValueIn(ByValueStructs.find(t.contains).getOrElse(throw IllegalStateException(t)))
       case t if ByValueStructs.exists(g => t == s"$g*") =>
-        val cefName = ByValueStructs.find(g => t.contains(g)).get
-        CType.ByValueOut(cefName)
+        CType.ByValueOut(ByValueStructs.find(t.contains).getOrElse(throw IllegalStateException(t)))
       case "int*" | "const int*" => CType.OutInt
       case t if t.endsWith("*")  =>
         CType.Ptr(t.stripSuffix("*").trim)
@@ -322,7 +315,6 @@ object CHeaderParser {
     }
   }
 
-  // Promote ByValueIn to ByValueArray when it is immediately preceded by a matching count parameter.
   private def promoteByValueArrays(fn: FnPtr): FnPtr = {
     val promoted = fn.params.zipWithIndex.map { case (p, i) =>
       p.typ match {
@@ -354,7 +346,6 @@ object CHeaderParser {
     }
   }
 
-  // Pre-scan lines to find data-struct names before full declaration parsing.
   private def prescanDataStructs(lines: Vector[String]): Set[String] = {
     @tailrec
     def scan(idx: Int, acc: Set[String]): Set[String] =
@@ -436,10 +427,8 @@ object CHeaderParser {
     loop(startIdx)
   }
 
-  /** Strip C integer literal suffixes (U/u/L/l combinations). */
   private def stripCSuffix(s: String): String = s.replaceAll("[UuLl]+$", "")
 
-  /** Try to parse a single numeric token (decimal, hex, with optional C suffix). */
   private def parseNumericToken(token: String): Option[Long] = {
     val clean = stripCSuffix(token.trim)
     if (clean.startsWith("0x") || clean.startsWith("0X"))
@@ -448,8 +437,7 @@ object CHeaderParser {
   }
 
   private def parseEnumValue(expr: String, existing: List[(String, Long, String)]): Long = {
-    val trimmed = expr.trim
-    // Strip outer parentheses for expressions like (2147483647 *2U +1U)
+    val trimmed   = expr.trim
     val unwrapped = if (trimmed.startsWith("(") && trimmed.endsWith(")"))
       trimmed.substring(1, trimmed.length - 1).trim
     else trimmed
@@ -459,7 +447,6 @@ object CHeaderParser {
     } else if (trimmed.startsWith("-")) {
       -parseEnumValue(trimmed.substring(1), existing)
     } else {
-      // Try plain numeric (with optional C suffix)
       parseNumericToken(trimmed).getOrElse {
         val shiftPattern = """(\w+)\s*<<\s*(\d+)""".r
         unwrapped match {
@@ -471,8 +458,6 @@ object CHeaderParser {
           case _ if unwrapped.contains("|") =>
             unwrapped.split("\\|").map(p => parseEnumValue(p.trim, existing)).reduce(_ | _)
           case _ =>
-            // Try evaluating as a simple arithmetic expression with +, -, * operators.
-            // This handles preprocessor expansions like (2147483647 *2U +1U).
             val tokens = unwrapped.split("""(?<=[+\-*])|(?=[+\-*])""").map(_.trim).filter(_.nonEmpty).toList
             def resolveToken(t: String): Option[Long] =
               parseNumericToken(t).orElse(existing.find(_._1 == t).map(_._2))
@@ -506,16 +491,15 @@ object CHeaderParser {
     "cef_request_context_cef_create_context_shared" -> "cef_request_context_t"
   )
 
-  // Parse CEF_EXPORT free functions from raw CAPI headers.
   def parseFreeExports(
       capiDir: Path,
       knownStructNames: Set[String],
       dataStructNames: Set[String],
       extraCapiDirs: List[String] = Nil
-  )(using Naming.Context): List[CefDecl.FreeFunction] = {
+  ): List[CefDecl.FreeFunction] = {
     val capiHeaders = (capiDir :: extraCapiDirs.map(capiDir.resolve)).filter(Files.isDirectory(_))
       .flatMap(dir =>
-        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
+        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
       )
       .sorted
 
@@ -531,7 +515,7 @@ object CHeaderParser {
       headerName: String,
       knownStructNames: Set[String],
       dataStructNames: Set[String]
-  )(using Naming.Context): List[CefDecl.FreeFunction] = {
+  ): List[CefDecl.FreeFunction] = {
     @tailrec
     def loop(
         idx: Int,
@@ -583,7 +567,7 @@ object CHeaderParser {
   ): Option[CefDecl.FreeFunction] =
     decl match {
       case s"CEF_EXPORT $signature" =>
-        parseFreeFunctionSignature(signature.stripSuffix(";").trim, dataStructNames).flatMap {
+        parseFreeFunctionSignature(signature.stripSuffix(";").trim).flatMap {
           case (retStr, cName, paramStr) =>
             if (cName.startsWith("cef_string_") || cName.startsWith("cef_time_")) None
             else {
@@ -604,52 +588,35 @@ object CHeaderParser {
       case _ => None
     }
 
-  private def parseFreeFunctionSignature(
-      signature: String,
-      dataStructNames: Set[String]
-  ): Option[(String, String, String)] = {
+  private def parseFreeFunctionSignature(signature: String): Option[(String, String, String)] = {
     val openParen  = signature.indexOf('(')
     val closeParen = signature.lastIndexOf(')')
-    if (openParen < 0 || closeParen < openParen) return None
-
-    val beforeParams = signature.substring(0, openParen).trim
-    val paramStr     = signature.substring(openParen + 1, closeParen).trim
-    val lastSpace    = beforeParams.lastIndexOf(' ')
-    if (lastSpace < 0) None
-    else {
-      val retStr = beforeParams.substring(0, lastSpace).trim
-      val cName  = beforeParams.substring(lastSpace + 1).trim
-      Option.when(retStr.nonEmpty && cName.nonEmpty)((retStr, cName, paramStr))
+    Option.when(openParen >= 0 && closeParen >= openParen)(()).flatMap { _ =>
+      val beforeParams = signature.substring(0, openParen).trim
+      val paramStr     = signature.substring(openParen + 1, closeParen).trim
+      val lastSpace    = beforeParams.lastIndexOf(' ')
+      Option.when(lastSpace >= 0)(()).flatMap { _ =>
+        val retStr = beforeParams.substring(0, lastSpace).trim
+        val cName  = beforeParams.substring(lastSpace + 1).trim
+        Option.when(retStr.nonEmpty && cName.nonEmpty)((retStr, cName, paramStr))
+      }
     }
   }
 
-  private def resolveOwnerStruct(cName: String, ret: CType, knownStructNames: Set[String]): String = {
-    ExplicitOwnerMap.get(cName) match {
-      case Some(owner) => return owner
-      case None        =>
-    }
-
-    ret match {
+  private def resolveOwnerStruct(cName: String, ret: CType, knownStructNames: Set[String]): String =
+    ExplicitOwnerMap.get(cName).orElse(ret match {
       case CType.Ptr(inner) =>
         val stripped = inner.stripPrefix("struct ").stripPrefix("_").trim
-        if (knownStructNames.contains(stripped)) return stripped
+        Option.when(knownStructNames.contains(stripped))(stripped)
       case CType.ObjectPtr(name) if knownStructNames.contains(name) =>
-        return name
-      case _ =>
-    }
+        Some(name)
+      case _ => None
+    }).orElse {
+      knownStructNames
+        .filter(structName => cName.startsWith(structName.stripSuffix("_t") + "_"))
+        .maxByOption(_.length)
+    }.getOrElse("")
 
-    val candidates = knownStructNames.filter { structName =>
-      val prefix = structName.stripSuffix("_t")
-      cName.startsWith(prefix + "_")
-    }
-    if (candidates.nonEmpty) {
-      return candidates.maxBy(_.length)
-    }
-
-    ""
-  }
-
-  // Compute the Java method name for a free function by stripping the owner prefix.
   private def computeJavaMethodName(cName: String, ownerStruct: String)(using Naming.Context): String = {
     val prefix = if (ownerStruct.nonEmpty) ownerStruct.stripSuffix("_t") + "_"
     else "cef_"
@@ -671,8 +638,7 @@ object CHeaderParser {
     "size_t"      -> CType.SizeT
   )
 
-  // Post-process declarations to reclassify raw Ptr types into richer internal CType variants.
-  def reclassifyPointers(decls: List[CefDecl], handlerNames: Set[String]): List[CefDecl] = {
+  def reclassifyPointers(decls: List[CefDecl]): List[CefDecl] = {
     val objectStructNames = decls.collect {
       case d: CefDecl.ObjectStruct  => d.name
       case d: CefDecl.HandlerStruct => d.name
@@ -701,7 +667,7 @@ object CHeaderParser {
         else if (allowConstDataStructPtr && dataStructNames.contains(stripped) && isConst)
           CType.ConstDataStructPtr(stripped)
         else if (dataStructNames.contains(stripped))
-          CType.OpaquePtr // Data struct pointers not in ByValueStructs -> opaque for now
+          CType.OpaquePtr
         else
           PrimitiveOutPtrMap.get(stripped) match {
             case Some(prim) => CType.OutPrimitivePtr(prim)
@@ -721,10 +687,7 @@ object CHeaderParser {
       )
 
     decls.map {
-      // ObjectStruct methods (cef_browser_host_t::send_mouse_click_event etc.) take const-ptrs to data structs
-      // by-value just like HandlerStruct callbacks do. The reclassify guard checks `dataStructNames` first so
-      // refcounted facade pointers (cef_browser_t*) still land as RemoteHandle, not DataStruct — only true
-      // data structs (cef_mouse_event_t, cef_key_event_t, cef_rect_t…) get promoted.
+      // Only known data structs may replace refcounted pointer classification.
       case d: CefDecl.ObjectStruct  => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = true)))
       case d: CefDecl.HandlerStruct => d.copy(fns = d.fns.map(fn => reclassifyFn(fn, allowConstDataStructPtr = true)))
       case d: CefDecl.FreeFunction  =>
@@ -736,7 +699,6 @@ object CHeaderParser {
     }
   }
 
-  // Promote adjacent count + out-pointer pairs into array-shaped parameter types.
   def promoteArrayParams(decls: List[CefDecl]): List[CefDecl] = {
     def promote(fn: FnPtr): FnPtr = {
       val promoted = fn.params.zipWithIndex.map { case (p, i) =>
@@ -762,7 +724,6 @@ object CHeaderParser {
     }
   }
 
-  // Promote void* plus adjacent size parameters into ByteBuffer-style parameter types.
   def promoteBufferParams(decls: List[CefDecl]): List[CefDecl] = {
     def isSizeType(ct: CType): Boolean = ct match {
       case CType.SizeT | CType.Long | CType.Int => true
@@ -803,17 +764,18 @@ object CHeaderParser {
         case p if isVoidPtr(p) => findSizeParam(p.name, fn.params).map(sp => (p.name, sp))
       }.flatten.toMap
 
-      if (bufferSizePairs.isEmpty) return fn
-
-      val sizeToBuffer = bufferSizePairs.map(_.swap)
-      val promoted     = fn.params.map { p =>
-        if (bufferSizePairs.contains(p.name))
-          p.copy(typ = CType.Buffer(bufferSizePairs(p.name)))
-        else if (sizeToBuffer.contains(p.name))
-          p.copy(typ = CType.BufferSize(sizeToBuffer(p.name)))
-        else p
+      if (bufferSizePairs.isEmpty) fn
+      else {
+        val sizeToBuffer = bufferSizePairs.map(_.swap)
+        val promoted     = fn.params.map { p =>
+          if (bufferSizePairs.contains(p.name))
+            p.copy(typ = CType.Buffer(bufferSizePairs(p.name)))
+          else if (sizeToBuffer.contains(p.name))
+            p.copy(typ = CType.BufferSize(sizeToBuffer(p.name)))
+          else p
+        }
+        fn.copy(params = promoted)
       }
-      fn.copy(params = promoted)
     }
 
     decls.map {

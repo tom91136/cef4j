@@ -1,8 +1,8 @@
 package net.kurobako.cef4j.codegen.passes
 
-import java.nio.file.Files
 import java.nio.file.Path
 
+import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.Banners
 
 object EmitNativePointer {
@@ -81,6 +81,6 @@ public class NativePointer {
     }
 }
 """
-    Files.writeString(outJava.resolve("NativePointer.java"), content)
+    AtomicFiles.writeString(outJava.resolve("NativePointer.java"), content)
   }
 }

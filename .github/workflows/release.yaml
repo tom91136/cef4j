@@ -150,9 +150,10 @@ jobs:
           CEF_API: ${{ env.CEF_API }}
           JAVAFX_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
           JAVAFX_TEST_VERSION: ${{ matrix.platform == 'linuxarm64' && '21.0.1' || env.JAVAFX_VERSION }}
+          JAVAFX_TESTS: 'true'
           JAVA11_SMOKE: 'false'
           RELEASE_BUILD: 'true'
-        run: .github/ci/linux-build.sh
+        run: .github/ci/build.sh linux
 
       - name: Build platform release artifacts (Windows/macOS)
         if: runner.os != 'Linux' && matrix.platform != 'windowsarm64'
@@ -185,7 +186,19 @@ jobs:
       - name: Stage platform-neutral Maven artifacts
         if: matrix.platform == 'linux64'
         shell: bash
-        run: bash .github/ci/stage-java-artifacts.sh staging
+        run: |
+          modules=(
+            cef4j-api cef4j-inprocess-jfx cef4j-inprocess-swing
+            cef4j-inprocess-webdriver cef4j-http cef4j-cdp
+            cef4j-codecs-gson cef4j-codecs-jackson cef4j-remote-api
+            cef4j-remote-core cef4j-remote-frame cef4j-remote-jfx
+            cef4j-remote-swing cef4j-remote-webdriver cef4j-webdriver
+          )
+          for module in "${modules[@]}"; do
+            find "${module}/target" -maxdepth 1 -type f -name "${module}-*.jar" \
+              ! -name '*-sources.jar' ! -name '*-javadoc.jar' ! -name '*-tests.jar' \
+              -exec cp '{}' staging/ ';'
+          done
 
       - uses: actions/upload-artifact@v7
         with:

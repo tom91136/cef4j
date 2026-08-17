@@ -2,7 +2,8 @@ package net.kurobako.cef4j.codegen.passes
 
 import java.nio.file.Files
 import java.nio.file.Path
-import scala.jdk.StreamConverters._
+
+import net.kurobako.cef4j.codegen.FileSystem
 
 object IndexStructHeaders {
   private val StructDefPattern = """typedef\s+struct\s+_?(cef_\w+_t)\s*\{""".r
@@ -10,7 +11,7 @@ object IndexStructHeaders {
   def apply(capiDir: Path, extraCapiDirs: List[String] = Nil): Map[String, String] = {
     val headers = (capiDir :: extraCapiDirs.map(capiDir.resolve)).filter(Files.isDirectory(_))
       .flatMap(dir =>
-        Files.list(dir).toScala(List).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
+        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
       )
       .sorted
     headers.flatMap { header =>

@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Accessibility.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Accessibility {
     private Accessibility() {}
@@ -1510,6 +1512,14 @@ public final class Accessibility {
             return client.call("Accessibility.getPartialAXTree", params, GetPartialAXTreeResult::fromMap);
         }
         /**
+         * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetPartialAXTreeResult> getPartialAXTree() {
+            return getPartialAXTree(GetPartialAXTreeParams.builder().build());
+        }
+        /**
          * Fetches the entire accessibility tree for the root Document
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -1517,6 +1527,14 @@ public final class Accessibility {
          */
         public CompletionStage<GetFullAXTreeResult> getFullAXTree(GetFullAXTreeParams params) {
             return client.call("Accessibility.getFullAXTree", params, GetFullAXTreeResult::fromMap);
+        }
+        /**
+         * Fetches the entire accessibility tree for the root Document
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetFullAXTreeResult> getFullAXTree() {
+            return getFullAXTree(GetFullAXTreeParams.builder().build());
         }
         /**
          * Fetches the root node. Requires {@code enable()} to have been called previously.
@@ -1528,6 +1546,14 @@ public final class Accessibility {
             return client.call("Accessibility.getRootAXNode", params, GetRootAXNodeResult::fromMap);
         }
         /**
+         * Fetches the root node. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetRootAXNodeResult> getRootAXNode() {
+            return getRootAXNode(GetRootAXNodeParams.builder().build());
+        }
+        /**
          * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @param params command parameters
@@ -1535,6 +1561,14 @@ public final class Accessibility {
          */
         public CompletionStage<GetAXNodeAndAncestorsResult> getAXNodeAndAncestors(GetAXNodeAndAncestorsParams params) {
             return client.call("Accessibility.getAXNodeAndAncestors", params, GetAXNodeAndAncestorsResult::fromMap);
+        }
+        /**
+         * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetAXNodeAndAncestorsResult> getAXNodeAndAncestors() {
+            return getAXNodeAndAncestors(GetAXNodeAndAncestorsParams.builder().build());
         }
         /**
          * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
@@ -1553,6 +1587,14 @@ public final class Accessibility {
          */
         public CompletionStage<QueryAXTreeResult> queryAXTree(QueryAXTreeParams params) {
             return client.call("Accessibility.queryAXTree", params, QueryAXTreeResult::fromMap);
+        }
+        /**
+         * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<QueryAXTreeResult> queryAXTree() {
+            return queryAXTree(QueryAXTreeParams.builder().build());
         }
         /**
          * The loadComplete event mirrors the load complete event sent by the browser to assistive technology when the web page has finished loading.

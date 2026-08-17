@@ -4,7 +4,6 @@ import java.nio.file.Path
 
 object JavaEnumCodeGen {
 
-  // Expressions safe to inline as Java constant expressions with no named references.
   private val JavaSafeExprRe = """^[\d\s+\-*/|&^~<>()xXaAbBcCdDeEfFlL]+$""".r
   private val ExprTokenRe    = """0[xX][0-9A-Fa-f]+[UuLl]*|\d+[UuLl]*|<<|>>|[()+\-*/|&^~]|[A-Za-z_]\w*""".r
 
@@ -19,7 +18,6 @@ object JavaEnumCodeGen {
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
-  // Regex matching a simple atom literal (no operators): decimal or hex digits only.
   private val SimpleLiteralRe = """0[xX][0-9A-Fa-f]+[UuLl]*|[0-9]+[UuLl]*""".r
 
   private def canonicalJavaLongLiteral(value: Long): String =
@@ -29,9 +27,7 @@ object JavaEnumCodeGen {
   private def javaExpr(rawExpr: String, evaluated: Long): String = {
     val trimmed = rawExpr.trim
     if (JavaSafeExprRe.matches(trimmed)) {
-      // Java integer literals wider than Int.MaxValue must carry an L suffix, otherwise
-      // the compiler sees a signed 32-bit overflow.  For a simple atom literal we append L;
-      // for composite expressions (operators present) we fall back to the decimal form.
+      // Wide Java integer literals require an L suffix.
       val needsLong = evaluated > Int.MaxValue || evaluated < Int.MinValue
       if (!needsLong) trimmed
       else if (SimpleLiteralRe.matches(trimmed)) s"${stripCSuffix(trimmed)}L"
@@ -92,18 +88,16 @@ object JavaEnumCodeGen {
       javaName: String,
       cefName: String,
       values: List[(String, Long, String)],
-      doc: String = "",
-      valueDocs: Map[String, String] = Map.empty,
-      sourceHeader: String = "",
-      subPackage: String = ""
+      doc: String,
+      valueDocs: Map[String, String],
+      sourceHeader: String,
+      subPackage: String
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    // Deduplicate enum constants and keep the first occurrence of each name.
     val deduped = values.foldLeft((Set.empty[String], List.empty[(String, Long, String)])) {
-      case ((seen, acc), entry @ (name, _, _)) if seen.contains(name) => (seen, acc)
-      case ((seen, acc), entry @ (name, _, _))                        => (seen + name, entry :: acc)
+      case ((seen, acc), (name, _, _)) if seen.contains(name) => (seen, acc)
+      case ((seen, acc), entry @ (name, _, _))                => (seen + name, entry :: acc)
     }._2.reverse
 
-    // Strip the common constant prefix for the nested Kind enum.
     val cNames  = deduped.map(_._1)
     val prefix  = Naming.computeEnumPrefix(cNames)
     val jNames  = cNames.map(_.stripPrefix(prefix))
@@ -123,7 +117,6 @@ object JavaEnumCodeGen {
 
     val cProto = DocComments.cPrototypeForEnum(cefName, deduped)
 
-    // Append the "Possible values" list without running it back through doc conversion.
     val possibleValues = jNames.map(n => s"{@link Kind#$n}").mkString(", ")
     val valuesDocLine  = s"<p>Possible values: $possibleValues"
 

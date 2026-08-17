@@ -25,7 +25,7 @@ object ValidateTypedPointers {
         }
       }
       System.err.println(s"====================================\n")
-      throw new RuntimeException(s"${warnings.size} unresolved CType.Ptr remaining - codegen cannot continue")
+      throw IllegalStateException(s"${warnings.size} unresolved CType.Ptr remaining; codegen cannot continue")
     }
 
     warnings

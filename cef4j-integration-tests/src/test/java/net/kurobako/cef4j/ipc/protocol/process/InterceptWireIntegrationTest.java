@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptRequest;
@@ -18,7 +16,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
 import net.kurobako.cef4j.ipc.transport.ZmqTransport;
-import org.junit.jupiter.api.Assumptions;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -50,14 +48,9 @@ class InterceptWireIntegrationTest {
 
     @BeforeAll
     static void resolveBinary() {
-        String bin = System.getProperty("cef4j.runtime.server.binary");
-        String res = System.getProperty("cef4j.runtime.server.resources");
-        Assumptions.assumeTrue(bin != null, "cef4j.runtime.server.binary system property not set");
-        Assumptions.assumeTrue(res != null, "cef4j.runtime.server.resources system property not set");
-        serverBinary = Paths.get(bin);
-        cefResources = Paths.get(res);
-        Assumptions.assumeTrue(Files.isExecutable(serverBinary), "server binary not built at " + serverBinary);
-        Assumptions.assumeTrue(Files.isDirectory(cefResources), "CEF resources dir missing at " + cefResources);
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        serverBinary = environment.binary();
+        cefResources = environment.resources();
     }
 
     private static RuntimeServerProcess spawnServerWithEnv() throws IOException {

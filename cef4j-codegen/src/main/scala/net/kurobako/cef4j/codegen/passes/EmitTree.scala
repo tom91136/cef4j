@@ -19,9 +19,6 @@ object EmitTree {
   def apply(cfg: Config, parseState: ParseState, refined: RefinedTree)(using DocComments.Context, Banners): Unit = {
     val objectDeclMap                  = refined.decls.collect { case d: CefDecl.ObjectStruct => d.name -> d }.toMap
     val sharedPlatformInterfaceStructs = {
-      // Data structs referenced as ConstDataStructPtr in handler callbacks, plus platform-specific
-      // data structs referenced by-value in object/handler struct methods
-      // (e.g., CefWindowInfo is platform-specific but used by CefBrowserHost.createBrowserSync).
       val byValueName: PartialFunction[CType, String] = {
         case CType.ByValueIn(name)  => name
         case CType.ByValueOut(name) => name
@@ -56,9 +53,7 @@ object EmitTree {
           case (s, p) => byValueMatch(p).fold(s)(s + _)
         }
       } ++
-        // cef_main_args_t is consumed by the global cef_initialize/cef_execute_process entry points. Their parser
-        // representation is intentionally opaque, but the struct shape differs on Windows and must use the same
-        // shared-interface/platform-implementation model as platform structs referenced by generated methods.
+        // cef_main_args_t is opaque but platform-shaped on Windows.
         Set("cef_main_args_t").filter(parseState.platformSpecificTypes.contains)
     }
     given Naming.Context = parseState.namingContext.copy(platformInterfaceTypes = sharedPlatformInterfaceStructs)

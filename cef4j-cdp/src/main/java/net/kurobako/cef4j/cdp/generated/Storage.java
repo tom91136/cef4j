@@ -1,4 +1,4 @@
-// GENERATED - do not edit. Run scripts/update-cdp-schema.sh.
+// GENERATED - do not edit. Regenerate via: mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
@@ -15,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * <p><b>Experimental:</b> this part of CDP may change without notice.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Storage.pdl">Pinned protocol source</a>
  */
+@Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
 public final class Storage {
     private Storage() {}
@@ -4284,6 +4286,14 @@ public final class Storage {
             return client.call("Storage.getStorageKey", params, GetStorageKeyResult::fromMap);
         }
         /**
+         * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetStorageKeyResult> getStorageKey() {
+            return getStorageKey(GetStorageKeyParams.builder().build());
+        }
+        /**
          * Clears storage for origin.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -4308,6 +4318,13 @@ public final class Storage {
             return client.call("Storage.getCookies", params, GetCookiesResult::fromMap);
         }
         /**
+         * Returns all browser cookies.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetCookiesResult> getCookies() {
+            return getCookies(GetCookiesParams.builder().build());
+        }
+        /**
          * Sets given cookies.
          * @param params command parameters
          * @return a stage completing with the command result
@@ -4322,6 +4339,13 @@ public final class Storage {
          */
         public CompletionStage<ClearCookiesResult> clearCookies(ClearCookiesParams params) {
             return client.call("Storage.clearCookies", params, ClearCookiesResult::fromMap);
+        }
+        /**
+         * Clears cookies.
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<ClearCookiesResult> clearCookies() {
+            return clearCookies(ClearCookiesParams.builder().build());
         }
         /**
          * Returns usage and quota in bytes.

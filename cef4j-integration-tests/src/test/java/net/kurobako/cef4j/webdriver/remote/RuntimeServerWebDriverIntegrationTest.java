@@ -18,8 +18,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.remote.RuntimeServerBrowserRuntimeFactory;
+import net.kurobako.cef4j.test.RuntimeServerTestEnvironment;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -41,13 +41,9 @@ class RuntimeServerWebDriverIntegrationTest {
 
     @BeforeAll
     static void resolveDistribution() {
-        String binary = System.getProperty("cef4j.runtime.server.binary");
-        String resources = System.getProperty("cef4j.runtime.server.resources");
-        Assumptions.assumeTrue(binary != null && resources != null, "packaged CEF test properties not set");
-        serverBinary = Path.of(binary);
-        cefResources = Path.of(resources);
-        Assumptions.assumeTrue(Files.isExecutable(serverBinary), "runtime server binary not built");
-        Assumptions.assumeTrue(Files.isDirectory(cefResources), "CEF resources not present");
+        RuntimeServerTestEnvironment environment = RuntimeServerTestEnvironment.require();
+        serverBinary = environment.binary();
+        cefResources = environment.resources();
     }
 
     @Test

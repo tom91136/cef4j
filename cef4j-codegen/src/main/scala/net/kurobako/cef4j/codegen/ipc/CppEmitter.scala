@@ -1,27 +1,17 @@
 package net.kurobako.cef4j.codegen.ipc
 
-/** Emits a single-header C++ struct + encode/decode functions matching the Java side wire format.
-  *
-  * Layout: same little-endian order, same length-prefixed strings/bytes. Output is intended to be included into the
-  * cef4j-runtime-server build, replacing the inline byte parsing in {@code main.cpp}.
-  *
-  * One header per spec; no inline-defined codecs in a `.cpp` to keep the runtime server's build flat.
-  */
 object CppEmitter {
 
-  /** Returns a self-contained C++17 header. */
   def emit(spec: MessageSpec): String = {
     val guardName = (spec.packageName.replace('.', '_').toUpperCase + "_" + camelToSnake(spec.className).toUpperCase
       + "_H_")
-    val ns       = spec.packageName.replace('.', '_').toLowerCase
-    val cls      = spec.className
-    val fields   = renderFields(spec)
-    val sizeBody = renderEncodedSizeBody(spec)
-    val encBody  = renderEncodeBody(spec)
-    val decBody  = renderDecodeBody(spec)
-    val decPos   = "        std::size_t pos = 0;"
-    // Nested DataStruct fields reference other generated headers; pull them in via #include so the compile
-    // graph resolves. Each spec gets its own .h file (Main.scala writes one per spec), so naming matches.
+    val ns             = spec.packageName.replace('.', '_').toLowerCase
+    val cls            = spec.className
+    val fields         = renderFields(spec)
+    val sizeBody       = renderEncodedSizeBody(spec)
+    val encBody        = renderEncodeBody(spec)
+    val decBody        = renderDecodeBody(spec)
+    val decPos         = "        std::size_t pos = 0;"
     val nestedIncludes = spec.fields.collect {
       case FieldSpec(_, FieldType.DataStruct(cefName)) => SpecDeriver.cefStructToClassName(cefName)
     }.distinct.map(c => s"""#include "$c.h"""").mkString("\n")
@@ -73,10 +63,9 @@ object CppEmitter {
   }
 
   private def camelToSnake(s: String): String =
-    s.foldLeft(StringBuilder()) { (sb, c) =>
-      if (c.isUpper && sb.nonEmpty) sb.append('_').append(c.toLower)
-      else sb.append(c.toLower)
-    }.toString
+    s.zipWithIndex.flatMap { case (c, index) =>
+      if (c.isUpper && index > 0) s"_${c.toLower}" else c.toLower.toString
+    }.mkString
 
   private def cppType(ty: FieldType): String = ty match {
     case FieldType.I32                 => "std::int32_t"
@@ -113,8 +102,6 @@ object CppEmitter {
     case FieldType.Utf8String => Some(s"${field.name}.size()")
     case FieldType.Bytes      => Some(s"${field.name}.size()")
     case FieldType.StringList =>
-      // 4-byte length prefix per element + total UTF-8 byte count. Compute via accumulation since
-      // there's no constexpr expression.
       Some(s"[&]() { std::size_t n = 0; for (const auto& __s : ${field.name}) n += 4 + __s.size(); return n; }()")
     case FieldType.DataStruct(_) => Some(s"${field.name}.encodedSize()")
     case _                       => None
@@ -126,9 +113,6 @@ object CppEmitter {
     if (variable.isEmpty) fixed.toString else s"$fixed + $variable"
   }
 
-  /** Reusable little-endian write helpers. To keep generated code self-contained, the helpers are inlined directly here
-    * instead of a shared header — keeps each generated file independently buildable.
-    */
   private val writeI32 = (offsetVar: String, valExpr: String) =>
     s"""        {
        |            std::uint32_t v = static_cast<std::uint32_t>($valExpr);
@@ -173,7 +157,6 @@ object CppEmitter {
             s"        pos += ${f.name}.size();"
           )
         case FieldType.StringList =>
-          // count prefix, then for each string: length prefix + raw UTF-8 bytes
           List(
             writeI32("pos", s"${f.name}.size()"),
             s"        for (const auto& __s : ${f.name}) {",
@@ -183,10 +166,6 @@ object CppEmitter {
             s"        }"
           )
         case FieldType.DataStruct(_) =>
-          // Nested struct rides inline. Its own encodeInto writes from `dst+pos`; pos advances by the nested
-          // encodedSize. Because we generate forward references to types we may not have included yet, the
-          // nested struct's header must be #included by the user (Main.scala emits one .h per struct so the
-          // compile graph resolves naturally).
           List(
             s"        ${f.name}.encodeInto(dst + pos);",
             s"        pos += ${f.name}.encodedSize();"

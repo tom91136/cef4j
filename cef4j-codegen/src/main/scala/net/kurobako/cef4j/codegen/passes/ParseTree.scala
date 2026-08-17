@@ -6,7 +6,6 @@ import net.kurobako.cef4j.codegen.CHeaderParser
 import net.kurobako.cef4j.codegen.CefDecl
 import net.kurobako.cef4j.codegen.Config
 import net.kurobako.cef4j.codegen.HeaderInputs
-import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.ParseState
 import net.kurobako.cef4j.codegen.ParsedTree
 import net.kurobako.cef4j.codegen.namedStruct
@@ -19,8 +18,6 @@ object ParseTree {
       cfg: Config,
       parseState: ParseState
   ): ParsedTree = {
-    given Naming.Context = parseState.namingContext
-
     val rawDecls = preprocessed.flatMap { case (_, src) =>
       CHeaderParser.parse(src, parseState.handlerNames).map(attachSourceHeader(_, parseState.structHeaderMap))
     }
@@ -32,7 +29,7 @@ object ParseTree {
 
     val decls = CHeaderParser.promoteBufferParams(
       CHeaderParser.promoteArrayParams(
-        CHeaderParser.reclassifyPointers(rawDecls ++ rawFreeFunctions, parseState.handlerNames)
+        CHeaderParser.reclassifyPointers(rawDecls ++ rawFreeFunctions)
       )
     )
 
