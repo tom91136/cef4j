@@ -93,8 +93,8 @@
         <Class name="~net\.kurobako\.cef4j\.ipc\.protocol\.gen\..*"/>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
-    <!-- CdpObject recursively freezes maps/lists before retaining them; exposing that immutable view is its codec
-         boundary. CdpDomains likewise returns immutable, stateless command clients owned for the facade lifetime. -->
+    <!-- CdpObject retains a mutable wire map; exposing it is its codec boundary. CdpDomains likewise returns
+         immutable, stateless command clients owned for the facade lifetime. -->
     <Match>
         <Class name="net.kurobako.cef4j.cdp.CdpObject"/>
         <Method name="toMap"/>
@@ -103,5 +103,10 @@
     <Match>
         <Class name="net.kurobako.cef4j.cdp.generated.CdpDomains"/>
         <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <!-- Generated tagged value classes reject null wire scalars in their constructors. -->
+    <Match>
+        <Class name="~net\.kurobako\.cef4j\.cdp\.generated\..*"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
 </FindBugsFilter>

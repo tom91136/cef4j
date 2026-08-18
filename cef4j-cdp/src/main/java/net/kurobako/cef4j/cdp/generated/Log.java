@@ -3,542 +3,423 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Provides access to log entries.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Log.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Log {
     private Log() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Log entry.
      */
     public static final class LogEntry extends CdpObject {
+        public LogEntry() {}
         private LogEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static LogEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LogEntry(values);
+        public static LogEntry fromMap(Map<String, Object> values) {
+            return new LogEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
+        /**
+         * Log entry source.
+         */
+        public enum SourceValues implements CdpValue<String> {
+            XML("xml"),
+            JAVASCRIPT("javascript"),
+            NETWORK("network"),
+            STORAGE("storage"),
+            APPCACHE("appcache"),
+            RENDERING("rendering"),
+            SECURITY("security"),
+            DEPRECATION("deprecation"),
+            WORKER("worker"),
+            VIOLATION("violation"),
+            INTERVENTION("intervention"),
+            RECOMMENDATION("recommendation"),
+            OTHER("other");
+            public final String value;
+            SourceValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static SourceValues of(@Nonnull String value) {
+                for (SourceValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown SourceValues value: " + value);
+            }
+        }
+        /**
+         * Log entry severity.
+         */
+        public enum LevelValues implements CdpValue<String> {
+            VERBOSE("verbose"),
+            INFO("info"),
+            WARNING("warning"),
+            ERROR("error");
+            public final String value;
+            LevelValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static LevelValues of(@Nonnull String value) {
+                for (LevelValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown LevelValues value: " + value);
+            }
+        }
+        /**
+         * Wire values for CategoryValues.
+         */
+        public enum CategoryValues implements CdpValue<String> {
+            CORS("cors");
+            public final String value;
+            CategoryValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static CategoryValues of(@Nonnull String value) {
+                for (CategoryValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown CategoryValues value: " + value);
+            }
+        }
         /**
          * Log entry source.
          * @return the protocol field value
          */
-        @Nullable public String source() {
-            return (String) value("source");
-        }
-        /**
-         * Log entry source.
-         */
-        public static final class SourceValues {
-            private SourceValues() {}
-            public static final String XML = "xml";
-            public static final String JAVASCRIPT = "javascript";
-            public static final String NETWORK = "network";
-            public static final String STORAGE = "storage";
-            public static final String APPCACHE = "appcache";
-            public static final String RENDERING = "rendering";
-            public static final String SECURITY = "security";
-            public static final String DEPRECATION = "deprecation";
-            public static final String WORKER = "worker";
-            public static final String VIOLATION = "violation";
-            public static final String INTERVENTION = "intervention";
-            public static final String RECOMMENDATION = "recommendation";
-            public static final String OTHER = "other";
+        public LogEntry.SourceValues source() {
+            return LogEntry.SourceValues.of((String) require("source"));
         }
         /**
          * Log entry severity.
          * @return the protocol field value
          */
-        @Nullable public String level() {
-            return (String) value("level");
-        }
-        /**
-         * Log entry severity.
-         */
-        public static final class LevelValues {
-            private LevelValues() {}
-            public static final String VERBOSE = "verbose";
-            public static final String INFO = "info";
-            public static final String WARNING = "warning";
-            public static final String ERROR = "error";
+        public LogEntry.LevelValues level() {
+            return LogEntry.LevelValues.of((String) require("level"));
         }
         /**
          * Logged text.
          * @return the protocol field value
          */
-        @Nullable public String text() {
-            return (String) value("text");
+        public String text() {
+            return (String) require("text");
         }
         /**
          * Returns the category field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String category() {
-            return (String) value("category");
-        }
-        /**
-         * Wire values for CategoryValues.
-         */
-        public static final class CategoryValues {
-            private CategoryValues() {}
-            public static final String CORS = "cors";
+        public Optional<LogEntry.CategoryValues> category() {
+            return Optional.ofNullable(raw("category") == null ? null : LogEntry.CategoryValues.of((String) raw("category")));
         }
         /**
          * Timestamp when this entry was added.
          * @return the protocol field value
          */
-        @Nullable public Double timestamp() {
-            return numberAsDouble(value("timestamp"));
+        public Runtime.Timestamp timestamp() {
+            return new Runtime.Timestamp(((Number) require("timestamp")).doubleValue());
         }
         /**
          * URL of the resource if known.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String url() {
-            return (String) value("url");
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
         }
         /**
          * Line number in the resource.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long lineNumber() {
-            return numberAsLong(value("lineNumber"));
+        public OptionalLong lineNumber() {
+            Long value = CdpObject.numberAsLong(raw("lineNumber"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * JavaScript stack trace.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Runtime.StackTrace stackTrace() {
-            return Runtime.StackTrace.fromMap(objectMap(value("stackTrace")));
+        public Optional<Runtime.StackTrace> stackTrace() {
+            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
         }
         /**
          * Identifier of the network request associated with this entry.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String networkRequestId() {
-            return (String) value("networkRequestId");
+        public Optional<Network.RequestId> networkRequestId() {
+            return Optional.ofNullable(raw("networkRequestId") == null ? null : new Network.RequestId((String) raw("networkRequestId")));
         }
         /**
          * Identifier of the worker associated with this entry.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String workerId() {
-            return (String) value("workerId");
+        public Optional<String> workerId() {
+            return Optional.ofNullable((String) raw("workerId"));
         }
         /**
          * Call arguments.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<Runtime.RemoteObject> args() {
-            return list(value("args"), element0 -> Runtime.RemoteObject.fromMap(objectMap(element0)));
+        public Optional<java.util.List<Runtime.RemoteObject>> args() {
+            return Optional.ofNullable(list(raw("args"), element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Log entry source.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder source(@Nullable String value) {
-                if (value == null) values.remove("source");
-                else values.put("source", jsonValue(value));
-                return this;
-            }
-            /**
-             * Log entry severity.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder level(@Nullable String value) {
-                if (value == null) values.remove("level");
-                else values.put("level", jsonValue(value));
-                return this;
-            }
-            /**
-             * Logged text.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder text(@Nullable String value) {
-                if (value == null) values.remove("text");
-                else values.put("text", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the category field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder category(@Nullable String value) {
-                if (value == null) values.remove("category");
-                else values.put("category", jsonValue(value));
-                return this;
-            }
-            /**
-             * Timestamp when this entry was added.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder timestamp(@Nullable Double value) {
-                if (value == null) values.remove("timestamp");
-                else values.put("timestamp", jsonValue(value));
-                return this;
-            }
-            /**
-             * URL of the resource if known.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * Line number in the resource.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lineNumber(@Nullable Long value) {
-                if (value == null) values.remove("lineNumber");
-                else values.put("lineNumber", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript stack trace.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder stackTrace(@Nullable Runtime.StackTrace value) {
-                if (value == null) values.remove("stackTrace");
-                else values.put("stackTrace", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the network request associated with this entry.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder networkRequestId(@Nullable String value) {
-                if (value == null) values.remove("networkRequestId");
-                else values.put("networkRequestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the worker associated with this entry.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder workerId(@Nullable String value) {
-                if (value == null) values.remove("workerId");
-                else values.put("workerId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Call arguments.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder args(@Nullable java.util.List<Runtime.RemoteObject> value) {
-                if (value == null) values.remove("args");
-                else values.put("args", jsonValue(value));
-                return this;
-            }
-            public LogEntry build() {
-                if (!values.containsKey("source")) throw new IllegalStateException("Missing required CDP field: source");
-                if (!values.containsKey("level")) throw new IllegalStateException("Missing required CDP field: level");
-                if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
-                if (!values.containsKey("timestamp")) throw new IllegalStateException("Missing required CDP field: timestamp");
-                return new LogEntry(values);
-            }
+        /**
+         * Log entry source.
+         * @param source field value
+         * @return this model
+         */
+        public LogEntry source(LogEntry.SourceValues source) {
+            set("source", source);
+            return this;
+        }
+        /**
+         * Log entry severity.
+         * @param level field value
+         * @return this model
+         */
+        public LogEntry level(LogEntry.LevelValues level) {
+            set("level", level);
+            return this;
+        }
+        /**
+         * Logged text.
+         * @param text field value
+         * @return this model
+         */
+        public LogEntry text(String text) {
+            set("text", text);
+            return this;
+        }
+        /**
+         * Sets the category field.
+         * @param category field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry category(Optional<LogEntry.CategoryValues> category) {
+            set("category", category.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the category field.
+         * @param category field value; null removes the value
+         * @return this model
+         */
+        public LogEntry category(LogEntry.CategoryValues category) {
+            set("category", category);
+            return this;
+        }
+        /**
+         * Timestamp when this entry was added.
+         * @param timestamp field value
+         * @return this model
+         */
+        public LogEntry timestamp(Runtime.Timestamp timestamp) {
+            set("timestamp", timestamp);
+            return this;
+        }
+        /**
+         * URL of the resource if known.
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * URL of the resource if known.
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public LogEntry url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Line number in the resource.
+         * @param lineNumber field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry lineNumber(OptionalLong lineNumber) {
+            set("lineNumber", lineNumber.isPresent() ? lineNumber.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Line number in the resource.
+         * @param lineNumber field value; null removes the value
+         * @return this model
+         */
+        public LogEntry lineNumber(Long lineNumber) {
+            set("lineNumber", lineNumber);
+            return this;
+        }
+        /**
+         * JavaScript stack trace.
+         * @param stackTrace field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry stackTrace(Optional<Runtime.StackTrace> stackTrace) {
+            set("stackTrace", stackTrace.orElse(null));
+            return this;
+        }
+        /**
+         * JavaScript stack trace.
+         * @param stackTrace field value; null removes the value
+         * @return this model
+         */
+        public LogEntry stackTrace(Runtime.StackTrace stackTrace) {
+            set("stackTrace", stackTrace);
+            return this;
+        }
+        /**
+         * Identifier of the network request associated with this entry.
+         * @param networkRequestId field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry networkRequestId(Optional<Network.RequestId> networkRequestId) {
+            set("networkRequestId", networkRequestId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the network request associated with this entry.
+         * @param networkRequestId field value; null removes the value
+         * @return this model
+         */
+        public LogEntry networkRequestId(Network.RequestId networkRequestId) {
+            set("networkRequestId", networkRequestId);
+            return this;
+        }
+        /**
+         * Identifier of the worker associated with this entry.
+         * @param workerId field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry workerId(Optional<String> workerId) {
+            set("workerId", workerId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the worker associated with this entry.
+         * @param workerId field value; null removes the value
+         * @return this model
+         */
+        public LogEntry workerId(String workerId) {
+            set("workerId", workerId);
+            return this;
+        }
+        /**
+         * Call arguments.
+         * @param args field value; empty omits the value
+         * @return this model
+         */
+        public LogEntry args(Optional<java.util.List<Runtime.RemoteObject>> args) {
+            set("args", args.orElse(null));
+            return this;
+        }
+        /**
+         * Call arguments.
+         * @param args field value; null removes the value
+         * @return this model
+         */
+        public LogEntry args(java.util.List<Runtime.RemoteObject> args) {
+            set("args", args);
+            return this;
         }
     }
     /**
      * Violation configuration setting.
      */
     public static final class ViolationSetting extends CdpObject {
+        public ViolationSetting() {}
         private ViolationSetting(Map<String, Object> values) { super(values); }
-        @Nullable public static ViolationSetting fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ViolationSetting(values);
+        public static ViolationSetting fromMap(Map<String, Object> values) {
+            return new ViolationSetting(values);
         }
-        public static Builder builder() { return new Builder(); }
+        /**
+         * Violation type.
+         */
+        public enum NameValues implements CdpValue<String> {
+            LONGTASK("longTask"),
+            LONGLAYOUT("longLayout"),
+            BLOCKEDEVENT("blockedEvent"),
+            BLOCKEDPARSER("blockedParser"),
+            DISCOURAGEDAPIUSE("discouragedAPIUse"),
+            HANDLER("handler"),
+            RECURRINGHANDLER("recurringHandler");
+            public final String value;
+            NameValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static NameValues of(@Nonnull String value) {
+                for (NameValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown NameValues value: " + value);
+            }
+        }
         /**
          * Violation type.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        /**
-         * Violation type.
-         */
-        public static final class NameValues {
-            private NameValues() {}
-            public static final String LONGTASK = "longTask";
-            public static final String LONGLAYOUT = "longLayout";
-            public static final String BLOCKEDEVENT = "blockedEvent";
-            public static final String BLOCKEDPARSER = "blockedParser";
-            public static final String DISCOURAGEDAPIUSE = "discouragedAPIUse";
-            public static final String HANDLER = "handler";
-            public static final String RECURRINGHANDLER = "recurringHandler";
+        public ViolationSetting.NameValues name() {
+            return ViolationSetting.NameValues.of((String) require("name"));
         }
         /**
          * Time threshold to trigger upon.
          * @return the protocol field value
          */
-        @Nullable public Double threshold() {
-            return numberAsDouble(value("threshold"));
+        public double threshold() {
+            return ((Number) require("threshold")).doubleValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Violation type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Time threshold to trigger upon.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder threshold(@Nullable Double value) {
-                if (value == null) values.remove("threshold");
-                else values.put("threshold", jsonValue(value));
-                return this;
-            }
-            public ViolationSetting build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("threshold")) throw new IllegalStateException("Missing required CDP field: threshold");
-                return new ViolationSetting(values);
-            }
-        }
-    }
-    /**
-     * Clears the log.
-     */
-    public static final class ClearParams extends CdpObject {
-        private ClearParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearParams build() {
-                return new ClearParams(values);
-            }
-        }
-    }
-    /**
-     * Clears the log.
-     */
-    public static final class ClearResult extends CdpObject {
-        private ClearResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearResult build() {
-                return new ClearResult(values);
-            }
-        }
-    }
-    /**
-     * Disables log domain, prevents further log entries from being reported to the client.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disables log domain, prevents further log entries from being reported to the client.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Enables log domain, sends the entries collected so far to the client by means of the {@code entryAdded} notification.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enables log domain, sends the entries collected so far to the client by means of the {@code entryAdded} notification.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * start violation reporting.
-     */
-    public static final class StartViolationsReportParams extends CdpObject {
-        private StartViolationsReportParams(Map<String, Object> values) { super(values); }
-        @Nullable public static StartViolationsReportParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StartViolationsReportParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Configuration for violations.
-         * @return the protocol field value
+         * Violation type.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public java.util.List<Log.ViolationSetting> config() {
-            return list(value("config"), element0 -> Log.ViolationSetting.fromMap(objectMap(element0)));
+        public ViolationSetting name(ViolationSetting.NameValues name) {
+            set("name", name);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Configuration for violations.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder config(@Nullable java.util.List<Log.ViolationSetting> value) {
-                if (value == null) values.remove("config");
-                else values.put("config", jsonValue(value));
-                return this;
-            }
-            public StartViolationsReportParams build() {
-                if (!values.containsKey("config")) throw new IllegalStateException("Missing required CDP field: config");
-                return new StartViolationsReportParams(values);
-            }
-        }
-    }
-    /**
-     * start violation reporting.
-     */
-    public static final class StartViolationsReportResult extends CdpObject {
-        private StartViolationsReportResult(Map<String, Object> values) { super(values); }
-        @Nullable public static StartViolationsReportResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StartViolationsReportResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StartViolationsReportResult build() {
-                return new StartViolationsReportResult(values);
-            }
-        }
-    }
-    /**
-     * Stop violation reporting.
-     */
-    public static final class StopViolationsReportParams extends CdpObject {
-        private StopViolationsReportParams(Map<String, Object> values) { super(values); }
-        @Nullable public static StopViolationsReportParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopViolationsReportParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StopViolationsReportParams build() {
-                return new StopViolationsReportParams(values);
-            }
-        }
-    }
-    /**
-     * Stop violation reporting.
-     */
-    public static final class StopViolationsReportResult extends CdpObject {
-        private StopViolationsReportResult(Map<String, Object> values) { super(values); }
-        @Nullable public static StopViolationsReportResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopViolationsReportResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StopViolationsReportResult build() {
-                return new StopViolationsReportResult(values);
-            }
+        /**
+         * Time threshold to trigger upon.
+         * @param threshold field value
+         * @return this model
+         */
+        public ViolationSetting threshold(double threshold) {
+            set("threshold", threshold);
+            return this;
         }
     }
     /**
      * Issued when new message was logged.
      */
     public static final class EntryAddedEvent extends CdpObject {
+        public EntryAddedEvent() {}
         private EntryAddedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static EntryAddedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EntryAddedEvent(values);
+        public static EntryAddedEvent fromMap(Map<String, Object> values) {
+            return new EntryAddedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The entry.
          * @return the protocol field value
          */
-        @Nullable public Log.LogEntry entry() {
-            return Log.LogEntry.fromMap(objectMap(value("entry")));
+        public Log.LogEntry entry() {
+            return java.util.Objects.requireNonNull(Log.LogEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("entry")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The entry.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder entry(@Nullable Log.LogEntry value) {
-                if (value == null) values.remove("entry");
-                else values.put("entry", jsonValue(value));
-                return this;
-            }
-            public EntryAddedEvent build() {
-                if (!values.containsKey("entry")) throw new IllegalStateException("Missing required CDP field: entry");
-                return new EntryAddedEvent(values);
-            }
+        /**
+         * The entry.
+         * @param entry field value
+         * @return this model
+         */
+        public EntryAddedEvent entry(Log.LogEntry entry) {
+            set("entry", entry);
+            return this;
         }
     }
     public static final class Client {
@@ -546,39 +427,41 @@ public final class Log {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Clears the log.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearResult> clear() {
-            return client.call("Log.clear", null, ClearResult::fromMap);
+        public CompletionStage<Void> clear() {
+            return client.call("Log.clear", null, result_ -> null);
         }
         /**
          * Disables log domain, prevents further log entries from being reported to the client.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("Log.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("Log.disable", null, result_ -> null);
         }
         /**
          * Enables log domain, sends the entries collected so far to the client by means of the {@code entryAdded} notification.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return client.call("Log.enable", null, EnableResult::fromMap);
+        public CompletionStage<Void> enable() {
+            return client.call("Log.enable", null, result_ -> null);
         }
         /**
          * start violation reporting.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param config protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<StartViolationsReportResult> startViolationsReport(StartViolationsReportParams params) {
-            return client.call("Log.startViolationsReport", params, StartViolationsReportResult::fromMap);
+        public CompletionStage<Void> startViolationsReport(java.util.List<Log.ViolationSetting> config) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("config", CdpObject.json(config));
+            return client.call("Log.startViolationsReport", params, result_ -> null);
         }
         /**
          * Stop violation reporting.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<StopViolationsReportResult> stopViolationsReport() {
-            return client.call("Log.stopViolationsReport", null, StopViolationsReportResult::fromMap);
+        public CompletionStage<Void> stopViolationsReport() {
+            return client.call("Log.stopViolationsReport", null, result_ -> null);
         }
         /**
          * Issued when new message was logged.

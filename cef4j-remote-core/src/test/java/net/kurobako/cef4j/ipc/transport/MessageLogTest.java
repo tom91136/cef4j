@@ -25,7 +25,7 @@ class MessageLogTest {
         List<MessageLog.Entry> entries = new ArrayList<>();
         try (MessageLog.Reader r = MessageLog.reader(file)) {
             MessageLog.Entry e;
-            while ((e = r.next()) != null) entries.add(e);
+            while ((e = r.next().orElse(null)) != null) entries.add(e);
         }
         assertThat(entries).hasSize(3);
         assertThat(entries.get(0).direction).isEqualTo(MessageLog.Direction.OUTBOUND);
@@ -82,7 +82,7 @@ class MessageLogTest {
         }
         int count = 0;
         try (MessageLog.Reader r = MessageLog.reader(file)) {
-            while (r.next() != null) count++;
+            while (r.next().isPresent()) count++;
         }
         assertThat(count).isEqualTo(threads * per);
     }

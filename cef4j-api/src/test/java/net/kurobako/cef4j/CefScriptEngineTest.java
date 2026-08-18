@@ -232,11 +232,11 @@ class CefScriptEngineTest extends CefTestBase {
 
         CefScriptEngine.Result nameResult = pumpAndGet(evaluator.getProperty(handle, "name", false), 5_000);
         assertThat(nameResult.isJson()).isTrue();
-        assertThat(nameResult.json()).isEqualTo("\"test\"");
+        assertThat(nameResult.json()).hasValue("\"test\"");
 
         CefScriptEngine.Result valueResult = pumpAndGet(evaluator.getProperty(handle, "value", false), 5_000);
         assertThat(valueResult.isJson()).isTrue();
-        assertThat(valueResult.json()).isEqualTo("42");
+        assertThat(valueResult.json()).hasValue("42");
 
         evaluator.release(handle);
     }
@@ -249,7 +249,7 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.setProperty(handle, "x", "99"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, "x", false), 5_000);
-        assertThat(result.json()).isEqualTo("99");
+        assertThat(result.json()).hasValue("99");
 
         evaluator.release(handle);
     }
@@ -262,7 +262,7 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.setProperty(handle, "msg", "\"hello\""), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, "msg", false), 5_000);
-        assertThat(result.json()).isEqualTo("\"hello\"");
+        assertThat(result.json()).hasValue("\"hello\"");
 
         evaluator.release(handle);
     }
@@ -275,7 +275,7 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.setProperty(handle, "nested", "{\"a\": 1}"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, "nested", false), 5_000);
-        assertThat(result.json()).isEqualTo("{\"a\":1}");
+        assertThat(result.json()).hasValue("{\"a\":1}");
 
         evaluator.release(handle);
     }
@@ -287,7 +287,7 @@ class CefScriptEngineTest extends CefTestBase {
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "add", "[3, 4]", false), 5_000);
         assertThat(result.isJson()).isTrue();
-        assertThat(result.json()).isEqualTo("7");
+        assertThat(result.json()).hasValue("7");
 
         evaluator.release(handle);
     }
@@ -299,7 +299,7 @@ class CefScriptEngineTest extends CefTestBase {
                 pumpAndGet(evaluator.evaluateHandle("({greet: function(name) { return 'hello ' + name; }})"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "greet", "[\"world\"]", false), 5_000);
-        assertThat(result.json()).isEqualTo("\"hello world\"");
+        assertThat(result.json()).hasValue("\"hello world\"");
 
         evaluator.release(handle);
     }
@@ -310,7 +310,7 @@ class CefScriptEngineTest extends CefTestBase {
         int handle = pumpAndGet(evaluator.evaluateHandle("({make: function() { return {x: 1, y: 2}; }})"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "make", "[]", false), 5_000);
-        assertThat(result.json()).isEqualTo("{\"x\":1,\"y\":2}");
+        assertThat(result.json()).hasValue("{\"x\":1,\"y\":2}");
 
         evaluator.release(handle);
     }
@@ -325,7 +325,7 @@ class CefScriptEngineTest extends CefTestBase {
         int nestedHandle = result.handle();
 
         CefScriptEngine.Result prop = pumpAndGet(evaluator.getProperty(nestedHandle, "nested", false), 5_000);
-        assertThat(prop.json()).isEqualTo("true");
+        assertThat(prop.json()).hasValue("true");
 
         evaluator.release(nestedHandle);
         evaluator.release(handle);
@@ -341,10 +341,10 @@ class CefScriptEngineTest extends CefTestBase {
         int childHandle = childResult.handle();
 
         CefScriptEngine.Result a = pumpAndGet(evaluator.getProperty(childHandle, "a", false), 5_000);
-        assertThat(a.json()).isEqualTo("1");
+        assertThat(a.json()).hasValue("1");
 
         CefScriptEngine.Result b = pumpAndGet(evaluator.getProperty(childHandle, "b", false), 5_000);
-        assertThat(b.json()).isEqualTo("2");
+        assertThat(b.json()).hasValue("2");
 
         evaluator.release(childHandle);
         evaluator.release(handle);
@@ -435,7 +435,7 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.setProperty(handle, "n", "5"), 5_000);
 
         CefScriptEngine.Result result = pumpAndGet(evaluator.getProperty(handle, "n", false), 5_000);
-        assertThat(result.json()).isEqualTo("5");
+        assertThat(result.json()).hasValue("5");
 
         String evalResult = pumpAndGet(evaluator.evaluate("window.__counter.n"), 5_000);
         assertThat(evalResult).isEqualTo("5");
@@ -448,7 +448,7 @@ class CefScriptEngineTest extends CefTestBase {
     void handle_callWithNoArgs() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function() { return 'no args'; }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "f", "[]", false), 5_000);
-        assertThat(result.json()).isEqualTo("\"no args\"");
+        assertThat(result.json()).hasValue("\"no args\"");
         evaluator.release(handle);
     }
 
@@ -457,7 +457,7 @@ class CefScriptEngineTest extends CefTestBase {
     void handle_callWithMixedArgs() throws Exception {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function(n, s, b) { return '' + n + s + b; }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "f", "[42, \"hello\", true]", false), 5_000);
-        assertThat(result.json()).isEqualTo("\"42hellotrue\"");
+        assertThat(result.json()).hasValue("\"42hellotrue\"");
         evaluator.release(handle);
     }
 
@@ -467,7 +467,7 @@ class CefScriptEngineTest extends CefTestBase {
         int handle = pumpAndGet(evaluator.evaluateHandle("({f: function(obj) { return obj.x + obj.y; }})"), 5_000);
         CefScriptEngine.Result result =
                 pumpAndGet(evaluator.call(handle, "f", "[{\"x\": 10, \"y\": 20}]", false), 5_000);
-        assertThat(result.json()).isEqualTo("30");
+        assertThat(result.json()).hasValue("30");
         evaluator.release(handle);
     }
 
@@ -477,7 +477,7 @@ class CefScriptEngineTest extends CefTestBase {
         int handle = pumpAndGet(
                 evaluator.evaluateHandle("({sum: function(arr) { return arr.reduce((a,b) => a+b, 0); }})"), 5_000);
         CefScriptEngine.Result result = pumpAndGet(evaluator.call(handle, "sum", "[[1,2,3,4,5]]", false), 5_000);
-        assertThat(result.json()).isEqualTo("15");
+        assertThat(result.json()).hasValue("15");
         evaluator.release(handle);
     }
 
@@ -507,7 +507,7 @@ class CefScriptEngineTest extends CefTestBase {
         assertThat(result.isJson())
                 .as("result() should return JSON, got: " + result)
                 .isTrue();
-        assertThat(result.json()).isEqualTo("[\"a\",\"b\",\"c\"]");
+        assertThat(result.json()).hasValue("[\"a\",\"b\",\"c\"]");
 
         evaluator.release(r3.handle());
         evaluator.release(r2.handle());
@@ -523,7 +523,7 @@ class CefScriptEngineTest extends CefTestBase {
 
         CefScriptEngine.Result titleResult = pumpAndGet(evaluator.getProperty(docHandle, "title", false), 5_000);
         assertThat(titleResult.isJson()).isTrue();
-        assertThat(titleResult.json()).isEqualTo("\"\"");
+        assertThat(titleResult.json()).hasValue("\"\"");
 
         CefScriptEngine.Result elemResult =
                 pumpAndGet(evaluator.call(docHandle, "createElement", "[\"div\"]", true), 5_000);
@@ -533,7 +533,7 @@ class CefScriptEngineTest extends CefTestBase {
         pumpAndGet(evaluator.setProperty(divHandle, "innerHTML", "\"<span>test</span>\""), 5_000);
 
         CefScriptEngine.Result htmlResult = pumpAndGet(evaluator.getProperty(divHandle, "innerHTML", false), 5_000);
-        assertThat(htmlResult.json()).isEqualTo("\"<span>test</span>\"");
+        assertThat(htmlResult.json()).hasValue("\"<span>test</span>\"");
 
         evaluator.release(divHandle);
         evaluator.release(docHandle);
@@ -642,10 +642,10 @@ class CefScriptEngineTest extends CefTestBase {
 
         CefScriptEngine.Result xResult = pumpAndGet(evaluator.getProperty(argHandles[0], "x", false), 5_000);
         assertThat(xResult.isJson()).isTrue();
-        assertThat(xResult.json()).isEqualTo("1");
+        assertThat(xResult.json()).hasValue("1");
 
         CefScriptEngine.Result yResult = pumpAndGet(evaluator.getProperty(argHandles[0], "y", false), 5_000);
-        assertThat(yResult.json()).isEqualTo("2");
+        assertThat(yResult.json()).hasValue("2");
 
         evaluator.release(argHandles[0]);
         evaluator.release(cbHandle);

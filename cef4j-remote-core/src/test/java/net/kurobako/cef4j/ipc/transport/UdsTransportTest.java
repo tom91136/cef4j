@@ -2,19 +2,21 @@ package net.kurobako.cef4j.ipc.transport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.newsclub.net.unix.AFUNIXServerSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 
 final class UdsTransportTest extends CefTransportContractTest {
+    @TempDir
+    static Path tmpDir;
+
     @Override
     protected Pair newPair() throws Exception {
-        Path directory = Files.createTempDirectory("cef4j-uds-test-");
-        Path path = directory.resolve("ipc.sock");
+        Path path = tmpDir.resolve("uds-" + System.nanoTime() + ".sock");
         AFUNIXServerSocket server = AFUNIXServerSocket.newInstance();
         server.bind(AFUNIXSocketAddress.of(path));
         CompletableFuture<UdsTransport> accepted = CompletableFuture.supplyAsync(() -> {

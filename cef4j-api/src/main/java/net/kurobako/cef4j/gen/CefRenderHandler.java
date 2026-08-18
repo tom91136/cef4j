@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:48</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public interface CefRenderHandler extends CefClientHandler {
 
     /**

@@ -92,13 +92,14 @@ public final class CefPackager implements Runnable {
                 throw new CommandLine.ParameterException(new CommandLine(this), "--sha256 requires one platform");
             }
             if (bridgeDirectory != null && targets.size() != 1) {
-                throw new CommandLine.ParameterException(new CommandLine(this), "--bridge-directory requires one platform");
+                throw new CommandLine.ParameterException(
+                        new CommandLine(this), "--bridge-directory requires one platform");
             }
             CefArchiveResolver resolver = new CefArchiveResolver();
             CefRuntimePackager packager = new CefRuntimePackager();
             for (CefPlatform platform : targets) {
-                CefArchiveResolver.ResolvedArchive resolved = resolver.resolve(
-                        cefVersion, platform, cache, archive, sha256, offline, baseUri, indexUri);
+                CefArchiveResolver.ResolvedArchive resolved =
+                        resolver.resolve(cefVersion, platform, cache, archive, sha256, offline, baseUri, indexUri);
                 CefRuntimePackager.Request request = new CefRuntimePackager.Request(
                         cefVersion,
                         platform,
@@ -110,7 +111,8 @@ public final class CefPackager implements Runnable {
                         resolved.sha256,
                         resolved.upstreamVerified);
                 if (skipIfCurrent && packager.isCurrent(request)) {
-                    System.out.printf("Reusing packaged CEF %s for %s in %s%n", cefVersion, platform.externalName(), output);
+                    System.out.printf(
+                            "Reusing packaged CEF %s for %s in %s%n", cefVersion, platform.externalName(), output);
                 } else {
                     CefRuntimePackager.Result result = packager.packageArchive(request);
                     System.out.printf(
@@ -123,9 +125,7 @@ public final class CefPackager implements Runnable {
         }
 
         private static void stageBridge(Path sourceDirectory, Path output, CefPlatform platform) throws IOException {
-            String library = platform.isWindows()
-                    ? "cef4j.dll"
-                    : platform.isMacOS() ? "libcef4j.dylib" : "libcef4j.so";
+            String library = platform.isWindows() ? "cef4j.dll" : platform.isMacOS() ? "libcef4j.dylib" : "libcef4j.so";
             if (!Files.isRegularFile(sourceDirectory.resolve(library))) {
                 throw new IOException("cef4j bridge is missing: " + sourceDirectory.resolve(library));
             }

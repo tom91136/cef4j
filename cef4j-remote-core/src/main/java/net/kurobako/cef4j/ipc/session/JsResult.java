@@ -53,6 +53,8 @@ public final class JsResult {
      * packs a single {@code int64} for the double bits via {@link Double#longBitsToDouble} so the value survives intact
      * across both encodings.
      */
+    // null slots carry the value for the matching kind only
+    @SuppressWarnings("NullableForbidden")
     public static JsResult fromWire(
             int valueKind,
             boolean boolValue,
@@ -149,6 +151,8 @@ public final class JsResult {
      * Untyped accessor — returns Boolean/Integer/Double/String/null based on {@link #kind}, or throws if the result is
      * an error. Useful for one-off callers that don't care about strict typing.
      */
+    // null is a valid JS value (null/undefined)
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public Object value() {
         switch (kind) {

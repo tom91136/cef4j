@@ -19,6 +19,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
@@ -283,7 +284,7 @@ public final class RuntimeServerProcess implements Closeable {
 
     /** Connects an authenticated WebSocket generation, optionally trusting a caller-supplied TLS context. */
     @Nonnull
-    public CefTransport connectWebSocket(@Nullable String bearerToken, @Nullable SSLContext sslContext)
+    public CefTransport connectWebSocket(Optional<String> bearerToken, Optional<SSLContext> sslContext)
             throws CefTransportException {
         if (!"websocket".equals(transport)) {
             throw new CefTransportException("runtime server selected " + transport + ", not websocket");

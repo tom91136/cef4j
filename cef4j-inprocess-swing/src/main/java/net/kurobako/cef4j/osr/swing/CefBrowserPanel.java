@@ -31,6 +31,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -117,7 +118,7 @@ public class CefBrowserPanel extends JPanel {
      * @throws IllegalStateException if CEF has been terminated
      */
     public static void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, Optional<CefApp> appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
@@ -139,8 +140,8 @@ public class CefBrowserPanel extends JPanel {
             List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
             combinedArgs.addAll(defaults.args());
             combinedArgs.addAll(extraArgs);
-            if (appHandler != null) {
-                Cef.INSTANCE.addAppHandler(appHandler);
+            if (appHandler.isPresent()) {
+                Cef.INSTANCE.addAppHandler(appHandler.get());
             }
             Cef.INSTANCE.initialise(settings, combinedArgs);
         }
@@ -244,9 +245,8 @@ public class CefBrowserPanel extends JPanel {
             if (ph > maxH) maxH = ph;
         }
         frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
-            BufferedImage img = (prev != null && prev.getWidth() == w && prev.getHeight() == h)
-                    ? prev
-                    : new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage img = prev.filter(p -> p.getWidth() == w && p.getHeight() == h)
+                    .orElseGet(() -> new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB));
             int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
             // The paint buffer is a full frame; partial copies flicker with the current double-buffering path.
             System.arraycopy(pixels, 0, dst, 0, w * h);
@@ -517,7 +517,7 @@ public class CefBrowserPanel extends JPanel {
                     buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(px, 0, pixelCount);
                     SwingUtilities.invokeLater(() -> blitOsrPopup(px, width, height));
                 } else {
-                    if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
+                    if (frameBuffer.onPaint(buffer, width, height, dirtyRects).isPresent()) {
                         onViewPainted(width, height);
                         repaint();
                     }
@@ -530,6 +530,8 @@ public class CefBrowserPanel extends JPanel {
     protected void onViewPainted(int width, int height) {}
 
     /** Attaches an already-created browser to this panel and refreshes its OSR viewport. */
+    // null detaches the browser
+    @SuppressWarnings("NullableForbidden")
     public void browser(@Nullable CefBrowser browser) {
         this.browser = browser;
         if (browser == null) return;
@@ -544,6 +546,8 @@ public class CefBrowserPanel extends JPanel {
     }
 
     /** Returns the attached browser, or {@code null} if none is attached. */
+    // null when no browser is attached
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser browser() {
         return browser;
@@ -571,10 +575,7 @@ public class CefBrowserPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        BufferedImage fresh = frameBuffer.consume();
-        if (fresh != null) {
-            lastPaintedImage = fresh;
-        }
+        frameBuffer.consume().ifPresent(fresh -> lastPaintedImage = fresh);
         BufferedImage img = lastPaintedImage;
         if (img != null) {
             g.drawImage(img, 0, 0, getWidth(), getHeight(), null);

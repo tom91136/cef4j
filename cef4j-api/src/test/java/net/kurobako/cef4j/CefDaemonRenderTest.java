@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.*;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -52,9 +53,11 @@ class CefDaemonRenderTest {
         if (Cef.INSTANCE.state() == Cef.State.INITIALISED) return;
 
         Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        TestTempDirs.cleanupAtExit(tempDir);
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
         settings.windowlessRenderingEnabled = 1;
         settings.externalMessagePump = 0;
         settings.multiThreadedMessageLoop = 0;

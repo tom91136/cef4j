@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.CefSession;
  * <p>Use {@link #register(CefSession, CefJsdialogHandler)} to bind every method to its corresponding wire event in
  * one step. Subscriptions stay live until the session closes.
  */
+@SuppressWarnings("NullableForbidden")
 public interface CefJsdialogHandler {
 
     /**

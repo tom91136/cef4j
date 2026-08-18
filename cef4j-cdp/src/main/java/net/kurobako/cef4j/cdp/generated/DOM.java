@@ -3,3223 +3,1613 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an {@code id}. This {@code id} can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client&#x27;s responsibility to collect information about the nodes that were sent to the client. Note that {@code iframe} owner elements will return corresponding document elements as their child nodes.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/DOM.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class DOM {
     private DOM() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Unique DOM node identifier.
+     */
+    public static final class NodeId implements CdpValue<Long> {
+        public final long value;
+        public NodeId(long value) { this.value = value; }
+        @Nonnull public Long value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof NodeId)) return false;
+            return value == ((NodeId) other).value;
+        }
+        @Override public int hashCode() { return Long.hashCode(value); }
+        @Override public String toString() { return "NodeId(" + value + ")"; }
+    }
+    /**
+     * Unique DOM node identifier used to reference a node that may not have been pushed to the front-end.
+     */
+    public static final class BackendNodeId implements CdpValue<Long> {
+        public final long value;
+        public BackendNodeId(long value) { this.value = value; }
+        @Nonnull public Long value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof BackendNodeId)) return false;
+            return value == ((BackendNodeId) other).value;
+        }
+        @Override public int hashCode() { return Long.hashCode(value); }
+        @Override public String toString() { return "BackendNodeId(" + value + ")"; }
+    }
+    /**
+     * Unique identifier for a CSS stylesheet.
+     */
+    public static final class StyleSheetId implements CdpValue<String> {
+        public final String value;
+        public StyleSheetId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof StyleSheetId)) return false;
+            return value.equals(((StyleSheetId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "StyleSheetId(" + value + ")"; }
+    }
     /**
      * Backend node with a friendly name.
      */
     public static final class BackendNode extends CdpObject {
+        public BackendNode() {}
         private BackendNode(Map<String, Object> values) { super(values); }
-        @Nullable public static BackendNode fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new BackendNode(values);
+        public static BackendNode fromMap(Map<String, Object> values) {
+            return new BackendNode(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * {@code Node}&#x27;s nodeType.
          * @return the protocol field value
          */
-        @Nullable public Long nodeType() {
-            return numberAsLong(value("nodeType"));
+        public long nodeType() {
+            return ((Number) require("nodeType")).longValue();
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value
          */
-        @Nullable public String nodeName() {
-            return (String) value("nodeName");
+        public String nodeName() {
+            return (String) require("nodeName");
         }
         /**
          * Returns the backendNodeId field.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * {@code Node}&#x27;s nodeType.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeType(@Nullable Long value) {
-                if (value == null) values.remove("nodeType");
-                else values.put("nodeType", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Node}&#x27;s nodeName.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeName(@Nullable String value) {
-                if (value == null) values.remove("nodeName");
-                else values.put("nodeName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the backendNodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            public BackendNode build() {
-                if (!values.containsKey("nodeType")) throw new IllegalStateException("Missing required CDP field: nodeType");
-                if (!values.containsKey("nodeName")) throw new IllegalStateException("Missing required CDP field: nodeName");
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                return new BackendNode(values);
-            }
+        /**
+         * {@code Node}&#x27;s nodeType.
+         * @param nodeType field value
+         * @return this model
+         */
+        public BackendNode nodeType(long nodeType) {
+            set("nodeType", nodeType);
+            return this;
+        }
+        /**
+         * {@code Node}&#x27;s nodeName.
+         * @param nodeName field value
+         * @return this model
+         */
+        public BackendNode nodeName(String nodeName) {
+            set("nodeName", nodeName);
+            return this;
+        }
+        /**
+         * Sets the backendNodeId field.
+         * @param backendNodeId field value
+         * @return this model
+         */
+        public BackendNode backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
     }
     /**
      * Pseudo element type.
      */
-    public static final class PseudoType {
-        private PseudoType() {}
-        public static final String FIRST_LINE = "first-line";
-        public static final String FIRST_LETTER = "first-letter";
-        public static final String CHECKMARK = "checkmark";
-        public static final String BEFORE = "before";
-        public static final String AFTER = "after";
-        public static final String EXPAND_ICON = "expand-icon";
-        public static final String PICKER_ICON = "picker-icon";
-        public static final String INTEREST_BUTTON = "interest-button";
-        public static final String MARKER = "marker";
-        public static final String BACKDROP = "backdrop";
-        public static final String COLUMN = "column";
-        public static final String SELECTION = "selection";
-        public static final String SEARCH_TEXT = "search-text";
-        public static final String TARGET_TEXT = "target-text";
-        public static final String SPELLING_ERROR = "spelling-error";
-        public static final String GRAMMAR_ERROR = "grammar-error";
-        public static final String HIGHLIGHT = "highlight";
-        public static final String FIRST_LINE_INHERITED = "first-line-inherited";
-        public static final String SCROLL_MARKER = "scroll-marker";
-        public static final String SCROLL_MARKER_GROUP = "scroll-marker-group";
-        public static final String SCROLL_BUTTON = "scroll-button";
-        public static final String SCROLLBAR = "scrollbar";
-        public static final String SCROLLBAR_THUMB = "scrollbar-thumb";
-        public static final String SCROLLBAR_BUTTON = "scrollbar-button";
-        public static final String SCROLLBAR_TRACK = "scrollbar-track";
-        public static final String SCROLLBAR_TRACK_PIECE = "scrollbar-track-piece";
-        public static final String SCROLLBAR_CORNER = "scrollbar-corner";
-        public static final String RESIZER = "resizer";
-        public static final String INPUT_LIST_BUTTON = "input-list-button";
-        public static final String VIEW_TRANSITION = "view-transition";
-        public static final String VIEW_TRANSITION_GROUP = "view-transition-group";
-        public static final String VIEW_TRANSITION_IMAGE_PAIR = "view-transition-image-pair";
-        public static final String VIEW_TRANSITION_GROUP_CHILDREN = "view-transition-group-children";
-        public static final String VIEW_TRANSITION_OLD = "view-transition-old";
-        public static final String VIEW_TRANSITION_NEW = "view-transition-new";
-        public static final String PLACEHOLDER = "placeholder";
-        public static final String FILE_SELECTOR_BUTTON = "file-selector-button";
-        public static final String DETAILS_CONTENT = "details-content";
-        public static final String PICKER = "picker";
-        public static final String PERMISSION_ICON = "permission-icon";
-        public static final String OVERSCROLL_AREA_PARENT = "overscroll-area-parent";
+    public enum PseudoType implements CdpValue<String> {
+        FIRST_LINE("first-line"),
+        FIRST_LETTER("first-letter"),
+        CHECKMARK("checkmark"),
+        BEFORE("before"),
+        AFTER("after"),
+        EXPAND_ICON("expand-icon"),
+        PICKER_ICON("picker-icon"),
+        INTEREST_BUTTON("interest-button"),
+        MARKER("marker"),
+        BACKDROP("backdrop"),
+        COLUMN("column"),
+        SELECTION("selection"),
+        SEARCH_TEXT("search-text"),
+        TARGET_TEXT("target-text"),
+        SPELLING_ERROR("spelling-error"),
+        GRAMMAR_ERROR("grammar-error"),
+        HIGHLIGHT("highlight"),
+        FIRST_LINE_INHERITED("first-line-inherited"),
+        SCROLL_MARKER("scroll-marker"),
+        SCROLL_MARKER_GROUP("scroll-marker-group"),
+        SCROLL_BUTTON("scroll-button"),
+        SCROLLBAR("scrollbar"),
+        SCROLLBAR_THUMB("scrollbar-thumb"),
+        SCROLLBAR_BUTTON("scrollbar-button"),
+        SCROLLBAR_TRACK("scrollbar-track"),
+        SCROLLBAR_TRACK_PIECE("scrollbar-track-piece"),
+        SCROLLBAR_CORNER("scrollbar-corner"),
+        RESIZER("resizer"),
+        INPUT_LIST_BUTTON("input-list-button"),
+        VIEW_TRANSITION("view-transition"),
+        VIEW_TRANSITION_GROUP("view-transition-group"),
+        VIEW_TRANSITION_IMAGE_PAIR("view-transition-image-pair"),
+        VIEW_TRANSITION_GROUP_CHILDREN("view-transition-group-children"),
+        VIEW_TRANSITION_OLD("view-transition-old"),
+        VIEW_TRANSITION_NEW("view-transition-new"),
+        PLACEHOLDER("placeholder"),
+        FILE_SELECTOR_BUTTON("file-selector-button"),
+        DETAILS_CONTENT("details-content"),
+        PICKER("picker"),
+        PERMISSION_ICON("permission-icon"),
+        OVERSCROLL_AREA_PARENT("overscroll-area-parent");
+        public final String value;
+        PseudoType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static PseudoType of(@Nonnull String value) {
+            for (PseudoType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown PseudoType value: " + value);
+        }
     }
     /**
      * Shadow root type.
      */
-    public static final class ShadowRootType {
-        private ShadowRootType() {}
-        public static final String USER_AGENT = "user-agent";
-        public static final String OPEN = "open";
-        public static final String CLOSED = "closed";
+    public enum ShadowRootType implements CdpValue<String> {
+        USER_AGENT("user-agent"),
+        OPEN("open"),
+        CLOSED("closed");
+        public final String value;
+        ShadowRootType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ShadowRootType of(@Nonnull String value) {
+            for (ShadowRootType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ShadowRootType value: " + value);
+        }
     }
     /**
      * Document compatibility mode.
      */
-    public static final class CompatibilityMode {
-        private CompatibilityMode() {}
-        public static final String QUIRKSMODE = "QuirksMode";
-        public static final String LIMITEDQUIRKSMODE = "LimitedQuirksMode";
-        public static final String NOQUIRKSMODE = "NoQuirksMode";
+    public enum CompatibilityMode implements CdpValue<String> {
+        QUIRKSMODE("QuirksMode"),
+        LIMITEDQUIRKSMODE("LimitedQuirksMode"),
+        NOQUIRKSMODE("NoQuirksMode");
+        public final String value;
+        CompatibilityMode(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static CompatibilityMode of(@Nonnull String value) {
+            for (CompatibilityMode constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown CompatibilityMode value: " + value);
+        }
     }
     /**
      * ContainerSelector physical axes
      */
-    public static final class PhysicalAxes {
-        private PhysicalAxes() {}
-        public static final String HORIZONTAL = "Horizontal";
-        public static final String VERTICAL = "Vertical";
-        public static final String BOTH = "Both";
+    public enum PhysicalAxes implements CdpValue<String> {
+        HORIZONTAL("Horizontal"),
+        VERTICAL("Vertical"),
+        BOTH("Both");
+        public final String value;
+        PhysicalAxes(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static PhysicalAxes of(@Nonnull String value) {
+            for (PhysicalAxes constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown PhysicalAxes value: " + value);
+        }
     }
     /**
      * ContainerSelector logical axes
      */
-    public static final class LogicalAxes {
-        private LogicalAxes() {}
-        public static final String INLINE = "Inline";
-        public static final String BLOCK = "Block";
-        public static final String BOTH = "Both";
+    public enum LogicalAxes implements CdpValue<String> {
+        INLINE("Inline"),
+        BLOCK("Block"),
+        BOTH("Both");
+        public final String value;
+        LogicalAxes(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static LogicalAxes of(@Nonnull String value) {
+            for (LogicalAxes constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown LogicalAxes value: " + value);
+        }
     }
     /**
      * Physical scroll orientation
      */
-    public static final class ScrollOrientation {
-        private ScrollOrientation() {}
-        public static final String HORIZONTAL = "horizontal";
-        public static final String VERTICAL = "vertical";
+    public enum ScrollOrientation implements CdpValue<String> {
+        HORIZONTAL("horizontal"),
+        VERTICAL("vertical");
+        public final String value;
+        ScrollOrientation(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ScrollOrientation of(@Nonnull String value) {
+            for (ScrollOrientation constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ScrollOrientation value: " + value);
+        }
     }
     /**
      * DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes. DOMNode is a base node mirror type.
      */
     public static final class Node extends CdpObject {
+        public Node() {}
         private Node(Map<String, Object> values) { super(values); }
-        @Nullable public static Node fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Node(values);
+        public static Node fromMap(Map<String, Object> values) {
+            return new Node(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * The id of the parent node if any.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long parentId() {
-            return numberAsLong(value("parentId"));
+        public Optional<DOM.NodeId> parentId() {
+            return Optional.ofNullable(raw("parentId") == null ? null : new DOM.NodeId(((Number) raw("parentId")).longValue()));
         }
         /**
          * The BackendNodeId for this node.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
         /**
          * {@code Node}&#x27;s nodeType.
          * @return the protocol field value
          */
-        @Nullable public Long nodeType() {
-            return numberAsLong(value("nodeType"));
+        public long nodeType() {
+            return ((Number) require("nodeType")).longValue();
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value
          */
-        @Nullable public String nodeName() {
-            return (String) value("nodeName");
+        public String nodeName() {
+            return (String) require("nodeName");
         }
         /**
          * {@code Node}&#x27;s localName.
          * @return the protocol field value
          */
-        @Nullable public String localName() {
-            return (String) value("localName");
+        public String localName() {
+            return (String) require("localName");
         }
         /**
          * {@code Node}&#x27;s nodeValue.
          * @return the protocol field value
          */
-        @Nullable public String nodeValue() {
-            return (String) value("nodeValue");
+        public String nodeValue() {
+            return (String) require("nodeValue");
         }
         /**
          * Child count for {@code Container} nodes.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long childNodeCount() {
-            return numberAsLong(value("childNodeCount"));
+        public OptionalLong childNodeCount() {
+            Long value = CdpObject.numberAsLong(raw("childNodeCount"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * Child nodes of this node when requested with children.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<DOM.Node> children() {
-            return list(value("children"), element0 -> DOM.Node.fromMap(objectMap(element0)));
+        public Optional<java.util.List<DOM.Node>> children() {
+            return Optional.ofNullable(list(raw("children"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<String> attributes() {
-            return list(value("attributes"), element0 -> (String) element0);
+        public Optional<java.util.List<String>> attributes() {
+            return Optional.ofNullable(list(raw("attributes"), element0 -> (String) element0));
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String documentURL() {
-            return (String) value("documentURL");
+        public Optional<String> documentURL() {
+            return Optional.ofNullable((String) raw("documentURL"));
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String baseURL() {
-            return (String) value("baseURL");
+        public Optional<String> baseURL() {
+            return Optional.ofNullable((String) raw("baseURL"));
         }
         /**
          * {@code DocumentType}&#x27;s publicId.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String publicId() {
-            return (String) value("publicId");
+        public Optional<String> publicId() {
+            return Optional.ofNullable((String) raw("publicId"));
         }
         /**
          * {@code DocumentType}&#x27;s systemId.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String systemId() {
-            return (String) value("systemId");
+        public Optional<String> systemId() {
+            return Optional.ofNullable((String) raw("systemId"));
         }
         /**
          * {@code DocumentType}&#x27;s internalSubset.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String internalSubset() {
-            return (String) value("internalSubset");
+        public Optional<String> internalSubset() {
+            return Optional.ofNullable((String) raw("internalSubset"));
         }
         /**
          * {@code Document}&#x27;s XML version in case of XML documents.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String xmlVersion() {
-            return (String) value("xmlVersion");
+        public Optional<String> xmlVersion() {
+            return Optional.ofNullable((String) raw("xmlVersion"));
         }
         /**
          * {@code Attr}&#x27;s name.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public Optional<String> name() {
+            return Optional.ofNullable((String) raw("name"));
         }
         /**
          * {@code Attr}&#x27;s value.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public Optional<String> value() {
+            return Optional.ofNullable((String) raw("value"));
         }
         /**
          * Pseudo element type for this node.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String pseudoType() {
-            return (String) value("pseudoType");
+        public Optional<DOM.PseudoType> pseudoType() {
+            return Optional.ofNullable(raw("pseudoType") == null ? null : DOM.PseudoType.of((String) raw("pseudoType")));
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String pseudoIdentifier() {
-            return (String) value("pseudoIdentifier");
+        public Optional<String> pseudoIdentifier() {
+            return Optional.ofNullable((String) raw("pseudoIdentifier"));
         }
         /**
          * Shadow root type.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String shadowRootType() {
-            return (String) value("shadowRootType");
+        public Optional<DOM.ShadowRootType> shadowRootType() {
+            return Optional.ofNullable(raw("shadowRootType") == null ? null : DOM.ShadowRootType.of((String) raw("shadowRootType")));
         }
         /**
          * Frame ID for frame owner elements.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Optional<Page.FrameId> frameId() {
+            return Optional.ofNullable(raw("frameId") == null ? null : new Page.FrameId((String) raw("frameId")));
         }
         /**
          * Content document for frame owner elements.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.Node contentDocument() {
-            return DOM.Node.fromMap(objectMap(value("contentDocument")));
+        public Optional<DOM.Node> contentDocument() {
+            return Optional.ofNullable(raw("contentDocument") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentDocument")))));
         }
         /**
          * Shadow root list for given element host.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<DOM.Node> shadowRoots() {
-            return list(value("shadowRoots"), element0 -> DOM.Node.fromMap(objectMap(element0)));
+        public Optional<java.util.List<DOM.Node>> shadowRoots() {
+            return Optional.ofNullable(list(raw("shadowRoots"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Content document fragment for template elements.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.Node templateContent() {
-            return DOM.Node.fromMap(objectMap(value("templateContent")));
+        public Optional<DOM.Node> templateContent() {
+            return Optional.ofNullable(raw("templateContent") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("templateContent")))));
         }
         /**
          * Pseudo elements associated with this node.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<DOM.Node> pseudoElements() {
-            return list(value("pseudoElements"), element0 -> DOM.Node.fromMap(objectMap(element0)));
+        public Optional<java.util.List<DOM.Node>> pseudoElements() {
+            return Optional.ofNullable(list(raw("pseudoElements"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        @Nullable public DOM.Node importedDocument() {
-            return DOM.Node.fromMap(objectMap(value("importedDocument")));
+        public Optional<DOM.Node> importedDocument() {
+            return Optional.ofNullable(raw("importedDocument") == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(raw("importedDocument")))));
         }
         /**
          * Distributed nodes for given insertion point.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<DOM.BackendNode> distributedNodes() {
-            return list(value("distributedNodes"), element0 -> DOM.BackendNode.fromMap(objectMap(element0)));
+        public Optional<java.util.List<DOM.BackendNode>> distributedNodes() {
+            return Optional.ofNullable(list(raw("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Whether the node is SVG.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean isSVG() {
-            return (Boolean) value("isSVG");
+        public Optional<Boolean> isSVG() {
+            return Optional.ofNullable((Boolean) raw("isSVG"));
         }
         /**
          * Returns the compatibilityMode field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String compatibilityMode() {
-            return (String) value("compatibilityMode");
+        public Optional<DOM.CompatibilityMode> compatibilityMode() {
+            return Optional.ofNullable(raw("compatibilityMode") == null ? null : DOM.CompatibilityMode.of((String) raw("compatibilityMode")));
         }
         /**
          * Returns the assignedSlot field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.BackendNode assignedSlot() {
-            return DOM.BackendNode.fromMap(objectMap(value("assignedSlot")));
+        public Optional<DOM.BackendNode> assignedSlot() {
+            return Optional.ofNullable(raw("assignedSlot") == null ? null : DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(objectMap(raw("assignedSlot")))));
         }
         /**
          * Returns the isScrollable field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean isScrollable() {
-            return (Boolean) value("isScrollable");
+        public Optional<Boolean> isScrollable() {
+            return Optional.ofNullable((Boolean) raw("isScrollable"));
         }
         /**
          * Returns the affectedByStartingStyles field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean affectedByStartingStyles() {
-            return (Boolean) value("affectedByStartingStyles");
+        public Optional<Boolean> affectedByStartingStyles() {
+            return Optional.ofNullable((Boolean) raw("affectedByStartingStyles"));
         }
         /**
          * Returns the adoptedStyleSheets field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<String> adoptedStyleSheets() {
-            return list(value("adoptedStyleSheets"), element0 -> (String) element0);
+        public Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets() {
+            return Optional.ofNullable(list(raw("adoptedStyleSheets"), element0 -> new DOM.StyleSheetId((String) element0)));
         }
         /**
          * Returns the adProvenance field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Network.AdProvenance adProvenance() {
-            return Network.AdProvenance.fromMap(objectMap(value("adProvenance")));
+        public Optional<Network.AdProvenance> adProvenance() {
+            return Optional.ofNullable(raw("adProvenance") == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(raw("adProvenance")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id of the parent node if any.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentId(@Nullable Long value) {
-                if (value == null) values.remove("parentId");
-                else values.put("parentId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The BackendNodeId for this node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Node}&#x27;s nodeType.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeType(@Nullable Long value) {
-                if (value == null) values.remove("nodeType");
-                else values.put("nodeType", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Node}&#x27;s nodeName.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeName(@Nullable String value) {
-                if (value == null) values.remove("nodeName");
-                else values.put("nodeName", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Node}&#x27;s localName.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder localName(@Nullable String value) {
-                if (value == null) values.remove("localName");
-                else values.put("localName", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Node}&#x27;s nodeValue.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeValue(@Nullable String value) {
-                if (value == null) values.remove("nodeValue");
-                else values.put("nodeValue", jsonValue(value));
-                return this;
-            }
-            /**
-             * Child count for {@code Container} nodes.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder childNodeCount(@Nullable Long value) {
-                if (value == null) values.remove("childNodeCount");
-                else values.put("childNodeCount", jsonValue(value));
-                return this;
-            }
-            /**
-             * Child nodes of this node when requested with children.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder children(@Nullable java.util.List<DOM.Node> value) {
-                if (value == null) values.remove("children");
-                else values.put("children", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder attributes(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("attributes");
-                else values.put("attributes", jsonValue(value));
-                return this;
-            }
-            /**
-             * Document URL that {@code Document} or {@code FrameOwner} node points to.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder documentURL(@Nullable String value) {
-                if (value == null) values.remove("documentURL");
-                else values.put("documentURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder baseURL(@Nullable String value) {
-                if (value == null) values.remove("baseURL");
-                else values.put("baseURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code DocumentType}&#x27;s publicId.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder publicId(@Nullable String value) {
-                if (value == null) values.remove("publicId");
-                else values.put("publicId", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code DocumentType}&#x27;s systemId.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder systemId(@Nullable String value) {
-                if (value == null) values.remove("systemId");
-                else values.put("systemId", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code DocumentType}&#x27;s internalSubset.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder internalSubset(@Nullable String value) {
-                if (value == null) values.remove("internalSubset");
-                else values.put("internalSubset", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Document}&#x27;s XML version in case of XML documents.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder xmlVersion(@Nullable String value) {
-                if (value == null) values.remove("xmlVersion");
-                else values.put("xmlVersion", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Attr}&#x27;s name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * {@code Attr}&#x27;s value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            /**
-             * Pseudo element type for this node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pseudoType(@Nullable String value) {
-                if (value == null) values.remove("pseudoType");
-                else values.put("pseudoType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pseudoIdentifier(@Nullable String value) {
-                if (value == null) values.remove("pseudoIdentifier");
-                else values.put("pseudoIdentifier", jsonValue(value));
-                return this;
-            }
-            /**
-             * Shadow root type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shadowRootType(@Nullable String value) {
-                if (value == null) values.remove("shadowRootType");
-                else values.put("shadowRootType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame ID for frame owner elements.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Content document for frame owner elements.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contentDocument(@Nullable DOM.Node value) {
-                if (value == null) values.remove("contentDocument");
-                else values.put("contentDocument", jsonValue(value));
-                return this;
-            }
-            /**
-             * Shadow root list for given element host.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shadowRoots(@Nullable java.util.List<DOM.Node> value) {
-                if (value == null) values.remove("shadowRoots");
-                else values.put("shadowRoots", jsonValue(value));
-                return this;
-            }
-            /**
-             * Content document fragment for template elements.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder templateContent(@Nullable DOM.Node value) {
-                if (value == null) values.remove("templateContent");
-                else values.put("templateContent", jsonValue(value));
-                return this;
-            }
-            /**
-             * Pseudo elements associated with this node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pseudoElements(@Nullable java.util.List<DOM.Node> value) {
-                if (value == null) values.remove("pseudoElements");
-                else values.put("pseudoElements", jsonValue(value));
-                return this;
-            }
-            /**
-             * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder importedDocument(@Nullable DOM.Node value) {
-                if (value == null) values.remove("importedDocument");
-                else values.put("importedDocument", jsonValue(value));
-                return this;
-            }
-            /**
-             * Distributed nodes for given insertion point.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder distributedNodes(@Nullable java.util.List<DOM.BackendNode> value) {
-                if (value == null) values.remove("distributedNodes");
-                else values.put("distributedNodes", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the node is SVG.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isSVG(@Nullable Boolean value) {
-                if (value == null) values.remove("isSVG");
-                else values.put("isSVG", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the compatibilityMode field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder compatibilityMode(@Nullable String value) {
-                if (value == null) values.remove("compatibilityMode");
-                else values.put("compatibilityMode", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the assignedSlot field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder assignedSlot(@Nullable DOM.BackendNode value) {
-                if (value == null) values.remove("assignedSlot");
-                else values.put("assignedSlot", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the isScrollable field.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isScrollable(@Nullable Boolean value) {
-                if (value == null) values.remove("isScrollable");
-                else values.put("isScrollable", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the affectedByStartingStyles field.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder affectedByStartingStyles(@Nullable Boolean value) {
-                if (value == null) values.remove("affectedByStartingStyles");
-                else values.put("affectedByStartingStyles", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the adoptedStyleSheets field.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder adoptedStyleSheets(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("adoptedStyleSheets");
-                else values.put("adoptedStyleSheets", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the adProvenance field.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder adProvenance(@Nullable Network.AdProvenance value) {
-                if (value == null) values.remove("adProvenance");
-                else values.put("adProvenance", jsonValue(value));
-                return this;
-            }
-            public Node build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                if (!values.containsKey("nodeType")) throw new IllegalStateException("Missing required CDP field: nodeType");
-                if (!values.containsKey("nodeName")) throw new IllegalStateException("Missing required CDP field: nodeName");
-                if (!values.containsKey("localName")) throw new IllegalStateException("Missing required CDP field: localName");
-                if (!values.containsKey("nodeValue")) throw new IllegalStateException("Missing required CDP field: nodeValue");
-                return new Node(values);
-            }
+        /**
+         * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
+         * @param nodeId field value
+         * @return this model
+         */
+        public Node nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * The id of the parent node if any.
+         * @param parentId field value; empty omits the value
+         * @return this model
+         */
+        public Node parentId(Optional<DOM.NodeId> parentId) {
+            set("parentId", parentId.orElse(null));
+            return this;
+        }
+        /**
+         * The id of the parent node if any.
+         * @param parentId field value; null removes the value
+         * @return this model
+         */
+        public Node parentId(DOM.NodeId parentId) {
+            set("parentId", parentId);
+            return this;
+        }
+        /**
+         * The BackendNodeId for this node.
+         * @param backendNodeId field value
+         * @return this model
+         */
+        public Node backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * {@code Node}&#x27;s nodeType.
+         * @param nodeType field value
+         * @return this model
+         */
+        public Node nodeType(long nodeType) {
+            set("nodeType", nodeType);
+            return this;
+        }
+        /**
+         * {@code Node}&#x27;s nodeName.
+         * @param nodeName field value
+         * @return this model
+         */
+        public Node nodeName(String nodeName) {
+            set("nodeName", nodeName);
+            return this;
+        }
+        /**
+         * {@code Node}&#x27;s localName.
+         * @param localName field value
+         * @return this model
+         */
+        public Node localName(String localName) {
+            set("localName", localName);
+            return this;
+        }
+        /**
+         * {@code Node}&#x27;s nodeValue.
+         * @param nodeValue field value
+         * @return this model
+         */
+        public Node nodeValue(String nodeValue) {
+            set("nodeValue", nodeValue);
+            return this;
+        }
+        /**
+         * Child count for {@code Container} nodes.
+         * @param childNodeCount field value; empty omits the value
+         * @return this model
+         */
+        public Node childNodeCount(OptionalLong childNodeCount) {
+            set("childNodeCount", childNodeCount.isPresent() ? childNodeCount.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Child count for {@code Container} nodes.
+         * @param childNodeCount field value; null removes the value
+         * @return this model
+         */
+        public Node childNodeCount(Long childNodeCount) {
+            set("childNodeCount", childNodeCount);
+            return this;
+        }
+        /**
+         * Child nodes of this node when requested with children.
+         * @param children field value; empty omits the value
+         * @return this model
+         */
+        public Node children(Optional<java.util.List<DOM.Node>> children) {
+            set("children", children.orElse(null));
+            return this;
+        }
+        /**
+         * Child nodes of this node when requested with children.
+         * @param children field value; null removes the value
+         * @return this model
+         */
+        public Node children(java.util.List<DOM.Node> children) {
+            set("children", children);
+            return this;
+        }
+        /**
+         * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
+         * @param attributes field value; empty omits the value
+         * @return this model
+         */
+        public Node attributes(Optional<java.util.List<String>> attributes) {
+            set("attributes", attributes.orElse(null));
+            return this;
+        }
+        /**
+         * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
+         * @param attributes field value; null removes the value
+         * @return this model
+         */
+        public Node attributes(java.util.List<String> attributes) {
+            set("attributes", attributes);
+            return this;
+        }
+        /**
+         * Document URL that {@code Document} or {@code FrameOwner} node points to.
+         * @param documentURL field value; empty omits the value
+         * @return this model
+         */
+        public Node documentURL(Optional<String> documentURL) {
+            set("documentURL", documentURL.orElse(null));
+            return this;
+        }
+        /**
+         * Document URL that {@code Document} or {@code FrameOwner} node points to.
+         * @param documentURL field value; null removes the value
+         * @return this model
+         */
+        public Node documentURL(String documentURL) {
+            set("documentURL", documentURL);
+            return this;
+        }
+        /**
+         * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
+         * @param baseURL field value; empty omits the value
+         * @return this model
+         */
+        public Node baseURL(Optional<String> baseURL) {
+            set("baseURL", baseURL.orElse(null));
+            return this;
+        }
+        /**
+         * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
+         * @param baseURL field value; null removes the value
+         * @return this model
+         */
+        public Node baseURL(String baseURL) {
+            set("baseURL", baseURL);
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s publicId.
+         * @param publicId field value; empty omits the value
+         * @return this model
+         */
+        public Node publicId(Optional<String> publicId) {
+            set("publicId", publicId.orElse(null));
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s publicId.
+         * @param publicId field value; null removes the value
+         * @return this model
+         */
+        public Node publicId(String publicId) {
+            set("publicId", publicId);
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s systemId.
+         * @param systemId field value; empty omits the value
+         * @return this model
+         */
+        public Node systemId(Optional<String> systemId) {
+            set("systemId", systemId.orElse(null));
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s systemId.
+         * @param systemId field value; null removes the value
+         * @return this model
+         */
+        public Node systemId(String systemId) {
+            set("systemId", systemId);
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s internalSubset.
+         * @param internalSubset field value; empty omits the value
+         * @return this model
+         */
+        public Node internalSubset(Optional<String> internalSubset) {
+            set("internalSubset", internalSubset.orElse(null));
+            return this;
+        }
+        /**
+         * {@code DocumentType}&#x27;s internalSubset.
+         * @param internalSubset field value; null removes the value
+         * @return this model
+         */
+        public Node internalSubset(String internalSubset) {
+            set("internalSubset", internalSubset);
+            return this;
+        }
+        /**
+         * {@code Document}&#x27;s XML version in case of XML documents.
+         * @param xmlVersion field value; empty omits the value
+         * @return this model
+         */
+        public Node xmlVersion(Optional<String> xmlVersion) {
+            set("xmlVersion", xmlVersion.orElse(null));
+            return this;
+        }
+        /**
+         * {@code Document}&#x27;s XML version in case of XML documents.
+         * @param xmlVersion field value; null removes the value
+         * @return this model
+         */
+        public Node xmlVersion(String xmlVersion) {
+            set("xmlVersion", xmlVersion);
+            return this;
+        }
+        /**
+         * {@code Attr}&#x27;s name.
+         * @param name field value; empty omits the value
+         * @return this model
+         */
+        public Node name(Optional<String> name) {
+            set("name", name.orElse(null));
+            return this;
+        }
+        /**
+         * {@code Attr}&#x27;s name.
+         * @param name field value; null removes the value
+         * @return this model
+         */
+        public Node name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * {@code Attr}&#x27;s value.
+         * @param value field value; empty omits the value
+         * @return this model
+         */
+        public Node value(Optional<String> value) {
+            set("value", value.orElse(null));
+            return this;
+        }
+        /**
+         * {@code Attr}&#x27;s value.
+         * @param value field value; null removes the value
+         * @return this model
+         */
+        public Node value(String value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * Pseudo element type for this node.
+         * @param pseudoType field value; empty omits the value
+         * @return this model
+         */
+        public Node pseudoType(Optional<DOM.PseudoType> pseudoType) {
+            set("pseudoType", pseudoType.orElse(null));
+            return this;
+        }
+        /**
+         * Pseudo element type for this node.
+         * @param pseudoType field value; null removes the value
+         * @return this model
+         */
+        public Node pseudoType(DOM.PseudoType pseudoType) {
+            set("pseudoType", pseudoType);
+            return this;
+        }
+        /**
+         * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
+         * @param pseudoIdentifier field value; empty omits the value
+         * @return this model
+         */
+        public Node pseudoIdentifier(Optional<String> pseudoIdentifier) {
+            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
+            return this;
+        }
+        /**
+         * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
+         * @param pseudoIdentifier field value; null removes the value
+         * @return this model
+         */
+        public Node pseudoIdentifier(String pseudoIdentifier) {
+            set("pseudoIdentifier", pseudoIdentifier);
+            return this;
+        }
+        /**
+         * Shadow root type.
+         * @param shadowRootType field value; empty omits the value
+         * @return this model
+         */
+        public Node shadowRootType(Optional<DOM.ShadowRootType> shadowRootType) {
+            set("shadowRootType", shadowRootType.orElse(null));
+            return this;
+        }
+        /**
+         * Shadow root type.
+         * @param shadowRootType field value; null removes the value
+         * @return this model
+         */
+        public Node shadowRootType(DOM.ShadowRootType shadowRootType) {
+            set("shadowRootType", shadowRootType);
+            return this;
+        }
+        /**
+         * Frame ID for frame owner elements.
+         * @param frameId field value; empty omits the value
+         * @return this model
+         */
+        public Node frameId(Optional<Page.FrameId> frameId) {
+            set("frameId", frameId.orElse(null));
+            return this;
+        }
+        /**
+         * Frame ID for frame owner elements.
+         * @param frameId field value; null removes the value
+         * @return this model
+         */
+        public Node frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Content document for frame owner elements.
+         * @param contentDocument field value; empty omits the value
+         * @return this model
+         */
+        public Node contentDocument(Optional<DOM.Node> contentDocument) {
+            set("contentDocument", contentDocument.orElse(null));
+            return this;
+        }
+        /**
+         * Content document for frame owner elements.
+         * @param contentDocument field value; null removes the value
+         * @return this model
+         */
+        public Node contentDocument(DOM.Node contentDocument) {
+            set("contentDocument", contentDocument);
+            return this;
+        }
+        /**
+         * Shadow root list for given element host.
+         * @param shadowRoots field value; empty omits the value
+         * @return this model
+         */
+        public Node shadowRoots(Optional<java.util.List<DOM.Node>> shadowRoots) {
+            set("shadowRoots", shadowRoots.orElse(null));
+            return this;
+        }
+        /**
+         * Shadow root list for given element host.
+         * @param shadowRoots field value; null removes the value
+         * @return this model
+         */
+        public Node shadowRoots(java.util.List<DOM.Node> shadowRoots) {
+            set("shadowRoots", shadowRoots);
+            return this;
+        }
+        /**
+         * Content document fragment for template elements.
+         * @param templateContent field value; empty omits the value
+         * @return this model
+         */
+        public Node templateContent(Optional<DOM.Node> templateContent) {
+            set("templateContent", templateContent.orElse(null));
+            return this;
+        }
+        /**
+         * Content document fragment for template elements.
+         * @param templateContent field value; null removes the value
+         * @return this model
+         */
+        public Node templateContent(DOM.Node templateContent) {
+            set("templateContent", templateContent);
+            return this;
+        }
+        /**
+         * Pseudo elements associated with this node.
+         * @param pseudoElements field value; empty omits the value
+         * @return this model
+         */
+        public Node pseudoElements(Optional<java.util.List<DOM.Node>> pseudoElements) {
+            set("pseudoElements", pseudoElements.orElse(null));
+            return this;
+        }
+        /**
+         * Pseudo elements associated with this node.
+         * @param pseudoElements field value; null removes the value
+         * @return this model
+         */
+        public Node pseudoElements(java.util.List<DOM.Node> pseudoElements) {
+            set("pseudoElements", pseudoElements);
+            return this;
+        }
+        /**
+         * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
+         * @param importedDocument field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Node importedDocument(Optional<DOM.Node> importedDocument) {
+            set("importedDocument", importedDocument.orElse(null));
+            return this;
+        }
+        /**
+         * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
+         * @param importedDocument field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public Node importedDocument(DOM.Node importedDocument) {
+            set("importedDocument", importedDocument);
+            return this;
+        }
+        /**
+         * Distributed nodes for given insertion point.
+         * @param distributedNodes field value; empty omits the value
+         * @return this model
+         */
+        public Node distributedNodes(Optional<java.util.List<DOM.BackendNode>> distributedNodes) {
+            set("distributedNodes", distributedNodes.orElse(null));
+            return this;
+        }
+        /**
+         * Distributed nodes for given insertion point.
+         * @param distributedNodes field value; null removes the value
+         * @return this model
+         */
+        public Node distributedNodes(java.util.List<DOM.BackendNode> distributedNodes) {
+            set("distributedNodes", distributedNodes);
+            return this;
+        }
+        /**
+         * Whether the node is SVG.
+         * @param isSVG field value; empty omits the value
+         * @return this model
+         */
+        public Node isSVG(Optional<Boolean> isSVG) {
+            set("isSVG", isSVG.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the node is SVG.
+         * @param isSVG field value; null removes the value
+         * @return this model
+         */
+        public Node isSVG(Boolean isSVG) {
+            set("isSVG", isSVG);
+            return this;
+        }
+        /**
+         * Sets the compatibilityMode field.
+         * @param compatibilityMode field value; empty omits the value
+         * @return this model
+         */
+        public Node compatibilityMode(Optional<DOM.CompatibilityMode> compatibilityMode) {
+            set("compatibilityMode", compatibilityMode.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the compatibilityMode field.
+         * @param compatibilityMode field value; null removes the value
+         * @return this model
+         */
+        public Node compatibilityMode(DOM.CompatibilityMode compatibilityMode) {
+            set("compatibilityMode", compatibilityMode);
+            return this;
+        }
+        /**
+         * Sets the assignedSlot field.
+         * @param assignedSlot field value; empty omits the value
+         * @return this model
+         */
+        public Node assignedSlot(Optional<DOM.BackendNode> assignedSlot) {
+            set("assignedSlot", assignedSlot.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the assignedSlot field.
+         * @param assignedSlot field value; null removes the value
+         * @return this model
+         */
+        public Node assignedSlot(DOM.BackendNode assignedSlot) {
+            set("assignedSlot", assignedSlot);
+            return this;
+        }
+        /**
+         * Sets the isScrollable field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param isScrollable field value; empty omits the value
+         * @return this model
+         */
+        public Node isScrollable(Optional<Boolean> isScrollable) {
+            set("isScrollable", isScrollable.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the isScrollable field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param isScrollable field value; null removes the value
+         * @return this model
+         */
+        public Node isScrollable(Boolean isScrollable) {
+            set("isScrollable", isScrollable);
+            return this;
+        }
+        /**
+         * Sets the affectedByStartingStyles field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param affectedByStartingStyles field value; empty omits the value
+         * @return this model
+         */
+        public Node affectedByStartingStyles(Optional<Boolean> affectedByStartingStyles) {
+            set("affectedByStartingStyles", affectedByStartingStyles.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the affectedByStartingStyles field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param affectedByStartingStyles field value; null removes the value
+         * @return this model
+         */
+        public Node affectedByStartingStyles(Boolean affectedByStartingStyles) {
+            set("affectedByStartingStyles", affectedByStartingStyles);
+            return this;
+        }
+        /**
+         * Sets the adoptedStyleSheets field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param adoptedStyleSheets field value; empty omits the value
+         * @return this model
+         */
+        public Node adoptedStyleSheets(Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets) {
+            set("adoptedStyleSheets", adoptedStyleSheets.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the adoptedStyleSheets field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param adoptedStyleSheets field value; null removes the value
+         * @return this model
+         */
+        public Node adoptedStyleSheets(java.util.List<DOM.StyleSheetId> adoptedStyleSheets) {
+            set("adoptedStyleSheets", adoptedStyleSheets);
+            return this;
+        }
+        /**
+         * Sets the adProvenance field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param adProvenance field value; empty omits the value
+         * @return this model
+         */
+        public Node adProvenance(Optional<Network.AdProvenance> adProvenance) {
+            set("adProvenance", adProvenance.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the adProvenance field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param adProvenance field value; null removes the value
+         * @return this model
+         */
+        public Node adProvenance(Network.AdProvenance adProvenance) {
+            set("adProvenance", adProvenance);
+            return this;
         }
     }
     /**
      * A structure to hold the top-level node of a detached tree and an array of its retained descendants.
      */
     public static final class DetachedElementInfo extends CdpObject {
+        public DetachedElementInfo() {}
         private DetachedElementInfo(Map<String, Object> values) { super(values); }
-        @Nullable public static DetachedElementInfo fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DetachedElementInfo(values);
+        public static DetachedElementInfo fromMap(Map<String, Object> values) {
+            return new DetachedElementInfo(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the treeNode field.
          * @return the protocol field value
          */
-        @Nullable public DOM.Node treeNode() {
-            return DOM.Node.fromMap(objectMap(value("treeNode")));
+        public DOM.Node treeNode() {
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("treeNode")))));
         }
         /**
          * Returns the retainedNodeIds field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Long> retainedNodeIds() {
-            return list(value("retainedNodeIds"), element0 -> numberAsLong(element0));
+        public java.util.List<DOM.NodeId> retainedNodeIds() {
+            return CdpObject.requireList(require("retainedNodeIds"), element0 -> new DOM.NodeId(((Number) element0).longValue()));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the treeNode field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder treeNode(@Nullable DOM.Node value) {
-                if (value == null) values.remove("treeNode");
-                else values.put("treeNode", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the retainedNodeIds field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder retainedNodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("retainedNodeIds");
-                else values.put("retainedNodeIds", jsonValue(value));
-                return this;
-            }
-            public DetachedElementInfo build() {
-                if (!values.containsKey("treeNode")) throw new IllegalStateException("Missing required CDP field: treeNode");
-                if (!values.containsKey("retainedNodeIds")) throw new IllegalStateException("Missing required CDP field: retainedNodeIds");
-                return new DetachedElementInfo(values);
-            }
+        /**
+         * Sets the treeNode field.
+         * @param treeNode field value
+         * @return this model
+         */
+        public DetachedElementInfo treeNode(DOM.Node treeNode) {
+            set("treeNode", treeNode);
+            return this;
+        }
+        /**
+         * Sets the retainedNodeIds field.
+         * @param retainedNodeIds field value
+         * @return this model
+         */
+        public DetachedElementInfo retainedNodeIds(java.util.List<DOM.NodeId> retainedNodeIds) {
+            set("retainedNodeIds", retainedNodeIds);
+            return this;
         }
     }
     /**
      * A structure holding an RGBA color.
      */
     public static final class RGBA extends CdpObject {
+        public RGBA() {}
         private RGBA(Map<String, Object> values) { super(values); }
-        @Nullable public static RGBA fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RGBA(values);
+        public static RGBA fromMap(Map<String, Object> values) {
+            return new RGBA(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The red component, in the [0-255] range.
          * @return the protocol field value
          */
-        @Nullable public Long r() {
-            return numberAsLong(value("r"));
+        public long r() {
+            return ((Number) require("r")).longValue();
         }
         /**
          * The green component, in the [0-255] range.
          * @return the protocol field value
          */
-        @Nullable public Long g() {
-            return numberAsLong(value("g"));
+        public long g() {
+            return ((Number) require("g")).longValue();
         }
         /**
          * The blue component, in the [0-255] range.
          * @return the protocol field value
          */
-        @Nullable public Long b() {
-            return numberAsLong(value("b"));
+        public long b() {
+            return ((Number) require("b")).longValue();
         }
         /**
          * The alpha component, in the [0-1] range (default: 1).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Double a() {
-            return numberAsDouble(value("a"));
+        public OptionalDouble a() {
+            Double value = CdpObject.numberAsDouble(raw("a"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The red component, in the [0-255] range.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder r(@Nullable Long value) {
-                if (value == null) values.remove("r");
-                else values.put("r", jsonValue(value));
-                return this;
-            }
-            /**
-             * The green component, in the [0-255] range.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder g(@Nullable Long value) {
-                if (value == null) values.remove("g");
-                else values.put("g", jsonValue(value));
-                return this;
-            }
-            /**
-             * The blue component, in the [0-255] range.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder b(@Nullable Long value) {
-                if (value == null) values.remove("b");
-                else values.put("b", jsonValue(value));
-                return this;
-            }
-            /**
-             * The alpha component, in the [0-1] range (default: 1).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder a(@Nullable Double value) {
-                if (value == null) values.remove("a");
-                else values.put("a", jsonValue(value));
-                return this;
-            }
-            public RGBA build() {
-                if (!values.containsKey("r")) throw new IllegalStateException("Missing required CDP field: r");
-                if (!values.containsKey("g")) throw new IllegalStateException("Missing required CDP field: g");
-                if (!values.containsKey("b")) throw new IllegalStateException("Missing required CDP field: b");
-                return new RGBA(values);
-            }
+        /**
+         * The red component, in the [0-255] range.
+         * @param r field value
+         * @return this model
+         */
+        public RGBA r(long r) {
+            set("r", r);
+            return this;
+        }
+        /**
+         * The green component, in the [0-255] range.
+         * @param g field value
+         * @return this model
+         */
+        public RGBA g(long g) {
+            set("g", g);
+            return this;
+        }
+        /**
+         * The blue component, in the [0-255] range.
+         * @param b field value
+         * @return this model
+         */
+        public RGBA b(long b) {
+            set("b", b);
+            return this;
+        }
+        /**
+         * The alpha component, in the [0-1] range (default: 1).
+         * @param a field value; empty omits the value
+         * @return this model
+         */
+        public RGBA a(OptionalDouble a) {
+            set("a", a.isPresent() ? a.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The alpha component, in the [0-1] range (default: 1).
+         * @param a field value; null removes the value
+         * @return this model
+         */
+        public RGBA a(Double a) {
+            set("a", a);
+            return this;
         }
     }
     /**
      * Box model.
      */
     public static final class BoxModel extends CdpObject {
+        public BoxModel() {}
         private BoxModel(Map<String, Object> values) { super(values); }
-        @Nullable public static BoxModel fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new BoxModel(values);
+        public static BoxModel fromMap(Map<String, Object> values) {
+            return new BoxModel(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Content box
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Double> content() {
-            return list(value("content"), element0 -> numberAsDouble(element0));
+        public java.util.List<Double> content() {
+            return CdpObject.requireList(require("content"), element0 -> ((Number) element0).doubleValue());
         }
         /**
          * Padding box
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Double> padding() {
-            return list(value("padding"), element0 -> numberAsDouble(element0));
+        public java.util.List<Double> padding() {
+            return CdpObject.requireList(require("padding"), element0 -> ((Number) element0).doubleValue());
         }
         /**
          * Border box
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Double> border() {
-            return list(value("border"), element0 -> numberAsDouble(element0));
+        public java.util.List<Double> border() {
+            return CdpObject.requireList(require("border"), element0 -> ((Number) element0).doubleValue());
         }
         /**
          * Margin box
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Double> margin() {
-            return list(value("margin"), element0 -> numberAsDouble(element0));
+        public java.util.List<Double> margin() {
+            return CdpObject.requireList(require("margin"), element0 -> ((Number) element0).doubleValue());
         }
         /**
          * Node width
          * @return the protocol field value
          */
-        @Nullable public Long width() {
-            return numberAsLong(value("width"));
+        public long width() {
+            return ((Number) require("width")).longValue();
         }
         /**
          * Node height
          * @return the protocol field value
          */
-        @Nullable public Long height() {
-            return numberAsLong(value("height"));
+        public long height() {
+            return ((Number) require("height")).longValue();
         }
         /**
          * Shape outside coordinates
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.ShapeOutsideInfo shapeOutside() {
-            return DOM.ShapeOutsideInfo.fromMap(objectMap(value("shapeOutside")));
+        public Optional<DOM.ShapeOutsideInfo> shapeOutside() {
+            return Optional.ofNullable(raw("shapeOutside") == null ? null : DOM.ShapeOutsideInfo.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeOutside")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Content box
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder content(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("content");
-                else values.put("content", jsonValue(value));
-                return this;
-            }
-            /**
-             * Padding box
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder padding(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("padding");
-                else values.put("padding", jsonValue(value));
-                return this;
-            }
-            /**
-             * Border box
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder border(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("border");
-                else values.put("border", jsonValue(value));
-                return this;
-            }
-            /**
-             * Margin box
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder margin(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("margin");
-                else values.put("margin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Node width
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder width(@Nullable Long value) {
-                if (value == null) values.remove("width");
-                else values.put("width", jsonValue(value));
-                return this;
-            }
-            /**
-             * Node height
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder height(@Nullable Long value) {
-                if (value == null) values.remove("height");
-                else values.put("height", jsonValue(value));
-                return this;
-            }
-            /**
-             * Shape outside coordinates
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shapeOutside(@Nullable DOM.ShapeOutsideInfo value) {
-                if (value == null) values.remove("shapeOutside");
-                else values.put("shapeOutside", jsonValue(value));
-                return this;
-            }
-            public BoxModel build() {
-                if (!values.containsKey("content")) throw new IllegalStateException("Missing required CDP field: content");
-                if (!values.containsKey("padding")) throw new IllegalStateException("Missing required CDP field: padding");
-                if (!values.containsKey("border")) throw new IllegalStateException("Missing required CDP field: border");
-                if (!values.containsKey("margin")) throw new IllegalStateException("Missing required CDP field: margin");
-                if (!values.containsKey("width")) throw new IllegalStateException("Missing required CDP field: width");
-                if (!values.containsKey("height")) throw new IllegalStateException("Missing required CDP field: height");
-                return new BoxModel(values);
-            }
+        /**
+         * Content box
+         * @param content field value
+         * @return this model
+         */
+        public BoxModel content(java.util.List<Double> content) {
+            set("content", content);
+            return this;
+        }
+        /**
+         * Padding box
+         * @param padding field value
+         * @return this model
+         */
+        public BoxModel padding(java.util.List<Double> padding) {
+            set("padding", padding);
+            return this;
+        }
+        /**
+         * Border box
+         * @param border field value
+         * @return this model
+         */
+        public BoxModel border(java.util.List<Double> border) {
+            set("border", border);
+            return this;
+        }
+        /**
+         * Margin box
+         * @param margin field value
+         * @return this model
+         */
+        public BoxModel margin(java.util.List<Double> margin) {
+            set("margin", margin);
+            return this;
+        }
+        /**
+         * Node width
+         * @param width field value
+         * @return this model
+         */
+        public BoxModel width(long width) {
+            set("width", width);
+            return this;
+        }
+        /**
+         * Node height
+         * @param height field value
+         * @return this model
+         */
+        public BoxModel height(long height) {
+            set("height", height);
+            return this;
+        }
+        /**
+         * Shape outside coordinates
+         * @param shapeOutside field value; empty omits the value
+         * @return this model
+         */
+        public BoxModel shapeOutside(Optional<DOM.ShapeOutsideInfo> shapeOutside) {
+            set("shapeOutside", shapeOutside.orElse(null));
+            return this;
+        }
+        /**
+         * Shape outside coordinates
+         * @param shapeOutside field value; null removes the value
+         * @return this model
+         */
+        public BoxModel shapeOutside(DOM.ShapeOutsideInfo shapeOutside) {
+            set("shapeOutside", shapeOutside);
+            return this;
         }
     }
     /**
      * CSS Shape Outside details.
      */
     public static final class ShapeOutsideInfo extends CdpObject {
+        public ShapeOutsideInfo() {}
         private ShapeOutsideInfo(Map<String, Object> values) { super(values); }
-        @Nullable public static ShapeOutsideInfo fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ShapeOutsideInfo(values);
+        public static ShapeOutsideInfo fromMap(Map<String, Object> values) {
+            return new ShapeOutsideInfo(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Shape bounds
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Double> bounds() {
-            return list(value("bounds"), element0 -> numberAsDouble(element0));
+        public java.util.List<Double> bounds() {
+            return CdpObject.requireList(require("bounds"), element0 -> ((Number) element0).doubleValue());
         }
         /**
          * Shape coordinate details
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Object> shape() {
-            return list(value("shape"), element0 -> element0);
+        public java.util.List<Object> shape() {
+            return CdpObject.requireList(require("shape"), element0 -> element0);
         }
         /**
          * Margin shape bounds
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Object> marginShape() {
-            return list(value("marginShape"), element0 -> element0);
+        public java.util.List<Object> marginShape() {
+            return CdpObject.requireList(require("marginShape"), element0 -> element0);
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Shape bounds
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bounds(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("bounds");
-                else values.put("bounds", jsonValue(value));
-                return this;
-            }
-            /**
-             * Shape coordinate details
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shape(@Nullable java.util.List<Object> value) {
-                if (value == null) values.remove("shape");
-                else values.put("shape", jsonValue(value));
-                return this;
-            }
-            /**
-             * Margin shape bounds
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder marginShape(@Nullable java.util.List<Object> value) {
-                if (value == null) values.remove("marginShape");
-                else values.put("marginShape", jsonValue(value));
-                return this;
-            }
-            public ShapeOutsideInfo build() {
-                if (!values.containsKey("bounds")) throw new IllegalStateException("Missing required CDP field: bounds");
-                if (!values.containsKey("shape")) throw new IllegalStateException("Missing required CDP field: shape");
-                if (!values.containsKey("marginShape")) throw new IllegalStateException("Missing required CDP field: marginShape");
-                return new ShapeOutsideInfo(values);
-            }
+        /**
+         * Shape bounds
+         * @param bounds field value
+         * @return this model
+         */
+        public ShapeOutsideInfo bounds(java.util.List<Double> bounds) {
+            set("bounds", bounds);
+            return this;
+        }
+        /**
+         * Shape coordinate details
+         * @param shape field value
+         * @return this model
+         */
+        public ShapeOutsideInfo shape(java.util.List<Object> shape) {
+            set("shape", shape);
+            return this;
+        }
+        /**
+         * Margin shape bounds
+         * @param marginShape field value
+         * @return this model
+         */
+        public ShapeOutsideInfo marginShape(java.util.List<Object> marginShape) {
+            set("marginShape", marginShape);
+            return this;
         }
     }
     /**
      * Rectangle.
      */
     public static final class Rect extends CdpObject {
+        public Rect() {}
         private Rect(Map<String, Object> values) { super(values); }
-        @Nullable public static Rect fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Rect(values);
+        public static Rect fromMap(Map<String, Object> values) {
+            return new Rect(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * X coordinate
          * @return the protocol field value
          */
-        @Nullable public Double x() {
-            return numberAsDouble(value("x"));
+        public double x() {
+            return ((Number) require("x")).doubleValue();
         }
         /**
          * Y coordinate
          * @return the protocol field value
          */
-        @Nullable public Double y() {
-            return numberAsDouble(value("y"));
+        public double y() {
+            return ((Number) require("y")).doubleValue();
         }
         /**
          * Rectangle width
          * @return the protocol field value
          */
-        @Nullable public Double width() {
-            return numberAsDouble(value("width"));
+        public double width() {
+            return ((Number) require("width")).doubleValue();
         }
         /**
          * Rectangle height
          * @return the protocol field value
          */
-        @Nullable public Double height() {
-            return numberAsDouble(value("height"));
+        public double height() {
+            return ((Number) require("height")).doubleValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * X coordinate
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder x(@Nullable Double value) {
-                if (value == null) values.remove("x");
-                else values.put("x", jsonValue(value));
-                return this;
-            }
-            /**
-             * Y coordinate
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder y(@Nullable Double value) {
-                if (value == null) values.remove("y");
-                else values.put("y", jsonValue(value));
-                return this;
-            }
-            /**
-             * Rectangle width
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder width(@Nullable Double value) {
-                if (value == null) values.remove("width");
-                else values.put("width", jsonValue(value));
-                return this;
-            }
-            /**
-             * Rectangle height
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder height(@Nullable Double value) {
-                if (value == null) values.remove("height");
-                else values.put("height", jsonValue(value));
-                return this;
-            }
-            public Rect build() {
-                if (!values.containsKey("x")) throw new IllegalStateException("Missing required CDP field: x");
-                if (!values.containsKey("y")) throw new IllegalStateException("Missing required CDP field: y");
-                if (!values.containsKey("width")) throw new IllegalStateException("Missing required CDP field: width");
-                if (!values.containsKey("height")) throw new IllegalStateException("Missing required CDP field: height");
-                return new Rect(values);
-            }
+        /**
+         * X coordinate
+         * @param x field value
+         * @return this model
+         */
+        public Rect x(double x) {
+            set("x", x);
+            return this;
+        }
+        /**
+         * Y coordinate
+         * @param y field value
+         * @return this model
+         */
+        public Rect y(double y) {
+            set("y", y);
+            return this;
+        }
+        /**
+         * Rectangle width
+         * @param width field value
+         * @return this model
+         */
+        public Rect width(double width) {
+            set("width", width);
+            return this;
+        }
+        /**
+         * Rectangle height
+         * @param height field value
+         * @return this model
+         */
+        public Rect height(double height) {
+            set("height", height);
+            return this;
         }
     }
     /**
      */
     public static final class CSSComputedStyleProperty extends CdpObject {
+        public CSSComputedStyleProperty() {}
         private CSSComputedStyleProperty(Map<String, Object> values) { super(values); }
-        @Nullable public static CSSComputedStyleProperty fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CSSComputedStyleProperty(values);
+        public static CSSComputedStyleProperty fromMap(Map<String, Object> values) {
+            return new CSSComputedStyleProperty(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Computed style property name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Computed style property value.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Computed style property name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Computed style property value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public CSSComputedStyleProperty build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new CSSComputedStyleProperty(values);
-            }
-        }
-    }
-    /**
-     * Collects class names for the node with given id and all of it&#x27;s child nodes.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class CollectClassNamesFromSubtreeParams extends CdpObject {
-        private CollectClassNamesFromSubtreeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CollectClassNamesFromSubtreeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CollectClassNamesFromSubtreeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to collect class names.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to collect class names.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public CollectClassNamesFromSubtreeParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new CollectClassNamesFromSubtreeParams(values);
-            }
-        }
-    }
-    /**
-     * Collects class names for the node with given id and all of it&#x27;s child nodes.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class CollectClassNamesFromSubtreeResult extends CdpObject {
-        private CollectClassNamesFromSubtreeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CollectClassNamesFromSubtreeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CollectClassNamesFromSubtreeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Class name list.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> classNames() {
-            return list(value("classNames"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Class name list.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder classNames(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("classNames");
-                else values.put("classNames", jsonValue(value));
-                return this;
-            }
-            public CollectClassNamesFromSubtreeResult build() {
-                if (!values.containsKey("classNames")) throw new IllegalStateException("Missing required CDP field: classNames");
-                return new CollectClassNamesFromSubtreeResult(values);
-            }
-        }
-    }
-    /**
-     * Creates a deep copy of the specified node and places it into the target container before the given anchor.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class CopyToParams extends CdpObject {
-        private CopyToParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CopyToParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CopyToParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to copy.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public String value() {
+            return (String) require("value");
         }
         /**
-         * Id of the element to drop the copy into.
-         * @return the protocol field value
+         * Computed style property name.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public Long targetNodeId() {
-            return numberAsLong(value("targetNodeId"));
+        public CSSComputedStyleProperty name(String name) {
+            set("name", name);
+            return this;
         }
         /**
-         * Drop the copy before this node (if absent, the copy becomes the last child of {@code targetNodeId}).
-         * @return the protocol field value
+         * Computed style property value.
+         * @param value field value
+         * @return this model
          */
-        @Nullable public Long insertBeforeNodeId() {
-            return numberAsLong(value("insertBeforeNodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to copy.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the element to drop the copy into.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetNodeId(@Nullable Long value) {
-                if (value == null) values.remove("targetNodeId");
-                else values.put("targetNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Drop the copy before this node (if absent, the copy becomes the last child of {@code targetNodeId}).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder insertBeforeNodeId(@Nullable Long value) {
-                if (value == null) values.remove("insertBeforeNodeId");
-                else values.put("insertBeforeNodeId", jsonValue(value));
-                return this;
-            }
-            public CopyToParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("targetNodeId")) throw new IllegalStateException("Missing required CDP field: targetNodeId");
-                return new CopyToParams(values);
-            }
-        }
-    }
-    /**
-     * Creates a deep copy of the specified node and places it into the target container before the given anchor.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class CopyToResult extends CdpObject {
-        private CopyToResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CopyToResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CopyToResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node clone.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node clone.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public CopyToResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new CopyToResult(values);
-            }
-        }
-    }
-    /**
-     * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
-     */
-    public static final class DescribeNodeParams extends CdpObject {
-        private DescribeNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DescribeNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DescribeNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @return the protocol field value
-         */
-        @Nullable public Long depth() {
-            return numberAsLong(value("depth"));
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean pierce() {
-            return (Boolean) value("pierce");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder depth(@Nullable Long value) {
-                if (value == null) values.remove("depth");
-                else values.put("depth", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pierce(@Nullable Boolean value) {
-                if (value == null) values.remove("pierce");
-                else values.put("pierce", jsonValue(value));
-                return this;
-            }
-            public DescribeNodeParams build() {
-                return new DescribeNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
-     */
-    public static final class DescribeNodeResult extends CdpObject {
-        private DescribeNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DescribeNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DescribeNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Node description.
-         * @return the protocol field value
-         */
-        @Nullable public DOM.Node node() {
-            return DOM.Node.fromMap(objectMap(value("node")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Node description.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder node(@Nullable DOM.Node value) {
-                if (value == null) values.remove("node");
-                else values.put("node", jsonValue(value));
-                return this;
-            }
-            public DescribeNodeResult build() {
-                if (!values.containsKey("node")) throw new IllegalStateException("Missing required CDP field: node");
-                return new DescribeNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
-     */
-    public static final class ScrollIntoViewIfNeededParams extends CdpObject {
-        private ScrollIntoViewIfNeededParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ScrollIntoViewIfNeededParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScrollIntoViewIfNeededParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        /**
-         * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
-         * @return the protocol field value
-         */
-        @Nullable public DOM.Rect rect() {
-            return DOM.Rect.fromMap(objectMap(value("rect")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rect(@Nullable DOM.Rect value) {
-                if (value == null) values.remove("rect");
-                else values.put("rect", jsonValue(value));
-                return this;
-            }
-            public ScrollIntoViewIfNeededParams build() {
-                return new ScrollIntoViewIfNeededParams(values);
-            }
-        }
-    }
-    /**
-     * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
-     */
-    public static final class ScrollIntoViewIfNeededResult extends CdpObject {
-        private ScrollIntoViewIfNeededResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ScrollIntoViewIfNeededResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScrollIntoViewIfNeededResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ScrollIntoViewIfNeededResult build() {
-                return new ScrollIntoViewIfNeededResult(values);
-            }
-        }
-    }
-    /**
-     * Disables DOM agent for the given page.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disables DOM agent for the given page.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DiscardSearchResultsParams extends CdpObject {
-        private DiscardSearchResultsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DiscardSearchResultsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DiscardSearchResultsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Unique search session identifier.
-         * @return the protocol field value
-         */
-        @Nullable public String searchId() {
-            return (String) value("searchId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Unique search session identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder searchId(@Nullable String value) {
-                if (value == null) values.remove("searchId");
-                else values.put("searchId", jsonValue(value));
-                return this;
-            }
-            public DiscardSearchResultsParams build() {
-                if (!values.containsKey("searchId")) throw new IllegalStateException("Missing required CDP field: searchId");
-                return new DiscardSearchResultsParams(values);
-            }
-        }
-    }
-    /**
-     * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DiscardSearchResultsResult extends CdpObject {
-        private DiscardSearchResultsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DiscardSearchResultsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DiscardSearchResultsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DiscardSearchResultsResult build() {
-                return new DiscardSearchResultsResult(values);
-            }
-        }
-    }
-    /**
-     * Enables DOM agent for the given page.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Whether to include whitespaces in the children array of returned Nodes.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public String includeWhitespace() {
-            return (String) value("includeWhitespace");
-        }
-        /**
-         * Whether to include whitespaces in the children array of returned Nodes.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         */
-        public static final class IncludeWhitespaceValues {
-            private IncludeWhitespaceValues() {}
-            public static final String NONE = "none";
-            public static final String ALL = "all";
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether to include whitespaces in the children array of returned Nodes.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeWhitespace(@Nullable String value) {
-                if (value == null) values.remove("includeWhitespace");
-                else values.put("includeWhitespace", jsonValue(value));
-                return this;
-            }
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enables DOM agent for the given page.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Focuses the given element.
-     */
-    public static final class FocusParams extends CdpObject {
-        private FocusParams(Map<String, Object> values) { super(values); }
-        @Nullable public static FocusParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FocusParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public FocusParams build() {
-                return new FocusParams(values);
-            }
-        }
-    }
-    /**
-     * Focuses the given element.
-     */
-    public static final class FocusResult extends CdpObject {
-        private FocusResult(Map<String, Object> values) { super(values); }
-        @Nullable public static FocusResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FocusResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public FocusResult build() {
-                return new FocusResult(values);
-            }
-        }
-    }
-    /**
-     * Returns attributes for the specified node.
-     */
-    public static final class GetAttributesParams extends CdpObject {
-        private GetAttributesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetAttributesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetAttributesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to retrieve attributes for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to retrieve attributes for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetAttributesParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetAttributesParams(values);
-            }
-        }
-    }
-    /**
-     * Returns attributes for the specified node.
-     */
-    public static final class GetAttributesResult extends CdpObject {
-        private GetAttributesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetAttributesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetAttributesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An interleaved array of node attribute names and values.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> attributes() {
-            return list(value("attributes"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An interleaved array of node attribute names and values.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder attributes(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("attributes");
-                else values.put("attributes", jsonValue(value));
-                return this;
-            }
-            public GetAttributesResult build() {
-                if (!values.containsKey("attributes")) throw new IllegalStateException("Missing required CDP field: attributes");
-                return new GetAttributesResult(values);
-            }
-        }
-    }
-    /**
-     * Returns boxes for the given node.
-     */
-    public static final class GetBoxModelParams extends CdpObject {
-        private GetBoxModelParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetBoxModelParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetBoxModelParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public GetBoxModelParams build() {
-                return new GetBoxModelParams(values);
-            }
-        }
-    }
-    /**
-     * Returns boxes for the given node.
-     */
-    public static final class GetBoxModelResult extends CdpObject {
-        private GetBoxModelResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetBoxModelResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetBoxModelResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Box model for the node.
-         * @return the protocol field value
-         */
-        @Nullable public DOM.BoxModel model() {
-            return DOM.BoxModel.fromMap(objectMap(value("model")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Box model for the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder model(@Nullable DOM.BoxModel value) {
-                if (value == null) values.remove("model");
-                else values.put("model", jsonValue(value));
-                return this;
-            }
-            public GetBoxModelResult build() {
-                if (!values.containsKey("model")) throw new IllegalStateException("Missing required CDP field: model");
-                return new GetBoxModelResult(values);
-            }
-        }
-    }
-    /**
-     * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetContentQuadsParams extends CdpObject {
-        private GetContentQuadsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetContentQuadsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetContentQuadsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public GetContentQuadsParams build() {
-                return new GetContentQuadsParams(values);
-            }
-        }
-    }
-    /**
-     * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetContentQuadsResult extends CdpObject {
-        private GetContentQuadsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetContentQuadsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetContentQuadsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Quads that describe node layout relative to viewport.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<java.util.List<Double>> quads() {
-            return list(value("quads"), element0 -> list(element0, element1 -> numberAsDouble(element1)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Quads that describe node layout relative to viewport.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder quads(@Nullable java.util.List<java.util.List<Double>> value) {
-                if (value == null) values.remove("quads");
-                else values.put("quads", jsonValue(value));
-                return this;
-            }
-            public GetContentQuadsResult build() {
-                if (!values.containsKey("quads")) throw new IllegalStateException("Missing required CDP field: quads");
-                return new GetContentQuadsResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
-     */
-    public static final class GetDocumentParams extends CdpObject {
-        private GetDocumentParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDocumentParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDocumentParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @return the protocol field value
-         */
-        @Nullable public Long depth() {
-            return numberAsLong(value("depth"));
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean pierce() {
-            return (Boolean) value("pierce");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder depth(@Nullable Long value) {
-                if (value == null) values.remove("depth");
-                else values.put("depth", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pierce(@Nullable Boolean value) {
-                if (value == null) values.remove("pierce");
-                else values.put("pierce", jsonValue(value));
-                return this;
-            }
-            public GetDocumentParams build() {
-                return new GetDocumentParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
-     */
-    public static final class GetDocumentResult extends CdpObject {
-        private GetDocumentResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDocumentResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDocumentResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Resulting node.
-         * @return the protocol field value
-         */
-        @Nullable public DOM.Node root() {
-            return DOM.Node.fromMap(objectMap(value("root")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Resulting node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder root(@Nullable DOM.Node value) {
-                if (value == null) values.remove("root");
-                else values.put("root", jsonValue(value));
-                return this;
-            }
-            public GetDocumentResult build() {
-                if (!values.containsKey("root")) throw new IllegalStateException("Missing required CDP field: root");
-                return new GetDocumentResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class GetFlattenedDocumentParams extends CdpObject {
-        private GetFlattenedDocumentParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFlattenedDocumentParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFlattenedDocumentParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @return the protocol field value
-         */
-        @Nullable public Long depth() {
-            return numberAsLong(value("depth"));
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean pierce() {
-            return (Boolean) value("pierce");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder depth(@Nullable Long value) {
-                if (value == null) values.remove("depth");
-                else values.put("depth", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pierce(@Nullable Boolean value) {
-                if (value == null) values.remove("pierce");
-                else values.put("pierce", jsonValue(value));
-                return this;
-            }
-            public GetFlattenedDocumentParams build() {
-                return new GetFlattenedDocumentParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class GetFlattenedDocumentResult extends CdpObject {
-        private GetFlattenedDocumentResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFlattenedDocumentResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFlattenedDocumentResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Resulting node.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<DOM.Node> nodes() {
-            return list(value("nodes"), element0 -> DOM.Node.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Resulting node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodes(@Nullable java.util.List<DOM.Node> value) {
-                if (value == null) values.remove("nodes");
-                else values.put("nodes", jsonValue(value));
-                return this;
-            }
-            public GetFlattenedDocumentResult build() {
-                if (!values.containsKey("nodes")) throw new IllegalStateException("Missing required CDP field: nodes");
-                return new GetFlattenedDocumentResult(values);
-            }
-        }
-    }
-    /**
-     * Finds nodes with a given computed style in a subtree.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetNodesForSubtreeByStyleParams extends CdpObject {
-        private GetNodesForSubtreeByStyleParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodesForSubtreeByStyleParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodesForSubtreeByStyleParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Node ID pointing to the root of a subtree.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * The style to filter nodes by (includes nodes if any of properties matches).
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<DOM.CSSComputedStyleProperty> computedStyles() {
-            return list(value("computedStyles"), element0 -> DOM.CSSComputedStyleProperty.fromMap(objectMap(element0)));
-        }
-        /**
-         * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean pierce() {
-            return (Boolean) value("pierce");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Node ID pointing to the root of a subtree.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The style to filter nodes by (includes nodes if any of properties matches).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder computedStyles(@Nullable java.util.List<DOM.CSSComputedStyleProperty> value) {
-                if (value == null) values.remove("computedStyles");
-                else values.put("computedStyles", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pierce(@Nullable Boolean value) {
-                if (value == null) values.remove("pierce");
-                else values.put("pierce", jsonValue(value));
-                return this;
-            }
-            public GetNodesForSubtreeByStyleParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("computedStyles")) throw new IllegalStateException("Missing required CDP field: computedStyles");
-                return new GetNodesForSubtreeByStyleParams(values);
-            }
-        }
-    }
-    /**
-     * Finds nodes with a given computed style in a subtree.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetNodesForSubtreeByStyleResult extends CdpObject {
-        private GetNodesForSubtreeByStyleResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodesForSubtreeByStyleResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodesForSubtreeByStyleResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Resulting nodes.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Resulting nodes.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public GetNodesForSubtreeByStyleResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new GetNodesForSubtreeByStyleResult(values);
-            }
-        }
-    }
-    /**
-     * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
-     */
-    public static final class GetNodeForLocationParams extends CdpObject {
-        private GetNodeForLocationParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodeForLocationParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodeForLocationParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * X coordinate.
-         * @return the protocol field value
-         */
-        @Nullable public Long x() {
-            return numberAsLong(value("x"));
-        }
-        /**
-         * Y coordinate.
-         * @return the protocol field value
-         */
-        @Nullable public Long y() {
-            return numberAsLong(value("y"));
-        }
-        /**
-         * False to skip to the nearest non-UA shadow root ancestor (default: false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean includeUserAgentShadowDOM() {
-            return (Boolean) value("includeUserAgentShadowDOM");
-        }
-        /**
-         * Whether to ignore pointer-events: none on elements and hit test them.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean ignorePointerEventsNone() {
-            return (Boolean) value("ignorePointerEventsNone");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * X coordinate.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder x(@Nullable Long value) {
-                if (value == null) values.remove("x");
-                else values.put("x", jsonValue(value));
-                return this;
-            }
-            /**
-             * Y coordinate.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder y(@Nullable Long value) {
-                if (value == null) values.remove("y");
-                else values.put("y", jsonValue(value));
-                return this;
-            }
-            /**
-             * False to skip to the nearest non-UA shadow root ancestor (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeUserAgentShadowDOM(@Nullable Boolean value) {
-                if (value == null) values.remove("includeUserAgentShadowDOM");
-                else values.put("includeUserAgentShadowDOM", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to ignore pointer-events: none on elements and hit test them.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ignorePointerEventsNone(@Nullable Boolean value) {
-                if (value == null) values.remove("ignorePointerEventsNone");
-                else values.put("ignorePointerEventsNone", jsonValue(value));
-                return this;
-            }
-            public GetNodeForLocationParams build() {
-                if (!values.containsKey("x")) throw new IllegalStateException("Missing required CDP field: x");
-                if (!values.containsKey("y")) throw new IllegalStateException("Missing required CDP field: y");
-                return new GetNodeForLocationParams(values);
-            }
+        public CSSComputedStyleProperty value(String value) {
+            set("value", value);
+            return this;
         }
     }
     /**
      * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
      */
     public static final class GetNodeForLocationResult extends CdpObject {
+        public GetNodeForLocationResult() {}
         private GetNodeForLocationResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodeForLocationResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodeForLocationResult(values);
+        public static GetNodeForLocationResult fromMap(Map<String, Object> values) {
+            return new GetNodeForLocationResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Resulting node.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
         /**
          * Frame this node belongs to.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Resulting node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame this node belongs to.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the node at given coordinates, only when enabled and requested document.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetNodeForLocationResult build() {
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new GetNodeForLocationResult(values);
-            }
-        }
-    }
-    /**
-     * Returns node&#x27;s HTML markup.
-     */
-    public static final class GetOuterHTMLParams extends CdpObject {
-        private GetOuterHTMLParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetOuterHTMLParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetOuterHTMLParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
         }
         /**
-         * Identifier of the backend node.
-         * @return the protocol field value
+         * Resulting node.
+         * @param backendNodeId field value
+         * @return this model
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public GetNodeForLocationResult backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
         /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
+         * Frame this node belongs to.
+         * @param frameId field value
+         * @return this model
          */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
+        public GetNodeForLocationResult frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
         }
         /**
-         * Include all shadow roots. Equals to false if not specified.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * Id of the node at given coordinates, only when enabled and requested document.
+         * @param nodeId field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Boolean includeShadowDOM() {
-            return (Boolean) value("includeShadowDOM");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Include all shadow roots. Equals to false if not specified.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeShadowDOM(@Nullable Boolean value) {
-                if (value == null) values.remove("includeShadowDOM");
-                else values.put("includeShadowDOM", jsonValue(value));
-                return this;
-            }
-            public GetOuterHTMLParams build() {
-                return new GetOuterHTMLParams(values);
-            }
-        }
-    }
-    /**
-     * Returns node&#x27;s HTML markup.
-     */
-    public static final class GetOuterHTMLResult extends CdpObject {
-        private GetOuterHTMLResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetOuterHTMLResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetOuterHTMLResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Outer HTML markup.
-         * @return the protocol field value
-         */
-        @Nullable public String outerHTML() {
-            return (String) value("outerHTML");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Outer HTML markup.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder outerHTML(@Nullable String value) {
-                if (value == null) values.remove("outerHTML");
-                else values.put("outerHTML", jsonValue(value));
-                return this;
-            }
-            public GetOuterHTMLResult build() {
-                if (!values.containsKey("outerHTML")) throw new IllegalStateException("Missing required CDP field: outerHTML");
-                return new GetOuterHTMLResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the id of the nearest ancestor that is a relayout boundary.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetRelayoutBoundaryParams extends CdpObject {
-        private GetRelayoutBoundaryParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetRelayoutBoundaryParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetRelayoutBoundaryParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetRelayoutBoundaryParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetRelayoutBoundaryParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the id of the nearest ancestor that is a relayout boundary.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetRelayoutBoundaryResult extends CdpObject {
-        private GetRelayoutBoundaryResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetRelayoutBoundaryResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetRelayoutBoundaryResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Relayout boundary node id for the given node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Relayout boundary node id for the given node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetRelayoutBoundaryResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetRelayoutBoundaryResult(values);
-            }
-        }
-    }
-    /**
-     * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSearchResultsParams extends CdpObject {
-        private GetSearchResultsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSearchResultsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSearchResultsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Unique search session identifier.
-         * @return the protocol field value
-         */
-        @Nullable public String searchId() {
-            return (String) value("searchId");
+        public GetNodeForLocationResult nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
         }
         /**
-         * Start index of the search result to be returned.
-         * @return the protocol field value
+         * Id of the node at given coordinates, only when enabled and requested document.
+         * @param nodeId field value; null removes the value
+         * @return this model
          */
-        @Nullable public Long fromIndex() {
-            return numberAsLong(value("fromIndex"));
-        }
-        /**
-         * End index of the search result to be returned.
-         * @return the protocol field value
-         */
-        @Nullable public Long toIndex() {
-            return numberAsLong(value("toIndex"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Unique search session identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder searchId(@Nullable String value) {
-                if (value == null) values.remove("searchId");
-                else values.put("searchId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Start index of the search result to be returned.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder fromIndex(@Nullable Long value) {
-                if (value == null) values.remove("fromIndex");
-                else values.put("fromIndex", jsonValue(value));
-                return this;
-            }
-            /**
-             * End index of the search result to be returned.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder toIndex(@Nullable Long value) {
-                if (value == null) values.remove("toIndex");
-                else values.put("toIndex", jsonValue(value));
-                return this;
-            }
-            public GetSearchResultsParams build() {
-                if (!values.containsKey("searchId")) throw new IllegalStateException("Missing required CDP field: searchId");
-                if (!values.containsKey("fromIndex")) throw new IllegalStateException("Missing required CDP field: fromIndex");
-                if (!values.containsKey("toIndex")) throw new IllegalStateException("Missing required CDP field: toIndex");
-                return new GetSearchResultsParams(values);
-            }
-        }
-    }
-    /**
-     * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSearchResultsResult extends CdpObject {
-        private GetSearchResultsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSearchResultsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSearchResultsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Ids of the search result nodes.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Ids of the search result nodes.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public GetSearchResultsResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new GetSearchResultsResult(values);
-            }
-        }
-    }
-    /**
-     * Hides any highlight.
-     */
-    public static final class HideHighlightParams extends CdpObject {
-        private HideHighlightParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HideHighlightParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HideHighlightParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HideHighlightParams build() {
-                return new HideHighlightParams(values);
-            }
-        }
-    }
-    /**
-     * Hides any highlight.
-     */
-    public static final class HideHighlightResult extends CdpObject {
-        private HideHighlightResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HideHighlightResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HideHighlightResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HideHighlightResult build() {
-                return new HideHighlightResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights DOM node.
-     */
-    public static final class HighlightNodeParams extends CdpObject {
-        private HighlightNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightNodeParams build() {
-                return new HighlightNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights DOM node.
-     */
-    public static final class HighlightNodeResult extends CdpObject {
-        private HighlightNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightNodeResult build() {
-                return new HighlightNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights given rectangle.
-     */
-    public static final class HighlightRectParams extends CdpObject {
-        private HighlightRectParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightRectParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightRectParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightRectParams build() {
-                return new HighlightRectParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights given rectangle.
-     */
-    public static final class HighlightRectResult extends CdpObject {
-        private HighlightRectResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightRectResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightRectResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightRectResult build() {
-                return new HighlightRectResult(values);
-            }
-        }
-    }
-    /**
-     * Marks last undoable state.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class MarkUndoableStateParams extends CdpObject {
-        private MarkUndoableStateParams(Map<String, Object> values) { super(values); }
-        @Nullable public static MarkUndoableStateParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new MarkUndoableStateParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public MarkUndoableStateParams build() {
-                return new MarkUndoableStateParams(values);
-            }
-        }
-    }
-    /**
-     * Marks last undoable state.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class MarkUndoableStateResult extends CdpObject {
-        private MarkUndoableStateResult(Map<String, Object> values) { super(values); }
-        @Nullable public static MarkUndoableStateResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new MarkUndoableStateResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public MarkUndoableStateResult build() {
-                return new MarkUndoableStateResult(values);
-            }
-        }
-    }
-    /**
-     * Moves node into the new container, places it before the given anchor.
-     */
-    public static final class MoveToParams extends CdpObject {
-        private MoveToParams(Map<String, Object> values) { super(values); }
-        @Nullable public static MoveToParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new MoveToParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to move.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Id of the element to drop the moved node into.
-         * @return the protocol field value
-         */
-        @Nullable public Long targetNodeId() {
-            return numberAsLong(value("targetNodeId"));
-        }
-        /**
-         * Drop node before this one (if absent, the moved node becomes the last child of {@code targetNodeId}).
-         * @return the protocol field value
-         */
-        @Nullable public Long insertBeforeNodeId() {
-            return numberAsLong(value("insertBeforeNodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to move.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the element to drop the moved node into.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetNodeId(@Nullable Long value) {
-                if (value == null) values.remove("targetNodeId");
-                else values.put("targetNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Drop node before this one (if absent, the moved node becomes the last child of {@code targetNodeId}).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder insertBeforeNodeId(@Nullable Long value) {
-                if (value == null) values.remove("insertBeforeNodeId");
-                else values.put("insertBeforeNodeId", jsonValue(value));
-                return this;
-            }
-            public MoveToParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("targetNodeId")) throw new IllegalStateException("Missing required CDP field: targetNodeId");
-                return new MoveToParams(values);
-            }
-        }
-    }
-    /**
-     * Moves node into the new container, places it before the given anchor.
-     */
-    public static final class MoveToResult extends CdpObject {
-        private MoveToResult(Map<String, Object> values) { super(values); }
-        @Nullable public static MoveToResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new MoveToResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * New id of the moved node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * New id of the moved node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public MoveToResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new MoveToResult(values);
-            }
-        }
-    }
-    /**
-     * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class PerformSearchParams extends CdpObject {
-        private PerformSearchParams(Map<String, Object> values) { super(values); }
-        @Nullable public static PerformSearchParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PerformSearchParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Plain text or query selector or XPath search query.
-         * @return the protocol field value
-         */
-        @Nullable public String query() {
-            return (String) value("query");
-        }
-        /**
-         * True to search in user agent shadow DOM.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean includeUserAgentShadowDOM() {
-            return (Boolean) value("includeUserAgentShadowDOM");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Plain text or query selector or XPath search query.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder query(@Nullable String value) {
-                if (value == null) values.remove("query");
-                else values.put("query", jsonValue(value));
-                return this;
-            }
-            /**
-             * True to search in user agent shadow DOM.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeUserAgentShadowDOM(@Nullable Boolean value) {
-                if (value == null) values.remove("includeUserAgentShadowDOM");
-                else values.put("includeUserAgentShadowDOM", jsonValue(value));
-                return this;
-            }
-            public PerformSearchParams build() {
-                if (!values.containsKey("query")) throw new IllegalStateException("Missing required CDP field: query");
-                return new PerformSearchParams(values);
-            }
+        public GetNodeForLocationResult nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
@@ -3227,1793 +1617,42 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class PerformSearchResult extends CdpObject {
+        public PerformSearchResult() {}
         private PerformSearchResult(Map<String, Object> values) { super(values); }
-        @Nullable public static PerformSearchResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PerformSearchResult(values);
+        public static PerformSearchResult fromMap(Map<String, Object> values) {
+            return new PerformSearchResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Unique search session identifier.
          * @return the protocol field value
          */
-        @Nullable public String searchId() {
-            return (String) value("searchId");
+        public String searchId() {
+            return (String) require("searchId");
         }
         /**
          * Number of search results.
          * @return the protocol field value
          */
-        @Nullable public Long resultCount() {
-            return numberAsLong(value("resultCount"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Unique search session identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder searchId(@Nullable String value) {
-                if (value == null) values.remove("searchId");
-                else values.put("searchId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of search results.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resultCount(@Nullable Long value) {
-                if (value == null) values.remove("resultCount");
-                else values.put("resultCount", jsonValue(value));
-                return this;
-            }
-            public PerformSearchResult build() {
-                if (!values.containsKey("searchId")) throw new IllegalStateException("Missing required CDP field: searchId");
-                if (!values.containsKey("resultCount")) throw new IllegalStateException("Missing required CDP field: resultCount");
-                return new PerformSearchResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that the node is sent to the caller given its path. // FIXME, use XPath
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class PushNodeByPathToFrontendParams extends CdpObject {
-        private PushNodeByPathToFrontendParams(Map<String, Object> values) { super(values); }
-        @Nullable public static PushNodeByPathToFrontendParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PushNodeByPathToFrontendParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Path to node in the proprietary format.
-         * @return the protocol field value
-         */
-        @Nullable public String path() {
-            return (String) value("path");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Path to node in the proprietary format.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder path(@Nullable String value) {
-                if (value == null) values.remove("path");
-                else values.put("path", jsonValue(value));
-                return this;
-            }
-            public PushNodeByPathToFrontendParams build() {
-                if (!values.containsKey("path")) throw new IllegalStateException("Missing required CDP field: path");
-                return new PushNodeByPathToFrontendParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that the node is sent to the caller given its path. // FIXME, use XPath
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class PushNodeByPathToFrontendResult extends CdpObject {
-        private PushNodeByPathToFrontendResult(Map<String, Object> values) { super(values); }
-        @Nullable public static PushNodeByPathToFrontendResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PushNodeByPathToFrontendResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node for given path.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node for given path.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public PushNodeByPathToFrontendResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new PushNodeByPathToFrontendResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that a batch of nodes is sent to the caller given their backend node ids.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class PushNodesByBackendIdsToFrontendParams extends CdpObject {
-        private PushNodesByBackendIdsToFrontendParams(Map<String, Object> values) { super(values); }
-        @Nullable public static PushNodesByBackendIdsToFrontendParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PushNodesByBackendIdsToFrontendParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The array of backend node ids.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> backendNodeIds() {
-            return list(value("backendNodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The array of backend node ids.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("backendNodeIds");
-                else values.put("backendNodeIds", jsonValue(value));
-                return this;
-            }
-            public PushNodesByBackendIdsToFrontendParams build() {
-                if (!values.containsKey("backendNodeIds")) throw new IllegalStateException("Missing required CDP field: backendNodeIds");
-                return new PushNodesByBackendIdsToFrontendParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that a batch of nodes is sent to the caller given their backend node ids.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class PushNodesByBackendIdsToFrontendResult extends CdpObject {
-        private PushNodesByBackendIdsToFrontendResult(Map<String, Object> values) { super(values); }
-        @Nullable public static PushNodesByBackendIdsToFrontendResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PushNodesByBackendIdsToFrontendResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public PushNodesByBackendIdsToFrontendResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new PushNodesByBackendIdsToFrontendResult(values);
-            }
-        }
-    }
-    /**
-     * Executes {@code querySelector} on a given node.
-     */
-    public static final class QuerySelectorParams extends CdpObject {
-        private QuerySelectorParams(Map<String, Object> values) { super(values); }
-        @Nullable public static QuerySelectorParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new QuerySelectorParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to query upon.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public long resultCount() {
+            return ((Number) require("resultCount")).longValue();
         }
         /**
-         * Selector string.
-         * @return the protocol field value
+         * Unique search session identifier.
+         * @param searchId field value
+         * @return this model
          */
-        @Nullable public String selector() {
-            return (String) value("selector");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to query upon.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Selector string.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder selector(@Nullable String value) {
-                if (value == null) values.remove("selector");
-                else values.put("selector", jsonValue(value));
-                return this;
-            }
-            public QuerySelectorParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("selector")) throw new IllegalStateException("Missing required CDP field: selector");
-                return new QuerySelectorParams(values);
-            }
-        }
-    }
-    /**
-     * Executes {@code querySelector} on a given node.
-     */
-    public static final class QuerySelectorResult extends CdpObject {
-        private QuerySelectorResult(Map<String, Object> values) { super(values); }
-        @Nullable public static QuerySelectorResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new QuerySelectorResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Query selector result.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Query selector result.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public QuerySelectorResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new QuerySelectorResult(values);
-            }
-        }
-    }
-    /**
-     * Executes {@code querySelectorAll} on a given node.
-     */
-    public static final class QuerySelectorAllParams extends CdpObject {
-        private QuerySelectorAllParams(Map<String, Object> values) { super(values); }
-        @Nullable public static QuerySelectorAllParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new QuerySelectorAllParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to query upon.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public PerformSearchResult searchId(String searchId) {
+            set("searchId", searchId);
+            return this;
         }
         /**
-         * Selector string.
-         * @return the protocol field value
+         * Number of search results.
+         * @param resultCount field value
+         * @return this model
          */
-        @Nullable public String selector() {
-            return (String) value("selector");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to query upon.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Selector string.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder selector(@Nullable String value) {
-                if (value == null) values.remove("selector");
-                else values.put("selector", jsonValue(value));
-                return this;
-            }
-            public QuerySelectorAllParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("selector")) throw new IllegalStateException("Missing required CDP field: selector");
-                return new QuerySelectorAllParams(values);
-            }
-        }
-    }
-    /**
-     * Executes {@code querySelectorAll} on a given node.
-     */
-    public static final class QuerySelectorAllResult extends CdpObject {
-        private QuerySelectorAllResult(Map<String, Object> values) { super(values); }
-        @Nullable public static QuerySelectorAllResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new QuerySelectorAllResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Query selector result.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Query selector result.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public QuerySelectorAllResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new QuerySelectorAllResult(values);
-            }
-        }
-    }
-    /**
-     * Returns NodeIds of current top layer elements. Top layer is rendered closest to the user within a viewport, therefore its elements always appear on top of all other content.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTopLayerElementsParams extends CdpObject {
-        private GetTopLayerElementsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTopLayerElementsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTopLayerElementsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetTopLayerElementsParams build() {
-                return new GetTopLayerElementsParams(values);
-            }
-        }
-    }
-    /**
-     * Returns NodeIds of current top layer elements. Top layer is rendered closest to the user within a viewport, therefore its elements always appear on top of all other content.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTopLayerElementsResult extends CdpObject {
-        private GetTopLayerElementsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTopLayerElementsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTopLayerElementsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * NodeIds of top layer elements
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * NodeIds of top layer elements
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public GetTopLayerElementsResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new GetTopLayerElementsResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the NodeId of the matched element according to certain relations.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetElementByRelationParams extends CdpObject {
-        private GetElementByRelationParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetElementByRelationParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetElementByRelationParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node from which to query the relation.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Type of relation to get.
-         * @return the protocol field value
-         */
-        @Nullable public String relation() {
-            return (String) value("relation");
-        }
-        /**
-         * Type of relation to get.
-         */
-        public static final class RelationValues {
-            private RelationValues() {}
-            public static final String POPOVERTARGET = "PopoverTarget";
-            public static final String INTERESTTARGET = "InterestTarget";
-            public static final String COMMANDFOR = "CommandFor";
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node from which to query the relation.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Type of relation to get.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder relation(@Nullable String value) {
-                if (value == null) values.remove("relation");
-                else values.put("relation", jsonValue(value));
-                return this;
-            }
-            public GetElementByRelationParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("relation")) throw new IllegalStateException("Missing required CDP field: relation");
-                return new GetElementByRelationParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the NodeId of the matched element according to certain relations.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetElementByRelationResult extends CdpObject {
-        private GetElementByRelationResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetElementByRelationResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetElementByRelationResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * NodeId of the element matching the queried relation.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * NodeId of the element matching the queried relation.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetElementByRelationResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetElementByRelationResult(values);
-            }
-        }
-    }
-    /**
-     * Re-does the last undone action.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class RedoParams extends CdpObject {
-        private RedoParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RedoParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RedoParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RedoParams build() {
-                return new RedoParams(values);
-            }
-        }
-    }
-    /**
-     * Re-does the last undone action.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class RedoResult extends CdpObject {
-        private RedoResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RedoResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RedoResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RedoResult build() {
-                return new RedoResult(values);
-            }
-        }
-    }
-    /**
-     * Removes attribute with given name from an element with given id.
-     */
-    public static final class RemoveAttributeParams extends CdpObject {
-        private RemoveAttributeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveAttributeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveAttributeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the element to remove attribute from.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Name of the attribute to remove.
-         * @return the protocol field value
-         */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the element to remove attribute from.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name of the attribute to remove.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public RemoveAttributeParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new RemoveAttributeParams(values);
-            }
-        }
-    }
-    /**
-     * Removes attribute with given name from an element with given id.
-     */
-    public static final class RemoveAttributeResult extends CdpObject {
-        private RemoveAttributeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveAttributeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveAttributeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RemoveAttributeResult build() {
-                return new RemoveAttributeResult(values);
-            }
-        }
-    }
-    /**
-     * Removes node with given id.
-     */
-    public static final class RemoveNodeParams extends CdpObject {
-        private RemoveNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to remove.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to remove.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public RemoveNodeParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new RemoveNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Removes node with given id.
-     */
-    public static final class RemoveNodeResult extends CdpObject {
-        private RemoveNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RemoveNodeResult build() {
-                return new RemoveNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
-     */
-    public static final class RequestChildNodesParams extends CdpObject {
-        private RequestChildNodesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestChildNodesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestChildNodesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to get children for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @return the protocol field value
-         */
-        @Nullable public Long depth() {
-            return numberAsLong(value("depth"));
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean pierce() {
-            return (Boolean) value("pierce");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to get children for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder depth(@Nullable Long value) {
-                if (value == null) values.remove("depth");
-                else values.put("depth", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pierce(@Nullable Boolean value) {
-                if (value == null) values.remove("pierce");
-                else values.put("pierce", jsonValue(value));
-                return this;
-            }
-            public RequestChildNodesParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new RequestChildNodesParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
-     */
-    public static final class RequestChildNodesResult extends CdpObject {
-        private RequestChildNodesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestChildNodesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestChildNodesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RequestChildNodesResult build() {
-                return new RequestChildNodesResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
-     */
-    public static final class RequestNodeParams extends CdpObject {
-        private RequestNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * JavaScript object id to convert into node.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * JavaScript object id to convert into node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public RequestNodeParams build() {
-                if (!values.containsKey("objectId")) throw new IllegalStateException("Missing required CDP field: objectId");
-                return new RequestNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
-     */
-    public static final class RequestNodeResult extends CdpObject {
-        private RequestNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Node id for given object.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Node id for given object.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public RequestNodeResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new RequestNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
-     */
-    public static final class ResolveNodeParams extends CdpObject {
-        private ResolveNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ResolveNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResolveNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to resolve.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Backend identifier of the node to resolve.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * Symbolic group name that can be used to release multiple objects.
-         * @return the protocol field value
-         */
-        @Nullable public String objectGroup() {
-            return (String) value("objectGroup");
-        }
-        /**
-         * Execution context in which to resolve the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long executionContextId() {
-            return numberAsLong(value("executionContextId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to resolve.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Backend identifier of the node to resolve.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Symbolic group name that can be used to release multiple objects.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectGroup(@Nullable String value) {
-                if (value == null) values.remove("objectGroup");
-                else values.put("objectGroup", jsonValue(value));
-                return this;
-            }
-            /**
-             * Execution context in which to resolve the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder executionContextId(@Nullable Long value) {
-                if (value == null) values.remove("executionContextId");
-                else values.put("executionContextId", jsonValue(value));
-                return this;
-            }
-            public ResolveNodeParams build() {
-                return new ResolveNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
-     */
-    public static final class ResolveNodeResult extends CdpObject {
-        private ResolveNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ResolveNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResolveNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * JavaScript object wrapper for given node.
-         * @return the protocol field value
-         */
-        @Nullable public Runtime.RemoteObject object() {
-            return Runtime.RemoteObject.fromMap(objectMap(value("object")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * JavaScript object wrapper for given node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder object(@Nullable Runtime.RemoteObject value) {
-                if (value == null) values.remove("object");
-                else values.put("object", jsonValue(value));
-                return this;
-            }
-            public ResolveNodeResult build() {
-                if (!values.containsKey("object")) throw new IllegalStateException("Missing required CDP field: object");
-                return new ResolveNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Sets attribute for an element with given id.
-     */
-    public static final class SetAttributeValueParams extends CdpObject {
-        private SetAttributeValueParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAttributeValueParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAttributeValueParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the element to set attribute for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Attribute name.
-         * @return the protocol field value
-         */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        /**
-         * Attribute value.
-         * @return the protocol field value
-         */
-        @Nullable public String value() {
-            return (String) value("value");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the element to set attribute for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attribute name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attribute value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public SetAttributeValueParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new SetAttributeValueParams(values);
-            }
-        }
-    }
-    /**
-     * Sets attribute for an element with given id.
-     */
-    public static final class SetAttributeValueResult extends CdpObject {
-        private SetAttributeValueResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAttributeValueResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAttributeValueResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetAttributeValueResult build() {
-                return new SetAttributeValueResult(values);
-            }
-        }
-    }
-    /**
-     * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-     */
-    public static final class SetAttributesAsTextParams extends CdpObject {
-        private SetAttributesAsTextParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAttributesAsTextParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAttributesAsTextParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the element to set attributes for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Text with a number of attributes. Will parse this text using HTML parser.
-         * @return the protocol field value
-         */
-        @Nullable public String text() {
-            return (String) value("text");
-        }
-        /**
-         * Attribute name to replace with new attributes derived from text in case text parsed successfully.
-         * @return the protocol field value
-         */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the element to set attributes for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Text with a number of attributes. Will parse this text using HTML parser.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder text(@Nullable String value) {
-                if (value == null) values.remove("text");
-                else values.put("text", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attribute name to replace with new attributes derived from text in case text parsed successfully.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public SetAttributesAsTextParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("text")) throw new IllegalStateException("Missing required CDP field: text");
-                return new SetAttributesAsTextParams(values);
-            }
-        }
-    }
-    /**
-     * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-     */
-    public static final class SetAttributesAsTextResult extends CdpObject {
-        private SetAttributesAsTextResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAttributesAsTextResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAttributesAsTextResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetAttributesAsTextResult build() {
-                return new SetAttributesAsTextResult(values);
-            }
-        }
-    }
-    /**
-     * Sets files for the given file input element.
-     */
-    public static final class SetFileInputFilesParams extends CdpObject {
-        private SetFileInputFilesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetFileInputFilesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetFileInputFilesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Array of file paths to set.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> files() {
-            return list(value("files"), element0 -> (String) element0);
-        }
-        /**
-         * Identifier of the node.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Array of file paths to set.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder files(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("files");
-                else values.put("files", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public SetFileInputFilesParams build() {
-                if (!values.containsKey("files")) throw new IllegalStateException("Missing required CDP field: files");
-                return new SetFileInputFilesParams(values);
-            }
-        }
-    }
-    /**
-     * Sets files for the given file input element.
-     */
-    public static final class SetFileInputFilesResult extends CdpObject {
-        private SetFileInputFilesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetFileInputFilesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetFileInputFilesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetFileInputFilesResult build() {
-                return new SetFileInputFilesResult(values);
-            }
-        }
-    }
-    /**
-     * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetNodeStackTracesEnabledParams extends CdpObject {
-        private SetNodeStackTracesEnabledParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeStackTracesEnabledParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeStackTracesEnabledParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Enable or disable.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Enable or disable.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public SetNodeStackTracesEnabledParams build() {
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new SetNodeStackTracesEnabledParams(values);
-            }
-        }
-    }
-    /**
-     * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetNodeStackTracesEnabledResult extends CdpObject {
-        private SetNodeStackTracesEnabledResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeStackTracesEnabledResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeStackTracesEnabledResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetNodeStackTracesEnabledResult build() {
-                return new SetNodeStackTracesEnabledResult(values);
-            }
-        }
-    }
-    /**
-     * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetNodeStackTracesParams extends CdpObject {
-        private GetNodeStackTracesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodeStackTracesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodeStackTracesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to get stack traces for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to get stack traces for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetNodeStackTracesParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetNodeStackTracesParams(values);
-            }
-        }
-    }
-    /**
-     * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetNodeStackTracesResult extends CdpObject {
-        private GetNodeStackTracesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetNodeStackTracesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetNodeStackTracesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Creation stack trace, if available.
-         * @return the protocol field value
-         */
-        @Nullable public Runtime.StackTrace creation() {
-            return Runtime.StackTrace.fromMap(objectMap(value("creation")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Creation stack trace, if available.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder creation(@Nullable Runtime.StackTrace value) {
-                if (value == null) values.remove("creation");
-                else values.put("creation", jsonValue(value));
-                return this;
-            }
-            public GetNodeStackTracesResult build() {
-                return new GetNodeStackTracesResult(values);
-            }
-        }
-    }
-    /**
-     * Returns file information for the given File wrapper.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetFileInfoParams extends CdpObject {
-        private GetFileInfoParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFileInfoParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFileInfoParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * JavaScript object id of the node wrapper.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public GetFileInfoParams build() {
-                if (!values.containsKey("objectId")) throw new IllegalStateException("Missing required CDP field: objectId");
-                return new GetFileInfoParams(values);
-            }
-        }
-    }
-    /**
-     * Returns file information for the given File wrapper.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetFileInfoResult extends CdpObject {
-        private GetFileInfoResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFileInfoResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFileInfoResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the path field.
-         * @return the protocol field value
-         */
-        @Nullable public String path() {
-            return (String) value("path");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the path field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder path(@Nullable String value) {
-                if (value == null) values.remove("path");
-                else values.put("path", jsonValue(value));
-                return this;
-            }
-            public GetFileInfoResult build() {
-                if (!values.containsKey("path")) throw new IllegalStateException("Missing required CDP field: path");
-                return new GetFileInfoResult(values);
-            }
-        }
-    }
-    /**
-     * Returns list of detached nodes
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetDetachedDomNodesParams extends CdpObject {
-        private GetDetachedDomNodesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDetachedDomNodesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDetachedDomNodesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetDetachedDomNodesParams build() {
-                return new GetDetachedDomNodesParams(values);
-            }
-        }
-    }
-    /**
-     * Returns list of detached nodes
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetDetachedDomNodesResult extends CdpObject {
-        private GetDetachedDomNodesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDetachedDomNodesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDetachedDomNodesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The list of detached nodes
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<DOM.DetachedElementInfo> detachedNodes() {
-            return list(value("detachedNodes"), element0 -> DOM.DetachedElementInfo.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The list of detached nodes
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder detachedNodes(@Nullable java.util.List<DOM.DetachedElementInfo> value) {
-                if (value == null) values.remove("detachedNodes");
-                else values.put("detachedNodes", jsonValue(value));
-                return this;
-            }
-            public GetDetachedDomNodesResult build() {
-                if (!values.containsKey("detachedNodes")) throw new IllegalStateException("Missing required CDP field: detachedNodes");
-                return new GetDetachedDomNodesResult(values);
-            }
-        }
-    }
-    /**
-     * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInspectedNodeParams extends CdpObject {
-        private SetInspectedNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInspectedNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInspectedNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * DOM node id to be accessible by means of $x command line API.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * DOM node id to be accessible by means of $x command line API.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public SetInspectedNodeParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new SetInspectedNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInspectedNodeResult extends CdpObject {
-        private SetInspectedNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInspectedNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInspectedNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetInspectedNodeResult build() {
-                return new SetInspectedNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Sets node name for a node with given id.
-     */
-    public static final class SetNodeNameParams extends CdpObject {
-        private SetNodeNameParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeNameParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeNameParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to set name for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * New node&#x27;s name.
-         * @return the protocol field value
-         */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to set name for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * New node&#x27;s name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public SetNodeNameParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new SetNodeNameParams(values);
-            }
-        }
-    }
-    /**
-     * Sets node name for a node with given id.
-     */
-    public static final class SetNodeNameResult extends CdpObject {
-        private SetNodeNameResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeNameResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeNameResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * New node&#x27;s id.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * New node&#x27;s id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public SetNodeNameResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new SetNodeNameResult(values);
-            }
-        }
-    }
-    /**
-     * Sets node value for a node with given id.
-     */
-    public static final class SetNodeValueParams extends CdpObject {
-        private SetNodeValueParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeValueParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeValueParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to set value for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * New node&#x27;s value.
-         * @return the protocol field value
-         */
-        @Nullable public String value() {
-            return (String) value("value");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to set value for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * New node&#x27;s value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public SetNodeValueParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new SetNodeValueParams(values);
-            }
-        }
-    }
-    /**
-     * Sets node value for a node with given id.
-     */
-    public static final class SetNodeValueResult extends CdpObject {
-        private SetNodeValueResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetNodeValueResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetNodeValueResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetNodeValueResult build() {
-                return new SetNodeValueResult(values);
-            }
-        }
-    }
-    /**
-     * Sets node HTML markup, returns new node id.
-     */
-    public static final class SetOuterHTMLParams extends CdpObject {
-        private SetOuterHTMLParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetOuterHTMLParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetOuterHTMLParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to set markup for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Outer HTML markup to set.
-         * @return the protocol field value
-         */
-        @Nullable public String outerHTML() {
-            return (String) value("outerHTML");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to set markup for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Outer HTML markup to set.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder outerHTML(@Nullable String value) {
-                if (value == null) values.remove("outerHTML");
-                else values.put("outerHTML", jsonValue(value));
-                return this;
-            }
-            public SetOuterHTMLParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("outerHTML")) throw new IllegalStateException("Missing required CDP field: outerHTML");
-                return new SetOuterHTMLParams(values);
-            }
-        }
-    }
-    /**
-     * Sets node HTML markup, returns new node id.
-     */
-    public static final class SetOuterHTMLResult extends CdpObject {
-        private SetOuterHTMLResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetOuterHTMLResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetOuterHTMLResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetOuterHTMLResult build() {
-                return new SetOuterHTMLResult(values);
-            }
-        }
-    }
-    /**
-     * Undoes the last performed action.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class UndoParams extends CdpObject {
-        private UndoParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UndoParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UndoParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UndoParams build() {
-                return new UndoParams(values);
-            }
-        }
-    }
-    /**
-     * Undoes the last performed action.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class UndoResult extends CdpObject {
-        private UndoResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UndoResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UndoResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UndoResult build() {
-                return new UndoResult(values);
-            }
-        }
-    }
-    /**
-     * Returns iframe node that owns iframe with the given domain.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetFrameOwnerParams extends CdpObject {
-        private GetFrameOwnerParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFrameOwnerParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFrameOwnerParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the frameId field.
-         * @return the protocol field value
-         */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the frameId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            public GetFrameOwnerParams build() {
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new GetFrameOwnerParams(values);
-            }
+        public PerformSearchResult resultCount(long resultCount) {
+            set("resultCount", resultCount);
+            return this;
         }
     }
     /**
@@ -5021,520 +1660,109 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class GetFrameOwnerResult extends CdpObject {
+        public GetFrameOwnerResult() {}
         private GetFrameOwnerResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetFrameOwnerResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetFrameOwnerResult(values);
+        public static GetFrameOwnerResult fromMap(Map<String, Object> values) {
+            return new GetFrameOwnerResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Resulting node.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Resulting node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the node at given coordinates, only when enabled and requested document.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetFrameOwnerResult build() {
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                return new GetFrameOwnerResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetContainerForNodeParams extends CdpObject {
-        private GetContainerForNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetContainerForNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetContainerForNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the nodeId field.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
         }
         /**
-         * Returns the containerName field.
-         * @return the protocol field value
+         * Resulting node.
+         * @param backendNodeId field value
+         * @return this model
          */
-        @Nullable public String containerName() {
-            return (String) value("containerName");
+        public GetFrameOwnerResult backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
         /**
-         * Returns the physicalAxes field.
-         * @return the protocol field value
+         * Id of the node at given coordinates, only when enabled and requested document.
+         * @param nodeId field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String physicalAxes() {
-            return (String) value("physicalAxes");
+        public GetFrameOwnerResult nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
         }
         /**
-         * Returns the logicalAxes field.
-         * @return the protocol field value
+         * Id of the node at given coordinates, only when enabled and requested document.
+         * @param nodeId field value; null removes the value
+         * @return this model
          */
-        @Nullable public String logicalAxes() {
-            return (String) value("logicalAxes");
-        }
-        /**
-         * Returns the queriesScrollState field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean queriesScrollState() {
-            return (Boolean) value("queriesScrollState");
-        }
-        /**
-         * Returns the queriesAnchored field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean queriesAnchored() {
-            return (Boolean) value("queriesAnchored");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the nodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the containerName field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerName(@Nullable String value) {
-                if (value == null) values.remove("containerName");
-                else values.put("containerName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the physicalAxes field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder physicalAxes(@Nullable String value) {
-                if (value == null) values.remove("physicalAxes");
-                else values.put("physicalAxes", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the logicalAxes field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder logicalAxes(@Nullable String value) {
-                if (value == null) values.remove("logicalAxes");
-                else values.put("logicalAxes", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the queriesScrollState field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder queriesScrollState(@Nullable Boolean value) {
-                if (value == null) values.remove("queriesScrollState");
-                else values.put("queriesScrollState", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the queriesAnchored field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder queriesAnchored(@Nullable Boolean value) {
-                if (value == null) values.remove("queriesAnchored");
-                else values.put("queriesAnchored", jsonValue(value));
-                return this;
-            }
-            public GetContainerForNodeParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetContainerForNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetContainerForNodeResult extends CdpObject {
-        private GetContainerForNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetContainerForNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetContainerForNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The container node for the given node, or null if not found.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The container node for the given node, or null if not found.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetContainerForNodeResult build() {
-                return new GetContainerForNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the descendants of a container query container that have container queries against this container.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetQueryingDescendantsForContainerParams extends CdpObject {
-        private GetQueryingDescendantsForContainerParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetQueryingDescendantsForContainerParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetQueryingDescendantsForContainerParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the container node to find querying descendants from.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the container node to find querying descendants from.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetQueryingDescendantsForContainerParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetQueryingDescendantsForContainerParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the descendants of a container query container that have container queries against this container.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetQueryingDescendantsForContainerResult extends CdpObject {
-        private GetQueryingDescendantsForContainerResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetQueryingDescendantsForContainerResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetQueryingDescendantsForContainerResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Descendant nodes with container queries against the given container.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Descendant nodes with container queries against the given container.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public GetQueryingDescendantsForContainerResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new GetQueryingDescendantsForContainerResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetAnchorElementParams extends CdpObject {
-        private GetAnchorElementParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetAnchorElementParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetAnchorElementParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the positioned element from which to find the anchor.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * An optional anchor specifier, as defined in https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier. If not provided, it will return the implicit anchor element for the given positioned element.
-         * @return the protocol field value
-         */
-        @Nullable public String anchorSpecifier() {
-            return (String) value("anchorSpecifier");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the positioned element from which to find the anchor.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * An optional anchor specifier, as defined in https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier. If not provided, it will return the implicit anchor element for the given positioned element.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder anchorSpecifier(@Nullable String value) {
-                if (value == null) values.remove("anchorSpecifier");
-                else values.put("anchorSpecifier", jsonValue(value));
-                return this;
-            }
-            public GetAnchorElementParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetAnchorElementParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetAnchorElementResult extends CdpObject {
-        private GetAnchorElementResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetAnchorElementResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetAnchorElementResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The anchor element of the given anchor query.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The anchor element of the given anchor query.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetAnchorElementResult build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetAnchorElementResult(values);
-            }
-        }
-    }
-    /**
-     * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ForceShowPopoverParams extends CdpObject {
-        private ForceShowPopoverParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ForceShowPopoverParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ForceShowPopoverParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the popover HTMLElement
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * If true, opens the popover and keeps it open. If false, closes the popover if it was previously force-opened.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the popover HTMLElement
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * If true, opens the popover and keeps it open. If false, closes the popover if it was previously force-opened.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public ForceShowPopoverParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new ForceShowPopoverParams(values);
-            }
-        }
-    }
-    /**
-     * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ForceShowPopoverResult extends CdpObject {
-        private ForceShowPopoverResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ForceShowPopoverResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ForceShowPopoverResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * List of popovers that were closed in order to respect popover stacking order.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * List of popovers that were closed in order to respect popover stacking order.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public ForceShowPopoverResult build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new ForceShowPopoverResult(values);
-            }
+        public GetFrameOwnerResult nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      * Fired when {@code Element}&#x27;s attribute is modified.
      */
     public static final class AttributeModifiedEvent extends CdpObject {
+        public AttributeModifiedEvent() {}
         private AttributeModifiedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AttributeModifiedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttributeModifiedEvent(values);
+        public static AttributeModifiedEvent fromMap(Map<String, Object> values) {
+            return new AttributeModifiedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * Attribute name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Attribute value.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public String value() {
+            return (String) require("value");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attribute name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Attribute value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public AttributeModifiedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new AttributeModifiedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public AttributeModifiedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * Attribute name.
+         * @param name field value
+         * @return this model
+         */
+        public AttributeModifiedEvent name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Attribute value.
+         * @param value field value
+         * @return this model
+         */
+        public AttributeModifiedEvent value(String value) {
+            set("value", value);
+            return this;
         }
     }
     /**
@@ -5542,332 +1770,270 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class AdoptedStyleSheetsModifiedEvent extends CdpObject {
+        public AdoptedStyleSheetsModifiedEvent() {}
         private AdoptedStyleSheetsModifiedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AdoptedStyleSheetsModifiedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AdoptedStyleSheetsModifiedEvent(values);
+        public static AdoptedStyleSheetsModifiedEvent fromMap(Map<String, Object> values) {
+            return new AdoptedStyleSheetsModifiedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * New adoptedStyleSheets array.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> adoptedStyleSheets() {
-            return list(value("adoptedStyleSheets"), element0 -> (String) element0);
+        public java.util.List<DOM.StyleSheetId> adoptedStyleSheets() {
+            return CdpObject.requireList(require("adoptedStyleSheets"), element0 -> new DOM.StyleSheetId((String) element0));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * New adoptedStyleSheets array.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder adoptedStyleSheets(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("adoptedStyleSheets");
-                else values.put("adoptedStyleSheets", jsonValue(value));
-                return this;
-            }
-            public AdoptedStyleSheetsModifiedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("adoptedStyleSheets")) throw new IllegalStateException("Missing required CDP field: adoptedStyleSheets");
-                return new AdoptedStyleSheetsModifiedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public AdoptedStyleSheetsModifiedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * New adoptedStyleSheets array.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param adoptedStyleSheets field value
+         * @return this model
+         */
+        public AdoptedStyleSheetsModifiedEvent adoptedStyleSheets(java.util.List<DOM.StyleSheetId> adoptedStyleSheets) {
+            set("adoptedStyleSheets", adoptedStyleSheets);
+            return this;
         }
     }
     /**
      * Fired when {@code Element}&#x27;s attribute is removed.
      */
     public static final class AttributeRemovedEvent extends CdpObject {
+        public AttributeRemovedEvent() {}
         private AttributeRemovedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AttributeRemovedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttributeRemovedEvent(values);
+        public static AttributeRemovedEvent fromMap(Map<String, Object> values) {
+            return new AttributeRemovedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * A ttribute name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * A ttribute name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public AttributeRemovedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new AttributeRemovedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public AttributeRemovedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * A ttribute name.
+         * @param name field value
+         * @return this model
+         */
+        public AttributeRemovedEvent name(String name) {
+            set("name", name);
+            return this;
         }
     }
     /**
      * Mirrors {@code DOMCharacterDataModified} event.
      */
     public static final class CharacterDataModifiedEvent extends CdpObject {
+        public CharacterDataModifiedEvent() {}
         private CharacterDataModifiedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static CharacterDataModifiedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CharacterDataModifiedEvent(values);
+        public static CharacterDataModifiedEvent fromMap(Map<String, Object> values) {
+            return new CharacterDataModifiedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * New text value.
          * @return the protocol field value
          */
-        @Nullable public String characterData() {
-            return (String) value("characterData");
+        public String characterData() {
+            return (String) require("characterData");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * New text value.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characterData(@Nullable String value) {
-                if (value == null) values.remove("characterData");
-                else values.put("characterData", jsonValue(value));
-                return this;
-            }
-            public CharacterDataModifiedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("characterData")) throw new IllegalStateException("Missing required CDP field: characterData");
-                return new CharacterDataModifiedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public CharacterDataModifiedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * New text value.
+         * @param characterData field value
+         * @return this model
+         */
+        public CharacterDataModifiedEvent characterData(String characterData) {
+            set("characterData", characterData);
+            return this;
         }
     }
     /**
      * Fired when {@code Container}&#x27;s child node count has changed.
      */
     public static final class ChildNodeCountUpdatedEvent extends CdpObject {
+        public ChildNodeCountUpdatedEvent() {}
         private ChildNodeCountUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ChildNodeCountUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ChildNodeCountUpdatedEvent(values);
+        public static ChildNodeCountUpdatedEvent fromMap(Map<String, Object> values) {
+            return new ChildNodeCountUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * New node count.
          * @return the protocol field value
          */
-        @Nullable public Long childNodeCount() {
-            return numberAsLong(value("childNodeCount"));
+        public long childNodeCount() {
+            return ((Number) require("childNodeCount")).longValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * New node count.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder childNodeCount(@Nullable Long value) {
-                if (value == null) values.remove("childNodeCount");
-                else values.put("childNodeCount", jsonValue(value));
-                return this;
-            }
-            public ChildNodeCountUpdatedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("childNodeCount")) throw new IllegalStateException("Missing required CDP field: childNodeCount");
-                return new ChildNodeCountUpdatedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ChildNodeCountUpdatedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * New node count.
+         * @param childNodeCount field value
+         * @return this model
+         */
+        public ChildNodeCountUpdatedEvent childNodeCount(long childNodeCount) {
+            set("childNodeCount", childNodeCount);
+            return this;
         }
     }
     /**
      * Mirrors {@code DOMNodeInserted} event.
      */
     public static final class ChildNodeInsertedEvent extends CdpObject {
+        public ChildNodeInsertedEvent() {}
         private ChildNodeInsertedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ChildNodeInsertedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ChildNodeInsertedEvent(values);
+        public static ChildNodeInsertedEvent fromMap(Map<String, Object> values) {
+            return new ChildNodeInsertedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node that has changed.
          * @return the protocol field value
          */
-        @Nullable public Long parentNodeId() {
-            return numberAsLong(value("parentNodeId"));
+        public DOM.NodeId parentNodeId() {
+            return new DOM.NodeId(((Number) require("parentNodeId")).longValue());
         }
         /**
          * Id of the previous sibling.
          * @return the protocol field value
          */
-        @Nullable public Long previousNodeId() {
-            return numberAsLong(value("previousNodeId"));
+        public DOM.NodeId previousNodeId() {
+            return new DOM.NodeId(((Number) require("previousNodeId")).longValue());
         }
         /**
          * Inserted node data.
          * @return the protocol field value
          */
-        @Nullable public DOM.Node node() {
-            return DOM.Node.fromMap(objectMap(value("node")));
+        public DOM.Node node() {
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("node")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node that has changed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentNodeId(@Nullable Long value) {
-                if (value == null) values.remove("parentNodeId");
-                else values.put("parentNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the previous sibling.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder previousNodeId(@Nullable Long value) {
-                if (value == null) values.remove("previousNodeId");
-                else values.put("previousNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Inserted node data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder node(@Nullable DOM.Node value) {
-                if (value == null) values.remove("node");
-                else values.put("node", jsonValue(value));
-                return this;
-            }
-            public ChildNodeInsertedEvent build() {
-                if (!values.containsKey("parentNodeId")) throw new IllegalStateException("Missing required CDP field: parentNodeId");
-                if (!values.containsKey("previousNodeId")) throw new IllegalStateException("Missing required CDP field: previousNodeId");
-                if (!values.containsKey("node")) throw new IllegalStateException("Missing required CDP field: node");
-                return new ChildNodeInsertedEvent(values);
-            }
+        /**
+         * Id of the node that has changed.
+         * @param parentNodeId field value
+         * @return this model
+         */
+        public ChildNodeInsertedEvent parentNodeId(DOM.NodeId parentNodeId) {
+            set("parentNodeId", parentNodeId);
+            return this;
+        }
+        /**
+         * Id of the previous sibling.
+         * @param previousNodeId field value
+         * @return this model
+         */
+        public ChildNodeInsertedEvent previousNodeId(DOM.NodeId previousNodeId) {
+            set("previousNodeId", previousNodeId);
+            return this;
+        }
+        /**
+         * Inserted node data.
+         * @param node field value
+         * @return this model
+         */
+        public ChildNodeInsertedEvent node(DOM.Node node) {
+            set("node", node);
+            return this;
         }
     }
     /**
      * Mirrors {@code DOMNodeRemoved} event.
      */
     public static final class ChildNodeRemovedEvent extends CdpObject {
+        public ChildNodeRemovedEvent() {}
         private ChildNodeRemovedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ChildNodeRemovedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ChildNodeRemovedEvent(values);
+        public static ChildNodeRemovedEvent fromMap(Map<String, Object> values) {
+            return new ChildNodeRemovedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Parent id.
          * @return the protocol field value
          */
-        @Nullable public Long parentNodeId() {
-            return numberAsLong(value("parentNodeId"));
+        public DOM.NodeId parentNodeId() {
+            return new DOM.NodeId(((Number) require("parentNodeId")).longValue());
         }
         /**
          * Id of the node that has been removed.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Parent id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentNodeId(@Nullable Long value) {
-                if (value == null) values.remove("parentNodeId");
-                else values.put("parentNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the node that has been removed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public ChildNodeRemovedEvent build() {
-                if (!values.containsKey("parentNodeId")) throw new IllegalStateException("Missing required CDP field: parentNodeId");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new ChildNodeRemovedEvent(values);
-            }
+        /**
+         * Parent id.
+         * @param parentNodeId field value
+         * @return this model
+         */
+        public ChildNodeRemovedEvent parentNodeId(DOM.NodeId parentNodeId) {
+            set("parentNodeId", parentNodeId);
+            return this;
+        }
+        /**
+         * Id of the node that has been removed.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ChildNodeRemovedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
@@ -5875,68 +2041,52 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class DistributedNodesUpdatedEvent extends CdpObject {
+        public DistributedNodesUpdatedEvent() {}
         private DistributedNodesUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DistributedNodesUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DistributedNodesUpdatedEvent(values);
+        public static DistributedNodesUpdatedEvent fromMap(Map<String, Object> values) {
+            return new DistributedNodesUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Insertion point where distributed nodes were updated.
          * @return the protocol field value
          */
-        @Nullable public Long insertionPointId() {
-            return numberAsLong(value("insertionPointId"));
+        public DOM.NodeId insertionPointId() {
+            return new DOM.NodeId(((Number) require("insertionPointId")).longValue());
         }
         /**
          * Distributed nodes for given insertion point.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<DOM.BackendNode> distributedNodes() {
-            return list(value("distributedNodes"), element0 -> DOM.BackendNode.fromMap(objectMap(element0)));
+        public java.util.List<DOM.BackendNode> distributedNodes() {
+            return CdpObject.requireList(require("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Insertion point where distributed nodes were updated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder insertionPointId(@Nullable Long value) {
-                if (value == null) values.remove("insertionPointId");
-                else values.put("insertionPointId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Distributed nodes for given insertion point.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder distributedNodes(@Nullable java.util.List<DOM.BackendNode> value) {
-                if (value == null) values.remove("distributedNodes");
-                else values.put("distributedNodes", jsonValue(value));
-                return this;
-            }
-            public DistributedNodesUpdatedEvent build() {
-                if (!values.containsKey("insertionPointId")) throw new IllegalStateException("Missing required CDP field: insertionPointId");
-                if (!values.containsKey("distributedNodes")) throw new IllegalStateException("Missing required CDP field: distributedNodes");
-                return new DistributedNodesUpdatedEvent(values);
-            }
+        /**
+         * Insertion point where distributed nodes were updated.
+         * @param insertionPointId field value
+         * @return this model
+         */
+        public DistributedNodesUpdatedEvent insertionPointId(DOM.NodeId insertionPointId) {
+            set("insertionPointId", insertionPointId);
+            return this;
+        }
+        /**
+         * Distributed nodes for given insertion point.
+         * @param distributedNodes field value
+         * @return this model
+         */
+        public DistributedNodesUpdatedEvent distributedNodes(java.util.List<DOM.BackendNode> distributedNodes) {
+            set("distributedNodes", distributedNodes);
+            return this;
         }
     }
     /**
      * Fired when {@code Document} has been totally updated. Node ids are no longer valid.
      */
     public static final class DocumentUpdatedEvent extends CdpObject {
+        public DocumentUpdatedEvent() {}
         private DocumentUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DocumentUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DocumentUpdatedEvent(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DocumentUpdatedEvent build() {
-                return new DocumentUpdatedEvent(values);
-            }
+        public static DocumentUpdatedEvent fromMap(Map<String, Object> values) {
+            return new DocumentUpdatedEvent(values);
         }
     }
     /**
@@ -5944,34 +2094,26 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class InlineStyleInvalidatedEvent extends CdpObject {
+        public InlineStyleInvalidatedEvent() {}
         private InlineStyleInvalidatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InlineStyleInvalidatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InlineStyleInvalidatedEvent(values);
+        public static InlineStyleInvalidatedEvent fromMap(Map<String, Object> values) {
+            return new InlineStyleInvalidatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Ids of the nodes for which the inline styles have been invalidated.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
+        public java.util.List<DOM.NodeId> nodeIds() {
+            return CdpObject.requireList(require("nodeIds"), element0 -> new DOM.NodeId(((Number) element0).longValue()));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Ids of the nodes for which the inline styles have been invalidated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public InlineStyleInvalidatedEvent build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new InlineStyleInvalidatedEvent(values);
-            }
+        /**
+         * Ids of the nodes for which the inline styles have been invalidated.
+         * @param nodeIds field value
+         * @return this model
+         */
+        public InlineStyleInvalidatedEvent nodeIds(java.util.List<DOM.NodeId> nodeIds) {
+            set("nodeIds", nodeIds);
+            return this;
         }
     }
     /**
@@ -5979,52 +2121,42 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class PseudoElementAddedEvent extends CdpObject {
+        public PseudoElementAddedEvent() {}
         private PseudoElementAddedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static PseudoElementAddedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PseudoElementAddedEvent(values);
+        public static PseudoElementAddedEvent fromMap(Map<String, Object> values) {
+            return new PseudoElementAddedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Pseudo element&#x27;s parent element id.
          * @return the protocol field value
          */
-        @Nullable public Long parentId() {
-            return numberAsLong(value("parentId"));
+        public DOM.NodeId parentId() {
+            return new DOM.NodeId(((Number) require("parentId")).longValue());
         }
         /**
          * The added pseudo element.
          * @return the protocol field value
          */
-        @Nullable public DOM.Node pseudoElement() {
-            return DOM.Node.fromMap(objectMap(value("pseudoElement")));
+        public DOM.Node pseudoElement() {
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("pseudoElement")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Pseudo element&#x27;s parent element id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentId(@Nullable Long value) {
-                if (value == null) values.remove("parentId");
-                else values.put("parentId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The added pseudo element.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pseudoElement(@Nullable DOM.Node value) {
-                if (value == null) values.remove("pseudoElement");
-                else values.put("pseudoElement", jsonValue(value));
-                return this;
-            }
-            public PseudoElementAddedEvent build() {
-                if (!values.containsKey("parentId")) throw new IllegalStateException("Missing required CDP field: parentId");
-                if (!values.containsKey("pseudoElement")) throw new IllegalStateException("Missing required CDP field: pseudoElement");
-                return new PseudoElementAddedEvent(values);
-            }
+        /**
+         * Pseudo element&#x27;s parent element id.
+         * @param parentId field value
+         * @return this model
+         */
+        public PseudoElementAddedEvent parentId(DOM.NodeId parentId) {
+            set("parentId", parentId);
+            return this;
+        }
+        /**
+         * The added pseudo element.
+         * @param pseudoElement field value
+         * @return this model
+         */
+        public PseudoElementAddedEvent pseudoElement(DOM.Node pseudoElement) {
+            set("pseudoElement", pseudoElement);
+            return this;
         }
     }
     /**
@@ -6032,16 +2164,10 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class TopLayerElementsUpdatedEvent extends CdpObject {
+        public TopLayerElementsUpdatedEvent() {}
         private TopLayerElementsUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TopLayerElementsUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TopLayerElementsUpdatedEvent(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public TopLayerElementsUpdatedEvent build() {
-                return new TopLayerElementsUpdatedEvent(values);
-            }
+        public static TopLayerElementsUpdatedEvent fromMap(Map<String, Object> values) {
+            return new TopLayerElementsUpdatedEvent(values);
         }
     }
     /**
@@ -6049,52 +2175,42 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class ScrollableFlagUpdatedEvent extends CdpObject {
+        public ScrollableFlagUpdatedEvent() {}
         private ScrollableFlagUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ScrollableFlagUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScrollableFlagUpdatedEvent(values);
+        public static ScrollableFlagUpdatedEvent fromMap(Map<String, Object> values) {
+            return new ScrollableFlagUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The id of the node.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * If the node is scrollable.
          * @return the protocol field value
          */
-        @Nullable public Boolean isScrollable() {
-            return (Boolean) value("isScrollable");
+        public boolean isScrollable() {
+            return (Boolean) require("isScrollable");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The id of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the node is scrollable.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isScrollable(@Nullable Boolean value) {
-                if (value == null) values.remove("isScrollable");
-                else values.put("isScrollable", jsonValue(value));
-                return this;
-            }
-            public ScrollableFlagUpdatedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("isScrollable")) throw new IllegalStateException("Missing required CDP field: isScrollable");
-                return new ScrollableFlagUpdatedEvent(values);
-            }
+        /**
+         * The id of the node.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ScrollableFlagUpdatedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * If the node is scrollable.
+         * @param isScrollable field value
+         * @return this model
+         */
+        public ScrollableFlagUpdatedEvent isScrollable(boolean isScrollable) {
+            set("isScrollable", isScrollable);
+            return this;
         }
     }
     /**
@@ -6102,51 +2218,51 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class AdRelatedStateUpdatedEvent extends CdpObject {
+        public AdRelatedStateUpdatedEvent() {}
         private AdRelatedStateUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AdRelatedStateUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AdRelatedStateUpdatedEvent(values);
+        public static AdRelatedStateUpdatedEvent fromMap(Map<String, Object> values) {
+            return new AdRelatedStateUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The id of the node.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * The provenance of the ad related node, if it is ad related.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Network.AdProvenance adProvenance() {
-            return Network.AdProvenance.fromMap(objectMap(value("adProvenance")));
+        public Optional<Network.AdProvenance> adProvenance() {
+            return Optional.ofNullable(raw("adProvenance") == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(raw("adProvenance")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The id of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The provenance of the ad related node, if it is ad related.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder adProvenance(@Nullable Network.AdProvenance value) {
-                if (value == null) values.remove("adProvenance");
-                else values.put("adProvenance", jsonValue(value));
-                return this;
-            }
-            public AdRelatedStateUpdatedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new AdRelatedStateUpdatedEvent(values);
-            }
+        /**
+         * The id of the node.
+         * @param nodeId field value
+         * @return this model
+         */
+        public AdRelatedStateUpdatedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * The provenance of the ad related node, if it is ad related.
+         * @param adProvenance field value; empty omits the value
+         * @return this model
+         */
+        public AdRelatedStateUpdatedEvent adProvenance(Optional<Network.AdProvenance> adProvenance) {
+            set("adProvenance", adProvenance.orElse(null));
+            return this;
+        }
+        /**
+         * The provenance of the ad related node, if it is ad related.
+         * @param adProvenance field value; null removes the value
+         * @return this model
+         */
+        public AdRelatedStateUpdatedEvent adProvenance(Network.AdProvenance adProvenance) {
+            set("adProvenance", adProvenance);
+            return this;
         }
     }
     /**
@@ -6154,52 +2270,42 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class AffectedByStartingStylesFlagUpdatedEvent extends CdpObject {
+        public AffectedByStartingStylesFlagUpdatedEvent() {}
         private AffectedByStartingStylesFlagUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AffectedByStartingStylesFlagUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AffectedByStartingStylesFlagUpdatedEvent(values);
+        public static AffectedByStartingStylesFlagUpdatedEvent fromMap(Map<String, Object> values) {
+            return new AffectedByStartingStylesFlagUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The id of the node.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
         /**
          * If the node has starting styles.
          * @return the protocol field value
          */
-        @Nullable public Boolean affectedByStartingStyles() {
-            return (Boolean) value("affectedByStartingStyles");
+        public boolean affectedByStartingStyles() {
+            return (Boolean) require("affectedByStartingStyles");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The id of the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the node has starting styles.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder affectedByStartingStyles(@Nullable Boolean value) {
-                if (value == null) values.remove("affectedByStartingStyles");
-                else values.put("affectedByStartingStyles", jsonValue(value));
-                return this;
-            }
-            public AffectedByStartingStylesFlagUpdatedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                if (!values.containsKey("affectedByStartingStyles")) throw new IllegalStateException("Missing required CDP field: affectedByStartingStyles");
-                return new AffectedByStartingStylesFlagUpdatedEvent(values);
-            }
+        /**
+         * The id of the node.
+         * @param nodeId field value
+         * @return this model
+         */
+        public AffectedByStartingStylesFlagUpdatedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
+        }
+        /**
+         * If the node has starting styles.
+         * @param affectedByStartingStyles field value
+         * @return this model
+         */
+        public AffectedByStartingStylesFlagUpdatedEvent affectedByStartingStyles(boolean affectedByStartingStyles) {
+            set("affectedByStartingStyles", affectedByStartingStyles);
+            return this;
         }
     }
     /**
@@ -6207,104 +2313,84 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class PseudoElementRemovedEvent extends CdpObject {
+        public PseudoElementRemovedEvent() {}
         private PseudoElementRemovedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static PseudoElementRemovedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PseudoElementRemovedEvent(values);
+        public static PseudoElementRemovedEvent fromMap(Map<String, Object> values) {
+            return new PseudoElementRemovedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Pseudo element&#x27;s parent element id.
          * @return the protocol field value
          */
-        @Nullable public Long parentId() {
-            return numberAsLong(value("parentId"));
+        public DOM.NodeId parentId() {
+            return new DOM.NodeId(((Number) require("parentId")).longValue());
         }
         /**
          * The removed pseudo element id.
          * @return the protocol field value
          */
-        @Nullable public Long pseudoElementId() {
-            return numberAsLong(value("pseudoElementId"));
+        public DOM.NodeId pseudoElementId() {
+            return new DOM.NodeId(((Number) require("pseudoElementId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Pseudo element&#x27;s parent element id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentId(@Nullable Long value) {
-                if (value == null) values.remove("parentId");
-                else values.put("parentId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The removed pseudo element id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pseudoElementId(@Nullable Long value) {
-                if (value == null) values.remove("pseudoElementId");
-                else values.put("pseudoElementId", jsonValue(value));
-                return this;
-            }
-            public PseudoElementRemovedEvent build() {
-                if (!values.containsKey("parentId")) throw new IllegalStateException("Missing required CDP field: parentId");
-                if (!values.containsKey("pseudoElementId")) throw new IllegalStateException("Missing required CDP field: pseudoElementId");
-                return new PseudoElementRemovedEvent(values);
-            }
+        /**
+         * Pseudo element&#x27;s parent element id.
+         * @param parentId field value
+         * @return this model
+         */
+        public PseudoElementRemovedEvent parentId(DOM.NodeId parentId) {
+            set("parentId", parentId);
+            return this;
+        }
+        /**
+         * The removed pseudo element id.
+         * @param pseudoElementId field value
+         * @return this model
+         */
+        public PseudoElementRemovedEvent pseudoElementId(DOM.NodeId pseudoElementId) {
+            set("pseudoElementId", pseudoElementId);
+            return this;
         }
     }
     /**
      * Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
      */
     public static final class SetChildNodesEvent extends CdpObject {
+        public SetChildNodesEvent() {}
         private SetChildNodesEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static SetChildNodesEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetChildNodesEvent(values);
+        public static SetChildNodesEvent fromMap(Map<String, Object> values) {
+            return new SetChildNodesEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Parent node id to populate with children.
          * @return the protocol field value
          */
-        @Nullable public Long parentId() {
-            return numberAsLong(value("parentId"));
+        public DOM.NodeId parentId() {
+            return new DOM.NodeId(((Number) require("parentId")).longValue());
         }
         /**
          * Child nodes array.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<DOM.Node> nodes() {
-            return list(value("nodes"), element0 -> DOM.Node.fromMap(objectMap(element0)));
+        public java.util.List<DOM.Node> nodes() {
+            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Parent node id to populate with children.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentId(@Nullable Long value) {
-                if (value == null) values.remove("parentId");
-                else values.put("parentId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Child nodes array.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodes(@Nullable java.util.List<DOM.Node> value) {
-                if (value == null) values.remove("nodes");
-                else values.put("nodes", jsonValue(value));
-                return this;
-            }
-            public SetChildNodesEvent build() {
-                if (!values.containsKey("parentId")) throw new IllegalStateException("Missing required CDP field: parentId");
-                if (!values.containsKey("nodes")) throw new IllegalStateException("Missing required CDP field: nodes");
-                return new SetChildNodesEvent(values);
-            }
+        /**
+         * Parent node id to populate with children.
+         * @param parentId field value
+         * @return this model
+         */
+        public SetChildNodesEvent parentId(DOM.NodeId parentId) {
+            set("parentId", parentId);
+            return this;
+        }
+        /**
+         * Child nodes array.
+         * @param nodes field value
+         * @return this model
+         */
+        public SetChildNodesEvent nodes(java.util.List<DOM.Node> nodes) {
+            set("nodes", nodes);
+            return this;
         }
     }
     /**
@@ -6312,52 +2398,42 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class ShadowRootPoppedEvent extends CdpObject {
+        public ShadowRootPoppedEvent() {}
         private ShadowRootPoppedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ShadowRootPoppedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ShadowRootPoppedEvent(values);
+        public static ShadowRootPoppedEvent fromMap(Map<String, Object> values) {
+            return new ShadowRootPoppedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Host element id.
          * @return the protocol field value
          */
-        @Nullable public Long hostId() {
-            return numberAsLong(value("hostId"));
+        public DOM.NodeId hostId() {
+            return new DOM.NodeId(((Number) require("hostId")).longValue());
         }
         /**
          * Shadow root id.
          * @return the protocol field value
          */
-        @Nullable public Long rootId() {
-            return numberAsLong(value("rootId"));
+        public DOM.NodeId rootId() {
+            return new DOM.NodeId(((Number) require("rootId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Host element id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hostId(@Nullable Long value) {
-                if (value == null) values.remove("hostId");
-                else values.put("hostId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Shadow root id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rootId(@Nullable Long value) {
-                if (value == null) values.remove("rootId");
-                else values.put("rootId", jsonValue(value));
-                return this;
-            }
-            public ShadowRootPoppedEvent build() {
-                if (!values.containsKey("hostId")) throw new IllegalStateException("Missing required CDP field: hostId");
-                if (!values.containsKey("rootId")) throw new IllegalStateException("Missing required CDP field: rootId");
-                return new ShadowRootPoppedEvent(values);
-            }
+        /**
+         * Host element id.
+         * @param hostId field value
+         * @return this model
+         */
+        public ShadowRootPoppedEvent hostId(DOM.NodeId hostId) {
+            set("hostId", hostId);
+            return this;
+        }
+        /**
+         * Shadow root id.
+         * @param rootId field value
+         * @return this model
+         */
+        public ShadowRootPoppedEvent rootId(DOM.NodeId rootId) {
+            set("rootId", rootId);
+            return this;
         }
     }
     /**
@@ -6365,52 +2441,76 @@ public final class DOM {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class ShadowRootPushedEvent extends CdpObject {
+        public ShadowRootPushedEvent() {}
         private ShadowRootPushedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ShadowRootPushedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ShadowRootPushedEvent(values);
+        public static ShadowRootPushedEvent fromMap(Map<String, Object> values) {
+            return new ShadowRootPushedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Host element id.
          * @return the protocol field value
          */
-        @Nullable public Long hostId() {
-            return numberAsLong(value("hostId"));
+        public DOM.NodeId hostId() {
+            return new DOM.NodeId(((Number) require("hostId")).longValue());
         }
         /**
          * Shadow root.
          * @return the protocol field value
          */
-        @Nullable public DOM.Node root() {
-            return DOM.Node.fromMap(objectMap(value("root")));
+        public DOM.Node root() {
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("root")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Host element id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hostId(@Nullable Long value) {
-                if (value == null) values.remove("hostId");
-                else values.put("hostId", jsonValue(value));
-                return this;
+        /**
+         * Host element id.
+         * @param hostId field value
+         * @return this model
+         */
+        public ShadowRootPushedEvent hostId(DOM.NodeId hostId) {
+            set("hostId", hostId);
+            return this;
+        }
+        /**
+         * Shadow root.
+         * @param root field value
+         * @return this model
+         */
+        public ShadowRootPushedEvent root(DOM.Node root) {
+            set("root", root);
+            return this;
+        }
+    }
+    /**
+     * Whether to include whitespaces in the children array of returned Nodes.
+     * <p><b>Experimental:</b> this part of CDP may change without notice.
+     */
+    public enum EnableIncludeWhitespaceValues implements CdpValue<String> {
+        NONE("none"),
+        ALL("all");
+        public final String value;
+        EnableIncludeWhitespaceValues(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static EnableIncludeWhitespaceValues of(@Nonnull String value) {
+            for (EnableIncludeWhitespaceValues constant : values()) {
+                if (constant.value.equals(value)) return constant;
             }
-            /**
-             * Shadow root.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder root(@Nullable DOM.Node value) {
-                if (value == null) values.remove("root");
-                else values.put("root", jsonValue(value));
-                return this;
+            throw new IllegalArgumentException("Unknown EnableIncludeWhitespaceValues value: " + value);
+        }
+    }
+    /**
+     * Type of relation to get.
+     */
+    public enum GetElementByRelationRelationValues implements CdpValue<String> {
+        POPOVERTARGET("PopoverTarget"),
+        INTERESTTARGET("InterestTarget"),
+        COMMANDFOR("CommandFor");
+        public final String value;
+        GetElementByRelationRelationValues(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static GetElementByRelationRelationValues of(@Nonnull String value) {
+            for (GetElementByRelationRelationValues constant : values()) {
+                if (constant.value.equals(value)) return constant;
             }
-            public ShadowRootPushedEvent build() {
-                if (!values.containsKey("hostId")) throw new IllegalStateException("Missing required CDP field: hostId");
-                if (!values.containsKey("root")) throw new IllegalStateException("Missing required CDP field: root");
-                return new ShadowRootPushedEvent(values);
-            }
+            throw new IllegalArgumentException("Unknown GetElementByRelationRelationValues value: " + value);
         }
     }
     public static final class Client {
@@ -6419,161 +2519,229 @@ public final class DOM {
         /**
          * Collects class names for the node with given id and all of it&#x27;s child nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CollectClassNamesFromSubtreeResult> collectClassNamesFromSubtree(CollectClassNamesFromSubtreeParams params) {
-            return client.call("DOM.collectClassNamesFromSubtree", params, CollectClassNamesFromSubtreeResult::fromMap);
+        public CompletionStage<java.util.List<String>> collectClassNamesFromSubtree(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.collectClassNamesFromSubtree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
         }
         /**
          * Creates a deep copy of the specified node and places it into the target container before the given anchor.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param targetNodeId protocol value
+         * @param insertBeforeNodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CopyToResult> copyTo(CopyToParams params) {
-            return client.call("DOM.copyTo", params, CopyToResult::fromMap);
+        public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, Optional<DOM.NodeId> insertBeforeNodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("targetNodeId", CdpObject.json(targetNodeId));
+            insertBeforeNodeId.ifPresent(value_ -> params.put("insertBeforeNodeId", CdpObject.json(value_)));
+            return client.call("DOM.copyTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+        }
+        /**
+         * Creates a deep copy of the specified node and places it into the target container before the given anchor.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         * @param targetNodeId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
+            return copyTo(nodeId, targetNodeId, Optional.empty());
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @param depth protocol value
+         * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DescribeNodeResult> describeNode(DescribeNodeParams params) {
-            return client.call("DOM.describeNode", params, DescribeNodeResult::fromMap);
+        public CompletionStage<DOM.Node> describeNode(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, OptionalLong depth, Optional<Boolean> pierce) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            depth.ifPresent(value_ -> params.put("depth", value_));
+            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            return client.call("DOM.describeNode", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
          * @return a stage completing with the command result
          */
-        public CompletionStage<DescribeNodeResult> describeNode() {
-            return describeNode(DescribeNodeParams.builder().build());
+        public CompletionStage<DOM.Node> describeNode() {
+            return describeNode(Optional.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), Optional.empty());
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @param rect protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ScrollIntoViewIfNeededResult> scrollIntoViewIfNeeded(ScrollIntoViewIfNeededParams params) {
-            return client.call("DOM.scrollIntoViewIfNeeded", params, ScrollIntoViewIfNeededResult::fromMap);
+        public CompletionStage<Void> scrollIntoViewIfNeeded(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<DOM.Rect> rect) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            rect.ifPresent(value_ -> params.put("rect", CdpObject.json(value_)));
+            return client.call("DOM.scrollIntoViewIfNeeded", params, result_ -> null);
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ScrollIntoViewIfNeededResult> scrollIntoViewIfNeeded() {
-            return scrollIntoViewIfNeeded(ScrollIntoViewIfNeededParams.builder().build());
+        public CompletionStage<Void> scrollIntoViewIfNeeded() {
+            return scrollIntoViewIfNeeded(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Disables DOM agent for the given page.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("DOM.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("DOM.disable", null, result_ -> null);
         }
         /**
          * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param searchId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DiscardSearchResultsResult> discardSearchResults(DiscardSearchResultsParams params) {
-            return client.call("DOM.discardSearchResults", params, DiscardSearchResultsResult::fromMap);
+        public CompletionStage<Void> discardSearchResults(String searchId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("searchId", CdpObject.json(searchId));
+            return client.call("DOM.discardSearchResults", params, result_ -> null);
         }
         /**
          * Enables DOM agent for the given page.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param includeWhitespace protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable(EnableParams params) {
-            return client.call("DOM.enable", params, EnableResult::fromMap);
+        public CompletionStage<Void> enable(Optional<EnableIncludeWhitespaceValues> includeWhitespace) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            includeWhitespace.ifPresent(value_ -> params.put("includeWhitespace", CdpObject.json(value_)));
+            return client.call("DOM.enable", params, result_ -> null);
         }
         /**
          * Enables DOM agent for the given page.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return enable(EnableParams.builder().build());
+        public CompletionStage<Void> enable() {
+            return enable(Optional.empty());
         }
         /**
          * Focuses the given element.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<FocusResult> focus(FocusParams params) {
-            return client.call("DOM.focus", params, FocusResult::fromMap);
+        public CompletionStage<Void> focus(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            return client.call("DOM.focus", params, result_ -> null);
         }
         /**
          * Focuses the given element.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<FocusResult> focus() {
-            return focus(FocusParams.builder().build());
+        public CompletionStage<Void> focus() {
+            return focus(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns attributes for the specified node.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetAttributesResult> getAttributes(GetAttributesParams params) {
-            return client.call("DOM.getAttributes", params, GetAttributesResult::fromMap);
+        public CompletionStage<java.util.List<String>> getAttributes(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getAttributes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("attributes")), element0 -> (String) element0));
         }
         /**
          * Returns boxes for the given node.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetBoxModelResult> getBoxModel(GetBoxModelParams params) {
-            return client.call("DOM.getBoxModel", params, GetBoxModelResult::fromMap);
+        public CompletionStage<DOM.BoxModel> getBoxModel(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            return client.call("DOM.getBoxModel", params, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("model")))))));
         }
         /**
          * Returns boxes for the given node.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetBoxModelResult> getBoxModel() {
-            return getBoxModel(GetBoxModelParams.builder().build());
+        public CompletionStage<DOM.BoxModel> getBoxModel() {
+            return getBoxModel(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetContentQuadsResult> getContentQuads(GetContentQuadsParams params) {
-            return client.call("DOM.getContentQuads", params, GetContentQuadsResult::fromMap);
+        public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            return client.call("DOM.getContentQuads", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetContentQuadsResult> getContentQuads() {
-            return getContentQuads(GetContentQuadsParams.builder().build());
+        public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads() {
+            return getContentQuads(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
-         * @param params command parameters
+         * @param depth protocol value
+         * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDocumentResult> getDocument(GetDocumentParams params) {
-            return client.call("DOM.getDocument", params, GetDocumentResult::fromMap);
+        public CompletionStage<DOM.Node> getDocument(OptionalLong depth, Optional<Boolean> pierce) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            depth.ifPresent(value_ -> params.put("depth", value_));
+            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            return client.call("DOM.getDocument", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("root")))))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDocumentResult> getDocument() {
-            return getDocument(GetDocumentParams.builder().build());
+        public CompletionStage<DOM.Node> getDocument() {
+            return getDocument(OptionalLong.empty(), Optional.empty());
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
-         * @param params command parameters
+         * @param depth protocol value
+         * @param pierce protocol value
          * @return a stage completing with the command result
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<GetFlattenedDocumentResult> getFlattenedDocument(GetFlattenedDocumentParams params) {
-            return client.call("DOM.getFlattenedDocument", params, GetFlattenedDocumentResult::fromMap);
+        public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(OptionalLong depth, Optional<Boolean> pierce) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            depth.ifPresent(value_ -> params.put("depth", value_));
+            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            return client.call("DOM.getFlattenedDocument", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -6581,355 +2749,577 @@ public final class DOM {
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<GetFlattenedDocumentResult> getFlattenedDocument() {
-            return getFlattenedDocument(GetFlattenedDocumentParams.builder().build());
+        public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument() {
+            return getFlattenedDocument(OptionalLong.empty(), Optional.empty());
         }
         /**
          * Finds nodes with a given computed style in a subtree.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param computedStyles protocol value
+         * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetNodesForSubtreeByStyleResult> getNodesForSubtreeByStyle(GetNodesForSubtreeByStyleParams params) {
-            return client.call("DOM.getNodesForSubtreeByStyle", params, GetNodesForSubtreeByStyleResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles, Optional<Boolean> pierce) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("computedStyles", CdpObject.json(computedStyles));
+            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            return client.call("DOM.getNodesForSubtreeByStyle", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+        }
+        /**
+         * Finds nodes with a given computed style in a subtree.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         * @param computedStyles protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles) {
+            return getNodesForSubtreeByStyle(nodeId, computedStyles, Optional.empty());
         }
         /**
          * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
-         * @param params command parameters
+         * @param x protocol value
+         * @param y protocol value
+         * @param includeUserAgentShadowDOM protocol value
+         * @param ignorePointerEventsNone protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetNodeForLocationResult> getNodeForLocation(GetNodeForLocationParams params) {
-            return client.call("DOM.getNodeForLocation", params, GetNodeForLocationResult::fromMap);
+        public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y, Optional<Boolean> includeUserAgentShadowDOM, Optional<Boolean> ignorePointerEventsNone) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            includeUserAgentShadowDOM.ifPresent(value_ -> params.put("includeUserAgentShadowDOM", value_));
+            ignorePointerEventsNone.ifPresent(value_ -> params.put("ignorePointerEventsNone", value_));
+            return client.call("DOM.getNodeForLocation", params, result_ -> new GetNodeForLocationResult(result_));
+        }
+        /**
+         * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
+         * @param x protocol value
+         * @param y protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y) {
+            return getNodeForLocation(x, y, Optional.empty(), Optional.empty());
         }
         /**
          * Returns node&#x27;s HTML markup.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @param includeShadowDOM protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetOuterHTMLResult> getOuterHTML(GetOuterHTMLParams params) {
-            return client.call("DOM.getOuterHTML", params, GetOuterHTMLResult::fromMap);
+        public CompletionStage<String> getOuterHTML(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<Boolean> includeShadowDOM) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            includeShadowDOM.ifPresent(value_ -> params.put("includeShadowDOM", value_));
+            return client.call("DOM.getOuterHTML", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
         }
         /**
          * Returns node&#x27;s HTML markup.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetOuterHTMLResult> getOuterHTML() {
-            return getOuterHTML(GetOuterHTMLParams.builder().build());
+        public CompletionStage<String> getOuterHTML() {
+            return getOuterHTML(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns the id of the nearest ancestor that is a relayout boundary.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetRelayoutBoundaryResult> getRelayoutBoundary(GetRelayoutBoundaryParams params) {
-            return client.call("DOM.getRelayoutBoundary", params, GetRelayoutBoundaryResult::fromMap);
+        public CompletionStage<DOM.NodeId> getRelayoutBoundary(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getRelayoutBoundary", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param searchId protocol value
+         * @param fromIndex protocol value
+         * @param toIndex protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetSearchResultsResult> getSearchResults(GetSearchResultsParams params) {
-            return client.call("DOM.getSearchResults", params, GetSearchResultsResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> getSearchResults(String searchId, long fromIndex, long toIndex) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("searchId", CdpObject.json(searchId));
+            params.put("fromIndex", CdpObject.json(fromIndex));
+            params.put("toIndex", CdpObject.json(toIndex));
+            return client.call("DOM.getSearchResults", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Hides any highlight.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HideHighlightResult> hideHighlight() {
-            return client.call("DOM.hideHighlight", null, HideHighlightResult::fromMap);
+        public CompletionStage<Void> hideHighlight() {
+            return client.call("DOM.hideHighlight", null, result_ -> null);
         }
         /**
          * Highlights DOM node.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightNodeResult> highlightNode() {
-            return client.call("DOM.highlightNode", null, HighlightNodeResult::fromMap);
+        public CompletionStage<Void> highlightNode() {
+            return client.call("DOM.highlightNode", null, result_ -> null);
         }
         /**
          * Highlights given rectangle.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightRectResult> highlightRect() {
-            return client.call("DOM.highlightRect", null, HighlightRectResult::fromMap);
+        public CompletionStage<Void> highlightRect() {
+            return client.call("DOM.highlightRect", null, result_ -> null);
         }
         /**
          * Marks last undoable state.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<MarkUndoableStateResult> markUndoableState() {
-            return client.call("DOM.markUndoableState", null, MarkUndoableStateResult::fromMap);
+        public CompletionStage<Void> markUndoableState() {
+            return client.call("DOM.markUndoableState", null, result_ -> null);
         }
         /**
          * Moves node into the new container, places it before the given anchor.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param targetNodeId protocol value
+         * @param insertBeforeNodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<MoveToResult> moveTo(MoveToParams params) {
-            return client.call("DOM.moveTo", params, MoveToResult::fromMap);
+        public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, Optional<DOM.NodeId> insertBeforeNodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("targetNodeId", CdpObject.json(targetNodeId));
+            insertBeforeNodeId.ifPresent(value_ -> params.put("insertBeforeNodeId", CdpObject.json(value_)));
+            return client.call("DOM.moveTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+        }
+        /**
+         * Moves node into the new container, places it before the given anchor.
+         * @param nodeId protocol value
+         * @param targetNodeId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
+            return moveTo(nodeId, targetNodeId, Optional.empty());
         }
         /**
          * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param query protocol value
+         * @param includeUserAgentShadowDOM protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<PerformSearchResult> performSearch(PerformSearchParams params) {
-            return client.call("DOM.performSearch", params, PerformSearchResult::fromMap);
+        public CompletionStage<PerformSearchResult> performSearch(String query, Optional<Boolean> includeUserAgentShadowDOM) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("query", CdpObject.json(query));
+            includeUserAgentShadowDOM.ifPresent(value_ -> params.put("includeUserAgentShadowDOM", value_));
+            return client.call("DOM.performSearch", params, result_ -> new PerformSearchResult(result_));
+        }
+        /**
+         * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param query protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<PerformSearchResult> performSearch(String query) {
+            return performSearch(query, Optional.empty());
         }
         /**
          * Requests that the node is sent to the caller given its path. // FIXME, use XPath
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param path protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<PushNodeByPathToFrontendResult> pushNodeByPathToFrontend(PushNodeByPathToFrontendParams params) {
-            return client.call("DOM.pushNodeByPathToFrontend", params, PushNodeByPathToFrontendResult::fromMap);
+        public CompletionStage<DOM.NodeId> pushNodeByPathToFrontend(String path) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("path", CdpObject.json(path));
+            return client.call("DOM.pushNodeByPathToFrontend", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Requests that a batch of nodes is sent to the caller given their backend node ids.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param backendNodeIds protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<PushNodesByBackendIdsToFrontendResult> pushNodesByBackendIdsToFrontend(PushNodesByBackendIdsToFrontendParams params) {
-            return client.call("DOM.pushNodesByBackendIdsToFrontend", params, PushNodesByBackendIdsToFrontendResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> pushNodesByBackendIdsToFrontend(java.util.List<DOM.BackendNodeId> backendNodeIds) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("backendNodeIds", CdpObject.json(backendNodeIds));
+            return client.call("DOM.pushNodesByBackendIdsToFrontend", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Executes {@code querySelector} on a given node.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param selector protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<QuerySelectorResult> querySelector(QuerySelectorParams params) {
-            return client.call("DOM.querySelector", params, QuerySelectorResult::fromMap);
+        public CompletionStage<DOM.NodeId> querySelector(DOM.NodeId nodeId, String selector) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("selector", CdpObject.json(selector));
+            return client.call("DOM.querySelector", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Executes {@code querySelectorAll} on a given node.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param selector protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<QuerySelectorAllResult> querySelectorAll(QuerySelectorAllParams params) {
-            return client.call("DOM.querySelectorAll", params, QuerySelectorAllResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> querySelectorAll(DOM.NodeId nodeId, String selector) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("selector", CdpObject.json(selector));
+            return client.call("DOM.querySelectorAll", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Returns NodeIds of current top layer elements. Top layer is rendered closest to the user within a viewport, therefore its elements always appear on top of all other content.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTopLayerElementsResult> getTopLayerElements() {
-            return client.call("DOM.getTopLayerElements", null, GetTopLayerElementsResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> getTopLayerElements() {
+            return client.call("DOM.getTopLayerElements", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Returns the NodeId of the matched element according to certain relations.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param relation protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetElementByRelationResult> getElementByRelation(GetElementByRelationParams params) {
-            return client.call("DOM.getElementByRelation", params, GetElementByRelationResult::fromMap);
+        public CompletionStage<DOM.NodeId> getElementByRelation(DOM.NodeId nodeId, GetElementByRelationRelationValues relation) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("relation", CdpObject.json(relation));
+            return client.call("DOM.getElementByRelation", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Re-does the last undone action.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RedoResult> redo() {
-            return client.call("DOM.redo", null, RedoResult::fromMap);
+        public CompletionStage<Void> redo() {
+            return client.call("DOM.redo", null, result_ -> null);
         }
         /**
          * Removes attribute with given name from an element with given id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param name protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RemoveAttributeResult> removeAttribute(RemoveAttributeParams params) {
-            return client.call("DOM.removeAttribute", params, RemoveAttributeResult::fromMap);
+        public CompletionStage<Void> removeAttribute(DOM.NodeId nodeId, String name) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("name", CdpObject.json(name));
+            return client.call("DOM.removeAttribute", params, result_ -> null);
         }
         /**
          * Removes node with given id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RemoveNodeResult> removeNode(RemoveNodeParams params) {
-            return client.call("DOM.removeNode", params, RemoveNodeResult::fromMap);
+        public CompletionStage<Void> removeNode(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.removeNode", params, result_ -> null);
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param depth protocol value
+         * @param pierce protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RequestChildNodesResult> requestChildNodes(RequestChildNodesParams params) {
-            return client.call("DOM.requestChildNodes", params, RequestChildNodesResult::fromMap);
+        public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId, OptionalLong depth, Optional<Boolean> pierce) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            depth.ifPresent(value_ -> params.put("depth", value_));
+            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            return client.call("DOM.requestChildNodes", params, result_ -> null);
+        }
+        /**
+         * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
+         * @param nodeId protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId) {
+            return requestChildNodes(nodeId, OptionalLong.empty(), Optional.empty());
         }
         /**
          * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
-         * @param params command parameters
+         * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestNodeResult> requestNode(RequestNodeParams params) {
-            return client.call("DOM.requestNode", params, RequestNodeResult::fromMap);
+        public CompletionStage<DOM.NodeId> requestNode(Runtime.RemoteObjectId objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("objectId", CdpObject.json(objectId));
+            return client.call("DOM.requestNode", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectGroup protocol value
+         * @param executionContextId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<ResolveNodeResult> resolveNode(ResolveNodeParams params) {
-            return client.call("DOM.resolveNode", params, ResolveNodeResult::fromMap);
+        public CompletionStage<Runtime.RemoteObject> resolveNode(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<String> objectGroup, Optional<Runtime.ExecutionContextId> executionContextId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectGroup.ifPresent(value_ -> params.put("objectGroup", CdpObject.json(value_)));
+            executionContextId.ifPresent(value_ -> params.put("executionContextId", CdpObject.json(value_)));
+            return client.call("DOM.resolveNode", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("object")))))));
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
          * @return a stage completing with the command result
          */
-        public CompletionStage<ResolveNodeResult> resolveNode() {
-            return resolveNode(ResolveNodeParams.builder().build());
+        public CompletionStage<Runtime.RemoteObject> resolveNode() {
+            return resolveNode(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Sets attribute for an element with given id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param name protocol value
+         * @param value protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetAttributeValueResult> setAttributeValue(SetAttributeValueParams params) {
-            return client.call("DOM.setAttributeValue", params, SetAttributeValueResult::fromMap);
+        public CompletionStage<Void> setAttributeValue(DOM.NodeId nodeId, String name, String value) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("name", CdpObject.json(name));
+            params.put("value", CdpObject.json(value));
+            return client.call("DOM.setAttributeValue", params, result_ -> null);
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param text protocol value
+         * @param name protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetAttributesAsTextResult> setAttributesAsText(SetAttributesAsTextParams params) {
-            return client.call("DOM.setAttributesAsText", params, SetAttributesAsTextResult::fromMap);
+        public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text, Optional<String> name) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("text", CdpObject.json(text));
+            name.ifPresent(value_ -> params.put("name", CdpObject.json(value_)));
+            return client.call("DOM.setAttributesAsText", params, result_ -> null);
+        }
+        /**
+         * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
+         * @param nodeId protocol value
+         * @param text protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text) {
+            return setAttributesAsText(nodeId, text, Optional.empty());
         }
         /**
          * Sets files for the given file input element.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param files protocol value
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetFileInputFilesResult> setFileInputFiles(SetFileInputFilesParams params) {
-            return client.call("DOM.setFileInputFiles", params, SetFileInputFilesResult::fromMap);
+        public CompletionStage<Void> setFileInputFiles(java.util.List<String> files, Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("files", CdpObject.json(files));
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            return client.call("DOM.setFileInputFiles", params, result_ -> null);
+        }
+        /**
+         * Sets files for the given file input element.
+         * @param files protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setFileInputFiles(java.util.List<String> files) {
+            return setFileInputFiles(files, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param enable protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetNodeStackTracesEnabledResult> setNodeStackTracesEnabled(SetNodeStackTracesEnabledParams params) {
-            return client.call("DOM.setNodeStackTracesEnabled", params, SetNodeStackTracesEnabledResult::fromMap);
+        public CompletionStage<Void> setNodeStackTracesEnabled(boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enable", CdpObject.json(enable));
+            return client.call("DOM.setNodeStackTracesEnabled", params, result_ -> null);
         }
         /**
          * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetNodeStackTracesResult> getNodeStackTraces(GetNodeStackTracesParams params) {
-            return client.call("DOM.getNodeStackTraces", params, GetNodeStackTracesResult::fromMap);
+        public CompletionStage<Optional<Runtime.StackTrace>> getNodeStackTraces(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getNodeStackTraces", params, result_ -> Optional.ofNullable(result_.get("creation") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(result_.get("creation"))))));
         }
         /**
          * Returns file information for the given File wrapper.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetFileInfoResult> getFileInfo(GetFileInfoParams params) {
-            return client.call("DOM.getFileInfo", params, GetFileInfoResult::fromMap);
+        public CompletionStage<String> getFileInfo(Runtime.RemoteObjectId objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("objectId", CdpObject.json(objectId));
+            return client.call("DOM.getFileInfo", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("path")));
         }
         /**
          * Returns list of detached nodes
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDetachedDomNodesResult> getDetachedDomNodes() {
-            return client.call("DOM.getDetachedDomNodes", null, GetDetachedDomNodesResult::fromMap);
+        public CompletionStage<java.util.List<DOM.DetachedElementInfo>> getDetachedDomNodes() {
+            return client.call("DOM.getDetachedDomNodes", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("detachedNodes")), element0 -> java.util.Objects.requireNonNull(DOM.DetachedElementInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetInspectedNodeResult> setInspectedNode(SetInspectedNodeParams params) {
-            return client.call("DOM.setInspectedNode", params, SetInspectedNodeResult::fromMap);
+        public CompletionStage<Void> setInspectedNode(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.setInspectedNode", params, result_ -> null);
         }
         /**
          * Sets node name for a node with given id.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param name protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<SetNodeNameResult> setNodeName(SetNodeNameParams params) {
-            return client.call("DOM.setNodeName", params, SetNodeNameResult::fromMap);
+        public CompletionStage<DOM.NodeId> setNodeName(DOM.NodeId nodeId, String name) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("name", CdpObject.json(name));
+            return client.call("DOM.setNodeName", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Sets node value for a node with given id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param value protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetNodeValueResult> setNodeValue(SetNodeValueParams params) {
-            return client.call("DOM.setNodeValue", params, SetNodeValueResult::fromMap);
+        public CompletionStage<Void> setNodeValue(DOM.NodeId nodeId, String value) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("value", CdpObject.json(value));
+            return client.call("DOM.setNodeValue", params, result_ -> null);
         }
         /**
          * Sets node HTML markup, returns new node id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param nodeId protocol value
+         * @param outerHTML protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetOuterHTMLResult> setOuterHTML(SetOuterHTMLParams params) {
-            return client.call("DOM.setOuterHTML", params, SetOuterHTMLResult::fromMap);
+        public CompletionStage<Void> setOuterHTML(DOM.NodeId nodeId, String outerHTML) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("outerHTML", CdpObject.json(outerHTML));
+            return client.call("DOM.setOuterHTML", params, result_ -> null);
         }
         /**
          * Undoes the last performed action.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UndoResult> undo() {
-            return client.call("DOM.undo", null, UndoResult::fromMap);
+        public CompletionStage<Void> undo() {
+            return client.call("DOM.undo", null, result_ -> null);
         }
         /**
          * Returns iframe node that owns iframe with the given domain.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param frameId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetFrameOwnerResult> getFrameOwner(GetFrameOwnerParams params) {
-            return client.call("DOM.getFrameOwner", params, GetFrameOwnerResult::fromMap);
+        public CompletionStage<GetFrameOwnerResult> getFrameOwner(Page.FrameId frameId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            return client.call("DOM.getFrameOwner", params, result_ -> new GetFrameOwnerResult(result_));
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param containerName protocol value
+         * @param physicalAxes protocol value
+         * @param logicalAxes protocol value
+         * @param queriesScrollState protocol value
+         * @param queriesAnchored protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetContainerForNodeResult> getContainerForNode(GetContainerForNodeParams params) {
-            return client.call("DOM.getContainerForNode", params, GetContainerForNodeResult::fromMap);
+        public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId, Optional<String> containerName, Optional<DOM.PhysicalAxes> physicalAxes, Optional<DOM.LogicalAxes> logicalAxes, Optional<Boolean> queriesScrollState, Optional<Boolean> queriesAnchored) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            containerName.ifPresent(value_ -> params.put("containerName", CdpObject.json(value_)));
+            physicalAxes.ifPresent(value_ -> params.put("physicalAxes", CdpObject.json(value_)));
+            logicalAxes.ifPresent(value_ -> params.put("logicalAxes", CdpObject.json(value_)));
+            queriesScrollState.ifPresent(value_ -> params.put("queriesScrollState", value_));
+            queriesAnchored.ifPresent(value_ -> params.put("queriesAnchored", value_));
+            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId") == null ? null : new DOM.NodeId(((Number) result_.get("nodeId")).longValue())));
+        }
+        /**
+         * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId) {
+            return getContainerForNode(nodeId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns the descendants of a container query container that have container queries against this container.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetQueryingDescendantsForContainerResult> getQueryingDescendantsForContainer(GetQueryingDescendantsForContainerParams params) {
-            return client.call("DOM.getQueryingDescendantsForContainer", params, GetQueryingDescendantsForContainerResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> getQueryingDescendantsForContainer(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getQueryingDescendantsForContainer", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param anchorSpecifier protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetAnchorElementResult> getAnchorElement(GetAnchorElementParams params) {
-            return client.call("DOM.getAnchorElement", params, GetAnchorElementResult::fromMap);
+        public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId, Optional<String> anchorSpecifier) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            anchorSpecifier.ifPresent(value_ -> params.put("anchorSpecifier", CdpObject.json(value_)));
+            return client.call("DOM.getAnchorElement", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+        }
+        /**
+         * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param nodeId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId) {
+            return getAnchorElement(nodeId, Optional.empty());
         }
         /**
          * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param enable protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<ForceShowPopoverResult> forceShowPopover(ForceShowPopoverParams params) {
-            return client.call("DOM.forceShowPopover", params, ForceShowPopoverResult::fromMap);
+        public CompletionStage<java.util.List<DOM.NodeId>> forceShowPopover(DOM.NodeId nodeId, boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("enable", CdpObject.json(enable));
+            return client.call("DOM.forceShowPopover", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Fired when {@code Element}&#x27;s attribute is modified.

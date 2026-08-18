@@ -10,10 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -53,12 +55,19 @@ public final class CefRuntimePackager {
         if (!request.cefVersion.equals(properties.getProperty("cef.version"))) return false;
         if (!request.platform.cefName().equals(properties.getProperty("cef.platform"))) return false;
         if (!request.archiveSha256.equalsIgnoreCase(properties.getProperty("archive.sha256", ""))) return false;
+        // A verified archive must never be satisfied by a cached tree built from an unverified (offline) archive.
+        if (request.upstreamVerified
+                && !"true".equalsIgnoreCase(properties.getProperty("archive.upstream-verified", "false"))) {
+            return false;
+        }
         if (!String.join(",", normalizeLocales(request.locales)).equals(properties.getProperty("locales", ""))) {
             return false;
         }
         if (!Boolean.toString(!request.withoutSwiftShader).equals(properties.getProperty("swiftshader"))) return false;
         for (String relative : Files.readAllLines(fileList, StandardCharsets.UTF_8)) {
-            if (relative.isBlank() || !Files.isRegularFile(runtimeRoot.resolve(relative))) return false;
+            if (relative.isBlank()) return false;
+            Path file = runtimeRoot.resolve(relative);
+            if (!Files.isRegularFile(file) || Files.size(file) == 0) return false;
         }
         return true;
     }
@@ -68,7 +77,9 @@ public final class CefRuntimePackager {
         Objects.requireNonNull(request, "request");
         Path output = request.output.toAbsolutePath().normalize();
         Files.createDirectories(output);
-        Path runtimeRoot = output.resolve("cef-runtime").resolve(request.platform.cefName()).normalize();
+        Path runtimeRoot = output.resolve("cef-runtime")
+                .resolve(request.platform.cefName())
+                .normalize();
         requireContained(output, runtimeRoot);
         Path temporary = Files.createTempDirectory(output, ".cef4j-runtime-");
         Path stagedRoot = temporary.resolve(request.platform.cefName());
@@ -105,7 +116,13 @@ public final class CefRuntimePackager {
             Set<String> matchedLocales,
             Set<String> requestedLocales)
             throws IOException {
-        try (InputStream fileInput = Files.newInputStream(request.archive);
+        MessageDigest sha256;
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException("SHA-256 is not available", impossible);
+        }
+        try (InputStream fileInput = new DigestInputStream(Files.newInputStream(request.archive), sha256);
                 BZip2CompressorInputStream bzipInput = new BZip2CompressorInputStream(fileInput, true);
                 TarArchiveInputStream tarInput = new TarArchiveInputStream(bzipInput)) {
             TarArchiveEntry entry;
@@ -131,7 +148,22 @@ public final class CefRuntimePackager {
                 Files.copy(tarInput, target, StandardCopyOption.REPLACE_EXISTING);
                 files.add(relative.replace('\\', '/'));
             }
+            // The bzip decompressor may not consume the archive to EOF; drain so the digest covers every byte.
+            byte[] drain = new byte[8192];
+            while (fileInput.read(drain) >= 0) {}
         }
+        // Re-verify the bytes actually extracted, closing the digest-then-reopen window on the archive.
+        String actual = hex(sha256.digest());
+        if (!request.archiveSha256.equalsIgnoreCase(actual)) {
+            throw new IOException(
+                    "archive changed during extraction: sha256 " + actual + " != expected " + request.archiveSha256);
+        }
+    }
+
+    private static String hex(byte[] bytes) {
+        StringBuilder result = new StringBuilder(bytes.length * 2);
+        for (byte value : bytes) result.append(String.format("%02x", value & 0xff));
+        return result.toString();
     }
 
     private static String safeArchivePath(String raw) throws IOException {
@@ -151,9 +183,7 @@ public final class CefRuntimePackager {
         if (relative.equals("LICENSE.txt")) return "CEF-LICENSE.txt";
         if (relative.equals("CREDITS.html")) return "CEF-CREDITS.html";
         if (platform.isMacOS()) {
-            return relative.startsWith("Release/" + MAC_FRAMEWORK)
-                    ? relative.substring("Release/".length())
-                    : null;
+            return relative.startsWith("Release/" + MAC_FRAMEWORK) ? relative.substring("Release/".length()) : null;
         }
         if (relative.startsWith("Release/")) return relative.substring("Release/".length());
         if (relative.startsWith("Resources/")) return relative.substring("Resources/".length());
@@ -235,7 +265,8 @@ public final class CefRuntimePackager {
             Path resources = root.resolve(MAC_FRAMEWORK + "Resources");
             boolean snapshot;
             try (var entries = Files.list(resources)) {
-                snapshot = entries.anyMatch(path -> path.getFileName().toString().startsWith("v8_context_snapshot"));
+                snapshot =
+                        entries.anyMatch(path -> path.getFileName().toString().startsWith("v8_context_snapshot"));
             }
             if (!snapshot) missing.add(MAC_FRAMEWORK + "Resources/v8_context_snapshot.*.bin");
         }

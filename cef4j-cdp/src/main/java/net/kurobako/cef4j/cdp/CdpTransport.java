@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 
 /** Raw, transport-independent CDP command and event channel. */
 public interface CdpTransport extends AutoCloseable {
+    // null params omit the JSON-RPC request body
+    @SuppressWarnings("NullableForbidden")
     @Nonnull
     CompletionStage<byte[]> execute(@Nonnull String method, @Nullable byte[] params);
 

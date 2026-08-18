@@ -3,6 +3,7 @@ package net.kurobako.cef4j.osr.swing.test;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.test.backend.BrowserBackend;
 import net.kurobako.cef4j.test.backend.BrowserSession;
 
@@ -73,10 +75,12 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
     @Nonnull
     public BrowserSession openSession(@Nonnull SessionConfig config) {
         try {
+            Path tmp = Files.createTempDirectory("cef4j-native-swing-contract");
+            TestTempDirs.cleanupAtExit(tmp);
             CefSettings.Mutable settings = new CefSettings.Mutable();
-            settings.cachePath =
-                    Files.createTempDirectory("cef4j-native-swing-contract").toString();
-            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), null);
+            settings.cachePath = tmp.toAbsolutePath().toString();
+            settings.rootCachePath = tmp.toAbsolutePath().toString();
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
             return new Session(config);
         } catch (Exception e) {
             throw new RuntimeException("failed to open native Swing contract session", e);

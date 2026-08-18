@@ -9,17 +9,92 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/** Immutable, codec-independent CDP value object. */
+/** Mutable, codec-independent CDP value object. Setters store wire-form values. */
 public abstract class CdpObject {
-    private final Map<String, Object> values;
+    protected final Map<String, Object> values = new LinkedHashMap<>();
+
+    protected CdpObject() {}
 
     protected CdpObject(Map<String, Object> values) {
-        this.values = immutableMap(values);
+        this.values.putAll(values);
     }
 
     @Nonnull
     public final Map<String, Object> toMap() {
         return values;
+    }
+
+    // null removes the field, the wire form treats omission as absent
+    @SuppressWarnings("NullableForbidden")
+    protected final void set(String name, @Nullable Object value) {
+        if (value == null) values.remove(name);
+        else values.put(name, json(value));
+    }
+
+    // decoded JSON null and absent fields share the Java null representation
+    @SuppressWarnings("NullableForbidden")
+    @Nullable
+    protected final Object raw(String name) {
+        return values.get(name);
+    }
+
+    @Nonnull
+    protected final Object require(String name) {
+        Object value = values.get(name);
+        if (value == null) throw new IllegalStateException("Missing required protocol field: " + name);
+        return value;
+    }
+
+    // passes through JSON-null nodes as null
+    @SuppressWarnings({"unchecked", "NullableForbidden"})
+    @Nullable
+    public static Map<String, Object> objectMap(@Nullable Object value) {
+        return value == null ? null : (Map<String, Object>) value;
+    }
+
+    // passes through JSON-null nodes as null
+    @SuppressWarnings("NullableForbidden")
+    @Nullable
+    public static <T> List<T> list(@Nullable Object value, Function<Object, T> mapper) {
+        if (value == null) return null;
+        List<?> source = (List<?>) value;
+        List<T> result = new ArrayList<>(source.size());
+        for (Object element : source) result.add(mapper.apply(element));
+        return Collections.unmodifiableList(result);
+    }
+
+    @Nonnull
+    public static <T> List<T> requireList(@Nonnull Object value, Function<Object, T> mapper) {
+        List<?> source = (List<?>) value;
+        List<T> result = new ArrayList<>(source.size());
+        for (Object element : source) result.add(mapper.apply(element));
+        return Collections.unmodifiableList(result);
+    }
+
+    @Nonnull
+    public static Object json(@Nonnull Object value) {
+        if (value instanceof CdpObject) return ((CdpObject) value).toMap();
+        if (value instanceof CdpValue<?>) return ((CdpValue<?>) value).value();
+        if (value instanceof List<?>) {
+            List<Object> result = new ArrayList<>(((List<?>) value).size());
+            for (Object element : (List<?>) value) result.add(json(element));
+            return result;
+        }
+        return value;
+    }
+
+    // passes through JSON-null nodes as null
+    @SuppressWarnings("NullableForbidden")
+    @Nullable
+    public static Long numberAsLong(@Nullable Object value) {
+        return value == null ? null : ((Number) value).longValue();
+    }
+
+    // passes through JSON-null nodes as null
+    @SuppressWarnings("NullableForbidden")
+    @Nullable
+    public static Double numberAsDouble(@Nullable Object value) {
+        return value == null ? null : ((Number) value).doubleValue();
     }
 
     @Override
@@ -37,80 +112,5 @@ public abstract class CdpObject {
     @Override
     public final String toString() {
         return getClass().getSimpleName() + values;
-    }
-
-    @Nullable
-    protected final Object value(String name) {
-        return values.get(name);
-    }
-
-    @Nullable
-    protected final String string(String name) {
-        return (String) value(name);
-    }
-
-    @Nullable
-    protected final Boolean bool(String name) {
-        return (Boolean) value(name);
-    }
-
-    @Nullable
-    protected final Long integer(String name) {
-        Number number = (Number) value(name);
-        return number == null ? null : number.longValue();
-    }
-
-    @Nullable
-    protected final Double number(String name) {
-        Number number = (Number) value(name);
-        return number == null ? null : number.doubleValue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    protected static Map<String, Object> objectMap(@Nullable Object value) {
-        return value == null ? null : (Map<String, Object>) value;
-    }
-
-    @Nullable
-    protected static <T> List<T> list(@Nullable Object value, Function<Object, T> mapper) {
-        if (value == null) return null;
-        List<?> source = (List<?>) value;
-        List<T> result = new ArrayList<>(source.size());
-        for (Object element : source) result.add(mapper.apply(element));
-        return Collections.unmodifiableList(result);
-    }
-
-    @Nullable
-    protected static Object jsonValue(@Nullable Object value) {
-        if (value instanceof CdpObject) return ((CdpObject) value).toMap();
-        if (value instanceof List<?>) {
-            List<Object> result = new ArrayList<>(((List<?>) value).size());
-            for (Object element : (List<?>) value) result.add(jsonValue(element));
-            return result;
-        }
-        return value;
-    }
-
-    private static Map<String, Object> immutableMap(Map<String, Object> source) {
-        Map<String, Object> copy = new LinkedHashMap<>();
-        for (Map.Entry<String, Object> entry : source.entrySet()) {
-            copy.put(entry.getKey(), immutableValue(entry.getValue()));
-        }
-        return Collections.unmodifiableMap(copy);
-    }
-
-    private static Object immutableValue(Object value) {
-        if (value instanceof Map<?, ?>) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) value;
-            return immutableMap(map);
-        }
-        if (value instanceof List<?>) {
-            List<Object> copy = new ArrayList<>(((List<?>) value).size());
-            for (Object element : (List<?>) value) copy.add(immutableValue(element));
-            return Collections.unmodifiableList(copy);
-        }
-        return value;
     }
 }

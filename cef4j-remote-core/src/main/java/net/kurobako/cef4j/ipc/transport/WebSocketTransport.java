@@ -6,7 +6,11 @@ import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -19,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public final class WebSocketTransport implements CefTransport, WebSocket.Listener {
     private static final Logger LOG = LoggerFactory.getLogger(WebSocketTransport.class);
     private static final int MAX_FRAME_SIZE = 64 * 1024 * 1024;
+    private static final long IO_TIMEOUT_MS = 30_000;
 
     private final String endpoint;
     private final Object sendLock = new Object();
@@ -42,13 +47,13 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
 
     @Nonnull
     public static WebSocketTransport connect(@Nonnull String endpoint) throws CefTransportException {
-        return connect(endpoint, null, null);
+        return connect(endpoint, Optional.empty(), Optional.empty());
     }
 
     /** Connects with optional bearer authentication and an explicit TLS context for {@code wss://}. */
     @Nonnull
     public static WebSocketTransport connect(
-            @Nonnull String endpoint, @Nullable String bearerToken, @Nullable SSLContext sslContext)
+            @Nonnull String endpoint, Optional<String> bearerToken, Optional<SSLContext> sslContext)
             throws CefTransportException {
         URI uri;
         try {
@@ -61,14 +66,16 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         }
         WebSocketTransport transport = new WebSocketTransport(endpoint);
         try {
-            if (bearerToken != null
-                    && (bearerToken.isEmpty() || bearerToken.contains("\r") || bearerToken.contains("\n"))) {
+            if (bearerToken.isPresent()
+                    && (bearerToken.get().isEmpty()
+                            || bearerToken.get().contains("\r")
+                            || bearerToken.get().contains("\n"))) {
                 throw new CefTransportException("invalid WebSocket bearer token");
             }
             HttpClient.Builder clientBuilder = HttpClient.newBuilder();
-            if (sslContext != null) clientBuilder.sslContext(sslContext);
+            sslContext.ifPresent(clientBuilder::sslContext);
             WebSocket.Builder socketBuilder = clientBuilder.build().newWebSocketBuilder();
-            if (bearerToken != null) socketBuilder.header("Authorization", "Bearer " + bearerToken);
+            bearerToken.ifPresent(token -> socketBuilder.header("Authorization", "Bearer " + token));
             transport.socket = socketBuilder.buildAsync(uri, transport).join();
             return transport;
         } catch (RuntimeException e) {
@@ -97,9 +104,14 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
             WebSocket current = socket;
             if (current == null) throw new CefTransportException(endpoint + ": transport is not connected");
             try {
-                current.sendBinary(ByteBuffer.wrap(copy), true).join();
-            } catch (RuntimeException e) {
+                current.sendBinary(ByteBuffer.wrap(copy), true).get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 markDisconnected();
+                throw new CefTransportException(endpoint + ": send interrupted", e);
+            } catch (ExecutionException | TimeoutException e) {
+                markDisconnected();
+                current.abort();
                 throw new CefTransportException(endpoint + ": send failed", e);
             }
         }
@@ -137,8 +149,11 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         WebSocket current = socket;
         if (current == null) return;
         try {
-            current.sendClose(WebSocket.NORMAL_CLOSURE, "").join();
-        } catch (RuntimeException e) {
+            current.sendClose(WebSocket.NORMAL_CLOSURE, "").get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            current.abort();
+        } catch (ExecutionException | TimeoutException e) {
             LOG.debug("close on {} failed", endpoint, e);
             current.abort();
         }

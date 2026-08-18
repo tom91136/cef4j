@@ -21,6 +21,7 @@ object JavaHandlerEmitter {
        | * <p>Use {@link #register(CefSession, $cls)} to bind every method to its corresponding wire event in
        | * one step. Subscriptions stay live until the session closes.
        | */
+       |@SuppressWarnings("NullableForbidden")
        |public interface $cls {
        |
        |$methods

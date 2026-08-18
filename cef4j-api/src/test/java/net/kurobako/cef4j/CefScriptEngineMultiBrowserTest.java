@@ -116,10 +116,10 @@ class CefScriptEngineMultiBrowserTest extends CefTestBase {
         int handleB = pumpAndGet(engineB.evaluateHandle("({x: 'b'})"), 5_000);
 
         CefScriptEngine.Result rA = pumpAndGet(engineA.getProperty(handleA, "x", false), 5_000);
-        assertThat(rA.json()).isEqualTo("\"a\"");
+        assertThat(rA.json()).hasValue("\"a\"");
 
         CefScriptEngine.Result rB = pumpAndGet(engineB.getProperty(handleB, "x", false), 5_000);
-        assertThat(rB.json()).isEqualTo("\"b\"");
+        assertThat(rB.json()).hasValue("\"b\"");
 
         engineA.release(handleA);
         engineB.release(handleB);

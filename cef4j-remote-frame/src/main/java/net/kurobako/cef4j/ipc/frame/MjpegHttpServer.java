@@ -12,44 +12,53 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Chrome-compatible multipart MJPEG endpoint fed by any raw-frame transport. */
+@SuppressWarnings("FutureReturnValueIgnored")
 public final class MjpegHttpServer implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MjpegHttpServer.class);
     private static final String BOUNDARY = "cef4j-frame";
     private static final byte[] END = ("--" + BOUNDARY + "--\r\n").getBytes(StandardCharsets.US_ASCII);
+    private static final long CLIENT_STALL_TIMEOUT_NANOS = TimeUnit.SECONDS.toNanos(30);
+    private static final long WATCHDOG_INTERVAL_SECONDS = 5;
 
     private final HttpServer server;
     private final String path;
 
-    @Nullable
-    private final String bearerToken;
+    private final Optional<String> bearerToken;
 
     private final Set<Client> clients = ConcurrentHashMap.newKeySet();
     private final AtomicReference<FrameTransport> source = new AtomicReference<>();
     private final AtomicReference<byte[]> latestPart = new AtomicReference<>();
     private final EncodedFramePipeline pipeline;
     private final ExecutorService httpExecutor;
+    private final ScheduledExecutorService watchdog;
 
     private MjpegHttpServer(Configuration configuration) throws IOException {
         this.path = normalizePath(configuration.path);
         this.bearerToken = configuration.bearerToken;
         validateExposure(configuration);
-        if (configuration.sslContext == null) {
+        if (configuration.sslContext.isEmpty()) {
             server = HttpServer.create(configuration.bindAddress, configuration.backlog);
         } else {
             HttpsServer https = HttpsServer.create(configuration.bindAddress, configuration.backlog);
-            https.setHttpsConfigurator(new HttpsConfigurator(configuration.sslContext));
+            https.setHttpsConfigurator(new HttpsConfigurator(configuration.sslContext.get()));
             server = https;
         }
         httpExecutor = Executors.newCachedThreadPool(r -> {
@@ -57,6 +66,13 @@ public final class MjpegHttpServer implements AutoCloseable {
             thread.setDaemon(true);
             return thread;
         });
+        watchdog = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread thread = new Thread(r, "cef4j-mjpeg-watchdog");
+            thread.setDaemon(true);
+            return thread;
+        });
+        watchdog.scheduleWithFixedDelay(
+                this::evictStalledClients, WATCHDOG_INTERVAL_SECONDS, WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
         server.setExecutor(httpExecutor);
         server.createContext(path, this::serve);
         FrameCodec codec =
@@ -118,7 +134,22 @@ public final class MjpegHttpServer implements AutoCloseable {
     }
 
     private boolean authorized(Headers headers) {
-        return bearerToken == null || ("Bearer " + bearerToken).equals(headers.getFirst("Authorization"));
+        if (bearerToken.isEmpty()) return true;
+        String expected = "Bearer " + bearerToken.get();
+        String provided = headers.getFirst("Authorization");
+        if (provided == null) return false;
+        // Constant-time comparison so the token is not recoverable from request timing.
+        return MessageDigest.isEqual(
+                expected.getBytes(StandardCharsets.UTF_8), provided.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void evictStalledClients() {
+        long now = System.nanoTime();
+        for (Client client : clients) {
+            if (!client.isStalled(now)) continue;
+            LOG.debug("closing MJPEG client that has stopped making write progress");
+            client.close();
+        }
     }
 
     private void publish(EncodedFrame frame) {
@@ -145,6 +176,7 @@ public final class MjpegHttpServer implements AutoCloseable {
         for (Client client : clients) client.close();
         clients.clear();
         server.stop(0);
+        watchdog.shutdownNow();
         httpExecutor.shutdownNow();
     }
 
@@ -162,7 +194,7 @@ public final class MjpegHttpServer implements AutoCloseable {
         if (!loopback && !configuration.allowRemote) {
             throw new IllegalArgumentException("non-loopback MJPEG bind requires allowRemote=true");
         }
-        if (!loopback && (configuration.sslContext == null || configuration.bearerToken == null)) {
+        if (!loopback && (configuration.sslContext.isEmpty() || configuration.bearerToken.isEmpty())) {
             throw new IllegalArgumentException("remote MJPEG requires both TLS and bearer authentication");
         }
     }
@@ -171,6 +203,7 @@ public final class MjpegHttpServer implements AutoCloseable {
         private final OutputStream output;
         private final ArrayBlockingQueue<byte[]> latest = new ArrayBlockingQueue<>(1);
         private volatile boolean closed;
+        private volatile long lastWriteNanos = System.nanoTime();
 
         private Client(OutputStream output) {
             this.output = output;
@@ -182,16 +215,23 @@ public final class MjpegHttpServer implements AutoCloseable {
             if (!latest.offer(frame)) throw new IllegalStateException("failed to replace queued MJPEG frame");
         }
 
+        boolean isStalled(long now) {
+            return !closed && now - lastWriteNanos > CLIENT_STALL_TIMEOUT_NANOS;
+        }
+
         void run() throws IOException {
-            while (!closed) {
+            while (true) {
+                byte[] frame;
                 try {
-                    byte[] frame = latest.take();
-                    output.write(frame);
-                    output.flush();
+                    frame = latest.take();
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
                     return;
                 }
+                output.write(frame);
+                output.flush();
+                lastWriteNanos = System.nanoTime();
+                if (frame == END) return;
             }
         }
 
@@ -215,11 +255,9 @@ public final class MjpegHttpServer implements AutoCloseable {
         private final float quality;
         private final boolean allowRemote;
 
-        @Nullable
-        private final SSLContext sslContext;
+        private final Optional<SSLContext> sslContext;
 
-        @Nullable
-        private final String bearerToken;
+        private final Optional<String> bearerToken;
 
         public Configuration(
                 @Nonnull InetSocketAddress bindAddress,
@@ -227,13 +265,13 @@ public final class MjpegHttpServer implements AutoCloseable {
                 int backlog,
                 float quality,
                 boolean allowRemote,
-                @Nullable SSLContext sslContext,
-                @Nullable String bearerToken) {
+                Optional<SSLContext> sslContext,
+                Optional<String> bearerToken) {
             this.bindAddress = Objects.requireNonNull(bindAddress, "bindAddress");
             this.path = Objects.requireNonNull(path, "path");
             if (backlog < 0) throw new IllegalArgumentException("backlog must not be negative");
             if (!(quality > 0.0f && quality <= 1.0f)) throw new IllegalArgumentException("quality must be in (0, 1]");
-            if (bearerToken != null && bearerToken.isEmpty())
+            if (bearerToken.isPresent() && bearerToken.get().isEmpty())
                 throw new IllegalArgumentException("bearerToken is empty");
             this.backlog = backlog;
             this.quality = quality;
@@ -250,8 +288,8 @@ public final class MjpegHttpServer implements AutoCloseable {
                     16,
                     0.80f,
                     false,
-                    null,
-                    null);
+                    Optional.empty(),
+                    Optional.empty());
         }
     }
 }

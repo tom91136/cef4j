@@ -20,15 +20,16 @@ class CefArchiveResolverTest {
         Path archive = TestArchives.create(temporary.resolve("input.tar.bz2"), CefPlatform.LINUX_X86_64);
         String sha256 = Digests.digest(archive, "SHA-256");
 
-        CefArchiveResolver.ResolvedArchive resolved = new CefArchiveResolver().resolve(
-                VERSION,
-                CefPlatform.LINUX_X86_64,
-                temporary.resolve("cache"),
-                archive,
-                sha256,
-                true,
-                URI.create("https://invalid.example/"),
-                URI.create("https://invalid.example/index.json"));
+        CefArchiveResolver.ResolvedArchive resolved = new CefArchiveResolver()
+                .resolve(
+                        VERSION,
+                        CefPlatform.LINUX_X86_64,
+                        temporary.resolve("cache"),
+                        archive,
+                        sha256,
+                        true,
+                        URI.create("https://invalid.example/"),
+                        URI.create("https://invalid.example/index.json"));
 
         assertThat(resolved.path).isEqualTo(archive);
         assertThat(resolved.sha256).isEqualTo(sha256);
@@ -39,15 +40,16 @@ class CefArchiveResolverTest {
     void rejectsAnExplicitArchiveWithTheWrongSha256() throws Exception {
         Path archive = TestArchives.create(temporary.resolve("input.tar.bz2"), CefPlatform.LINUX_X86_64);
 
-        assertThatThrownBy(() -> new CefArchiveResolver().resolve(
-                        VERSION,
-                        CefPlatform.LINUX_X86_64,
-                        temporary.resolve("cache"),
-                        archive,
-                        "0".repeat(64),
-                        true,
-                        URI.create("https://invalid.example/"),
-                        URI.create("https://invalid.example/index.json")))
+        assertThatThrownBy(() -> new CefArchiveResolver()
+                        .resolve(
+                                VERSION,
+                                CefPlatform.LINUX_X86_64,
+                                temporary.resolve("cache"),
+                                archive,
+                                "0".repeat(64),
+                                true,
+                                URI.create("https://invalid.example/"),
+                                URI.create("https://invalid.example/index.json")))
                 .isInstanceOf(java.io.IOException.class)
                 .hasMessageContaining("SHA-256 mismatch");
     }
@@ -60,15 +62,16 @@ class CefArchiveResolverTest {
         Path archive = TestArchives.create(cache.resolve(platform.archiveName(VERSION)), platform);
         Files.writeString(cache.resolve(platform.archiveName(VERSION) + ".sha1"), Digests.digest(archive, "SHA-1"));
 
-        CefArchiveResolver.ResolvedArchive resolved = new CefArchiveResolver().resolve(
-                VERSION,
-                platform,
-                cache,
-                null,
-                null,
-                true,
-                URI.create("https://invalid.example/"),
-                URI.create("https://invalid.example/index.json"));
+        CefArchiveResolver.ResolvedArchive resolved = new CefArchiveResolver()
+                .resolve(
+                        VERSION,
+                        platform,
+                        cache,
+                        null,
+                        null,
+                        true,
+                        URI.create("https://invalid.example/"),
+                        URI.create("https://invalid.example/index.json"));
 
         assertThat(resolved.upstreamVerified).isTrue();
     }

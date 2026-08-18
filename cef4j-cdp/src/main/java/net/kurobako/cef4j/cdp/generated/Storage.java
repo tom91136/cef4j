@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol Storage domain.
@@ -17,80 +21,91 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Storage.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Storage {
     private Storage() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Tagged String wire value for SerializedStorageKey.
+     */
+    public static final class SerializedStorageKey implements CdpValue<String> {
+        public final String value;
+        public SerializedStorageKey(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof SerializedStorageKey)) return false;
+            return value.equals(((SerializedStorageKey) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "SerializedStorageKey(" + value + ")"; }
+    }
     /**
      * Enum of possible storage types.
      */
-    public static final class StorageType {
-        private StorageType() {}
-        public static final String COOKIES = "cookies";
-        public static final String FILE_SYSTEMS = "file_systems";
-        public static final String INDEXEDDB = "indexeddb";
-        public static final String LOCAL_STORAGE = "local_storage";
-        public static final String SHADER_CACHE = "shader_cache";
-        public static final String WEBSQL = "websql";
-        public static final String SERVICE_WORKERS = "service_workers";
-        public static final String CACHE_STORAGE = "cache_storage";
-        public static final String INTEREST_GROUPS = "interest_groups";
-        public static final String SHARED_STORAGE = "shared_storage";
-        public static final String STORAGE_BUCKETS = "storage_buckets";
-        public static final String ALL = "all";
-        public static final String OTHER = "other";
+    public enum StorageType implements CdpValue<String> {
+        COOKIES("cookies"),
+        FILE_SYSTEMS("file_systems"),
+        INDEXEDDB("indexeddb"),
+        LOCAL_STORAGE("local_storage"),
+        SHADER_CACHE("shader_cache"),
+        WEBSQL("websql"),
+        SERVICE_WORKERS("service_workers"),
+        CACHE_STORAGE("cache_storage"),
+        INTEREST_GROUPS("interest_groups"),
+        SHARED_STORAGE("shared_storage"),
+        STORAGE_BUCKETS("storage_buckets"),
+        ALL("all"),
+        OTHER("other");
+        public final String value;
+        StorageType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static StorageType of(@Nonnull String value) {
+            for (StorageType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown StorageType value: " + value);
+        }
     }
     /**
      * Usage for a storage type.
      */
     public static final class UsageForType extends CdpObject {
+        public UsageForType() {}
         private UsageForType(Map<String, Object> values) { super(values); }
-        @Nullable public static UsageForType fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UsageForType(values);
+        public static UsageForType fromMap(Map<String, Object> values) {
+            return new UsageForType(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Name of storage type.
          * @return the protocol field value
          */
-        @Nullable public String storageType() {
-            return (String) value("storageType");
+        public Storage.StorageType storageType() {
+            return Storage.StorageType.of((String) require("storageType"));
         }
         /**
          * Storage usage (bytes).
          * @return the protocol field value
          */
-        @Nullable public Double usage() {
-            return numberAsDouble(value("usage"));
+        public double usage() {
+            return ((Number) require("usage")).doubleValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Name of storage type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageType(@Nullable String value) {
-                if (value == null) values.remove("storageType");
-                else values.put("storageType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage usage (bytes).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder usage(@Nullable Double value) {
-                if (value == null) values.remove("usage");
-                else values.put("usage", jsonValue(value));
-                return this;
-            }
-            public UsageForType build() {
-                if (!values.containsKey("storageType")) throw new IllegalStateException("Missing required CDP field: storageType");
-                if (!values.containsKey("usage")) throw new IllegalStateException("Missing required CDP field: usage");
-                return new UsageForType(values);
-            }
+        /**
+         * Name of storage type.
+         * @param storageType field value
+         * @return this model
+         */
+        public UsageForType storageType(Storage.StorageType storageType) {
+            set("storageType", storageType);
+            return this;
+        }
+        /**
+         * Storage usage (bytes).
+         * @param usage field value
+         * @return this model
+         */
+        public UsageForType usage(double usage) {
+            set("usage", usage);
+            return this;
         }
     }
     /**
@@ -98,934 +113,1074 @@ public final class Storage {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class TrustTokens extends CdpObject {
+        public TrustTokens() {}
         private TrustTokens(Map<String, Object> values) { super(values); }
-        @Nullable public static TrustTokens fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrustTokens(values);
+        public static TrustTokens fromMap(Map<String, Object> values) {
+            return new TrustTokens(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the issuerOrigin field.
          * @return the protocol field value
          */
-        @Nullable public String issuerOrigin() {
-            return (String) value("issuerOrigin");
+        public String issuerOrigin() {
+            return (String) require("issuerOrigin");
         }
         /**
          * Returns the count field.
          * @return the protocol field value
          */
-        @Nullable public Double count() {
-            return numberAsDouble(value("count"));
+        public double count() {
+            return ((Number) require("count")).doubleValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the issuerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder issuerOrigin(@Nullable String value) {
-                if (value == null) values.remove("issuerOrigin");
-                else values.put("issuerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the count field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder count(@Nullable Double value) {
-                if (value == null) values.remove("count");
-                else values.put("count", jsonValue(value));
-                return this;
-            }
-            public TrustTokens build() {
-                if (!values.containsKey("issuerOrigin")) throw new IllegalStateException("Missing required CDP field: issuerOrigin");
-                if (!values.containsKey("count")) throw new IllegalStateException("Missing required CDP field: count");
-                return new TrustTokens(values);
-            }
+        /**
+         * Sets the issuerOrigin field.
+         * @param issuerOrigin field value
+         * @return this model
+         */
+        public TrustTokens issuerOrigin(String issuerOrigin) {
+            set("issuerOrigin", issuerOrigin);
+            return this;
         }
+        /**
+         * Sets the count field.
+         * @param count field value
+         * @return this model
+         */
+        public TrustTokens count(double count) {
+            set("count", count);
+            return this;
+        }
+    }
+    /**
+     * Protected audience interest group auction identifier.
+     */
+    public static final class InterestGroupAuctionId implements CdpValue<String> {
+        public final String value;
+        public InterestGroupAuctionId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof InterestGroupAuctionId)) return false;
+            return value.equals(((InterestGroupAuctionId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "InterestGroupAuctionId(" + value + ")"; }
     }
     /**
      * Enum of interest group access types.
      */
-    public static final class InterestGroupAccessType {
-        private InterestGroupAccessType() {}
-        public static final String JOIN = "join";
-        public static final String LEAVE = "leave";
-        public static final String UPDATE = "update";
-        public static final String LOADED = "loaded";
-        public static final String BID = "bid";
-        public static final String WIN = "win";
-        public static final String ADDITIONALBID = "additionalBid";
-        public static final String ADDITIONALBIDWIN = "additionalBidWin";
-        public static final String TOPLEVELBID = "topLevelBid";
-        public static final String TOPLEVELADDITIONALBID = "topLevelAdditionalBid";
-        public static final String CLEAR = "clear";
+    public enum InterestGroupAccessType implements CdpValue<String> {
+        JOIN("join"),
+        LEAVE("leave"),
+        UPDATE("update"),
+        LOADED("loaded"),
+        BID("bid"),
+        WIN("win"),
+        ADDITIONALBID("additionalBid"),
+        ADDITIONALBIDWIN("additionalBidWin"),
+        TOPLEVELBID("topLevelBid"),
+        TOPLEVELADDITIONALBID("topLevelAdditionalBid"),
+        CLEAR("clear");
+        public final String value;
+        InterestGroupAccessType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static InterestGroupAccessType of(@Nonnull String value) {
+            for (InterestGroupAccessType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown InterestGroupAccessType value: " + value);
+        }
     }
     /**
      * Enum of auction events.
      */
-    public static final class InterestGroupAuctionEventType {
-        private InterestGroupAuctionEventType() {}
-        public static final String STARTED = "started";
-        public static final String CONFIGRESOLVED = "configResolved";
+    public enum InterestGroupAuctionEventType implements CdpValue<String> {
+        STARTED("started"),
+        CONFIGRESOLVED("configResolved");
+        public final String value;
+        InterestGroupAuctionEventType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static InterestGroupAuctionEventType of(@Nonnull String value) {
+            for (InterestGroupAuctionEventType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown InterestGroupAuctionEventType value: " + value);
+        }
     }
     /**
      * Enum of network fetches auctions can do.
      */
-    public static final class InterestGroupAuctionFetchType {
-        private InterestGroupAuctionFetchType() {}
-        public static final String BIDDERJS = "bidderJs";
-        public static final String BIDDERWASM = "bidderWasm";
-        public static final String SELLERJS = "sellerJs";
-        public static final String BIDDERTRUSTEDSIGNALS = "bidderTrustedSignals";
-        public static final String SELLERTRUSTEDSIGNALS = "sellerTrustedSignals";
+    public enum InterestGroupAuctionFetchType implements CdpValue<String> {
+        BIDDERJS("bidderJs"),
+        BIDDERWASM("bidderWasm"),
+        SELLERJS("sellerJs"),
+        BIDDERTRUSTEDSIGNALS("bidderTrustedSignals"),
+        SELLERTRUSTEDSIGNALS("sellerTrustedSignals");
+        public final String value;
+        InterestGroupAuctionFetchType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static InterestGroupAuctionFetchType of(@Nonnull String value) {
+            for (InterestGroupAuctionFetchType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown InterestGroupAuctionFetchType value: " + value);
+        }
     }
     /**
      * Enum of shared storage access scopes.
      */
-    public static final class SharedStorageAccessScope {
-        private SharedStorageAccessScope() {}
-        public static final String WINDOW = "window";
-        public static final String SHAREDSTORAGEWORKLET = "sharedStorageWorklet";
-        public static final String PROTECTEDAUDIENCEWORKLET = "protectedAudienceWorklet";
-        public static final String HEADER = "header";
+    public enum SharedStorageAccessScope implements CdpValue<String> {
+        WINDOW("window"),
+        SHAREDSTORAGEWORKLET("sharedStorageWorklet"),
+        PROTECTEDAUDIENCEWORKLET("protectedAudienceWorklet"),
+        HEADER("header");
+        public final String value;
+        SharedStorageAccessScope(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static SharedStorageAccessScope of(@Nonnull String value) {
+            for (SharedStorageAccessScope constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown SharedStorageAccessScope value: " + value);
+        }
     }
     /**
      * Enum of shared storage access methods.
      */
-    public static final class SharedStorageAccessMethod {
-        private SharedStorageAccessMethod() {}
-        public static final String ADDMODULE = "addModule";
-        public static final String CREATEWORKLET = "createWorklet";
-        public static final String SELECTURL = "selectURL";
-        public static final String RUN = "run";
-        public static final String BATCHUPDATE = "batchUpdate";
-        public static final String SET = "set";
-        public static final String APPEND = "append";
-        public static final String DELETE = "delete";
-        public static final String CLEAR = "clear";
-        public static final String GET = "get";
-        public static final String KEYS = "keys";
-        public static final String VALUES = "values";
-        public static final String ENTRIES = "entries";
-        public static final String LENGTH = "length";
-        public static final String REMAININGBUDGET = "remainingBudget";
+    public enum SharedStorageAccessMethod implements CdpValue<String> {
+        ADDMODULE("addModule"),
+        CREATEWORKLET("createWorklet"),
+        SELECTURL("selectURL"),
+        RUN("run"),
+        BATCHUPDATE("batchUpdate"),
+        SET("set"),
+        APPEND("append"),
+        DELETE("delete"),
+        CLEAR("clear"),
+        GET("get"),
+        KEYS("keys"),
+        VALUES("values"),
+        ENTRIES("entries"),
+        LENGTH("length"),
+        REMAININGBUDGET("remainingBudget");
+        public final String value;
+        SharedStorageAccessMethod(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static SharedStorageAccessMethod of(@Nonnull String value) {
+            for (SharedStorageAccessMethod constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown SharedStorageAccessMethod value: " + value);
+        }
     }
     /**
      * Struct for a single key-value pair in an origin&#x27;s shared storage.
      */
     public static final class SharedStorageEntry extends CdpObject {
+        public SharedStorageEntry() {}
         private SharedStorageEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageEntry(values);
+        public static SharedStorageEntry fromMap(Map<String, Object> values) {
+            return new SharedStorageEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
-        @Nullable public String key() {
-            return (String) value("key");
+        public String key() {
+            return (String) require("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public String value() {
+            return (String) require("value");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the key field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable String value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the value field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public SharedStorageEntry build() {
-                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new SharedStorageEntry(values);
-            }
+        /**
+         * Sets the key field.
+         * @param key field value
+         * @return this model
+         */
+        public SharedStorageEntry key(String key) {
+            set("key", key);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public SharedStorageEntry value(String value) {
+            set("value", value);
+            return this;
         }
     }
     /**
      * Details for an origin&#x27;s shared storage.
      */
     public static final class SharedStorageMetadata extends CdpObject {
+        public SharedStorageMetadata() {}
         private SharedStorageMetadata(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageMetadata fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageMetadata(values);
+        public static SharedStorageMetadata fromMap(Map<String, Object> values) {
+            return new SharedStorageMetadata(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Time when the origin&#x27;s shared storage was last created.
          * @return the protocol field value
          */
-        @Nullable public Double creationTime() {
-            return numberAsDouble(value("creationTime"));
+        public Network.TimeSinceEpoch creationTime() {
+            return new Network.TimeSinceEpoch(((Number) require("creationTime")).doubleValue());
         }
         /**
          * Number of key-value pairs stored in origin&#x27;s shared storage.
          * @return the protocol field value
          */
-        @Nullable public Long length() {
-            return numberAsLong(value("length"));
+        public long length() {
+            return ((Number) require("length")).longValue();
         }
         /**
          * Current amount of bits of entropy remaining in the navigation budget.
          * @return the protocol field value
          */
-        @Nullable public Double remainingBudget() {
-            return numberAsDouble(value("remainingBudget"));
+        public double remainingBudget() {
+            return ((Number) require("remainingBudget")).doubleValue();
         }
         /**
          * Total number of bytes stored as key-value pairs in origin&#x27;s shared storage.
          * @return the protocol field value
          */
-        @Nullable public Long bytesUsed() {
-            return numberAsLong(value("bytesUsed"));
+        public long bytesUsed() {
+            return ((Number) require("bytesUsed")).longValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Time when the origin&#x27;s shared storage was last created.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder creationTime(@Nullable Double value) {
-                if (value == null) values.remove("creationTime");
-                else values.put("creationTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of key-value pairs stored in origin&#x27;s shared storage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder length(@Nullable Long value) {
-                if (value == null) values.remove("length");
-                else values.put("length", jsonValue(value));
-                return this;
-            }
-            /**
-             * Current amount of bits of entropy remaining in the navigation budget.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder remainingBudget(@Nullable Double value) {
-                if (value == null) values.remove("remainingBudget");
-                else values.put("remainingBudget", jsonValue(value));
-                return this;
-            }
-            /**
-             * Total number of bytes stored as key-value pairs in origin&#x27;s shared storage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bytesUsed(@Nullable Long value) {
-                if (value == null) values.remove("bytesUsed");
-                else values.put("bytesUsed", jsonValue(value));
-                return this;
-            }
-            public SharedStorageMetadata build() {
-                if (!values.containsKey("creationTime")) throw new IllegalStateException("Missing required CDP field: creationTime");
-                if (!values.containsKey("length")) throw new IllegalStateException("Missing required CDP field: length");
-                if (!values.containsKey("remainingBudget")) throw new IllegalStateException("Missing required CDP field: remainingBudget");
-                if (!values.containsKey("bytesUsed")) throw new IllegalStateException("Missing required CDP field: bytesUsed");
-                return new SharedStorageMetadata(values);
-            }
+        /**
+         * Time when the origin&#x27;s shared storage was last created.
+         * @param creationTime field value
+         * @return this model
+         */
+        public SharedStorageMetadata creationTime(Network.TimeSinceEpoch creationTime) {
+            set("creationTime", creationTime);
+            return this;
+        }
+        /**
+         * Number of key-value pairs stored in origin&#x27;s shared storage.
+         * @param length field value
+         * @return this model
+         */
+        public SharedStorageMetadata length(long length) {
+            set("length", length);
+            return this;
+        }
+        /**
+         * Current amount of bits of entropy remaining in the navigation budget.
+         * @param remainingBudget field value
+         * @return this model
+         */
+        public SharedStorageMetadata remainingBudget(double remainingBudget) {
+            set("remainingBudget", remainingBudget);
+            return this;
+        }
+        /**
+         * Total number of bytes stored as key-value pairs in origin&#x27;s shared storage.
+         * @param bytesUsed field value
+         * @return this model
+         */
+        public SharedStorageMetadata bytesUsed(long bytesUsed) {
+            set("bytesUsed", bytesUsed);
+            return this;
         }
     }
     /**
      * Represents a dictionary object passed in as privateAggregationConfig to run or selectURL.
      */
     public static final class SharedStoragePrivateAggregationConfig extends CdpObject {
+        public SharedStoragePrivateAggregationConfig() {}
         private SharedStoragePrivateAggregationConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStoragePrivateAggregationConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStoragePrivateAggregationConfig(values);
+        public static SharedStoragePrivateAggregationConfig fromMap(Map<String, Object> values) {
+            return new SharedStoragePrivateAggregationConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The chosen aggregation service deployment.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String aggregationCoordinatorOrigin() {
-            return (String) value("aggregationCoordinatorOrigin");
+        public Optional<String> aggregationCoordinatorOrigin() {
+            return Optional.ofNullable((String) raw("aggregationCoordinatorOrigin"));
         }
         /**
          * The context ID provided.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String contextId() {
-            return (String) value("contextId");
+        public Optional<String> contextId() {
+            return Optional.ofNullable((String) raw("contextId"));
         }
         /**
          * Configures the maximum size allowed for filtering IDs.
          * @return the protocol field value
          */
-        @Nullable public Long filteringIdMaxBytes() {
-            return numberAsLong(value("filteringIdMaxBytes"));
+        public long filteringIdMaxBytes() {
+            return ((Number) require("filteringIdMaxBytes")).longValue();
         }
         /**
          * The limit on the number of contributions in the final report.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long maxContributions() {
-            return numberAsLong(value("maxContributions"));
+        public OptionalLong maxContributions() {
+            Long value = CdpObject.numberAsLong(raw("maxContributions"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The chosen aggregation service deployment.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder aggregationCoordinatorOrigin(@Nullable String value) {
-                if (value == null) values.remove("aggregationCoordinatorOrigin");
-                else values.put("aggregationCoordinatorOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * The context ID provided.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contextId(@Nullable String value) {
-                if (value == null) values.remove("contextId");
-                else values.put("contextId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Configures the maximum size allowed for filtering IDs.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder filteringIdMaxBytes(@Nullable Long value) {
-                if (value == null) values.remove("filteringIdMaxBytes");
-                else values.put("filteringIdMaxBytes", jsonValue(value));
-                return this;
-            }
-            /**
-             * The limit on the number of contributions in the final report.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder maxContributions(@Nullable Long value) {
-                if (value == null) values.remove("maxContributions");
-                else values.put("maxContributions", jsonValue(value));
-                return this;
-            }
-            public SharedStoragePrivateAggregationConfig build() {
-                if (!values.containsKey("filteringIdMaxBytes")) throw new IllegalStateException("Missing required CDP field: filteringIdMaxBytes");
-                return new SharedStoragePrivateAggregationConfig(values);
-            }
+        /**
+         * The chosen aggregation service deployment.
+         * @param aggregationCoordinatorOrigin field value; empty omits the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig aggregationCoordinatorOrigin(Optional<String> aggregationCoordinatorOrigin) {
+            set("aggregationCoordinatorOrigin", aggregationCoordinatorOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * The chosen aggregation service deployment.
+         * @param aggregationCoordinatorOrigin field value; null removes the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig aggregationCoordinatorOrigin(String aggregationCoordinatorOrigin) {
+            set("aggregationCoordinatorOrigin", aggregationCoordinatorOrigin);
+            return this;
+        }
+        /**
+         * The context ID provided.
+         * @param contextId field value; empty omits the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig contextId(Optional<String> contextId) {
+            set("contextId", contextId.orElse(null));
+            return this;
+        }
+        /**
+         * The context ID provided.
+         * @param contextId field value; null removes the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig contextId(String contextId) {
+            set("contextId", contextId);
+            return this;
+        }
+        /**
+         * Configures the maximum size allowed for filtering IDs.
+         * @param filteringIdMaxBytes field value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig filteringIdMaxBytes(long filteringIdMaxBytes) {
+            set("filteringIdMaxBytes", filteringIdMaxBytes);
+            return this;
+        }
+        /**
+         * The limit on the number of contributions in the final report.
+         * @param maxContributions field value; empty omits the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig maxContributions(OptionalLong maxContributions) {
+            set("maxContributions", maxContributions.isPresent() ? maxContributions.getAsLong() : null);
+            return this;
+        }
+        /**
+         * The limit on the number of contributions in the final report.
+         * @param maxContributions field value; null removes the value
+         * @return this model
+         */
+        public SharedStoragePrivateAggregationConfig maxContributions(Long maxContributions) {
+            set("maxContributions", maxContributions);
+            return this;
         }
     }
     /**
      * Pair of reporting metadata details for a candidate URL for {@code selectURL()}.
      */
     public static final class SharedStorageReportingMetadata extends CdpObject {
+        public SharedStorageReportingMetadata() {}
         private SharedStorageReportingMetadata(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageReportingMetadata fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageReportingMetadata(values);
+        public static SharedStorageReportingMetadata fromMap(Map<String, Object> values) {
+            return new SharedStorageReportingMetadata(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the eventType field.
          * @return the protocol field value
          */
-        @Nullable public String eventType() {
-            return (String) value("eventType");
+        public String eventType() {
+            return (String) require("eventType");
         }
         /**
          * Returns the reportingUrl field.
          * @return the protocol field value
          */
-        @Nullable public String reportingUrl() {
-            return (String) value("reportingUrl");
+        public String reportingUrl() {
+            return (String) require("reportingUrl");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the eventType field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder eventType(@Nullable String value) {
-                if (value == null) values.remove("eventType");
-                else values.put("eventType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the reportingUrl field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder reportingUrl(@Nullable String value) {
-                if (value == null) values.remove("reportingUrl");
-                else values.put("reportingUrl", jsonValue(value));
-                return this;
-            }
-            public SharedStorageReportingMetadata build() {
-                if (!values.containsKey("eventType")) throw new IllegalStateException("Missing required CDP field: eventType");
-                if (!values.containsKey("reportingUrl")) throw new IllegalStateException("Missing required CDP field: reportingUrl");
-                return new SharedStorageReportingMetadata(values);
-            }
+        /**
+         * Sets the eventType field.
+         * @param eventType field value
+         * @return this model
+         */
+        public SharedStorageReportingMetadata eventType(String eventType) {
+            set("eventType", eventType);
+            return this;
+        }
+        /**
+         * Sets the reportingUrl field.
+         * @param reportingUrl field value
+         * @return this model
+         */
+        public SharedStorageReportingMetadata reportingUrl(String reportingUrl) {
+            set("reportingUrl", reportingUrl);
+            return this;
         }
     }
     /**
      * Bundles a candidate URL with its reporting metadata.
      */
     public static final class SharedStorageUrlWithMetadata extends CdpObject {
+        public SharedStorageUrlWithMetadata() {}
         private SharedStorageUrlWithMetadata(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageUrlWithMetadata fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageUrlWithMetadata(values);
+        public static SharedStorageUrlWithMetadata fromMap(Map<String, Object> values) {
+            return new SharedStorageUrlWithMetadata(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Spec of candidate URL.
          * @return the protocol field value
          */
-        @Nullable public String url() {
-            return (String) value("url");
+        public String url() {
+            return (String) require("url");
         }
         /**
          * Any associated reporting metadata.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Storage.SharedStorageReportingMetadata> reportingMetadata() {
-            return list(value("reportingMetadata"), element0 -> Storage.SharedStorageReportingMetadata.fromMap(objectMap(element0)));
+        public java.util.List<Storage.SharedStorageReportingMetadata> reportingMetadata() {
+            return CdpObject.requireList(require("reportingMetadata"), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageReportingMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Spec of candidate URL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * Any associated reporting metadata.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder reportingMetadata(@Nullable java.util.List<Storage.SharedStorageReportingMetadata> value) {
-                if (value == null) values.remove("reportingMetadata");
-                else values.put("reportingMetadata", jsonValue(value));
-                return this;
-            }
-            public SharedStorageUrlWithMetadata build() {
-                if (!values.containsKey("url")) throw new IllegalStateException("Missing required CDP field: url");
-                if (!values.containsKey("reportingMetadata")) throw new IllegalStateException("Missing required CDP field: reportingMetadata");
-                return new SharedStorageUrlWithMetadata(values);
-            }
+        /**
+         * Spec of candidate URL.
+         * @param url field value
+         * @return this model
+         */
+        public SharedStorageUrlWithMetadata url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Any associated reporting metadata.
+         * @param reportingMetadata field value
+         * @return this model
+         */
+        public SharedStorageUrlWithMetadata reportingMetadata(java.util.List<Storage.SharedStorageReportingMetadata> reportingMetadata) {
+            set("reportingMetadata", reportingMetadata);
+            return this;
         }
     }
     /**
      * Bundles the parameters for shared storage access events whose presence/absence can vary according to SharedStorageAccessType.
      */
     public static final class SharedStorageAccessParams extends CdpObject {
+        public SharedStorageAccessParams() {}
         private SharedStorageAccessParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageAccessParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageAccessParams(values);
+        public static SharedStorageAccessParams fromMap(Map<String, Object> values) {
+            return new SharedStorageAccessParams(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Spec of the module script URL. Present only for SharedStorageAccessMethods: addModule and createWorklet.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String scriptSourceUrl() {
-            return (String) value("scriptSourceUrl");
+        public Optional<String> scriptSourceUrl() {
+            return Optional.ofNullable((String) raw("scriptSourceUrl"));
         }
         /**
          * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String dataOrigin() {
-            return (String) value("dataOrigin");
+        public Optional<String> dataOrigin() {
+            return Optional.ofNullable((String) raw("dataOrigin"));
         }
         /**
          * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String operationName() {
-            return (String) value("operationName");
+        public Optional<String> operationName() {
+            return Optional.ofNullable((String) raw("operationName"));
         }
         /**
          * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String operationId() {
-            return (String) value("operationId");
+        public Optional<String> operationId() {
+            return Optional.ofNullable((String) raw("operationId"));
         }
         /**
          * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean keepAlive() {
-            return (Boolean) value("keepAlive");
+        public Optional<Boolean> keepAlive() {
+            return Optional.ofNullable((Boolean) raw("keepAlive"));
         }
         /**
          * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Storage.SharedStoragePrivateAggregationConfig privateAggregationConfig() {
-            return Storage.SharedStoragePrivateAggregationConfig.fromMap(objectMap(value("privateAggregationConfig")));
+        public Optional<Storage.SharedStoragePrivateAggregationConfig> privateAggregationConfig() {
+            return Optional.ofNullable(raw("privateAggregationConfig") == null ? null : Storage.SharedStoragePrivateAggregationConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("privateAggregationConfig")))));
         }
         /**
          * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String serializedData() {
-            return (String) value("serializedData");
+        public Optional<String> serializedData() {
+            return Optional.ofNullable((String) raw("serializedData"));
         }
         /**
          * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<Storage.SharedStorageUrlWithMetadata> urlsWithMetadata() {
-            return list(value("urlsWithMetadata"), element0 -> Storage.SharedStorageUrlWithMetadata.fromMap(objectMap(element0)));
+        public Optional<java.util.List<Storage.SharedStorageUrlWithMetadata>> urlsWithMetadata() {
+            return Optional.ofNullable(list(raw("urlsWithMetadata"), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageUrlWithMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String urnUuid() {
-            return (String) value("urnUuid");
+        public Optional<String> urnUuid() {
+            return Optional.ofNullable((String) raw("urnUuid"));
         }
         /**
          * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String key() {
-            return (String) value("key");
+        public Optional<String> key() {
+            return Optional.ofNullable((String) raw("key"));
         }
         /**
          * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public Optional<String> value() {
+            return Optional.ofNullable((String) raw("value"));
         }
         /**
          * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean ignoreIfPresent() {
-            return (Boolean) value("ignoreIfPresent");
+        public Optional<Boolean> ignoreIfPresent() {
+            return Optional.ofNullable((Boolean) raw("ignoreIfPresent"));
         }
         /**
          * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long workletOrdinal() {
-            return numberAsLong(value("workletOrdinal"));
+        public OptionalLong workletOrdinal() {
+            Long value = CdpObject.numberAsLong(raw("workletOrdinal"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet. Present only for SharedStorageAccessMethods: addModule, createWorklet, run, selectURL, and any other SharedStorageAccessMethod when the SharedStorageAccessScope is sharedStorageWorklet.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String workletTargetId() {
-            return (String) value("workletTargetId");
+        public Optional<Target.TargetID> workletTargetId() {
+            return Optional.ofNullable(raw("workletTargetId") == null ? null : new Target.TargetID((String) raw("workletTargetId")));
         }
         /**
          * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String withLock() {
-            return (String) value("withLock");
+        public Optional<String> withLock() {
+            return Optional.ofNullable((String) raw("withLock"));
         }
         /**
          * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String batchUpdateId() {
-            return (String) value("batchUpdateId");
+        public Optional<String> batchUpdateId() {
+            return Optional.ofNullable((String) raw("batchUpdateId"));
         }
         /**
          * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long batchSize() {
-            return numberAsLong(value("batchSize"));
+        public OptionalLong batchSize() {
+            Long value = CdpObject.numberAsLong(raw("batchSize"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Spec of the module script URL. Present only for SharedStorageAccessMethods: addModule and createWorklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scriptSourceUrl(@Nullable String value) {
-                if (value == null) values.remove("scriptSourceUrl");
-                else values.put("scriptSourceUrl", jsonValue(value));
-                return this;
-            }
-            /**
-             * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dataOrigin(@Nullable String value) {
-                if (value == null) values.remove("dataOrigin");
-                else values.put("dataOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder operationName(@Nullable String value) {
-                if (value == null) values.remove("operationName");
-                else values.put("operationName", jsonValue(value));
-                return this;
-            }
-            /**
-             * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder operationId(@Nullable String value) {
-                if (value == null) values.remove("operationId");
-                else values.put("operationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder keepAlive(@Nullable Boolean value) {
-                if (value == null) values.remove("keepAlive");
-                else values.put("keepAlive", jsonValue(value));
-                return this;
-            }
-            /**
-             * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder privateAggregationConfig(@Nullable Storage.SharedStoragePrivateAggregationConfig value) {
-                if (value == null) values.remove("privateAggregationConfig");
-                else values.put("privateAggregationConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serializedData(@Nullable String value) {
-                if (value == null) values.remove("serializedData");
-                else values.put("serializedData", jsonValue(value));
-                return this;
-            }
-            /**
-             * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder urlsWithMetadata(@Nullable java.util.List<Storage.SharedStorageUrlWithMetadata> value) {
-                if (value == null) values.remove("urlsWithMetadata");
-                else values.put("urlsWithMetadata", jsonValue(value));
-                return this;
-            }
-            /**
-             * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder urnUuid(@Nullable String value) {
-                if (value == null) values.remove("urnUuid");
-                else values.put("urnUuid", jsonValue(value));
-                return this;
-            }
-            /**
-             * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable String value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            /**
-             * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ignoreIfPresent(@Nullable Boolean value) {
-                if (value == null) values.remove("ignoreIfPresent");
-                else values.put("ignoreIfPresent", jsonValue(value));
-                return this;
-            }
-            /**
-             * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder workletOrdinal(@Nullable Long value) {
-                if (value == null) values.remove("workletOrdinal");
-                else values.put("workletOrdinal", jsonValue(value));
-                return this;
-            }
-            /**
-             * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet. Present only for SharedStorageAccessMethods: addModule, createWorklet, run, selectURL, and any other SharedStorageAccessMethod when the SharedStorageAccessScope is sharedStorageWorklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder workletTargetId(@Nullable String value) {
-                if (value == null) values.remove("workletTargetId");
-                else values.put("workletTargetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder withLock(@Nullable String value) {
-                if (value == null) values.remove("withLock");
-                else values.put("withLock", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder batchUpdateId(@Nullable String value) {
-                if (value == null) values.remove("batchUpdateId");
-                else values.put("batchUpdateId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder batchSize(@Nullable Long value) {
-                if (value == null) values.remove("batchSize");
-                else values.put("batchSize", jsonValue(value));
-                return this;
-            }
-            public SharedStorageAccessParams build() {
-                return new SharedStorageAccessParams(values);
-            }
+        /**
+         * Spec of the module script URL. Present only for SharedStorageAccessMethods: addModule and createWorklet.
+         * @param scriptSourceUrl field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams scriptSourceUrl(Optional<String> scriptSourceUrl) {
+            set("scriptSourceUrl", scriptSourceUrl.orElse(null));
+            return this;
+        }
+        /**
+         * Spec of the module script URL. Present only for SharedStorageAccessMethods: addModule and createWorklet.
+         * @param scriptSourceUrl field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams scriptSourceUrl(String scriptSourceUrl) {
+            set("scriptSourceUrl", scriptSourceUrl);
+            return this;
+        }
+        /**
+         * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
+         * @param dataOrigin field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams dataOrigin(Optional<String> dataOrigin) {
+            set("dataOrigin", dataOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
+         * @param dataOrigin field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams dataOrigin(String dataOrigin) {
+            set("dataOrigin", dataOrigin);
+            return this;
+        }
+        /**
+         * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param operationName field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams operationName(Optional<String> operationName) {
+            set("operationName", operationName.orElse(null));
+            return this;
+        }
+        /**
+         * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param operationName field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams operationName(String operationName) {
+            set("operationName", operationName);
+            return this;
+        }
+        /**
+         * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param operationId field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams operationId(Optional<String> operationId) {
+            set("operationId", operationId.orElse(null));
+            return this;
+        }
+        /**
+         * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param operationId field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams operationId(String operationId) {
+            set("operationId", operationId);
+            return this;
+        }
+        /**
+         * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param keepAlive field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams keepAlive(Optional<Boolean> keepAlive) {
+            set("keepAlive", keepAlive.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param keepAlive field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams keepAlive(Boolean keepAlive) {
+            set("keepAlive", keepAlive);
+            return this;
+        }
+        /**
+         * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param privateAggregationConfig field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams privateAggregationConfig(Optional<Storage.SharedStoragePrivateAggregationConfig> privateAggregationConfig) {
+            set("privateAggregationConfig", privateAggregationConfig.orElse(null));
+            return this;
+        }
+        /**
+         * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
+         * @param privateAggregationConfig field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams privateAggregationConfig(Storage.SharedStoragePrivateAggregationConfig privateAggregationConfig) {
+            set("privateAggregationConfig", privateAggregationConfig);
+            return this;
+        }
+        /**
+         * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
+         * @param serializedData field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams serializedData(Optional<String> serializedData) {
+            set("serializedData", serializedData.orElse(null));
+            return this;
+        }
+        /**
+         * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
+         * @param serializedData field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams serializedData(String serializedData) {
+            set("serializedData", serializedData);
+            return this;
+        }
+        /**
+         * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
+         * @param urlsWithMetadata field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams urlsWithMetadata(Optional<java.util.List<Storage.SharedStorageUrlWithMetadata>> urlsWithMetadata) {
+            set("urlsWithMetadata", urlsWithMetadata.orElse(null));
+            return this;
+        }
+        /**
+         * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
+         * @param urlsWithMetadata field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams urlsWithMetadata(java.util.List<Storage.SharedStorageUrlWithMetadata> urlsWithMetadata) {
+            set("urlsWithMetadata", urlsWithMetadata);
+            return this;
+        }
+        /**
+         * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
+         * @param urnUuid field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams urnUuid(Optional<String> urnUuid) {
+            set("urnUuid", urnUuid.orElse(null));
+            return this;
+        }
+        /**
+         * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
+         * @param urnUuid field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams urnUuid(String urnUuid) {
+            set("urnUuid", urnUuid);
+            return this;
+        }
+        /**
+         * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
+         * @param key field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams key(Optional<String> key) {
+            set("key", key.orElse(null));
+            return this;
+        }
+        /**
+         * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
+         * @param key field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams key(String key) {
+            set("key", key);
+            return this;
+        }
+        /**
+         * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
+         * @param value field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams value(Optional<String> value) {
+            set("value", value.orElse(null));
+            return this;
+        }
+        /**
+         * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
+         * @param value field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams value(String value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
+         * @param ignoreIfPresent field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams ignoreIfPresent(Optional<Boolean> ignoreIfPresent) {
+            set("ignoreIfPresent", ignoreIfPresent.orElse(null));
+            return this;
+        }
+        /**
+         * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
+         * @param ignoreIfPresent field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams ignoreIfPresent(Boolean ignoreIfPresent) {
+            set("ignoreIfPresent", ignoreIfPresent);
+            return this;
+        }
+        /**
+         * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
+         * @param workletOrdinal field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams workletOrdinal(OptionalLong workletOrdinal) {
+            set("workletOrdinal", workletOrdinal.isPresent() ? workletOrdinal.getAsLong() : null);
+            return this;
+        }
+        /**
+         * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
+         * @param workletOrdinal field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams workletOrdinal(Long workletOrdinal) {
+            set("workletOrdinal", workletOrdinal);
+            return this;
+        }
+        /**
+         * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet. Present only for SharedStorageAccessMethods: addModule, createWorklet, run, selectURL, and any other SharedStorageAccessMethod when the SharedStorageAccessScope is sharedStorageWorklet.
+         * @param workletTargetId field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams workletTargetId(Optional<Target.TargetID> workletTargetId) {
+            set("workletTargetId", workletTargetId.orElse(null));
+            return this;
+        }
+        /**
+         * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet. Present only for SharedStorageAccessMethods: addModule, createWorklet, run, selectURL, and any other SharedStorageAccessMethod when the SharedStorageAccessScope is sharedStorageWorklet.
+         * @param workletTargetId field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams workletTargetId(Target.TargetID workletTargetId) {
+            set("workletTargetId", workletTargetId);
+            return this;
+        }
+        /**
+         * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
+         * @param withLock field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams withLock(Optional<String> withLock) {
+            set("withLock", withLock.orElse(null));
+            return this;
+        }
+        /**
+         * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
+         * @param withLock field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams withLock(String withLock) {
+            set("withLock", withLock);
+            return this;
+        }
+        /**
+         * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
+         * @param batchUpdateId field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams batchUpdateId(Optional<String> batchUpdateId) {
+            set("batchUpdateId", batchUpdateId.orElse(null));
+            return this;
+        }
+        /**
+         * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
+         * @param batchUpdateId field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams batchUpdateId(String batchUpdateId) {
+            set("batchUpdateId", batchUpdateId);
+            return this;
+        }
+        /**
+         * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
+         * @param batchSize field value; empty omits the value
+         * @return this model
+         */
+        public SharedStorageAccessParams batchSize(OptionalLong batchSize) {
+            set("batchSize", batchSize.isPresent() ? batchSize.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
+         * @param batchSize field value; null removes the value
+         * @return this model
+         */
+        public SharedStorageAccessParams batchSize(Long batchSize) {
+            set("batchSize", batchSize);
+            return this;
         }
     }
     /**
      * Wire values for StorageBucketsDurability.
      */
-    public static final class StorageBucketsDurability {
-        private StorageBucketsDurability() {}
-        public static final String RELAXED = "relaxed";
-        public static final String STRICT = "strict";
+    public enum StorageBucketsDurability implements CdpValue<String> {
+        RELAXED("relaxed"),
+        STRICT("strict");
+        public final String value;
+        StorageBucketsDurability(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static StorageBucketsDurability of(@Nonnull String value) {
+            for (StorageBucketsDurability constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown StorageBucketsDurability value: " + value);
+        }
     }
     /**
      */
     public static final class StorageBucket extends CdpObject {
+        public StorageBucket() {}
         private StorageBucket(Map<String, Object> values) { super(values); }
-        @Nullable public static StorageBucket fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StorageBucket(values);
+        public static StorageBucket fromMap(Map<String, Object> values) {
+            return new StorageBucket(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the storageKey field.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public Storage.SerializedStorageKey storageKey() {
+            return new Storage.SerializedStorageKey((String) require("storageKey"));
         }
         /**
          * If not specified, it is the default bucket of the storageKey.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public Optional<String> name() {
+            return Optional.ofNullable((String) raw("name"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the storageKey field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * If not specified, it is the default bucket of the storageKey.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public StorageBucket build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new StorageBucket(values);
-            }
+        /**
+         * Sets the storageKey field.
+         * @param storageKey field value
+         * @return this model
+         */
+        public StorageBucket storageKey(Storage.SerializedStorageKey storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * If not specified, it is the default bucket of the storageKey.
+         * @param name field value; empty omits the value
+         * @return this model
+         */
+        public StorageBucket name(Optional<String> name) {
+            set("name", name.orElse(null));
+            return this;
+        }
+        /**
+         * If not specified, it is the default bucket of the storageKey.
+         * @param name field value; null removes the value
+         * @return this model
+         */
+        public StorageBucket name(String name) {
+            set("name", name);
+            return this;
         }
     }
     /**
      */
     public static final class StorageBucketInfo extends CdpObject {
+        public StorageBucketInfo() {}
         private StorageBucketInfo(Map<String, Object> values) { super(values); }
-        @Nullable public static StorageBucketInfo fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StorageBucketInfo(values);
+        public static StorageBucketInfo fromMap(Map<String, Object> values) {
+            return new StorageBucketInfo(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the bucket field.
          * @return the protocol field value
          */
-        @Nullable public Storage.StorageBucket bucket() {
-            return Storage.StorageBucket.fromMap(objectMap(value("bucket")));
+        public Storage.StorageBucket bucket() {
+            return java.util.Objects.requireNonNull(Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bucket")))));
         }
         /**
          * Returns the id field.
          * @return the protocol field value
          */
-        @Nullable public String id() {
-            return (String) value("id");
+        public String id() {
+            return (String) require("id");
         }
         /**
          * Returns the expiration field.
          * @return the protocol field value
          */
-        @Nullable public Double expiration() {
-            return numberAsDouble(value("expiration"));
+        public Network.TimeSinceEpoch expiration() {
+            return new Network.TimeSinceEpoch(((Number) require("expiration")).doubleValue());
         }
         /**
          * Storage quota (bytes).
          * @return the protocol field value
          */
-        @Nullable public Double quota() {
-            return numberAsDouble(value("quota"));
+        public double quota() {
+            return ((Number) require("quota")).doubleValue();
         }
         /**
          * Returns the persistent field.
          * @return the protocol field value
          */
-        @Nullable public Boolean persistent() {
-            return (Boolean) value("persistent");
+        public boolean persistent() {
+            return (Boolean) require("persistent");
         }
         /**
          * Returns the durability field.
          * @return the protocol field value
          */
-        @Nullable public String durability() {
-            return (String) value("durability");
+        public Storage.StorageBucketsDurability durability() {
+            return Storage.StorageBucketsDurability.of((String) require("durability"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the bucket field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucket(@Nullable Storage.StorageBucket value) {
-                if (value == null) values.remove("bucket");
-                else values.put("bucket", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the id field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder id(@Nullable String value) {
-                if (value == null) values.remove("id");
-                else values.put("id", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the expiration field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder expiration(@Nullable Double value) {
-                if (value == null) values.remove("expiration");
-                else values.put("expiration", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage quota (bytes).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder quota(@Nullable Double value) {
-                if (value == null) values.remove("quota");
-                else values.put("quota", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the persistent field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder persistent(@Nullable Boolean value) {
-                if (value == null) values.remove("persistent");
-                else values.put("persistent", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the durability field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder durability(@Nullable String value) {
-                if (value == null) values.remove("durability");
-                else values.put("durability", jsonValue(value));
-                return this;
-            }
-            public StorageBucketInfo build() {
-                if (!values.containsKey("bucket")) throw new IllegalStateException("Missing required CDP field: bucket");
-                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
-                if (!values.containsKey("expiration")) throw new IllegalStateException("Missing required CDP field: expiration");
-                if (!values.containsKey("quota")) throw new IllegalStateException("Missing required CDP field: quota");
-                if (!values.containsKey("persistent")) throw new IllegalStateException("Missing required CDP field: persistent");
-                if (!values.containsKey("durability")) throw new IllegalStateException("Missing required CDP field: durability");
-                return new StorageBucketInfo(values);
-            }
+        /**
+         * Sets the bucket field.
+         * @param bucket field value
+         * @return this model
+         */
+        public StorageBucketInfo bucket(Storage.StorageBucket bucket) {
+            set("bucket", bucket);
+            return this;
+        }
+        /**
+         * Sets the id field.
+         * @param id field value
+         * @return this model
+         */
+        public StorageBucketInfo id(String id) {
+            set("id", id);
+            return this;
+        }
+        /**
+         * Sets the expiration field.
+         * @param expiration field value
+         * @return this model
+         */
+        public StorageBucketInfo expiration(Network.TimeSinceEpoch expiration) {
+            set("expiration", expiration);
+            return this;
+        }
+        /**
+         * Storage quota (bytes).
+         * @param quota field value
+         * @return this model
+         */
+        public StorageBucketInfo quota(double quota) {
+            set("quota", quota);
+            return this;
+        }
+        /**
+         * Sets the persistent field.
+         * @param persistent field value
+         * @return this model
+         */
+        public StorageBucketInfo persistent(boolean persistent) {
+            set("persistent", persistent);
+            return this;
+        }
+        /**
+         * Sets the durability field.
+         * @param durability field value
+         * @return this model
+         */
+        public StorageBucketInfo durability(Storage.StorageBucketsDurability durability) {
+            set("durability", durability);
+            return this;
         }
     }
     /**
@@ -1033,3234 +1188,1049 @@ public final class Storage {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class RelatedWebsiteSet extends CdpObject {
+        public RelatedWebsiteSet() {}
         private RelatedWebsiteSet(Map<String, Object> values) { super(values); }
-        @Nullable public static RelatedWebsiteSet fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RelatedWebsiteSet(values);
+        public static RelatedWebsiteSet fromMap(Map<String, Object> values) {
+            return new RelatedWebsiteSet(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The primary site of this set, along with the ccTLDs if there is any.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> primarySites() {
-            return list(value("primarySites"), element0 -> (String) element0);
+        public java.util.List<String> primarySites() {
+            return CdpObject.requireList(require("primarySites"), element0 -> (String) element0);
         }
         /**
          * The associated sites of this set, along with the ccTLDs if there is any.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> associatedSites() {
-            return list(value("associatedSites"), element0 -> (String) element0);
+        public java.util.List<String> associatedSites() {
+            return CdpObject.requireList(require("associatedSites"), element0 -> (String) element0);
         }
         /**
          * The service sites of this set, along with the ccTLDs if there is any.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> serviceSites() {
-            return list(value("serviceSites"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The primary site of this set, along with the ccTLDs if there is any.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder primarySites(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("primarySites");
-                else values.put("primarySites", jsonValue(value));
-                return this;
-            }
-            /**
-             * The associated sites of this set, along with the ccTLDs if there is any.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder associatedSites(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("associatedSites");
-                else values.put("associatedSites", jsonValue(value));
-                return this;
-            }
-            /**
-             * The service sites of this set, along with the ccTLDs if there is any.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serviceSites(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("serviceSites");
-                else values.put("serviceSites", jsonValue(value));
-                return this;
-            }
-            public RelatedWebsiteSet build() {
-                if (!values.containsKey("primarySites")) throw new IllegalStateException("Missing required CDP field: primarySites");
-                if (!values.containsKey("associatedSites")) throw new IllegalStateException("Missing required CDP field: associatedSites");
-                if (!values.containsKey("serviceSites")) throw new IllegalStateException("Missing required CDP field: serviceSites");
-                return new RelatedWebsiteSet(values);
-            }
-        }
-    }
-    /**
-     * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class GetStorageKeyForFrameParams extends CdpObject {
-        private GetStorageKeyForFrameParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetStorageKeyForFrameParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetStorageKeyForFrameParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the frameId field.
-         * @return the protocol field value
-         */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the frameId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            public GetStorageKeyForFrameParams build() {
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new GetStorageKeyForFrameParams(values);
-            }
-        }
-    }
-    /**
-     * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class GetStorageKeyForFrameResult extends CdpObject {
-        private GetStorageKeyForFrameResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetStorageKeyForFrameResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetStorageKeyForFrameResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the storageKey field.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the storageKey field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public GetStorageKeyForFrameResult build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new GetStorageKeyForFrameResult(values);
-            }
-        }
-    }
-    /**
-     * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetStorageKeyParams extends CdpObject {
-        private GetStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the frameId field.
-         * @return the protocol field value
-         */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the frameId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            public GetStorageKeyParams build() {
-                return new GetStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetStorageKeyResult extends CdpObject {
-        private GetStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the storageKey field.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the storageKey field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public GetStorageKeyResult build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new GetStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Clears storage for origin.
-     */
-    public static final class ClearDataForOriginParams extends CdpObject {
-        private ClearDataForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearDataForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearDataForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public java.util.List<String> serviceSites() {
+            return CdpObject.requireList(require("serviceSites"), element0 -> (String) element0);
         }
         /**
-         * Comma separated list of StorageType to clear.
-         * @return the protocol field value
+         * The primary site of this set, along with the ccTLDs if there is any.
+         * @param primarySites field value
+         * @return this model
          */
-        @Nullable public String storageTypes() {
-            return (String) value("storageTypes");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Comma separated list of StorageType to clear.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageTypes(@Nullable String value) {
-                if (value == null) values.remove("storageTypes");
-                else values.put("storageTypes", jsonValue(value));
-                return this;
-            }
-            public ClearDataForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("storageTypes")) throw new IllegalStateException("Missing required CDP field: storageTypes");
-                return new ClearDataForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Clears storage for origin.
-     */
-    public static final class ClearDataForOriginResult extends CdpObject {
-        private ClearDataForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearDataForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearDataForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearDataForOriginResult build() {
-                return new ClearDataForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Clears storage for storage key.
-     */
-    public static final class ClearDataForStorageKeyParams extends CdpObject {
-        private ClearDataForStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearDataForStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearDataForStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public RelatedWebsiteSet primarySites(java.util.List<String> primarySites) {
+            set("primarySites", primarySites);
+            return this;
         }
         /**
-         * Comma separated list of StorageType to clear.
-         * @return the protocol field value
+         * The associated sites of this set, along with the ccTLDs if there is any.
+         * @param associatedSites field value
+         * @return this model
          */
-        @Nullable public String storageTypes() {
-            return (String) value("storageTypes");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Comma separated list of StorageType to clear.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageTypes(@Nullable String value) {
-                if (value == null) values.remove("storageTypes");
-                else values.put("storageTypes", jsonValue(value));
-                return this;
-            }
-            public ClearDataForStorageKeyParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("storageTypes")) throw new IllegalStateException("Missing required CDP field: storageTypes");
-                return new ClearDataForStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Clears storage for storage key.
-     */
-    public static final class ClearDataForStorageKeyResult extends CdpObject {
-        private ClearDataForStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearDataForStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearDataForStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearDataForStorageKeyResult build() {
-                return new ClearDataForStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Returns all browser cookies.
-     */
-    public static final class GetCookiesParams extends CdpObject {
-        private GetCookiesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetCookiesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetCookiesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Browser context to use when called on the browser endpoint.
-         * @return the protocol field value
-         */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Browser context to use when called on the browser endpoint.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            public GetCookiesParams build() {
-                return new GetCookiesParams(values);
-            }
-        }
-    }
-    /**
-     * Returns all browser cookies.
-     */
-    public static final class GetCookiesResult extends CdpObject {
-        private GetCookiesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetCookiesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetCookiesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Array of cookie objects.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Network.Cookie> cookies() {
-            return list(value("cookies"), element0 -> Network.Cookie.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Array of cookie objects.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cookies(@Nullable java.util.List<Network.Cookie> value) {
-                if (value == null) values.remove("cookies");
-                else values.put("cookies", jsonValue(value));
-                return this;
-            }
-            public GetCookiesResult build() {
-                if (!values.containsKey("cookies")) throw new IllegalStateException("Missing required CDP field: cookies");
-                return new GetCookiesResult(values);
-            }
-        }
-    }
-    /**
-     * Sets given cookies.
-     */
-    public static final class SetCookiesParams extends CdpObject {
-        private SetCookiesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetCookiesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetCookiesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Cookies to be set.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Network.CookieParam> cookies() {
-            return list(value("cookies"), element0 -> Network.CookieParam.fromMap(objectMap(element0)));
+        public RelatedWebsiteSet associatedSites(java.util.List<String> associatedSites) {
+            set("associatedSites", associatedSites);
+            return this;
         }
         /**
-         * Browser context to use when called on the browser endpoint.
-         * @return the protocol field value
+         * The service sites of this set, along with the ccTLDs if there is any.
+         * @param serviceSites field value
+         * @return this model
          */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Cookies to be set.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cookies(@Nullable java.util.List<Network.CookieParam> value) {
-                if (value == null) values.remove("cookies");
-                else values.put("cookies", jsonValue(value));
-                return this;
-            }
-            /**
-             * Browser context to use when called on the browser endpoint.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            public SetCookiesParams build() {
-                if (!values.containsKey("cookies")) throw new IllegalStateException("Missing required CDP field: cookies");
-                return new SetCookiesParams(values);
-            }
-        }
-    }
-    /**
-     * Sets given cookies.
-     */
-    public static final class SetCookiesResult extends CdpObject {
-        private SetCookiesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetCookiesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetCookiesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetCookiesResult build() {
-                return new SetCookiesResult(values);
-            }
-        }
-    }
-    /**
-     * Clears cookies.
-     */
-    public static final class ClearCookiesParams extends CdpObject {
-        private ClearCookiesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearCookiesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearCookiesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Browser context to use when called on the browser endpoint.
-         * @return the protocol field value
-         */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Browser context to use when called on the browser endpoint.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            public ClearCookiesParams build() {
-                return new ClearCookiesParams(values);
-            }
-        }
-    }
-    /**
-     * Clears cookies.
-     */
-    public static final class ClearCookiesResult extends CdpObject {
-        private ClearCookiesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearCookiesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearCookiesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearCookiesResult build() {
-                return new ClearCookiesResult(values);
-            }
-        }
-    }
-    /**
-     * Returns usage and quota in bytes.
-     */
-    public static final class GetUsageAndQuotaParams extends CdpObject {
-        private GetUsageAndQuotaParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetUsageAndQuotaParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetUsageAndQuotaParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            public GetUsageAndQuotaParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new GetUsageAndQuotaParams(values);
-            }
+        public RelatedWebsiteSet serviceSites(java.util.List<String> serviceSites) {
+            set("serviceSites", serviceSites);
+            return this;
         }
     }
     /**
      * Returns usage and quota in bytes.
      */
     public static final class GetUsageAndQuotaResult extends CdpObject {
+        public GetUsageAndQuotaResult() {}
         private GetUsageAndQuotaResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetUsageAndQuotaResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetUsageAndQuotaResult(values);
+        public static GetUsageAndQuotaResult fromMap(Map<String, Object> values) {
+            return new GetUsageAndQuotaResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Storage usage (bytes).
          * @return the protocol field value
          */
-        @Nullable public Double usage() {
-            return numberAsDouble(value("usage"));
+        public double usage() {
+            return ((Number) require("usage")).doubleValue();
         }
         /**
          * Storage quota (bytes).
          * @return the protocol field value
          */
-        @Nullable public Double quota() {
-            return numberAsDouble(value("quota"));
+        public double quota() {
+            return ((Number) require("quota")).doubleValue();
         }
         /**
          * Whether or not the origin has an active storage quota override
          * @return the protocol field value
          */
-        @Nullable public Boolean overrideActive() {
-            return (Boolean) value("overrideActive");
+        public boolean overrideActive() {
+            return (Boolean) require("overrideActive");
         }
         /**
          * Storage usage per type (bytes).
          * @return the protocol field value
          */
-        @Nullable public java.util.List<Storage.UsageForType> usageBreakdown() {
-            return list(value("usageBreakdown"), element0 -> Storage.UsageForType.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage usage (bytes).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder usage(@Nullable Double value) {
-                if (value == null) values.remove("usage");
-                else values.put("usage", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage quota (bytes).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder quota(@Nullable Double value) {
-                if (value == null) values.remove("quota");
-                else values.put("quota", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether or not the origin has an active storage quota override
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder overrideActive(@Nullable Boolean value) {
-                if (value == null) values.remove("overrideActive");
-                else values.put("overrideActive", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage usage per type (bytes).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder usageBreakdown(@Nullable java.util.List<Storage.UsageForType> value) {
-                if (value == null) values.remove("usageBreakdown");
-                else values.put("usageBreakdown", jsonValue(value));
-                return this;
-            }
-            public GetUsageAndQuotaResult build() {
-                if (!values.containsKey("usage")) throw new IllegalStateException("Missing required CDP field: usage");
-                if (!values.containsKey("quota")) throw new IllegalStateException("Missing required CDP field: quota");
-                if (!values.containsKey("overrideActive")) throw new IllegalStateException("Missing required CDP field: overrideActive");
-                if (!values.containsKey("usageBreakdown")) throw new IllegalStateException("Missing required CDP field: usageBreakdown");
-                return new GetUsageAndQuotaResult(values);
-            }
-        }
-    }
-    /**
-     * Override quota for the specified origin
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class OverrideQuotaForOriginParams extends CdpObject {
-        private OverrideQuotaForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static OverrideQuotaForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OverrideQuotaForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public java.util.List<Storage.UsageForType> usageBreakdown() {
+            return CdpObject.requireList(require("usageBreakdown"), element0 -> java.util.Objects.requireNonNull(Storage.UsageForType.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
         /**
-         * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
-         * @return the protocol field value
+         * Storage usage (bytes).
+         * @param usage field value
+         * @return this model
          */
-        @Nullable public Double quotaSize() {
-            return numberAsDouble(value("quotaSize"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder quotaSize(@Nullable Double value) {
-                if (value == null) values.remove("quotaSize");
-                else values.put("quotaSize", jsonValue(value));
-                return this;
-            }
-            public OverrideQuotaForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new OverrideQuotaForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Override quota for the specified origin
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class OverrideQuotaForOriginResult extends CdpObject {
-        private OverrideQuotaForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static OverrideQuotaForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OverrideQuotaForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public OverrideQuotaForOriginResult build() {
-                return new OverrideQuotaForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Registers origin to be notified when an update occurs to its cache storage list.
-     */
-    public static final class TrackCacheStorageForOriginParams extends CdpObject {
-        private TrackCacheStorageForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackCacheStorageForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackCacheStorageForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            public TrackCacheStorageForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new TrackCacheStorageForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Registers origin to be notified when an update occurs to its cache storage list.
-     */
-    public static final class TrackCacheStorageForOriginResult extends CdpObject {
-        private TrackCacheStorageForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackCacheStorageForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackCacheStorageForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public TrackCacheStorageForOriginResult build() {
-                return new TrackCacheStorageForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Registers storage key to be notified when an update occurs to its cache storage list.
-     */
-    public static final class TrackCacheStorageForStorageKeyParams extends CdpObject {
-        private TrackCacheStorageForStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackCacheStorageForStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackCacheStorageForStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public TrackCacheStorageForStorageKeyParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new TrackCacheStorageForStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Registers storage key to be notified when an update occurs to its cache storage list.
-     */
-    public static final class TrackCacheStorageForStorageKeyResult extends CdpObject {
-        private TrackCacheStorageForStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackCacheStorageForStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackCacheStorageForStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public TrackCacheStorageForStorageKeyResult build() {
-                return new TrackCacheStorageForStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Registers origin to be notified when an update occurs to its IndexedDB.
-     */
-    public static final class TrackIndexedDBForOriginParams extends CdpObject {
-        private TrackIndexedDBForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackIndexedDBForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackIndexedDBForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            public TrackIndexedDBForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new TrackIndexedDBForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Registers origin to be notified when an update occurs to its IndexedDB.
-     */
-    public static final class TrackIndexedDBForOriginResult extends CdpObject {
-        private TrackIndexedDBForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackIndexedDBForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackIndexedDBForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public TrackIndexedDBForOriginResult build() {
-                return new TrackIndexedDBForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Registers storage key to be notified when an update occurs to its IndexedDB.
-     */
-    public static final class TrackIndexedDBForStorageKeyParams extends CdpObject {
-        private TrackIndexedDBForStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackIndexedDBForStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackIndexedDBForStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public TrackIndexedDBForStorageKeyParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new TrackIndexedDBForStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Registers storage key to be notified when an update occurs to its IndexedDB.
-     */
-    public static final class TrackIndexedDBForStorageKeyResult extends CdpObject {
-        private TrackIndexedDBForStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static TrackIndexedDBForStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TrackIndexedDBForStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public TrackIndexedDBForStorageKeyResult build() {
-                return new TrackIndexedDBForStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Unregisters origin from receiving notifications for cache storage.
-     */
-    public static final class UntrackCacheStorageForOriginParams extends CdpObject {
-        private UntrackCacheStorageForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackCacheStorageForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackCacheStorageForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            public UntrackCacheStorageForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new UntrackCacheStorageForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Unregisters origin from receiving notifications for cache storage.
-     */
-    public static final class UntrackCacheStorageForOriginResult extends CdpObject {
-        private UntrackCacheStorageForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackCacheStorageForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackCacheStorageForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UntrackCacheStorageForOriginResult build() {
-                return new UntrackCacheStorageForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Unregisters storage key from receiving notifications for cache storage.
-     */
-    public static final class UntrackCacheStorageForStorageKeyParams extends CdpObject {
-        private UntrackCacheStorageForStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackCacheStorageForStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackCacheStorageForStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public UntrackCacheStorageForStorageKeyParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new UntrackCacheStorageForStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Unregisters storage key from receiving notifications for cache storage.
-     */
-    public static final class UntrackCacheStorageForStorageKeyResult extends CdpObject {
-        private UntrackCacheStorageForStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackCacheStorageForStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackCacheStorageForStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UntrackCacheStorageForStorageKeyResult build() {
-                return new UntrackCacheStorageForStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Unregisters origin from receiving notifications for IndexedDB.
-     */
-    public static final class UntrackIndexedDBForOriginParams extends CdpObject {
-        private UntrackIndexedDBForOriginParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackIndexedDBForOriginParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackIndexedDBForOriginParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            public UntrackIndexedDBForOriginParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                return new UntrackIndexedDBForOriginParams(values);
-            }
-        }
-    }
-    /**
-     * Unregisters origin from receiving notifications for IndexedDB.
-     */
-    public static final class UntrackIndexedDBForOriginResult extends CdpObject {
-        private UntrackIndexedDBForOriginResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackIndexedDBForOriginResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackIndexedDBForOriginResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UntrackIndexedDBForOriginResult build() {
-                return new UntrackIndexedDBForOriginResult(values);
-            }
-        }
-    }
-    /**
-     * Unregisters storage key from receiving notifications for IndexedDB.
-     */
-    public static final class UntrackIndexedDBForStorageKeyParams extends CdpObject {
-        private UntrackIndexedDBForStorageKeyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackIndexedDBForStorageKeyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackIndexedDBForStorageKeyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            public UntrackIndexedDBForStorageKeyParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                return new UntrackIndexedDBForStorageKeyParams(values);
-            }
-        }
-    }
-    /**
-     * Unregisters storage key from receiving notifications for IndexedDB.
-     */
-    public static final class UntrackIndexedDBForStorageKeyResult extends CdpObject {
-        private UntrackIndexedDBForStorageKeyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UntrackIndexedDBForStorageKeyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UntrackIndexedDBForStorageKeyResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UntrackIndexedDBForStorageKeyResult build() {
-                return new UntrackIndexedDBForStorageKeyResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the number of stored Trust Tokens per issuer for the current browsing context.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTrustTokensParams extends CdpObject {
-        private GetTrustTokensParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTrustTokensParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTrustTokensParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetTrustTokensParams build() {
-                return new GetTrustTokensParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the number of stored Trust Tokens per issuer for the current browsing context.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTrustTokensResult extends CdpObject {
-        private GetTrustTokensResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTrustTokensResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTrustTokensResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the tokens field.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Storage.TrustTokens> tokens() {
-            return list(value("tokens"), element0 -> Storage.TrustTokens.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the tokens field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder tokens(@Nullable java.util.List<Storage.TrustTokens> value) {
-                if (value == null) values.remove("tokens");
-                else values.put("tokens", jsonValue(value));
-                return this;
-            }
-            public GetTrustTokensResult build() {
-                if (!values.containsKey("tokens")) throw new IllegalStateException("Missing required CDP field: tokens");
-                return new GetTrustTokensResult(values);
-            }
-        }
-    }
-    /**
-     * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ClearTrustTokensParams extends CdpObject {
-        private ClearTrustTokensParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearTrustTokensParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearTrustTokensParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the issuerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String issuerOrigin() {
-            return (String) value("issuerOrigin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the issuerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder issuerOrigin(@Nullable String value) {
-                if (value == null) values.remove("issuerOrigin");
-                else values.put("issuerOrigin", jsonValue(value));
-                return this;
-            }
-            public ClearTrustTokensParams build() {
-                if (!values.containsKey("issuerOrigin")) throw new IllegalStateException("Missing required CDP field: issuerOrigin");
-                return new ClearTrustTokensParams(values);
-            }
-        }
-    }
-    /**
-     * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ClearTrustTokensResult extends CdpObject {
-        private ClearTrustTokensResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearTrustTokensResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearTrustTokensResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True if any tokens were deleted, false otherwise.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean didDeleteTokens() {
-            return (Boolean) value("didDeleteTokens");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True if any tokens were deleted, false otherwise.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder didDeleteTokens(@Nullable Boolean value) {
-                if (value == null) values.remove("didDeleteTokens");
-                else values.put("didDeleteTokens", jsonValue(value));
-                return this;
-            }
-            public ClearTrustTokensResult build() {
-                if (!values.containsKey("didDeleteTokens")) throw new IllegalStateException("Missing required CDP field: didDeleteTokens");
-                return new ClearTrustTokensResult(values);
-            }
-        }
-    }
-    /**
-     * Gets details for a named interest group.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetInterestGroupDetailsParams extends CdpObject {
-        private GetInterestGroupDetailsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetInterestGroupDetailsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetInterestGroupDetailsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
+        public GetUsageAndQuotaResult usage(double usage) {
+            set("usage", usage);
+            return this;
         }
         /**
-         * Returns the name field.
-         * @return the protocol field value
+         * Storage quota (bytes).
+         * @param quota field value
+         * @return this model
          */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public GetInterestGroupDetailsParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new GetInterestGroupDetailsParams(values);
-            }
-        }
-    }
-    /**
-     * Gets details for a named interest group.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetInterestGroupDetailsResult extends CdpObject {
-        private GetInterestGroupDetailsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetInterestGroupDetailsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetInterestGroupDetailsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * This largely corresponds to: https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup but has absolute expirationTime instead of relative lifetimeMs and also adds joiningOrigin.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.Map<String, Object> details() {
-            return objectMap(value("details"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * This largely corresponds to: https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup but has absolute expirationTime instead of relative lifetimeMs and also adds joiningOrigin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder details(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("details");
-                else values.put("details", jsonValue(value));
-                return this;
-            }
-            public GetInterestGroupDetailsResult build() {
-                if (!values.containsKey("details")) throw new IllegalStateException("Missing required CDP field: details");
-                return new GetInterestGroupDetailsResult(values);
-            }
-        }
-    }
-    /**
-     * Enables/Disables issuing of interestGroupAccessed events.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInterestGroupTrackingParams extends CdpObject {
-        private SetInterestGroupTrackingParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInterestGroupTrackingParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInterestGroupTrackingParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the enable field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the enable field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public SetInterestGroupTrackingParams build() {
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new SetInterestGroupTrackingParams(values);
-            }
-        }
-    }
-    /**
-     * Enables/Disables issuing of interestGroupAccessed events.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInterestGroupTrackingResult extends CdpObject {
-        private SetInterestGroupTrackingResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInterestGroupTrackingResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInterestGroupTrackingResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetInterestGroupTrackingResult build() {
-                return new SetInterestGroupTrackingResult(values);
-            }
-        }
-    }
-    /**
-     * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInterestGroupAuctionTrackingParams extends CdpObject {
-        private SetInterestGroupAuctionTrackingParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInterestGroupAuctionTrackingParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInterestGroupAuctionTrackingParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the enable field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the enable field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public SetInterestGroupAuctionTrackingParams build() {
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new SetInterestGroupAuctionTrackingParams(values);
-            }
-        }
-    }
-    /**
-     * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetInterestGroupAuctionTrackingResult extends CdpObject {
-        private SetInterestGroupAuctionTrackingResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInterestGroupAuctionTrackingResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInterestGroupAuctionTrackingResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetInterestGroupAuctionTrackingResult build() {
-                return new SetInterestGroupAuctionTrackingResult(values);
-            }
-        }
-    }
-    /**
-     * Gets metadata for an origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSharedStorageMetadataParams extends CdpObject {
-        private GetSharedStorageMetadataParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSharedStorageMetadataParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSharedStorageMetadataParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            public GetSharedStorageMetadataParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                return new GetSharedStorageMetadataParams(values);
-            }
-        }
-    }
-    /**
-     * Gets metadata for an origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSharedStorageMetadataResult extends CdpObject {
-        private GetSharedStorageMetadataResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSharedStorageMetadataResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSharedStorageMetadataResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the metadata field.
-         * @return the protocol field value
-         */
-        @Nullable public Storage.SharedStorageMetadata metadata() {
-            return Storage.SharedStorageMetadata.fromMap(objectMap(value("metadata")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the metadata field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder metadata(@Nullable Storage.SharedStorageMetadata value) {
-                if (value == null) values.remove("metadata");
-                else values.put("metadata", jsonValue(value));
-                return this;
-            }
-            public GetSharedStorageMetadataResult build() {
-                if (!values.containsKey("metadata")) throw new IllegalStateException("Missing required CDP field: metadata");
-                return new GetSharedStorageMetadataResult(values);
-            }
-        }
-    }
-    /**
-     * Gets the entries in an given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSharedStorageEntriesParams extends CdpObject {
-        private GetSharedStorageEntriesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSharedStorageEntriesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSharedStorageEntriesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            public GetSharedStorageEntriesParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                return new GetSharedStorageEntriesParams(values);
-            }
-        }
-    }
-    /**
-     * Gets the entries in an given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetSharedStorageEntriesResult extends CdpObject {
-        private GetSharedStorageEntriesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSharedStorageEntriesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSharedStorageEntriesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the entries field.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Storage.SharedStorageEntry> entries() {
-            return list(value("entries"), element0 -> Storage.SharedStorageEntry.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the entries field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder entries(@Nullable java.util.List<Storage.SharedStorageEntry> value) {
-                if (value == null) values.remove("entries");
-                else values.put("entries", jsonValue(value));
-                return this;
-            }
-            public GetSharedStorageEntriesResult build() {
-                if (!values.containsKey("entries")) throw new IllegalStateException("Missing required CDP field: entries");
-                return new GetSharedStorageEntriesResult(values);
-            }
-        }
-    }
-    /**
-     * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetSharedStorageEntryParams extends CdpObject {
-        private SetSharedStorageEntryParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSharedStorageEntryParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSharedStorageEntryParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
+        public GetUsageAndQuotaResult quota(double quota) {
+            set("quota", quota);
+            return this;
         }
         /**
-         * Returns the key field.
-         * @return the protocol field value
+         * Whether or not the origin has an active storage quota override
+         * @param overrideActive field value
+         * @return this model
          */
-        @Nullable public String key() {
-            return (String) value("key");
+        public GetUsageAndQuotaResult overrideActive(boolean overrideActive) {
+            set("overrideActive", overrideActive);
+            return this;
         }
         /**
-         * Returns the value field.
-         * @return the protocol field value
+         * Storage usage per type (bytes).
+         * @param usageBreakdown field value
+         * @return this model
          */
-        @Nullable public String value() {
-            return (String) value("value");
-        }
-        /**
-         * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean ignoreIfPresent() {
-            return (Boolean) value("ignoreIfPresent");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the key field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable String value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the value field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            /**
-             * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ignoreIfPresent(@Nullable Boolean value) {
-                if (value == null) values.remove("ignoreIfPresent");
-                else values.put("ignoreIfPresent", jsonValue(value));
-                return this;
-            }
-            public SetSharedStorageEntryParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new SetSharedStorageEntryParams(values);
-            }
-        }
-    }
-    /**
-     * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetSharedStorageEntryResult extends CdpObject {
-        private SetSharedStorageEntryResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSharedStorageEntryResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSharedStorageEntryResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetSharedStorageEntryResult build() {
-                return new SetSharedStorageEntryResult(values);
-            }
-        }
-    }
-    /**
-     * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DeleteSharedStorageEntryParams extends CdpObject {
-        private DeleteSharedStorageEntryParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteSharedStorageEntryParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteSharedStorageEntryParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
-        }
-        /**
-         * Returns the key field.
-         * @return the protocol field value
-         */
-        @Nullable public String key() {
-            return (String) value("key");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the key field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable String value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            public DeleteSharedStorageEntryParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
-                return new DeleteSharedStorageEntryParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DeleteSharedStorageEntryResult extends CdpObject {
-        private DeleteSharedStorageEntryResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteSharedStorageEntryResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteSharedStorageEntryResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DeleteSharedStorageEntryResult build() {
-                return new DeleteSharedStorageEntryResult(values);
-            }
-        }
-    }
-    /**
-     * Clears all entries for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ClearSharedStorageEntriesParams extends CdpObject {
-        private ClearSharedStorageEntriesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearSharedStorageEntriesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearSharedStorageEntriesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            public ClearSharedStorageEntriesParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                return new ClearSharedStorageEntriesParams(values);
-            }
-        }
-    }
-    /**
-     * Clears all entries for a given origin&#x27;s shared storage.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ClearSharedStorageEntriesResult extends CdpObject {
-        private ClearSharedStorageEntriesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClearSharedStorageEntriesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClearSharedStorageEntriesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClearSharedStorageEntriesResult build() {
-                return new ClearSharedStorageEntriesResult(values);
-            }
-        }
-    }
-    /**
-     * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ResetSharedStorageBudgetParams extends CdpObject {
-        private ResetSharedStorageBudgetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ResetSharedStorageBudgetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResetSharedStorageBudgetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the ownerOrigin field.
-         * @return the protocol field value
-         */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            public ResetSharedStorageBudgetParams build() {
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                return new ResetSharedStorageBudgetParams(values);
-            }
-        }
-    }
-    /**
-     * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ResetSharedStorageBudgetResult extends CdpObject {
-        private ResetSharedStorageBudgetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ResetSharedStorageBudgetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResetSharedStorageBudgetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ResetSharedStorageBudgetResult build() {
-                return new ResetSharedStorageBudgetResult(values);
-            }
-        }
-    }
-    /**
-     * Enables/disables issuing of sharedStorageAccessed events.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetSharedStorageTrackingParams extends CdpObject {
-        private SetSharedStorageTrackingParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSharedStorageTrackingParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSharedStorageTrackingParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the enable field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the enable field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public SetSharedStorageTrackingParams build() {
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new SetSharedStorageTrackingParams(values);
-            }
-        }
-    }
-    /**
-     * Enables/disables issuing of sharedStorageAccessed events.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetSharedStorageTrackingResult extends CdpObject {
-        private SetSharedStorageTrackingResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSharedStorageTrackingResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSharedStorageTrackingResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetSharedStorageTrackingResult build() {
-                return new SetSharedStorageTrackingResult(values);
-            }
-        }
-    }
-    /**
-     * Set tracking for a storage key&#x27;s buckets.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetStorageBucketTrackingParams extends CdpObject {
-        private SetStorageBucketTrackingParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetStorageBucketTrackingParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetStorageBucketTrackingParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the storageKey field.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        /**
-         * Returns the enable field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enable() {
-            return (Boolean) value("enable");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the storageKey field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the enable field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enable(@Nullable Boolean value) {
-                if (value == null) values.remove("enable");
-                else values.put("enable", jsonValue(value));
-                return this;
-            }
-            public SetStorageBucketTrackingParams build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("enable")) throw new IllegalStateException("Missing required CDP field: enable");
-                return new SetStorageBucketTrackingParams(values);
-            }
-        }
-    }
-    /**
-     * Set tracking for a storage key&#x27;s buckets.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetStorageBucketTrackingResult extends CdpObject {
-        private SetStorageBucketTrackingResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetStorageBucketTrackingResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetStorageBucketTrackingResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetStorageBucketTrackingResult build() {
-                return new SetStorageBucketTrackingResult(values);
-            }
-        }
-    }
-    /**
-     * Deletes the Storage Bucket with the given storage key and bucket name.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DeleteStorageBucketParams extends CdpObject {
-        private DeleteStorageBucketParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteStorageBucketParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteStorageBucketParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the bucket field.
-         * @return the protocol field value
-         */
-        @Nullable public Storage.StorageBucket bucket() {
-            return Storage.StorageBucket.fromMap(objectMap(value("bucket")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the bucket field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucket(@Nullable Storage.StorageBucket value) {
-                if (value == null) values.remove("bucket");
-                else values.put("bucket", jsonValue(value));
-                return this;
-            }
-            public DeleteStorageBucketParams build() {
-                if (!values.containsKey("bucket")) throw new IllegalStateException("Missing required CDP field: bucket");
-                return new DeleteStorageBucketParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes the Storage Bucket with the given storage key and bucket name.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class DeleteStorageBucketResult extends CdpObject {
-        private DeleteStorageBucketResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteStorageBucketResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteStorageBucketResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DeleteStorageBucketResult build() {
-                return new DeleteStorageBucketResult(values);
-            }
-        }
-    }
-    /**
-     * Deletes state for sites identified as potential bounce trackers, immediately.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class RunBounceTrackingMitigationsParams extends CdpObject {
-        private RunBounceTrackingMitigationsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RunBounceTrackingMitigationsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RunBounceTrackingMitigationsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RunBounceTrackingMitigationsParams build() {
-                return new RunBounceTrackingMitigationsParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes state for sites identified as potential bounce trackers, immediately.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class RunBounceTrackingMitigationsResult extends CdpObject {
-        private RunBounceTrackingMitigationsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RunBounceTrackingMitigationsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RunBounceTrackingMitigationsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the deletedSites field.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> deletedSites() {
-            return list(value("deletedSites"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the deletedSites field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder deletedSites(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("deletedSites");
-                else values.put("deletedSites", jsonValue(value));
-                return this;
-            }
-            public RunBounceTrackingMitigationsResult build() {
-                if (!values.containsKey("deletedSites")) throw new IllegalStateException("Missing required CDP field: deletedSites");
-                return new RunBounceTrackingMitigationsResult(values);
-            }
-        }
-    }
-    /**
-     * Returns the effective Related Website Sets in use by this profile for the browser session. The effective Related Website Sets will not change during a browser session.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetRelatedWebsiteSetsParams extends CdpObject {
-        private GetRelatedWebsiteSetsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetRelatedWebsiteSetsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetRelatedWebsiteSetsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetRelatedWebsiteSetsParams build() {
-                return new GetRelatedWebsiteSetsParams(values);
-            }
-        }
-    }
-    /**
-     * Returns the effective Related Website Sets in use by this profile for the browser session. The effective Related Website Sets will not change during a browser session.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetRelatedWebsiteSetsResult extends CdpObject {
-        private GetRelatedWebsiteSetsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetRelatedWebsiteSetsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetRelatedWebsiteSetsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the sets field.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Storage.RelatedWebsiteSet> sets() {
-            return list(value("sets"), element0 -> Storage.RelatedWebsiteSet.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the sets field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sets(@Nullable java.util.List<Storage.RelatedWebsiteSet> value) {
-                if (value == null) values.remove("sets");
-                else values.put("sets", jsonValue(value));
-                return this;
-            }
-            public GetRelatedWebsiteSetsResult build() {
-                if (!values.containsKey("sets")) throw new IllegalStateException("Missing required CDP field: sets");
-                return new GetRelatedWebsiteSetsResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Storage.setProtectedAudienceKAnonymity.
-     */
-    public static final class SetProtectedAudienceKAnonymityParams extends CdpObject {
-        private SetProtectedAudienceKAnonymityParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetProtectedAudienceKAnonymityParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetProtectedAudienceKAnonymityParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the owner field.
-         * @return the protocol field value
-         */
-        @Nullable public String owner() {
-            return (String) value("owner");
-        }
-        /**
-         * Returns the name field.
-         * @return the protocol field value
-         */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        /**
-         * Returns the hashes field.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> hashes() {
-            return list(value("hashes"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the owner field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder owner(@Nullable String value) {
-                if (value == null) values.remove("owner");
-                else values.put("owner", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the hashes field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hashes(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("hashes");
-                else values.put("hashes", jsonValue(value));
-                return this;
-            }
-            public SetProtectedAudienceKAnonymityParams build() {
-                if (!values.containsKey("owner")) throw new IllegalStateException("Missing required CDP field: owner");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("hashes")) throw new IllegalStateException("Missing required CDP field: hashes");
-                return new SetProtectedAudienceKAnonymityParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Storage.setProtectedAudienceKAnonymity.
-     */
-    public static final class SetProtectedAudienceKAnonymityResult extends CdpObject {
-        private SetProtectedAudienceKAnonymityResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetProtectedAudienceKAnonymityResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetProtectedAudienceKAnonymityResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetProtectedAudienceKAnonymityResult build() {
-                return new SetProtectedAudienceKAnonymityResult(values);
-            }
+        public GetUsageAndQuotaResult usageBreakdown(java.util.List<Storage.UsageForType> usageBreakdown) {
+            set("usageBreakdown", usageBreakdown);
+            return this;
         }
     }
     /**
      * A cache&#x27;s contents have been modified.
      */
     public static final class CacheStorageContentUpdatedEvent extends CdpObject {
+        public CacheStorageContentUpdatedEvent() {}
         private CacheStorageContentUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static CacheStorageContentUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CacheStorageContentUpdatedEvent(values);
+        public static CacheStorageContentUpdatedEvent fromMap(Map<String, Object> values) {
+            return new CacheStorageContentUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Origin to update.
          * @return the protocol field value
          */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public String origin() {
+            return (String) require("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public String storageKey() {
+            return (String) require("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
-        @Nullable public String bucketId() {
-            return (String) value("bucketId");
+        public String bucketId() {
+            return (String) require("bucketId");
         }
         /**
          * Name of cache in origin.
          * @return the protocol field value
          */
-        @Nullable public String cacheName() {
-            return (String) value("cacheName");
+        public String cacheName() {
+            return (String) require("cacheName");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Origin to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketId(@Nullable String value) {
-                if (value == null) values.remove("bucketId");
-                else values.put("bucketId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name of cache in origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheName(@Nullable String value) {
-                if (value == null) values.remove("cacheName");
-                else values.put("cacheName", jsonValue(value));
-                return this;
-            }
-            public CacheStorageContentUpdatedEvent build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("bucketId")) throw new IllegalStateException("Missing required CDP field: bucketId");
-                if (!values.containsKey("cacheName")) throw new IllegalStateException("Missing required CDP field: cacheName");
-                return new CacheStorageContentUpdatedEvent(values);
-            }
+        /**
+         * Origin to update.
+         * @param origin field value
+         * @return this model
+         */
+        public CacheStorageContentUpdatedEvent origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Storage key to update.
+         * @param storageKey field value
+         * @return this model
+         */
+        public CacheStorageContentUpdatedEvent storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket to update.
+         * @param bucketId field value
+         * @return this model
+         */
+        public CacheStorageContentUpdatedEvent bucketId(String bucketId) {
+            set("bucketId", bucketId);
+            return this;
+        }
+        /**
+         * Name of cache in origin.
+         * @param cacheName field value
+         * @return this model
+         */
+        public CacheStorageContentUpdatedEvent cacheName(String cacheName) {
+            set("cacheName", cacheName);
+            return this;
         }
     }
     /**
      * A cache has been added/deleted.
      */
     public static final class CacheStorageListUpdatedEvent extends CdpObject {
+        public CacheStorageListUpdatedEvent() {}
         private CacheStorageListUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static CacheStorageListUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CacheStorageListUpdatedEvent(values);
+        public static CacheStorageListUpdatedEvent fromMap(Map<String, Object> values) {
+            return new CacheStorageListUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Origin to update.
          * @return the protocol field value
          */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public String origin() {
+            return (String) require("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public String storageKey() {
+            return (String) require("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
-        @Nullable public String bucketId() {
-            return (String) value("bucketId");
+        public String bucketId() {
+            return (String) require("bucketId");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Origin to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketId(@Nullable String value) {
-                if (value == null) values.remove("bucketId");
-                else values.put("bucketId", jsonValue(value));
-                return this;
-            }
-            public CacheStorageListUpdatedEvent build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("bucketId")) throw new IllegalStateException("Missing required CDP field: bucketId");
-                return new CacheStorageListUpdatedEvent(values);
-            }
+        /**
+         * Origin to update.
+         * @param origin field value
+         * @return this model
+         */
+        public CacheStorageListUpdatedEvent origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Storage key to update.
+         * @param storageKey field value
+         * @return this model
+         */
+        public CacheStorageListUpdatedEvent storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket to update.
+         * @param bucketId field value
+         * @return this model
+         */
+        public CacheStorageListUpdatedEvent bucketId(String bucketId) {
+            set("bucketId", bucketId);
+            return this;
         }
     }
     /**
      * The origin&#x27;s IndexedDB object store has been modified.
      */
     public static final class IndexedDBContentUpdatedEvent extends CdpObject {
+        public IndexedDBContentUpdatedEvent() {}
         private IndexedDBContentUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static IndexedDBContentUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new IndexedDBContentUpdatedEvent(values);
+        public static IndexedDBContentUpdatedEvent fromMap(Map<String, Object> values) {
+            return new IndexedDBContentUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Origin to update.
          * @return the protocol field value
          */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public String origin() {
+            return (String) require("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public String storageKey() {
+            return (String) require("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
-        @Nullable public String bucketId() {
-            return (String) value("bucketId");
+        public String bucketId() {
+            return (String) require("bucketId");
         }
         /**
          * Database to update.
          * @return the protocol field value
          */
-        @Nullable public String databaseName() {
-            return (String) value("databaseName");
+        public String databaseName() {
+            return (String) require("databaseName");
         }
         /**
          * ObjectStore to update.
          * @return the protocol field value
          */
-        @Nullable public String objectStoreName() {
-            return (String) value("objectStoreName");
+        public String objectStoreName() {
+            return (String) require("objectStoreName");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Origin to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketId(@Nullable String value) {
-                if (value == null) values.remove("bucketId");
-                else values.put("bucketId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Database to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder databaseName(@Nullable String value) {
-                if (value == null) values.remove("databaseName");
-                else values.put("databaseName", jsonValue(value));
-                return this;
-            }
-            /**
-             * ObjectStore to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectStoreName(@Nullable String value) {
-                if (value == null) values.remove("objectStoreName");
-                else values.put("objectStoreName", jsonValue(value));
-                return this;
-            }
-            public IndexedDBContentUpdatedEvent build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("bucketId")) throw new IllegalStateException("Missing required CDP field: bucketId");
-                if (!values.containsKey("databaseName")) throw new IllegalStateException("Missing required CDP field: databaseName");
-                if (!values.containsKey("objectStoreName")) throw new IllegalStateException("Missing required CDP field: objectStoreName");
-                return new IndexedDBContentUpdatedEvent(values);
-            }
+        /**
+         * Origin to update.
+         * @param origin field value
+         * @return this model
+         */
+        public IndexedDBContentUpdatedEvent origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Storage key to update.
+         * @param storageKey field value
+         * @return this model
+         */
+        public IndexedDBContentUpdatedEvent storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket to update.
+         * @param bucketId field value
+         * @return this model
+         */
+        public IndexedDBContentUpdatedEvent bucketId(String bucketId) {
+            set("bucketId", bucketId);
+            return this;
+        }
+        /**
+         * Database to update.
+         * @param databaseName field value
+         * @return this model
+         */
+        public IndexedDBContentUpdatedEvent databaseName(String databaseName) {
+            set("databaseName", databaseName);
+            return this;
+        }
+        /**
+         * ObjectStore to update.
+         * @param objectStoreName field value
+         * @return this model
+         */
+        public IndexedDBContentUpdatedEvent objectStoreName(String objectStoreName) {
+            set("objectStoreName", objectStoreName);
+            return this;
         }
     }
     /**
      * The origin&#x27;s IndexedDB database list has been modified.
      */
     public static final class IndexedDBListUpdatedEvent extends CdpObject {
+        public IndexedDBListUpdatedEvent() {}
         private IndexedDBListUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static IndexedDBListUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new IndexedDBListUpdatedEvent(values);
+        public static IndexedDBListUpdatedEvent fromMap(Map<String, Object> values) {
+            return new IndexedDBListUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Origin to update.
          * @return the protocol field value
          */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public String origin() {
+            return (String) require("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public String storageKey() {
+            return (String) require("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
-        @Nullable public String bucketId() {
-            return (String) value("bucketId");
+        public String bucketId() {
+            return (String) require("bucketId");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Origin to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket to update.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketId(@Nullable String value) {
-                if (value == null) values.remove("bucketId");
-                else values.put("bucketId", jsonValue(value));
-                return this;
-            }
-            public IndexedDBListUpdatedEvent build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("bucketId")) throw new IllegalStateException("Missing required CDP field: bucketId");
-                return new IndexedDBListUpdatedEvent(values);
-            }
+        /**
+         * Origin to update.
+         * @param origin field value
+         * @return this model
+         */
+        public IndexedDBListUpdatedEvent origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * Storage key to update.
+         * @param storageKey field value
+         * @return this model
+         */
+        public IndexedDBListUpdatedEvent storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket to update.
+         * @param bucketId field value
+         * @return this model
+         */
+        public IndexedDBListUpdatedEvent bucketId(String bucketId) {
+            set("bucketId", bucketId);
+            return this;
         }
     }
     /**
      * One of the interest groups was accessed. Note that these events are global to all targets sharing an interest group store.
      */
     public static final class InterestGroupAccessedEvent extends CdpObject {
+        public InterestGroupAccessedEvent() {}
         private InterestGroupAccessedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InterestGroupAccessedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InterestGroupAccessedEvent(values);
+        public static InterestGroupAccessedEvent fromMap(Map<String, Object> values) {
+            return new InterestGroupAccessedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the accessTime field.
          * @return the protocol field value
          */
-        @Nullable public Double accessTime() {
-            return numberAsDouble(value("accessTime"));
+        public Network.TimeSinceEpoch accessTime() {
+            return new Network.TimeSinceEpoch(((Number) require("accessTime")).doubleValue());
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public Storage.InterestGroupAccessType type() {
+            return Storage.InterestGroupAccessType.of((String) require("type"));
         }
         /**
          * Returns the ownerOrigin field.
          * @return the protocol field value
          */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * For topLevelBid/topLevelAdditionalBid, and when appropriate, win and additionalBidWin
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String componentSellerOrigin() {
-            return (String) value("componentSellerOrigin");
+        public Optional<String> componentSellerOrigin() {
+            return Optional.ofNullable((String) raw("componentSellerOrigin"));
         }
         /**
          * For bid or somethingBid event, if done locally and not on a server.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Double bid() {
-            return numberAsDouble(value("bid"));
+        public OptionalDouble bid() {
+            Double value = CdpObject.numberAsDouble(raw("bid"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
         }
         /**
          * Returns the bidCurrency field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String bidCurrency() {
-            return (String) value("bidCurrency");
+        public Optional<String> bidCurrency() {
+            return Optional.ofNullable((String) raw("bidCurrency"));
         }
         /**
          * For non-global events --- links to interestGroupAuctionEvent
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String uniqueAuctionId() {
-            return (String) value("uniqueAuctionId");
+        public Optional<Storage.InterestGroupAuctionId> uniqueAuctionId() {
+            return Optional.ofNullable(raw("uniqueAuctionId") == null ? null : new Storage.InterestGroupAuctionId((String) raw("uniqueAuctionId")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the accessTime field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accessTime(@Nullable Double value) {
-                if (value == null) values.remove("accessTime");
-                else values.put("accessTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the ownerOrigin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * For topLevelBid/topLevelAdditionalBid, and when appropriate, win and additionalBidWin
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder componentSellerOrigin(@Nullable String value) {
-                if (value == null) values.remove("componentSellerOrigin");
-                else values.put("componentSellerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * For bid or somethingBid event, if done locally and not on a server.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bid(@Nullable Double value) {
-                if (value == null) values.remove("bid");
-                else values.put("bid", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the bidCurrency field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bidCurrency(@Nullable String value) {
-                if (value == null) values.remove("bidCurrency");
-                else values.put("bidCurrency", jsonValue(value));
-                return this;
-            }
-            /**
-             * For non-global events --- links to interestGroupAuctionEvent
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder uniqueAuctionId(@Nullable String value) {
-                if (value == null) values.remove("uniqueAuctionId");
-                else values.put("uniqueAuctionId", jsonValue(value));
-                return this;
-            }
-            public InterestGroupAccessedEvent build() {
-                if (!values.containsKey("accessTime")) throw new IllegalStateException("Missing required CDP field: accessTime");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new InterestGroupAccessedEvent(values);
-            }
+        /**
+         * Sets the accessTime field.
+         * @param accessTime field value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent accessTime(Network.TimeSinceEpoch accessTime) {
+            set("accessTime", accessTime);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent type(Storage.InterestGroupAccessType type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the ownerOrigin field.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * For topLevelBid/topLevelAdditionalBid, and when appropriate, win and additionalBidWin
+         * @param componentSellerOrigin field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent componentSellerOrigin(Optional<String> componentSellerOrigin) {
+            set("componentSellerOrigin", componentSellerOrigin.orElse(null));
+            return this;
+        }
+        /**
+         * For topLevelBid/topLevelAdditionalBid, and when appropriate, win and additionalBidWin
+         * @param componentSellerOrigin field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent componentSellerOrigin(String componentSellerOrigin) {
+            set("componentSellerOrigin", componentSellerOrigin);
+            return this;
+        }
+        /**
+         * For bid or somethingBid event, if done locally and not on a server.
+         * @param bid field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent bid(OptionalDouble bid) {
+            set("bid", bid.isPresent() ? bid.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * For bid or somethingBid event, if done locally and not on a server.
+         * @param bid field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent bid(Double bid) {
+            set("bid", bid);
+            return this;
+        }
+        /**
+         * Sets the bidCurrency field.
+         * @param bidCurrency field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent bidCurrency(Optional<String> bidCurrency) {
+            set("bidCurrency", bidCurrency.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the bidCurrency field.
+         * @param bidCurrency field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent bidCurrency(String bidCurrency) {
+            set("bidCurrency", bidCurrency);
+            return this;
+        }
+        /**
+         * For non-global events --- links to interestGroupAuctionEvent
+         * @param uniqueAuctionId field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent uniqueAuctionId(Optional<Storage.InterestGroupAuctionId> uniqueAuctionId) {
+            set("uniqueAuctionId", uniqueAuctionId.orElse(null));
+            return this;
+        }
+        /**
+         * For non-global events --- links to interestGroupAuctionEvent
+         * @param uniqueAuctionId field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAccessedEvent uniqueAuctionId(Storage.InterestGroupAuctionId uniqueAuctionId) {
+            set("uniqueAuctionId", uniqueAuctionId);
+            return this;
         }
     }
     /**
      * An auction involving interest groups is taking place. These events are target-specific.
      */
     public static final class InterestGroupAuctionEventOccurredEvent extends CdpObject {
+        public InterestGroupAuctionEventOccurredEvent() {}
         private InterestGroupAuctionEventOccurredEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InterestGroupAuctionEventOccurredEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InterestGroupAuctionEventOccurredEvent(values);
+        public static InterestGroupAuctionEventOccurredEvent fromMap(Map<String, Object> values) {
+            return new InterestGroupAuctionEventOccurredEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the eventTime field.
          * @return the protocol field value
          */
-        @Nullable public Double eventTime() {
-            return numberAsDouble(value("eventTime"));
+        public Network.TimeSinceEpoch eventTime() {
+            return new Network.TimeSinceEpoch(((Number) require("eventTime")).doubleValue());
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public Storage.InterestGroupAuctionEventType type() {
+            return Storage.InterestGroupAuctionEventType.of((String) require("type"));
         }
         /**
          * Returns the uniqueAuctionId field.
          * @return the protocol field value
          */
-        @Nullable public String uniqueAuctionId() {
-            return (String) value("uniqueAuctionId");
+        public Storage.InterestGroupAuctionId uniqueAuctionId() {
+            return new Storage.InterestGroupAuctionId((String) require("uniqueAuctionId"));
         }
         /**
          * Set for child auctions.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String parentAuctionId() {
-            return (String) value("parentAuctionId");
+        public Optional<Storage.InterestGroupAuctionId> parentAuctionId() {
+            return Optional.ofNullable(raw("parentAuctionId") == null ? null : new Storage.InterestGroupAuctionId((String) raw("parentAuctionId")));
         }
         /**
          * Set for started and configResolved
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.Map<String, Object> auctionConfig() {
-            return objectMap(value("auctionConfig"));
+        public Optional<java.util.Map<String, Object>> auctionConfig() {
+            return Optional.ofNullable(objectMap(raw("auctionConfig")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the eventTime field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder eventTime(@Nullable Double value) {
-                if (value == null) values.remove("eventTime");
-                else values.put("eventTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the uniqueAuctionId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder uniqueAuctionId(@Nullable String value) {
-                if (value == null) values.remove("uniqueAuctionId");
-                else values.put("uniqueAuctionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Set for child auctions.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentAuctionId(@Nullable String value) {
-                if (value == null) values.remove("parentAuctionId");
-                else values.put("parentAuctionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Set for started and configResolved
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder auctionConfig(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("auctionConfig");
-                else values.put("auctionConfig", jsonValue(value));
-                return this;
-            }
-            public InterestGroupAuctionEventOccurredEvent build() {
-                if (!values.containsKey("eventTime")) throw new IllegalStateException("Missing required CDP field: eventTime");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("uniqueAuctionId")) throw new IllegalStateException("Missing required CDP field: uniqueAuctionId");
-                return new InterestGroupAuctionEventOccurredEvent(values);
-            }
+        /**
+         * Sets the eventTime field.
+         * @param eventTime field value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent eventTime(Network.TimeSinceEpoch eventTime) {
+            set("eventTime", eventTime);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent type(Storage.InterestGroupAuctionEventType type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the uniqueAuctionId field.
+         * @param uniqueAuctionId field value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent uniqueAuctionId(Storage.InterestGroupAuctionId uniqueAuctionId) {
+            set("uniqueAuctionId", uniqueAuctionId);
+            return this;
+        }
+        /**
+         * Set for child auctions.
+         * @param parentAuctionId field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent parentAuctionId(Optional<Storage.InterestGroupAuctionId> parentAuctionId) {
+            set("parentAuctionId", parentAuctionId.orElse(null));
+            return this;
+        }
+        /**
+         * Set for child auctions.
+         * @param parentAuctionId field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent parentAuctionId(Storage.InterestGroupAuctionId parentAuctionId) {
+            set("parentAuctionId", parentAuctionId);
+            return this;
+        }
+        /**
+         * Set for started and configResolved
+         * @param auctionConfig field value; empty omits the value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent auctionConfig(Optional<java.util.Map<String, Object>> auctionConfig) {
+            set("auctionConfig", auctionConfig.orElse(null));
+            return this;
+        }
+        /**
+         * Set for started and configResolved
+         * @param auctionConfig field value; null removes the value
+         * @return this model
+         */
+        public InterestGroupAuctionEventOccurredEvent auctionConfig(java.util.Map<String, Object> auctionConfig) {
+            set("auctionConfig", auctionConfig);
+            return this;
         }
     }
     /**
      * Specifies which auctions a particular network fetch may be related to, and in what role. Note that it is not ordered with respect to Network.requestWillBeSent (but will happen before loadingFinished loadingFailed).
      */
     public static final class InterestGroupAuctionNetworkRequestCreatedEvent extends CdpObject {
+        public InterestGroupAuctionNetworkRequestCreatedEvent() {}
         private InterestGroupAuctionNetworkRequestCreatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InterestGroupAuctionNetworkRequestCreatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InterestGroupAuctionNetworkRequestCreatedEvent(values);
+        public static InterestGroupAuctionNetworkRequestCreatedEvent fromMap(Map<String, Object> values) {
+            return new InterestGroupAuctionNetworkRequestCreatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public Storage.InterestGroupAuctionFetchType type() {
+            return Storage.InterestGroupAuctionFetchType.of((String) require("type"));
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value
          */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public Network.RequestId requestId() {
+            return new Network.RequestId((String) require("requestId"));
         }
         /**
          * This is the set of the auctions using the worklet that issued this request. In the case of trusted signals, it&#x27;s possible that only some of them actually care about the keys being queried.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> auctions() {
-            return list(value("auctions"), element0 -> (String) element0);
+        public java.util.List<Storage.InterestGroupAuctionId> auctions() {
+            return CdpObject.requireList(require("auctions"), element0 -> new Storage.InterestGroupAuctionId((String) element0));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the requestId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * This is the set of the auctions using the worklet that issued this request. In the case of trusted signals, it&#x27;s possible that only some of them actually care about the keys being queried.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder auctions(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("auctions");
-                else values.put("auctions", jsonValue(value));
-                return this;
-            }
-            public InterestGroupAuctionNetworkRequestCreatedEvent build() {
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("auctions")) throw new IllegalStateException("Missing required CDP field: auctions");
-                return new InterestGroupAuctionNetworkRequestCreatedEvent(values);
-            }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public InterestGroupAuctionNetworkRequestCreatedEvent type(Storage.InterestGroupAuctionFetchType type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the requestId field.
+         * @param requestId field value
+         * @return this model
+         */
+        public InterestGroupAuctionNetworkRequestCreatedEvent requestId(Network.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * This is the set of the auctions using the worklet that issued this request. In the case of trusted signals, it&#x27;s possible that only some of them actually care about the keys being queried.
+         * @param auctions field value
+         * @return this model
+         */
+        public InterestGroupAuctionNetworkRequestCreatedEvent auctions(java.util.List<Storage.InterestGroupAuctionId> auctions) {
+            set("auctions", auctions);
+            return this;
         }
     }
     /**
      * Shared storage was accessed by the associated page. The following parameters are included in all events.
      */
     public static final class SharedStorageAccessedEvent extends CdpObject {
+        public SharedStorageAccessedEvent() {}
         private SharedStorageAccessedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageAccessedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageAccessedEvent(values);
+        public static SharedStorageAccessedEvent fromMap(Map<String, Object> values) {
+            return new SharedStorageAccessedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Time of the access.
          * @return the protocol field value
          */
-        @Nullable public Double accessTime() {
-            return numberAsDouble(value("accessTime"));
+        public Network.TimeSinceEpoch accessTime() {
+            return new Network.TimeSinceEpoch(((Number) require("accessTime")).doubleValue());
         }
         /**
          * Enum value indicating the access scope.
          * @return the protocol field value
          */
-        @Nullable public String scope() {
-            return (String) value("scope");
+        public Storage.SharedStorageAccessScope scope() {
+            return Storage.SharedStorageAccessScope.of((String) require("scope"));
         }
         /**
          * Enum value indicating the Shared Storage API method invoked.
          * @return the protocol field value
          */
-        @Nullable public String method() {
-            return (String) value("method");
+        public Storage.SharedStorageAccessMethod method() {
+            return Storage.SharedStorageAccessMethod.of((String) require("method"));
         }
         /**
          * DevTools Frame Token for the primary frame tree&#x27;s root.
          * @return the protocol field value
          */
-        @Nullable public String mainFrameId() {
-            return (String) value("mainFrameId");
+        public Page.FrameId mainFrameId() {
+            return new Page.FrameId((String) require("mainFrameId"));
         }
         /**
          * Serialization of the origin owning the Shared Storage data.
          * @return the protocol field value
          */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
         }
         /**
          * Serialization of the site owning the Shared Storage data.
          * @return the protocol field value
          */
-        @Nullable public String ownerSite() {
-            return (String) value("ownerSite");
+        public String ownerSite() {
+            return (String) require("ownerSite");
         }
         /**
          * The sub-parameters wrapped by {@code params} are all optional and their presence/absence depends on {@code type}.
          * @return the protocol field value
          */
-        @Nullable public Storage.SharedStorageAccessParams params() {
-            return Storage.SharedStorageAccessParams.fromMap(objectMap(value("params")));
+        public Storage.SharedStorageAccessParams params() {
+            return java.util.Objects.requireNonNull(Storage.SharedStorageAccessParams.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("params")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Time of the access.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accessTime(@Nullable Double value) {
-                if (value == null) values.remove("accessTime");
-                else values.put("accessTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Enum value indicating the access scope.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scope(@Nullable String value) {
-                if (value == null) values.remove("scope");
-                else values.put("scope", jsonValue(value));
-                return this;
-            }
-            /**
-             * Enum value indicating the Shared Storage API method invoked.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder method(@Nullable String value) {
-                if (value == null) values.remove("method");
-                else values.put("method", jsonValue(value));
-                return this;
-            }
-            /**
-             * DevTools Frame Token for the primary frame tree&#x27;s root.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder mainFrameId(@Nullable String value) {
-                if (value == null) values.remove("mainFrameId");
-                else values.put("mainFrameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Serialization of the origin owning the Shared Storage data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Serialization of the site owning the Shared Storage data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerSite(@Nullable String value) {
-                if (value == null) values.remove("ownerSite");
-                else values.put("ownerSite", jsonValue(value));
-                return this;
-            }
-            /**
-             * The sub-parameters wrapped by {@code params} are all optional and their presence/absence depends on {@code type}.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder params(@Nullable Storage.SharedStorageAccessParams value) {
-                if (value == null) values.remove("params");
-                else values.put("params", jsonValue(value));
-                return this;
-            }
-            public SharedStorageAccessedEvent build() {
-                if (!values.containsKey("accessTime")) throw new IllegalStateException("Missing required CDP field: accessTime");
-                if (!values.containsKey("scope")) throw new IllegalStateException("Missing required CDP field: scope");
-                if (!values.containsKey("method")) throw new IllegalStateException("Missing required CDP field: method");
-                if (!values.containsKey("mainFrameId")) throw new IllegalStateException("Missing required CDP field: mainFrameId");
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                if (!values.containsKey("ownerSite")) throw new IllegalStateException("Missing required CDP field: ownerSite");
-                if (!values.containsKey("params")) throw new IllegalStateException("Missing required CDP field: params");
-                return new SharedStorageAccessedEvent(values);
-            }
+        /**
+         * Time of the access.
+         * @param accessTime field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent accessTime(Network.TimeSinceEpoch accessTime) {
+            set("accessTime", accessTime);
+            return this;
+        }
+        /**
+         * Enum value indicating the access scope.
+         * @param scope field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent scope(Storage.SharedStorageAccessScope scope) {
+            set("scope", scope);
+            return this;
+        }
+        /**
+         * Enum value indicating the Shared Storage API method invoked.
+         * @param method field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent method(Storage.SharedStorageAccessMethod method) {
+            set("method", method);
+            return this;
+        }
+        /**
+         * DevTools Frame Token for the primary frame tree&#x27;s root.
+         * @param mainFrameId field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent mainFrameId(Page.FrameId mainFrameId) {
+            set("mainFrameId", mainFrameId);
+            return this;
+        }
+        /**
+         * Serialization of the origin owning the Shared Storage data.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
+        }
+        /**
+         * Serialization of the site owning the Shared Storage data.
+         * @param ownerSite field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent ownerSite(String ownerSite) {
+            set("ownerSite", ownerSite);
+            return this;
+        }
+        /**
+         * The sub-parameters wrapped by {@code params} are all optional and their presence/absence depends on {@code type}.
+         * @param params field value
+         * @return this model
+         */
+        public SharedStorageAccessedEvent params(Storage.SharedStorageAccessParams params) {
+            set("params", params);
+            return this;
         }
     }
     /**
      * A shared storage run or selectURL operation finished its execution. The following parameters are included in all events.
      */
     public static final class SharedStorageWorkletOperationExecutionFinishedEvent extends CdpObject {
+        public SharedStorageWorkletOperationExecutionFinishedEvent() {}
         private SharedStorageWorkletOperationExecutionFinishedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static SharedStorageWorkletOperationExecutionFinishedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SharedStorageWorkletOperationExecutionFinishedEvent(values);
+        public static SharedStorageWorkletOperationExecutionFinishedEvent fromMap(Map<String, Object> values) {
+            return new SharedStorageWorkletOperationExecutionFinishedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Time that the operation finished.
          * @return the protocol field value
          */
-        @Nullable public Double finishedTime() {
-            return numberAsDouble(value("finishedTime"));
+        public Network.TimeSinceEpoch finishedTime() {
+            return new Network.TimeSinceEpoch(((Number) require("finishedTime")).doubleValue());
         }
         /**
          * Time, in microseconds, from start of shared storage JS API call until end of operation execution in the worklet.
          * @return the protocol field value
          */
-        @Nullable public Long executionTime() {
-            return numberAsLong(value("executionTime"));
+        public long executionTime() {
+            return ((Number) require("executionTime")).longValue();
         }
         /**
          * Enum value indicating the Shared Storage API method invoked.
          * @return the protocol field value
          */
-        @Nullable public String method() {
-            return (String) value("method");
+        public Storage.SharedStorageAccessMethod method() {
+            return Storage.SharedStorageAccessMethod.of((String) require("method"));
         }
         /**
          * ID of the operation call.
          * @return the protocol field value
          */
-        @Nullable public String operationId() {
-            return (String) value("operationId");
+        public String operationId() {
+            return (String) require("operationId");
         }
         /**
          * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet.
          * @return the protocol field value
          */
-        @Nullable public String workletTargetId() {
-            return (String) value("workletTargetId");
+        public Target.TargetID workletTargetId() {
+            return new Target.TargetID((String) require("workletTargetId"));
         }
         /**
          * DevTools Frame Token for the primary frame tree&#x27;s root.
          * @return the protocol field value
          */
-        @Nullable public String mainFrameId() {
-            return (String) value("mainFrameId");
+        public Page.FrameId mainFrameId() {
+            return new Page.FrameId((String) require("mainFrameId"));
         }
         /**
          * Serialization of the origin owning the Shared Storage data.
          * @return the protocol field value
          */
-        @Nullable public String ownerOrigin() {
-            return (String) value("ownerOrigin");
+        public String ownerOrigin() {
+            return (String) require("ownerOrigin");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Time that the operation finished.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder finishedTime(@Nullable Double value) {
-                if (value == null) values.remove("finishedTime");
-                else values.put("finishedTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Time, in microseconds, from start of shared storage JS API call until end of operation execution in the worklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder executionTime(@Nullable Long value) {
-                if (value == null) values.remove("executionTime");
-                else values.put("executionTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Enum value indicating the Shared Storage API method invoked.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder method(@Nullable String value) {
-                if (value == null) values.remove("method");
-                else values.put("method", jsonValue(value));
-                return this;
-            }
-            /**
-             * ID of the operation call.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder operationId(@Nullable String value) {
-                if (value == null) values.remove("operationId");
-                else values.put("operationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder workletTargetId(@Nullable String value) {
-                if (value == null) values.remove("workletTargetId");
-                else values.put("workletTargetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * DevTools Frame Token for the primary frame tree&#x27;s root.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder mainFrameId(@Nullable String value) {
-                if (value == null) values.remove("mainFrameId");
-                else values.put("mainFrameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Serialization of the origin owning the Shared Storage data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder ownerOrigin(@Nullable String value) {
-                if (value == null) values.remove("ownerOrigin");
-                else values.put("ownerOrigin", jsonValue(value));
-                return this;
-            }
-            public SharedStorageWorkletOperationExecutionFinishedEvent build() {
-                if (!values.containsKey("finishedTime")) throw new IllegalStateException("Missing required CDP field: finishedTime");
-                if (!values.containsKey("executionTime")) throw new IllegalStateException("Missing required CDP field: executionTime");
-                if (!values.containsKey("method")) throw new IllegalStateException("Missing required CDP field: method");
-                if (!values.containsKey("operationId")) throw new IllegalStateException("Missing required CDP field: operationId");
-                if (!values.containsKey("workletTargetId")) throw new IllegalStateException("Missing required CDP field: workletTargetId");
-                if (!values.containsKey("mainFrameId")) throw new IllegalStateException("Missing required CDP field: mainFrameId");
-                if (!values.containsKey("ownerOrigin")) throw new IllegalStateException("Missing required CDP field: ownerOrigin");
-                return new SharedStorageWorkletOperationExecutionFinishedEvent(values);
-            }
+        /**
+         * Time that the operation finished.
+         * @param finishedTime field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent finishedTime(Network.TimeSinceEpoch finishedTime) {
+            set("finishedTime", finishedTime);
+            return this;
+        }
+        /**
+         * Time, in microseconds, from start of shared storage JS API call until end of operation execution in the worklet.
+         * @param executionTime field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent executionTime(long executionTime) {
+            set("executionTime", executionTime);
+            return this;
+        }
+        /**
+         * Enum value indicating the Shared Storage API method invoked.
+         * @param method field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent method(Storage.SharedStorageAccessMethod method) {
+            set("method", method);
+            return this;
+        }
+        /**
+         * ID of the operation call.
+         * @param operationId field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent operationId(String operationId) {
+            set("operationId", operationId);
+            return this;
+        }
+        /**
+         * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet.
+         * @param workletTargetId field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent workletTargetId(Target.TargetID workletTargetId) {
+            set("workletTargetId", workletTargetId);
+            return this;
+        }
+        /**
+         * DevTools Frame Token for the primary frame tree&#x27;s root.
+         * @param mainFrameId field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent mainFrameId(Page.FrameId mainFrameId) {
+            set("mainFrameId", mainFrameId);
+            return this;
+        }
+        /**
+         * Serialization of the origin owning the Shared Storage data.
+         * @param ownerOrigin field value
+         * @return this model
+         */
+        public SharedStorageWorkletOperationExecutionFinishedEvent ownerOrigin(String ownerOrigin) {
+            set("ownerOrigin", ownerOrigin);
+            return this;
         }
     }
     /**
      * Payload of the Storage.storageBucketCreatedOrUpdated event.
      */
     public static final class StorageBucketCreatedOrUpdatedEvent extends CdpObject {
+        public StorageBucketCreatedOrUpdatedEvent() {}
         private StorageBucketCreatedOrUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static StorageBucketCreatedOrUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StorageBucketCreatedOrUpdatedEvent(values);
+        public static StorageBucketCreatedOrUpdatedEvent fromMap(Map<String, Object> values) {
+            return new StorageBucketCreatedOrUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the bucketInfo field.
          * @return the protocol field value
          */
-        @Nullable public Storage.StorageBucketInfo bucketInfo() {
-            return Storage.StorageBucketInfo.fromMap(objectMap(value("bucketInfo")));
+        public Storage.StorageBucketInfo bucketInfo() {
+            return java.util.Objects.requireNonNull(Storage.StorageBucketInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bucketInfo")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the bucketInfo field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketInfo(@Nullable Storage.StorageBucketInfo value) {
-                if (value == null) values.remove("bucketInfo");
-                else values.put("bucketInfo", jsonValue(value));
-                return this;
-            }
-            public StorageBucketCreatedOrUpdatedEvent build() {
-                if (!values.containsKey("bucketInfo")) throw new IllegalStateException("Missing required CDP field: bucketInfo");
-                return new StorageBucketCreatedOrUpdatedEvent(values);
-            }
+        /**
+         * Sets the bucketInfo field.
+         * @param bucketInfo field value
+         * @return this model
+         */
+        public StorageBucketCreatedOrUpdatedEvent bucketInfo(Storage.StorageBucketInfo bucketInfo) {
+            set("bucketInfo", bucketInfo);
+            return this;
         }
     }
     /**
      * Payload of the Storage.storageBucketDeleted event.
      */
     public static final class StorageBucketDeletedEvent extends CdpObject {
+        public StorageBucketDeletedEvent() {}
         private StorageBucketDeletedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static StorageBucketDeletedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StorageBucketDeletedEvent(values);
+        public static StorageBucketDeletedEvent fromMap(Map<String, Object> values) {
+            return new StorageBucketDeletedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the bucketId field.
          * @return the protocol field value
          */
-        @Nullable public String bucketId() {
-            return (String) value("bucketId");
+        public String bucketId() {
+            return (String) require("bucketId");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the bucketId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketId(@Nullable String value) {
-                if (value == null) values.remove("bucketId");
-                else values.put("bucketId", jsonValue(value));
-                return this;
-            }
-            public StorageBucketDeletedEvent build() {
-                if (!values.containsKey("bucketId")) throw new IllegalStateException("Missing required CDP field: bucketId");
-                return new StorageBucketDeletedEvent(values);
-            }
+        /**
+         * Sets the bucketId field.
+         * @param bucketId field value
+         * @return this model
+         */
+        public StorageBucketDeletedEvent bucketId(String bucketId) {
+            set("bucketId", bucketId);
+            return this;
         }
     }
     public static final class Client {
@@ -4268,314 +2238,428 @@ public final class Storage {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
-         * @param params command parameters
+         * @param frameId protocol value
          * @return a stage completing with the command result
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<GetStorageKeyForFrameResult> getStorageKeyForFrame(GetStorageKeyForFrameParams params) {
-            return client.call("Storage.getStorageKeyForFrame", params, GetStorageKeyForFrameResult::fromMap);
+        public CompletionStage<Storage.SerializedStorageKey> getStorageKeyForFrame(Page.FrameId frameId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            return client.call("Storage.getStorageKeyForFrame", params, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
         }
         /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param frameId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetStorageKeyResult> getStorageKey(GetStorageKeyParams params) {
-            return client.call("Storage.getStorageKey", params, GetStorageKeyResult::fromMap);
+        public CompletionStage<Storage.SerializedStorageKey> getStorageKey(Optional<Page.FrameId> frameId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
+            return client.call("Storage.getStorageKey", params, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
         }
         /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetStorageKeyResult> getStorageKey() {
-            return getStorageKey(GetStorageKeyParams.builder().build());
+        public CompletionStage<Storage.SerializedStorageKey> getStorageKey() {
+            return getStorageKey(Optional.empty());
         }
         /**
          * Clears storage for origin.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @param storageTypes protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearDataForOriginResult> clearDataForOrigin(ClearDataForOriginParams params) {
-            return client.call("Storage.clearDataForOrigin", params, ClearDataForOriginResult::fromMap);
+        public CompletionStage<Void> clearDataForOrigin(String origin, String storageTypes) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            params.put("storageTypes", CdpObject.json(storageTypes));
+            return client.call("Storage.clearDataForOrigin", params, result_ -> null);
         }
         /**
          * Clears storage for storage key.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @param storageTypes protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearDataForStorageKeyResult> clearDataForStorageKey(ClearDataForStorageKeyParams params) {
-            return client.call("Storage.clearDataForStorageKey", params, ClearDataForStorageKeyResult::fromMap);
+        public CompletionStage<Void> clearDataForStorageKey(String storageKey, String storageTypes) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            params.put("storageTypes", CdpObject.json(storageTypes));
+            return client.call("Storage.clearDataForStorageKey", params, result_ -> null);
         }
         /**
          * Returns all browser cookies.
-         * @param params command parameters
+         * @param browserContextId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetCookiesResult> getCookies(GetCookiesParams params) {
-            return client.call("Storage.getCookies", params, GetCookiesResult::fromMap);
+        public CompletionStage<java.util.List<Network.Cookie>> getCookies(Optional<Browser.BrowserContextID> browserContextId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            return client.call("Storage.getCookies", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Returns all browser cookies.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetCookiesResult> getCookies() {
-            return getCookies(GetCookiesParams.builder().build());
+        public CompletionStage<java.util.List<Network.Cookie>> getCookies() {
+            return getCookies(Optional.empty());
         }
         /**
          * Sets given cookies.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param cookies protocol value
+         * @param browserContextId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetCookiesResult> setCookies(SetCookiesParams params) {
-            return client.call("Storage.setCookies", params, SetCookiesResult::fromMap);
+        public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies, Optional<Browser.BrowserContextID> browserContextId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cookies", CdpObject.json(cookies));
+            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            return client.call("Storage.setCookies", params, result_ -> null);
+        }
+        /**
+         * Sets given cookies.
+         * @param cookies protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies) {
+            return setCookies(cookies, Optional.empty());
         }
         /**
          * Clears cookies.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param browserContextId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearCookiesResult> clearCookies(ClearCookiesParams params) {
-            return client.call("Storage.clearCookies", params, ClearCookiesResult::fromMap);
+        public CompletionStage<Void> clearCookies(Optional<Browser.BrowserContextID> browserContextId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            return client.call("Storage.clearCookies", params, result_ -> null);
         }
         /**
          * Clears cookies.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearCookiesResult> clearCookies() {
-            return clearCookies(ClearCookiesParams.builder().build());
+        public CompletionStage<Void> clearCookies() {
+            return clearCookies(Optional.empty());
         }
         /**
          * Returns usage and quota in bytes.
-         * @param params command parameters
+         * @param origin protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetUsageAndQuotaResult> getUsageAndQuota(GetUsageAndQuotaParams params) {
-            return client.call("Storage.getUsageAndQuota", params, GetUsageAndQuotaResult::fromMap);
+        public CompletionStage<GetUsageAndQuotaResult> getUsageAndQuota(String origin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            return client.call("Storage.getUsageAndQuota", params, result_ -> new GetUsageAndQuotaResult(result_));
         }
         /**
          * Override quota for the specified origin
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @param quotaSize protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<OverrideQuotaForOriginResult> overrideQuotaForOrigin(OverrideQuotaForOriginParams params) {
-            return client.call("Storage.overrideQuotaForOrigin", params, OverrideQuotaForOriginResult::fromMap);
+        public CompletionStage<Void> overrideQuotaForOrigin(String origin, OptionalDouble quotaSize) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            quotaSize.ifPresent(value_ -> params.put("quotaSize", value_));
+            return client.call("Storage.overrideQuotaForOrigin", params, result_ -> null);
+        }
+        /**
+         * Override quota for the specified origin
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param origin protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> overrideQuotaForOrigin(String origin) {
+            return overrideQuotaForOrigin(origin, OptionalDouble.empty());
         }
         /**
          * Registers origin to be notified when an update occurs to its cache storage list.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<TrackCacheStorageForOriginResult> trackCacheStorageForOrigin(TrackCacheStorageForOriginParams params) {
-            return client.call("Storage.trackCacheStorageForOrigin", params, TrackCacheStorageForOriginResult::fromMap);
+        public CompletionStage<Void> trackCacheStorageForOrigin(String origin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            return client.call("Storage.trackCacheStorageForOrigin", params, result_ -> null);
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<TrackCacheStorageForStorageKeyResult> trackCacheStorageForStorageKey(TrackCacheStorageForStorageKeyParams params) {
-            return client.call("Storage.trackCacheStorageForStorageKey", params, TrackCacheStorageForStorageKeyResult::fromMap);
+        public CompletionStage<Void> trackCacheStorageForStorageKey(String storageKey) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            return client.call("Storage.trackCacheStorageForStorageKey", params, result_ -> null);
         }
         /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<TrackIndexedDBForOriginResult> trackIndexedDBForOrigin(TrackIndexedDBForOriginParams params) {
-            return client.call("Storage.trackIndexedDBForOrigin", params, TrackIndexedDBForOriginResult::fromMap);
+        public CompletionStage<Void> trackIndexedDBForOrigin(String origin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            return client.call("Storage.trackIndexedDBForOrigin", params, result_ -> null);
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<TrackIndexedDBForStorageKeyResult> trackIndexedDBForStorageKey(TrackIndexedDBForStorageKeyParams params) {
-            return client.call("Storage.trackIndexedDBForStorageKey", params, TrackIndexedDBForStorageKeyResult::fromMap);
+        public CompletionStage<Void> trackIndexedDBForStorageKey(String storageKey) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            return client.call("Storage.trackIndexedDBForStorageKey", params, result_ -> null);
         }
         /**
          * Unregisters origin from receiving notifications for cache storage.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UntrackCacheStorageForOriginResult> untrackCacheStorageForOrigin(UntrackCacheStorageForOriginParams params) {
-            return client.call("Storage.untrackCacheStorageForOrigin", params, UntrackCacheStorageForOriginResult::fromMap);
+        public CompletionStage<Void> untrackCacheStorageForOrigin(String origin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            return client.call("Storage.untrackCacheStorageForOrigin", params, result_ -> null);
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UntrackCacheStorageForStorageKeyResult> untrackCacheStorageForStorageKey(UntrackCacheStorageForStorageKeyParams params) {
-            return client.call("Storage.untrackCacheStorageForStorageKey", params, UntrackCacheStorageForStorageKeyResult::fromMap);
+        public CompletionStage<Void> untrackCacheStorageForStorageKey(String storageKey) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            return client.call("Storage.untrackCacheStorageForStorageKey", params, result_ -> null);
         }
         /**
          * Unregisters origin from receiving notifications for IndexedDB.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UntrackIndexedDBForOriginResult> untrackIndexedDBForOrigin(UntrackIndexedDBForOriginParams params) {
-            return client.call("Storage.untrackIndexedDBForOrigin", params, UntrackIndexedDBForOriginResult::fromMap);
+        public CompletionStage<Void> untrackIndexedDBForOrigin(String origin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            return client.call("Storage.untrackIndexedDBForOrigin", params, result_ -> null);
         }
         /**
          * Unregisters storage key from receiving notifications for IndexedDB.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UntrackIndexedDBForStorageKeyResult> untrackIndexedDBForStorageKey(UntrackIndexedDBForStorageKeyParams params) {
-            return client.call("Storage.untrackIndexedDBForStorageKey", params, UntrackIndexedDBForStorageKeyResult::fromMap);
+        public CompletionStage<Void> untrackIndexedDBForStorageKey(String storageKey) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            return client.call("Storage.untrackIndexedDBForStorageKey", params, result_ -> null);
         }
         /**
          * Returns the number of stored Trust Tokens per issuer for the current browsing context.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTrustTokensResult> getTrustTokens() {
-            return client.call("Storage.getTrustTokens", null, GetTrustTokensResult::fromMap);
+        public CompletionStage<java.util.List<Storage.TrustTokens>> getTrustTokens() {
+            return client.call("Storage.getTrustTokens", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tokens")), element0 -> java.util.Objects.requireNonNull(Storage.TrustTokens.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param issuerOrigin protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<ClearTrustTokensResult> clearTrustTokens(ClearTrustTokensParams params) {
-            return client.call("Storage.clearTrustTokens", params, ClearTrustTokensResult::fromMap);
+        public CompletionStage<Boolean> clearTrustTokens(String issuerOrigin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("issuerOrigin", CdpObject.json(issuerOrigin));
+            return client.call("Storage.clearTrustTokens", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("didDeleteTokens")));
         }
         /**
          * Gets details for a named interest group.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param ownerOrigin protocol value
+         * @param name protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetInterestGroupDetailsResult> getInterestGroupDetails(GetInterestGroupDetailsParams params) {
-            return client.call("Storage.getInterestGroupDetails", params, GetInterestGroupDetailsResult::fromMap);
+        public CompletionStage<java.util.Map<String, Object>> getInterestGroupDetails(String ownerOrigin, String name) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            params.put("name", CdpObject.json(name));
+            return client.call("Storage.getInterestGroupDetails", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("details")))));
         }
         /**
          * Enables/Disables issuing of interestGroupAccessed events.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param enable protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetInterestGroupTrackingResult> setInterestGroupTracking(SetInterestGroupTrackingParams params) {
-            return client.call("Storage.setInterestGroupTracking", params, SetInterestGroupTrackingResult::fromMap);
+        public CompletionStage<Void> setInterestGroupTracking(boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enable", CdpObject.json(enable));
+            return client.call("Storage.setInterestGroupTracking", params, result_ -> null);
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param enable protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetInterestGroupAuctionTrackingResult> setInterestGroupAuctionTracking(SetInterestGroupAuctionTrackingParams params) {
-            return client.call("Storage.setInterestGroupAuctionTracking", params, SetInterestGroupAuctionTrackingResult::fromMap);
+        public CompletionStage<Void> setInterestGroupAuctionTracking(boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enable", CdpObject.json(enable));
+            return client.call("Storage.setInterestGroupAuctionTracking", params, result_ -> null);
         }
         /**
          * Gets metadata for an origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param ownerOrigin protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetSharedStorageMetadataResult> getSharedStorageMetadata(GetSharedStorageMetadataParams params) {
-            return client.call("Storage.getSharedStorageMetadata", params, GetSharedStorageMetadataResult::fromMap);
+        public CompletionStage<Storage.SharedStorageMetadata> getSharedStorageMetadata(String ownerOrigin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            return client.call("Storage.getSharedStorageMetadata", params, result_ -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("metadata")))))));
         }
         /**
          * Gets the entries in an given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param ownerOrigin protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetSharedStorageEntriesResult> getSharedStorageEntries(GetSharedStorageEntriesParams params) {
-            return client.call("Storage.getSharedStorageEntries", params, GetSharedStorageEntriesResult::fromMap);
+        public CompletionStage<java.util.List<Storage.SharedStorageEntry>> getSharedStorageEntries(String ownerOrigin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            return client.call("Storage.getSharedStorageEntries", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param ownerOrigin protocol value
+         * @param key protocol value
+         * @param value protocol value
+         * @param ignoreIfPresent protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetSharedStorageEntryResult> setSharedStorageEntry(SetSharedStorageEntryParams params) {
-            return client.call("Storage.setSharedStorageEntry", params, SetSharedStorageEntryResult::fromMap);
+        public CompletionStage<Void> setSharedStorageEntry(String ownerOrigin, String key, String value, Optional<Boolean> ignoreIfPresent) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            params.put("key", CdpObject.json(key));
+            params.put("value", CdpObject.json(value));
+            ignoreIfPresent.ifPresent(value_ -> params.put("ignoreIfPresent", value_));
+            return client.call("Storage.setSharedStorageEntry", params, result_ -> null);
+        }
+        /**
+         * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param ownerOrigin protocol value
+         * @param key protocol value
+         * @param value protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setSharedStorageEntry(String ownerOrigin, String key, String value) {
+            return setSharedStorageEntry(ownerOrigin, key, value, Optional.empty());
         }
         /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param ownerOrigin protocol value
+         * @param key protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DeleteSharedStorageEntryResult> deleteSharedStorageEntry(DeleteSharedStorageEntryParams params) {
-            return client.call("Storage.deleteSharedStorageEntry", params, DeleteSharedStorageEntryResult::fromMap);
+        public CompletionStage<Void> deleteSharedStorageEntry(String ownerOrigin, String key) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            params.put("key", CdpObject.json(key));
+            return client.call("Storage.deleteSharedStorageEntry", params, result_ -> null);
         }
         /**
          * Clears all entries for a given origin&#x27;s shared storage.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param ownerOrigin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClearSharedStorageEntriesResult> clearSharedStorageEntries(ClearSharedStorageEntriesParams params) {
-            return client.call("Storage.clearSharedStorageEntries", params, ClearSharedStorageEntriesResult::fromMap);
+        public CompletionStage<Void> clearSharedStorageEntries(String ownerOrigin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            return client.call("Storage.clearSharedStorageEntries", params, result_ -> null);
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param ownerOrigin protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ResetSharedStorageBudgetResult> resetSharedStorageBudget(ResetSharedStorageBudgetParams params) {
-            return client.call("Storage.resetSharedStorageBudget", params, ResetSharedStorageBudgetResult::fromMap);
+        public CompletionStage<Void> resetSharedStorageBudget(String ownerOrigin) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
+            return client.call("Storage.resetSharedStorageBudget", params, result_ -> null);
         }
         /**
          * Enables/disables issuing of sharedStorageAccessed events.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param enable protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetSharedStorageTrackingResult> setSharedStorageTracking(SetSharedStorageTrackingParams params) {
-            return client.call("Storage.setSharedStorageTracking", params, SetSharedStorageTrackingResult::fromMap);
+        public CompletionStage<Void> setSharedStorageTracking(boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enable", CdpObject.json(enable));
+            return client.call("Storage.setSharedStorageTracking", params, result_ -> null);
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param storageKey protocol value
+         * @param enable protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetStorageBucketTrackingResult> setStorageBucketTracking(SetStorageBucketTrackingParams params) {
-            return client.call("Storage.setStorageBucketTracking", params, SetStorageBucketTrackingResult::fromMap);
+        public CompletionStage<Void> setStorageBucketTracking(String storageKey, boolean enable) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("storageKey", CdpObject.json(storageKey));
+            params.put("enable", CdpObject.json(enable));
+            return client.call("Storage.setStorageBucketTracking", params, result_ -> null);
         }
         /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param bucket protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DeleteStorageBucketResult> deleteStorageBucket(DeleteStorageBucketParams params) {
-            return client.call("Storage.deleteStorageBucket", params, DeleteStorageBucketResult::fromMap);
+        public CompletionStage<Void> deleteStorageBucket(Storage.StorageBucket bucket) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("bucket", CdpObject.json(bucket));
+            return client.call("Storage.deleteStorageBucket", params, result_ -> null);
         }
         /**
          * Deletes state for sites identified as potential bounce trackers, immediately.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<RunBounceTrackingMitigationsResult> runBounceTrackingMitigations() {
-            return client.call("Storage.runBounceTrackingMitigations", null, RunBounceTrackingMitigationsResult::fromMap);
+        public CompletionStage<java.util.List<String>> runBounceTrackingMitigations() {
+            return client.call("Storage.runBounceTrackingMitigations", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("deletedSites")), element0 -> (String) element0));
         }
         /**
          * Returns the effective Related Website Sets in use by this profile for the browser session. The effective Related Website Sets will not change during a browser session.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetRelatedWebsiteSetsResult> getRelatedWebsiteSets() {
-            return client.call("Storage.getRelatedWebsiteSets", null, GetRelatedWebsiteSetsResult::fromMap);
+        public CompletionStage<java.util.List<Storage.RelatedWebsiteSet>> getRelatedWebsiteSets() {
+            return client.call("Storage.getRelatedWebsiteSets", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("sets")), element0 -> java.util.Objects.requireNonNull(Storage.RelatedWebsiteSet.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Invokes Storage.setProtectedAudienceKAnonymity.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param owner protocol value
+         * @param name protocol value
+         * @param hashes protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetProtectedAudienceKAnonymityResult> setProtectedAudienceKAnonymity(SetProtectedAudienceKAnonymityParams params) {
-            return client.call("Storage.setProtectedAudienceKAnonymity", params, SetProtectedAudienceKAnonymityResult::fromMap);
+        public CompletionStage<Void> setProtectedAudienceKAnonymity(String owner, String name, java.util.List<String> hashes) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("owner", CdpObject.json(owner));
+            params.put("name", CdpObject.json(name));
+            params.put("hashes", CdpObject.json(hashes));
+            return client.call("Storage.setProtectedAudienceKAnonymity", params, result_ -> null);
         }
         /**
          * A cache&#x27;s contents have been modified.

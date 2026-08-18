@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.concurrent.Worker;
@@ -17,12 +18,14 @@ import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.DisplayLock;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -41,6 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
  */
 @Timeout(30)
 @TestMethodOrder(org.junit.jupiter.api.MethodOrderer.OrderAnnotation.class)
+@ExtendWith(DisplayLock.class)
 class CefWebViewRenderTest {
 
     @Order(1)
@@ -59,10 +63,10 @@ class CefWebViewRenderTest {
         assumeDisplayServer();
         startJavaFx();
         CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
-                .toAbsolutePath()
-                .toString();
-        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), null);
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
         try {
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {

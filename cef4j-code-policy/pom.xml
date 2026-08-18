@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.kurobako.cef4j</groupId>
+        <artifactId>cef4j-parent</artifactId>
+        <version>150.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cef4j-code-policy</artifactId>
+    <name>cef4j-code-policy</name>
+    <description>Error Prone checks enforcing the nullability policy on public API</description>
+
+    <properties>
+        <!-- Runs inside the build JVM (JDK 17+); the Error Prone jars it links are Java 17 bytecode. -->
+        <bytecode.check.skip>true</bytecode.check.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_check_api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <!-- error_prone_check_api pins checker-qual 3.19.0 which has no local jar; 3.43.0 is the
+                 version already resolved on the annotation processor paths elsewhere. -->
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.43.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- The installed check must not apply to its own compile.
+                         The Error Prone API pulls in com.sun.tools.javac internals that the
+                         module system hides; the check runs inside the compiler where they are
+                         always available, so the build JVM (JDK 17+) just needs them exported. -->
+                    <source>17</source>
+                    <target>17</target>
+                    <release combine.self="override"></release>
+                    <compilerArgs combine.self="override">
+                        <arg>-Xlint:all</arg>
+                        <arg>-Xlint:-options</arg>
+                        <arg>-Xlint:-processing</arg>
+                        <arg>-XDcompilePolicy=simple</arg>
+                        <arg>-XDshould-stop.ifError=FLOW</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.types=ALL-UNNAMED</arg>
+                        <arg>--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                        <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false</arg>
+                    </compilerArgs>
+                    <annotationProcessorPaths combine.self="override">
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${errorprone.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.uber.nullaway</groupId>
+                            <artifactId>nullaway</artifactId>
+                            <version>${nullaway.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.google.auto.service</groupId>
+                            <artifactId>auto-service</artifactId>
+                            <version>${autoservice.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>cef4j-inprocess-swing</artifactId>
-    <packaging>jar</packaging>
     <name>cef4j-inprocess-swing</name>
     <description>In-process Swing browser panel for cef4j</description>
 
@@ -19,19 +18,16 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
-            <version>${project.version}</version>
             <classifier>${cef.classifier}</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-test-shared</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -81,8 +77,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>11</release>
-                    <testExcludes>
+                                        <testExcludes>
                         <testExclude>${cef4j.test.v117plus.excludes}</testExclude>
                     </testExcludes>
                     <testIncrementalExcludes>

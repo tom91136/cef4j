@@ -1,7 +1,11 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -94,5 +98,43 @@ class RecordingReplayTest {
                     .extracting(b -> new String(b, StandardCharsets.UTF_8))
                     .containsExactly("first", "second");
         }
+    }
+
+    @Test
+    void inboundFrameForwardedEvenWhenRecordingFails() throws Exception {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        MessageLog.Writer broken = new MessageLog.Writer(new DataOutputStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException("recording medium full");
+            }
+        }));
+        try (RecordingTransport recording = new RecordingTransport(pair.a, broken)) {
+            CountDownLatch arrived = new CountDownLatch(1);
+            recording.onReceive(frame -> {
+                byte[] bytes = new byte[frame.remaining()];
+                frame.get(bytes);
+                assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("live");
+                arrived.countDown();
+            });
+            pair.b.send(buf("live"));
+            assertThat(arrived.await(5, TimeUnit.SECONDS)).isTrue();
+        }
+        pair.b.close();
+    }
+
+    @Test
+    void sendFailsLoudlyWhenRecordingFails() {
+        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        MessageLog.Writer broken = new MessageLog.Writer(new DataOutputStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException("recording medium full");
+            }
+        }));
+        try (RecordingTransport recording = new RecordingTransport(pair.a, broken)) {
+            assertThatThrownBy(() -> recording.send(buf("x"))).isInstanceOf(CefTransportException.class);
+        }
+        pair.b.close();
     }
 }

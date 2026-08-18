@@ -18,7 +18,7 @@ import net.kurobako.cef4j.gen.CefKeyEvent;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield__delegate_8h.html">views/cef_textfield_delegate.h:45</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public interface CefTextfieldDelegate extends CefClientHandler {
 
     /**

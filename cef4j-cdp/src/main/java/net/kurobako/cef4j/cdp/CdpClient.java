@@ -29,9 +29,11 @@ public final class CdpClient implements AutoCloseable {
         return transport;
     }
 
+    // null params omit the JSON-RPC request body
+    @SuppressWarnings("NullableForbidden")
     public <T> CompletionStage<T> call(
-            String method, @Nullable CdpObject params, Function<Map<String, Object>, T> decoder) {
-        byte[] bytes = params == null ? null : codec.encode(params.toMap());
+            String method, @Nullable Map<String, Object> params, Function<Map<String, Object>, T> decoder) {
+        byte[] bytes = params == null ? null : codec.encode(params);
         return transport.execute(method, bytes).thenApply(result -> decoder.apply(asObject(codec.decode(result))));
     }
 
@@ -45,7 +47,7 @@ public final class CdpClient implements AutoCloseable {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> asObject(Object value) {
+    private static Map<String, Object> asObject(@Nullable Object value) {
         return value == null ? Collections.emptyMap() : (Map<String, Object>) value;
     }
 }

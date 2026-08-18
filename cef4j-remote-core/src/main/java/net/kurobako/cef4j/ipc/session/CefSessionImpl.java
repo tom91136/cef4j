@@ -151,18 +151,21 @@ public final class CefSessionImpl implements CefSession {
                 TimeUnit.MILLISECONDS);
         p.timeoutTask = timeoutTask;
 
-        ByteBuffer buf =
-                ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, corrId, enc.messageId(), enc.encodedSize());
-        enc.encodeInto(buf);
-        buf.flip();
-
         try {
+            ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize())
+                    .order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, corrId, enc.messageId(), enc.encodedSize());
+            enc.encodeInto(buf);
+            buf.flip();
             transport.send(buf);
         } catch (CefTransportException e) {
             pending.remove(corrId);
             timeoutTask.cancel(false);
             future.completeExceptionally(e);
+        } catch (RuntimeException encodeFailure) {
+            pending.remove(corrId);
+            timeoutTask.cancel(false);
+            future.completeExceptionally(encodeFailure);
         }
         return future;
     }

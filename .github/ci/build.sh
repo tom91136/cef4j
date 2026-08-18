@@ -1,40 +1,52 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-mode=${1:-}
-case "${mode}" in
-    linux|desktop) ;;
-    *) echo "usage: $0 linux|desktop" >&2; exit 2 ;;
-esac
-
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "${repo_root}"
 
-for name in CEF_VERSION CEF_API JAVAFX_VERSION JAVAFX_TEST_VERSION JAVAFX_TESTS; do
+# XXX Required env: CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION JAVA_HOME.
+for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION JAVA_HOME; do
     [ -n "${!name:-}" ] || { echo "${name} is required" >&2; exit 1; }
 done
-if [ "${mode}" = linux ]; then
+[ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
+export JAVA_HOME
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+case "${CEF_PLATFORM}" in
+    linux64|linuxarm64) is_linux=1 ;;
+    windows64|windowsarm64) ;;
+    macosx64|macosarm64) is_macos=1 ;;
+    *) echo "unknown CEF_PLATFORM: ${CEF_PLATFORM}" >&2; exit 2 ;;
+esac
+
+if [ "${is_linux:-}" = 1 ]; then
     : "${CMAKE_SYSROOT:?CMAKE_SYSROOT must point at a prepared Linux sysroot}"
     [ -d "${CMAKE_SYSROOT}/usr/include" ] || { echo "invalid CMAKE_SYSROOT: ${CMAKE_SYSROOT}" >&2; exit 1; }
 fi
 
-collect_reports() {
-    local report_dir="ci-reports/cef-${CEF_API}" file safe_name
-    mkdir -p "${report_dir}"
-    while IFS= read -r file; do
-        safe_name=${file#./}
-        cp "${file}" "${report_dir}/${safe_name//\//__}"
-    done < <(find . -path './.git' -prune -o -path './.cef-dist' -prune -o \
-        -type f \( -path '*/target/surefire-reports/*' -o -name 'hs_err_pid*.log' \) -print)
+# XXX JavaFX version/gating is keyed on CEF_PLATFORM + JDK_VERSION.
+javafx_version() {
+    case "${CEF_PLATFORM}" in
+        linux64)
+            case "${JDK_VERSION}" in 17) echo 13.0.2 ;; 21) echo 21.0.12 ;; 25) echo 25.0.4 ;; esac ;;
+        linuxarm64)
+            case "${JDK_VERSION}" in 17) echo "" ;; 21) echo 21.0.1 ;; 25) echo 25.0.4 ;; esac ;;
+        windows64)
+            case "${JDK_VERSION}" in 17) echo 13.0.2 ;; 21) echo 21.0.12 ;; 25) echo 25.0.4 ;; esac ;;
+        windowsarm64) echo "" ;;
+        macosx64)
+            case "${JDK_VERSION}" in 17) echo 13.0.2 ;; 21) echo 21.0.12 ;; 25) echo 25.0.4 ;; esac ;;
+        macosarm64)
+            case "${JDK_VERSION}" in 17) echo 17.0.15 ;; 21) echo 21.0.12 ;; 25) echo 25.0.4 ;; esac ;;
+    esac
 }
-
-on_exit() {
-    local status=$?
-    trap - EXIT
-    [ "${status}" -eq 0 ] || collect_reports
-    exit "${status}"
-}
-trap on_exit EXIT
+JAVAFX_VERSION=$(javafx_version)
+JAVAFX_TESTS=false
+[ -n "${JAVAFX_VERSION}" ] && JAVAFX_TESTS=true
+JAVAFX_PLATFORM=""
+[ "${CEF_PLATFORM}" = windowsarm64 ] && JAVAFX_PLATFORM=win
+EXTRA_ARGS="--disable-gpu"
+[ "${is_macos:-}" = 1 ] && EXTRA_ARGS="--disable-gpu,--use-mock-keychain"
 
 retry() {
     local attempt
@@ -98,28 +110,26 @@ verify_linux_abi() {
 }
 
 java -version
-[ "${mode}" = desktop ] || clang++ --version
+[ "${is_linux:-}" = 1 ] && clang++ --version
 
-non_javafx='!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample'
+non_javafx=$(./mvnw -q -N help:evaluate -Dexpression=cef4j.nonJavafxModules -DforceStdout -DskipTests)
 properties=(
     "-Dcef.version=${CEF_VERSION}"
     "-Dcef.api.version=${CEF_API}"
     "-Djavafx.version=${JAVAFX_VERSION}"
-    "-Djavafx.test.version=${JAVAFX_TEST_VERSION}"
+    "-Djavafx.test.version=${JAVAFX_VERSION}"
 )
-if [ "${mode}" = linux ] && [ "$(uname -m)" = aarch64 ] && [ "${CEF_API}" -lt 150 ]; then
+if [ "${is_linux:-}" = 1 ] && [ "${ARCH}" = aarch64 ] && [ "${CEF_API}" -lt 150 ]; then
     properties+=("-Dcef4j.test.ldPreload=${repo_root}/.cef-dist/cef_binary_${CEF_VERSION}_linuxarm64_minimal/Release/libcef.so")
 fi
-if [ "${mode}" = desktop ]; then
-    properties+=(
-        "-Dcef4j.test.extraArgs=${CEF4J_TEST_EXTRA_ARGS:---disable-gpu}"
-        "-Dcef4j.runtime.server.extraArgs=${CEF4J_TEST_EXTRA_ARGS:---disable-gpu}"
-    )
-    [ -z "${JAVAFX_PLATFORM:-}" ] || properties+=("-Djavafx.platform=${JAVAFX_PLATFORM}")
-fi
+properties+=(
+    "-Dcef4j.test.extraArgs=${EXTRA_ARGS}"
+    "-Dcef4j.runtime.server.extraArgs=${EXTRA_ARGS}"
+)
+[ -z "${JAVAFX_PLATFORM:-}" ] || properties+=("-Djavafx.platform=${JAVAFX_PLATFORM}")
 
 run_reactor() {
-    if [ "${mode}" = linux ] && [ "${JAVAFX_TESTS}" != true ]; then
+    if [ "${is_linux:-}" = 1 ] && [ "${JAVAFX_TESTS}" != true ]; then
         "$@" -pl "${non_javafx}"
     else
         "$@"
@@ -127,7 +137,7 @@ run_reactor() {
 }
 
 run_with_display() {
-    if [ "${mode}" = linux ]; then
+    if [ "${is_linux:-}" = 1 ]; then
         xvfb-run -a "$@"
     else
         "$@"
@@ -136,27 +146,14 @@ run_with_display() {
 
 run_reactor retry ./mvnw -B dependency:go-offline \
     -DexcludeArtifactIds=cef4j-platform,cef4j-runtime-server "${properties[@]}"
+retry ./mvnw -B dependency:get "-Dartifact=org.apache.maven.surefire:surefire-junit-platform:3.5.6"
 retry ./mvnw -B -pl cef4j-platform spotless:check "${properties[@]}"
 
-build_options=(-DskipTests=false)
-if [ "${mode}" = linux ] || [ "${JAVAFX_TESTS}" != true ]; then
-    build_options=(-DskipTests)
-fi
-run_reactor ./mvnw -B clean install "${build_options[@]}" "${properties[@]}"
+run_reactor ./mvnw -B clean install -DskipTests "${properties[@]}"
 verify_thin_platform_jar
-[ "${mode}" = desktop ] || verify_linux_abi
+[ "${is_linux:-}" = 1 ] && verify_linux_abi
 
-test_properties=("${properties[@]}")
-if [ "${mode}" = linux ]; then
-    test_properties+=(
-        -Dcef4j.test.extraArgs=--disable-gpu
-        -Dcef4j.runtime.server.extraArgs=--disable-gpu
-    )
-    if [ "${JAVAFX_TESTS}" = true ]; then
-        run_with_display ./mvnw -B install "${test_properties[@]}"
-    fi
-fi
-run_with_display ./mvnw -B test -pl "${non_javafx}" "${test_properties[@]}"
+run_reactor run_with_display ./mvnw -B test "${properties[@]}"
 
 if [ "${JAVA11_SMOKE:-false}" = true ]; then
     ./mvnw -B -pl cef4j-remote-core,cef4j-remote-frame,cef4j-cdp,cef4j-webdriver,cef4j-codecs-gson,cef4j-codecs-jackson,cef4j-remote-webdriver test \

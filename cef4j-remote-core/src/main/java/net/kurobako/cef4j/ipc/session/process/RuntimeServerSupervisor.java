@@ -147,6 +147,13 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                             connection, new IOException("runtime server control transport disconnected"))));
             consecutiveFailures = 0;
             state.set(State.RUNNING);
+            if (closed) {
+                // close() raced the install; release the connection and leave the supervisor closed.
+                state.set(State.CLOSED);
+                current.compareAndSet(connection, null);
+                connection.close();
+                return;
+            }
             firstConnection.complete(connection);
             for (ConnectionListener listener : listeners) {
                 try {
@@ -275,11 +282,9 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
         private final Map<String, String> environment;
         private final CefSessionMiddleware sessionMiddleware;
 
-        @Nullable
-        private final String bearerToken;
+        private final Optional<String> bearerToken;
 
-        @Nullable
-        private final SSLContext sslContext;
+        private final Optional<SSLContext> sslContext;
 
         public Configuration(
                 @Nonnull Path binary,
@@ -303,8 +308,8 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                     maxRestartDelay,
                     maxConsecutiveFailures,
                     environment,
-                    null,
-                    null);
+                    Optional.empty(),
+                    Optional.empty());
         }
 
         public Configuration(
@@ -318,8 +323,8 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                 @Nonnull Duration maxRestartDelay,
                 int maxConsecutiveFailures,
                 @Nonnull Map<String, String> environment,
-                @Nullable String bearerToken,
-                @Nullable SSLContext sslContext) {
+                Optional<String> bearerToken,
+                Optional<SSLContext> sslContext) {
             this(
                     binary,
                     transport,
@@ -347,8 +352,8 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
                 Duration maxRestartDelay,
                 int maxConsecutiveFailures,
                 Map<String, String> environment,
-                @Nullable String bearerToken,
-                @Nullable SSLContext sslContext,
+                Optional<String> bearerToken,
+                Optional<SSLContext> sslContext,
                 CefSessionMiddleware sessionMiddleware) {
             this.binary = Objects.requireNonNull(binary, "binary");
             this.transport = Objects.requireNonNull(transport, "transport");
@@ -363,12 +368,12 @@ public final class RuntimeServerSupervisor implements AutoCloseable {
             }
             if (maxConsecutiveFailures < -1)
                 throw new IllegalArgumentException("maxConsecutiveFailures must be -1 or greater");
-            if (bearerToken != null && bearerToken.isEmpty())
+            if (bearerToken.isPresent() && bearerToken.get().isEmpty())
                 throw new IllegalArgumentException("bearerToken is empty");
             LinkedHashMap<String, String> serverEnvironment = new LinkedHashMap<>(environment);
-            if (bearerToken != null) {
-                String configured = serverEnvironment.put("CEF4J_WEBSOCKET_BEARER_TOKEN", bearerToken);
-                if (configured != null && !configured.equals(bearerToken)) {
+            if (bearerToken.isPresent()) {
+                String configured = serverEnvironment.put("CEF4J_WEBSOCKET_BEARER_TOKEN", bearerToken.get());
+                if (configured != null && !configured.equals(bearerToken.get())) {
                     throw new IllegalArgumentException(
                             "bearerToken disagrees with CEF4J_WEBSOCKET_BEARER_TOKEN environment value");
                 }

@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>cef4j-inprocess-webdriver</artifactId>
-    <packaging>jar</packaging>
     <name>cef4j-inprocess-webdriver</name>
     <description>WebDriver adapter for CEF browsers hosted in the client JVM</description>
 
@@ -19,17 +18,14 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-cdp</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-webdriver</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

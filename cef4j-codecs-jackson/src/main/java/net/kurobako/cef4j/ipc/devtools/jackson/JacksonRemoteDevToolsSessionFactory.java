@@ -2,6 +2,8 @@ package net.kurobako.cef4j.ipc.devtools.jackson;
 
 import java.util.concurrent.CompletableFuture;
 import net.kurobako.cef4j.cdp.CdpTransport;
+import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
+import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -12,6 +14,6 @@ public final class JacksonRemoteDevToolsSessionFactory implements RemoteDevTools
     @Override
     public CompletableFuture<? extends CdpTransport> attach(
             CefSession session, RemoteHandle browser, BrowserHost host) {
-        return DevToolsSession.attach(session, browser, host);
+        return DevToolsSession.attach(session, browser, host, new JacksonCdpCodec());
     }
 }

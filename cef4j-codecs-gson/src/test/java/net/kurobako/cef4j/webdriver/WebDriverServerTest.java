@@ -8,6 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -134,8 +135,10 @@ final class WebDriverServerTest {
             Response response =
                     request(server, "POST", "/session/" + sessionId + "/url", "{\"url\":\"https://slow.test\"}");
             assertError(response, 500, "timeout");
-            assertThat(backend.closed).isTrue();
-            assertError(request(server, "GET", "/session/" + sessionId + "/url", null), 404, "invalid session id");
+            // A command timeout must not destroy the session or close the backend.
+            assertThat(backend.closed).isFalse();
+            assertThat(request(server, "GET", "/session/" + sessionId + "/timeouts", null).status)
+                    .isEqualTo(200);
         }
     }
 
@@ -283,7 +286,7 @@ final class WebDriverServerTest {
 
         @Override
         public CompletableFuture<java.util.List<String>> findElements(
-                String using, String value, @Nullable String parentElement) {
+                String using, String value, Optional<String> parentElement) {
             searches.incrementAndGet();
             if (emptySearches.getAndDecrement() > 0) return CompletableFuture.completedFuture(java.util.List.of());
             return CompletableFuture.completedFuture(java.util.List.of("element-1"));

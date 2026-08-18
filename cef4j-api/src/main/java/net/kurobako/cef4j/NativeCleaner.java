@@ -42,14 +42,16 @@ public enum NativeCleaner {
                 // into native code whose process-global state no longer exists.
                 return () -> {};
             }
-            Cleaner.Cleanable c = cleaner.register(obj, action);
+            // Register the prune-and-release as the clean action so the active set is pruned both when the peer is
+            // collected by GC and when releaseAll() cleans it explicitly.
             Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
-            holder[0] = () -> {
+            Cleaner.Cleanable c = cleaner.register(obj, () -> {
                 active.remove(holder[0]);
-                c.clean();
-            };
-            active.add(holder[0]);
-            return holder[0];
+                action.run();
+            });
+            holder[0] = c;
+            active.add(c);
+            return c;
         }
     }
 

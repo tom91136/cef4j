@@ -3,1399 +3,733 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * A domain for letting clients substitute browser&#x27;s network layer with client code.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Fetch.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Fetch {
     private Fetch() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Unique request identifier. Note that this does not identify individual HTTP requests that are part of a network request.
+     */
+    public static final class RequestId implements CdpValue<String> {
+        public final String value;
+        public RequestId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof RequestId)) return false;
+            return value.equals(((RequestId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "RequestId(" + value + ")"; }
+    }
     /**
      * Stages of the request to handle. Request will intercept before the request is sent. Response will intercept after the response is received (but before response body is received).
      */
-    public static final class RequestStage {
-        private RequestStage() {}
-        public static final String REQUEST = "Request";
-        public static final String RESPONSE = "Response";
+    public enum RequestStage implements CdpValue<String> {
+        REQUEST("Request"),
+        RESPONSE("Response");
+        public final String value;
+        RequestStage(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static RequestStage of(@Nonnull String value) {
+            for (RequestStage constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown RequestStage value: " + value);
+        }
     }
     /**
      */
     public static final class RequestPattern extends CdpObject {
+        public RequestPattern() {}
         private RequestPattern(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestPattern fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestPattern(values);
+        public static RequestPattern fromMap(Map<String, Object> values) {
+            return new RequestPattern(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String urlPattern() {
-            return (String) value("urlPattern");
+        public Optional<String> urlPattern() {
+            return Optional.ofNullable((String) raw("urlPattern"));
         }
         /**
          * If set, only requests for matching resource types will be intercepted.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String resourceType() {
-            return (String) value("resourceType");
+        public Optional<Network.ResourceType> resourceType() {
+            return Optional.ofNullable(raw("resourceType") == null ? null : Network.ResourceType.of((String) raw("resourceType")));
         }
         /**
          * Stage at which to begin intercepting requests. Default is Request.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String requestStage() {
-            return (String) value("requestStage");
+        public Optional<Fetch.RequestStage> requestStage() {
+            return Optional.ofNullable(raw("requestStage") == null ? null : Fetch.RequestStage.of((String) raw("requestStage")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder urlPattern(@Nullable String value) {
-                if (value == null) values.remove("urlPattern");
-                else values.put("urlPattern", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, only requests for matching resource types will be intercepted.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resourceType(@Nullable String value) {
-                if (value == null) values.remove("resourceType");
-                else values.put("resourceType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Stage at which to begin intercepting requests. Default is Request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestStage(@Nullable String value) {
-                if (value == null) values.remove("requestStage");
-                else values.put("requestStage", jsonValue(value));
-                return this;
-            }
-            public RequestPattern build() {
-                return new RequestPattern(values);
-            }
+        /**
+         * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
+         * @param urlPattern field value; empty omits the value
+         * @return this model
+         */
+        public RequestPattern urlPattern(Optional<String> urlPattern) {
+            set("urlPattern", urlPattern.orElse(null));
+            return this;
+        }
+        /**
+         * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
+         * @param urlPattern field value; null removes the value
+         * @return this model
+         */
+        public RequestPattern urlPattern(String urlPattern) {
+            set("urlPattern", urlPattern);
+            return this;
+        }
+        /**
+         * If set, only requests for matching resource types will be intercepted.
+         * @param resourceType field value; empty omits the value
+         * @return this model
+         */
+        public RequestPattern resourceType(Optional<Network.ResourceType> resourceType) {
+            set("resourceType", resourceType.orElse(null));
+            return this;
+        }
+        /**
+         * If set, only requests for matching resource types will be intercepted.
+         * @param resourceType field value; null removes the value
+         * @return this model
+         */
+        public RequestPattern resourceType(Network.ResourceType resourceType) {
+            set("resourceType", resourceType);
+            return this;
+        }
+        /**
+         * Stage at which to begin intercepting requests. Default is Request.
+         * @param requestStage field value; empty omits the value
+         * @return this model
+         */
+        public RequestPattern requestStage(Optional<Fetch.RequestStage> requestStage) {
+            set("requestStage", requestStage.orElse(null));
+            return this;
+        }
+        /**
+         * Stage at which to begin intercepting requests. Default is Request.
+         * @param requestStage field value; null removes the value
+         * @return this model
+         */
+        public RequestPattern requestStage(Fetch.RequestStage requestStage) {
+            set("requestStage", requestStage);
+            return this;
         }
     }
     /**
      * Response HTTP header entry
      */
     public static final class HeaderEntry extends CdpObject {
+        public HeaderEntry() {}
         private HeaderEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static HeaderEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HeaderEntry(values);
+        public static HeaderEntry fromMap(Map<String, Object> values) {
+            return new HeaderEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public String value() {
+            return (String) require("value");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the value field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public HeaderEntry build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new HeaderEntry(values);
-            }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public HeaderEntry name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public HeaderEntry value(String value) {
+            set("value", value);
+            return this;
         }
     }
     /**
      * Authorization challenge for HTTP status code 401 or 407.
      */
     public static final class AuthChallenge extends CdpObject {
+        public AuthChallenge() {}
         private AuthChallenge(Map<String, Object> values) { super(values); }
-        @Nullable public static AuthChallenge fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AuthChallenge(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Source of the authentication challenge.
-         * @return the protocol field value
-         */
-        @Nullable public String source() {
-            return (String) value("source");
+        public static AuthChallenge fromMap(Map<String, Object> values) {
+            return new AuthChallenge(values);
         }
         /**
          * Source of the authentication challenge.
          */
-        public static final class SourceValues {
-            private SourceValues() {}
-            public static final String SERVER = "Server";
-            public static final String PROXY = "Proxy";
+        public enum SourceValues implements CdpValue<String> {
+            SERVER("Server"),
+            PROXY("Proxy");
+            public final String value;
+            SourceValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static SourceValues of(@Nonnull String value) {
+                for (SourceValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown SourceValues value: " + value);
+            }
+        }
+        /**
+         * Source of the authentication challenge.
+         * @return the protocol field value, empty when absent
+         */
+        public Optional<AuthChallenge.SourceValues> source() {
+            return Optional.ofNullable(raw("source") == null ? null : AuthChallenge.SourceValues.of((String) raw("source")));
         }
         /**
          * Origin of the challenger.
          * @return the protocol field value
          */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public String origin() {
+            return (String) require("origin");
         }
         /**
          * The authentication scheme used, such as basic or digest
          * @return the protocol field value
          */
-        @Nullable public String scheme() {
-            return (String) value("scheme");
+        public String scheme() {
+            return (String) require("scheme");
         }
         /**
          * The realm of the challenge. May be empty.
          * @return the protocol field value
          */
-        @Nullable public String realm() {
-            return (String) value("realm");
+        public String realm() {
+            return (String) require("realm");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Source of the authentication challenge.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder source(@Nullable String value) {
-                if (value == null) values.remove("source");
-                else values.put("source", jsonValue(value));
-                return this;
-            }
-            /**
-             * Origin of the challenger.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * The authentication scheme used, such as basic or digest
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scheme(@Nullable String value) {
-                if (value == null) values.remove("scheme");
-                else values.put("scheme", jsonValue(value));
-                return this;
-            }
-            /**
-             * The realm of the challenge. May be empty.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder realm(@Nullable String value) {
-                if (value == null) values.remove("realm");
-                else values.put("realm", jsonValue(value));
-                return this;
-            }
-            public AuthChallenge build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("scheme")) throw new IllegalStateException("Missing required CDP field: scheme");
-                if (!values.containsKey("realm")) throw new IllegalStateException("Missing required CDP field: realm");
-                return new AuthChallenge(values);
-            }
+        /**
+         * Source of the authentication challenge.
+         * @param source field value; empty omits the value
+         * @return this model
+         */
+        public AuthChallenge source(Optional<AuthChallenge.SourceValues> source) {
+            set("source", source.orElse(null));
+            return this;
+        }
+        /**
+         * Source of the authentication challenge.
+         * @param source field value; null removes the value
+         * @return this model
+         */
+        public AuthChallenge source(AuthChallenge.SourceValues source) {
+            set("source", source);
+            return this;
+        }
+        /**
+         * Origin of the challenger.
+         * @param origin field value
+         * @return this model
+         */
+        public AuthChallenge origin(String origin) {
+            set("origin", origin);
+            return this;
+        }
+        /**
+         * The authentication scheme used, such as basic or digest
+         * @param scheme field value
+         * @return this model
+         */
+        public AuthChallenge scheme(String scheme) {
+            set("scheme", scheme);
+            return this;
+        }
+        /**
+         * The realm of the challenge. May be empty.
+         * @param realm field value
+         * @return this model
+         */
+        public AuthChallenge realm(String realm) {
+            set("realm", realm);
+            return this;
         }
     }
     /**
      * Response to an AuthChallenge.
      */
     public static final class AuthChallengeResponse extends CdpObject {
+        public AuthChallengeResponse() {}
         private AuthChallengeResponse(Map<String, Object> values) { super(values); }
-        @Nullable public static AuthChallengeResponse fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AuthChallengeResponse(values);
+        public static AuthChallengeResponse fromMap(Map<String, Object> values) {
+            return new AuthChallengeResponse(values);
         }
-        public static Builder builder() { return new Builder(); }
+        /**
+         * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
+         */
+        public enum ResponseValues implements CdpValue<String> {
+            DEFAULT("Default"),
+            CANCELAUTH("CancelAuth"),
+            PROVIDECREDENTIALS("ProvideCredentials");
+            public final String value;
+            ResponseValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static ResponseValues of(@Nonnull String value) {
+                for (ResponseValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown ResponseValues value: " + value);
+            }
+        }
         /**
          * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
          * @return the protocol field value
          */
-        @Nullable public String response() {
-            return (String) value("response");
-        }
-        /**
-         * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
-         */
-        public static final class ResponseValues {
-            private ResponseValues() {}
-            public static final String DEFAULT = "Default";
-            public static final String CANCELAUTH = "CancelAuth";
-            public static final String PROVIDECREDENTIALS = "ProvideCredentials";
+        public AuthChallengeResponse.ResponseValues response() {
+            return AuthChallengeResponse.ResponseValues.of((String) require("response"));
         }
         /**
          * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String username() {
-            return (String) value("username");
+        public Optional<String> username() {
+            return Optional.ofNullable((String) raw("username"));
         }
         /**
          * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String password() {
-            return (String) value("password");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder response(@Nullable String value) {
-                if (value == null) values.remove("response");
-                else values.put("response", jsonValue(value));
-                return this;
-            }
-            /**
-             * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder username(@Nullable String value) {
-                if (value == null) values.remove("username");
-                else values.put("username", jsonValue(value));
-                return this;
-            }
-            /**
-             * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder password(@Nullable String value) {
-                if (value == null) values.remove("password");
-                else values.put("password", jsonValue(value));
-                return this;
-            }
-            public AuthChallengeResponse build() {
-                if (!values.containsKey("response")) throw new IllegalStateException("Missing required CDP field: response");
-                return new AuthChallengeResponse(values);
-            }
-        }
-    }
-    /**
-     * Disables the fetch domain.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disables the fetch domain.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Fetch.RequestPattern> patterns() {
-            return list(value("patterns"), element0 -> Fetch.RequestPattern.fromMap(objectMap(element0)));
+        public Optional<String> password() {
+            return Optional.ofNullable((String) raw("password"));
         }
         /**
-         * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
-         * @return the protocol field value
+         * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
+         * @param response field value
+         * @return this model
          */
-        @Nullable public Boolean handleAuthRequests() {
-            return (Boolean) value("handleAuthRequests");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder patterns(@Nullable java.util.List<Fetch.RequestPattern> value) {
-                if (value == null) values.remove("patterns");
-                else values.put("patterns", jsonValue(value));
-                return this;
-            }
-            /**
-             * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder handleAuthRequests(@Nullable Boolean value) {
-                if (value == null) values.remove("handleAuthRequests");
-                else values.put("handleAuthRequests", jsonValue(value));
-                return this;
-            }
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Causes the request to fail with specified reason.
-     */
-    public static final class FailRequestParams extends CdpObject {
-        private FailRequestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static FailRequestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FailRequestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An id the client received in requestPaused event.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public AuthChallengeResponse response(AuthChallengeResponse.ResponseValues response) {
+            set("response", response);
+            return this;
         }
         /**
-         * Causes the request to fail with the given reason.
-         * @return the protocol field value
+         * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
+         * @param username field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String errorReason() {
-            return (String) value("errorReason");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An id the client received in requestPaused event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Causes the request to fail with the given reason.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder errorReason(@Nullable String value) {
-                if (value == null) values.remove("errorReason");
-                else values.put("errorReason", jsonValue(value));
-                return this;
-            }
-            public FailRequestParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("errorReason")) throw new IllegalStateException("Missing required CDP field: errorReason");
-                return new FailRequestParams(values);
-            }
-        }
-    }
-    /**
-     * Causes the request to fail with specified reason.
-     */
-    public static final class FailRequestResult extends CdpObject {
-        private FailRequestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static FailRequestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FailRequestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public FailRequestResult build() {
-                return new FailRequestResult(values);
-            }
-        }
-    }
-    /**
-     * Provides response to the request.
-     */
-    public static final class FulfillRequestParams extends CdpObject {
-        private FulfillRequestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static FulfillRequestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FulfillRequestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An id the client received in requestPaused event.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public AuthChallengeResponse username(Optional<String> username) {
+            set("username", username.orElse(null));
+            return this;
         }
         /**
-         * An HTTP response code.
-         * @return the protocol field value
+         * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
+         * @param username field value; null removes the value
+         * @return this model
          */
-        @Nullable public Long responseCode() {
-            return numberAsLong(value("responseCode"));
+        public AuthChallengeResponse username(String username) {
+            set("username", username);
+            return this;
         }
         /**
-         * Response headers.
-         * @return the protocol field value
+         * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
+         * @param password field value; empty omits the value
+         * @return this model
          */
-        @Nullable public java.util.List<Fetch.HeaderEntry> responseHeaders() {
-            return list(value("responseHeaders"), element0 -> Fetch.HeaderEntry.fromMap(objectMap(element0)));
+        public AuthChallengeResponse password(Optional<String> password) {
+            set("password", password.orElse(null));
+            return this;
         }
         /**
-         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
-         * @return the protocol field value
+         * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
+         * @param password field value; null removes the value
+         * @return this model
          */
-        @Nullable public String binaryResponseHeaders() {
-            return (String) value("binaryResponseHeaders");
-        }
-        /**
-         * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
-         * @return the protocol field value
-         */
-        @Nullable public String body() {
-            return (String) value("body");
-        }
-        /**
-         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
-         * @return the protocol field value
-         */
-        @Nullable public String responsePhrase() {
-            return (String) value("responsePhrase");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An id the client received in requestPaused event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * An HTTP response code.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseCode(@Nullable Long value) {
-                if (value == null) values.remove("responseCode");
-                else values.put("responseCode", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response headers.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseHeaders(@Nullable java.util.List<Fetch.HeaderEntry> value) {
-                if (value == null) values.remove("responseHeaders");
-                else values.put("responseHeaders", jsonValue(value));
-                return this;
-            }
-            /**
-             * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder binaryResponseHeaders(@Nullable String value) {
-                if (value == null) values.remove("binaryResponseHeaders");
-                else values.put("binaryResponseHeaders", jsonValue(value));
-                return this;
-            }
-            /**
-             * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder body(@Nullable String value) {
-                if (value == null) values.remove("body");
-                else values.put("body", jsonValue(value));
-                return this;
-            }
-            /**
-             * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responsePhrase(@Nullable String value) {
-                if (value == null) values.remove("responsePhrase");
-                else values.put("responsePhrase", jsonValue(value));
-                return this;
-            }
-            public FulfillRequestParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("responseCode")) throw new IllegalStateException("Missing required CDP field: responseCode");
-                return new FulfillRequestParams(values);
-            }
-        }
-    }
-    /**
-     * Provides response to the request.
-     */
-    public static final class FulfillRequestResult extends CdpObject {
-        private FulfillRequestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static FulfillRequestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FulfillRequestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public FulfillRequestResult build() {
-                return new FulfillRequestResult(values);
-            }
-        }
-    }
-    /**
-     * Continues the request, optionally modifying some of its parameters.
-     */
-    public static final class ContinueRequestParams extends CdpObject {
-        private ContinueRequestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueRequestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueRequestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An id the client received in requestPaused event.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
-        }
-        /**
-         * If set, the request url will be modified in a way that&#x27;s not observable by page.
-         * @return the protocol field value
-         */
-        @Nullable public String url() {
-            return (String) value("url");
-        }
-        /**
-         * If set, the request method is overridden.
-         * @return the protocol field value
-         */
-        @Nullable public String method() {
-            return (String) value("method");
-        }
-        /**
-         * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
-         * @return the protocol field value
-         */
-        @Nullable public String postData() {
-            return (String) value("postData");
-        }
-        /**
-         * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Fetch.HeaderEntry> headers() {
-            return list(value("headers"), element0 -> Fetch.HeaderEntry.fromMap(objectMap(element0)));
-        }
-        /**
-         * If set, overrides response interception behavior for this request.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean interceptResponse() {
-            return (Boolean) value("interceptResponse");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An id the client received in requestPaused event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, the request url will be modified in a way that&#x27;s not observable by page.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, the request method is overridden.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder method(@Nullable String value) {
-                if (value == null) values.remove("method");
-                else values.put("method", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder postData(@Nullable String value) {
-                if (value == null) values.remove("postData");
-                else values.put("postData", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder headers(@Nullable java.util.List<Fetch.HeaderEntry> value) {
-                if (value == null) values.remove("headers");
-                else values.put("headers", jsonValue(value));
-                return this;
-            }
-            /**
-             * If set, overrides response interception behavior for this request.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder interceptResponse(@Nullable Boolean value) {
-                if (value == null) values.remove("interceptResponse");
-                else values.put("interceptResponse", jsonValue(value));
-                return this;
-            }
-            public ContinueRequestParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                return new ContinueRequestParams(values);
-            }
-        }
-    }
-    /**
-     * Continues the request, optionally modifying some of its parameters.
-     */
-    public static final class ContinueRequestResult extends CdpObject {
-        private ContinueRequestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueRequestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueRequestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ContinueRequestResult build() {
-                return new ContinueRequestResult(values);
-            }
-        }
-    }
-    /**
-     * Continues a request supplying authChallengeResponse following authRequired event.
-     */
-    public static final class ContinueWithAuthParams extends CdpObject {
-        private ContinueWithAuthParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueWithAuthParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueWithAuthParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An id the client received in authRequired event.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
-        }
-        /**
-         * Response to with an authChallenge.
-         * @return the protocol field value
-         */
-        @Nullable public Fetch.AuthChallengeResponse authChallengeResponse() {
-            return Fetch.AuthChallengeResponse.fromMap(objectMap(value("authChallengeResponse")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An id the client received in authRequired event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response to with an authChallenge.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder authChallengeResponse(@Nullable Fetch.AuthChallengeResponse value) {
-                if (value == null) values.remove("authChallengeResponse");
-                else values.put("authChallengeResponse", jsonValue(value));
-                return this;
-            }
-            public ContinueWithAuthParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("authChallengeResponse")) throw new IllegalStateException("Missing required CDP field: authChallengeResponse");
-                return new ContinueWithAuthParams(values);
-            }
-        }
-    }
-    /**
-     * Continues a request supplying authChallengeResponse following authRequired event.
-     */
-    public static final class ContinueWithAuthResult extends CdpObject {
-        private ContinueWithAuthResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueWithAuthResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueWithAuthResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ContinueWithAuthResult build() {
-                return new ContinueWithAuthResult(values);
-            }
-        }
-    }
-    /**
-     * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ContinueResponseParams extends CdpObject {
-        private ContinueResponseParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueResponseParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueResponseParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An id the client received in requestPaused event.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
-        }
-        /**
-         * An HTTP response code. If absent, original response code will be used.
-         * @return the protocol field value
-         */
-        @Nullable public Long responseCode() {
-            return numberAsLong(value("responseCode"));
-        }
-        /**
-         * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
-         * @return the protocol field value
-         */
-        @Nullable public String responsePhrase() {
-            return (String) value("responsePhrase");
-        }
-        /**
-         * Response headers. If absent, original response headers will be used.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Fetch.HeaderEntry> responseHeaders() {
-            return list(value("responseHeaders"), element0 -> Fetch.HeaderEntry.fromMap(objectMap(element0)));
-        }
-        /**
-         * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
-         * @return the protocol field value
-         */
-        @Nullable public String binaryResponseHeaders() {
-            return (String) value("binaryResponseHeaders");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An id the client received in requestPaused event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * An HTTP response code. If absent, original response code will be used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseCode(@Nullable Long value) {
-                if (value == null) values.remove("responseCode");
-                else values.put("responseCode", jsonValue(value));
-                return this;
-            }
-            /**
-             * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responsePhrase(@Nullable String value) {
-                if (value == null) values.remove("responsePhrase");
-                else values.put("responsePhrase", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response headers. If absent, original response headers will be used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseHeaders(@Nullable java.util.List<Fetch.HeaderEntry> value) {
-                if (value == null) values.remove("responseHeaders");
-                else values.put("responseHeaders", jsonValue(value));
-                return this;
-            }
-            /**
-             * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder binaryResponseHeaders(@Nullable String value) {
-                if (value == null) values.remove("binaryResponseHeaders");
-                else values.put("binaryResponseHeaders", jsonValue(value));
-                return this;
-            }
-            public ContinueResponseParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                return new ContinueResponseParams(values);
-            }
-        }
-    }
-    /**
-     * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ContinueResponseResult extends CdpObject {
-        private ContinueResponseResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ContinueResponseResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContinueResponseResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ContinueResponseResult build() {
-                return new ContinueResponseResult(values);
-            }
-        }
-    }
-    /**
-     * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
-     */
-    public static final class GetResponseBodyParams extends CdpObject {
-        private GetResponseBodyParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetResponseBodyParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetResponseBodyParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier for the intercepted request to get body for.
-         * @return the protocol field value
-         */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier for the intercepted request to get body for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            public GetResponseBodyParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                return new GetResponseBodyParams(values);
-            }
+        public AuthChallengeResponse password(String password) {
+            set("password", password);
+            return this;
         }
     }
     /**
      * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
      */
     public static final class GetResponseBodyResult extends CdpObject {
+        public GetResponseBodyResult() {}
         private GetResponseBodyResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetResponseBodyResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetResponseBodyResult(values);
+        public static GetResponseBodyResult fromMap(Map<String, Object> values) {
+            return new GetResponseBodyResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Response body.
          * @return the protocol field value
          */
-        @Nullable public String body() {
-            return (String) value("body");
+        public String body() {
+            return (String) require("body");
         }
         /**
          * True, if content was sent as base64.
          * @return the protocol field value
          */
-        @Nullable public Boolean base64Encoded() {
-            return (Boolean) value("base64Encoded");
+        public boolean base64Encoded() {
+            return (Boolean) require("base64Encoded");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Response body.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder body(@Nullable String value) {
-                if (value == null) values.remove("body");
-                else values.put("body", jsonValue(value));
-                return this;
-            }
-            /**
-             * True, if content was sent as base64.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder base64Encoded(@Nullable Boolean value) {
-                if (value == null) values.remove("base64Encoded");
-                else values.put("base64Encoded", jsonValue(value));
-                return this;
-            }
-            public GetResponseBodyResult build() {
-                if (!values.containsKey("body")) throw new IllegalStateException("Missing required CDP field: body");
-                if (!values.containsKey("base64Encoded")) throw new IllegalStateException("Missing required CDP field: base64Encoded");
-                return new GetResponseBodyResult(values);
-            }
-        }
-    }
-    /**
-     * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
-     */
-    public static final class TakeResponseBodyAsStreamParams extends CdpObject {
-        private TakeResponseBodyAsStreamParams(Map<String, Object> values) { super(values); }
-        @Nullable public static TakeResponseBodyAsStreamParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TakeResponseBodyAsStreamParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the requestId field.
-         * @return the protocol field value
+         * Response body.
+         * @param body field value
+         * @return this model
          */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public GetResponseBodyResult body(String body) {
+            set("body", body);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the requestId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            public TakeResponseBodyAsStreamParams build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                return new TakeResponseBodyAsStreamParams(values);
-            }
-        }
-    }
-    /**
-     * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
-     */
-    public static final class TakeResponseBodyAsStreamResult extends CdpObject {
-        private TakeResponseBodyAsStreamResult(Map<String, Object> values) { super(values); }
-        @Nullable public static TakeResponseBodyAsStreamResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TakeResponseBodyAsStreamResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the stream field.
-         * @return the protocol field value
+         * True, if content was sent as base64.
+         * @param base64Encoded field value
+         * @return this model
          */
-        @Nullable public String stream() {
-            return (String) value("stream");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the stream field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder stream(@Nullable String value) {
-                if (value == null) values.remove("stream");
-                else values.put("stream", jsonValue(value));
-                return this;
-            }
-            public TakeResponseBodyAsStreamResult build() {
-                if (!values.containsKey("stream")) throw new IllegalStateException("Missing required CDP field: stream");
-                return new TakeResponseBodyAsStreamResult(values);
-            }
+        public GetResponseBodyResult base64Encoded(boolean base64Encoded) {
+            set("base64Encoded", base64Encoded);
+            return this;
         }
     }
     /**
      * Issued when the domain is enabled and the request URL matches the specified filter. The request is paused until the client responds with one of continueRequest, failRequest or fulfillRequest. The stage of the request can be determined by presence of responseErrorReason and responseStatusCode -- the request is at the response stage if either of these fields is present and in the request stage otherwise. Redirect responses and subsequent requests are reported similarly to regular responses and requests. Redirect responses may be distinguished by the value of {@code responseStatusCode} (which is one of 301, 302, 303, 307, 308) along with presence of the {@code location} header. Requests resulting from a redirect will have {@code redirectedRequestId} field set.
      */
     public static final class RequestPausedEvent extends CdpObject {
+        public RequestPausedEvent() {}
         private RequestPausedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestPausedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestPausedEvent(values);
+        public static RequestPausedEvent fromMap(Map<String, Object> values) {
+            return new RequestPausedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Each request the page makes will have a unique id.
          * @return the protocol field value
          */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
         }
         /**
          * The details of the request.
          * @return the protocol field value
          */
-        @Nullable public Network.Request request() {
-            return Network.Request.fromMap(objectMap(value("request")));
+        public Network.Request request() {
+            return java.util.Objects.requireNonNull(Network.Request.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
         }
         /**
          * The id of the frame that initiated the request.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * How the requested resource will be used.
          * @return the protocol field value
          */
-        @Nullable public String resourceType() {
-            return (String) value("resourceType");
+        public Network.ResourceType resourceType() {
+            return Network.ResourceType.of((String) require("resourceType"));
         }
         /**
          * Response error if intercepted at response stage.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String responseErrorReason() {
-            return (String) value("responseErrorReason");
+        public Optional<Network.ErrorReason> responseErrorReason() {
+            return Optional.ofNullable(raw("responseErrorReason") == null ? null : Network.ErrorReason.of((String) raw("responseErrorReason")));
         }
         /**
          * Response code if intercepted at response stage.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long responseStatusCode() {
-            return numberAsLong(value("responseStatusCode"));
+        public OptionalLong responseStatusCode() {
+            Long value = CdpObject.numberAsLong(raw("responseStatusCode"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * Response status text if intercepted at response stage.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String responseStatusText() {
-            return (String) value("responseStatusText");
+        public Optional<String> responseStatusText() {
+            return Optional.ofNullable((String) raw("responseStatusText"));
         }
         /**
          * Response headers if intercepted at the response stage.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<Fetch.HeaderEntry> responseHeaders() {
-            return list(value("responseHeaders"), element0 -> Fetch.HeaderEntry.fromMap(objectMap(element0)));
+        public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
+            return Optional.ofNullable(list(raw("responseHeaders"), element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * If the intercepted request had a corresponding Network.requestWillBeSent event fired for it, then this networkId will be the same as the requestId present in the requestWillBeSent event.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String networkId() {
-            return (String) value("networkId");
+        public Optional<Network.RequestId> networkId() {
+            return Optional.ofNullable(raw("networkId") == null ? null : new Network.RequestId((String) raw("networkId")));
         }
         /**
          * If the request is due to a redirect response from the server, the id of the request that has caused the redirect.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String redirectedRequestId() {
-            return (String) value("redirectedRequestId");
+        public Optional<Fetch.RequestId> redirectedRequestId() {
+            return Optional.ofNullable(raw("redirectedRequestId") == null ? null : new Fetch.RequestId((String) raw("redirectedRequestId")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Each request the page makes will have a unique id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The details of the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder request(@Nullable Network.Request value) {
-                if (value == null) values.remove("request");
-                else values.put("request", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id of the frame that initiated the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * How the requested resource will be used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resourceType(@Nullable String value) {
-                if (value == null) values.remove("resourceType");
-                else values.put("resourceType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response error if intercepted at response stage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseErrorReason(@Nullable String value) {
-                if (value == null) values.remove("responseErrorReason");
-                else values.put("responseErrorReason", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response code if intercepted at response stage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseStatusCode(@Nullable Long value) {
-                if (value == null) values.remove("responseStatusCode");
-                else values.put("responseStatusCode", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response status text if intercepted at response stage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseStatusText(@Nullable String value) {
-                if (value == null) values.remove("responseStatusText");
-                else values.put("responseStatusText", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response headers if intercepted at the response stage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseHeaders(@Nullable java.util.List<Fetch.HeaderEntry> value) {
-                if (value == null) values.remove("responseHeaders");
-                else values.put("responseHeaders", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the intercepted request had a corresponding Network.requestWillBeSent event fired for it, then this networkId will be the same as the requestId present in the requestWillBeSent event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder networkId(@Nullable String value) {
-                if (value == null) values.remove("networkId");
-                else values.put("networkId", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the request is due to a redirect response from the server, the id of the request that has caused the redirect.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder redirectedRequestId(@Nullable String value) {
-                if (value == null) values.remove("redirectedRequestId");
-                else values.put("redirectedRequestId", jsonValue(value));
-                return this;
-            }
-            public RequestPausedEvent build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("request")) throw new IllegalStateException("Missing required CDP field: request");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                if (!values.containsKey("resourceType")) throw new IllegalStateException("Missing required CDP field: resourceType");
-                return new RequestPausedEvent(values);
-            }
+        /**
+         * Each request the page makes will have a unique id.
+         * @param requestId field value
+         * @return this model
+         */
+        public RequestPausedEvent requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * The details of the request.
+         * @param request field value
+         * @return this model
+         */
+        public RequestPausedEvent request(Network.Request request) {
+            set("request", request);
+            return this;
+        }
+        /**
+         * The id of the frame that initiated the request.
+         * @param frameId field value
+         * @return this model
+         */
+        public RequestPausedEvent frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * How the requested resource will be used.
+         * @param resourceType field value
+         * @return this model
+         */
+        public RequestPausedEvent resourceType(Network.ResourceType resourceType) {
+            set("resourceType", resourceType);
+            return this;
+        }
+        /**
+         * Response error if intercepted at response stage.
+         * @param responseErrorReason field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent responseErrorReason(Optional<Network.ErrorReason> responseErrorReason) {
+            set("responseErrorReason", responseErrorReason.orElse(null));
+            return this;
+        }
+        /**
+         * Response error if intercepted at response stage.
+         * @param responseErrorReason field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent responseErrorReason(Network.ErrorReason responseErrorReason) {
+            set("responseErrorReason", responseErrorReason);
+            return this;
+        }
+        /**
+         * Response code if intercepted at response stage.
+         * @param responseStatusCode field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent responseStatusCode(OptionalLong responseStatusCode) {
+            set("responseStatusCode", responseStatusCode.isPresent() ? responseStatusCode.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Response code if intercepted at response stage.
+         * @param responseStatusCode field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent responseStatusCode(Long responseStatusCode) {
+            set("responseStatusCode", responseStatusCode);
+            return this;
+        }
+        /**
+         * Response status text if intercepted at response stage.
+         * @param responseStatusText field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent responseStatusText(Optional<String> responseStatusText) {
+            set("responseStatusText", responseStatusText.orElse(null));
+            return this;
+        }
+        /**
+         * Response status text if intercepted at response stage.
+         * @param responseStatusText field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent responseStatusText(String responseStatusText) {
+            set("responseStatusText", responseStatusText);
+            return this;
+        }
+        /**
+         * Response headers if intercepted at the response stage.
+         * @param responseHeaders field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent responseHeaders(Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders) {
+            set("responseHeaders", responseHeaders.orElse(null));
+            return this;
+        }
+        /**
+         * Response headers if intercepted at the response stage.
+         * @param responseHeaders field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent responseHeaders(java.util.List<Fetch.HeaderEntry> responseHeaders) {
+            set("responseHeaders", responseHeaders);
+            return this;
+        }
+        /**
+         * If the intercepted request had a corresponding Network.requestWillBeSent event fired for it, then this networkId will be the same as the requestId present in the requestWillBeSent event.
+         * @param networkId field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent networkId(Optional<Network.RequestId> networkId) {
+            set("networkId", networkId.orElse(null));
+            return this;
+        }
+        /**
+         * If the intercepted request had a corresponding Network.requestWillBeSent event fired for it, then this networkId will be the same as the requestId present in the requestWillBeSent event.
+         * @param networkId field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent networkId(Network.RequestId networkId) {
+            set("networkId", networkId);
+            return this;
+        }
+        /**
+         * If the request is due to a redirect response from the server, the id of the request that has caused the redirect.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param redirectedRequestId field value; empty omits the value
+         * @return this model
+         */
+        public RequestPausedEvent redirectedRequestId(Optional<Fetch.RequestId> redirectedRequestId) {
+            set("redirectedRequestId", redirectedRequestId.orElse(null));
+            return this;
+        }
+        /**
+         * If the request is due to a redirect response from the server, the id of the request that has caused the redirect.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param redirectedRequestId field value; null removes the value
+         * @return this model
+         */
+        public RequestPausedEvent redirectedRequestId(Fetch.RequestId redirectedRequestId) {
+            set("redirectedRequestId", redirectedRequestId);
+            return this;
         }
     }
     /**
      * Issued when the domain is enabled with handleAuthRequests set to true. The request is paused until client responds with continueWithAuth.
      */
     public static final class AuthRequiredEvent extends CdpObject {
+        public AuthRequiredEvent() {}
         private AuthRequiredEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AuthRequiredEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AuthRequiredEvent(values);
+        public static AuthRequiredEvent fromMap(Map<String, Object> values) {
+            return new AuthRequiredEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Each request the page makes will have a unique id.
          * @return the protocol field value
          */
-        @Nullable public String requestId() {
-            return (String) value("requestId");
+        public Fetch.RequestId requestId() {
+            return new Fetch.RequestId((String) require("requestId"));
         }
         /**
          * The details of the request.
          * @return the protocol field value
          */
-        @Nullable public Network.Request request() {
-            return Network.Request.fromMap(objectMap(value("request")));
+        public Network.Request request() {
+            return java.util.Objects.requireNonNull(Network.Request.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
         }
         /**
          * The id of the frame that initiated the request.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * How the requested resource will be used.
          * @return the protocol field value
          */
-        @Nullable public String resourceType() {
-            return (String) value("resourceType");
+        public Network.ResourceType resourceType() {
+            return Network.ResourceType.of((String) require("resourceType"));
         }
         /**
          * Details of the Authorization Challenge encountered. If this is set, client should respond with continueRequest that contains AuthChallengeResponse.
          * @return the protocol field value
          */
-        @Nullable public Fetch.AuthChallenge authChallenge() {
-            return Fetch.AuthChallenge.fromMap(objectMap(value("authChallenge")));
+        public Fetch.AuthChallenge authChallenge() {
+            return java.util.Objects.requireNonNull(Fetch.AuthChallenge.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("authChallenge")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Each request the page makes will have a unique id.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestId(@Nullable String value) {
-                if (value == null) values.remove("requestId");
-                else values.put("requestId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The details of the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder request(@Nullable Network.Request value) {
-                if (value == null) values.remove("request");
-                else values.put("request", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id of the frame that initiated the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * How the requested resource will be used.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resourceType(@Nullable String value) {
-                if (value == null) values.remove("resourceType");
-                else values.put("resourceType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Details of the Authorization Challenge encountered. If this is set, client should respond with continueRequest that contains AuthChallengeResponse.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder authChallenge(@Nullable Fetch.AuthChallenge value) {
-                if (value == null) values.remove("authChallenge");
-                else values.put("authChallenge", jsonValue(value));
-                return this;
-            }
-            public AuthRequiredEvent build() {
-                if (!values.containsKey("requestId")) throw new IllegalStateException("Missing required CDP field: requestId");
-                if (!values.containsKey("request")) throw new IllegalStateException("Missing required CDP field: request");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                if (!values.containsKey("resourceType")) throw new IllegalStateException("Missing required CDP field: resourceType");
-                if (!values.containsKey("authChallenge")) throw new IllegalStateException("Missing required CDP field: authChallenge");
-                return new AuthRequiredEvent(values);
-            }
+        /**
+         * Each request the page makes will have a unique id.
+         * @param requestId field value
+         * @return this model
+         */
+        public AuthRequiredEvent requestId(Fetch.RequestId requestId) {
+            set("requestId", requestId);
+            return this;
+        }
+        /**
+         * The details of the request.
+         * @param request field value
+         * @return this model
+         */
+        public AuthRequiredEvent request(Network.Request request) {
+            set("request", request);
+            return this;
+        }
+        /**
+         * The id of the frame that initiated the request.
+         * @param frameId field value
+         * @return this model
+         */
+        public AuthRequiredEvent frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * How the requested resource will be used.
+         * @param resourceType field value
+         * @return this model
+         */
+        public AuthRequiredEvent resourceType(Network.ResourceType resourceType) {
+            set("resourceType", resourceType);
+            return this;
+        }
+        /**
+         * Details of the Authorization Challenge encountered. If this is set, client should respond with continueRequest that contains AuthChallengeResponse.
+         * @param authChallenge field value
+         * @return this model
+         */
+        public AuthRequiredEvent authChallenge(Fetch.AuthChallenge authChallenge) {
+            set("authChallenge", authChallenge);
+            return this;
         }
     }
     public static final class Client {
@@ -1403,82 +737,158 @@ public final class Fetch {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Disables the fetch domain.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("Fetch.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("Fetch.disable", null, result_ -> null);
         }
         /**
          * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param patterns protocol value
+         * @param handleAuthRequests protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable(EnableParams params) {
-            return client.call("Fetch.enable", params, EnableResult::fromMap);
+        public CompletionStage<Void> enable(Optional<java.util.List<Fetch.RequestPattern>> patterns, Optional<Boolean> handleAuthRequests) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            patterns.ifPresent(value_ -> params.put("patterns", CdpObject.json(value_)));
+            handleAuthRequests.ifPresent(value_ -> params.put("handleAuthRequests", value_));
+            return client.call("Fetch.enable", params, result_ -> null);
         }
         /**
          * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return enable(EnableParams.builder().build());
+        public CompletionStage<Void> enable() {
+            return enable(Optional.empty(), Optional.empty());
         }
         /**
          * Causes the request to fail with specified reason.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param requestId protocol value
+         * @param errorReason protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<FailRequestResult> failRequest(FailRequestParams params) {
-            return client.call("Fetch.failRequest", params, FailRequestResult::fromMap);
+        public CompletionStage<Void> failRequest(Fetch.RequestId requestId, Network.ErrorReason errorReason) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("errorReason", CdpObject.json(errorReason));
+            return client.call("Fetch.failRequest", params, result_ -> null);
         }
         /**
          * Provides response to the request.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param requestId protocol value
+         * @param responseCode protocol value
+         * @param responseHeaders protocol value
+         * @param binaryResponseHeaders protocol value
+         * @param body protocol value
+         * @param responsePhrase protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<FulfillRequestResult> fulfillRequest(FulfillRequestParams params) {
-            return client.call("Fetch.fulfillRequest", params, FulfillRequestResult::fromMap);
+        public CompletionStage<Void> fulfillRequest(Fetch.RequestId requestId, long responseCode, Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders, Optional<String> binaryResponseHeaders, Optional<String> body, Optional<String> responsePhrase) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("responseCode", CdpObject.json(responseCode));
+            responseHeaders.ifPresent(value_ -> params.put("responseHeaders", CdpObject.json(value_)));
+            binaryResponseHeaders.ifPresent(value_ -> params.put("binaryResponseHeaders", CdpObject.json(value_)));
+            body.ifPresent(value_ -> params.put("body", CdpObject.json(value_)));
+            responsePhrase.ifPresent(value_ -> params.put("responsePhrase", CdpObject.json(value_)));
+            return client.call("Fetch.fulfillRequest", params, result_ -> null);
+        }
+        /**
+         * Provides response to the request.
+         * @param requestId protocol value
+         * @param responseCode protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> fulfillRequest(Fetch.RequestId requestId, long responseCode) {
+            return fulfillRequest(requestId, responseCode, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Continues the request, optionally modifying some of its parameters.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param requestId protocol value
+         * @param url protocol value
+         * @param method protocol value
+         * @param postData protocol value
+         * @param headers protocol value
+         * @param interceptResponse protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ContinueRequestResult> continueRequest(ContinueRequestParams params) {
-            return client.call("Fetch.continueRequest", params, ContinueRequestResult::fromMap);
+        public CompletionStage<Void> continueRequest(Fetch.RequestId requestId, Optional<String> url, Optional<String> method, Optional<String> postData, Optional<java.util.List<Fetch.HeaderEntry>> headers, Optional<Boolean> interceptResponse) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            url.ifPresent(value_ -> params.put("url", CdpObject.json(value_)));
+            method.ifPresent(value_ -> params.put("method", CdpObject.json(value_)));
+            postData.ifPresent(value_ -> params.put("postData", CdpObject.json(value_)));
+            headers.ifPresent(value_ -> params.put("headers", CdpObject.json(value_)));
+            interceptResponse.ifPresent(value_ -> params.put("interceptResponse", value_));
+            return client.call("Fetch.continueRequest", params, result_ -> null);
+        }
+        /**
+         * Continues the request, optionally modifying some of its parameters.
+         * @param requestId protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> continueRequest(Fetch.RequestId requestId) {
+            return continueRequest(requestId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Continues a request supplying authChallengeResponse following authRequired event.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param requestId protocol value
+         * @param authChallengeResponse protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ContinueWithAuthResult> continueWithAuth(ContinueWithAuthParams params) {
-            return client.call("Fetch.continueWithAuth", params, ContinueWithAuthResult::fromMap);
+        public CompletionStage<Void> continueWithAuth(Fetch.RequestId requestId, Fetch.AuthChallengeResponse authChallengeResponse) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("authChallengeResponse", CdpObject.json(authChallengeResponse));
+            return client.call("Fetch.continueWithAuth", params, result_ -> null);
         }
         /**
          * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param requestId protocol value
+         * @param responseCode protocol value
+         * @param responsePhrase protocol value
+         * @param responseHeaders protocol value
+         * @param binaryResponseHeaders protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ContinueResponseResult> continueResponse(ContinueResponseParams params) {
-            return client.call("Fetch.continueResponse", params, ContinueResponseResult::fromMap);
+        public CompletionStage<Void> continueResponse(Fetch.RequestId requestId, OptionalLong responseCode, Optional<String> responsePhrase, Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders, Optional<String> binaryResponseHeaders) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            responseCode.ifPresent(value_ -> params.put("responseCode", value_));
+            responsePhrase.ifPresent(value_ -> params.put("responsePhrase", CdpObject.json(value_)));
+            responseHeaders.ifPresent(value_ -> params.put("responseHeaders", CdpObject.json(value_)));
+            binaryResponseHeaders.ifPresent(value_ -> params.put("binaryResponseHeaders", CdpObject.json(value_)));
+            return client.call("Fetch.continueResponse", params, result_ -> null);
+        }
+        /**
+         * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param requestId protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> continueResponse(Fetch.RequestId requestId) {
+            return continueResponse(requestId, OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
-         * @param params command parameters
+         * @param requestId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetResponseBodyResult> getResponseBody(GetResponseBodyParams params) {
-            return client.call("Fetch.getResponseBody", params, GetResponseBodyResult::fromMap);
+        public CompletionStage<GetResponseBodyResult> getResponseBody(Fetch.RequestId requestId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            return client.call("Fetch.getResponseBody", params, result_ -> new GetResponseBodyResult(result_));
         }
         /**
          * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
-         * @param params command parameters
+         * @param requestId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<TakeResponseBodyAsStreamResult> takeResponseBodyAsStream(TakeResponseBodyAsStreamParams params) {
-            return client.call("Fetch.takeResponseBodyAsStream", params, TakeResponseBodyAsStreamResult::fromMap);
+        public CompletionStage<IO.StreamHandle> takeResponseBodyAsStream(Fetch.RequestId requestId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            return client.call("Fetch.takeResponseBodyAsStream", params, result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
         }
         /**
          * Issued when the domain is enabled and the request URL matches the specified filter. The request is paused until the client responds with one of continueRequest, failRequest or fulfillRequest. The stage of the request can be determined by presence of responseErrorReason and responseStatusCode -- the request is at the response stage if either of these fields is present and in the request stage otherwise. Redirect responses and subsequent requests are reported similarly to regular responses and requests. Redirect responses may be distinguished by the value of {@code responseStatusCode} (which is one of 301, 302, 303, 307, 308) along with presence of the {@code location} header. Requests resulting from a redirect will have {@code redirectedRequestId} field set.

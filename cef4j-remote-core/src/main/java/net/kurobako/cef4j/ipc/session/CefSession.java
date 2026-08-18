@@ -73,6 +73,8 @@ public interface CefSession extends Closeable {
     /** Synchronous-return intercept handler; return {@code null} to signal "default action" (empty response). */
     @FunctionalInterface
     interface InterceptHandler<E extends CefMessageView> {
+        // null result means "no intercept" (default action)
+        @SuppressWarnings("NullableForbidden")
         @Nullable
         CefMessageEncoder onIntercept(@Nonnull E event);
     }

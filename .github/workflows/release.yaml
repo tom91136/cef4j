@@ -20,8 +20,7 @@ concurrency:
 env:
   CEF_VERSION: '150.0.18+gdb11278+chromium-150.0.7871.213'
   CEF_API: '150'
-  # Release artifacts compile against the oldest supported JavaFX API. Newer
-  # JavaFX lines are compatibility-tested in main.yaml, never used as the release baseline.
+  # XXX Release baseline is the oldest supported JavaFX API; newer lines are tested in main.yaml.
   JAVAFX_VERSION: '13.0.2'
 
 jobs:
@@ -36,13 +35,16 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag }}
+
       - uses: actions/setup-java@v5
         with:
           distribution: corretto
-          java-version: '21'
+          java-version: '17'
           cache: maven
           cache-dependency-path: '**/pom.xml'
+
       - uses: ./.github/actions/maven-wrapper
+
       - id: version
         name: Match tag to Maven version
         shell: bash
@@ -84,10 +86,11 @@ jobs:
           ref: ${{ needs.validate.outputs.tag }}
 
       - name: Set up JDK 21
+        id: jdk21
         uses: actions/setup-java@v5
         with:
           distribution: ${{ matrix.distribution }}
-          java-version: '21'
+          java-version: '17'
           cache: maven
           cache-dependency-path: '**/pom.xml'
 
@@ -111,18 +114,16 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
 
-      - name: Install Linux build prerequisites
+      - uses: ./.github/actions/linux-prereqs
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang lld cmake make binutils xvfb \
-            libgtk-3-0 libxss1 libnss3 libasound2t64 libcups2 \
-            libxcomposite1 libxdamage1 libxrandr2 libxtst6 \
-            libpango-1.0-0 libatk-bridge2.0-0 libdrm2 libgbm1
 
       - name: Build platform release artifacts (Linux)
         if: runner.os == 'Linux'
         env:
+          JAVA_HOME: ${{ steps.jdk21.outputs.java-home }}
+          JDK_VERSION: '21'
+          CEF_PLATFORM: ${{ matrix.platform }}
+          ARCH: ${{ matrix.arch }}
           CMAKE_SYSROOT: ${{ github.workspace }}/sysroot/out/${{ matrix.arch }}
           CEF_VERSION: ${{ env.CEF_VERSION }}
           CEF_API: ${{ env.CEF_API }}
@@ -131,10 +132,10 @@ jobs:
           JAVAFX_TESTS: 'true'
           JAVA11_SMOKE: 'false'
           RELEASE_BUILD: 'true'
-        run: .github/ci/build.sh linux
+        run: .github/ci/build.sh
 
       - name: Build platform release artifacts (Windows/macOS)
-        if: runner.os != 'Linux' && matrix.platform != 'windowsarm64'
+        if: runner.os != 'Linux'
         run: >-
           ./mvnw -B clean verify
           -DskipTests -Dgpg.skip=true -Drelease.bundle=true -Prelease
@@ -142,17 +143,7 @@ jobs:
           "-Dcef.api.version=${{ env.CEF_API }}"
           "-Djavafx.version=${{ env.JAVAFX_VERSION }}"
           "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
-
-      - name: Build platform release artifacts (Windows ARM)
-        if: matrix.platform == 'windowsarm64'
-        run: >-
-          ./mvnw -B clean verify
-          -DskipTests -Dgpg.skip=true -Drelease.bundle=true -Prelease
-          "-Dcef.version=${{ env.CEF_VERSION }}"
-          "-Dcef.api.version=${{ env.CEF_API }}"
-          "-Djavafx.version=${{ env.JAVAFX_VERSION }}"
-          "-Djavafx.test.version=${{ env.JAVAFX_VERSION }}"
-          "-Djavafx.platform=win"
+          ${{ matrix.platform == 'windowsarm64' && '-Djavafx.platform=win' || '' }}
 
       - name: Stage classified artifacts
         shell: bash
@@ -198,6 +189,7 @@ jobs:
           pattern: release-*
           path: release-assets
           merge-multiple: true
+
       - name: Upload assets
         env:
           GH_TOKEN: ${{ github.token }}
@@ -220,7 +212,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: corretto
-          java-version: '21'
+          java-version: '17'
           cache: maven
           cache-dependency-path: '**/pom.xml'
           server-id: central
@@ -284,7 +276,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         with:
           distribution: corretto
-          java-version: '21'
+          java-version: '17'
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 

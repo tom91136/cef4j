@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol FileSystem domain.
@@ -17,301 +21,203 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/FileSystem.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class FileSystem {
     private FileSystem() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      */
     public static final class File extends CdpObject {
+        public File() {}
         private File(Map<String, Object> values) { super(values); }
-        @Nullable public static File fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new File(values);
+        public static File fromMap(Map<String, Object> values) {
+            return new File(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Timestamp
          * @return the protocol field value
          */
-        @Nullable public Double lastModified() {
-            return numberAsDouble(value("lastModified"));
+        public Network.TimeSinceEpoch lastModified() {
+            return new Network.TimeSinceEpoch(((Number) require("lastModified")).doubleValue());
         }
         /**
          * Size in bytes
          * @return the protocol field value
          */
-        @Nullable public Double size() {
-            return numberAsDouble(value("size"));
+        public double size() {
+            return ((Number) require("size")).doubleValue();
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public String type() {
+            return (String) require("type");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Timestamp
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lastModified(@Nullable Double value) {
-                if (value == null) values.remove("lastModified");
-                else values.put("lastModified", jsonValue(value));
-                return this;
-            }
-            /**
-             * Size in bytes
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder size(@Nullable Double value) {
-                if (value == null) values.remove("size");
-                else values.put("size", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            public File build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("lastModified")) throw new IllegalStateException("Missing required CDP field: lastModified");
-                if (!values.containsKey("size")) throw new IllegalStateException("Missing required CDP field: size");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                return new File(values);
-            }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public File name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Timestamp
+         * @param lastModified field value
+         * @return this model
+         */
+        public File lastModified(Network.TimeSinceEpoch lastModified) {
+            set("lastModified", lastModified);
+            return this;
+        }
+        /**
+         * Size in bytes
+         * @param size field value
+         * @return this model
+         */
+        public File size(double size) {
+            set("size", size);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public File type(String type) {
+            set("type", type);
+            return this;
         }
     }
     /**
      */
     public static final class Directory extends CdpObject {
+        public Directory() {}
         private Directory(Map<String, Object> values) { super(values); }
-        @Nullable public static Directory fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Directory(values);
+        public static Directory fromMap(Map<String, Object> values) {
+            return new Directory(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Returns the nestedDirectories field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> nestedDirectories() {
-            return list(value("nestedDirectories"), element0 -> (String) element0);
+        public java.util.List<String> nestedDirectories() {
+            return CdpObject.requireList(require("nestedDirectories"), element0 -> (String) element0);
         }
         /**
          * Files that are directly nested under this directory.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<FileSystem.File> nestedFiles() {
-            return list(value("nestedFiles"), element0 -> FileSystem.File.fromMap(objectMap(element0)));
+        public java.util.List<FileSystem.File> nestedFiles() {
+            return CdpObject.requireList(require("nestedFiles"), element0 -> java.util.Objects.requireNonNull(FileSystem.File.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the nestedDirectories field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nestedDirectories(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("nestedDirectories");
-                else values.put("nestedDirectories", jsonValue(value));
-                return this;
-            }
-            /**
-             * Files that are directly nested under this directory.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nestedFiles(@Nullable java.util.List<FileSystem.File> value) {
-                if (value == null) values.remove("nestedFiles");
-                else values.put("nestedFiles", jsonValue(value));
-                return this;
-            }
-            public Directory build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("nestedDirectories")) throw new IllegalStateException("Missing required CDP field: nestedDirectories");
-                if (!values.containsKey("nestedFiles")) throw new IllegalStateException("Missing required CDP field: nestedFiles");
-                return new Directory(values);
-            }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public Directory name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Sets the nestedDirectories field.
+         * @param nestedDirectories field value
+         * @return this model
+         */
+        public Directory nestedDirectories(java.util.List<String> nestedDirectories) {
+            set("nestedDirectories", nestedDirectories);
+            return this;
+        }
+        /**
+         * Files that are directly nested under this directory.
+         * @param nestedFiles field value
+         * @return this model
+         */
+        public Directory nestedFiles(java.util.List<FileSystem.File> nestedFiles) {
+            set("nestedFiles", nestedFiles);
+            return this;
         }
     }
     /**
      */
     public static final class BucketFileSystemLocator extends CdpObject {
+        public BucketFileSystemLocator() {}
         private BucketFileSystemLocator(Map<String, Object> values) { super(values); }
-        @Nullable public static BucketFileSystemLocator fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new BucketFileSystemLocator(values);
+        public static BucketFileSystemLocator fromMap(Map<String, Object> values) {
+            return new BucketFileSystemLocator(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Storage key
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public Storage.SerializedStorageKey storageKey() {
+            return new Storage.SerializedStorageKey((String) require("storageKey"));
         }
         /**
          * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String bucketName() {
-            return (String) value("bucketName");
+        public Optional<String> bucketName() {
+            return Optional.ofNullable((String) raw("bucketName"));
         }
         /**
          * Path to the directory using each path component as an array item.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> pathComponents() {
-            return list(value("pathComponents"), element0 -> (String) element0);
+        public java.util.List<String> pathComponents() {
+            return CdpObject.requireList(require("pathComponents"), element0 -> (String) element0);
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Storage key
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketName(@Nullable String value) {
-                if (value == null) values.remove("bucketName");
-                else values.put("bucketName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Path to the directory using each path component as an array item.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pathComponents(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("pathComponents");
-                else values.put("pathComponents", jsonValue(value));
-                return this;
-            }
-            public BucketFileSystemLocator build() {
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("pathComponents")) throw new IllegalStateException("Missing required CDP field: pathComponents");
-                return new BucketFileSystemLocator(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FileSystem.getDirectory.
-     */
-    public static final class GetDirectoryParams extends CdpObject {
-        private GetDirectoryParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDirectoryParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDirectoryParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the bucketFileSystemLocator field.
-         * @return the protocol field value
+         * Storage key
+         * @param storageKey field value
+         * @return this model
          */
-        @Nullable public FileSystem.BucketFileSystemLocator bucketFileSystemLocator() {
-            return FileSystem.BucketFileSystemLocator.fromMap(objectMap(value("bucketFileSystemLocator")));
+        public BucketFileSystemLocator storageKey(Storage.SerializedStorageKey storageKey) {
+            set("storageKey", storageKey);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the bucketFileSystemLocator field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bucketFileSystemLocator(@Nullable FileSystem.BucketFileSystemLocator value) {
-                if (value == null) values.remove("bucketFileSystemLocator");
-                else values.put("bucketFileSystemLocator", jsonValue(value));
-                return this;
-            }
-            public GetDirectoryParams build() {
-                if (!values.containsKey("bucketFileSystemLocator")) throw new IllegalStateException("Missing required CDP field: bucketFileSystemLocator");
-                return new GetDirectoryParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FileSystem.getDirectory.
-     */
-    public static final class GetDirectoryResult extends CdpObject {
-        private GetDirectoryResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDirectoryResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDirectoryResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the directory object at the path.
-         * @return the protocol field value
+         * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
+         * @param bucketName field value; empty omits the value
+         * @return this model
          */
-        @Nullable public FileSystem.Directory directory() {
-            return FileSystem.Directory.fromMap(objectMap(value("directory")));
+        public BucketFileSystemLocator bucketName(Optional<String> bucketName) {
+            set("bucketName", bucketName.orElse(null));
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Returns the directory object at the path.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder directory(@Nullable FileSystem.Directory value) {
-                if (value == null) values.remove("directory");
-                else values.put("directory", jsonValue(value));
-                return this;
-            }
-            public GetDirectoryResult build() {
-                if (!values.containsKey("directory")) throw new IllegalStateException("Missing required CDP field: directory");
-                return new GetDirectoryResult(values);
-            }
+        /**
+         * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
+         * @param bucketName field value; null removes the value
+         * @return this model
+         */
+        public BucketFileSystemLocator bucketName(String bucketName) {
+            set("bucketName", bucketName);
+            return this;
+        }
+        /**
+         * Path to the directory using each path component as an array item.
+         * @param pathComponents field value
+         * @return this model
+         */
+        public BucketFileSystemLocator pathComponents(java.util.List<String> pathComponents) {
+            set("pathComponents", pathComponents);
+            return this;
         }
     }
     public static final class Client {
@@ -319,11 +225,13 @@ public final class FileSystem {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Invokes FileSystem.getDirectory.
-         * @param params command parameters
+         * @param bucketFileSystemLocator protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDirectoryResult> getDirectory(GetDirectoryParams params) {
-            return client.call("FileSystem.getDirectory", params, GetDirectoryResult::fromMap);
+        public CompletionStage<FileSystem.Directory> getDirectory(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("bucketFileSystemLocator", CdpObject.json(bucketFileSystemLocator));
+            return client.call("FileSystem.getDirectory", params, result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("directory")))))));
         }
     }
 }

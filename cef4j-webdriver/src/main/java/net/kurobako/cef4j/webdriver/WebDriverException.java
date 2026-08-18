@@ -14,6 +14,8 @@ public final class WebDriverException extends RuntimeException {
         this.error = error;
     }
 
+    // exception cause is optional
+    @SuppressWarnings("NullableForbidden")
     public WebDriverException(@Nonnull WebDriverError error, @Nonnull String message, @Nullable Throwable cause) {
         super(message, cause);
         this.error = error;

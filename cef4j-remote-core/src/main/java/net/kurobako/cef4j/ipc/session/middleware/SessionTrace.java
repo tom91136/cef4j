@@ -38,6 +38,7 @@ public final class SessionTrace {
     }
 
     /** Immutable trace entry. Payload is copied at construction and when exposed. */
+    @SuppressWarnings("NullableForbidden") // absent trace-record detail
     public static final class Entry {
         public final long sequence;
         public final long elapsedNanos;

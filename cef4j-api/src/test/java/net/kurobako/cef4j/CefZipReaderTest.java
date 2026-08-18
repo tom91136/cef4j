@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -72,17 +73,11 @@ class CefZipReaderTest extends CefTestBase {
         return out.toString(StandardCharsets.UTF_8);
     }
 
-    private static Path makeTmpDir() throws Exception {
-        Path dir = Files.createTempDirectory("cef4j-zip-test-");
-        dir.toFile().deleteOnExit();
-        return dir;
-    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void readSingleEntry(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
+    void readSingleEntry(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         byte[] zipBytes = makeZip("hello.txt", "Hello, CEF!");
-        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, tmpDir);
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFirstFile()).isTrue();
             assertThat(zr.getFileName()).hasValue("hello.txt");
@@ -99,9 +94,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void readMultipleEntries(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
+    void readMultipleEntries(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         byte[] zipBytes = makeZip("a.txt", "alpha", "b.txt", "bravo", "c.txt", "charlie");
-        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, tmpDir);
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             List<String> names = new ArrayList<>();
             List<String> contents = new ArrayList<>();
@@ -122,9 +117,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void moveToFileByName(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
+    void moveToFileByName(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         byte[] zipBytes = makeZip("first.txt", "one", "second.txt", "two", "third.txt", "three");
-        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, tmpDir);
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFile("second.txt", true)).isTrue();
             assertThat(zr.getFileName()).hasValue("second.txt");
@@ -139,9 +134,9 @@ class CefZipReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void eofAndTell(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
+    void eofAndTell(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         byte[] zipBytes = makeZip("data.bin", "0123456789");
-        try (CefStreamReader reader = factory.apply(zipBytes, makeTmpDir());
+        try (CefStreamReader reader = factory.apply(zipBytes, tmpDir);
                 CefZipReader zr = CefZipReader.create(reader).orElseThrow()) {
             assertThat(zr.moveToFirstFile()).isTrue();
             assertThat(zr.openFile(null)).isTrue();

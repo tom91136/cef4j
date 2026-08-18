@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,17 +24,30 @@ import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefGlobals;
 import net.kurobako.cef4j.gen.CefSchemeOptions;
 import net.kurobako.cef4j.gen.CefSchemeRegistrar;
+import net.kurobako.cef4j.test.DisplayLock;
+import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
+@ExtendWith(DisplayLock.class)
 class CefWebViewSchemeTest {
+
+    // macOS intentionally skips cef_shutdown(), so its CEF cache can remain mapped until process
+    // exit and must not be owned by JUnit's eager TempDir cleanup; TestTempDirs deletes it at exit.
+    @TempDir(cleanup = CleanupMode.NEVER)
+    @SuppressWarnings("NullAway.Init")
+    static Path cacheRoot;
 
     @BeforeAll
     static void setup() throws Exception {
         assumeDisplayServer();
+        TestTempDirs.cleanupAtExit(cacheRoot);
 
         URL.setURLStreamHandlerFactory(protocol -> {
             if ("classpath".equals(protocol)) {
@@ -92,11 +104,8 @@ class CefWebViewSchemeTest {
         });
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        // macOS intentionally skips cef_shutdown(), so its CEF cache can remain
-        // mapped until process exit and must not be owned by JUnit's eager TempDir cleanup.
-        Path cacheRoot = Files.createTempDirectory("cef4j-scheme-cache-");
-        cacheRoot.toFile().deleteOnExit();
         launch.settings().cachePath = cacheRoot.toAbsolutePath().toString();
+        launch.settings().rootCachePath = cacheRoot.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();

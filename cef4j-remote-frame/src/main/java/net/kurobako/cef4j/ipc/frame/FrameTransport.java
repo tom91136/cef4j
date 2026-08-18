@@ -19,12 +19,16 @@ import javax.annotation.Nullable;
 public interface FrameTransport extends AutoCloseable {
 
     /** Replace the current frame consumer. Pass {@code null} to disable callbacks without closing the transport. */
+    // null disables callbacks
+    @SuppressWarnings("NullableForbidden")
     void onFrame(@Nullable FrameConsumer consumer);
 
     /**
      * Replaces the current consumer with the richer raw-frame view used by codecs. The pixel view has the same
      * callback-only lifetime as {@link FrameConsumer}.
      */
+    // null disables callbacks
+    @SuppressWarnings("NullableForbidden")
     default void onRawFrame(@Nullable RawFrameConsumer consumer) {
         onFrame(
                 consumer == null

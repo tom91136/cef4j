@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -202,7 +203,7 @@ public final class WebDriverServer implements AutoCloseable {
                 Objects.requireNonNull(backendFactory.create(requested), "backend factory returned null future");
         try {
             try {
-                backend = await(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout);
+                backend = await(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout, false);
             } catch (RuntimeException failure) {
                 CompletableFuture<?> cleanup = creation.whenComplete((lateBackend, ignored) -> {
                     if (lateBackend != null) closeQuietly(lateBackend);
@@ -339,14 +340,14 @@ public final class WebDriverServer implements AutoCloseable {
         if (parts.length == 3 && "POST".equals(method) && "element".equals(parts[2])) {
             JsonObject body = parseObjectBody(exchange);
             String id = findElementWithImplicitWait(
-                    session, backend, requiredString(body, "using"), requiredString(body, "value"), null);
+                    session, backend, requiredString(body, "using"), requiredString(body, "value"), Optional.empty());
             sendSuccess(exchange, elementReference(id));
             return;
         }
         if (parts.length == 3 && "POST".equals(method) && "elements".equals(parts[2])) {
             JsonObject body = parseObjectBody(exchange);
             java.util.List<String> ids = findElementsWithImplicitWait(
-                    session, backend, requiredString(body, "using"), requiredString(body, "value"), null);
+                    session, backend, requiredString(body, "using"), requiredString(body, "value"), Optional.empty());
             sendSuccess(exchange, elementReferences(ids));
             return;
         }
@@ -377,11 +378,13 @@ public final class WebDriverServer implements AutoCloseable {
             if ("element".equals(parts[4])) {
                 sendSuccess(
                         exchange,
-                        elementReference(findElementWithImplicitWait(session, backend, using, value, elementId)));
+                        elementReference(
+                                findElementWithImplicitWait(session, backend, using, value, Optional.of(elementId))));
             } else {
                 sendSuccess(
                         exchange,
-                        elementReferences(findElementsWithImplicitWait(session, backend, using, value, elementId)));
+                        elementReferences(
+                                findElementsWithImplicitWait(session, backend, using, value, Optional.of(elementId))));
             }
             return;
         }
@@ -470,14 +473,14 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private String findElementWithImplicitWait(
-            ActiveSession session, AutomationBackend backend, String using, String value, @Nullable String parent) {
+            ActiveSession session, AutomationBackend backend, String using, String value, Optional<String> parent) {
         java.util.List<String> found = findElementsWithImplicitWait(session, backend, using, value, parent);
         if (found.isEmpty()) throw error(WebDriverError.NO_SUCH_ELEMENT, "unable to locate element: " + value);
         return found.get(0);
     }
 
     private java.util.List<String> findElementsWithImplicitWait(
-            ActiveSession session, AutomationBackend backend, String using, String value, @Nullable String parent) {
+            ActiveSession session, AutomationBackend backend, String using, String value, Optional<String> parent) {
         long timeoutMillis = session.timeoutMillis("implicit");
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         do {
@@ -503,20 +506,18 @@ public final class WebDriverServer implements AutoCloseable {
                 throw error(WebDriverError.INVALID_SESSION_ID, "session is closed: " + session.id);
             }
             Duration timeout = timeoutName == null ? commandTimeout : session.timeout(timeoutName);
-            try {
-                return await(operation.get(), WebDriverError.UNKNOWN_ERROR, timeout);
-            } catch (WebDriverException failure) {
-                if (failure.error() == WebDriverError.TIMEOUT && sessions.remove(session.id, session)) session.close();
-                throw failure;
-            }
+            return await(operation.get(), WebDriverError.UNKNOWN_ERROR, timeout, true);
         }
     }
 
-    private static <T> T await(CompletableFuture<? extends T> future, WebDriverError fallback, Duration timeout) {
+    private static <T> T await(
+            CompletableFuture<? extends T> future, WebDriverError fallback, Duration timeout, boolean cancelOnTimeout) {
         Objects.requireNonNull(future, "backend returned null future");
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
+            // Commands cancel the abandoned future; session creation keeps it alive to close a late backend.
+            if (cancelOnTimeout) future.cancel(true);
             throw new WebDriverException(WebDriverError.TIMEOUT, "command exceeded " + timeout, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

@@ -1123,6 +1123,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("NullableForbidden") // CEF callback null args for version-compat overloads
     static final class CompatibleKeyboardHandler implements CefKeyboardHandler {
         private final AtomicReference<CefKeyEvent> capturedEvent;
         private final CountDownLatch keyLatch;
@@ -1150,6 +1151,7 @@ class CefInteropTest extends CefTestBase {
         }
     }
 
+    @SuppressWarnings("NullableForbidden") // CEF callback null args for version-compat overloads
     static final class CompatiblePopupLifeSpanHandler implements CefLifeSpanHandler {
         private final AtomicBoolean popupFired;
         private final CountDownLatch popupLatch;

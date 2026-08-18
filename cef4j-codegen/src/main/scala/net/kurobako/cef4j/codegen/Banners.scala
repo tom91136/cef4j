@@ -7,7 +7,7 @@ final class Banners private (val regenerateCommand: String) {
   val java: String                    = s"// GENERATED - do not edit. Regenerate via: $regenerateCommand"
   val javaGeneratedAnnotation: String = s"@Generated(\"$regenerateCommand\")"
   val javaAnnotation: String          =
-    javaAnnotations("SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused")
+    javaAnnotations("SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden")
   val cpp: String = s"// GENERATED - do not edit. Regenerate via: $regenerateCommand"
 
   def javaAnnotations(suppressions: String*): String = {

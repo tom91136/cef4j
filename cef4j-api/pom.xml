@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>cef4j-api</artifactId>
-    <packaging>jar</packaging>
     <name>cef4j-api</name>
     <description>Java 11+ API for CEF OSR bindings</description>
 
@@ -52,13 +51,11 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-test-shared</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
-            <version>${project.version}</version>
             <classifier>${cef.classifier}</classifier>
             <scope>test</scope>
         </dependency>
@@ -79,10 +76,7 @@
                         <configuration>
                             <exportAntProperties>true</exportAntProperties>
                             <target>
-                                <!-- Gate CefV144Plus* tests on the CEF major version.
-                                     Match against cef.version (the full version string, e.g.
-                                     "150.0.18+g...") so that -Dcef.version=116... overrides
-                                     work without also requiring -Dcef.api.version=116. -->
+                                <!-- Match cef.version so a -Dcef.version override needs no matching cef.api.version. -->
                                 <condition property="cef4j.test.v144plus.excludes"
                                            value="__never__"
                                            else="**/CefV144Plus*.java">
@@ -121,26 +115,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- Native CEF is process-global and older releases retain state that can corrupt
-                         the next test class (most visibly on macOS). Every class still runs; giving each
-                         one a fresh process makes the lifecycle boundary match an end-user application. -->
+                    <!-- Fresh JVM per class: native CEF state does not survive across test classes. -->
                     <reuseForks>false</reuseForks>
                     <forkCount>1</forkCount>
-                    <!-- Tests in this list need a separate execution because they initialise CEF with
-                         incompatible settings (app handlers, scheme factories, multiThreadedMessageLoop)
-                         and CEF cannot be re-initialised once started. The isolated execution below
-                         selects those classes while reuseForks=false gives every selected class a fresh JVM. -->
+                    <!-- These classes initialise CEF with incompatible settings and cannot share a process. -->
                     <excludes>
                         <exclude>**/CefScriptEngineMultiThreadedTest.java</exclude>
                         <exclude>**/CefSchemeHandlerTest.java</exclude>
                         <exclude>**/CefDaemonRenderTest.java</exclude>
                         <exclude>**/CefAppDelegatingTest.java</exclude>
                         <exclude>**/CefV144PlusViewsInteropTest.java</exclude>
-                        <!-- CefXml/ZipReader cross-contaminate with browser-using tests on
-                             older CEF (<144) on macOS — run them in isolated forks below. -->
+                        <!-- CefXml/ZipReader cross-contaminate on older CEF (<144) on macOS. -->
                         <exclude>**/CefXmlReaderTest.java</exclude>
                         <exclude>**/CefZipReaderTest.java</exclude>
-                        <!-- Exclude V144+ tests when building against older CEF -->
                         <exclude>${cef4j.test.v144plus.excludes}</exclude>
                     </excludes>
                 </configuration>

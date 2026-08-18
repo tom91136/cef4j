@@ -1,6 +1,5 @@
-package net.kurobako.cef4j.ipc.devtools.gson;
+package net.kurobako.cef4j.cdp;
 
-import com.google.gson.JsonElement;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -11,9 +10,11 @@ public final class CdpException extends RuntimeException {
     private final int code;
 
     @Nullable
-    private final transient JsonElement data;
+    private final transient Object data;
 
-    public CdpException(int code, @Nonnull String message, @Nullable JsonElement data) {
+    // JSON error data may be absent or null
+    @SuppressWarnings("NullableForbidden")
+    public CdpException(int code, @Nonnull String message, @Nullable Object data) {
         super(message);
         this.code = code;
         this.data = data;
@@ -23,8 +24,10 @@ public final class CdpException extends RuntimeException {
         return code;
     }
 
+    // JSON error data may be absent or null
+    @SuppressWarnings("NullableForbidden")
     @Nullable
-    public JsonElement data() {
+    public Object data() {
         return data;
     }
 }

@@ -18,6 +18,7 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.SystemBootstrap;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,8 @@ import org.junit.jupiter.api.io.TempDir;
 class CefHttpIntegrationTest {
 
     // CEF owns files in this cache until the isolated fork exits. JUnit's default cleanup runs
-    // before process exit and races Chromium recreating SingletonSocket, so leave it to the CI
-    // worker's temporary-filesystem cleanup instead.
+    // before process exit and races Chromium recreating SingletonSocket, so TestTempDirs deletes
+    // it from a JVM-exit hook instead.
     @TempDir(cleanup = CleanupMode.NEVER)
     @SuppressWarnings("NullAway.Init")
     static Path tempDir;
@@ -53,8 +54,10 @@ class CefHttpIntegrationTest {
         SystemBootstrap.load();
         if (Cef.INSTANCE.state() != Cef.State.INITIALISED) {
             Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+            TestTempDirs.cleanupAtExit(tempDir);
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = cacheDir.toAbsolutePath().toString();
+            settings.rootCachePath = cacheDir.toAbsolutePath().toString();
             settings.windowlessRenderingEnabled = 1;
             settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;

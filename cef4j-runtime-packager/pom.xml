@@ -37,6 +37,7 @@
         <jackson.version>2.22.2</jackson.version>
         <junit.version>5.14.4</junit.version>
         <assertj.version>3.27.7</assertj.version>
+        <palantir.java.format.version>2.97.0</palantir.java.format.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
@@ -77,8 +78,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
                 <configuration>
-                    <release>11</release>
-                    <showWarnings>true</showWarnings>
+                                        <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                         <arg>-parameters</arg>
@@ -104,6 +104,29 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <java>
+                        <palantirJavaFormat>
+                            <version>${palantir.java.format.version}</version>
+                            <style>PALANTIR</style>
+                            <formatJavadoc>true</formatJavadoc>
+                        </palantirJavaFormat>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotless-check</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

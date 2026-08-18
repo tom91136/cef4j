@@ -6,6 +6,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -153,7 +154,7 @@ public class CefWebView extends Region {
      * @throws IllegalStateException if CEF has been terminated
      */
     public static void initialise(
-            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, @Nullable CefApp appHandler) {
+            @Nonnull CefSettings.Mutable settings, @Nonnull List<String> extraArgs, Optional<CefApp> appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
@@ -173,8 +174,8 @@ public class CefWebView extends Region {
             List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
             combinedArgs.addAll(defaults.args());
             combinedArgs.addAll(extraArgs);
-            if (appHandler != null) {
-                Cef.INSTANCE.addAppHandler(appHandler);
+            if (appHandler.isPresent()) {
+                Cef.INSTANCE.addAppHandler(appHandler.get());
             }
             Cef.INSTANCE.initialise(settings, combinedArgs);
         }
@@ -216,7 +217,13 @@ public class CefWebView extends Region {
             if (pw > maxW) maxW = pw;
             if (ph > maxH) maxH = ph;
         }
-        frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> pixels);
+        frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
+            // The producer owns `pixels` and may overwrite it on the next paint after consume() re-arms
+            // back-pressure. Copy into a stable back buffer so the FX thread never reads a torn frame.
+            int[] image = prev.filter(p -> p.length >= w * h).orElseGet(() -> new int[w * h]);
+            System.arraycopy(pixels, 0, image, 0, w * h);
+            return image;
+        });
 
         getChildren().add(imageView);
         imageView.setPreserveRatio(false);
@@ -270,6 +277,8 @@ public class CefWebView extends Region {
     }
 
     /** Returns the underlying browser instance, or {@code null} if it does not exist yet. */
+    // null until the browser is created
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser getBrowser() {
         BrowserHandle current = browser;
@@ -277,6 +286,8 @@ public class CefWebView extends Region {
     }
 
     /** Returns the underlying browser host, or {@code null} if it does not exist yet. */
+    // null until the browser is created
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowserHost getBrowserHost() {
         BrowserHandle current = browser;
@@ -305,11 +316,14 @@ public class CefWebView extends Region {
         return getScriptEngine();
     }
 
+    // null until the browser is created
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowser browser() {
         return getBrowser();
     }
 
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public CefBrowserHost browserHost() {
         return getBrowserHost();
@@ -522,7 +536,7 @@ public class CefWebView extends Region {
                     src.get(px, 0, pixelCount);
                     Platform.runLater(() -> popupSurface.blit(px, width, height));
                 } else {
-                    if (frameBuffer.onPaint(buffer, width, height, dirtyRects) != null) {
+                    if (frameBuffer.onPaint(buffer, width, height, dirtyRects).isPresent()) {
                         framesPainted.increment();
                         Platform.runLater(() -> blitFrame(width, height));
                     }
@@ -592,7 +606,7 @@ public class CefWebView extends Region {
     }
 
     private void blitFrame(int width, int height) {
-        int[] pixels = frameBuffer.consume();
+        int[] pixels = frameBuffer.consume().orElse(null);
         if (pixels == null) return;
 
         IntBuffer buf = pixelBuf;

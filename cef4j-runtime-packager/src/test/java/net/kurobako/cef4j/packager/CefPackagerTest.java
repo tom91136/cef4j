@@ -43,12 +43,13 @@ class CefPackagerTest {
 
     @Test
     void rejectsOneArchiveForMultiplePlatforms() {
-        int status = new CommandLine(new CefPackager()).execute(
-                "package",
-                "--cef-version=150.0.0+fixture",
-                "--platform=linux-x86_64,windows-x86_64",
-                "--archive=" + temporary.resolve("cef.tar.bz2"),
-                "--output=" + temporary.resolve("resources"));
+        int status = new CommandLine(new CefPackager())
+                .execute(
+                        "package",
+                        "--cef-version=150.0.0+fixture",
+                        "--platform=linux-x86_64,windows-x86_64",
+                        "--archive=" + temporary.resolve("cef.tar.bz2"),
+                        "--output=" + temporary.resolve("resources"));
 
         assertThat(status).isEqualTo(CommandLine.ExitCode.USAGE);
     }

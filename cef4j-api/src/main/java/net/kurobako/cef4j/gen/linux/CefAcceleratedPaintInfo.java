@@ -20,7 +20,7 @@ import net.kurobako.cef4j.gen.CefColorType;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__linux_8h.html">internal/cef_types_linux.h:176</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefAcceleratedPaintInfo implements net.kurobako.cef4j.gen.CefAcceleratedPaintInfo {
 
     // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.

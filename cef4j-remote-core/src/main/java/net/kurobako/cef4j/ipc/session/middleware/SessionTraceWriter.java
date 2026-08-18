@@ -7,11 +7,14 @@ import javax.annotation.Nullable;
 
 /** Streaming destination used by a {@link SessionTraceCodec}. Implementations must be thread-safe. */
 public interface SessionTraceWriter extends Closeable {
+    // null fields are absent trace-record detail
+    @SuppressWarnings("NullableForbidden")
     default void append(@Nonnull SessionTrace.Kind kind, long operationId, int messageId, @Nullable byte[] payload)
             throws IOException {
         append(kind, operationId, messageId, payload, null, null);
     }
 
+    @SuppressWarnings("NullableForbidden")
     void append(
             @Nonnull SessionTrace.Kind kind,
             long operationId,

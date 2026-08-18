@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Locale;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
 
 /** End-to-end runtime-server lifecycle and transport coverage. */
 @Timeout(60)
@@ -99,10 +99,10 @@ class RuntimeServerIntegrationTest {
     }
 
     @Test
-    void udsTransportBootstrapsRuntimeServerSession() throws Exception {
+    void udsTransportBootstrapsRuntimeServerSession(@TempDir Path tmp) throws Exception {
         Assumptions.assumeFalse(isWindows(), "Unix-domain sockets are not the Windows local transport");
         Assumptions.assumeTrue(optionalUdsClientAvailable(), "optional junixsocket client is not on this classpath");
-        Path socket = Files.createTempDirectory("cef4j-runtime-server-uds-").resolve("ipc.sock");
+        Path socket = tmp.resolve("ipc.sock");
         try (RuntimeServerProcess server = startServerWithEnv("uds", "unix://" + socket);
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(20))) {

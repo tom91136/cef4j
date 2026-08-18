@@ -23,10 +23,12 @@ final class CefArchiveResolver {
     private final ObjectMapper mapper;
 
     CefArchiveResolver() {
-        this(HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(30))
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build(), new ObjectMapper());
+        this(
+                HttpClient.newBuilder()
+                        .connectTimeout(Duration.ofSeconds(30))
+                        .followRedirects(HttpClient.Redirect.NORMAL)
+                        .build(),
+                new ObjectMapper());
     }
 
     CefArchiveResolver(HttpClient client, ObjectMapper mapper) {
@@ -77,7 +79,10 @@ final class CefArchiveResolver {
 
     private String findUpstreamSha1(URI indexUri, CefPlatform platform, String version, String archiveName)
             throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(indexUri).timeout(Duration.ofMinutes(2)).GET().build();
+        HttpRequest request = HttpRequest.newBuilder(indexUri)
+                .timeout(Duration.ofMinutes(2))
+                .GET()
+                .build();
         HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         if (response.statusCode() != 200) {
             response.body().close();
@@ -107,7 +112,10 @@ final class CefArchiveResolver {
         Files.createDirectories(parent);
         Path temporary = Files.createTempFile(parent, destination.getFileName().toString(), ".part");
         try {
-            HttpRequest request = HttpRequest.newBuilder(uri).timeout(Duration.ofMinutes(10)).GET().build();
+            HttpRequest request = HttpRequest.newBuilder(uri)
+                    .timeout(Duration.ofMinutes(10))
+                    .GET()
+                    .build();
             HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temporary));
             if (response.statusCode() != 200) {
                 throw new IOException("CEF archive returned HTTP " + response.statusCode() + ": " + uri);

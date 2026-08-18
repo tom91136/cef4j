@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:88</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public interface CefContextMenuHandler extends CefClientHandler {
 
     /**

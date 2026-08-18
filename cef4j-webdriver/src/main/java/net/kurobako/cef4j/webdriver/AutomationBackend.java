@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.webdriver;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
@@ -31,13 +32,13 @@ public interface AutomationBackend extends AutoCloseable {
 
     @Nonnull
     default CompletableFuture<String> findElement(
-            @Nonnull String using, @Nonnull String value, @javax.annotation.Nullable String parentElement) {
+            @Nonnull String using, @Nonnull String value, @Nonnull Optional<String> parentElement) {
         return unsupported("find element");
     }
 
     @Nonnull
     default CompletableFuture<java.util.List<String>> findElements(
-            @Nonnull String using, @Nonnull String value, @javax.annotation.Nullable String parentElement) {
+            @Nonnull String using, @Nonnull String value, @Nonnull Optional<String> parentElement) {
         return unsupported("find elements");
     }
 

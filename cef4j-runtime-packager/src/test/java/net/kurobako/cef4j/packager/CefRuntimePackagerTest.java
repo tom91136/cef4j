@@ -40,8 +40,8 @@ class CefRuntimePackagerTest {
     @MethodSource("platforms")
     void keepsRequestedLocaleFamilies(CefPlatform platform) throws Exception {
         Path archive = TestArchives.create(temporary.resolve("locales-" + platform.cefName() + ".tar.bz2"), platform);
-        CefRuntimePackager.Result result =
-                packageArchive(archive, temporary.resolve("locales-output-" + platform.cefName()), platform, List.of("fr"), false);
+        CefRuntimePackager.Result result = packageArchive(
+                archive, temporary.resolve("locales-output-" + platform.cefName()), platform, List.of("fr"), false);
 
         assertThat(result.files()).anyMatch(path -> path.contains("fr"));
         assertThat(result.files()).noneMatch(path -> path.contains("en-US") || path.contains("en.lproj"));
@@ -52,8 +52,8 @@ class CefRuntimePackagerTest {
     @MethodSource("platforms")
     void removesOnlySwiftShaderFiles(CefPlatform platform) throws Exception {
         Path archive = TestArchives.create(temporary.resolve("gpu-" + platform.cefName() + ".tar.bz2"), platform);
-        CefRuntimePackager.Result result =
-                packageArchive(archive, temporary.resolve("gpu-output-" + platform.cefName()), platform, List.of(), true);
+        CefRuntimePackager.Result result = packageArchive(
+                archive, temporary.resolve("gpu-output-" + platform.cefName()), platform, List.of(), true);
 
         assertThat(result.files()).noneMatch(path -> path.toLowerCase().contains("swiftshader"));
         assertThat(result.runtimeRoot().resolve(platform.runtimeBinary())).isRegularFile();
@@ -75,7 +75,11 @@ class CefRuntimePackagerTest {
         Path archive = TestArchives.create(temporary.resolve("missing-locale.tar.bz2"), CefPlatform.LINUX_X86_64);
 
         assertThatThrownBy(() -> packageArchive(
-                        archive, temporary.resolve("missing-locale-output"), CefPlatform.LINUX_X86_64, List.of("ja"), false))
+                        archive,
+                        temporary.resolve("missing-locale-output"),
+                        CefPlatform.LINUX_X86_64,
+                        List.of("ja"),
+                        false))
                 .isInstanceOf(java.io.IOException.class)
                 .hasMessageContaining("ja");
     }

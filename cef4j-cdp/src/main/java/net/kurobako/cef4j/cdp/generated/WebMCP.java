@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol WebMCP domain.
@@ -17,752 +21,552 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/WebMCP.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class WebMCP {
     private WebMCP() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Tool annotations
      */
     public static final class Annotation extends CdpObject {
+        public Annotation() {}
         private Annotation(Map<String, Object> values) { super(values); }
-        @Nullable public static Annotation fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Annotation(values);
+        public static Annotation fromMap(Map<String, Object> values) {
+            return new Annotation(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A hint indicating that the tool does not modify any state.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean readOnly() {
-            return (Boolean) value("readOnly");
+        public Optional<Boolean> readOnly() {
+            return Optional.ofNullable((Boolean) raw("readOnly"));
         }
         /**
          * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean untrustedContent() {
-            return (Boolean) value("untrustedContent");
+        public Optional<Boolean> untrustedContent() {
+            return Optional.ofNullable((Boolean) raw("untrustedContent"));
         }
         /**
          * If the declarative tool was declared with the autosubmit attribute.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean autosubmit() {
-            return (Boolean) value("autosubmit");
+        public Optional<Boolean> autosubmit() {
+            return Optional.ofNullable((Boolean) raw("autosubmit"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A hint indicating that the tool does not modify any state.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder readOnly(@Nullable Boolean value) {
-                if (value == null) values.remove("readOnly");
-                else values.put("readOnly", jsonValue(value));
-                return this;
-            }
-            /**
-             * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder untrustedContent(@Nullable Boolean value) {
-                if (value == null) values.remove("untrustedContent");
-                else values.put("untrustedContent", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the declarative tool was declared with the autosubmit attribute.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder autosubmit(@Nullable Boolean value) {
-                if (value == null) values.remove("autosubmit");
-                else values.put("autosubmit", jsonValue(value));
-                return this;
-            }
-            public Annotation build() {
-                return new Annotation(values);
-            }
+        /**
+         * A hint indicating that the tool does not modify any state.
+         * @param readOnly field value; empty omits the value
+         * @return this model
+         */
+        public Annotation readOnly(Optional<Boolean> readOnly) {
+            set("readOnly", readOnly.orElse(null));
+            return this;
+        }
+        /**
+         * A hint indicating that the tool does not modify any state.
+         * @param readOnly field value; null removes the value
+         * @return this model
+         */
+        public Annotation readOnly(Boolean readOnly) {
+            set("readOnly", readOnly);
+            return this;
+        }
+        /**
+         * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
+         * @param untrustedContent field value; empty omits the value
+         * @return this model
+         */
+        public Annotation untrustedContent(Optional<Boolean> untrustedContent) {
+            set("untrustedContent", untrustedContent.orElse(null));
+            return this;
+        }
+        /**
+         * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
+         * @param untrustedContent field value; null removes the value
+         * @return this model
+         */
+        public Annotation untrustedContent(Boolean untrustedContent) {
+            set("untrustedContent", untrustedContent);
+            return this;
+        }
+        /**
+         * If the declarative tool was declared with the autosubmit attribute.
+         * @param autosubmit field value; empty omits the value
+         * @return this model
+         */
+        public Annotation autosubmit(Optional<Boolean> autosubmit) {
+            set("autosubmit", autosubmit.orElse(null));
+            return this;
+        }
+        /**
+         * If the declarative tool was declared with the autosubmit attribute.
+         * @param autosubmit field value; null removes the value
+         * @return this model
+         */
+        public Annotation autosubmit(Boolean autosubmit) {
+            set("autosubmit", autosubmit);
+            return this;
         }
     }
     /**
      * Represents the status of a tool invocation.
      */
-    public static final class InvocationStatus {
-        private InvocationStatus() {}
-        public static final String COMPLETED = "Completed";
-        public static final String CANCELED = "Canceled";
-        public static final String ERROR = "Error";
+    public enum InvocationStatus implements CdpValue<String> {
+        COMPLETED("Completed"),
+        CANCELED("Canceled"),
+        ERROR("Error");
+        public final String value;
+        InvocationStatus(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static InvocationStatus of(@Nonnull String value) {
+            for (InvocationStatus constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown InvocationStatus value: " + value);
+        }
     }
     /**
      * Definition of a tool that can be invoked.
      */
     public static final class Tool extends CdpObject {
+        public Tool() {}
         private Tool(Map<String, Object> values) { super(values); }
-        @Nullable public static Tool fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Tool(values);
+        public static Tool fromMap(Map<String, Object> values) {
+            return new Tool(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Tool name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Tool description.
          * @return the protocol field value
          */
-        @Nullable public String description() {
-            return (String) value("description");
+        public String description() {
+            return (String) require("description");
         }
         /**
          * Schema for the tool&#x27;s input parameters.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.Map<String, Object> inputSchema() {
-            return objectMap(value("inputSchema"));
+        public Optional<java.util.Map<String, Object>> inputSchema() {
+            return Optional.ofNullable(objectMap(raw("inputSchema")));
         }
         /**
          * Optional annotations for the tool.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public WebMCP.Annotation annotations() {
-            return WebMCP.Annotation.fromMap(objectMap(value("annotations")));
+        public Optional<WebMCP.Annotation> annotations() {
+            return Optional.ofNullable(raw("annotations") == null ? null : WebMCP.Annotation.fromMap(java.util.Objects.requireNonNull(objectMap(raw("annotations")))));
         }
         /**
          * Frame identifier associated with the tool registration.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * Optional node ID for declarative tools.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
         }
         /**
          * The stack trace at the time of the registration.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Runtime.StackTrace stackTrace() {
-            return Runtime.StackTrace.fromMap(objectMap(value("stackTrace")));
+        public Optional<Runtime.StackTrace> stackTrace() {
+            return Optional.ofNullable(raw("stackTrace") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(raw("stackTrace")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Tool name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Tool description.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder description(@Nullable String value) {
-                if (value == null) values.remove("description");
-                else values.put("description", jsonValue(value));
-                return this;
-            }
-            /**
-             * Schema for the tool&#x27;s input parameters.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder inputSchema(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("inputSchema");
-                else values.put("inputSchema", jsonValue(value));
-                return this;
-            }
-            /**
-             * Optional annotations for the tool.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder annotations(@Nullable WebMCP.Annotation value) {
-                if (value == null) values.remove("annotations");
-                else values.put("annotations", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame identifier associated with the tool registration.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Optional node ID for declarative tools.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The stack trace at the time of the registration.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder stackTrace(@Nullable Runtime.StackTrace value) {
-                if (value == null) values.remove("stackTrace");
-                else values.put("stackTrace", jsonValue(value));
-                return this;
-            }
-            public Tool build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("description")) throw new IllegalStateException("Missing required CDP field: description");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new Tool(values);
-            }
+        /**
+         * Tool name.
+         * @param name field value
+         * @return this model
+         */
+        public Tool name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Tool description.
+         * @param description field value
+         * @return this model
+         */
+        public Tool description(String description) {
+            set("description", description);
+            return this;
+        }
+        /**
+         * Schema for the tool&#x27;s input parameters.
+         * @param inputSchema field value; empty omits the value
+         * @return this model
+         */
+        public Tool inputSchema(Optional<java.util.Map<String, Object>> inputSchema) {
+            set("inputSchema", inputSchema.orElse(null));
+            return this;
+        }
+        /**
+         * Schema for the tool&#x27;s input parameters.
+         * @param inputSchema field value; null removes the value
+         * @return this model
+         */
+        public Tool inputSchema(java.util.Map<String, Object> inputSchema) {
+            set("inputSchema", inputSchema);
+            return this;
+        }
+        /**
+         * Optional annotations for the tool.
+         * @param annotations field value; empty omits the value
+         * @return this model
+         */
+        public Tool annotations(Optional<WebMCP.Annotation> annotations) {
+            set("annotations", annotations.orElse(null));
+            return this;
+        }
+        /**
+         * Optional annotations for the tool.
+         * @param annotations field value; null removes the value
+         * @return this model
+         */
+        public Tool annotations(WebMCP.Annotation annotations) {
+            set("annotations", annotations);
+            return this;
+        }
+        /**
+         * Frame identifier associated with the tool registration.
+         * @param frameId field value
+         * @return this model
+         */
+        public Tool frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Optional node ID for declarative tools.
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
+         */
+        public Tool backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Optional node ID for declarative tools.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
+         */
+        public Tool backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
+        }
+        /**
+         * The stack trace at the time of the registration.
+         * @param stackTrace field value; empty omits the value
+         * @return this model
+         */
+        public Tool stackTrace(Optional<Runtime.StackTrace> stackTrace) {
+            set("stackTrace", stackTrace.orElse(null));
+            return this;
+        }
+        /**
+         * The stack trace at the time of the registration.
+         * @param stackTrace field value; null removes the value
+         * @return this model
+         */
+        public Tool stackTrace(Runtime.StackTrace stackTrace) {
+            set("stackTrace", stackTrace);
+            return this;
         }
     }
     /**
      * Definition of a tool that was removed.
      */
     public static final class RemovedTool extends CdpObject {
+        public RemovedTool() {}
         private RemovedTool(Map<String, Object> values) { super(values); }
-        @Nullable public static RemovedTool fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemovedTool(values);
+        public static RemovedTool fromMap(Map<String, Object> values) {
+            return new RemovedTool(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Tool name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Frame identifier associated with the tool registration.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Tool name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame identifier associated with the tool registration.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            public RemovedTool build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new RemovedTool(values);
-            }
-        }
-    }
-    /**
-     * Enables the WebMCP domain, allowing events to be sent. Enabling the domain will trigger a toolsAdded event for all currently registered tools.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enables the WebMCP domain, allowing events to be sent. Enabling the domain will trigger a toolsAdded event for all currently registered tools.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Disables the WebMCP domain.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disables the WebMCP domain.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Invokes a registered tool.
-     */
-    public static final class InvokeToolParams extends CdpObject {
-        private InvokeToolParams(Map<String, Object> values) { super(values); }
-        @Nullable public static InvokeToolParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InvokeToolParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Frame in which to invoke the tool.
-         * @return the protocol field value
-         */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
-         * Name of the tool to invoke.
-         * @return the protocol field value
+         * Tool name.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public String toolName() {
-            return (String) value("toolName");
+        public RemovedTool name(String name) {
+            set("name", name);
+            return this;
         }
         /**
-         * Input parameters for the tool, matching the tool&#x27;s inputSchema.
-         * @return the protocol field value
+         * Frame identifier associated with the tool registration.
+         * @param frameId field value
+         * @return this model
          */
-        @Nullable public java.util.Map<String, Object> input() {
-            return objectMap(value("input"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Frame in which to invoke the tool.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name of the tool to invoke.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder toolName(@Nullable String value) {
-                if (value == null) values.remove("toolName");
-                else values.put("toolName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Input parameters for the tool, matching the tool&#x27;s inputSchema.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder input(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("input");
-                else values.put("input", jsonValue(value));
-                return this;
-            }
-            public InvokeToolParams build() {
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                if (!values.containsKey("toolName")) throw new IllegalStateException("Missing required CDP field: toolName");
-                if (!values.containsKey("input")) throw new IllegalStateException("Missing required CDP field: input");
-                return new InvokeToolParams(values);
-            }
-        }
-    }
-    /**
-     * Invokes a registered tool.
-     */
-    public static final class InvokeToolResult extends CdpObject {
-        private InvokeToolResult(Map<String, Object> values) { super(values); }
-        @Nullable public static InvokeToolResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InvokeToolResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Unique identifier for this invocation. Response is sent before tool events.
-         * @return the protocol field value
-         */
-        @Nullable public String invocationId() {
-            return (String) value("invocationId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Unique identifier for this invocation. Response is sent before tool events.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder invocationId(@Nullable String value) {
-                if (value == null) values.remove("invocationId");
-                else values.put("invocationId", jsonValue(value));
-                return this;
-            }
-            public InvokeToolResult build() {
-                if (!values.containsKey("invocationId")) throw new IllegalStateException("Missing required CDP field: invocationId");
-                return new InvokeToolResult(values);
-            }
-        }
-    }
-    /**
-     * Cancels a pending tool invocation.
-     */
-    public static final class CancelInvocationParams extends CdpObject {
-        private CancelInvocationParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CancelInvocationParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CancelInvocationParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Invocation identifier to cancel.
-         * @return the protocol field value
-         */
-        @Nullable public String invocationId() {
-            return (String) value("invocationId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Invocation identifier to cancel.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder invocationId(@Nullable String value) {
-                if (value == null) values.remove("invocationId");
-                else values.put("invocationId", jsonValue(value));
-                return this;
-            }
-            public CancelInvocationParams build() {
-                if (!values.containsKey("invocationId")) throw new IllegalStateException("Missing required CDP field: invocationId");
-                return new CancelInvocationParams(values);
-            }
-        }
-    }
-    /**
-     * Cancels a pending tool invocation.
-     */
-    public static final class CancelInvocationResult extends CdpObject {
-        private CancelInvocationResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CancelInvocationResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CancelInvocationResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public CancelInvocationResult build() {
-                return new CancelInvocationResult(values);
-            }
+        public RemovedTool frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
         }
     }
     /**
      * Event fired when new tools are added.
      */
     public static final class ToolsAddedEvent extends CdpObject {
+        public ToolsAddedEvent() {}
         private ToolsAddedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ToolsAddedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ToolsAddedEvent(values);
+        public static ToolsAddedEvent fromMap(Map<String, Object> values) {
+            return new ToolsAddedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Array of tools that were added.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<WebMCP.Tool> tools() {
-            return list(value("tools"), element0 -> WebMCP.Tool.fromMap(objectMap(element0)));
+        public java.util.List<WebMCP.Tool> tools() {
+            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.Tool.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Array of tools that were added.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder tools(@Nullable java.util.List<WebMCP.Tool> value) {
-                if (value == null) values.remove("tools");
-                else values.put("tools", jsonValue(value));
-                return this;
-            }
-            public ToolsAddedEvent build() {
-                if (!values.containsKey("tools")) throw new IllegalStateException("Missing required CDP field: tools");
-                return new ToolsAddedEvent(values);
-            }
+        /**
+         * Array of tools that were added.
+         * @param tools field value
+         * @return this model
+         */
+        public ToolsAddedEvent tools(java.util.List<WebMCP.Tool> tools) {
+            set("tools", tools);
+            return this;
         }
     }
     /**
      * Event fired when tools are removed.
      */
     public static final class ToolsRemovedEvent extends CdpObject {
+        public ToolsRemovedEvent() {}
         private ToolsRemovedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ToolsRemovedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ToolsRemovedEvent(values);
+        public static ToolsRemovedEvent fromMap(Map<String, Object> values) {
+            return new ToolsRemovedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Array of tools that were removed.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<WebMCP.RemovedTool> tools() {
-            return list(value("tools"), element0 -> WebMCP.RemovedTool.fromMap(objectMap(element0)));
+        public java.util.List<WebMCP.RemovedTool> tools() {
+            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.RemovedTool.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Array of tools that were removed.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder tools(@Nullable java.util.List<WebMCP.RemovedTool> value) {
-                if (value == null) values.remove("tools");
-                else values.put("tools", jsonValue(value));
-                return this;
-            }
-            public ToolsRemovedEvent build() {
-                if (!values.containsKey("tools")) throw new IllegalStateException("Missing required CDP field: tools");
-                return new ToolsRemovedEvent(values);
-            }
+        /**
+         * Array of tools that were removed.
+         * @param tools field value
+         * @return this model
+         */
+        public ToolsRemovedEvent tools(java.util.List<WebMCP.RemovedTool> tools) {
+            set("tools", tools);
+            return this;
         }
     }
     /**
      * Event fired when a tool invocation starts.
      */
     public static final class ToolInvokedEvent extends CdpObject {
+        public ToolInvokedEvent() {}
         private ToolInvokedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ToolInvokedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ToolInvokedEvent(values);
+        public static ToolInvokedEvent fromMap(Map<String, Object> values) {
+            return new ToolInvokedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Name of the tool to invoke.
          * @return the protocol field value
          */
-        @Nullable public String toolName() {
-            return (String) value("toolName");
+        public String toolName() {
+            return (String) require("toolName");
         }
         /**
          * Frame id
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * Invocation identifier.
          * @return the protocol field value
          */
-        @Nullable public String invocationId() {
-            return (String) value("invocationId");
+        public String invocationId() {
+            return (String) require("invocationId");
         }
         /**
          * The input parameters used for the invocation.
          * @return the protocol field value
          */
-        @Nullable public String input() {
-            return (String) value("input");
+        public String input() {
+            return (String) require("input");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Name of the tool to invoke.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder toolName(@Nullable String value) {
-                if (value == null) values.remove("toolName");
-                else values.put("toolName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame id
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Invocation identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder invocationId(@Nullable String value) {
-                if (value == null) values.remove("invocationId");
-                else values.put("invocationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The input parameters used for the invocation.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder input(@Nullable String value) {
-                if (value == null) values.remove("input");
-                else values.put("input", jsonValue(value));
-                return this;
-            }
-            public ToolInvokedEvent build() {
-                if (!values.containsKey("toolName")) throw new IllegalStateException("Missing required CDP field: toolName");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                if (!values.containsKey("invocationId")) throw new IllegalStateException("Missing required CDP field: invocationId");
-                if (!values.containsKey("input")) throw new IllegalStateException("Missing required CDP field: input");
-                return new ToolInvokedEvent(values);
-            }
+        /**
+         * Name of the tool to invoke.
+         * @param toolName field value
+         * @return this model
+         */
+        public ToolInvokedEvent toolName(String toolName) {
+            set("toolName", toolName);
+            return this;
+        }
+        /**
+         * Frame id
+         * @param frameId field value
+         * @return this model
+         */
+        public ToolInvokedEvent frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
+        }
+        /**
+         * Invocation identifier.
+         * @param invocationId field value
+         * @return this model
+         */
+        public ToolInvokedEvent invocationId(String invocationId) {
+            set("invocationId", invocationId);
+            return this;
+        }
+        /**
+         * The input parameters used for the invocation.
+         * @param input field value
+         * @return this model
+         */
+        public ToolInvokedEvent input(String input) {
+            set("input", input);
+            return this;
         }
     }
     /**
      * Event fired when a tool invocation completes or fails.
      */
     public static final class ToolRespondedEvent extends CdpObject {
+        public ToolRespondedEvent() {}
         private ToolRespondedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ToolRespondedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ToolRespondedEvent(values);
+        public static ToolRespondedEvent fromMap(Map<String, Object> values) {
+            return new ToolRespondedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Invocation identifier.
          * @return the protocol field value
          */
-        @Nullable public String invocationId() {
-            return (String) value("invocationId");
+        public String invocationId() {
+            return (String) require("invocationId");
         }
         /**
          * Status of the invocation.
          * @return the protocol field value
          */
-        @Nullable public String status() {
-            return (String) value("status");
+        public WebMCP.InvocationStatus status() {
+            return WebMCP.InvocationStatus.of((String) require("status"));
         }
         /**
          * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Object output() {
-            return value("output");
+        public Optional<Object> output() {
+            return Optional.ofNullable(raw("output"));
         }
         /**
          * Error text for protocol users.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String errorText() {
-            return (String) value("errorText");
+        public Optional<String> errorText() {
+            return Optional.ofNullable((String) raw("errorText"));
         }
         /**
          * The exception object, if the javascript tool threw an error&gt;
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Runtime.RemoteObject exception() {
-            return Runtime.RemoteObject.fromMap(objectMap(value("exception")));
+        public Optional<Runtime.RemoteObject> exception() {
+            return Optional.ofNullable(raw("exception") == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(raw("exception")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Invocation identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder invocationId(@Nullable String value) {
-                if (value == null) values.remove("invocationId");
-                else values.put("invocationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Status of the invocation.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder status(@Nullable String value) {
-                if (value == null) values.remove("status");
-                else values.put("status", jsonValue(value));
-                return this;
-            }
-            /**
-             * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder output(@Nullable Object value) {
-                if (value == null) values.remove("output");
-                else values.put("output", jsonValue(value));
-                return this;
-            }
-            /**
-             * Error text for protocol users.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder errorText(@Nullable String value) {
-                if (value == null) values.remove("errorText");
-                else values.put("errorText", jsonValue(value));
-                return this;
-            }
-            /**
-             * The exception object, if the javascript tool threw an error&gt;
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder exception(@Nullable Runtime.RemoteObject value) {
-                if (value == null) values.remove("exception");
-                else values.put("exception", jsonValue(value));
-                return this;
-            }
-            public ToolRespondedEvent build() {
-                if (!values.containsKey("invocationId")) throw new IllegalStateException("Missing required CDP field: invocationId");
-                if (!values.containsKey("status")) throw new IllegalStateException("Missing required CDP field: status");
-                return new ToolRespondedEvent(values);
-            }
+        /**
+         * Invocation identifier.
+         * @param invocationId field value
+         * @return this model
+         */
+        public ToolRespondedEvent invocationId(String invocationId) {
+            set("invocationId", invocationId);
+            return this;
+        }
+        /**
+         * Status of the invocation.
+         * @param status field value
+         * @return this model
+         */
+        public ToolRespondedEvent status(WebMCP.InvocationStatus status) {
+            set("status", status);
+            return this;
+        }
+        /**
+         * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
+         * @param output field value; empty omits the value
+         * @return this model
+         */
+        public ToolRespondedEvent output(Optional<Object> output) {
+            set("output", output.orElse(null));
+            return this;
+        }
+        /**
+         * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
+         * @param output field value; null removes the value
+         * @return this model
+         */
+        public ToolRespondedEvent output(Object output) {
+            set("output", output);
+            return this;
+        }
+        /**
+         * Error text for protocol users.
+         * @param errorText field value; empty omits the value
+         * @return this model
+         */
+        public ToolRespondedEvent errorText(Optional<String> errorText) {
+            set("errorText", errorText.orElse(null));
+            return this;
+        }
+        /**
+         * Error text for protocol users.
+         * @param errorText field value; null removes the value
+         * @return this model
+         */
+        public ToolRespondedEvent errorText(String errorText) {
+            set("errorText", errorText);
+            return this;
+        }
+        /**
+         * The exception object, if the javascript tool threw an error&gt;
+         * @param exception field value; empty omits the value
+         * @return this model
+         */
+        public ToolRespondedEvent exception(Optional<Runtime.RemoteObject> exception) {
+            set("exception", exception.orElse(null));
+            return this;
+        }
+        /**
+         * The exception object, if the javascript tool threw an error&gt;
+         * @param exception field value; null removes the value
+         * @return this model
+         */
+        public ToolRespondedEvent exception(Runtime.RemoteObject exception) {
+            set("exception", exception);
+            return this;
         }
     }
     public static final class Client {
@@ -770,33 +574,41 @@ public final class WebMCP {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Enables the WebMCP domain, allowing events to be sent. Enabling the domain will trigger a toolsAdded event for all currently registered tools.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return client.call("WebMCP.enable", null, EnableResult::fromMap);
+        public CompletionStage<Void> enable() {
+            return client.call("WebMCP.enable", null, result_ -> null);
         }
         /**
          * Disables the WebMCP domain.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("WebMCP.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("WebMCP.disable", null, result_ -> null);
         }
         /**
          * Invokes a registered tool.
-         * @param params command parameters
+         * @param frameId protocol value
+         * @param toolName protocol value
+         * @param input protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<InvokeToolResult> invokeTool(InvokeToolParams params) {
-            return client.call("WebMCP.invokeTool", params, InvokeToolResult::fromMap);
+        public CompletionStage<String> invokeTool(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            params.put("toolName", CdpObject.json(toolName));
+            params.put("input", CdpObject.json(input));
+            return client.call("WebMCP.invokeTool", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("invocationId")));
         }
         /**
          * Cancels a pending tool invocation.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param invocationId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<CancelInvocationResult> cancelInvocation(CancelInvocationParams params) {
-            return client.call("WebMCP.cancelInvocation", params, CancelInvocationResult::fromMap);
+        public CompletionStage<Void> cancelInvocation(String invocationId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("invocationId", CdpObject.json(invocationId));
+            return client.call("WebMCP.cancelInvocation", params, result_ -> null);
         }
         /**
          * Event fired when new tools are added.

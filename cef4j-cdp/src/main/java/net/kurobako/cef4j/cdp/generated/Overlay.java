@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain provides various functionality related to drawing atop the inspected page.
@@ -17,3816 +21,2331 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Overlay.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Overlay {
     private Overlay() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Configuration data for drawing the source order of an elements children.
      */
     public static final class SourceOrderConfig extends CdpObject {
+        public SourceOrderConfig() {}
         private SourceOrderConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static SourceOrderConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SourceOrderConfig(values);
+        public static SourceOrderConfig fromMap(Map<String, Object> values) {
+            return new SourceOrderConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * the color to outline the given element in.
          * @return the protocol field value
          */
-        @Nullable public DOM.RGBA parentOutlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("parentOutlineColor")));
+        public DOM.RGBA parentOutlineColor() {
+            return java.util.Objects.requireNonNull(DOM.RGBA.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("parentOutlineColor")))));
         }
         /**
          * the color to outline the child elements in.
          * @return the protocol field value
          */
-        @Nullable public DOM.RGBA childOutlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("childOutlineColor")));
+        public DOM.RGBA childOutlineColor() {
+            return java.util.Objects.requireNonNull(DOM.RGBA.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("childOutlineColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * the color to outline the given element in.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentOutlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("parentOutlineColor");
-                else values.put("parentOutlineColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * the color to outline the child elements in.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder childOutlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("childOutlineColor");
-                else values.put("childOutlineColor", jsonValue(value));
-                return this;
-            }
-            public SourceOrderConfig build() {
-                if (!values.containsKey("parentOutlineColor")) throw new IllegalStateException("Missing required CDP field: parentOutlineColor");
-                if (!values.containsKey("childOutlineColor")) throw new IllegalStateException("Missing required CDP field: childOutlineColor");
-                return new SourceOrderConfig(values);
-            }
+        /**
+         * the color to outline the given element in.
+         * @param parentOutlineColor field value
+         * @return this model
+         */
+        public SourceOrderConfig parentOutlineColor(DOM.RGBA parentOutlineColor) {
+            set("parentOutlineColor", parentOutlineColor);
+            return this;
+        }
+        /**
+         * the color to outline the child elements in.
+         * @param childOutlineColor field value
+         * @return this model
+         */
+        public SourceOrderConfig childOutlineColor(DOM.RGBA childOutlineColor) {
+            set("childOutlineColor", childOutlineColor);
+            return this;
         }
     }
     /**
      * Configuration data for the highlighting of Grid elements.
      */
     public static final class GridHighlightConfig extends CdpObject {
+        public GridHighlightConfig() {}
         private GridHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static GridHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GridHighlightConfig(values);
+        public static GridHighlightConfig fromMap(Map<String, Object> values) {
+            return new GridHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Whether the extension lines from grid cells to the rulers should be shown (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showGridExtensionLines() {
-            return (Boolean) value("showGridExtensionLines");
+        public Optional<Boolean> showGridExtensionLines() {
+            return Optional.ofNullable((Boolean) raw("showGridExtensionLines"));
         }
         /**
          * Show Positive line number labels (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showPositiveLineNumbers() {
-            return (Boolean) value("showPositiveLineNumbers");
+        public Optional<Boolean> showPositiveLineNumbers() {
+            return Optional.ofNullable((Boolean) raw("showPositiveLineNumbers"));
         }
         /**
          * Show Negative line number labels (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showNegativeLineNumbers() {
-            return (Boolean) value("showNegativeLineNumbers");
+        public Optional<Boolean> showNegativeLineNumbers() {
+            return Optional.ofNullable((Boolean) raw("showNegativeLineNumbers"));
         }
         /**
          * Show area name labels (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showAreaNames() {
-            return (Boolean) value("showAreaNames");
+        public Optional<Boolean> showAreaNames() {
+            return Optional.ofNullable((Boolean) raw("showAreaNames"));
         }
         /**
          * Show line name labels (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showLineNames() {
-            return (Boolean) value("showLineNames");
+        public Optional<Boolean> showLineNames() {
+            return Optional.ofNullable((Boolean) raw("showLineNames"));
         }
         /**
          * Show track size labels (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showTrackSizes() {
-            return (Boolean) value("showTrackSizes");
+        public Optional<Boolean> showTrackSizes() {
+            return Optional.ofNullable((Boolean) raw("showTrackSizes"));
         }
         /**
          * The grid container border highlight color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA gridBorderColor() {
-            return DOM.RGBA.fromMap(objectMap(value("gridBorderColor")));
+        public Optional<DOM.RGBA> gridBorderColor() {
+            return Optional.ofNullable(raw("gridBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridBorderColor")))));
         }
         /**
          * The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        @Nullable public DOM.RGBA cellBorderColor() {
-            return DOM.RGBA.fromMap(objectMap(value("cellBorderColor")));
+        public Optional<DOM.RGBA> cellBorderColor() {
+            return Optional.ofNullable(raw("cellBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cellBorderColor")))));
         }
         /**
          * The row line color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA rowLineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("rowLineColor")));
+        public Optional<DOM.RGBA> rowLineColor() {
+            return Optional.ofNullable(raw("rowLineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowLineColor")))));
         }
         /**
          * The column line color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA columnLineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("columnLineColor")));
+        public Optional<DOM.RGBA> columnLineColor() {
+            return Optional.ofNullable(raw("columnLineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnLineColor")))));
         }
         /**
          * Whether the grid border is dashed (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean gridBorderDash() {
-            return (Boolean) value("gridBorderDash");
+        public Optional<Boolean> gridBorderDash() {
+            return Optional.ofNullable((Boolean) raw("gridBorderDash"));
         }
         /**
          * Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        @Nullable public Boolean cellBorderDash() {
-            return (Boolean) value("cellBorderDash");
+        public Optional<Boolean> cellBorderDash() {
+            return Optional.ofNullable((Boolean) raw("cellBorderDash"));
         }
         /**
          * Whether row lines are dashed (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean rowLineDash() {
-            return (Boolean) value("rowLineDash");
+        public Optional<Boolean> rowLineDash() {
+            return Optional.ofNullable((Boolean) raw("rowLineDash"));
         }
         /**
          * Whether column lines are dashed (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean columnLineDash() {
-            return (Boolean) value("columnLineDash");
+        public Optional<Boolean> columnLineDash() {
+            return Optional.ofNullable((Boolean) raw("columnLineDash"));
         }
         /**
          * The row gap highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA rowGapColor() {
-            return DOM.RGBA.fromMap(objectMap(value("rowGapColor")));
+        public Optional<DOM.RGBA> rowGapColor() {
+            return Optional.ofNullable(raw("rowGapColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowGapColor")))));
         }
         /**
          * The row gap hatching fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA rowHatchColor() {
-            return DOM.RGBA.fromMap(objectMap(value("rowHatchColor")));
+        public Optional<DOM.RGBA> rowHatchColor() {
+            return Optional.ofNullable(raw("rowHatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowHatchColor")))));
         }
         /**
          * The column gap highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA columnGapColor() {
-            return DOM.RGBA.fromMap(objectMap(value("columnGapColor")));
+        public Optional<DOM.RGBA> columnGapColor() {
+            return Optional.ofNullable(raw("columnGapColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnGapColor")))));
         }
         /**
          * The column gap hatching fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA columnHatchColor() {
-            return DOM.RGBA.fromMap(objectMap(value("columnHatchColor")));
+        public Optional<DOM.RGBA> columnHatchColor() {
+            return Optional.ofNullable(raw("columnHatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnHatchColor")))));
         }
         /**
          * The named grid areas border color (Default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA areaBorderColor() {
-            return DOM.RGBA.fromMap(objectMap(value("areaBorderColor")));
+        public Optional<DOM.RGBA> areaBorderColor() {
+            return Optional.ofNullable(raw("areaBorderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("areaBorderColor")))));
         }
         /**
          * The grid container background color (Default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA gridBackgroundColor() {
-            return DOM.RGBA.fromMap(objectMap(value("gridBackgroundColor")));
+        public Optional<DOM.RGBA> gridBackgroundColor() {
+            return Optional.ofNullable(raw("gridBackgroundColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridBackgroundColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether the extension lines from grid cells to the rulers should be shown (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showGridExtensionLines(@Nullable Boolean value) {
-                if (value == null) values.remove("showGridExtensionLines");
-                else values.put("showGridExtensionLines", jsonValue(value));
-                return this;
-            }
-            /**
-             * Show Positive line number labels (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showPositiveLineNumbers(@Nullable Boolean value) {
-                if (value == null) values.remove("showPositiveLineNumbers");
-                else values.put("showPositiveLineNumbers", jsonValue(value));
-                return this;
-            }
-            /**
-             * Show Negative line number labels (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showNegativeLineNumbers(@Nullable Boolean value) {
-                if (value == null) values.remove("showNegativeLineNumbers");
-                else values.put("showNegativeLineNumbers", jsonValue(value));
-                return this;
-            }
-            /**
-             * Show area name labels (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showAreaNames(@Nullable Boolean value) {
-                if (value == null) values.remove("showAreaNames");
-                else values.put("showAreaNames", jsonValue(value));
-                return this;
-            }
-            /**
-             * Show line name labels (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showLineNames(@Nullable Boolean value) {
-                if (value == null) values.remove("showLineNames");
-                else values.put("showLineNames", jsonValue(value));
-                return this;
-            }
-            /**
-             * Show track size labels (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showTrackSizes(@Nullable Boolean value) {
-                if (value == null) values.remove("showTrackSizes");
-                else values.put("showTrackSizes", jsonValue(value));
-                return this;
-            }
-            /**
-             * The grid container border highlight color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridBorderColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("gridBorderColor");
-                else values.put("gridBorderColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder cellBorderColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("cellBorderColor");
-                else values.put("cellBorderColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The row line color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rowLineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("rowLineColor");
-                else values.put("rowLineColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The column line color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnLineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("columnLineColor");
-                else values.put("columnLineColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the grid border is dashed (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridBorderDash(@Nullable Boolean value) {
-                if (value == null) values.remove("gridBorderDash");
-                else values.put("gridBorderDash", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder cellBorderDash(@Nullable Boolean value) {
-                if (value == null) values.remove("cellBorderDash");
-                else values.put("cellBorderDash", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether row lines are dashed (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rowLineDash(@Nullable Boolean value) {
-                if (value == null) values.remove("rowLineDash");
-                else values.put("rowLineDash", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether column lines are dashed (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnLineDash(@Nullable Boolean value) {
-                if (value == null) values.remove("columnLineDash");
-                else values.put("columnLineDash", jsonValue(value));
-                return this;
-            }
-            /**
-             * The row gap highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rowGapColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("rowGapColor");
-                else values.put("rowGapColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The row gap hatching fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rowHatchColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("rowHatchColor");
-                else values.put("rowHatchColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The column gap highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnGapColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("columnGapColor");
-                else values.put("columnGapColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The column gap hatching fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnHatchColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("columnHatchColor");
-                else values.put("columnHatchColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The named grid areas border color (Default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder areaBorderColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("areaBorderColor");
-                else values.put("areaBorderColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The grid container background color (Default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridBackgroundColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("gridBackgroundColor");
-                else values.put("gridBackgroundColor", jsonValue(value));
-                return this;
-            }
-            public GridHighlightConfig build() {
-                return new GridHighlightConfig(values);
-            }
+        /**
+         * Whether the extension lines from grid cells to the rulers should be shown (default: false).
+         * @param showGridExtensionLines field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showGridExtensionLines(Optional<Boolean> showGridExtensionLines) {
+            set("showGridExtensionLines", showGridExtensionLines.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the extension lines from grid cells to the rulers should be shown (default: false).
+         * @param showGridExtensionLines field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showGridExtensionLines(Boolean showGridExtensionLines) {
+            set("showGridExtensionLines", showGridExtensionLines);
+            return this;
+        }
+        /**
+         * Show Positive line number labels (default: false).
+         * @param showPositiveLineNumbers field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showPositiveLineNumbers(Optional<Boolean> showPositiveLineNumbers) {
+            set("showPositiveLineNumbers", showPositiveLineNumbers.orElse(null));
+            return this;
+        }
+        /**
+         * Show Positive line number labels (default: false).
+         * @param showPositiveLineNumbers field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showPositiveLineNumbers(Boolean showPositiveLineNumbers) {
+            set("showPositiveLineNumbers", showPositiveLineNumbers);
+            return this;
+        }
+        /**
+         * Show Negative line number labels (default: false).
+         * @param showNegativeLineNumbers field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showNegativeLineNumbers(Optional<Boolean> showNegativeLineNumbers) {
+            set("showNegativeLineNumbers", showNegativeLineNumbers.orElse(null));
+            return this;
+        }
+        /**
+         * Show Negative line number labels (default: false).
+         * @param showNegativeLineNumbers field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showNegativeLineNumbers(Boolean showNegativeLineNumbers) {
+            set("showNegativeLineNumbers", showNegativeLineNumbers);
+            return this;
+        }
+        /**
+         * Show area name labels (default: false).
+         * @param showAreaNames field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showAreaNames(Optional<Boolean> showAreaNames) {
+            set("showAreaNames", showAreaNames.orElse(null));
+            return this;
+        }
+        /**
+         * Show area name labels (default: false).
+         * @param showAreaNames field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showAreaNames(Boolean showAreaNames) {
+            set("showAreaNames", showAreaNames);
+            return this;
+        }
+        /**
+         * Show line name labels (default: false).
+         * @param showLineNames field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showLineNames(Optional<Boolean> showLineNames) {
+            set("showLineNames", showLineNames.orElse(null));
+            return this;
+        }
+        /**
+         * Show line name labels (default: false).
+         * @param showLineNames field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showLineNames(Boolean showLineNames) {
+            set("showLineNames", showLineNames);
+            return this;
+        }
+        /**
+         * Show track size labels (default: false).
+         * @param showTrackSizes field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig showTrackSizes(Optional<Boolean> showTrackSizes) {
+            set("showTrackSizes", showTrackSizes.orElse(null));
+            return this;
+        }
+        /**
+         * Show track size labels (default: false).
+         * @param showTrackSizes field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig showTrackSizes(Boolean showTrackSizes) {
+            set("showTrackSizes", showTrackSizes);
+            return this;
+        }
+        /**
+         * The grid container border highlight color (default: transparent).
+         * @param gridBorderColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBorderColor(Optional<DOM.RGBA> gridBorderColor) {
+            set("gridBorderColor", gridBorderColor.orElse(null));
+            return this;
+        }
+        /**
+         * The grid container border highlight color (default: transparent).
+         * @param gridBorderColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBorderColor(DOM.RGBA gridBorderColor) {
+            set("gridBorderColor", gridBorderColor);
+            return this;
+        }
+        /**
+         * The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
+         * @param cellBorderColor field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GridHighlightConfig cellBorderColor(Optional<DOM.RGBA> cellBorderColor) {
+            set("cellBorderColor", cellBorderColor.orElse(null));
+            return this;
+        }
+        /**
+         * The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
+         * @param cellBorderColor field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GridHighlightConfig cellBorderColor(DOM.RGBA cellBorderColor) {
+            set("cellBorderColor", cellBorderColor);
+            return this;
+        }
+        /**
+         * The row line color (default: transparent).
+         * @param rowLineColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig rowLineColor(Optional<DOM.RGBA> rowLineColor) {
+            set("rowLineColor", rowLineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The row line color (default: transparent).
+         * @param rowLineColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig rowLineColor(DOM.RGBA rowLineColor) {
+            set("rowLineColor", rowLineColor);
+            return this;
+        }
+        /**
+         * The column line color (default: transparent).
+         * @param columnLineColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig columnLineColor(Optional<DOM.RGBA> columnLineColor) {
+            set("columnLineColor", columnLineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The column line color (default: transparent).
+         * @param columnLineColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig columnLineColor(DOM.RGBA columnLineColor) {
+            set("columnLineColor", columnLineColor);
+            return this;
+        }
+        /**
+         * Whether the grid border is dashed (default: false).
+         * @param gridBorderDash field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBorderDash(Optional<Boolean> gridBorderDash) {
+            set("gridBorderDash", gridBorderDash.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the grid border is dashed (default: false).
+         * @param gridBorderDash field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBorderDash(Boolean gridBorderDash) {
+            set("gridBorderDash", gridBorderDash);
+            return this;
+        }
+        /**
+         * Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
+         * @param cellBorderDash field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GridHighlightConfig cellBorderDash(Optional<Boolean> cellBorderDash) {
+            set("cellBorderDash", cellBorderDash.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
+         * @param cellBorderDash field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public GridHighlightConfig cellBorderDash(Boolean cellBorderDash) {
+            set("cellBorderDash", cellBorderDash);
+            return this;
+        }
+        /**
+         * Whether row lines are dashed (default: false).
+         * @param rowLineDash field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig rowLineDash(Optional<Boolean> rowLineDash) {
+            set("rowLineDash", rowLineDash.orElse(null));
+            return this;
+        }
+        /**
+         * Whether row lines are dashed (default: false).
+         * @param rowLineDash field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig rowLineDash(Boolean rowLineDash) {
+            set("rowLineDash", rowLineDash);
+            return this;
+        }
+        /**
+         * Whether column lines are dashed (default: false).
+         * @param columnLineDash field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig columnLineDash(Optional<Boolean> columnLineDash) {
+            set("columnLineDash", columnLineDash.orElse(null));
+            return this;
+        }
+        /**
+         * Whether column lines are dashed (default: false).
+         * @param columnLineDash field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig columnLineDash(Boolean columnLineDash) {
+            set("columnLineDash", columnLineDash);
+            return this;
+        }
+        /**
+         * The row gap highlight fill color (default: transparent).
+         * @param rowGapColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig rowGapColor(Optional<DOM.RGBA> rowGapColor) {
+            set("rowGapColor", rowGapColor.orElse(null));
+            return this;
+        }
+        /**
+         * The row gap highlight fill color (default: transparent).
+         * @param rowGapColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig rowGapColor(DOM.RGBA rowGapColor) {
+            set("rowGapColor", rowGapColor);
+            return this;
+        }
+        /**
+         * The row gap hatching fill color (default: transparent).
+         * @param rowHatchColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig rowHatchColor(Optional<DOM.RGBA> rowHatchColor) {
+            set("rowHatchColor", rowHatchColor.orElse(null));
+            return this;
+        }
+        /**
+         * The row gap hatching fill color (default: transparent).
+         * @param rowHatchColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig rowHatchColor(DOM.RGBA rowHatchColor) {
+            set("rowHatchColor", rowHatchColor);
+            return this;
+        }
+        /**
+         * The column gap highlight fill color (default: transparent).
+         * @param columnGapColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig columnGapColor(Optional<DOM.RGBA> columnGapColor) {
+            set("columnGapColor", columnGapColor.orElse(null));
+            return this;
+        }
+        /**
+         * The column gap highlight fill color (default: transparent).
+         * @param columnGapColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig columnGapColor(DOM.RGBA columnGapColor) {
+            set("columnGapColor", columnGapColor);
+            return this;
+        }
+        /**
+         * The column gap hatching fill color (default: transparent).
+         * @param columnHatchColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig columnHatchColor(Optional<DOM.RGBA> columnHatchColor) {
+            set("columnHatchColor", columnHatchColor.orElse(null));
+            return this;
+        }
+        /**
+         * The column gap hatching fill color (default: transparent).
+         * @param columnHatchColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig columnHatchColor(DOM.RGBA columnHatchColor) {
+            set("columnHatchColor", columnHatchColor);
+            return this;
+        }
+        /**
+         * The named grid areas border color (Default: transparent).
+         * @param areaBorderColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig areaBorderColor(Optional<DOM.RGBA> areaBorderColor) {
+            set("areaBorderColor", areaBorderColor.orElse(null));
+            return this;
+        }
+        /**
+         * The named grid areas border color (Default: transparent).
+         * @param areaBorderColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig areaBorderColor(DOM.RGBA areaBorderColor) {
+            set("areaBorderColor", areaBorderColor);
+            return this;
+        }
+        /**
+         * The grid container background color (Default: transparent).
+         * @param gridBackgroundColor field value; empty omits the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBackgroundColor(Optional<DOM.RGBA> gridBackgroundColor) {
+            set("gridBackgroundColor", gridBackgroundColor.orElse(null));
+            return this;
+        }
+        /**
+         * The grid container background color (Default: transparent).
+         * @param gridBackgroundColor field value; null removes the value
+         * @return this model
+         */
+        public GridHighlightConfig gridBackgroundColor(DOM.RGBA gridBackgroundColor) {
+            set("gridBackgroundColor", gridBackgroundColor);
+            return this;
         }
     }
     /**
      * Configuration data for the highlighting of Flex container elements.
      */
     public static final class FlexContainerHighlightConfig extends CdpObject {
+        public FlexContainerHighlightConfig() {}
         private FlexContainerHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static FlexContainerHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FlexContainerHighlightConfig(values);
+        public static FlexContainerHighlightConfig fromMap(Map<String, Object> values) {
+            return new FlexContainerHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The style of the container border
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle containerBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("containerBorder")));
+        public Optional<Overlay.LineStyle> containerBorder() {
+            return Optional.ofNullable(raw("containerBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerBorder")))));
         }
         /**
          * The style of the separator between lines
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle lineSeparator() {
-            return Overlay.LineStyle.fromMap(objectMap(value("lineSeparator")));
+        public Optional<Overlay.LineStyle> lineSeparator() {
+            return Optional.ofNullable(raw("lineSeparator") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("lineSeparator")))));
         }
         /**
          * The style of the separator between items
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle itemSeparator() {
-            return Overlay.LineStyle.fromMap(objectMap(value("itemSeparator")));
+        public Optional<Overlay.LineStyle> itemSeparator() {
+            return Optional.ofNullable(raw("itemSeparator") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("itemSeparator")))));
         }
         /**
          * Style of content-distribution space on the main axis (justify-content).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.BoxStyle mainDistributedSpace() {
-            return Overlay.BoxStyle.fromMap(objectMap(value("mainDistributedSpace")));
+        public Optional<Overlay.BoxStyle> mainDistributedSpace() {
+            return Optional.ofNullable(raw("mainDistributedSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("mainDistributedSpace")))));
         }
         /**
          * Style of content-distribution space on the cross axis (align-content).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.BoxStyle crossDistributedSpace() {
-            return Overlay.BoxStyle.fromMap(objectMap(value("crossDistributedSpace")));
+        public Optional<Overlay.BoxStyle> crossDistributedSpace() {
+            return Optional.ofNullable(raw("crossDistributedSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("crossDistributedSpace")))));
         }
         /**
          * Style of empty space caused by row gaps (gap/row-gap).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.BoxStyle rowGapSpace() {
-            return Overlay.BoxStyle.fromMap(objectMap(value("rowGapSpace")));
+        public Optional<Overlay.BoxStyle> rowGapSpace() {
+            return Optional.ofNullable(raw("rowGapSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("rowGapSpace")))));
         }
         /**
          * Style of empty space caused by columns gaps (gap/column-gap).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.BoxStyle columnGapSpace() {
-            return Overlay.BoxStyle.fromMap(objectMap(value("columnGapSpace")));
+        public Optional<Overlay.BoxStyle> columnGapSpace() {
+            return Optional.ofNullable(raw("columnGapSpace") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("columnGapSpace")))));
         }
         /**
          * Style of the self-alignment line (align-items).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle crossAlignment() {
-            return Overlay.LineStyle.fromMap(objectMap(value("crossAlignment")));
+        public Optional<Overlay.LineStyle> crossAlignment() {
+            return Optional.ofNullable(raw("crossAlignment") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("crossAlignment")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The style of the container border
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("containerBorder");
-                else values.put("containerBorder", jsonValue(value));
-                return this;
-            }
-            /**
-             * The style of the separator between lines
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lineSeparator(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("lineSeparator");
-                else values.put("lineSeparator", jsonValue(value));
-                return this;
-            }
-            /**
-             * The style of the separator between items
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder itemSeparator(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("itemSeparator");
-                else values.put("itemSeparator", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of content-distribution space on the main axis (justify-content).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder mainDistributedSpace(@Nullable Overlay.BoxStyle value) {
-                if (value == null) values.remove("mainDistributedSpace");
-                else values.put("mainDistributedSpace", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of content-distribution space on the cross axis (align-content).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder crossDistributedSpace(@Nullable Overlay.BoxStyle value) {
-                if (value == null) values.remove("crossDistributedSpace");
-                else values.put("crossDistributedSpace", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of empty space caused by row gaps (gap/row-gap).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rowGapSpace(@Nullable Overlay.BoxStyle value) {
-                if (value == null) values.remove("rowGapSpace");
-                else values.put("rowGapSpace", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of empty space caused by columns gaps (gap/column-gap).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnGapSpace(@Nullable Overlay.BoxStyle value) {
-                if (value == null) values.remove("columnGapSpace");
-                else values.put("columnGapSpace", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of the self-alignment line (align-items).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder crossAlignment(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("crossAlignment");
-                else values.put("crossAlignment", jsonValue(value));
-                return this;
-            }
-            public FlexContainerHighlightConfig build() {
-                return new FlexContainerHighlightConfig(values);
-            }
+        /**
+         * The style of the container border
+         * @param containerBorder field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig containerBorder(Optional<Overlay.LineStyle> containerBorder) {
+            set("containerBorder", containerBorder.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the container border
+         * @param containerBorder field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig containerBorder(Overlay.LineStyle containerBorder) {
+            set("containerBorder", containerBorder);
+            return this;
+        }
+        /**
+         * The style of the separator between lines
+         * @param lineSeparator field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig lineSeparator(Optional<Overlay.LineStyle> lineSeparator) {
+            set("lineSeparator", lineSeparator.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the separator between lines
+         * @param lineSeparator field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig lineSeparator(Overlay.LineStyle lineSeparator) {
+            set("lineSeparator", lineSeparator);
+            return this;
+        }
+        /**
+         * The style of the separator between items
+         * @param itemSeparator field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig itemSeparator(Optional<Overlay.LineStyle> itemSeparator) {
+            set("itemSeparator", itemSeparator.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the separator between items
+         * @param itemSeparator field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig itemSeparator(Overlay.LineStyle itemSeparator) {
+            set("itemSeparator", itemSeparator);
+            return this;
+        }
+        /**
+         * Style of content-distribution space on the main axis (justify-content).
+         * @param mainDistributedSpace field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig mainDistributedSpace(Optional<Overlay.BoxStyle> mainDistributedSpace) {
+            set("mainDistributedSpace", mainDistributedSpace.orElse(null));
+            return this;
+        }
+        /**
+         * Style of content-distribution space on the main axis (justify-content).
+         * @param mainDistributedSpace field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig mainDistributedSpace(Overlay.BoxStyle mainDistributedSpace) {
+            set("mainDistributedSpace", mainDistributedSpace);
+            return this;
+        }
+        /**
+         * Style of content-distribution space on the cross axis (align-content).
+         * @param crossDistributedSpace field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig crossDistributedSpace(Optional<Overlay.BoxStyle> crossDistributedSpace) {
+            set("crossDistributedSpace", crossDistributedSpace.orElse(null));
+            return this;
+        }
+        /**
+         * Style of content-distribution space on the cross axis (align-content).
+         * @param crossDistributedSpace field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig crossDistributedSpace(Overlay.BoxStyle crossDistributedSpace) {
+            set("crossDistributedSpace", crossDistributedSpace);
+            return this;
+        }
+        /**
+         * Style of empty space caused by row gaps (gap/row-gap).
+         * @param rowGapSpace field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig rowGapSpace(Optional<Overlay.BoxStyle> rowGapSpace) {
+            set("rowGapSpace", rowGapSpace.orElse(null));
+            return this;
+        }
+        /**
+         * Style of empty space caused by row gaps (gap/row-gap).
+         * @param rowGapSpace field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig rowGapSpace(Overlay.BoxStyle rowGapSpace) {
+            set("rowGapSpace", rowGapSpace);
+            return this;
+        }
+        /**
+         * Style of empty space caused by columns gaps (gap/column-gap).
+         * @param columnGapSpace field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig columnGapSpace(Optional<Overlay.BoxStyle> columnGapSpace) {
+            set("columnGapSpace", columnGapSpace.orElse(null));
+            return this;
+        }
+        /**
+         * Style of empty space caused by columns gaps (gap/column-gap).
+         * @param columnGapSpace field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig columnGapSpace(Overlay.BoxStyle columnGapSpace) {
+            set("columnGapSpace", columnGapSpace);
+            return this;
+        }
+        /**
+         * Style of the self-alignment line (align-items).
+         * @param crossAlignment field value; empty omits the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig crossAlignment(Optional<Overlay.LineStyle> crossAlignment) {
+            set("crossAlignment", crossAlignment.orElse(null));
+            return this;
+        }
+        /**
+         * Style of the self-alignment line (align-items).
+         * @param crossAlignment field value; null removes the value
+         * @return this model
+         */
+        public FlexContainerHighlightConfig crossAlignment(Overlay.LineStyle crossAlignment) {
+            set("crossAlignment", crossAlignment);
+            return this;
         }
     }
     /**
      * Configuration data for the highlighting of Flex item elements.
      */
     public static final class FlexItemHighlightConfig extends CdpObject {
+        public FlexItemHighlightConfig() {}
         private FlexItemHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static FlexItemHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FlexItemHighlightConfig(values);
+        public static FlexItemHighlightConfig fromMap(Map<String, Object> values) {
+            return new FlexItemHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Style of the box representing the item&#x27;s base size
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.BoxStyle baseSizeBox() {
-            return Overlay.BoxStyle.fromMap(objectMap(value("baseSizeBox")));
+        public Optional<Overlay.BoxStyle> baseSizeBox() {
+            return Optional.ofNullable(raw("baseSizeBox") == null ? null : Overlay.BoxStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("baseSizeBox")))));
         }
         /**
          * Style of the border around the box representing the item&#x27;s base size
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle baseSizeBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("baseSizeBorder")));
+        public Optional<Overlay.LineStyle> baseSizeBorder() {
+            return Optional.ofNullable(raw("baseSizeBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("baseSizeBorder")))));
         }
         /**
          * Style of the arrow representing if the item grew or shrank
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle flexibilityArrow() {
-            return Overlay.LineStyle.fromMap(objectMap(value("flexibilityArrow")));
+        public Optional<Overlay.LineStyle> flexibilityArrow() {
+            return Optional.ofNullable(raw("flexibilityArrow") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexibilityArrow")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Style of the box representing the item&#x27;s base size
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder baseSizeBox(@Nullable Overlay.BoxStyle value) {
-                if (value == null) values.remove("baseSizeBox");
-                else values.put("baseSizeBox", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of the border around the box representing the item&#x27;s base size
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder baseSizeBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("baseSizeBorder");
-                else values.put("baseSizeBorder", jsonValue(value));
-                return this;
-            }
-            /**
-             * Style of the arrow representing if the item grew or shrank
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flexibilityArrow(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("flexibilityArrow");
-                else values.put("flexibilityArrow", jsonValue(value));
-                return this;
-            }
-            public FlexItemHighlightConfig build() {
-                return new FlexItemHighlightConfig(values);
-            }
+        /**
+         * Style of the box representing the item&#x27;s base size
+         * @param baseSizeBox field value; empty omits the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig baseSizeBox(Optional<Overlay.BoxStyle> baseSizeBox) {
+            set("baseSizeBox", baseSizeBox.orElse(null));
+            return this;
+        }
+        /**
+         * Style of the box representing the item&#x27;s base size
+         * @param baseSizeBox field value; null removes the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig baseSizeBox(Overlay.BoxStyle baseSizeBox) {
+            set("baseSizeBox", baseSizeBox);
+            return this;
+        }
+        /**
+         * Style of the border around the box representing the item&#x27;s base size
+         * @param baseSizeBorder field value; empty omits the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig baseSizeBorder(Optional<Overlay.LineStyle> baseSizeBorder) {
+            set("baseSizeBorder", baseSizeBorder.orElse(null));
+            return this;
+        }
+        /**
+         * Style of the border around the box representing the item&#x27;s base size
+         * @param baseSizeBorder field value; null removes the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig baseSizeBorder(Overlay.LineStyle baseSizeBorder) {
+            set("baseSizeBorder", baseSizeBorder);
+            return this;
+        }
+        /**
+         * Style of the arrow representing if the item grew or shrank
+         * @param flexibilityArrow field value; empty omits the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig flexibilityArrow(Optional<Overlay.LineStyle> flexibilityArrow) {
+            set("flexibilityArrow", flexibilityArrow.orElse(null));
+            return this;
+        }
+        /**
+         * Style of the arrow representing if the item grew or shrank
+         * @param flexibilityArrow field value; null removes the value
+         * @return this model
+         */
+        public FlexItemHighlightConfig flexibilityArrow(Overlay.LineStyle flexibilityArrow) {
+            set("flexibilityArrow", flexibilityArrow);
+            return this;
         }
     }
     /**
      * Style information for drawing a line.
      */
     public static final class LineStyle extends CdpObject {
+        public LineStyle() {}
         private LineStyle(Map<String, Object> values) { super(values); }
-        @Nullable public static LineStyle fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LineStyle(values);
+        public static LineStyle fromMap(Map<String, Object> values) {
+            return new LineStyle(values);
         }
-        public static Builder builder() { return new Builder(); }
+        /**
+         * The line pattern (default: solid)
+         */
+        public enum PatternValues implements CdpValue<String> {
+            DASHED("dashed"),
+            DOTTED("dotted");
+            public final String value;
+            PatternValues(String value) { this.value = value; }
+            @Nonnull public String value() { return value; }
+            public static PatternValues of(@Nonnull String value) {
+                for (PatternValues constant : values()) {
+                    if (constant.value.equals(value)) return constant;
+                }
+                throw new IllegalArgumentException("Unknown PatternValues value: " + value);
+            }
+        }
         /**
          * The color of the line (default: transparent)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA color() {
-            return DOM.RGBA.fromMap(objectMap(value("color")));
+        public Optional<DOM.RGBA> color() {
+            return Optional.ofNullable(raw("color") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("color")))));
         }
         /**
          * The line pattern (default: solid)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String pattern() {
-            return (String) value("pattern");
+        public Optional<LineStyle.PatternValues> pattern() {
+            return Optional.ofNullable(raw("pattern") == null ? null : LineStyle.PatternValues.of((String) raw("pattern")));
+        }
+        /**
+         * The color of the line (default: transparent)
+         * @param color field value; empty omits the value
+         * @return this model
+         */
+        public LineStyle color(Optional<DOM.RGBA> color) {
+            set("color", color.orElse(null));
+            return this;
+        }
+        /**
+         * The color of the line (default: transparent)
+         * @param color field value; null removes the value
+         * @return this model
+         */
+        public LineStyle color(DOM.RGBA color) {
+            set("color", color);
+            return this;
         }
         /**
          * The line pattern (default: solid)
+         * @param pattern field value; empty omits the value
+         * @return this model
          */
-        public static final class PatternValues {
-            private PatternValues() {}
-            public static final String DASHED = "dashed";
-            public static final String DOTTED = "dotted";
+        public LineStyle pattern(Optional<LineStyle.PatternValues> pattern) {
+            set("pattern", pattern.orElse(null));
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The color of the line (default: transparent)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder color(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("color");
-                else values.put("color", jsonValue(value));
-                return this;
-            }
-            /**
-             * The line pattern (default: solid)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pattern(@Nullable String value) {
-                if (value == null) values.remove("pattern");
-                else values.put("pattern", jsonValue(value));
-                return this;
-            }
-            public LineStyle build() {
-                return new LineStyle(values);
-            }
+        /**
+         * The line pattern (default: solid)
+         * @param pattern field value; null removes the value
+         * @return this model
+         */
+        public LineStyle pattern(LineStyle.PatternValues pattern) {
+            set("pattern", pattern);
+            return this;
         }
     }
     /**
      * Style information for drawing a box.
      */
     public static final class BoxStyle extends CdpObject {
+        public BoxStyle() {}
         private BoxStyle(Map<String, Object> values) { super(values); }
-        @Nullable public static BoxStyle fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new BoxStyle(values);
+        public static BoxStyle fromMap(Map<String, Object> values) {
+            return new BoxStyle(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The background color for the box (default: transparent)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA fillColor() {
-            return DOM.RGBA.fromMap(objectMap(value("fillColor")));
+        public Optional<DOM.RGBA> fillColor() {
+            return Optional.ofNullable(raw("fillColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("fillColor")))));
         }
         /**
          * The hatching color for the box (default: transparent)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA hatchColor() {
-            return DOM.RGBA.fromMap(objectMap(value("hatchColor")));
+        public Optional<DOM.RGBA> hatchColor() {
+            return Optional.ofNullable(raw("hatchColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("hatchColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The background color for the box (default: transparent)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder fillColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("fillColor");
-                else values.put("fillColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The hatching color for the box (default: transparent)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hatchColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("hatchColor");
-                else values.put("hatchColor", jsonValue(value));
-                return this;
-            }
-            public BoxStyle build() {
-                return new BoxStyle(values);
-            }
+        /**
+         * The background color for the box (default: transparent)
+         * @param fillColor field value; empty omits the value
+         * @return this model
+         */
+        public BoxStyle fillColor(Optional<DOM.RGBA> fillColor) {
+            set("fillColor", fillColor.orElse(null));
+            return this;
+        }
+        /**
+         * The background color for the box (default: transparent)
+         * @param fillColor field value; null removes the value
+         * @return this model
+         */
+        public BoxStyle fillColor(DOM.RGBA fillColor) {
+            set("fillColor", fillColor);
+            return this;
+        }
+        /**
+         * The hatching color for the box (default: transparent)
+         * @param hatchColor field value; empty omits the value
+         * @return this model
+         */
+        public BoxStyle hatchColor(Optional<DOM.RGBA> hatchColor) {
+            set("hatchColor", hatchColor.orElse(null));
+            return this;
+        }
+        /**
+         * The hatching color for the box (default: transparent)
+         * @param hatchColor field value; null removes the value
+         * @return this model
+         */
+        public BoxStyle hatchColor(DOM.RGBA hatchColor) {
+            set("hatchColor", hatchColor);
+            return this;
         }
     }
     /**
      * Wire values for ContrastAlgorithm.
      */
-    public static final class ContrastAlgorithm {
-        private ContrastAlgorithm() {}
-        public static final String AA = "aa";
-        public static final String AAA = "aaa";
-        public static final String APCA = "apca";
+    public enum ContrastAlgorithm implements CdpValue<String> {
+        AA("aa"),
+        AAA("aaa"),
+        APCA("apca");
+        public final String value;
+        ContrastAlgorithm(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ContrastAlgorithm of(@Nonnull String value) {
+            for (ContrastAlgorithm constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ContrastAlgorithm value: " + value);
+        }
     }
     /**
      * Configuration data for the highlighting of page elements.
      */
     public static final class HighlightConfig extends CdpObject {
+        public HighlightConfig() {}
         private HighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightConfig(values);
+        public static HighlightConfig fromMap(Map<String, Object> values) {
+            return new HighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Whether the node info tooltip should be shown (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showInfo() {
-            return (Boolean) value("showInfo");
+        public Optional<Boolean> showInfo() {
+            return Optional.ofNullable((Boolean) raw("showInfo"));
         }
         /**
          * Whether the node styles in the tooltip (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showStyles() {
-            return (Boolean) value("showStyles");
+        public Optional<Boolean> showStyles() {
+            return Optional.ofNullable((Boolean) raw("showStyles"));
         }
         /**
          * Whether the rulers should be shown (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showRulers() {
-            return (Boolean) value("showRulers");
+        public Optional<Boolean> showRulers() {
+            return Optional.ofNullable((Boolean) raw("showRulers"));
         }
         /**
          * Whether the a11y info should be shown (default: true).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showAccessibilityInfo() {
-            return (Boolean) value("showAccessibilityInfo");
+        public Optional<Boolean> showAccessibilityInfo() {
+            return Optional.ofNullable((Boolean) raw("showAccessibilityInfo"));
         }
         /**
          * Whether the extension lines from node to the rulers should be shown (default: false).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean showExtensionLines() {
-            return (Boolean) value("showExtensionLines");
+        public Optional<Boolean> showExtensionLines() {
+            return Optional.ofNullable((Boolean) raw("showExtensionLines"));
         }
         /**
          * The content box highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA contentColor() {
-            return DOM.RGBA.fromMap(objectMap(value("contentColor")));
+        public Optional<DOM.RGBA> contentColor() {
+            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
         }
         /**
          * The padding highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA paddingColor() {
-            return DOM.RGBA.fromMap(objectMap(value("paddingColor")));
+        public Optional<DOM.RGBA> paddingColor() {
+            return Optional.ofNullable(raw("paddingColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("paddingColor")))));
         }
         /**
          * The border highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA borderColor() {
-            return DOM.RGBA.fromMap(objectMap(value("borderColor")));
+        public Optional<DOM.RGBA> borderColor() {
+            return Optional.ofNullable(raw("borderColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("borderColor")))));
         }
         /**
          * The margin highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA marginColor() {
-            return DOM.RGBA.fromMap(objectMap(value("marginColor")));
+        public Optional<DOM.RGBA> marginColor() {
+            return Optional.ofNullable(raw("marginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("marginColor")))));
         }
         /**
          * The event target element highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA eventTargetColor() {
-            return DOM.RGBA.fromMap(objectMap(value("eventTargetColor")));
+        public Optional<DOM.RGBA> eventTargetColor() {
+            return Optional.ofNullable(raw("eventTargetColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("eventTargetColor")))));
         }
         /**
          * The shape outside fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA shapeColor() {
-            return DOM.RGBA.fromMap(objectMap(value("shapeColor")));
+        public Optional<DOM.RGBA> shapeColor() {
+            return Optional.ofNullable(raw("shapeColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeColor")))));
         }
         /**
          * The shape margin fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA shapeMarginColor() {
-            return DOM.RGBA.fromMap(objectMap(value("shapeMarginColor")));
+        public Optional<DOM.RGBA> shapeMarginColor() {
+            return Optional.ofNullable(raw("shapeMarginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("shapeMarginColor")))));
         }
         /**
          * The grid layout color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA cssGridColor() {
-            return DOM.RGBA.fromMap(objectMap(value("cssGridColor")));
+        public Optional<DOM.RGBA> cssGridColor() {
+            return Optional.ofNullable(raw("cssGridColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("cssGridColor")))));
         }
         /**
          * The color format used to format color styles (default: hex).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String colorFormat() {
-            return (String) value("colorFormat");
+        public Optional<Overlay.ColorFormat> colorFormat() {
+            return Optional.ofNullable(raw("colorFormat") == null ? null : Overlay.ColorFormat.of((String) raw("colorFormat")));
         }
         /**
          * The grid layout highlight configuration (default: all transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.GridHighlightConfig gridHighlightConfig() {
-            return Overlay.GridHighlightConfig.fromMap(objectMap(value("gridHighlightConfig")));
+        public Optional<Overlay.GridHighlightConfig> gridHighlightConfig() {
+            return Optional.ofNullable(raw("gridHighlightConfig") == null ? null : Overlay.GridHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("gridHighlightConfig")))));
         }
         /**
          * The flex container highlight configuration (default: all transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.FlexContainerHighlightConfig flexContainerHighlightConfig() {
-            return Overlay.FlexContainerHighlightConfig.fromMap(objectMap(value("flexContainerHighlightConfig")));
+        public Optional<Overlay.FlexContainerHighlightConfig> flexContainerHighlightConfig() {
+            return Optional.ofNullable(raw("flexContainerHighlightConfig") == null ? null : Overlay.FlexContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexContainerHighlightConfig")))));
         }
         /**
          * The flex item highlight configuration (default: all transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.FlexItemHighlightConfig flexItemHighlightConfig() {
-            return Overlay.FlexItemHighlightConfig.fromMap(objectMap(value("flexItemHighlightConfig")));
+        public Optional<Overlay.FlexItemHighlightConfig> flexItemHighlightConfig() {
+            return Optional.ofNullable(raw("flexItemHighlightConfig") == null ? null : Overlay.FlexItemHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("flexItemHighlightConfig")))));
         }
         /**
          * The contrast algorithm to use for the contrast ratio (default: aa).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String contrastAlgorithm() {
-            return (String) value("contrastAlgorithm");
+        public Optional<Overlay.ContrastAlgorithm> contrastAlgorithm() {
+            return Optional.ofNullable(raw("contrastAlgorithm") == null ? null : Overlay.ContrastAlgorithm.of((String) raw("contrastAlgorithm")));
         }
         /**
          * The container query container highlight configuration (default: all transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.ContainerQueryContainerHighlightConfig containerQueryContainerHighlightConfig() {
-            return Overlay.ContainerQueryContainerHighlightConfig.fromMap(objectMap(value("containerQueryContainerHighlightConfig")));
+        public Optional<Overlay.ContainerQueryContainerHighlightConfig> containerQueryContainerHighlightConfig() {
+            return Optional.ofNullable(raw("containerQueryContainerHighlightConfig") == null ? null : Overlay.ContainerQueryContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerQueryContainerHighlightConfig")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether the node info tooltip should be shown (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showInfo(@Nullable Boolean value) {
-                if (value == null) values.remove("showInfo");
-                else values.put("showInfo", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the node styles in the tooltip (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showStyles(@Nullable Boolean value) {
-                if (value == null) values.remove("showStyles");
-                else values.put("showStyles", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the rulers should be shown (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showRulers(@Nullable Boolean value) {
-                if (value == null) values.remove("showRulers");
-                else values.put("showRulers", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the a11y info should be shown (default: true).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showAccessibilityInfo(@Nullable Boolean value) {
-                if (value == null) values.remove("showAccessibilityInfo");
-                else values.put("showAccessibilityInfo", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the extension lines from node to the rulers should be shown (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showExtensionLines(@Nullable Boolean value) {
-                if (value == null) values.remove("showExtensionLines");
-                else values.put("showExtensionLines", jsonValue(value));
-                return this;
-            }
-            /**
-             * The content box highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contentColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("contentColor");
-                else values.put("contentColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The padding highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder paddingColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("paddingColor");
-                else values.put("paddingColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The border highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder borderColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("borderColor");
-                else values.put("borderColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The margin highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder marginColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("marginColor");
-                else values.put("marginColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The event target element highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder eventTargetColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("eventTargetColor");
-                else values.put("eventTargetColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The shape outside fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shapeColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("shapeColor");
-                else values.put("shapeColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The shape margin fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder shapeMarginColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("shapeMarginColor");
-                else values.put("shapeMarginColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The grid layout color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cssGridColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("cssGridColor");
-                else values.put("cssGridColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The color format used to format color styles (default: hex).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder colorFormat(@Nullable String value) {
-                if (value == null) values.remove("colorFormat");
-                else values.put("colorFormat", jsonValue(value));
-                return this;
-            }
-            /**
-             * The grid layout highlight configuration (default: all transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridHighlightConfig(@Nullable Overlay.GridHighlightConfig value) {
-                if (value == null) values.remove("gridHighlightConfig");
-                else values.put("gridHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * The flex container highlight configuration (default: all transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flexContainerHighlightConfig(@Nullable Overlay.FlexContainerHighlightConfig value) {
-                if (value == null) values.remove("flexContainerHighlightConfig");
-                else values.put("flexContainerHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * The flex item highlight configuration (default: all transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flexItemHighlightConfig(@Nullable Overlay.FlexItemHighlightConfig value) {
-                if (value == null) values.remove("flexItemHighlightConfig");
-                else values.put("flexItemHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * The contrast algorithm to use for the contrast ratio (default: aa).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contrastAlgorithm(@Nullable String value) {
-                if (value == null) values.remove("contrastAlgorithm");
-                else values.put("contrastAlgorithm", jsonValue(value));
-                return this;
-            }
-            /**
-             * The container query container highlight configuration (default: all transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerQueryContainerHighlightConfig(@Nullable Overlay.ContainerQueryContainerHighlightConfig value) {
-                if (value == null) values.remove("containerQueryContainerHighlightConfig");
-                else values.put("containerQueryContainerHighlightConfig", jsonValue(value));
-                return this;
-            }
-            public HighlightConfig build() {
-                return new HighlightConfig(values);
-            }
+        /**
+         * Whether the node info tooltip should be shown (default: false).
+         * @param showInfo field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig showInfo(Optional<Boolean> showInfo) {
+            set("showInfo", showInfo.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the node info tooltip should be shown (default: false).
+         * @param showInfo field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig showInfo(Boolean showInfo) {
+            set("showInfo", showInfo);
+            return this;
+        }
+        /**
+         * Whether the node styles in the tooltip (default: false).
+         * @param showStyles field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig showStyles(Optional<Boolean> showStyles) {
+            set("showStyles", showStyles.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the node styles in the tooltip (default: false).
+         * @param showStyles field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig showStyles(Boolean showStyles) {
+            set("showStyles", showStyles);
+            return this;
+        }
+        /**
+         * Whether the rulers should be shown (default: false).
+         * @param showRulers field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig showRulers(Optional<Boolean> showRulers) {
+            set("showRulers", showRulers.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the rulers should be shown (default: false).
+         * @param showRulers field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig showRulers(Boolean showRulers) {
+            set("showRulers", showRulers);
+            return this;
+        }
+        /**
+         * Whether the a11y info should be shown (default: true).
+         * @param showAccessibilityInfo field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig showAccessibilityInfo(Optional<Boolean> showAccessibilityInfo) {
+            set("showAccessibilityInfo", showAccessibilityInfo.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the a11y info should be shown (default: true).
+         * @param showAccessibilityInfo field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig showAccessibilityInfo(Boolean showAccessibilityInfo) {
+            set("showAccessibilityInfo", showAccessibilityInfo);
+            return this;
+        }
+        /**
+         * Whether the extension lines from node to the rulers should be shown (default: false).
+         * @param showExtensionLines field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig showExtensionLines(Optional<Boolean> showExtensionLines) {
+            set("showExtensionLines", showExtensionLines.orElse(null));
+            return this;
+        }
+        /**
+         * Whether the extension lines from node to the rulers should be shown (default: false).
+         * @param showExtensionLines field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig showExtensionLines(Boolean showExtensionLines) {
+            set("showExtensionLines", showExtensionLines);
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: transparent).
+         * @param contentColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig contentColor(Optional<DOM.RGBA> contentColor) {
+            set("contentColor", contentColor.orElse(null));
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: transparent).
+         * @param contentColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig contentColor(DOM.RGBA contentColor) {
+            set("contentColor", contentColor);
+            return this;
+        }
+        /**
+         * The padding highlight fill color (default: transparent).
+         * @param paddingColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig paddingColor(Optional<DOM.RGBA> paddingColor) {
+            set("paddingColor", paddingColor.orElse(null));
+            return this;
+        }
+        /**
+         * The padding highlight fill color (default: transparent).
+         * @param paddingColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig paddingColor(DOM.RGBA paddingColor) {
+            set("paddingColor", paddingColor);
+            return this;
+        }
+        /**
+         * The border highlight fill color (default: transparent).
+         * @param borderColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig borderColor(Optional<DOM.RGBA> borderColor) {
+            set("borderColor", borderColor.orElse(null));
+            return this;
+        }
+        /**
+         * The border highlight fill color (default: transparent).
+         * @param borderColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig borderColor(DOM.RGBA borderColor) {
+            set("borderColor", borderColor);
+            return this;
+        }
+        /**
+         * The margin highlight fill color (default: transparent).
+         * @param marginColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig marginColor(Optional<DOM.RGBA> marginColor) {
+            set("marginColor", marginColor.orElse(null));
+            return this;
+        }
+        /**
+         * The margin highlight fill color (default: transparent).
+         * @param marginColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig marginColor(DOM.RGBA marginColor) {
+            set("marginColor", marginColor);
+            return this;
+        }
+        /**
+         * The event target element highlight fill color (default: transparent).
+         * @param eventTargetColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig eventTargetColor(Optional<DOM.RGBA> eventTargetColor) {
+            set("eventTargetColor", eventTargetColor.orElse(null));
+            return this;
+        }
+        /**
+         * The event target element highlight fill color (default: transparent).
+         * @param eventTargetColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig eventTargetColor(DOM.RGBA eventTargetColor) {
+            set("eventTargetColor", eventTargetColor);
+            return this;
+        }
+        /**
+         * The shape outside fill color (default: transparent).
+         * @param shapeColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig shapeColor(Optional<DOM.RGBA> shapeColor) {
+            set("shapeColor", shapeColor.orElse(null));
+            return this;
+        }
+        /**
+         * The shape outside fill color (default: transparent).
+         * @param shapeColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig shapeColor(DOM.RGBA shapeColor) {
+            set("shapeColor", shapeColor);
+            return this;
+        }
+        /**
+         * The shape margin fill color (default: transparent).
+         * @param shapeMarginColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig shapeMarginColor(Optional<DOM.RGBA> shapeMarginColor) {
+            set("shapeMarginColor", shapeMarginColor.orElse(null));
+            return this;
+        }
+        /**
+         * The shape margin fill color (default: transparent).
+         * @param shapeMarginColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig shapeMarginColor(DOM.RGBA shapeMarginColor) {
+            set("shapeMarginColor", shapeMarginColor);
+            return this;
+        }
+        /**
+         * The grid layout color (default: transparent).
+         * @param cssGridColor field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig cssGridColor(Optional<DOM.RGBA> cssGridColor) {
+            set("cssGridColor", cssGridColor.orElse(null));
+            return this;
+        }
+        /**
+         * The grid layout color (default: transparent).
+         * @param cssGridColor field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig cssGridColor(DOM.RGBA cssGridColor) {
+            set("cssGridColor", cssGridColor);
+            return this;
+        }
+        /**
+         * The color format used to format color styles (default: hex).
+         * @param colorFormat field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig colorFormat(Optional<Overlay.ColorFormat> colorFormat) {
+            set("colorFormat", colorFormat.orElse(null));
+            return this;
+        }
+        /**
+         * The color format used to format color styles (default: hex).
+         * @param colorFormat field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig colorFormat(Overlay.ColorFormat colorFormat) {
+            set("colorFormat", colorFormat);
+            return this;
+        }
+        /**
+         * The grid layout highlight configuration (default: all transparent).
+         * @param gridHighlightConfig field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig gridHighlightConfig(Optional<Overlay.GridHighlightConfig> gridHighlightConfig) {
+            set("gridHighlightConfig", gridHighlightConfig.orElse(null));
+            return this;
+        }
+        /**
+         * The grid layout highlight configuration (default: all transparent).
+         * @param gridHighlightConfig field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig gridHighlightConfig(Overlay.GridHighlightConfig gridHighlightConfig) {
+            set("gridHighlightConfig", gridHighlightConfig);
+            return this;
+        }
+        /**
+         * The flex container highlight configuration (default: all transparent).
+         * @param flexContainerHighlightConfig field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig flexContainerHighlightConfig(Optional<Overlay.FlexContainerHighlightConfig> flexContainerHighlightConfig) {
+            set("flexContainerHighlightConfig", flexContainerHighlightConfig.orElse(null));
+            return this;
+        }
+        /**
+         * The flex container highlight configuration (default: all transparent).
+         * @param flexContainerHighlightConfig field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig flexContainerHighlightConfig(Overlay.FlexContainerHighlightConfig flexContainerHighlightConfig) {
+            set("flexContainerHighlightConfig", flexContainerHighlightConfig);
+            return this;
+        }
+        /**
+         * The flex item highlight configuration (default: all transparent).
+         * @param flexItemHighlightConfig field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig flexItemHighlightConfig(Optional<Overlay.FlexItemHighlightConfig> flexItemHighlightConfig) {
+            set("flexItemHighlightConfig", flexItemHighlightConfig.orElse(null));
+            return this;
+        }
+        /**
+         * The flex item highlight configuration (default: all transparent).
+         * @param flexItemHighlightConfig field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig flexItemHighlightConfig(Overlay.FlexItemHighlightConfig flexItemHighlightConfig) {
+            set("flexItemHighlightConfig", flexItemHighlightConfig);
+            return this;
+        }
+        /**
+         * The contrast algorithm to use for the contrast ratio (default: aa).
+         * @param contrastAlgorithm field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig contrastAlgorithm(Optional<Overlay.ContrastAlgorithm> contrastAlgorithm) {
+            set("contrastAlgorithm", contrastAlgorithm.orElse(null));
+            return this;
+        }
+        /**
+         * The contrast algorithm to use for the contrast ratio (default: aa).
+         * @param contrastAlgorithm field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig contrastAlgorithm(Overlay.ContrastAlgorithm contrastAlgorithm) {
+            set("contrastAlgorithm", contrastAlgorithm);
+            return this;
+        }
+        /**
+         * The container query container highlight configuration (default: all transparent).
+         * @param containerQueryContainerHighlightConfig field value; empty omits the value
+         * @return this model
+         */
+        public HighlightConfig containerQueryContainerHighlightConfig(Optional<Overlay.ContainerQueryContainerHighlightConfig> containerQueryContainerHighlightConfig) {
+            set("containerQueryContainerHighlightConfig", containerQueryContainerHighlightConfig.orElse(null));
+            return this;
+        }
+        /**
+         * The container query container highlight configuration (default: all transparent).
+         * @param containerQueryContainerHighlightConfig field value; null removes the value
+         * @return this model
+         */
+        public HighlightConfig containerQueryContainerHighlightConfig(Overlay.ContainerQueryContainerHighlightConfig containerQueryContainerHighlightConfig) {
+            set("containerQueryContainerHighlightConfig", containerQueryContainerHighlightConfig);
+            return this;
         }
     }
     /**
      * Wire values for ColorFormat.
      */
-    public static final class ColorFormat {
-        private ColorFormat() {}
-        public static final String RGB = "rgb";
-        public static final String HSL = "hsl";
-        public static final String HWB = "hwb";
-        public static final String HEX = "hex";
+    public enum ColorFormat implements CdpValue<String> {
+        RGB("rgb"),
+        HSL("hsl"),
+        HWB("hwb"),
+        HEX("hex");
+        public final String value;
+        ColorFormat(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ColorFormat of(@Nonnull String value) {
+            for (ColorFormat constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ColorFormat value: " + value);
+        }
     }
     /**
      * Configurations for Persistent Grid Highlight
      */
     public static final class GridNodeHighlightConfig extends CdpObject {
+        public GridNodeHighlightConfig() {}
         private GridNodeHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static GridNodeHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GridNodeHighlightConfig(values);
+        public static GridNodeHighlightConfig fromMap(Map<String, Object> values) {
+            return new GridNodeHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A descriptor for the highlight appearance.
          * @return the protocol field value
          */
-        @Nullable public Overlay.GridHighlightConfig gridHighlightConfig() {
-            return Overlay.GridHighlightConfig.fromMap(objectMap(value("gridHighlightConfig")));
+        public Overlay.GridHighlightConfig gridHighlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.GridHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("gridHighlightConfig")))));
         }
         /**
          * Identifier of the node to highlight.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridHighlightConfig(@Nullable Overlay.GridHighlightConfig value) {
-                if (value == null) values.remove("gridHighlightConfig");
-                else values.put("gridHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GridNodeHighlightConfig build() {
-                if (!values.containsKey("gridHighlightConfig")) throw new IllegalStateException("Missing required CDP field: gridHighlightConfig");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GridNodeHighlightConfig(values);
-            }
+        /**
+         * A descriptor for the highlight appearance.
+         * @param gridHighlightConfig field value
+         * @return this model
+         */
+        public GridNodeHighlightConfig gridHighlightConfig(Overlay.GridHighlightConfig gridHighlightConfig) {
+            set("gridHighlightConfig", gridHighlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public GridNodeHighlightConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      */
     public static final class FlexNodeHighlightConfig extends CdpObject {
+        public FlexNodeHighlightConfig() {}
         private FlexNodeHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static FlexNodeHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FlexNodeHighlightConfig(values);
+        public static FlexNodeHighlightConfig fromMap(Map<String, Object> values) {
+            return new FlexNodeHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A descriptor for the highlight appearance of flex containers.
          * @return the protocol field value
          */
-        @Nullable public Overlay.FlexContainerHighlightConfig flexContainerHighlightConfig() {
-            return Overlay.FlexContainerHighlightConfig.fromMap(objectMap(value("flexContainerHighlightConfig")));
+        public Overlay.FlexContainerHighlightConfig flexContainerHighlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.FlexContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("flexContainerHighlightConfig")))));
         }
         /**
          * Identifier of the node to highlight.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance of flex containers.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flexContainerHighlightConfig(@Nullable Overlay.FlexContainerHighlightConfig value) {
-                if (value == null) values.remove("flexContainerHighlightConfig");
-                else values.put("flexContainerHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public FlexNodeHighlightConfig build() {
-                if (!values.containsKey("flexContainerHighlightConfig")) throw new IllegalStateException("Missing required CDP field: flexContainerHighlightConfig");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new FlexNodeHighlightConfig(values);
-            }
+        /**
+         * A descriptor for the highlight appearance of flex containers.
+         * @param flexContainerHighlightConfig field value
+         * @return this model
+         */
+        public FlexNodeHighlightConfig flexContainerHighlightConfig(Overlay.FlexContainerHighlightConfig flexContainerHighlightConfig) {
+            set("flexContainerHighlightConfig", flexContainerHighlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public FlexNodeHighlightConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      */
     public static final class ScrollSnapContainerHighlightConfig extends CdpObject {
+        public ScrollSnapContainerHighlightConfig() {}
         private ScrollSnapContainerHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static ScrollSnapContainerHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScrollSnapContainerHighlightConfig(values);
+        public static ScrollSnapContainerHighlightConfig fromMap(Map<String, Object> values) {
+            return new ScrollSnapContainerHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The style of the snapport border (default: transparent)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle snapportBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("snapportBorder")));
+        public Optional<Overlay.LineStyle> snapportBorder() {
+            return Optional.ofNullable(raw("snapportBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("snapportBorder")))));
         }
         /**
          * The style of the snap area border (default: transparent)
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle snapAreaBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("snapAreaBorder")));
+        public Optional<Overlay.LineStyle> snapAreaBorder() {
+            return Optional.ofNullable(raw("snapAreaBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("snapAreaBorder")))));
         }
         /**
          * The margin highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA scrollMarginColor() {
-            return DOM.RGBA.fromMap(objectMap(value("scrollMarginColor")));
+        public Optional<DOM.RGBA> scrollMarginColor() {
+            return Optional.ofNullable(raw("scrollMarginColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("scrollMarginColor")))));
         }
         /**
          * The padding highlight fill color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA scrollPaddingColor() {
-            return DOM.RGBA.fromMap(objectMap(value("scrollPaddingColor")));
+        public Optional<DOM.RGBA> scrollPaddingColor() {
+            return Optional.ofNullable(raw("scrollPaddingColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("scrollPaddingColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The style of the snapport border (default: transparent)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder snapportBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("snapportBorder");
-                else values.put("snapportBorder", jsonValue(value));
-                return this;
-            }
-            /**
-             * The style of the snap area border (default: transparent)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder snapAreaBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("snapAreaBorder");
-                else values.put("snapAreaBorder", jsonValue(value));
-                return this;
-            }
-            /**
-             * The margin highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scrollMarginColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("scrollMarginColor");
-                else values.put("scrollMarginColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The padding highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scrollPaddingColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("scrollPaddingColor");
-                else values.put("scrollPaddingColor", jsonValue(value));
-                return this;
-            }
-            public ScrollSnapContainerHighlightConfig build() {
-                return new ScrollSnapContainerHighlightConfig(values);
-            }
+        /**
+         * The style of the snapport border (default: transparent)
+         * @param snapportBorder field value; empty omits the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig snapportBorder(Optional<Overlay.LineStyle> snapportBorder) {
+            set("snapportBorder", snapportBorder.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the snapport border (default: transparent)
+         * @param snapportBorder field value; null removes the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig snapportBorder(Overlay.LineStyle snapportBorder) {
+            set("snapportBorder", snapportBorder);
+            return this;
+        }
+        /**
+         * The style of the snap area border (default: transparent)
+         * @param snapAreaBorder field value; empty omits the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig snapAreaBorder(Optional<Overlay.LineStyle> snapAreaBorder) {
+            set("snapAreaBorder", snapAreaBorder.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the snap area border (default: transparent)
+         * @param snapAreaBorder field value; null removes the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig snapAreaBorder(Overlay.LineStyle snapAreaBorder) {
+            set("snapAreaBorder", snapAreaBorder);
+            return this;
+        }
+        /**
+         * The margin highlight fill color (default: transparent).
+         * @param scrollMarginColor field value; empty omits the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig scrollMarginColor(Optional<DOM.RGBA> scrollMarginColor) {
+            set("scrollMarginColor", scrollMarginColor.orElse(null));
+            return this;
+        }
+        /**
+         * The margin highlight fill color (default: transparent).
+         * @param scrollMarginColor field value; null removes the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig scrollMarginColor(DOM.RGBA scrollMarginColor) {
+            set("scrollMarginColor", scrollMarginColor);
+            return this;
+        }
+        /**
+         * The padding highlight fill color (default: transparent).
+         * @param scrollPaddingColor field value; empty omits the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig scrollPaddingColor(Optional<DOM.RGBA> scrollPaddingColor) {
+            set("scrollPaddingColor", scrollPaddingColor.orElse(null));
+            return this;
+        }
+        /**
+         * The padding highlight fill color (default: transparent).
+         * @param scrollPaddingColor field value; null removes the value
+         * @return this model
+         */
+        public ScrollSnapContainerHighlightConfig scrollPaddingColor(DOM.RGBA scrollPaddingColor) {
+            set("scrollPaddingColor", scrollPaddingColor);
+            return this;
         }
     }
     /**
      */
     public static final class ScrollSnapHighlightConfig extends CdpObject {
+        public ScrollSnapHighlightConfig() {}
         private ScrollSnapHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static ScrollSnapHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScrollSnapHighlightConfig(values);
+        public static ScrollSnapHighlightConfig fromMap(Map<String, Object> values) {
+            return new ScrollSnapHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A descriptor for the highlight appearance of scroll snap containers.
          * @return the protocol field value
          */
-        @Nullable public Overlay.ScrollSnapContainerHighlightConfig scrollSnapContainerHighlightConfig() {
-            return Overlay.ScrollSnapContainerHighlightConfig.fromMap(objectMap(value("scrollSnapContainerHighlightConfig")));
+        public Overlay.ScrollSnapContainerHighlightConfig scrollSnapContainerHighlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.ScrollSnapContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("scrollSnapContainerHighlightConfig")))));
         }
         /**
          * Identifier of the node to highlight.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance of scroll snap containers.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scrollSnapContainerHighlightConfig(@Nullable Overlay.ScrollSnapContainerHighlightConfig value) {
-                if (value == null) values.remove("scrollSnapContainerHighlightConfig");
-                else values.put("scrollSnapContainerHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public ScrollSnapHighlightConfig build() {
-                if (!values.containsKey("scrollSnapContainerHighlightConfig")) throw new IllegalStateException("Missing required CDP field: scrollSnapContainerHighlightConfig");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new ScrollSnapHighlightConfig(values);
-            }
+        /**
+         * A descriptor for the highlight appearance of scroll snap containers.
+         * @param scrollSnapContainerHighlightConfig field value
+         * @return this model
+         */
+        public ScrollSnapHighlightConfig scrollSnapContainerHighlightConfig(Overlay.ScrollSnapContainerHighlightConfig scrollSnapContainerHighlightConfig) {
+            set("scrollSnapContainerHighlightConfig", scrollSnapContainerHighlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ScrollSnapHighlightConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      * Configuration for dual screen hinge
      */
     public static final class HingeConfig extends CdpObject {
+        public HingeConfig() {}
         private HingeConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static HingeConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HingeConfig(values);
+        public static HingeConfig fromMap(Map<String, Object> values) {
+            return new HingeConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A rectangle represent hinge
          * @return the protocol field value
          */
-        @Nullable public DOM.Rect rect() {
-            return DOM.Rect.fromMap(objectMap(value("rect")));
+        public DOM.Rect rect() {
+            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("rect")))));
         }
         /**
          * The content box highlight fill color (default: a dark color).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA contentColor() {
-            return DOM.RGBA.fromMap(objectMap(value("contentColor")));
+        public Optional<DOM.RGBA> contentColor() {
+            return Optional.ofNullable(raw("contentColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("contentColor")))));
         }
         /**
          * The content box highlight outline color (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA outlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("outlineColor")));
+        public Optional<DOM.RGBA> outlineColor() {
+            return Optional.ofNullable(raw("outlineColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("outlineColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A rectangle represent hinge
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rect(@Nullable DOM.Rect value) {
-                if (value == null) values.remove("rect");
-                else values.put("rect", jsonValue(value));
-                return this;
-            }
-            /**
-             * The content box highlight fill color (default: a dark color).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contentColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("contentColor");
-                else values.put("contentColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The content box highlight outline color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder outlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("outlineColor");
-                else values.put("outlineColor", jsonValue(value));
-                return this;
-            }
-            public HingeConfig build() {
-                if (!values.containsKey("rect")) throw new IllegalStateException("Missing required CDP field: rect");
-                return new HingeConfig(values);
-            }
+        /**
+         * A rectangle represent hinge
+         * @param rect field value
+         * @return this model
+         */
+        public HingeConfig rect(DOM.Rect rect) {
+            set("rect", rect);
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: a dark color).
+         * @param contentColor field value; empty omits the value
+         * @return this model
+         */
+        public HingeConfig contentColor(Optional<DOM.RGBA> contentColor) {
+            set("contentColor", contentColor.orElse(null));
+            return this;
+        }
+        /**
+         * The content box highlight fill color (default: a dark color).
+         * @param contentColor field value; null removes the value
+         * @return this model
+         */
+        public HingeConfig contentColor(DOM.RGBA contentColor) {
+            set("contentColor", contentColor);
+            return this;
+        }
+        /**
+         * The content box highlight outline color (default: transparent).
+         * @param outlineColor field value; empty omits the value
+         * @return this model
+         */
+        public HingeConfig outlineColor(Optional<DOM.RGBA> outlineColor) {
+            set("outlineColor", outlineColor.orElse(null));
+            return this;
+        }
+        /**
+         * The content box highlight outline color (default: transparent).
+         * @param outlineColor field value; null removes the value
+         * @return this model
+         */
+        public HingeConfig outlineColor(DOM.RGBA outlineColor) {
+            set("outlineColor", outlineColor);
+            return this;
         }
     }
     /**
      * Configuration for Window Controls Overlay
      */
     public static final class WindowControlsOverlayConfig extends CdpObject {
+        public WindowControlsOverlayConfig() {}
         private WindowControlsOverlayConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static WindowControlsOverlayConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new WindowControlsOverlayConfig(values);
+        public static WindowControlsOverlayConfig fromMap(Map<String, Object> values) {
+            return new WindowControlsOverlayConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
          * @return the protocol field value
          */
-        @Nullable public Boolean showCSS() {
-            return (Boolean) value("showCSS");
+        public boolean showCSS() {
+            return (Boolean) require("showCSS");
         }
         /**
          * Selected platforms to show the overlay.
          * @return the protocol field value
          */
-        @Nullable public String selectedPlatform() {
-            return (String) value("selectedPlatform");
+        public String selectedPlatform() {
+            return (String) require("selectedPlatform");
         }
         /**
          * The theme color defined in app manifest.
          * @return the protocol field value
          */
-        @Nullable public String themeColor() {
-            return (String) value("themeColor");
+        public String themeColor() {
+            return (String) require("themeColor");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showCSS(@Nullable Boolean value) {
-                if (value == null) values.remove("showCSS");
-                else values.put("showCSS", jsonValue(value));
-                return this;
-            }
-            /**
-             * Selected platforms to show the overlay.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder selectedPlatform(@Nullable String value) {
-                if (value == null) values.remove("selectedPlatform");
-                else values.put("selectedPlatform", jsonValue(value));
-                return this;
-            }
-            /**
-             * The theme color defined in app manifest.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder themeColor(@Nullable String value) {
-                if (value == null) values.remove("themeColor");
-                else values.put("themeColor", jsonValue(value));
-                return this;
-            }
-            public WindowControlsOverlayConfig build() {
-                if (!values.containsKey("showCSS")) throw new IllegalStateException("Missing required CDP field: showCSS");
-                if (!values.containsKey("selectedPlatform")) throw new IllegalStateException("Missing required CDP field: selectedPlatform");
-                if (!values.containsKey("themeColor")) throw new IllegalStateException("Missing required CDP field: themeColor");
-                return new WindowControlsOverlayConfig(values);
-            }
+        /**
+         * Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
+         * @param showCSS field value
+         * @return this model
+         */
+        public WindowControlsOverlayConfig showCSS(boolean showCSS) {
+            set("showCSS", showCSS);
+            return this;
+        }
+        /**
+         * Selected platforms to show the overlay.
+         * @param selectedPlatform field value
+         * @return this model
+         */
+        public WindowControlsOverlayConfig selectedPlatform(String selectedPlatform) {
+            set("selectedPlatform", selectedPlatform);
+            return this;
+        }
+        /**
+         * The theme color defined in app manifest.
+         * @param themeColor field value
+         * @return this model
+         */
+        public WindowControlsOverlayConfig themeColor(String themeColor) {
+            set("themeColor", themeColor);
+            return this;
         }
     }
     /**
      */
     public static final class ContainerQueryHighlightConfig extends CdpObject {
+        public ContainerQueryHighlightConfig() {}
         private ContainerQueryHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static ContainerQueryHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContainerQueryHighlightConfig(values);
+        public static ContainerQueryHighlightConfig fromMap(Map<String, Object> values) {
+            return new ContainerQueryHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A descriptor for the highlight appearance of container query containers.
          * @return the protocol field value
          */
-        @Nullable public Overlay.ContainerQueryContainerHighlightConfig containerQueryContainerHighlightConfig() {
-            return Overlay.ContainerQueryContainerHighlightConfig.fromMap(objectMap(value("containerQueryContainerHighlightConfig")));
+        public Overlay.ContainerQueryContainerHighlightConfig containerQueryContainerHighlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.ContainerQueryContainerHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("containerQueryContainerHighlightConfig")))));
         }
         /**
          * Identifier of the container node to highlight.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance of container query containers.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerQueryContainerHighlightConfig(@Nullable Overlay.ContainerQueryContainerHighlightConfig value) {
-                if (value == null) values.remove("containerQueryContainerHighlightConfig");
-                else values.put("containerQueryContainerHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the container node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public ContainerQueryHighlightConfig build() {
-                if (!values.containsKey("containerQueryContainerHighlightConfig")) throw new IllegalStateException("Missing required CDP field: containerQueryContainerHighlightConfig");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new ContainerQueryHighlightConfig(values);
-            }
+        /**
+         * A descriptor for the highlight appearance of container query containers.
+         * @param containerQueryContainerHighlightConfig field value
+         * @return this model
+         */
+        public ContainerQueryHighlightConfig containerQueryContainerHighlightConfig(Overlay.ContainerQueryContainerHighlightConfig containerQueryContainerHighlightConfig) {
+            set("containerQueryContainerHighlightConfig", containerQueryContainerHighlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the container node to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public ContainerQueryHighlightConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      */
     public static final class ContainerQueryContainerHighlightConfig extends CdpObject {
+        public ContainerQueryContainerHighlightConfig() {}
         private ContainerQueryContainerHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static ContainerQueryContainerHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ContainerQueryContainerHighlightConfig(values);
+        public static ContainerQueryContainerHighlightConfig fromMap(Map<String, Object> values) {
+            return new ContainerQueryContainerHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The style of the container border.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle containerBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("containerBorder")));
+        public Optional<Overlay.LineStyle> containerBorder() {
+            return Optional.ofNullable(raw("containerBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("containerBorder")))));
         }
         /**
          * The style of the descendants&#x27; borders.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Overlay.LineStyle descendantBorder() {
-            return Overlay.LineStyle.fromMap(objectMap(value("descendantBorder")));
+        public Optional<Overlay.LineStyle> descendantBorder() {
+            return Optional.ofNullable(raw("descendantBorder") == null ? null : Overlay.LineStyle.fromMap(java.util.Objects.requireNonNull(objectMap(raw("descendantBorder")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The style of the container border.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("containerBorder");
-                else values.put("containerBorder", jsonValue(value));
-                return this;
-            }
-            /**
-             * The style of the descendants&#x27; borders.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descendantBorder(@Nullable Overlay.LineStyle value) {
-                if (value == null) values.remove("descendantBorder");
-                else values.put("descendantBorder", jsonValue(value));
-                return this;
-            }
-            public ContainerQueryContainerHighlightConfig build() {
-                return new ContainerQueryContainerHighlightConfig(values);
-            }
+        /**
+         * The style of the container border.
+         * @param containerBorder field value; empty omits the value
+         * @return this model
+         */
+        public ContainerQueryContainerHighlightConfig containerBorder(Optional<Overlay.LineStyle> containerBorder) {
+            set("containerBorder", containerBorder.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the container border.
+         * @param containerBorder field value; null removes the value
+         * @return this model
+         */
+        public ContainerQueryContainerHighlightConfig containerBorder(Overlay.LineStyle containerBorder) {
+            set("containerBorder", containerBorder);
+            return this;
+        }
+        /**
+         * The style of the descendants&#x27; borders.
+         * @param descendantBorder field value; empty omits the value
+         * @return this model
+         */
+        public ContainerQueryContainerHighlightConfig descendantBorder(Optional<Overlay.LineStyle> descendantBorder) {
+            set("descendantBorder", descendantBorder.orElse(null));
+            return this;
+        }
+        /**
+         * The style of the descendants&#x27; borders.
+         * @param descendantBorder field value; null removes the value
+         * @return this model
+         */
+        public ContainerQueryContainerHighlightConfig descendantBorder(Overlay.LineStyle descendantBorder) {
+            set("descendantBorder", descendantBorder);
+            return this;
         }
     }
     /**
      */
     public static final class IsolatedElementHighlightConfig extends CdpObject {
+        public IsolatedElementHighlightConfig() {}
         private IsolatedElementHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static IsolatedElementHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new IsolatedElementHighlightConfig(values);
+        public static IsolatedElementHighlightConfig fromMap(Map<String, Object> values) {
+            return new IsolatedElementHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * A descriptor for the highlight appearance of an element in isolation mode.
          * @return the protocol field value
          */
-        @Nullable public Overlay.IsolationModeHighlightConfig isolationModeHighlightConfig() {
-            return Overlay.IsolationModeHighlightConfig.fromMap(objectMap(value("isolationModeHighlightConfig")));
+        public Overlay.IsolationModeHighlightConfig isolationModeHighlightConfig() {
+            return java.util.Objects.requireNonNull(Overlay.IsolationModeHighlightConfig.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("isolationModeHighlightConfig")))));
         }
         /**
          * Identifier of the isolated element to highlight.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance of an element in isolation mode.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isolationModeHighlightConfig(@Nullable Overlay.IsolationModeHighlightConfig value) {
-                if (value == null) values.remove("isolationModeHighlightConfig");
-                else values.put("isolationModeHighlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the isolated element to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public IsolatedElementHighlightConfig build() {
-                if (!values.containsKey("isolationModeHighlightConfig")) throw new IllegalStateException("Missing required CDP field: isolationModeHighlightConfig");
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new IsolatedElementHighlightConfig(values);
-            }
+        /**
+         * A descriptor for the highlight appearance of an element in isolation mode.
+         * @param isolationModeHighlightConfig field value
+         * @return this model
+         */
+        public IsolatedElementHighlightConfig isolationModeHighlightConfig(Overlay.IsolationModeHighlightConfig isolationModeHighlightConfig) {
+            set("isolationModeHighlightConfig", isolationModeHighlightConfig);
+            return this;
+        }
+        /**
+         * Identifier of the isolated element to highlight.
+         * @param nodeId field value
+         * @return this model
+         */
+        public IsolatedElementHighlightConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      */
     public static final class IsolationModeHighlightConfig extends CdpObject {
+        public IsolationModeHighlightConfig() {}
         private IsolationModeHighlightConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static IsolationModeHighlightConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new IsolationModeHighlightConfig(values);
+        public static IsolationModeHighlightConfig fromMap(Map<String, Object> values) {
+            return new IsolationModeHighlightConfig(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * The fill color of the resizers (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA resizerColor() {
-            return DOM.RGBA.fromMap(objectMap(value("resizerColor")));
+        public Optional<DOM.RGBA> resizerColor() {
+            return Optional.ofNullable(raw("resizerColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("resizerColor")))));
         }
         /**
          * The fill color for resizer handles (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA resizerHandleColor() {
-            return DOM.RGBA.fromMap(objectMap(value("resizerHandleColor")));
+        public Optional<DOM.RGBA> resizerHandleColor() {
+            return Optional.ofNullable(raw("resizerHandleColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("resizerHandleColor")))));
         }
         /**
          * The fill color for the mask covering non-isolated elements (default: transparent).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public DOM.RGBA maskColor() {
-            return DOM.RGBA.fromMap(objectMap(value("maskColor")));
+        public Optional<DOM.RGBA> maskColor() {
+            return Optional.ofNullable(raw("maskColor") == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(raw("maskColor")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The fill color of the resizers (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resizerColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("resizerColor");
-                else values.put("resizerColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The fill color for resizer handles (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder resizerHandleColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("resizerHandleColor");
-                else values.put("resizerHandleColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The fill color for the mask covering non-isolated elements (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder maskColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("maskColor");
-                else values.put("maskColor", jsonValue(value));
-                return this;
-            }
-            public IsolationModeHighlightConfig build() {
-                return new IsolationModeHighlightConfig(values);
-            }
+        /**
+         * The fill color of the resizers (default: transparent).
+         * @param resizerColor field value; empty omits the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig resizerColor(Optional<DOM.RGBA> resizerColor) {
+            set("resizerColor", resizerColor.orElse(null));
+            return this;
+        }
+        /**
+         * The fill color of the resizers (default: transparent).
+         * @param resizerColor field value; null removes the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig resizerColor(DOM.RGBA resizerColor) {
+            set("resizerColor", resizerColor);
+            return this;
+        }
+        /**
+         * The fill color for resizer handles (default: transparent).
+         * @param resizerHandleColor field value; empty omits the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig resizerHandleColor(Optional<DOM.RGBA> resizerHandleColor) {
+            set("resizerHandleColor", resizerHandleColor.orElse(null));
+            return this;
+        }
+        /**
+         * The fill color for resizer handles (default: transparent).
+         * @param resizerHandleColor field value; null removes the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig resizerHandleColor(DOM.RGBA resizerHandleColor) {
+            set("resizerHandleColor", resizerHandleColor);
+            return this;
+        }
+        /**
+         * The fill color for the mask covering non-isolated elements (default: transparent).
+         * @param maskColor field value; empty omits the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig maskColor(Optional<DOM.RGBA> maskColor) {
+            set("maskColor", maskColor.orElse(null));
+            return this;
+        }
+        /**
+         * The fill color for the mask covering non-isolated elements (default: transparent).
+         * @param maskColor field value; null removes the value
+         * @return this model
+         */
+        public IsolationModeHighlightConfig maskColor(DOM.RGBA maskColor) {
+            set("maskColor", maskColor);
+            return this;
         }
     }
     /**
      * Wire values for InspectMode.
      */
-    public static final class InspectMode {
-        private InspectMode() {}
-        public static final String SEARCHFORNODE = "searchForNode";
-        public static final String SEARCHFORUASHADOWDOM = "searchForUAShadowDOM";
-        public static final String CAPTUREAREASCREENSHOT = "captureAreaScreenshot";
-        public static final String NONE = "none";
+    public enum InspectMode implements CdpValue<String> {
+        SEARCHFORNODE("searchForNode"),
+        SEARCHFORUASHADOWDOM("searchForUAShadowDOM"),
+        CAPTUREAREASCREENSHOT("captureAreaScreenshot"),
+        NONE("none");
+        public final String value;
+        InspectMode(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static InspectMode of(@Nonnull String value) {
+            for (InspectMode constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown InspectMode value: " + value);
+        }
     }
     /**
      */
     public static final class InspectedElementAnchorConfig extends CdpObject {
+        public InspectedElementAnchorConfig() {}
         private InspectedElementAnchorConfig(Map<String, Object> values) { super(values); }
-        @Nullable public static InspectedElementAnchorConfig fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InspectedElementAnchorConfig(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the node to highlight.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Identifier of the backend node to highlight.
-         * @return the protocol field value
-         */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            public InspectedElementAnchorConfig build() {
-                return new InspectedElementAnchorConfig(values);
-            }
-        }
-    }
-    /**
-     * Disables domain notifications.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disables domain notifications.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Enables domain notifications.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enables domain notifications.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * For testing.
-     */
-    public static final class GetHighlightObjectForTestParams extends CdpObject {
-        private GetHighlightObjectForTestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetHighlightObjectForTestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetHighlightObjectForTestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to get highlight object for.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        /**
-         * Whether to include distance info.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean includeDistance() {
-            return (Boolean) value("includeDistance");
-        }
-        /**
-         * Whether to include style info.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean includeStyle() {
-            return (Boolean) value("includeStyle");
-        }
-        /**
-         * The color format to get config with (default: hex).
-         * @return the protocol field value
-         */
-        @Nullable public String colorFormat() {
-            return (String) value("colorFormat");
-        }
-        /**
-         * Whether to show accessibility info (default: true).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean showAccessibilityInfo() {
-            return (Boolean) value("showAccessibilityInfo");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to get highlight object for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to include distance info.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeDistance(@Nullable Boolean value) {
-                if (value == null) values.remove("includeDistance");
-                else values.put("includeDistance", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to include style info.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder includeStyle(@Nullable Boolean value) {
-                if (value == null) values.remove("includeStyle");
-                else values.put("includeStyle", jsonValue(value));
-                return this;
-            }
-            /**
-             * The color format to get config with (default: hex).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder colorFormat(@Nullable String value) {
-                if (value == null) values.remove("colorFormat");
-                else values.put("colorFormat", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to show accessibility info (default: true).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder showAccessibilityInfo(@Nullable Boolean value) {
-                if (value == null) values.remove("showAccessibilityInfo");
-                else values.put("showAccessibilityInfo", jsonValue(value));
-                return this;
-            }
-            public GetHighlightObjectForTestParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetHighlightObjectForTestParams(values);
-            }
-        }
-    }
-    /**
-     * For testing.
-     */
-    public static final class GetHighlightObjectForTestResult extends CdpObject {
-        private GetHighlightObjectForTestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetHighlightObjectForTestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetHighlightObjectForTestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Highlight data for the node.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.Map<String, Object> highlight() {
-            return objectMap(value("highlight"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Highlight data for the node.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder highlight(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("highlight");
-                else values.put("highlight", jsonValue(value));
-                return this;
-            }
-            public GetHighlightObjectForTestResult build() {
-                if (!values.containsKey("highlight")) throw new IllegalStateException("Missing required CDP field: highlight");
-                return new GetHighlightObjectForTestResult(values);
-            }
-        }
-    }
-    /**
-     * For Persistent Grid testing.
-     */
-    public static final class GetGridHighlightObjectsForTestParams extends CdpObject {
-        private GetGridHighlightObjectsForTestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetGridHighlightObjectsForTestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetGridHighlightObjectsForTestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Ids of the node to get highlight object for.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Long> nodeIds() {
-            return list(value("nodeIds"), element0 -> numberAsLong(element0));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Ids of the node to get highlight object for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeIds(@Nullable java.util.List<Long> value) {
-                if (value == null) values.remove("nodeIds");
-                else values.put("nodeIds", jsonValue(value));
-                return this;
-            }
-            public GetGridHighlightObjectsForTestParams build() {
-                if (!values.containsKey("nodeIds")) throw new IllegalStateException("Missing required CDP field: nodeIds");
-                return new GetGridHighlightObjectsForTestParams(values);
-            }
-        }
-    }
-    /**
-     * For Persistent Grid testing.
-     */
-    public static final class GetGridHighlightObjectsForTestResult extends CdpObject {
-        private GetGridHighlightObjectsForTestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetGridHighlightObjectsForTestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetGridHighlightObjectsForTestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Grid Highlight data for the node ids provided.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.Map<String, Object> highlights() {
-            return objectMap(value("highlights"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Grid Highlight data for the node ids provided.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder highlights(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("highlights");
-                else values.put("highlights", jsonValue(value));
-                return this;
-            }
-            public GetGridHighlightObjectsForTestResult build() {
-                if (!values.containsKey("highlights")) throw new IllegalStateException("Missing required CDP field: highlights");
-                return new GetGridHighlightObjectsForTestResult(values);
-            }
-        }
-    }
-    /**
-     * For Source Order Viewer testing.
-     */
-    public static final class GetSourceOrderHighlightObjectForTestParams extends CdpObject {
-        private GetSourceOrderHighlightObjectForTestParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSourceOrderHighlightObjectForTestParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSourceOrderHighlightObjectForTestParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of the node to highlight.
-         * @return the protocol field value
-         */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public GetSourceOrderHighlightObjectForTestParams build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new GetSourceOrderHighlightObjectForTestParams(values);
-            }
-        }
-    }
-    /**
-     * For Source Order Viewer testing.
-     */
-    public static final class GetSourceOrderHighlightObjectForTestResult extends CdpObject {
-        private GetSourceOrderHighlightObjectForTestResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetSourceOrderHighlightObjectForTestResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetSourceOrderHighlightObjectForTestResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Source order highlight data for the node id provided.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.Map<String, Object> highlight() {
-            return objectMap(value("highlight"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Source order highlight data for the node id provided.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder highlight(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("highlight");
-                else values.put("highlight", jsonValue(value));
-                return this;
-            }
-            public GetSourceOrderHighlightObjectForTestResult build() {
-                if (!values.containsKey("highlight")) throw new IllegalStateException("Missing required CDP field: highlight");
-                return new GetSourceOrderHighlightObjectForTestResult(values);
-            }
-        }
-    }
-    /**
-     * Hides any highlight.
-     */
-    public static final class HideHighlightParams extends CdpObject {
-        private HideHighlightParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HideHighlightParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HideHighlightParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HideHighlightParams build() {
-                return new HideHighlightParams(values);
-            }
-        }
-    }
-    /**
-     * Hides any highlight.
-     */
-    public static final class HideHighlightResult extends CdpObject {
-        private HideHighlightResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HideHighlightResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HideHighlightResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HideHighlightResult build() {
-                return new HideHighlightResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class HighlightFrameParams extends CdpObject {
-        private HighlightFrameParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightFrameParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightFrameParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Identifier of the frame to highlight.
-         * @return the protocol field value
-         */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
-        }
-        /**
-         * The content box highlight fill color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA contentColor() {
-            return DOM.RGBA.fromMap(objectMap(value("contentColor")));
-        }
-        /**
-         * The content box highlight outline color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA contentOutlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("contentOutlineColor")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of the frame to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The content box highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contentColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("contentColor");
-                else values.put("contentColor", jsonValue(value));
-                return this;
-            }
-            /**
-             * The content box highlight outline color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder contentOutlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("contentOutlineColor");
-                else values.put("contentOutlineColor", jsonValue(value));
-                return this;
-            }
-            public HighlightFrameParams build() {
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new HighlightFrameParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class HighlightFrameResult extends CdpObject {
-        private HighlightFrameResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightFrameResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightFrameResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightFrameResult build() {
-                return new HighlightFrameResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-     */
-    public static final class HighlightNodeParams extends CdpObject {
-        private HighlightNodeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightNodeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightNodeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * A descriptor for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.HighlightConfig highlightConfig() {
-            return Overlay.HighlightConfig.fromMap(objectMap(value("highlightConfig")));
+        public static InspectedElementAnchorConfig fromMap(Map<String, Object> values) {
+            return new InspectedElementAnchorConfig(values);
         }
         /**
          * Identifier of the node to highlight.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public Optional<DOM.NodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.NodeId(((Number) raw("nodeId")).longValue()));
         }
         /**
          * Identifier of the backend node to highlight.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
-        }
-        /**
-         * JavaScript object id of the node to be highlighted.
-         * @return the protocol field value
-         */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        /**
-         * Selectors to highlight relevant nodes.
-         * @return the protocol field value
-         */
-        @Nullable public String selector() {
-            return (String) value("selector");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder highlightConfig(@Nullable Overlay.HighlightConfig value) {
-                if (value == null) values.remove("highlightConfig");
-                else values.put("highlightConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node to be highlighted.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Selectors to highlight relevant nodes.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder selector(@Nullable String value) {
-                if (value == null) values.remove("selector");
-                else values.put("selector", jsonValue(value));
-                return this;
-            }
-            public HighlightNodeParams build() {
-                if (!values.containsKey("highlightConfig")) throw new IllegalStateException("Missing required CDP field: highlightConfig");
-                return new HighlightNodeParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-     */
-    public static final class HighlightNodeResult extends CdpObject {
-        private HighlightNodeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightNodeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightNodeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightNodeResult build() {
-                return new HighlightNodeResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
-     */
-    public static final class HighlightQuadParams extends CdpObject {
-        private HighlightQuadParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightQuadParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightQuadParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Quad to highlight
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Double> quad() {
-            return list(value("quad"), element0 -> numberAsDouble(element0));
-        }
-        /**
-         * The highlight fill color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA color() {
-            return DOM.RGBA.fromMap(objectMap(value("color")));
-        }
-        /**
-         * The highlight outline color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA outlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("outlineColor")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Quad to highlight
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder quad(@Nullable java.util.List<Double> value) {
-                if (value == null) values.remove("quad");
-                else values.put("quad", jsonValue(value));
-                return this;
-            }
-            /**
-             * The highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder color(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("color");
-                else values.put("color", jsonValue(value));
-                return this;
-            }
-            /**
-             * The highlight outline color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder outlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("outlineColor");
-                else values.put("outlineColor", jsonValue(value));
-                return this;
-            }
-            public HighlightQuadParams build() {
-                if (!values.containsKey("quad")) throw new IllegalStateException("Missing required CDP field: quad");
-                return new HighlightQuadParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
-     */
-    public static final class HighlightQuadResult extends CdpObject {
-        private HighlightQuadResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightQuadResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightQuadResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightQuadResult build() {
-                return new HighlightQuadResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
-     */
-    public static final class HighlightRectParams extends CdpObject {
-        private HighlightRectParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightRectParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightRectParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * X coordinate
-         * @return the protocol field value
-         */
-        @Nullable public Long x() {
-            return numberAsLong(value("x"));
-        }
-        /**
-         * Y coordinate
-         * @return the protocol field value
-         */
-        @Nullable public Long y() {
-            return numberAsLong(value("y"));
-        }
-        /**
-         * Rectangle width
-         * @return the protocol field value
-         */
-        @Nullable public Long width() {
-            return numberAsLong(value("width"));
-        }
-        /**
-         * Rectangle height
-         * @return the protocol field value
-         */
-        @Nullable public Long height() {
-            return numberAsLong(value("height"));
-        }
-        /**
-         * The highlight fill color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA color() {
-            return DOM.RGBA.fromMap(objectMap(value("color")));
-        }
-        /**
-         * The highlight outline color (default: transparent).
-         * @return the protocol field value
-         */
-        @Nullable public DOM.RGBA outlineColor() {
-            return DOM.RGBA.fromMap(objectMap(value("outlineColor")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * X coordinate
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder x(@Nullable Long value) {
-                if (value == null) values.remove("x");
-                else values.put("x", jsonValue(value));
-                return this;
-            }
-            /**
-             * Y coordinate
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder y(@Nullable Long value) {
-                if (value == null) values.remove("y");
-                else values.put("y", jsonValue(value));
-                return this;
-            }
-            /**
-             * Rectangle width
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder width(@Nullable Long value) {
-                if (value == null) values.remove("width");
-                else values.put("width", jsonValue(value));
-                return this;
-            }
-            /**
-             * Rectangle height
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder height(@Nullable Long value) {
-                if (value == null) values.remove("height");
-                else values.put("height", jsonValue(value));
-                return this;
-            }
-            /**
-             * The highlight fill color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder color(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("color");
-                else values.put("color", jsonValue(value));
-                return this;
-            }
-            /**
-             * The highlight outline color (default: transparent).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder outlineColor(@Nullable DOM.RGBA value) {
-                if (value == null) values.remove("outlineColor");
-                else values.put("outlineColor", jsonValue(value));
-                return this;
-            }
-            public HighlightRectParams build() {
-                if (!values.containsKey("x")) throw new IllegalStateException("Missing required CDP field: x");
-                if (!values.containsKey("y")) throw new IllegalStateException("Missing required CDP field: y");
-                if (!values.containsKey("width")) throw new IllegalStateException("Missing required CDP field: width");
-                if (!values.containsKey("height")) throw new IllegalStateException("Missing required CDP field: height");
-                return new HighlightRectParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
-     */
-    public static final class HighlightRectResult extends CdpObject {
-        private HighlightRectResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightRectResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightRectResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightRectResult build() {
-                return new HighlightRectResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-     */
-    public static final class HighlightSourceOrderParams extends CdpObject {
-        private HighlightSourceOrderParams(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightSourceOrderParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightSourceOrderParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * A descriptor for the appearance of the overlay drawing.
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.SourceOrderConfig sourceOrderConfig() {
-            return Overlay.SourceOrderConfig.fromMap(objectMap(value("sourceOrderConfig")));
+        public Optional<DOM.BackendNodeId> backendNodeId() {
+            return Optional.ofNullable(raw("backendNodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("backendNodeId")).longValue()));
         }
         /**
          * Identifier of the node to highlight.
-         * @return the protocol field value
+         * @param nodeId field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public InspectedElementAnchorConfig nodeId(Optional<DOM.NodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Identifier of the node to highlight.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public InspectedElementAnchorConfig nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
         /**
          * Identifier of the backend node to highlight.
-         * @return the protocol field value
+         * @param backendNodeId field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public InspectedElementAnchorConfig backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
+            set("backendNodeId", backendNodeId.orElse(null));
+            return this;
         }
         /**
-         * JavaScript object id of the node to be highlighted.
-         * @return the protocol field value
+         * Identifier of the backend node to highlight.
+         * @param backendNodeId field value; null removes the value
+         * @return this model
          */
-        @Nullable public String objectId() {
-            return (String) value("objectId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * A descriptor for the appearance of the overlay drawing.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sourceOrderConfig(@Nullable Overlay.SourceOrderConfig value) {
-                if (value == null) values.remove("sourceOrderConfig");
-                else values.put("sourceOrderConfig", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the backend node to highlight.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            /**
-             * JavaScript object id of the node to be highlighted.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder objectId(@Nullable String value) {
-                if (value == null) values.remove("objectId");
-                else values.put("objectId", jsonValue(value));
-                return this;
-            }
-            public HighlightSourceOrderParams build() {
-                if (!values.containsKey("sourceOrderConfig")) throw new IllegalStateException("Missing required CDP field: sourceOrderConfig");
-                return new HighlightSourceOrderParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-     */
-    public static final class HighlightSourceOrderResult extends CdpObject {
-        private HighlightSourceOrderResult(Map<String, Object> values) { super(values); }
-        @Nullable public static HighlightSourceOrderResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new HighlightSourceOrderResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public HighlightSourceOrderResult build() {
-                return new HighlightSourceOrderResult(values);
-            }
-        }
-    }
-    /**
-     * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
-     */
-    public static final class SetInspectModeParams extends CdpObject {
-        private SetInspectModeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInspectModeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInspectModeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Set an inspection mode.
-         * @return the protocol field value
-         */
-        @Nullable public String mode() {
-            return (String) value("mode");
-        }
-        /**
-         * A descriptor for the highlight appearance of hovered-over nodes. May be omitted if {@code enabled == false}.
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.HighlightConfig highlightConfig() {
-            return Overlay.HighlightConfig.fromMap(objectMap(value("highlightConfig")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Set an inspection mode.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder mode(@Nullable String value) {
-                if (value == null) values.remove("mode");
-                else values.put("mode", jsonValue(value));
-                return this;
-            }
-            /**
-             * A descriptor for the highlight appearance of hovered-over nodes. May be omitted if {@code enabled == false}.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder highlightConfig(@Nullable Overlay.HighlightConfig value) {
-                if (value == null) values.remove("highlightConfig");
-                else values.put("highlightConfig", jsonValue(value));
-                return this;
-            }
-            public SetInspectModeParams build() {
-                if (!values.containsKey("mode")) throw new IllegalStateException("Missing required CDP field: mode");
-                return new SetInspectModeParams(values);
-            }
-        }
-    }
-    /**
-     * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
-     */
-    public static final class SetInspectModeResult extends CdpObject {
-        private SetInspectModeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetInspectModeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetInspectModeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetInspectModeResult build() {
-                return new SetInspectModeResult(values);
-            }
-        }
-    }
-    /**
-     * Highlights owner element of all frames detected to be ads.
-     */
-    public static final class SetShowAdHighlightsParams extends CdpObject {
-        private SetShowAdHighlightsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowAdHighlightsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowAdHighlightsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing ad highlights
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing ad highlights
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowAdHighlightsParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowAdHighlightsParams(values);
-            }
-        }
-    }
-    /**
-     * Highlights owner element of all frames detected to be ads.
-     */
-    public static final class SetShowAdHighlightsResult extends CdpObject {
-        private SetShowAdHighlightsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowAdHighlightsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowAdHighlightsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowAdHighlightsResult build() {
-                return new SetShowAdHighlightsResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Overlay.setPausedInDebuggerMessage.
-     */
-    public static final class SetPausedInDebuggerMessageParams extends CdpObject {
-        private SetPausedInDebuggerMessageParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetPausedInDebuggerMessageParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetPausedInDebuggerMessageParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The message to display, also triggers resume and step over controls.
-         * @return the protocol field value
-         */
-        @Nullable public String message() {
-            return (String) value("message");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The message to display, also triggers resume and step over controls.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder message(@Nullable String value) {
-                if (value == null) values.remove("message");
-                else values.put("message", jsonValue(value));
-                return this;
-            }
-            public SetPausedInDebuggerMessageParams build() {
-                return new SetPausedInDebuggerMessageParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Overlay.setPausedInDebuggerMessage.
-     */
-    public static final class SetPausedInDebuggerMessageResult extends CdpObject {
-        private SetPausedInDebuggerMessageResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetPausedInDebuggerMessageResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetPausedInDebuggerMessageResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetPausedInDebuggerMessageResult build() {
-                return new SetPausedInDebuggerMessageResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows debug borders on layers
-     */
-    public static final class SetShowDebugBordersParams extends CdpObject {
-        private SetShowDebugBordersParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowDebugBordersParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowDebugBordersParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing debug borders
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing debug borders
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowDebugBordersParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowDebugBordersParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows debug borders on layers
-     */
-    public static final class SetShowDebugBordersResult extends CdpObject {
-        private SetShowDebugBordersResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowDebugBordersResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowDebugBordersResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowDebugBordersResult build() {
-                return new SetShowDebugBordersResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows the FPS counter
-     */
-    public static final class SetShowFPSCounterParams extends CdpObject {
-        private SetShowFPSCounterParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowFPSCounterParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowFPSCounterParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing the FPS counter
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing the FPS counter
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowFPSCounterParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowFPSCounterParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows the FPS counter
-     */
-    public static final class SetShowFPSCounterResult extends CdpObject {
-        private SetShowFPSCounterResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowFPSCounterResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowFPSCounterResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowFPSCounterResult build() {
-                return new SetShowFPSCounterResult(values);
-            }
-        }
-    }
-    /**
-     * Highlight multiple elements with the CSS Grid overlay.
-     */
-    public static final class SetShowGridOverlaysParams extends CdpObject {
-        private SetShowGridOverlaysParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowGridOverlaysParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowGridOverlaysParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An array of node identifiers and descriptors for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs() {
-            return list(value("gridNodeHighlightConfigs"), element0 -> Overlay.GridNodeHighlightConfig.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of node identifiers and descriptors for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder gridNodeHighlightConfigs(@Nullable java.util.List<Overlay.GridNodeHighlightConfig> value) {
-                if (value == null) values.remove("gridNodeHighlightConfigs");
-                else values.put("gridNodeHighlightConfigs", jsonValue(value));
-                return this;
-            }
-            public SetShowGridOverlaysParams build() {
-                if (!values.containsKey("gridNodeHighlightConfigs")) throw new IllegalStateException("Missing required CDP field: gridNodeHighlightConfigs");
-                return new SetShowGridOverlaysParams(values);
-            }
-        }
-    }
-    /**
-     * Highlight multiple elements with the CSS Grid overlay.
-     */
-    public static final class SetShowGridOverlaysResult extends CdpObject {
-        private SetShowGridOverlaysResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowGridOverlaysResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowGridOverlaysResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowGridOverlaysResult build() {
-                return new SetShowGridOverlaysResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Overlay.setShowFlexOverlays.
-     */
-    public static final class SetShowFlexOverlaysParams extends CdpObject {
-        private SetShowFlexOverlaysParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowFlexOverlaysParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowFlexOverlaysParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An array of node identifiers and descriptors for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs() {
-            return list(value("flexNodeHighlightConfigs"), element0 -> Overlay.FlexNodeHighlightConfig.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of node identifiers and descriptors for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flexNodeHighlightConfigs(@Nullable java.util.List<Overlay.FlexNodeHighlightConfig> value) {
-                if (value == null) values.remove("flexNodeHighlightConfigs");
-                else values.put("flexNodeHighlightConfigs", jsonValue(value));
-                return this;
-            }
-            public SetShowFlexOverlaysParams build() {
-                if (!values.containsKey("flexNodeHighlightConfigs")) throw new IllegalStateException("Missing required CDP field: flexNodeHighlightConfigs");
-                return new SetShowFlexOverlaysParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Overlay.setShowFlexOverlays.
-     */
-    public static final class SetShowFlexOverlaysResult extends CdpObject {
-        private SetShowFlexOverlaysResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowFlexOverlaysResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowFlexOverlaysResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowFlexOverlaysResult build() {
-                return new SetShowFlexOverlaysResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Overlay.setShowScrollSnapOverlays.
-     */
-    public static final class SetShowScrollSnapOverlaysParams extends CdpObject {
-        private SetShowScrollSnapOverlaysParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowScrollSnapOverlaysParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowScrollSnapOverlaysParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An array of node identifiers and descriptors for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs() {
-            return list(value("scrollSnapHighlightConfigs"), element0 -> Overlay.ScrollSnapHighlightConfig.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of node identifiers and descriptors for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scrollSnapHighlightConfigs(@Nullable java.util.List<Overlay.ScrollSnapHighlightConfig> value) {
-                if (value == null) values.remove("scrollSnapHighlightConfigs");
-                else values.put("scrollSnapHighlightConfigs", jsonValue(value));
-                return this;
-            }
-            public SetShowScrollSnapOverlaysParams build() {
-                if (!values.containsKey("scrollSnapHighlightConfigs")) throw new IllegalStateException("Missing required CDP field: scrollSnapHighlightConfigs");
-                return new SetShowScrollSnapOverlaysParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Overlay.setShowScrollSnapOverlays.
-     */
-    public static final class SetShowScrollSnapOverlaysResult extends CdpObject {
-        private SetShowScrollSnapOverlaysResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowScrollSnapOverlaysResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowScrollSnapOverlaysResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowScrollSnapOverlaysResult build() {
-                return new SetShowScrollSnapOverlaysResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Overlay.setShowContainerQueryOverlays.
-     */
-    public static final class SetShowContainerQueryOverlaysParams extends CdpObject {
-        private SetShowContainerQueryOverlaysParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowContainerQueryOverlaysParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowContainerQueryOverlaysParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An array of node identifiers and descriptors for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs() {
-            return list(value("containerQueryHighlightConfigs"), element0 -> Overlay.ContainerQueryHighlightConfig.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of node identifiers and descriptors for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder containerQueryHighlightConfigs(@Nullable java.util.List<Overlay.ContainerQueryHighlightConfig> value) {
-                if (value == null) values.remove("containerQueryHighlightConfigs");
-                else values.put("containerQueryHighlightConfigs", jsonValue(value));
-                return this;
-            }
-            public SetShowContainerQueryOverlaysParams build() {
-                if (!values.containsKey("containerQueryHighlightConfigs")) throw new IllegalStateException("Missing required CDP field: containerQueryHighlightConfigs");
-                return new SetShowContainerQueryOverlaysParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Overlay.setShowContainerQueryOverlays.
-     */
-    public static final class SetShowContainerQueryOverlaysResult extends CdpObject {
-        private SetShowContainerQueryOverlaysResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowContainerQueryOverlaysResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowContainerQueryOverlaysResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowContainerQueryOverlaysResult build() {
-                return new SetShowContainerQueryOverlaysResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for Overlay.setShowInspectedElementAnchor.
-     */
-    public static final class SetShowInspectedElementAnchorParams extends CdpObject {
-        private SetShowInspectedElementAnchorParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowInspectedElementAnchorParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowInspectedElementAnchorParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Node identifier for which to show an anchor for.
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig() {
-            return Overlay.InspectedElementAnchorConfig.fromMap(objectMap(value("inspectedElementAnchorConfig")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Node identifier for which to show an anchor for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder inspectedElementAnchorConfig(@Nullable Overlay.InspectedElementAnchorConfig value) {
-                if (value == null) values.remove("inspectedElementAnchorConfig");
-                else values.put("inspectedElementAnchorConfig", jsonValue(value));
-                return this;
-            }
-            public SetShowInspectedElementAnchorParams build() {
-                if (!values.containsKey("inspectedElementAnchorConfig")) throw new IllegalStateException("Missing required CDP field: inspectedElementAnchorConfig");
-                return new SetShowInspectedElementAnchorParams(values);
-            }
-        }
-    }
-    /**
-     * Result of Overlay.setShowInspectedElementAnchor.
-     */
-    public static final class SetShowInspectedElementAnchorResult extends CdpObject {
-        private SetShowInspectedElementAnchorResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowInspectedElementAnchorResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowInspectedElementAnchorResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowInspectedElementAnchorResult build() {
-                return new SetShowInspectedElementAnchorResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows paint rectangles
-     */
-    public static final class SetShowPaintRectsParams extends CdpObject {
-        private SetShowPaintRectsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowPaintRectsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowPaintRectsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing paint rectangles
-         * @return the protocol field value
-         */
-        @Nullable public Boolean result() {
-            return (Boolean) value("result");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing paint rectangles
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder result(@Nullable Boolean value) {
-                if (value == null) values.remove("result");
-                else values.put("result", jsonValue(value));
-                return this;
-            }
-            public SetShowPaintRectsParams build() {
-                if (!values.containsKey("result")) throw new IllegalStateException("Missing required CDP field: result");
-                return new SetShowPaintRectsParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows paint rectangles
-     */
-    public static final class SetShowPaintRectsResult extends CdpObject {
-        private SetShowPaintRectsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowPaintRectsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowPaintRectsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowPaintRectsResult build() {
-                return new SetShowPaintRectsResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows layout shift regions
-     */
-    public static final class SetShowLayoutShiftRegionsParams extends CdpObject {
-        private SetShowLayoutShiftRegionsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowLayoutShiftRegionsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowLayoutShiftRegionsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing layout shift regions
-         * @return the protocol field value
-         */
-        @Nullable public Boolean result() {
-            return (Boolean) value("result");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing layout shift regions
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder result(@Nullable Boolean value) {
-                if (value == null) values.remove("result");
-                else values.put("result", jsonValue(value));
-                return this;
-            }
-            public SetShowLayoutShiftRegionsParams build() {
-                if (!values.containsKey("result")) throw new IllegalStateException("Missing required CDP field: result");
-                return new SetShowLayoutShiftRegionsParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows layout shift regions
-     */
-    public static final class SetShowLayoutShiftRegionsResult extends CdpObject {
-        private SetShowLayoutShiftRegionsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowLayoutShiftRegionsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowLayoutShiftRegionsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowLayoutShiftRegionsResult build() {
-                return new SetShowLayoutShiftRegionsResult(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows scroll bottleneck rects
-     */
-    public static final class SetShowScrollBottleneckRectsParams extends CdpObject {
-        private SetShowScrollBottleneckRectsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowScrollBottleneckRectsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowScrollBottleneckRectsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing scroll bottleneck rects
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing scroll bottleneck rects
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowScrollBottleneckRectsParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowScrollBottleneckRectsParams(values);
-            }
-        }
-    }
-    /**
-     * Requests that backend shows scroll bottleneck rects
-     */
-    public static final class SetShowScrollBottleneckRectsResult extends CdpObject {
-        private SetShowScrollBottleneckRectsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowScrollBottleneckRectsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowScrollBottleneckRectsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowScrollBottleneckRectsResult build() {
-                return new SetShowScrollBottleneckRectsResult(values);
-            }
-        }
-    }
-    /**
-     * Deprecated, no longer has any effect.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SetShowHitTestBordersParams extends CdpObject {
-        private SetShowHitTestBordersParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowHitTestBordersParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowHitTestBordersParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * True for showing hit-test borders
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * True for showing hit-test borders
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowHitTestBordersParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowHitTestBordersParams(values);
-            }
-        }
-    }
-    /**
-     * Deprecated, no longer has any effect.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SetShowHitTestBordersResult extends CdpObject {
-        private SetShowHitTestBordersResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowHitTestBordersResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowHitTestBordersResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowHitTestBordersResult build() {
-                return new SetShowHitTestBordersResult(values);
-            }
-        }
-    }
-    /**
-     * Deprecated, no longer has any effect.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SetShowWebVitalsParams extends CdpObject {
-        private SetShowWebVitalsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowWebVitalsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowWebVitalsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the show field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the show field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowWebVitalsParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowWebVitalsParams(values);
-            }
-        }
-    }
-    /**
-     * Deprecated, no longer has any effect.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SetShowWebVitalsResult extends CdpObject {
-        private SetShowWebVitalsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowWebVitalsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowWebVitalsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowWebVitalsResult build() {
-                return new SetShowWebVitalsResult(values);
-            }
-        }
-    }
-    /**
-     * Paints viewport size upon main frame resize.
-     */
-    public static final class SetShowViewportSizeOnResizeParams extends CdpObject {
-        private SetShowViewportSizeOnResizeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowViewportSizeOnResizeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowViewportSizeOnResizeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Whether to paint size or not.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean show() {
-            return (Boolean) value("show");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether to paint size or not.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder show(@Nullable Boolean value) {
-                if (value == null) values.remove("show");
-                else values.put("show", jsonValue(value));
-                return this;
-            }
-            public SetShowViewportSizeOnResizeParams build() {
-                if (!values.containsKey("show")) throw new IllegalStateException("Missing required CDP field: show");
-                return new SetShowViewportSizeOnResizeParams(values);
-            }
-        }
-    }
-    /**
-     * Paints viewport size upon main frame resize.
-     */
-    public static final class SetShowViewportSizeOnResizeResult extends CdpObject {
-        private SetShowViewportSizeOnResizeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowViewportSizeOnResizeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowViewportSizeOnResizeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowViewportSizeOnResizeResult build() {
-                return new SetShowViewportSizeOnResizeResult(values);
-            }
-        }
-    }
-    /**
-     * Add a dual screen device hinge
-     */
-    public static final class SetShowHingeParams extends CdpObject {
-        private SetShowHingeParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowHingeParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowHingeParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * hinge data, null means hideHinge
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.HingeConfig hingeConfig() {
-            return Overlay.HingeConfig.fromMap(objectMap(value("hingeConfig")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * hinge data, null means hideHinge
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hingeConfig(@Nullable Overlay.HingeConfig value) {
-                if (value == null) values.remove("hingeConfig");
-                else values.put("hingeConfig", jsonValue(value));
-                return this;
-            }
-            public SetShowHingeParams build() {
-                return new SetShowHingeParams(values);
-            }
-        }
-    }
-    /**
-     * Add a dual screen device hinge
-     */
-    public static final class SetShowHingeResult extends CdpObject {
-        private SetShowHingeResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowHingeResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowHingeResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowHingeResult build() {
-                return new SetShowHingeResult(values);
-            }
-        }
-    }
-    /**
-     * Show elements in isolation mode with overlays.
-     */
-    public static final class SetShowIsolatedElementsParams extends CdpObject {
-        private SetShowIsolatedElementsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowIsolatedElementsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowIsolatedElementsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An array of node identifiers and descriptors for the highlight appearance.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs() {
-            return list(value("isolatedElementHighlightConfigs"), element0 -> Overlay.IsolatedElementHighlightConfig.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of node identifiers and descriptors for the highlight appearance.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isolatedElementHighlightConfigs(@Nullable java.util.List<Overlay.IsolatedElementHighlightConfig> value) {
-                if (value == null) values.remove("isolatedElementHighlightConfigs");
-                else values.put("isolatedElementHighlightConfigs", jsonValue(value));
-                return this;
-            }
-            public SetShowIsolatedElementsParams build() {
-                if (!values.containsKey("isolatedElementHighlightConfigs")) throw new IllegalStateException("Missing required CDP field: isolatedElementHighlightConfigs");
-                return new SetShowIsolatedElementsParams(values);
-            }
-        }
-    }
-    /**
-     * Show elements in isolation mode with overlays.
-     */
-    public static final class SetShowIsolatedElementsResult extends CdpObject {
-        private SetShowIsolatedElementsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowIsolatedElementsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowIsolatedElementsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowIsolatedElementsResult build() {
-                return new SetShowIsolatedElementsResult(values);
-            }
-        }
-    }
-    /**
-     * Show Window Controls Overlay for PWA
-     */
-    public static final class SetShowWindowControlsOverlayParams extends CdpObject {
-        private SetShowWindowControlsOverlayParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowWindowControlsOverlayParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowWindowControlsOverlayParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Window Controls Overlay data, null means hide Window Controls Overlay
-         * @return the protocol field value
-         */
-        @Nullable public Overlay.WindowControlsOverlayConfig windowControlsOverlayConfig() {
-            return Overlay.WindowControlsOverlayConfig.fromMap(objectMap(value("windowControlsOverlayConfig")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Window Controls Overlay data, null means hide Window Controls Overlay
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder windowControlsOverlayConfig(@Nullable Overlay.WindowControlsOverlayConfig value) {
-                if (value == null) values.remove("windowControlsOverlayConfig");
-                else values.put("windowControlsOverlayConfig", jsonValue(value));
-                return this;
-            }
-            public SetShowWindowControlsOverlayParams build() {
-                return new SetShowWindowControlsOverlayParams(values);
-            }
-        }
-    }
-    /**
-     * Show Window Controls Overlay for PWA
-     */
-    public static final class SetShowWindowControlsOverlayResult extends CdpObject {
-        private SetShowWindowControlsOverlayResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetShowWindowControlsOverlayResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetShowWindowControlsOverlayResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetShowWindowControlsOverlayResult build() {
-                return new SetShowWindowControlsOverlayResult(values);
-            }
+        public InspectedElementAnchorConfig backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
     }
     /**
      * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.
      */
     public static final class InspectNodeRequestedEvent extends CdpObject {
+        public InspectNodeRequestedEvent() {}
         private InspectNodeRequestedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InspectNodeRequestedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InspectNodeRequestedEvent(values);
+        public static InspectNodeRequestedEvent fromMap(Map<String, Object> values) {
+            return new InspectNodeRequestedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node to inspect.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to inspect.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            public InspectNodeRequestedEvent build() {
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                return new InspectNodeRequestedEvent(values);
-            }
+        /**
+         * Id of the node to inspect.
+         * @param backendNodeId field value
+         * @return this model
+         */
+        public InspectNodeRequestedEvent backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
     }
     /**
      * Fired when the node should be highlighted. This happens after call to {@code setInspectMode}.
      */
     public static final class NodeHighlightRequestedEvent extends CdpObject {
+        public NodeHighlightRequestedEvent() {}
         private NodeHighlightRequestedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static NodeHighlightRequestedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new NodeHighlightRequestedEvent(values);
+        public static NodeHighlightRequestedEvent fromMap(Map<String, Object> values) {
+            return new NodeHighlightRequestedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the nodeId field.
          * @return the protocol field value
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public DOM.NodeId nodeId() {
+            return new DOM.NodeId(((Number) require("nodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the nodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public NodeHighlightRequestedEvent build() {
-                if (!values.containsKey("nodeId")) throw new IllegalStateException("Missing required CDP field: nodeId");
-                return new NodeHighlightRequestedEvent(values);
-            }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value
+         * @return this model
+         */
+        public NodeHighlightRequestedEvent nodeId(DOM.NodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      * Fired when user asks to capture screenshot of some area on the page.
      */
     public static final class ScreenshotRequestedEvent extends CdpObject {
+        public ScreenshotRequestedEvent() {}
         private ScreenshotRequestedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ScreenshotRequestedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScreenshotRequestedEvent(values);
+        public static ScreenshotRequestedEvent fromMap(Map<String, Object> values) {
+            return new ScreenshotRequestedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Viewport to capture, in device independent pixels (dip).
          * @return the protocol field value
          */
-        @Nullable public Page.Viewport viewport() {
-            return Page.Viewport.fromMap(objectMap(value("viewport")));
+        public Page.Viewport viewport() {
+            return java.util.Objects.requireNonNull(Page.Viewport.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("viewport")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Viewport to capture, in device independent pixels (dip).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder viewport(@Nullable Page.Viewport value) {
-                if (value == null) values.remove("viewport");
-                else values.put("viewport", jsonValue(value));
-                return this;
-            }
-            public ScreenshotRequestedEvent build() {
-                if (!values.containsKey("viewport")) throw new IllegalStateException("Missing required CDP field: viewport");
-                return new ScreenshotRequestedEvent(values);
-            }
+        /**
+         * Viewport to capture, in device independent pixels (dip).
+         * @param viewport field value
+         * @return this model
+         */
+        public ScreenshotRequestedEvent viewport(Page.Viewport viewport) {
+            set("viewport", viewport);
+            return this;
         }
     }
     /**
      * Fired when user asks to show the Inspect panel.
      */
     public static final class InspectPanelShowRequestedEvent extends CdpObject {
+        public InspectPanelShowRequestedEvent() {}
         private InspectPanelShowRequestedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InspectPanelShowRequestedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InspectPanelShowRequestedEvent(values);
+        public static InspectPanelShowRequestedEvent fromMap(Map<String, Object> values) {
+            return new InspectPanelShowRequestedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node to show in the panel.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to show in the panel.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            public InspectPanelShowRequestedEvent build() {
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                return new InspectPanelShowRequestedEvent(values);
-            }
+        /**
+         * Id of the node to show in the panel.
+         * @param backendNodeId field value
+         * @return this model
+         */
+        public InspectPanelShowRequestedEvent backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
     }
     /**
      * Fired when user asks to restore the Inspected Element floating window.
      */
     public static final class InspectedElementWindowRestoredEvent extends CdpObject {
+        public InspectedElementWindowRestoredEvent() {}
         private InspectedElementWindowRestoredEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InspectedElementWindowRestoredEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InspectedElementWindowRestoredEvent(values);
+        public static InspectedElementWindowRestoredEvent fromMap(Map<String, Object> values) {
+            return new InspectedElementWindowRestoredEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Id of the node to restore the floating window for.
          * @return the protocol field value
          */
-        @Nullable public Long backendNodeId() {
-            return numberAsLong(value("backendNodeId"));
+        public DOM.BackendNodeId backendNodeId() {
+            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of the node to restore the floating window for.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder backendNodeId(@Nullable Long value) {
-                if (value == null) values.remove("backendNodeId");
-                else values.put("backendNodeId", jsonValue(value));
-                return this;
-            }
-            public InspectedElementWindowRestoredEvent build() {
-                if (!values.containsKey("backendNodeId")) throw new IllegalStateException("Missing required CDP field: backendNodeId");
-                return new InspectedElementWindowRestoredEvent(values);
-            }
+        /**
+         * Id of the node to restore the floating window for.
+         * @param backendNodeId field value
+         * @return this model
+         */
+        public InspectedElementWindowRestoredEvent backendNodeId(DOM.BackendNodeId backendNodeId) {
+            set("backendNodeId", backendNodeId);
+            return this;
         }
     }
     /**
      * Fired when user cancels the inspect mode.
      */
     public static final class InspectModeCanceledEvent extends CdpObject {
+        public InspectModeCanceledEvent() {}
         private InspectModeCanceledEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static InspectModeCanceledEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new InspectModeCanceledEvent(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public InspectModeCanceledEvent build() {
-                return new InspectModeCanceledEvent(values);
-            }
+        public static InspectModeCanceledEvent fromMap(Map<String, Object> values) {
+            return new InspectModeCanceledEvent(values);
         }
     }
     public static final class Client {
@@ -3834,267 +2353,424 @@ public final class Overlay {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Disables domain notifications.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("Overlay.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("Overlay.disable", null, result_ -> null);
         }
         /**
          * Enables domain notifications.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return client.call("Overlay.enable", null, EnableResult::fromMap);
+        public CompletionStage<Void> enable() {
+            return client.call("Overlay.enable", null, result_ -> null);
         }
         /**
          * For testing.
-         * @param params command parameters
+         * @param nodeId protocol value
+         * @param includeDistance protocol value
+         * @param includeStyle protocol value
+         * @param colorFormat protocol value
+         * @param showAccessibilityInfo protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetHighlightObjectForTestResult> getHighlightObjectForTest(GetHighlightObjectForTestParams params) {
-            return client.call("Overlay.getHighlightObjectForTest", params, GetHighlightObjectForTestResult::fromMap);
+        public CompletionStage<java.util.Map<String, Object>> getHighlightObjectForTest(DOM.NodeId nodeId, Optional<Boolean> includeDistance, Optional<Boolean> includeStyle, Optional<Overlay.ColorFormat> colorFormat, Optional<Boolean> showAccessibilityInfo) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            includeDistance.ifPresent(value_ -> params.put("includeDistance", value_));
+            includeStyle.ifPresent(value_ -> params.put("includeStyle", value_));
+            colorFormat.ifPresent(value_ -> params.put("colorFormat", CdpObject.json(value_)));
+            showAccessibilityInfo.ifPresent(value_ -> params.put("showAccessibilityInfo", value_));
+            return client.call("Overlay.getHighlightObjectForTest", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlight")))));
+        }
+        /**
+         * For testing.
+         * @param nodeId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<java.util.Map<String, Object>> getHighlightObjectForTest(DOM.NodeId nodeId) {
+            return getHighlightObjectForTest(nodeId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * For Persistent Grid testing.
-         * @param params command parameters
+         * @param nodeIds protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetGridHighlightObjectsForTestResult> getGridHighlightObjectsForTest(GetGridHighlightObjectsForTestParams params) {
-            return client.call("Overlay.getGridHighlightObjectsForTest", params, GetGridHighlightObjectsForTestResult::fromMap);
+        public CompletionStage<java.util.Map<String, Object>> getGridHighlightObjectsForTest(java.util.List<DOM.NodeId> nodeIds) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeIds", CdpObject.json(nodeIds));
+            return client.call("Overlay.getGridHighlightObjectsForTest", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlights")))));
         }
         /**
          * For Source Order Viewer testing.
-         * @param params command parameters
+         * @param nodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetSourceOrderHighlightObjectForTestResult> getSourceOrderHighlightObjectForTest(GetSourceOrderHighlightObjectForTestParams params) {
-            return client.call("Overlay.getSourceOrderHighlightObjectForTest", params, GetSourceOrderHighlightObjectForTestResult::fromMap);
+        public CompletionStage<java.util.Map<String, Object>> getSourceOrderHighlightObjectForTest(DOM.NodeId nodeId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("Overlay.getSourceOrderHighlightObjectForTest", params, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("highlight")))));
         }
         /**
          * Hides any highlight.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HideHighlightResult> hideHighlight() {
-            return client.call("Overlay.hideHighlight", null, HideHighlightResult::fromMap);
+        public CompletionStage<Void> hideHighlight() {
+            return client.call("Overlay.hideHighlight", null, result_ -> null);
         }
         /**
          * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param frameId protocol value
+         * @param contentColor protocol value
+         * @param contentOutlineColor protocol value
+         * @return a stage completing when the command completes
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<HighlightFrameResult> highlightFrame(HighlightFrameParams params) {
-            return client.call("Overlay.highlightFrame", params, HighlightFrameResult::fromMap);
+        public CompletionStage<Void> highlightFrame(Page.FrameId frameId, Optional<DOM.RGBA> contentColor, Optional<DOM.RGBA> contentOutlineColor) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            contentColor.ifPresent(value_ -> params.put("contentColor", CdpObject.json(value_)));
+            contentOutlineColor.ifPresent(value_ -> params.put("contentOutlineColor", CdpObject.json(value_)));
+            return client.call("Overlay.highlightFrame", params, result_ -> null);
+        }
+        /**
+         * Highlights owner element of the frame with given id. Deprecated: Doesn&#x27;t work reliably and cannot be fixed due to process separation (the owner node might be in a different process). Determine the owner node in the client and use highlightNode.
+         * @param frameId protocol value
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> highlightFrame(Page.FrameId frameId) {
+            return highlightFrame(frameId, Optional.empty(), Optional.empty());
         }
         /**
          * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param highlightConfig protocol value
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @param selector protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightNodeResult> highlightNode(HighlightNodeParams params) {
-            return client.call("Overlay.highlightNode", params, HighlightNodeResult::fromMap);
+        public CompletionStage<Void> highlightNode(Overlay.HighlightConfig highlightConfig, Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<String> selector) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("highlightConfig", CdpObject.json(highlightConfig));
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            selector.ifPresent(value_ -> params.put("selector", CdpObject.json(value_)));
+            return client.call("Overlay.highlightNode", params, result_ -> null);
+        }
+        /**
+         * Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param highlightConfig protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightNode(Overlay.HighlightConfig highlightConfig) {
+            return highlightNode(highlightConfig, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param quad protocol value
+         * @param color protocol value
+         * @param outlineColor protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightQuadResult> highlightQuad(HighlightQuadParams params) {
-            return client.call("Overlay.highlightQuad", params, HighlightQuadResult::fromMap);
+        public CompletionStage<Void> highlightQuad(java.util.List<Double> quad, Optional<DOM.RGBA> color, Optional<DOM.RGBA> outlineColor) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("quad", CdpObject.json(quad));
+            color.ifPresent(value_ -> params.put("color", CdpObject.json(value_)));
+            outlineColor.ifPresent(value_ -> params.put("outlineColor", CdpObject.json(value_)));
+            return client.call("Overlay.highlightQuad", params, result_ -> null);
+        }
+        /**
+         * Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
+         * @param quad protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightQuad(java.util.List<Double> quad) {
+            return highlightQuad(quad, Optional.empty(), Optional.empty());
         }
         /**
          * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param x protocol value
+         * @param y protocol value
+         * @param width protocol value
+         * @param height protocol value
+         * @param color protocol value
+         * @param outlineColor protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightRectResult> highlightRect(HighlightRectParams params) {
-            return client.call("Overlay.highlightRect", params, HighlightRectResult::fromMap);
+        public CompletionStage<Void> highlightRect(long x, long y, long width, long height, Optional<DOM.RGBA> color, Optional<DOM.RGBA> outlineColor) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            params.put("width", CdpObject.json(width));
+            params.put("height", CdpObject.json(height));
+            color.ifPresent(value_ -> params.put("color", CdpObject.json(value_)));
+            outlineColor.ifPresent(value_ -> params.put("outlineColor", CdpObject.json(value_)));
+            return client.call("Overlay.highlightRect", params, result_ -> null);
+        }
+        /**
+         * Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport. Issue: the method does not handle device pixel ratio (DPR) correctly. The coordinates currently have to be adjusted by the client if DPR is not 1 (see crbug.com/437807128).
+         * @param x protocol value
+         * @param y protocol value
+         * @param width protocol value
+         * @param height protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightRect(long x, long y, long width, long height) {
+            return highlightRect(x, y, width, height, Optional.empty(), Optional.empty());
         }
         /**
          * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param sourceOrderConfig protocol value
+         * @param nodeId protocol value
+         * @param backendNodeId protocol value
+         * @param objectId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<HighlightSourceOrderResult> highlightSourceOrder(HighlightSourceOrderParams params) {
-            return client.call("Overlay.highlightSourceOrder", params, HighlightSourceOrderResult::fromMap);
+        public CompletionStage<Void> highlightSourceOrder(Overlay.SourceOrderConfig sourceOrderConfig, Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("sourceOrderConfig", CdpObject.json(sourceOrderConfig));
+            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
+            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            return client.call("Overlay.highlightSourceOrder", params, result_ -> null);
+        }
+        /**
+         * Highlights the source order of the children of the DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
+         * @param sourceOrderConfig protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> highlightSourceOrder(Overlay.SourceOrderConfig sourceOrderConfig) {
+            return highlightSourceOrder(sourceOrderConfig, Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param mode protocol value
+         * @param highlightConfig protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetInspectModeResult> setInspectMode(SetInspectModeParams params) {
-            return client.call("Overlay.setInspectMode", params, SetInspectModeResult::fromMap);
+        public CompletionStage<Void> setInspectMode(Overlay.InspectMode mode, Optional<Overlay.HighlightConfig> highlightConfig) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("mode", CdpObject.json(mode));
+            highlightConfig.ifPresent(value_ -> params.put("highlightConfig", CdpObject.json(value_)));
+            return client.call("Overlay.setInspectMode", params, result_ -> null);
+        }
+        /**
+         * Enters the &#x27;inspect&#x27; mode. In this mode, elements that user is hovering over are highlighted. Backend then generates &#x27;inspectNodeRequested&#x27; event upon element selection.
+         * @param mode protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setInspectMode(Overlay.InspectMode mode) {
+            return setInspectMode(mode, Optional.empty());
         }
         /**
          * Highlights owner element of all frames detected to be ads.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowAdHighlightsResult> setShowAdHighlights(SetShowAdHighlightsParams params) {
-            return client.call("Overlay.setShowAdHighlights", params, SetShowAdHighlightsResult::fromMap);
+        public CompletionStage<Void> setShowAdHighlights(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowAdHighlights", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setPausedInDebuggerMessage.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param message protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetPausedInDebuggerMessageResult> setPausedInDebuggerMessage(SetPausedInDebuggerMessageParams params) {
-            return client.call("Overlay.setPausedInDebuggerMessage", params, SetPausedInDebuggerMessageResult::fromMap);
+        public CompletionStage<Void> setPausedInDebuggerMessage(Optional<String> message) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            message.ifPresent(value_ -> params.put("message", CdpObject.json(value_)));
+            return client.call("Overlay.setPausedInDebuggerMessage", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setPausedInDebuggerMessage with default parameters.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetPausedInDebuggerMessageResult> setPausedInDebuggerMessage() {
-            return setPausedInDebuggerMessage(SetPausedInDebuggerMessageParams.builder().build());
+        public CompletionStage<Void> setPausedInDebuggerMessage() {
+            return setPausedInDebuggerMessage(Optional.empty());
         }
         /**
          * Requests that backend shows debug borders on layers
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowDebugBordersResult> setShowDebugBorders(SetShowDebugBordersParams params) {
-            return client.call("Overlay.setShowDebugBorders", params, SetShowDebugBordersResult::fromMap);
+        public CompletionStage<Void> setShowDebugBorders(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowDebugBorders", params, result_ -> null);
         }
         /**
          * Requests that backend shows the FPS counter
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowFPSCounterResult> setShowFPSCounter(SetShowFPSCounterParams params) {
-            return client.call("Overlay.setShowFPSCounter", params, SetShowFPSCounterResult::fromMap);
+        public CompletionStage<Void> setShowFPSCounter(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowFPSCounter", params, result_ -> null);
         }
         /**
          * Highlight multiple elements with the CSS Grid overlay.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param gridNodeHighlightConfigs protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowGridOverlaysResult> setShowGridOverlays(SetShowGridOverlaysParams params) {
-            return client.call("Overlay.setShowGridOverlays", params, SetShowGridOverlaysResult::fromMap);
+        public CompletionStage<Void> setShowGridOverlays(java.util.List<Overlay.GridNodeHighlightConfig> gridNodeHighlightConfigs) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("gridNodeHighlightConfigs", CdpObject.json(gridNodeHighlightConfigs));
+            return client.call("Overlay.setShowGridOverlays", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setShowFlexOverlays.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param flexNodeHighlightConfigs protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowFlexOverlaysResult> setShowFlexOverlays(SetShowFlexOverlaysParams params) {
-            return client.call("Overlay.setShowFlexOverlays", params, SetShowFlexOverlaysResult::fromMap);
+        public CompletionStage<Void> setShowFlexOverlays(java.util.List<Overlay.FlexNodeHighlightConfig> flexNodeHighlightConfigs) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("flexNodeHighlightConfigs", CdpObject.json(flexNodeHighlightConfigs));
+            return client.call("Overlay.setShowFlexOverlays", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setShowScrollSnapOverlays.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param scrollSnapHighlightConfigs protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowScrollSnapOverlaysResult> setShowScrollSnapOverlays(SetShowScrollSnapOverlaysParams params) {
-            return client.call("Overlay.setShowScrollSnapOverlays", params, SetShowScrollSnapOverlaysResult::fromMap);
+        public CompletionStage<Void> setShowScrollSnapOverlays(java.util.List<Overlay.ScrollSnapHighlightConfig> scrollSnapHighlightConfigs) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scrollSnapHighlightConfigs", CdpObject.json(scrollSnapHighlightConfigs));
+            return client.call("Overlay.setShowScrollSnapOverlays", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setShowContainerQueryOverlays.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param containerQueryHighlightConfigs protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowContainerQueryOverlaysResult> setShowContainerQueryOverlays(SetShowContainerQueryOverlaysParams params) {
-            return client.call("Overlay.setShowContainerQueryOverlays", params, SetShowContainerQueryOverlaysResult::fromMap);
+        public CompletionStage<Void> setShowContainerQueryOverlays(java.util.List<Overlay.ContainerQueryHighlightConfig> containerQueryHighlightConfigs) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("containerQueryHighlightConfigs", CdpObject.json(containerQueryHighlightConfigs));
+            return client.call("Overlay.setShowContainerQueryOverlays", params, result_ -> null);
         }
         /**
          * Invokes Overlay.setShowInspectedElementAnchor.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param inspectedElementAnchorConfig protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowInspectedElementAnchorResult> setShowInspectedElementAnchor(SetShowInspectedElementAnchorParams params) {
-            return client.call("Overlay.setShowInspectedElementAnchor", params, SetShowInspectedElementAnchorResult::fromMap);
+        public CompletionStage<Void> setShowInspectedElementAnchor(Overlay.InspectedElementAnchorConfig inspectedElementAnchorConfig) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("inspectedElementAnchorConfig", CdpObject.json(inspectedElementAnchorConfig));
+            return client.call("Overlay.setShowInspectedElementAnchor", params, result_ -> null);
         }
         /**
          * Requests that backend shows paint rectangles
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param result protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowPaintRectsResult> setShowPaintRects(SetShowPaintRectsParams params) {
-            return client.call("Overlay.setShowPaintRects", params, SetShowPaintRectsResult::fromMap);
+        public CompletionStage<Void> setShowPaintRects(boolean result) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("result", CdpObject.json(result));
+            return client.call("Overlay.setShowPaintRects", params, result_ -> null);
         }
         /**
          * Requests that backend shows layout shift regions
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param result protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowLayoutShiftRegionsResult> setShowLayoutShiftRegions(SetShowLayoutShiftRegionsParams params) {
-            return client.call("Overlay.setShowLayoutShiftRegions", params, SetShowLayoutShiftRegionsResult::fromMap);
+        public CompletionStage<Void> setShowLayoutShiftRegions(boolean result) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("result", CdpObject.json(result));
+            return client.call("Overlay.setShowLayoutShiftRegions", params, result_ -> null);
         }
         /**
          * Requests that backend shows scroll bottleneck rects
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowScrollBottleneckRectsResult> setShowScrollBottleneckRects(SetShowScrollBottleneckRectsParams params) {
-            return client.call("Overlay.setShowScrollBottleneckRects", params, SetShowScrollBottleneckRectsResult::fromMap);
+        public CompletionStage<Void> setShowScrollBottleneckRects(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowScrollBottleneckRects", params, result_ -> null);
         }
         /**
          * Deprecated, no longer has any effect.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<SetShowHitTestBordersResult> setShowHitTestBorders(SetShowHitTestBordersParams params) {
-            return client.call("Overlay.setShowHitTestBorders", params, SetShowHitTestBordersResult::fromMap);
+        public CompletionStage<Void> setShowHitTestBorders(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowHitTestBorders", params, result_ -> null);
         }
         /**
          * Deprecated, no longer has any effect.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<SetShowWebVitalsResult> setShowWebVitals(SetShowWebVitalsParams params) {
-            return client.call("Overlay.setShowWebVitals", params, SetShowWebVitalsResult::fromMap);
+        public CompletionStage<Void> setShowWebVitals(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowWebVitals", params, result_ -> null);
         }
         /**
          * Paints viewport size upon main frame resize.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param show protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowViewportSizeOnResizeResult> setShowViewportSizeOnResize(SetShowViewportSizeOnResizeParams params) {
-            return client.call("Overlay.setShowViewportSizeOnResize", params, SetShowViewportSizeOnResizeResult::fromMap);
+        public CompletionStage<Void> setShowViewportSizeOnResize(boolean show) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("show", CdpObject.json(show));
+            return client.call("Overlay.setShowViewportSizeOnResize", params, result_ -> null);
         }
         /**
          * Add a dual screen device hinge
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param hingeConfig protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowHingeResult> setShowHinge(SetShowHingeParams params) {
-            return client.call("Overlay.setShowHinge", params, SetShowHingeResult::fromMap);
+        public CompletionStage<Void> setShowHinge(Optional<Overlay.HingeConfig> hingeConfig) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            hingeConfig.ifPresent(value_ -> params.put("hingeConfig", CdpObject.json(value_)));
+            return client.call("Overlay.setShowHinge", params, result_ -> null);
         }
         /**
          * Add a dual screen device hinge
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowHingeResult> setShowHinge() {
-            return setShowHinge(SetShowHingeParams.builder().build());
+        public CompletionStage<Void> setShowHinge() {
+            return setShowHinge(Optional.empty());
         }
         /**
          * Show elements in isolation mode with overlays.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param isolatedElementHighlightConfigs protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowIsolatedElementsResult> setShowIsolatedElements(SetShowIsolatedElementsParams params) {
-            return client.call("Overlay.setShowIsolatedElements", params, SetShowIsolatedElementsResult::fromMap);
+        public CompletionStage<Void> setShowIsolatedElements(java.util.List<Overlay.IsolatedElementHighlightConfig> isolatedElementHighlightConfigs) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("isolatedElementHighlightConfigs", CdpObject.json(isolatedElementHighlightConfigs));
+            return client.call("Overlay.setShowIsolatedElements", params, result_ -> null);
         }
         /**
          * Show Window Controls Overlay for PWA
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param windowControlsOverlayConfig protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowWindowControlsOverlayResult> setShowWindowControlsOverlay(SetShowWindowControlsOverlayParams params) {
-            return client.call("Overlay.setShowWindowControlsOverlay", params, SetShowWindowControlsOverlayResult::fromMap);
+        public CompletionStage<Void> setShowWindowControlsOverlay(Optional<Overlay.WindowControlsOverlayConfig> windowControlsOverlayConfig) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            windowControlsOverlayConfig.ifPresent(value_ -> params.put("windowControlsOverlayConfig", CdpObject.json(value_)));
+            return client.call("Overlay.setShowWindowControlsOverlay", params, result_ -> null);
         }
         /**
          * Show Window Controls Overlay for PWA
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetShowWindowControlsOverlayResult> setShowWindowControlsOverlay() {
-            return setShowWindowControlsOverlay(SetShowWindowControlsOverlayParams.builder().build());
+        public CompletionStage<Void> setShowWindowControlsOverlay() {
+            return setShowWindowControlsOverlay(Optional.empty());
         }
         /**
          * Fired when the node should be inspected. This happens after call to {@code setInspectMode} or when user manually inspects an element.

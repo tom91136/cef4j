@@ -17,23 +17,26 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.Cef;
+import net.kurobako.cef4j.test.DisplayLock;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
+@ExtendWith(DisplayLock.class)
 class CefWebViewV117PlusInputTest {
 
     @BeforeAll
     static void setup(@TempDir Path tempDir) throws Exception {
         assumeDisplayServer();
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
-                .toAbsolutePath()
-                .toString();
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -55,7 +56,7 @@ public final class JfxBrowserApp {
             // JavaFX must establish its AppKit integration before CEF on macOS.
             CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.cachePath = createCacheDir().toAbsolutePath().toString();
-            CefWebView.initialise(settings, List.of(), null);
+            CefWebView.initialise(settings, List.of(), Optional.empty());
 
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);

@@ -19,25 +19,21 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-cdp</artifactId>
-            <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-core</artifactId>
-            <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-api</artifactId>
-            <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-webdriver</artifactId>
-            <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

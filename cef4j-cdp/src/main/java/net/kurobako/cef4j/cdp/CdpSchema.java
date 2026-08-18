@@ -22,17 +22,6 @@ public final class CdpSchema {
         return PROPERTIES.getProperty("v8.revision");
     }
 
-    public static String sha256() {
-        return PROPERTIES.getProperty("schema.sha256");
-    }
-
-    /** Opens the exact canonical JSON schema bundled with this artifact. The caller closes the stream. */
-    public static InputStream openProtocol() {
-        InputStream stream = CdpSchema.class.getClassLoader().getResourceAsStream("META-INF/cef4j/cdp/protocol.json");
-        if (stream == null) throw new IllegalStateException("Missing bundled CDP protocol schema");
-        return stream;
-    }
-
     /**
      * Queries {@code Browser.getVersion} and rejects a Chromium build different from the generated schema. This uses
      * the existing CDP channel; it never launches CEF or enables a debugging port.
@@ -41,7 +30,7 @@ public final class CdpSchema {
         Objects.requireNonNull(client, "client");
         return client.domains().browser().getVersion().thenApply(result -> {
             String product = result.product();
-            if (product == null || !product.endsWith("/" + chromiumVersion())) {
+            if (!product.endsWith("/" + chromiumVersion())) {
                 throw new CdpVersionMismatchException(chromiumVersion(), product);
             }
             return result;

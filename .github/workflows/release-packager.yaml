@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: corretto
-          java-version: '11'
+          java-version: '17'
           cache: maven
           cache-dependency-path: cef4j-runtime-packager/pom.xml
           server-id: central

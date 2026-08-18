@@ -3,12 +3,15 @@ package net.kurobako.cef4j.osr.swing.test;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.OS;
 import net.kurobako.cef4j.osr.swing.CefBrowserPanel;
+import net.kurobako.cef4j.test.DisplayLock;
 import net.kurobako.cef4j.test.backend.BrowserContract;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @Timeout(90)
+@ExtendWith(DisplayLock.class)
 class NativeSwingContractTest {
     @AfterAll
     static void shutdown() throws Exception {

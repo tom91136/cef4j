@@ -1,0 +1,13 @@
+name: Install Linux build and runtime prerequisites
+description: Install packages required to build and run Linux CEF tests
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang lld cmake make binutils xvfb \
+          libgtk-3-0 libxss1 libnss3 libasound2t64 libcups2 \
+          libxcomposite1 libxdamage1 libxrandr2 libxtst6 \
+          libpango-1.0-0 libatk-bridge2.0-0 libdrm2 libgbm1

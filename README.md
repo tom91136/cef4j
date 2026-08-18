@@ -147,10 +147,7 @@ hatch, and in-process and remote transports. Add `cef4j-codecs-gson` or `cef4j-c
 ```java
 CdpClient cdp = new CdpClient(devToolsSession, new GsonCdpCodec());
 Runtime.EvaluateResult result = cdp.domains().runtime()
-    .evaluate(Runtime.EvaluateParams.builder()
-        .expression("document.title")
-        .returnByValue(true)
-        .build())
+    .evaluate("document.title")
     .toCompletableFuture().join();
 ```
 

@@ -33,8 +33,11 @@ import org.w3c.dom.Document;
  * <p>The API intentionally tracks the most common {@code WebEngine} entry points first. Callers that need full CEF
  * control can drop down to the owning {@link CefWebView}.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "NullableForbidden"}) // JavaFX bean accessors treat unset properties as null
 public final class CefWebEngine {
+    // Chromium truncates data: URLs around 2 MB; reject larger content up front instead of silently loading a prefix.
+    private static final int MAX_DATA_URL_CONTENT_BYTES = 2 * 1024 * 1024;
+
     private final CefWebView view;
     private final CefWebHistory history;
     private final CefLoadWorker loadWorker;
@@ -102,6 +105,10 @@ public final class CefWebEngine {
         suppressNavigationHistory = true;
         String mime = contentType == null || contentType.isEmpty() ? "text/html" : contentType;
         String body = content == null ? "" : content;
+        if (body.getBytes(StandardCharsets.UTF_8).length > MAX_DATA_URL_CONTENT_BYTES) {
+            throw new IllegalArgumentException(
+                    "content exceeds the data: URL limit of " + MAX_DATA_URL_CONTENT_BYTES + " bytes");
+        }
         String encoded = URLEncoder.encode(body, StandardCharsets.UTF_8).replace("+", "%20");
         loadInternal("data:" + mime + ";charset=UTF-8," + encoded);
     }

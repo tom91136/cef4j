@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain is deprecated.
@@ -18,111 +22,49 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  */
 @Deprecated
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Schema {
     private Schema() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Description of the protocol domain.
      */
     public static final class Domain extends CdpObject {
+        public Domain() {}
         private Domain(Map<String, Object> values) { super(values); }
-        @Nullable public static Domain fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Domain(values);
+        public static Domain fromMap(Map<String, Object> values) {
+            return new Domain(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Domain name.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Domain version.
          * @return the protocol field value
          */
-        @Nullable public String version() {
-            return (String) value("version");
+        public String version() {
+            return (String) require("version");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Domain name.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Domain version.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder version(@Nullable String value) {
-                if (value == null) values.remove("version");
-                else values.put("version", jsonValue(value));
-                return this;
-            }
-            public Domain build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("version")) throw new IllegalStateException("Missing required CDP field: version");
-                return new Domain(values);
-            }
-        }
-    }
-    /**
-     * Returns supported domains.
-     */
-    public static final class GetDomainsParams extends CdpObject {
-        private GetDomainsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDomainsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDomainsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetDomainsParams build() {
-                return new GetDomainsParams(values);
-            }
-        }
-    }
-    /**
-     * Returns supported domains.
-     */
-    public static final class GetDomainsResult extends CdpObject {
-        private GetDomainsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDomainsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDomainsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * List of supported domains.
-         * @return the protocol field value
+         * Domain name.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public java.util.List<Schema.Domain> domains() {
-            return list(value("domains"), element0 -> Schema.Domain.fromMap(objectMap(element0)));
+        public Domain name(String name) {
+            set("name", name);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * List of supported domains.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder domains(@Nullable java.util.List<Schema.Domain> value) {
-                if (value == null) values.remove("domains");
-                else values.put("domains", jsonValue(value));
-                return this;
-            }
-            public GetDomainsResult build() {
-                if (!values.containsKey("domains")) throw new IllegalStateException("Missing required CDP field: domains");
-                return new GetDomainsResult(values);
-            }
+        /**
+         * Domain version.
+         * @param version field value
+         * @return this model
+         */
+        public Domain version(String version) {
+            set("version", version);
+            return this;
         }
     }
     public static final class Client {
@@ -132,8 +74,8 @@ public final class Schema {
          * Returns supported domains.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDomainsResult> getDomains() {
-            return client.call("Schema.getDomains", null, GetDomainsResult::fromMap);
+        public CompletionStage<java.util.List<Schema.Domain>> getDomains() {
+            return client.call("Schema.getDomains", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("domains")), element0 -> java.util.Objects.requireNonNull(Schema.Domain.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
     }
 }

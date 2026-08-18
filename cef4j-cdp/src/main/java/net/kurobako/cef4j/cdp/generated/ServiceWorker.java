@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol ServiceWorker domain.
@@ -17,1190 +21,519 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/ServiceWorker.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class ServiceWorker {
     private ServiceWorker() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Tagged String wire value for RegistrationID.
+     */
+    public static final class RegistrationID implements CdpValue<String> {
+        public final String value;
+        public RegistrationID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof RegistrationID)) return false;
+            return value.equals(((RegistrationID) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "RegistrationID(" + value + ")"; }
+    }
     /**
      * ServiceWorker registration.
      */
     public static final class ServiceWorkerRegistration extends CdpObject {
+        public ServiceWorkerRegistration() {}
         private ServiceWorkerRegistration(Map<String, Object> values) { super(values); }
-        @Nullable public static ServiceWorkerRegistration fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ServiceWorkerRegistration(values);
+        public static ServiceWorkerRegistration fromMap(Map<String, Object> values) {
+            return new ServiceWorkerRegistration(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
         }
         /**
          * Returns the scopeURL field.
          * @return the protocol field value
          */
-        @Nullable public String scopeURL() {
-            return (String) value("scopeURL");
+        public String scopeURL() {
+            return (String) require("scopeURL");
         }
         /**
          * Returns the isDeleted field.
          * @return the protocol field value
          */
-        @Nullable public Boolean isDeleted() {
-            return (Boolean) value("isDeleted");
+        public boolean isDeleted() {
+            return (Boolean) require("isDeleted");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the scopeURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scopeURL(@Nullable String value) {
-                if (value == null) values.remove("scopeURL");
-                else values.put("scopeURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the isDeleted field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder isDeleted(@Nullable Boolean value) {
-                if (value == null) values.remove("isDeleted");
-                else values.put("isDeleted", jsonValue(value));
-                return this;
-            }
-            public ServiceWorkerRegistration build() {
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("scopeURL")) throw new IllegalStateException("Missing required CDP field: scopeURL");
-                if (!values.containsKey("isDeleted")) throw new IllegalStateException("Missing required CDP field: isDeleted");
-                return new ServiceWorkerRegistration(values);
-            }
+        /**
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
+         */
+        public ServiceWorkerRegistration registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
+        }
+        /**
+         * Sets the scopeURL field.
+         * @param scopeURL field value
+         * @return this model
+         */
+        public ServiceWorkerRegistration scopeURL(String scopeURL) {
+            set("scopeURL", scopeURL);
+            return this;
+        }
+        /**
+         * Sets the isDeleted field.
+         * @param isDeleted field value
+         * @return this model
+         */
+        public ServiceWorkerRegistration isDeleted(boolean isDeleted) {
+            set("isDeleted", isDeleted);
+            return this;
         }
     }
     /**
      * Wire values for ServiceWorkerVersionRunningStatus.
      */
-    public static final class ServiceWorkerVersionRunningStatus {
-        private ServiceWorkerVersionRunningStatus() {}
-        public static final String STOPPED = "stopped";
-        public static final String STARTING = "starting";
-        public static final String RUNNING = "running";
-        public static final String STOPPING = "stopping";
+    public enum ServiceWorkerVersionRunningStatus implements CdpValue<String> {
+        STOPPED("stopped"),
+        STARTING("starting"),
+        RUNNING("running"),
+        STOPPING("stopping");
+        public final String value;
+        ServiceWorkerVersionRunningStatus(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ServiceWorkerVersionRunningStatus of(@Nonnull String value) {
+            for (ServiceWorkerVersionRunningStatus constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ServiceWorkerVersionRunningStatus value: " + value);
+        }
     }
     /**
      * Wire values for ServiceWorkerVersionStatus.
      */
-    public static final class ServiceWorkerVersionStatus {
-        private ServiceWorkerVersionStatus() {}
-        public static final String NEW = "new";
-        public static final String INSTALLING = "installing";
-        public static final String INSTALLED = "installed";
-        public static final String ACTIVATING = "activating";
-        public static final String ACTIVATED = "activated";
-        public static final String REDUNDANT = "redundant";
+    public enum ServiceWorkerVersionStatus implements CdpValue<String> {
+        NEW("new"),
+        INSTALLING("installing"),
+        INSTALLED("installed"),
+        ACTIVATING("activating"),
+        ACTIVATED("activated"),
+        REDUNDANT("redundant");
+        public final String value;
+        ServiceWorkerVersionStatus(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static ServiceWorkerVersionStatus of(@Nonnull String value) {
+            for (ServiceWorkerVersionStatus constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown ServiceWorkerVersionStatus value: " + value);
+        }
     }
     /**
      * ServiceWorker version.
      */
     public static final class ServiceWorkerVersion extends CdpObject {
+        public ServiceWorkerVersion() {}
         private ServiceWorkerVersion(Map<String, Object> values) { super(values); }
-        @Nullable public static ServiceWorkerVersion fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ServiceWorkerVersion(values);
+        public static ServiceWorkerVersion fromMap(Map<String, Object> values) {
+            return new ServiceWorkerVersion(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the versionId field.
          * @return the protocol field value
          */
-        @Nullable public String versionId() {
-            return (String) value("versionId");
+        public String versionId() {
+            return (String) require("versionId");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
         }
         /**
          * Returns the scriptURL field.
          * @return the protocol field value
          */
-        @Nullable public String scriptURL() {
-            return (String) value("scriptURL");
+        public String scriptURL() {
+            return (String) require("scriptURL");
         }
         /**
          * Returns the runningStatus field.
          * @return the protocol field value
          */
-        @Nullable public String runningStatus() {
-            return (String) value("runningStatus");
+        public ServiceWorker.ServiceWorkerVersionRunningStatus runningStatus() {
+            return ServiceWorker.ServiceWorkerVersionRunningStatus.of((String) require("runningStatus"));
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
-        @Nullable public String status() {
-            return (String) value("status");
+        public ServiceWorker.ServiceWorkerVersionStatus status() {
+            return ServiceWorker.ServiceWorkerVersionStatus.of((String) require("status"));
         }
         /**
          * The Last-Modified header value of the main script.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Double scriptLastModified() {
-            return numberAsDouble(value("scriptLastModified"));
+        public OptionalDouble scriptLastModified() {
+            Double value = CdpObject.numberAsDouble(raw("scriptLastModified"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
         }
         /**
          * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Double scriptResponseTime() {
-            return numberAsDouble(value("scriptResponseTime"));
+        public OptionalDouble scriptResponseTime() {
+            Double value = CdpObject.numberAsDouble(raw("scriptResponseTime"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
         }
         /**
          * Returns the controlledClients field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<String> controlledClients() {
-            return list(value("controlledClients"), element0 -> (String) element0);
+        public Optional<java.util.List<Target.TargetID>> controlledClients() {
+            return Optional.ofNullable(list(raw("controlledClients"), element0 -> new Target.TargetID((String) element0)));
         }
         /**
          * Returns the targetId field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Optional<Target.TargetID> targetId() {
+            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
         }
         /**
          * Returns the routerRules field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String routerRules() {
-            return (String) value("routerRules");
+        public Optional<String> routerRules() {
+            return Optional.ofNullable((String) raw("routerRules"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the versionId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder versionId(@Nullable String value) {
-                if (value == null) values.remove("versionId");
-                else values.put("versionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the scriptURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scriptURL(@Nullable String value) {
-                if (value == null) values.remove("scriptURL");
-                else values.put("scriptURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the runningStatus field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder runningStatus(@Nullable String value) {
-                if (value == null) values.remove("runningStatus");
-                else values.put("runningStatus", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the status field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder status(@Nullable String value) {
-                if (value == null) values.remove("status");
-                else values.put("status", jsonValue(value));
-                return this;
-            }
-            /**
-             * The Last-Modified header value of the main script.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scriptLastModified(@Nullable Double value) {
-                if (value == null) values.remove("scriptLastModified");
-                else values.put("scriptLastModified", jsonValue(value));
-                return this;
-            }
-            /**
-             * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scriptResponseTime(@Nullable Double value) {
-                if (value == null) values.remove("scriptResponseTime");
-                else values.put("scriptResponseTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the controlledClients field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder controlledClients(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("controlledClients");
-                else values.put("controlledClients", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the routerRules field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder routerRules(@Nullable String value) {
-                if (value == null) values.remove("routerRules");
-                else values.put("routerRules", jsonValue(value));
-                return this;
-            }
-            public ServiceWorkerVersion build() {
-                if (!values.containsKey("versionId")) throw new IllegalStateException("Missing required CDP field: versionId");
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("scriptURL")) throw new IllegalStateException("Missing required CDP field: scriptURL");
-                if (!values.containsKey("runningStatus")) throw new IllegalStateException("Missing required CDP field: runningStatus");
-                if (!values.containsKey("status")) throw new IllegalStateException("Missing required CDP field: status");
-                return new ServiceWorkerVersion(values);
-            }
+        /**
+         * Sets the versionId field.
+         * @param versionId field value
+         * @return this model
+         */
+        public ServiceWorkerVersion versionId(String versionId) {
+            set("versionId", versionId);
+            return this;
+        }
+        /**
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
+         */
+        public ServiceWorkerVersion registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
+        }
+        /**
+         * Sets the scriptURL field.
+         * @param scriptURL field value
+         * @return this model
+         */
+        public ServiceWorkerVersion scriptURL(String scriptURL) {
+            set("scriptURL", scriptURL);
+            return this;
+        }
+        /**
+         * Sets the runningStatus field.
+         * @param runningStatus field value
+         * @return this model
+         */
+        public ServiceWorkerVersion runningStatus(ServiceWorker.ServiceWorkerVersionRunningStatus runningStatus) {
+            set("runningStatus", runningStatus);
+            return this;
+        }
+        /**
+         * Sets the status field.
+         * @param status field value
+         * @return this model
+         */
+        public ServiceWorkerVersion status(ServiceWorker.ServiceWorkerVersionStatus status) {
+            set("status", status);
+            return this;
+        }
+        /**
+         * The Last-Modified header value of the main script.
+         * @param scriptLastModified field value; empty omits the value
+         * @return this model
+         */
+        public ServiceWorkerVersion scriptLastModified(OptionalDouble scriptLastModified) {
+            set("scriptLastModified", scriptLastModified.isPresent() ? scriptLastModified.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The Last-Modified header value of the main script.
+         * @param scriptLastModified field value; null removes the value
+         * @return this model
+         */
+        public ServiceWorkerVersion scriptLastModified(Double scriptLastModified) {
+            set("scriptLastModified", scriptLastModified);
+            return this;
+        }
+        /**
+         * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
+         * @param scriptResponseTime field value; empty omits the value
+         * @return this model
+         */
+        public ServiceWorkerVersion scriptResponseTime(OptionalDouble scriptResponseTime) {
+            set("scriptResponseTime", scriptResponseTime.isPresent() ? scriptResponseTime.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
+         * @param scriptResponseTime field value; null removes the value
+         * @return this model
+         */
+        public ServiceWorkerVersion scriptResponseTime(Double scriptResponseTime) {
+            set("scriptResponseTime", scriptResponseTime);
+            return this;
+        }
+        /**
+         * Sets the controlledClients field.
+         * @param controlledClients field value; empty omits the value
+         * @return this model
+         */
+        public ServiceWorkerVersion controlledClients(Optional<java.util.List<Target.TargetID>> controlledClients) {
+            set("controlledClients", controlledClients.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the controlledClients field.
+         * @param controlledClients field value; null removes the value
+         * @return this model
+         */
+        public ServiceWorkerVersion controlledClients(java.util.List<Target.TargetID> controlledClients) {
+            set("controlledClients", controlledClients);
+            return this;
+        }
+        /**
+         * Sets the targetId field.
+         * @param targetId field value; empty omits the value
+         * @return this model
+         */
+        public ServiceWorkerVersion targetId(Optional<Target.TargetID> targetId) {
+            set("targetId", targetId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the targetId field.
+         * @param targetId field value; null removes the value
+         * @return this model
+         */
+        public ServiceWorkerVersion targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
+        }
+        /**
+         * Sets the routerRules field.
+         * @param routerRules field value; empty omits the value
+         * @return this model
+         */
+        public ServiceWorkerVersion routerRules(Optional<String> routerRules) {
+            set("routerRules", routerRules.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the routerRules field.
+         * @param routerRules field value; null removes the value
+         * @return this model
+         */
+        public ServiceWorkerVersion routerRules(String routerRules) {
+            set("routerRules", routerRules);
+            return this;
         }
     }
     /**
      * ServiceWorker error message.
      */
     public static final class ServiceWorkerErrorMessage extends CdpObject {
+        public ServiceWorkerErrorMessage() {}
         private ServiceWorkerErrorMessage(Map<String, Object> values) { super(values); }
-        @Nullable public static ServiceWorkerErrorMessage fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ServiceWorkerErrorMessage(values);
+        public static ServiceWorkerErrorMessage fromMap(Map<String, Object> values) {
+            return new ServiceWorkerErrorMessage(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the errorMessage field.
          * @return the protocol field value
          */
-        @Nullable public String errorMessage() {
-            return (String) value("errorMessage");
+        public String errorMessage() {
+            return (String) require("errorMessage");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
+        public ServiceWorker.RegistrationID registrationId() {
+            return new ServiceWorker.RegistrationID((String) require("registrationId"));
         }
         /**
          * Returns the versionId field.
          * @return the protocol field value
          */
-        @Nullable public String versionId() {
-            return (String) value("versionId");
+        public String versionId() {
+            return (String) require("versionId");
         }
         /**
          * Returns the sourceURL field.
          * @return the protocol field value
          */
-        @Nullable public String sourceURL() {
-            return (String) value("sourceURL");
+        public String sourceURL() {
+            return (String) require("sourceURL");
         }
         /**
          * Returns the lineNumber field.
          * @return the protocol field value
          */
-        @Nullable public Long lineNumber() {
-            return numberAsLong(value("lineNumber"));
+        public long lineNumber() {
+            return ((Number) require("lineNumber")).longValue();
         }
         /**
          * Returns the columnNumber field.
          * @return the protocol field value
          */
-        @Nullable public Long columnNumber() {
-            return numberAsLong(value("columnNumber"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the errorMessage field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder errorMessage(@Nullable String value) {
-                if (value == null) values.remove("errorMessage");
-                else values.put("errorMessage", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the versionId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder versionId(@Nullable String value) {
-                if (value == null) values.remove("versionId");
-                else values.put("versionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the sourceURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sourceURL(@Nullable String value) {
-                if (value == null) values.remove("sourceURL");
-                else values.put("sourceURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the lineNumber field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lineNumber(@Nullable Long value) {
-                if (value == null) values.remove("lineNumber");
-                else values.put("lineNumber", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the columnNumber field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder columnNumber(@Nullable Long value) {
-                if (value == null) values.remove("columnNumber");
-                else values.put("columnNumber", jsonValue(value));
-                return this;
-            }
-            public ServiceWorkerErrorMessage build() {
-                if (!values.containsKey("errorMessage")) throw new IllegalStateException("Missing required CDP field: errorMessage");
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("versionId")) throw new IllegalStateException("Missing required CDP field: versionId");
-                if (!values.containsKey("sourceURL")) throw new IllegalStateException("Missing required CDP field: sourceURL");
-                if (!values.containsKey("lineNumber")) throw new IllegalStateException("Missing required CDP field: lineNumber");
-                if (!values.containsKey("columnNumber")) throw new IllegalStateException("Missing required CDP field: columnNumber");
-                return new ServiceWorkerErrorMessage(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.deliverPushMessage.
-     */
-    public static final class DeliverPushMessageParams extends CdpObject {
-        private DeliverPushMessageParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DeliverPushMessageParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeliverPushMessageParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the origin field.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public long columnNumber() {
+            return ((Number) require("columnNumber")).longValue();
         }
         /**
-         * Returns the registrationId field.
-         * @return the protocol field value
+         * Sets the errorMessage field.
+         * @param errorMessage field value
+         * @return this model
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
+        public ServiceWorkerErrorMessage errorMessage(String errorMessage) {
+            set("errorMessage", errorMessage);
+            return this;
         }
         /**
-         * Returns the data field.
-         * @return the protocol field value
+         * Sets the registrationId field.
+         * @param registrationId field value
+         * @return this model
          */
-        @Nullable public String data() {
-            return (String) value("data");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the origin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the data field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            public DeliverPushMessageParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("data")) throw new IllegalStateException("Missing required CDP field: data");
-                return new DeliverPushMessageParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.deliverPushMessage.
-     */
-    public static final class DeliverPushMessageResult extends CdpObject {
-        private DeliverPushMessageResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DeliverPushMessageResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeliverPushMessageResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DeliverPushMessageResult build() {
-                return new DeliverPushMessageResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.disable.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.disable.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.dispatchSyncEvent.
-     */
-    public static final class DispatchSyncEventParams extends CdpObject {
-        private DispatchSyncEventParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DispatchSyncEventParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DispatchSyncEventParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the origin field.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public ServiceWorkerErrorMessage registrationId(ServiceWorker.RegistrationID registrationId) {
+            set("registrationId", registrationId);
+            return this;
         }
         /**
-         * Returns the registrationId field.
-         * @return the protocol field value
+         * Sets the versionId field.
+         * @param versionId field value
+         * @return this model
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
+        public ServiceWorkerErrorMessage versionId(String versionId) {
+            set("versionId", versionId);
+            return this;
         }
         /**
-         * Returns the tag field.
-         * @return the protocol field value
+         * Sets the sourceURL field.
+         * @param sourceURL field value
+         * @return this model
          */
-        @Nullable public String tag() {
-            return (String) value("tag");
+        public ServiceWorkerErrorMessage sourceURL(String sourceURL) {
+            set("sourceURL", sourceURL);
+            return this;
         }
         /**
-         * Returns the lastChance field.
-         * @return the protocol field value
+         * Sets the lineNumber field.
+         * @param lineNumber field value
+         * @return this model
          */
-        @Nullable public Boolean lastChance() {
-            return (Boolean) value("lastChance");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the origin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the tag field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder tag(@Nullable String value) {
-                if (value == null) values.remove("tag");
-                else values.put("tag", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the lastChance field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lastChance(@Nullable Boolean value) {
-                if (value == null) values.remove("lastChance");
-                else values.put("lastChance", jsonValue(value));
-                return this;
-            }
-            public DispatchSyncEventParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("tag")) throw new IllegalStateException("Missing required CDP field: tag");
-                if (!values.containsKey("lastChance")) throw new IllegalStateException("Missing required CDP field: lastChance");
-                return new DispatchSyncEventParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.dispatchSyncEvent.
-     */
-    public static final class DispatchSyncEventResult extends CdpObject {
-        private DispatchSyncEventResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DispatchSyncEventResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DispatchSyncEventResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DispatchSyncEventResult build() {
-                return new DispatchSyncEventResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.dispatchPeriodicSyncEvent.
-     */
-    public static final class DispatchPeriodicSyncEventParams extends CdpObject {
-        private DispatchPeriodicSyncEventParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DispatchPeriodicSyncEventParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DispatchPeriodicSyncEventParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the origin field.
-         * @return the protocol field value
-         */
-        @Nullable public String origin() {
-            return (String) value("origin");
+        public ServiceWorkerErrorMessage lineNumber(long lineNumber) {
+            set("lineNumber", lineNumber);
+            return this;
         }
         /**
-         * Returns the registrationId field.
-         * @return the protocol field value
+         * Sets the columnNumber field.
+         * @param columnNumber field value
+         * @return this model
          */
-        @Nullable public String registrationId() {
-            return (String) value("registrationId");
-        }
-        /**
-         * Returns the tag field.
-         * @return the protocol field value
-         */
-        @Nullable public String tag() {
-            return (String) value("tag");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the origin field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder origin(@Nullable String value) {
-                if (value == null) values.remove("origin");
-                else values.put("origin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the registrationId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrationId(@Nullable String value) {
-                if (value == null) values.remove("registrationId");
-                else values.put("registrationId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the tag field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder tag(@Nullable String value) {
-                if (value == null) values.remove("tag");
-                else values.put("tag", jsonValue(value));
-                return this;
-            }
-            public DispatchPeriodicSyncEventParams build() {
-                if (!values.containsKey("origin")) throw new IllegalStateException("Missing required CDP field: origin");
-                if (!values.containsKey("registrationId")) throw new IllegalStateException("Missing required CDP field: registrationId");
-                if (!values.containsKey("tag")) throw new IllegalStateException("Missing required CDP field: tag");
-                return new DispatchPeriodicSyncEventParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.dispatchPeriodicSyncEvent.
-     */
-    public static final class DispatchPeriodicSyncEventResult extends CdpObject {
-        private DispatchPeriodicSyncEventResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DispatchPeriodicSyncEventResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DispatchPeriodicSyncEventResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DispatchPeriodicSyncEventResult build() {
-                return new DispatchPeriodicSyncEventResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.enable.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.enable.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.setForceUpdateOnPageLoad.
-     */
-    public static final class SetForceUpdateOnPageLoadParams extends CdpObject {
-        private SetForceUpdateOnPageLoadParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetForceUpdateOnPageLoadParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetForceUpdateOnPageLoadParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the forceUpdateOnPageLoad field.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean forceUpdateOnPageLoad() {
-            return (Boolean) value("forceUpdateOnPageLoad");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the forceUpdateOnPageLoad field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder forceUpdateOnPageLoad(@Nullable Boolean value) {
-                if (value == null) values.remove("forceUpdateOnPageLoad");
-                else values.put("forceUpdateOnPageLoad", jsonValue(value));
-                return this;
-            }
-            public SetForceUpdateOnPageLoadParams build() {
-                if (!values.containsKey("forceUpdateOnPageLoad")) throw new IllegalStateException("Missing required CDP field: forceUpdateOnPageLoad");
-                return new SetForceUpdateOnPageLoadParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.setForceUpdateOnPageLoad.
-     */
-    public static final class SetForceUpdateOnPageLoadResult extends CdpObject {
-        private SetForceUpdateOnPageLoadResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetForceUpdateOnPageLoadResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetForceUpdateOnPageLoadResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetForceUpdateOnPageLoadResult build() {
-                return new SetForceUpdateOnPageLoadResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.skipWaiting.
-     */
-    public static final class SkipWaitingParams extends CdpObject {
-        private SkipWaitingParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SkipWaitingParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SkipWaitingParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the scopeURL field.
-         * @return the protocol field value
-         */
-        @Nullable public String scopeURL() {
-            return (String) value("scopeURL");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the scopeURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scopeURL(@Nullable String value) {
-                if (value == null) values.remove("scopeURL");
-                else values.put("scopeURL", jsonValue(value));
-                return this;
-            }
-            public SkipWaitingParams build() {
-                if (!values.containsKey("scopeURL")) throw new IllegalStateException("Missing required CDP field: scopeURL");
-                return new SkipWaitingParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.skipWaiting.
-     */
-    public static final class SkipWaitingResult extends CdpObject {
-        private SkipWaitingResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SkipWaitingResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SkipWaitingResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SkipWaitingResult build() {
-                return new SkipWaitingResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.startWorker.
-     */
-    public static final class StartWorkerParams extends CdpObject {
-        private StartWorkerParams(Map<String, Object> values) { super(values); }
-        @Nullable public static StartWorkerParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StartWorkerParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the scopeURL field.
-         * @return the protocol field value
-         */
-        @Nullable public String scopeURL() {
-            return (String) value("scopeURL");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the scopeURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scopeURL(@Nullable String value) {
-                if (value == null) values.remove("scopeURL");
-                else values.put("scopeURL", jsonValue(value));
-                return this;
-            }
-            public StartWorkerParams build() {
-                if (!values.containsKey("scopeURL")) throw new IllegalStateException("Missing required CDP field: scopeURL");
-                return new StartWorkerParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.startWorker.
-     */
-    public static final class StartWorkerResult extends CdpObject {
-        private StartWorkerResult(Map<String, Object> values) { super(values); }
-        @Nullable public static StartWorkerResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StartWorkerResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StartWorkerResult build() {
-                return new StartWorkerResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.stopAllWorkers.
-     */
-    public static final class StopAllWorkersParams extends CdpObject {
-        private StopAllWorkersParams(Map<String, Object> values) { super(values); }
-        @Nullable public static StopAllWorkersParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopAllWorkersParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StopAllWorkersParams build() {
-                return new StopAllWorkersParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.stopAllWorkers.
-     */
-    public static final class StopAllWorkersResult extends CdpObject {
-        private StopAllWorkersResult(Map<String, Object> values) { super(values); }
-        @Nullable public static StopAllWorkersResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopAllWorkersResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StopAllWorkersResult build() {
-                return new StopAllWorkersResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.stopWorker.
-     */
-    public static final class StopWorkerParams extends CdpObject {
-        private StopWorkerParams(Map<String, Object> values) { super(values); }
-        @Nullable public static StopWorkerParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopWorkerParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the versionId field.
-         * @return the protocol field value
-         */
-        @Nullable public String versionId() {
-            return (String) value("versionId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the versionId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder versionId(@Nullable String value) {
-                if (value == null) values.remove("versionId");
-                else values.put("versionId", jsonValue(value));
-                return this;
-            }
-            public StopWorkerParams build() {
-                if (!values.containsKey("versionId")) throw new IllegalStateException("Missing required CDP field: versionId");
-                return new StopWorkerParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.stopWorker.
-     */
-    public static final class StopWorkerResult extends CdpObject {
-        private StopWorkerResult(Map<String, Object> values) { super(values); }
-        @Nullable public static StopWorkerResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new StopWorkerResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public StopWorkerResult build() {
-                return new StopWorkerResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.unregister.
-     */
-    public static final class UnregisterParams extends CdpObject {
-        private UnregisterParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UnregisterParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UnregisterParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the scopeURL field.
-         * @return the protocol field value
-         */
-        @Nullable public String scopeURL() {
-            return (String) value("scopeURL");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the scopeURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scopeURL(@Nullable String value) {
-                if (value == null) values.remove("scopeURL");
-                else values.put("scopeURL", jsonValue(value));
-                return this;
-            }
-            public UnregisterParams build() {
-                if (!values.containsKey("scopeURL")) throw new IllegalStateException("Missing required CDP field: scopeURL");
-                return new UnregisterParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.unregister.
-     */
-    public static final class UnregisterResult extends CdpObject {
-        private UnregisterResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UnregisterResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UnregisterResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UnregisterResult build() {
-                return new UnregisterResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for ServiceWorker.updateRegistration.
-     */
-    public static final class UpdateRegistrationParams extends CdpObject {
-        private UpdateRegistrationParams(Map<String, Object> values) { super(values); }
-        @Nullable public static UpdateRegistrationParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UpdateRegistrationParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the scopeURL field.
-         * @return the protocol field value
-         */
-        @Nullable public String scopeURL() {
-            return (String) value("scopeURL");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the scopeURL field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scopeURL(@Nullable String value) {
-                if (value == null) values.remove("scopeURL");
-                else values.put("scopeURL", jsonValue(value));
-                return this;
-            }
-            public UpdateRegistrationParams build() {
-                if (!values.containsKey("scopeURL")) throw new IllegalStateException("Missing required CDP field: scopeURL");
-                return new UpdateRegistrationParams(values);
-            }
-        }
-    }
-    /**
-     * Result of ServiceWorker.updateRegistration.
-     */
-    public static final class UpdateRegistrationResult extends CdpObject {
-        private UpdateRegistrationResult(Map<String, Object> values) { super(values); }
-        @Nullable public static UpdateRegistrationResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new UpdateRegistrationResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public UpdateRegistrationResult build() {
-                return new UpdateRegistrationResult(values);
-            }
+        public ServiceWorkerErrorMessage columnNumber(long columnNumber) {
+            set("columnNumber", columnNumber);
+            return this;
         }
     }
     /**
      * Payload of the ServiceWorker.workerErrorReported event.
      */
     public static final class WorkerErrorReportedEvent extends CdpObject {
+        public WorkerErrorReportedEvent() {}
         private WorkerErrorReportedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static WorkerErrorReportedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new WorkerErrorReportedEvent(values);
+        public static WorkerErrorReportedEvent fromMap(Map<String, Object> values) {
+            return new WorkerErrorReportedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the errorMessage field.
          * @return the protocol field value
          */
-        @Nullable public ServiceWorker.ServiceWorkerErrorMessage errorMessage() {
-            return ServiceWorker.ServiceWorkerErrorMessage.fromMap(objectMap(value("errorMessage")));
+        public ServiceWorker.ServiceWorkerErrorMessage errorMessage() {
+            return java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerErrorMessage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("errorMessage")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the errorMessage field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder errorMessage(@Nullable ServiceWorker.ServiceWorkerErrorMessage value) {
-                if (value == null) values.remove("errorMessage");
-                else values.put("errorMessage", jsonValue(value));
-                return this;
-            }
-            public WorkerErrorReportedEvent build() {
-                if (!values.containsKey("errorMessage")) throw new IllegalStateException("Missing required CDP field: errorMessage");
-                return new WorkerErrorReportedEvent(values);
-            }
+        /**
+         * Sets the errorMessage field.
+         * @param errorMessage field value
+         * @return this model
+         */
+        public WorkerErrorReportedEvent errorMessage(ServiceWorker.ServiceWorkerErrorMessage errorMessage) {
+            set("errorMessage", errorMessage);
+            return this;
         }
     }
     /**
      * Payload of the ServiceWorker.workerRegistrationUpdated event.
      */
     public static final class WorkerRegistrationUpdatedEvent extends CdpObject {
+        public WorkerRegistrationUpdatedEvent() {}
         private WorkerRegistrationUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static WorkerRegistrationUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new WorkerRegistrationUpdatedEvent(values);
+        public static WorkerRegistrationUpdatedEvent fromMap(Map<String, Object> values) {
+            return new WorkerRegistrationUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the registrations field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<ServiceWorker.ServiceWorkerRegistration> registrations() {
-            return list(value("registrations"), element0 -> ServiceWorker.ServiceWorkerRegistration.fromMap(objectMap(element0)));
+        public java.util.List<ServiceWorker.ServiceWorkerRegistration> registrations() {
+            return CdpObject.requireList(require("registrations"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerRegistration.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the registrations field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder registrations(@Nullable java.util.List<ServiceWorker.ServiceWorkerRegistration> value) {
-                if (value == null) values.remove("registrations");
-                else values.put("registrations", jsonValue(value));
-                return this;
-            }
-            public WorkerRegistrationUpdatedEvent build() {
-                if (!values.containsKey("registrations")) throw new IllegalStateException("Missing required CDP field: registrations");
-                return new WorkerRegistrationUpdatedEvent(values);
-            }
+        /**
+         * Sets the registrations field.
+         * @param registrations field value
+         * @return this model
+         */
+        public WorkerRegistrationUpdatedEvent registrations(java.util.List<ServiceWorker.ServiceWorkerRegistration> registrations) {
+            set("registrations", registrations);
+            return this;
         }
     }
     /**
      * Payload of the ServiceWorker.workerVersionUpdated event.
      */
     public static final class WorkerVersionUpdatedEvent extends CdpObject {
+        public WorkerVersionUpdatedEvent() {}
         private WorkerVersionUpdatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static WorkerVersionUpdatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new WorkerVersionUpdatedEvent(values);
+        public static WorkerVersionUpdatedEvent fromMap(Map<String, Object> values) {
+            return new WorkerVersionUpdatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the versions field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<ServiceWorker.ServiceWorkerVersion> versions() {
-            return list(value("versions"), element0 -> ServiceWorker.ServiceWorkerVersion.fromMap(objectMap(element0)));
+        public java.util.List<ServiceWorker.ServiceWorkerVersion> versions() {
+            return CdpObject.requireList(require("versions"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerVersion.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the versions field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder versions(@Nullable java.util.List<ServiceWorker.ServiceWorkerVersion> value) {
-                if (value == null) values.remove("versions");
-                else values.put("versions", jsonValue(value));
-                return this;
-            }
-            public WorkerVersionUpdatedEvent build() {
-                if (!values.containsKey("versions")) throw new IllegalStateException("Missing required CDP field: versions");
-                return new WorkerVersionUpdatedEvent(values);
-            }
+        /**
+         * Sets the versions field.
+         * @param versions field value
+         * @return this model
+         */
+        public WorkerVersionUpdatedEvent versions(java.util.List<ServiceWorker.ServiceWorkerVersion> versions) {
+            set("versions", versions);
+            return this;
         }
     }
     public static final class Client {
@@ -1208,96 +541,128 @@ public final class ServiceWorker {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Invokes ServiceWorker.deliverPushMessage.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param data protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DeliverPushMessageResult> deliverPushMessage(DeliverPushMessageParams params) {
-            return client.call("ServiceWorker.deliverPushMessage", params, DeliverPushMessageResult::fromMap);
+        public CompletionStage<Void> deliverPushMessage(String origin, ServiceWorker.RegistrationID registrationId, String data) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            params.put("registrationId", CdpObject.json(registrationId));
+            params.put("data", CdpObject.json(data));
+            return client.call("ServiceWorker.deliverPushMessage", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.disable.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("ServiceWorker.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("ServiceWorker.disable", null, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.dispatchSyncEvent.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param tag protocol value
+         * @param lastChance protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DispatchSyncEventResult> dispatchSyncEvent(DispatchSyncEventParams params) {
-            return client.call("ServiceWorker.dispatchSyncEvent", params, DispatchSyncEventResult::fromMap);
+        public CompletionStage<Void> dispatchSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            params.put("registrationId", CdpObject.json(registrationId));
+            params.put("tag", CdpObject.json(tag));
+            params.put("lastChance", CdpObject.json(lastChance));
+            return client.call("ServiceWorker.dispatchSyncEvent", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.dispatchPeriodicSyncEvent.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param origin protocol value
+         * @param registrationId protocol value
+         * @param tag protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DispatchPeriodicSyncEventResult> dispatchPeriodicSyncEvent(DispatchPeriodicSyncEventParams params) {
-            return client.call("ServiceWorker.dispatchPeriodicSyncEvent", params, DispatchPeriodicSyncEventResult::fromMap);
+        public CompletionStage<Void> dispatchPeriodicSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("origin", CdpObject.json(origin));
+            params.put("registrationId", CdpObject.json(registrationId));
+            params.put("tag", CdpObject.json(tag));
+            return client.call("ServiceWorker.dispatchPeriodicSyncEvent", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.enable.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return client.call("ServiceWorker.enable", null, EnableResult::fromMap);
+        public CompletionStage<Void> enable() {
+            return client.call("ServiceWorker.enable", null, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.setForceUpdateOnPageLoad.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param forceUpdateOnPageLoad protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetForceUpdateOnPageLoadResult> setForceUpdateOnPageLoad(SetForceUpdateOnPageLoadParams params) {
-            return client.call("ServiceWorker.setForceUpdateOnPageLoad", params, SetForceUpdateOnPageLoadResult::fromMap);
+        public CompletionStage<Void> setForceUpdateOnPageLoad(boolean forceUpdateOnPageLoad) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("forceUpdateOnPageLoad", CdpObject.json(forceUpdateOnPageLoad));
+            return client.call("ServiceWorker.setForceUpdateOnPageLoad", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.skipWaiting.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param scopeURL protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SkipWaitingResult> skipWaiting(SkipWaitingParams params) {
-            return client.call("ServiceWorker.skipWaiting", params, SkipWaitingResult::fromMap);
+        public CompletionStage<Void> skipWaiting(String scopeURL) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scopeURL", CdpObject.json(scopeURL));
+            return client.call("ServiceWorker.skipWaiting", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.startWorker.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param scopeURL protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<StartWorkerResult> startWorker(StartWorkerParams params) {
-            return client.call("ServiceWorker.startWorker", params, StartWorkerResult::fromMap);
+        public CompletionStage<Void> startWorker(String scopeURL) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scopeURL", CdpObject.json(scopeURL));
+            return client.call("ServiceWorker.startWorker", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.stopAllWorkers.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<StopAllWorkersResult> stopAllWorkers() {
-            return client.call("ServiceWorker.stopAllWorkers", null, StopAllWorkersResult::fromMap);
+        public CompletionStage<Void> stopAllWorkers() {
+            return client.call("ServiceWorker.stopAllWorkers", null, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.stopWorker.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param versionId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<StopWorkerResult> stopWorker(StopWorkerParams params) {
-            return client.call("ServiceWorker.stopWorker", params, StopWorkerResult::fromMap);
+        public CompletionStage<Void> stopWorker(String versionId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("versionId", CdpObject.json(versionId));
+            return client.call("ServiceWorker.stopWorker", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.unregister.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param scopeURL protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UnregisterResult> unregister(UnregisterParams params) {
-            return client.call("ServiceWorker.unregister", params, UnregisterResult::fromMap);
+        public CompletionStage<Void> unregister(String scopeURL) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scopeURL", CdpObject.json(scopeURL));
+            return client.call("ServiceWorker.unregister", params, result_ -> null);
         }
         /**
          * Invokes ServiceWorker.updateRegistration.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param scopeURL protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<UpdateRegistrationResult> updateRegistration(UpdateRegistrationParams params) {
-            return client.call("ServiceWorker.updateRegistration", params, UpdateRegistrationResult::fromMap);
+        public CompletionStage<Void> updateRegistration(String scopeURL) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scopeURL", CdpObject.json(scopeURL));
+            return client.call("ServiceWorker.updateRegistration", params, result_ -> null);
         }
         /**
          * Subscribes to ServiceWorker.workerErrorReported.

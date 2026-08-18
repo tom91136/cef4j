@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#CHROME}, {@link Kind#ALLOY}
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefRuntimeStyle implements CefEnum<CefRuntimeStyle> {
 
     /** Known constants for {@link CefRuntimeStyle}. */

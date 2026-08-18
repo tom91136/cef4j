@@ -80,7 +80,7 @@ final class SwingBrowserPanelTestSupport {
                     .resolve("cef-" + ProcessHandle.current().pid() + ".log")
                     .toAbsolutePath()
                     .toString();
-            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), null);
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);

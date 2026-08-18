@@ -156,9 +156,12 @@ final class FxWebViewRuntimeTestSupport {
 
     private static void initialiseCef() {
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
+        // A shared fallback cache dir would collide with concurrent forks over the CEF profile singleton lock.
+        // Callers must set a per-class temp dir before ensureStarted().
         Path cacheDir = cefCachePath;
         if (cacheDir == null) {
-            cacheDir = Path.of(System.getProperty("java.io.tmpdir"), "cef4j-jfx-cache");
+            throw new IllegalStateException(
+                    "CEF cache path not configured; setCefCachePath must run before ensureStarted");
         }
         try {
             Files.createDirectories(cacheDir);

@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * <p>Possible values: {@link Kind#NEW}, {@link Kind#CHECKING}, {@link Kind#CAN_UPDATE}, {@link Kind#DOWNLOADING}, {@link Kind#DECOMPRESSING}, {@link Kind#PATCHING}, {@link Kind#UPDATING}, {@link Kind#UPDATED}, {@link Kind#UP_TO_DATE}, {@link Kind#UPDATE_ERROR}, {@link Kind#RUN}
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefComponentState implements CefEnum<CefComponentState> {
 
     /** Known constants for {@link CefComponentState}. */

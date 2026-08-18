@@ -1,7 +1,6 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -49,7 +48,8 @@ public final class RecordingTransport implements CefTransport {
             try {
                 log.append(MessageLog.Direction.INBOUND, System.nanoTime(), copy);
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                // The recording is best-effort; a broken log must not stall live traffic.
+                LOG.warn("recording inbound failed", e);
             }
             handler.accept(frame);
         });

@@ -17,10 +17,13 @@ import javax.annotation.Nullable;
 final class CefHttpURLConnection extends HttpURLConnection {
 
     private static final byte[] EOF = new byte[0];
+    private static final int MAX_REDIRECTS = 20;
+    private static final int DEFAULT_MAX_REQUEST_BODY = 128 * 1024 * 1024;
 
     private final CefHttpEngine engine;
+    private final int maxRequestBodyBytes;
     private final ByteArrayOutputStream reqBody = new ByteArrayOutputStream();
-    private final CountDownLatch responseLatch = new CountDownLatch(1);
+    private volatile CountDownLatch responseLatch = new CountDownLatch(1);
     private final LinkedBlockingQueue<byte[]> chunks = new LinkedBlockingQueue<>();
 
     private volatile int statusCode = -1;
@@ -33,9 +36,18 @@ final class CefHttpURLConnection extends HttpURLConnection {
     @Nullable
     private CefHttpEngine.Cancellation cancellation;
 
+    private Map<String, List<String>> requestHeaders = Map.of();
+    private String requestMethod = "GET";
+    private byte[] requestBody = new byte[0];
+
     CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine) {
+        this(url, engine, DEFAULT_MAX_REQUEST_BODY);
+    }
+
+    CefHttpURLConnection(@Nonnull URL url, @Nonnull CefHttpEngine engine, int maxRequestBodyBytes) {
         super(url);
         this.engine = engine;
+        this.maxRequestBodyBytes = maxRequestBodyBytes;
     }
 
     @Override
@@ -43,23 +55,58 @@ final class CefHttpURLConnection extends HttpURLConnection {
         if (connected) return;
         // Snapshot request headers before flipping connected; URLConnection.getRequestProperties()
         // throws IllegalStateException once connected=true.
-        Map<String, List<String>> headers = getRequestProperties();
+        requestHeaders = getRequestProperties();
+        requestMethod = method;
+        requestBody = reqBody.toByteArray();
         connected = true;
+        reissue();
+    }
+
+    private void reissue() {
         CefHttpEngine.RequestSpec spec =
-                new CefHttpEngine.RequestSpec(url.toString(), method, headers, reqBody.toByteArray());
+                new CefHttpEngine.RequestSpec(url.toString(), requestMethod, requestHeaders, requestBody);
         cancellation = engine.send(spec, new Sink());
     }
 
-    private void awaitResponse() throws IOException {
+    private synchronized void awaitResponse() throws IOException {
         connect();
-        try {
-            responseLatch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("interrupted while awaiting response", e);
+        for (int redirects = 0; ; redirects++) {
+            try {
+                responseLatch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("interrupted while awaiting response", e);
+            }
+            IOException err = error;
+            if (err != null) throw err;
+            String location = redirectLocation(redirects);
+            if (location == null) return;
+            if (statusCode == 301 || statusCode == 302 || statusCode == 303) {
+                requestMethod = "GET";
+                requestBody = new byte[0];
+            }
+            chunks.clear();
+            error = null;
+            statusCode = -1;
+            responseLatch = new CountDownLatch(1);
+            url = new URL(url, location);
+            reissue();
         }
-        IOException err = error;
-        if (err != null) throw err;
+    }
+
+    @Nullable
+    private String redirectLocation(int redirects) {
+        if (redirects >= MAX_REDIRECTS || !instanceFollowRedirects) return null;
+        if (statusCode != 301 && statusCode != 302 && statusCode != 303 && statusCode != 307 && statusCode != 308) {
+            return null;
+        }
+        for (Map.Entry<String, List<String>> e : responseHeaders.entrySet()) {
+            if (e.getKey().equalsIgnoreCase("location")) {
+                List<String> values = e.getValue();
+                if (!values.isEmpty()) return values.get(0);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -69,6 +116,8 @@ final class CefHttpURLConnection extends HttpURLConnection {
     }
 
     @Override
+    // JDK contract: null when no status text / header present
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getResponseMessage() throws IOException {
         awaitResponse();
@@ -86,6 +135,8 @@ final class CefHttpURLConnection extends HttpURLConnection {
     }
 
     @Override
+    // JDK contract: null name/return
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public String getHeaderField(@Nullable String name) {
         if (name == null) return null;
@@ -108,7 +159,7 @@ final class CefHttpURLConnection extends HttpURLConnection {
     public OutputStream getOutputStream() throws IOException {
         if (connected) throw new ProtocolException("Cannot write after connect");
         if (!doOutput) throw new ProtocolException("setDoOutput(true) required before getOutputStream");
-        return reqBody;
+        return new BoundedBodyOutputStream();
     }
 
     @Override
@@ -122,6 +173,8 @@ final class CefHttpURLConnection extends HttpURLConnection {
     }
 
     @Override
+    // JDK contract: null when there is no error body
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public InputStream getErrorStream() {
         try {
@@ -171,6 +224,26 @@ final class CefHttpURLConnection extends HttpURLConnection {
         }
     }
 
+    private final class BoundedBodyOutputStream extends OutputStream {
+        @Override
+        public void write(int b) throws IOException {
+            checkCapacity(1);
+            reqBody.write(b);
+        }
+
+        @Override
+        public void write(@Nonnull byte[] b, int off, int len) throws IOException {
+            checkCapacity(len);
+            reqBody.write(b, off, len);
+        }
+
+        private void checkCapacity(int additional) throws IOException {
+            if (reqBody.size() + additional > maxRequestBodyBytes) {
+                throw new IOException("request body exceeds maximum of " + maxRequestBodyBytes + " bytes");
+            }
+        }
+    }
+
     private final class ChunkInputStream extends InputStream {
         private byte[] current = EOF;
         private int pos = 0;
@@ -185,6 +258,7 @@ final class CefHttpURLConnection extends HttpURLConnection {
 
         @Override
         public int read(@Nonnull byte[] b, int off, int len) throws IOException {
+            if (len == 0) return 0;
             if (eof) return -1;
             while (pos >= current.length) {
                 try {
@@ -195,6 +269,8 @@ final class CefHttpURLConnection extends HttpURLConnection {
                 }
                 if (current == EOF) {
                     eof = true;
+                    IOException failure = error;
+                    if (failure != null) throw failure;
                     return -1;
                 }
                 pos = 0;

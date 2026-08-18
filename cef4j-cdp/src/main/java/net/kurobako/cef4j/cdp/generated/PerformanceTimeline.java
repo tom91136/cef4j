@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Reporting of performance timeline events, as specified in https://w3c.github.io/performance-timeline/#dom-performanceobserver.
@@ -17,508 +21,455 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/PerformanceTimeline.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class PerformanceTimeline {
     private PerformanceTimeline() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
      */
     public static final class LargestContentfulPaint extends CdpObject {
+        public LargestContentfulPaint() {}
         private LargestContentfulPaint(Map<String, Object> values) { super(values); }
-        @Nullable public static LargestContentfulPaint fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LargestContentfulPaint(values);
+        public static LargestContentfulPaint fromMap(Map<String, Object> values) {
+            return new LargestContentfulPaint(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the renderTime field.
          * @return the protocol field value
          */
-        @Nullable public Double renderTime() {
-            return numberAsDouble(value("renderTime"));
+        public Network.TimeSinceEpoch renderTime() {
+            return new Network.TimeSinceEpoch(((Number) require("renderTime")).doubleValue());
         }
         /**
          * Returns the loadTime field.
          * @return the protocol field value
          */
-        @Nullable public Double loadTime() {
-            return numberAsDouble(value("loadTime"));
+        public Network.TimeSinceEpoch loadTime() {
+            return new Network.TimeSinceEpoch(((Number) require("loadTime")).doubleValue());
         }
         /**
          * The number of pixels being painted.
          * @return the protocol field value
          */
-        @Nullable public Double size() {
-            return numberAsDouble(value("size"));
+        public double size() {
+            return ((Number) require("size")).doubleValue();
         }
         /**
          * The id attribute of the element, if available.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String elementId() {
-            return (String) value("elementId");
+        public Optional<String> elementId() {
+            return Optional.ofNullable((String) raw("elementId"));
         }
         /**
          * The URL of the image (may be trimmed).
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String url() {
-            return (String) value("url");
+        public Optional<String> url() {
+            return Optional.ofNullable((String) raw("url"));
         }
         /**
          * Returns the nodeId field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public Optional<DOM.BackendNodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("nodeId")).longValue()));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the renderTime field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder renderTime(@Nullable Double value) {
-                if (value == null) values.remove("renderTime");
-                else values.put("renderTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the loadTime field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder loadTime(@Nullable Double value) {
-                if (value == null) values.remove("loadTime");
-                else values.put("loadTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * The number of pixels being painted.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder size(@Nullable Double value) {
-                if (value == null) values.remove("size");
-                else values.put("size", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id attribute of the element, if available.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder elementId(@Nullable String value) {
-                if (value == null) values.remove("elementId");
-                else values.put("elementId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The URL of the image (may be trimmed).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the nodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public LargestContentfulPaint build() {
-                if (!values.containsKey("renderTime")) throw new IllegalStateException("Missing required CDP field: renderTime");
-                if (!values.containsKey("loadTime")) throw new IllegalStateException("Missing required CDP field: loadTime");
-                if (!values.containsKey("size")) throw new IllegalStateException("Missing required CDP field: size");
-                return new LargestContentfulPaint(values);
-            }
+        /**
+         * Sets the renderTime field.
+         * @param renderTime field value
+         * @return this model
+         */
+        public LargestContentfulPaint renderTime(Network.TimeSinceEpoch renderTime) {
+            set("renderTime", renderTime);
+            return this;
+        }
+        /**
+         * Sets the loadTime field.
+         * @param loadTime field value
+         * @return this model
+         */
+        public LargestContentfulPaint loadTime(Network.TimeSinceEpoch loadTime) {
+            set("loadTime", loadTime);
+            return this;
+        }
+        /**
+         * The number of pixels being painted.
+         * @param size field value
+         * @return this model
+         */
+        public LargestContentfulPaint size(double size) {
+            set("size", size);
+            return this;
+        }
+        /**
+         * The id attribute of the element, if available.
+         * @param elementId field value; empty omits the value
+         * @return this model
+         */
+        public LargestContentfulPaint elementId(Optional<String> elementId) {
+            set("elementId", elementId.orElse(null));
+            return this;
+        }
+        /**
+         * The id attribute of the element, if available.
+         * @param elementId field value; null removes the value
+         * @return this model
+         */
+        public LargestContentfulPaint elementId(String elementId) {
+            set("elementId", elementId);
+            return this;
+        }
+        /**
+         * The URL of the image (may be trimmed).
+         * @param url field value; empty omits the value
+         * @return this model
+         */
+        public LargestContentfulPaint url(Optional<String> url) {
+            set("url", url.orElse(null));
+            return this;
+        }
+        /**
+         * The URL of the image (may be trimmed).
+         * @param url field value; null removes the value
+         * @return this model
+         */
+        public LargestContentfulPaint url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public LargestContentfulPaint nodeId(Optional<DOM.BackendNodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public LargestContentfulPaint nodeId(DOM.BackendNodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      */
     public static final class LayoutShiftAttribution extends CdpObject {
+        public LayoutShiftAttribution() {}
         private LayoutShiftAttribution(Map<String, Object> values) { super(values); }
-        @Nullable public static LayoutShiftAttribution fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LayoutShiftAttribution(values);
+        public static LayoutShiftAttribution fromMap(Map<String, Object> values) {
+            return new LayoutShiftAttribution(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the previousRect field.
          * @return the protocol field value
          */
-        @Nullable public DOM.Rect previousRect() {
-            return DOM.Rect.fromMap(objectMap(value("previousRect")));
+        public DOM.Rect previousRect() {
+            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("previousRect")))));
         }
         /**
          * Returns the currentRect field.
          * @return the protocol field value
          */
-        @Nullable public DOM.Rect currentRect() {
-            return DOM.Rect.fromMap(objectMap(value("currentRect")));
+        public DOM.Rect currentRect() {
+            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("currentRect")))));
         }
         /**
          * Returns the nodeId field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long nodeId() {
-            return numberAsLong(value("nodeId"));
+        public Optional<DOM.BackendNodeId> nodeId() {
+            return Optional.ofNullable(raw("nodeId") == null ? null : new DOM.BackendNodeId(((Number) raw("nodeId")).longValue()));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the previousRect field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder previousRect(@Nullable DOM.Rect value) {
-                if (value == null) values.remove("previousRect");
-                else values.put("previousRect", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the currentRect field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder currentRect(@Nullable DOM.Rect value) {
-                if (value == null) values.remove("currentRect");
-                else values.put("currentRect", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the nodeId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder nodeId(@Nullable Long value) {
-                if (value == null) values.remove("nodeId");
-                else values.put("nodeId", jsonValue(value));
-                return this;
-            }
-            public LayoutShiftAttribution build() {
-                if (!values.containsKey("previousRect")) throw new IllegalStateException("Missing required CDP field: previousRect");
-                if (!values.containsKey("currentRect")) throw new IllegalStateException("Missing required CDP field: currentRect");
-                return new LayoutShiftAttribution(values);
-            }
+        /**
+         * Sets the previousRect field.
+         * @param previousRect field value
+         * @return this model
+         */
+        public LayoutShiftAttribution previousRect(DOM.Rect previousRect) {
+            set("previousRect", previousRect);
+            return this;
+        }
+        /**
+         * Sets the currentRect field.
+         * @param currentRect field value
+         * @return this model
+         */
+        public LayoutShiftAttribution currentRect(DOM.Rect currentRect) {
+            set("currentRect", currentRect);
+            return this;
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; empty omits the value
+         * @return this model
+         */
+        public LayoutShiftAttribution nodeId(Optional<DOM.BackendNodeId> nodeId) {
+            set("nodeId", nodeId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the nodeId field.
+         * @param nodeId field value; null removes the value
+         * @return this model
+         */
+        public LayoutShiftAttribution nodeId(DOM.BackendNodeId nodeId) {
+            set("nodeId", nodeId);
+            return this;
         }
     }
     /**
      * See https://wicg.github.io/layout-instability/#sec-layout-shift and layout_shift.idl
      */
     public static final class LayoutShift extends CdpObject {
+        public LayoutShift() {}
         private LayoutShift(Map<String, Object> values) { super(values); }
-        @Nullable public static LayoutShift fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new LayoutShift(values);
+        public static LayoutShift fromMap(Map<String, Object> values) {
+            return new LayoutShift(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Score increment produced by this event.
          * @return the protocol field value
          */
-        @Nullable public Double value() {
-            return numberAsDouble(value("value"));
+        public double value() {
+            return ((Number) require("value")).doubleValue();
         }
         /**
          * Returns the hadRecentInput field.
          * @return the protocol field value
          */
-        @Nullable public Boolean hadRecentInput() {
-            return (Boolean) value("hadRecentInput");
+        public boolean hadRecentInput() {
+            return (Boolean) require("hadRecentInput");
         }
         /**
          * Returns the lastInputTime field.
          * @return the protocol field value
          */
-        @Nullable public Double lastInputTime() {
-            return numberAsDouble(value("lastInputTime"));
+        public Network.TimeSinceEpoch lastInputTime() {
+            return new Network.TimeSinceEpoch(((Number) require("lastInputTime")).doubleValue());
         }
         /**
          * Returns the sources field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<PerformanceTimeline.LayoutShiftAttribution> sources() {
-            return list(value("sources"), element0 -> PerformanceTimeline.LayoutShiftAttribution.fromMap(objectMap(element0)));
+        public java.util.List<PerformanceTimeline.LayoutShiftAttribution> sources() {
+            return CdpObject.requireList(require("sources"), element0 -> java.util.Objects.requireNonNull(PerformanceTimeline.LayoutShiftAttribution.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Score increment produced by this event.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable Double value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the hadRecentInput field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hadRecentInput(@Nullable Boolean value) {
-                if (value == null) values.remove("hadRecentInput");
-                else values.put("hadRecentInput", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the lastInputTime field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lastInputTime(@Nullable Double value) {
-                if (value == null) values.remove("lastInputTime");
-                else values.put("lastInputTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the sources field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sources(@Nullable java.util.List<PerformanceTimeline.LayoutShiftAttribution> value) {
-                if (value == null) values.remove("sources");
-                else values.put("sources", jsonValue(value));
-                return this;
-            }
-            public LayoutShift build() {
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                if (!values.containsKey("hadRecentInput")) throw new IllegalStateException("Missing required CDP field: hadRecentInput");
-                if (!values.containsKey("lastInputTime")) throw new IllegalStateException("Missing required CDP field: lastInputTime");
-                if (!values.containsKey("sources")) throw new IllegalStateException("Missing required CDP field: sources");
-                return new LayoutShift(values);
-            }
+        /**
+         * Score increment produced by this event.
+         * @param value field value
+         * @return this model
+         */
+        public LayoutShift value(double value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * Sets the hadRecentInput field.
+         * @param hadRecentInput field value
+         * @return this model
+         */
+        public LayoutShift hadRecentInput(boolean hadRecentInput) {
+            set("hadRecentInput", hadRecentInput);
+            return this;
+        }
+        /**
+         * Sets the lastInputTime field.
+         * @param lastInputTime field value
+         * @return this model
+         */
+        public LayoutShift lastInputTime(Network.TimeSinceEpoch lastInputTime) {
+            set("lastInputTime", lastInputTime);
+            return this;
+        }
+        /**
+         * Sets the sources field.
+         * @param sources field value
+         * @return this model
+         */
+        public LayoutShift sources(java.util.List<PerformanceTimeline.LayoutShiftAttribution> sources) {
+            set("sources", sources);
+            return this;
         }
     }
     /**
      */
     public static final class TimelineEvent extends CdpObject {
+        public TimelineEvent() {}
         private TimelineEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TimelineEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TimelineEvent(values);
+        public static TimelineEvent fromMap(Map<String, Object> values) {
+            return new TimelineEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Identifies the frame that this event is related to. Empty for non-frame targets.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
         /**
          * The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype This determines which of the optional &quot;details&quot; fields is present.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public String type() {
+            return (String) require("type");
         }
         /**
          * Name may be empty depending on the type.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Time in seconds since Epoch, monotonically increasing within document lifetime.
          * @return the protocol field value
          */
-        @Nullable public Double time() {
-            return numberAsDouble(value("time"));
+        public Network.TimeSinceEpoch time() {
+            return new Network.TimeSinceEpoch(((Number) require("time")).doubleValue());
         }
         /**
          * Event duration, if applicable.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Double duration() {
-            return numberAsDouble(value("duration"));
+        public OptionalDouble duration() {
+            Double value = CdpObject.numberAsDouble(raw("duration"));
+            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
         }
         /**
          * Returns the lcpDetails field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public PerformanceTimeline.LargestContentfulPaint lcpDetails() {
-            return PerformanceTimeline.LargestContentfulPaint.fromMap(objectMap(value("lcpDetails")));
+        public Optional<PerformanceTimeline.LargestContentfulPaint> lcpDetails() {
+            return Optional.ofNullable(raw("lcpDetails") == null ? null : PerformanceTimeline.LargestContentfulPaint.fromMap(java.util.Objects.requireNonNull(objectMap(raw("lcpDetails")))));
         }
         /**
          * Returns the layoutShiftDetails field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public PerformanceTimeline.LayoutShift layoutShiftDetails() {
-            return PerformanceTimeline.LayoutShift.fromMap(objectMap(value("layoutShiftDetails")));
+        public Optional<PerformanceTimeline.LayoutShift> layoutShiftDetails() {
+            return Optional.ofNullable(raw("layoutShiftDetails") == null ? null : PerformanceTimeline.LayoutShift.fromMap(java.util.Objects.requireNonNull(objectMap(raw("layoutShiftDetails")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifies the frame that this event is related to. Empty for non-frame targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype This determines which of the optional &quot;details&quot; fields is present.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Name may be empty depending on the type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Time in seconds since Epoch, monotonically increasing within document lifetime.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder time(@Nullable Double value) {
-                if (value == null) values.remove("time");
-                else values.put("time", jsonValue(value));
-                return this;
-            }
-            /**
-             * Event duration, if applicable.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder duration(@Nullable Double value) {
-                if (value == null) values.remove("duration");
-                else values.put("duration", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the lcpDetails field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder lcpDetails(@Nullable PerformanceTimeline.LargestContentfulPaint value) {
-                if (value == null) values.remove("lcpDetails");
-                else values.put("lcpDetails", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the layoutShiftDetails field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder layoutShiftDetails(@Nullable PerformanceTimeline.LayoutShift value) {
-                if (value == null) values.remove("layoutShiftDetails");
-                else values.put("layoutShiftDetails", jsonValue(value));
-                return this;
-            }
-            public TimelineEvent build() {
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("time")) throw new IllegalStateException("Missing required CDP field: time");
-                return new TimelineEvent(values);
-            }
-        }
-    }
-    /**
-     * Previously buffered events would be reported before method returns. See also: timelineEventAdded
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * The types of event to report, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype The specified filter overrides any previous filters, passing empty filter disables recording. Note that not all types exposed to the web platform are currently supported.
-         * @return the protocol field value
+         * Identifies the frame that this event is related to. Empty for non-frame targets.
+         * @param frameId field value
+         * @return this model
          */
-        @Nullable public java.util.List<String> eventTypes() {
-            return list(value("eventTypes"), element0 -> (String) element0);
+        public TimelineEvent frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The types of event to report, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype The specified filter overrides any previous filters, passing empty filter disables recording. Note that not all types exposed to the web platform are currently supported.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder eventTypes(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("eventTypes");
-                else values.put("eventTypes", jsonValue(value));
-                return this;
-            }
-            public EnableParams build() {
-                if (!values.containsKey("eventTypes")) throw new IllegalStateException("Missing required CDP field: eventTypes");
-                return new EnableParams(values);
-            }
+        /**
+         * The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype This determines which of the optional &quot;details&quot; fields is present.
+         * @param type field value
+         * @return this model
+         */
+        public TimelineEvent type(String type) {
+            set("type", type);
+            return this;
         }
-    }
-    /**
-     * Previously buffered events would be reported before method returns. See also: timelineEventAdded
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
+        /**
+         * Name may be empty depending on the type.
+         * @param name field value
+         * @return this model
+         */
+        public TimelineEvent name(String name) {
+            set("name", name);
+            return this;
         }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
+        /**
+         * Time in seconds since Epoch, monotonically increasing within document lifetime.
+         * @param time field value
+         * @return this model
+         */
+        public TimelineEvent time(Network.TimeSinceEpoch time) {
+            set("time", time);
+            return this;
+        }
+        /**
+         * Event duration, if applicable.
+         * @param duration field value; empty omits the value
+         * @return this model
+         */
+        public TimelineEvent duration(OptionalDouble duration) {
+            set("duration", duration.isPresent() ? duration.getAsDouble() : null);
+            return this;
+        }
+        /**
+         * Event duration, if applicable.
+         * @param duration field value; null removes the value
+         * @return this model
+         */
+        public TimelineEvent duration(Double duration) {
+            set("duration", duration);
+            return this;
+        }
+        /**
+         * Sets the lcpDetails field.
+         * @param lcpDetails field value; empty omits the value
+         * @return this model
+         */
+        public TimelineEvent lcpDetails(Optional<PerformanceTimeline.LargestContentfulPaint> lcpDetails) {
+            set("lcpDetails", lcpDetails.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the lcpDetails field.
+         * @param lcpDetails field value; null removes the value
+         * @return this model
+         */
+        public TimelineEvent lcpDetails(PerformanceTimeline.LargestContentfulPaint lcpDetails) {
+            set("lcpDetails", lcpDetails);
+            return this;
+        }
+        /**
+         * Sets the layoutShiftDetails field.
+         * @param layoutShiftDetails field value; empty omits the value
+         * @return this model
+         */
+        public TimelineEvent layoutShiftDetails(Optional<PerformanceTimeline.LayoutShift> layoutShiftDetails) {
+            set("layoutShiftDetails", layoutShiftDetails.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the layoutShiftDetails field.
+         * @param layoutShiftDetails field value; null removes the value
+         * @return this model
+         */
+        public TimelineEvent layoutShiftDetails(PerformanceTimeline.LayoutShift layoutShiftDetails) {
+            set("layoutShiftDetails", layoutShiftDetails);
+            return this;
         }
     }
     /**
      * Sent when a performance timeline event is added. See reportPerformanceTimeline method.
      */
     public static final class TimelineEventAddedEvent extends CdpObject {
+        public TimelineEventAddedEvent() {}
         private TimelineEventAddedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TimelineEventAddedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TimelineEventAddedEvent(values);
+        public static TimelineEventAddedEvent fromMap(Map<String, Object> values) {
+            return new TimelineEventAddedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the event field.
          * @return the protocol field value
          */
-        @Nullable public PerformanceTimeline.TimelineEvent event() {
-            return PerformanceTimeline.TimelineEvent.fromMap(objectMap(value("event")));
+        public PerformanceTimeline.TimelineEvent event() {
+            return java.util.Objects.requireNonNull(PerformanceTimeline.TimelineEvent.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("event")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the event field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder event(@Nullable PerformanceTimeline.TimelineEvent value) {
-                if (value == null) values.remove("event");
-                else values.put("event", jsonValue(value));
-                return this;
-            }
-            public TimelineEventAddedEvent build() {
-                if (!values.containsKey("event")) throw new IllegalStateException("Missing required CDP field: event");
-                return new TimelineEventAddedEvent(values);
-            }
+        /**
+         * Sets the event field.
+         * @param event field value
+         * @return this model
+         */
+        public TimelineEventAddedEvent event(PerformanceTimeline.TimelineEvent event) {
+            set("event", event);
+            return this;
         }
     }
     public static final class Client {
@@ -526,11 +477,13 @@ public final class PerformanceTimeline {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Previously buffered events would be reported before method returns. See also: timelineEventAdded
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param eventTypes protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable(EnableParams params) {
-            return client.call("PerformanceTimeline.enable", params, EnableResult::fromMap);
+        public CompletionStage<Void> enable(java.util.List<String> eventTypes) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("eventTypes", CdpObject.json(eventTypes));
+            return client.call("PerformanceTimeline.enable", params, result_ -> null);
         }
         /**
          * Sent when a performance timeline event is added. See reportPerformanceTimeline method.

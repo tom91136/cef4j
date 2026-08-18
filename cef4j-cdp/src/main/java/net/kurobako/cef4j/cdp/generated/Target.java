@@ -3,276 +3,351 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Supports additional targets discovery and allows to attach to them.
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/Target.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class Target {
     private Target() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Tagged String wire value for TargetID.
+     */
+    public static final class TargetID implements CdpValue<String> {
+        public final String value;
+        public TargetID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof TargetID)) return false;
+            return value.equals(((TargetID) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "TargetID(" + value + ")"; }
+    }
+    /**
+     * Unique identifier of attached debugging session.
+     */
+    public static final class SessionID implements CdpValue<String> {
+        public final String value;
+        public SessionID(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof SessionID)) return false;
+            return value.equals(((SessionID) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "SessionID(" + value + ")"; }
+    }
     /**
      */
     public static final class TargetInfo extends CdpObject {
+        public TargetInfo() {}
         private TargetInfo(Map<String, Object> values) { super(values); }
-        @Nullable public static TargetInfo fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TargetInfo(values);
+        public static TargetInfo fromMap(Map<String, Object> values) {
+            return new TargetInfo(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the targetId field.
          * @return the protocol field value
          */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Target.TargetID targetId() {
+            return new Target.TargetID((String) require("targetId"));
         }
         /**
          * List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&amp;q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public String type() {
+            return (String) require("type");
         }
         /**
          * Returns the title field.
          * @return the protocol field value
          */
-        @Nullable public String title() {
-            return (String) value("title");
+        public String title() {
+            return (String) require("title");
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
-        @Nullable public String url() {
-            return (String) value("url");
+        public String url() {
+            return (String) require("url");
         }
         /**
          * Whether the target has an attached client.
          * @return the protocol field value
          */
-        @Nullable public Boolean attached() {
-            return (Boolean) value("attached");
+        public boolean attached() {
+            return (Boolean) require("attached");
         }
         /**
          * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String parentId() {
-            return (String) value("parentId");
+        public Optional<Target.TargetID> parentId() {
+            return Optional.ofNullable(raw("parentId") == null ? null : new Target.TargetID((String) raw("parentId")));
         }
         /**
          * Opener target Id
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String openerId() {
-            return (String) value("openerId");
+        public Optional<Target.TargetID> openerId() {
+            return Optional.ofNullable(raw("openerId") == null ? null : new Target.TargetID((String) raw("openerId")));
         }
         /**
          * Whether the target has access to the originating window.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return the protocol field value
          */
-        @Nullable public Boolean canAccessOpener() {
-            return (Boolean) value("canAccessOpener");
+        public boolean canAccessOpener() {
+            return (Boolean) require("canAccessOpener");
         }
         /**
          * Frame id of originating window (is only set if target has an opener).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String openerFrameId() {
-            return (String) value("openerFrameId");
+        public Optional<Page.FrameId> openerFrameId() {
+            return Optional.ofNullable(raw("openerFrameId") == null ? null : new Page.FrameId((String) raw("openerFrameId")));
         }
         /**
          * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String parentFrameId() {
-            return (String) value("parentFrameId");
+        public Optional<Page.FrameId> parentFrameId() {
+            return Optional.ofNullable(raw("parentFrameId") == null ? null : new Page.FrameId((String) raw("parentFrameId")));
         }
         /**
          * Returns the browserContextId field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
+        public Optional<Browser.BrowserContextID> browserContextId() {
+            return Optional.ofNullable(raw("browserContextId") == null ? null : new Browser.BrowserContextID((String) raw("browserContextId")));
         }
         /**
          * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String subtype() {
-            return (String) value("subtype");
+        public Optional<String> subtype() {
+            return Optional.ofNullable((String) raw("subtype"));
         }
         /**
          * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.Map<String, Object> embedderData() {
-            return objectMap(value("embedderData"));
+        public Optional<java.util.Map<String, Object>> embedderData() {
+            return Optional.ofNullable(objectMap(raw("embedderData")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&amp;q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the title field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder title(@Nullable String value) {
-                if (value == null) values.remove("title");
-                else values.put("title", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the url field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the target has an attached client.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder attached(@Nullable Boolean value) {
-                if (value == null) values.remove("attached");
-                else values.put("attached", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentId(@Nullable String value) {
-                if (value == null) values.remove("parentId");
-                else values.put("parentId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Opener target Id
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder openerId(@Nullable String value) {
-                if (value == null) values.remove("openerId");
-                else values.put("openerId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether the target has access to the originating window.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder canAccessOpener(@Nullable Boolean value) {
-                if (value == null) values.remove("canAccessOpener");
-                else values.put("canAccessOpener", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame id of originating window (is only set if target has an opener).
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder openerFrameId(@Nullable String value) {
-                if (value == null) values.remove("openerFrameId");
-                else values.put("openerFrameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder parentFrameId(@Nullable String value) {
-                if (value == null) values.remove("parentFrameId");
-                else values.put("parentFrameId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the browserContextId field.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder subtype(@Nullable String value) {
-                if (value == null) values.remove("subtype");
-                else values.put("subtype", jsonValue(value));
-                return this;
-            }
-            /**
-             * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder embedderData(@Nullable java.util.Map<String, Object> value) {
-                if (value == null) values.remove("embedderData");
-                else values.put("embedderData", jsonValue(value));
-                return this;
-            }
-            public TargetInfo build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("title")) throw new IllegalStateException("Missing required CDP field: title");
-                if (!values.containsKey("url")) throw new IllegalStateException("Missing required CDP field: url");
-                if (!values.containsKey("attached")) throw new IllegalStateException("Missing required CDP field: attached");
-                if (!values.containsKey("canAccessOpener")) throw new IllegalStateException("Missing required CDP field: canAccessOpener");
-                return new TargetInfo(values);
-            }
+        /**
+         * Sets the targetId field.
+         * @param targetId field value
+         * @return this model
+         */
+        public TargetInfo targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
+        }
+        /**
+         * List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&amp;q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
+         * @param type field value
+         * @return this model
+         */
+        public TargetInfo type(String type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the title field.
+         * @param title field value
+         * @return this model
+         */
+        public TargetInfo title(String title) {
+            set("title", title);
+            return this;
+        }
+        /**
+         * Sets the url field.
+         * @param url field value
+         * @return this model
+         */
+        public TargetInfo url(String url) {
+            set("url", url);
+            return this;
+        }
+        /**
+         * Whether the target has an attached client.
+         * @param attached field value
+         * @return this model
+         */
+        public TargetInfo attached(boolean attached) {
+            set("attached", attached);
+            return this;
+        }
+        /**
+         * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
+         * @param parentId field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo parentId(Optional<Target.TargetID> parentId) {
+            set("parentId", parentId.orElse(null));
+            return this;
+        }
+        /**
+         * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
+         * @param parentId field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo parentId(Target.TargetID parentId) {
+            set("parentId", parentId);
+            return this;
+        }
+        /**
+         * Opener target Id
+         * @param openerId field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo openerId(Optional<Target.TargetID> openerId) {
+            set("openerId", openerId.orElse(null));
+            return this;
+        }
+        /**
+         * Opener target Id
+         * @param openerId field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo openerId(Target.TargetID openerId) {
+            set("openerId", openerId);
+            return this;
+        }
+        /**
+         * Whether the target has access to the originating window.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param canAccessOpener field value
+         * @return this model
+         */
+        public TargetInfo canAccessOpener(boolean canAccessOpener) {
+            set("canAccessOpener", canAccessOpener);
+            return this;
+        }
+        /**
+         * Frame id of originating window (is only set if target has an opener).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param openerFrameId field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo openerFrameId(Optional<Page.FrameId> openerFrameId) {
+            set("openerFrameId", openerFrameId.orElse(null));
+            return this;
+        }
+        /**
+         * Frame id of originating window (is only set if target has an opener).
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param openerFrameId field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo openerFrameId(Page.FrameId openerFrameId) {
+            set("openerFrameId", openerFrameId);
+            return this;
+        }
+        /**
+         * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param parentFrameId field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo parentFrameId(Optional<Page.FrameId> parentFrameId) {
+            set("parentFrameId", parentFrameId.orElse(null));
+            return this;
+        }
+        /**
+         * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param parentFrameId field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo parentFrameId(Page.FrameId parentFrameId) {
+            set("parentFrameId", parentFrameId);
+            return this;
+        }
+        /**
+         * Sets the browserContextId field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param browserContextId field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
+            set("browserContextId", browserContextId.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the browserContextId field.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param browserContextId field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo browserContextId(Browser.BrowserContextID browserContextId) {
+            set("browserContextId", browserContextId);
+            return this;
+        }
+        /**
+         * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param subtype field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo subtype(Optional<String> subtype) {
+            set("subtype", subtype.orElse(null));
+            return this;
+        }
+        /**
+         * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param subtype field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo subtype(String subtype) {
+            set("subtype", subtype);
+            return this;
+        }
+        /**
+         * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param embedderData field value; empty omits the value
+         * @return this model
+         */
+        public TargetInfo embedderData(Optional<java.util.Map<String, Object>> embedderData) {
+            set("embedderData", embedderData.orElse(null));
+            return this;
+        }
+        /**
+         * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param embedderData field value; null removes the value
+         * @return this model
+         */
+        public TargetInfo embedderData(java.util.Map<String, Object> embedderData) {
+            set("embedderData", embedderData);
+            return this;
         }
     }
     /**
@@ -280,1765 +355,175 @@ public final class Target {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class FilterEntry extends CdpObject {
+        public FilterEntry() {}
         private FilterEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static FilterEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new FilterEntry(values);
+        public static FilterEntry fromMap(Map<String, Object> values) {
+            return new FilterEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * If set, causes exclusion of matching targets from the list.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean exclude() {
-            return (Boolean) value("exclude");
+        public Optional<Boolean> exclude() {
+            return Optional.ofNullable((Boolean) raw("exclude"));
         }
         /**
          * If not present, matches any type.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public Optional<String> type() {
+            return Optional.ofNullable((String) raw("type"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * If set, causes exclusion of matching targets from the list.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder exclude(@Nullable Boolean value) {
-                if (value == null) values.remove("exclude");
-                else values.put("exclude", jsonValue(value));
-                return this;
-            }
-            /**
-             * If not present, matches any type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            public FilterEntry build() {
-                return new FilterEntry(values);
-            }
+        /**
+         * If set, causes exclusion of matching targets from the list.
+         * @param exclude field value; empty omits the value
+         * @return this model
+         */
+        public FilterEntry exclude(Optional<Boolean> exclude) {
+            set("exclude", exclude.orElse(null));
+            return this;
+        }
+        /**
+         * If set, causes exclusion of matching targets from the list.
+         * @param exclude field value; null removes the value
+         * @return this model
+         */
+        public FilterEntry exclude(Boolean exclude) {
+            set("exclude", exclude);
+            return this;
+        }
+        /**
+         * If not present, matches any type.
+         * @param type field value; empty omits the value
+         * @return this model
+         */
+        public FilterEntry type(Optional<String> type) {
+            set("type", type.orElse(null));
+            return this;
+        }
+        /**
+         * If not present, matches any type.
+         * @param type field value; null removes the value
+         * @return this model
+         */
+        public FilterEntry type(String type) {
+            set("type", type);
+            return this;
         }
     }
     /**
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class RemoteLocation extends CdpObject {
+        public RemoteLocation() {}
         private RemoteLocation(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoteLocation fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoteLocation(values);
+        public static RemoteLocation fromMap(Map<String, Object> values) {
+            return new RemoteLocation(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the host field.
          * @return the protocol field value
          */
-        @Nullable public String host() {
-            return (String) value("host");
+        public String host() {
+            return (String) require("host");
         }
         /**
          * Returns the port field.
          * @return the protocol field value
          */
-        @Nullable public Long port() {
-            return numberAsLong(value("port"));
+        public long port() {
+            return ((Number) require("port")).longValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the host field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder host(@Nullable String value) {
-                if (value == null) values.remove("host");
-                else values.put("host", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the port field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder port(@Nullable Long value) {
-                if (value == null) values.remove("port");
-                else values.put("port", jsonValue(value));
-                return this;
-            }
-            public RemoteLocation build() {
-                if (!values.containsKey("host")) throw new IllegalStateException("Missing required CDP field: host");
-                if (!values.containsKey("port")) throw new IllegalStateException("Missing required CDP field: port");
-                return new RemoteLocation(values);
-            }
+        /**
+         * Sets the host field.
+         * @param host field value
+         * @return this model
+         */
+        public RemoteLocation host(String host) {
+            set("host", host);
+            return this;
+        }
+        /**
+         * Sets the port field.
+         * @param port field value
+         * @return this model
+         */
+        public RemoteLocation port(long port) {
+            set("port", port);
+            return this;
         }
     }
     /**
      * The state of the target window.
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
-    public static final class WindowState {
-        private WindowState() {}
-        public static final String NORMAL = "normal";
-        public static final String MINIMIZED = "minimized";
-        public static final String MAXIMIZED = "maximized";
-        public static final String FULLSCREEN = "fullscreen";
-    }
-    /**
-     * Activates (focuses) the target.
-     */
-    public static final class ActivateTargetParams extends CdpObject {
-        private ActivateTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ActivateTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ActivateTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
+    public enum WindowState implements CdpValue<String> {
+        NORMAL("normal"),
+        MINIMIZED("minimized"),
+        MAXIMIZED("maximized"),
+        FULLSCREEN("fullscreen");
+        public final String value;
+        WindowState(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static WindowState of(@Nonnull String value) {
+            for (WindowState constant : values()) {
+                if (constant.value.equals(value)) return constant;
             }
-            public ActivateTargetParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new ActivateTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Activates (focuses) the target.
-     */
-    public static final class ActivateTargetResult extends CdpObject {
-        private ActivateTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ActivateTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ActivateTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ActivateTargetResult build() {
-                return new ActivateTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Attaches to the target with given id.
-     */
-    public static final class AttachToTargetParams extends CdpObject {
-        private AttachToTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AttachToTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttachToTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        /**
-         * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean flatten() {
-            return (Boolean) value("flatten");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flatten(@Nullable Boolean value) {
-                if (value == null) values.remove("flatten");
-                else values.put("flatten", jsonValue(value));
-                return this;
-            }
-            public AttachToTargetParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new AttachToTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Attaches to the target with given id.
-     */
-    public static final class AttachToTargetResult extends CdpObject {
-        private AttachToTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AttachToTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttachToTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id assigned to the session.
-         * @return the protocol field value
-         */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id assigned to the session.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            public AttachToTargetResult build() {
-                if (!values.containsKey("sessionId")) throw new IllegalStateException("Missing required CDP field: sessionId");
-                return new AttachToTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Attaches to the browser target, only uses flat sessionId mode.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AttachToBrowserTargetParams extends CdpObject {
-        private AttachToBrowserTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AttachToBrowserTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttachToBrowserTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public AttachToBrowserTargetParams build() {
-                return new AttachToBrowserTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Attaches to the browser target, only uses flat sessionId mode.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AttachToBrowserTargetResult extends CdpObject {
-        private AttachToBrowserTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AttachToBrowserTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttachToBrowserTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id assigned to the session.
-         * @return the protocol field value
-         */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id assigned to the session.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            public AttachToBrowserTargetResult build() {
-                if (!values.containsKey("sessionId")) throw new IllegalStateException("Missing required CDP field: sessionId");
-                return new AttachToBrowserTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Closes the target. If the target is a page that gets closed too.
-     */
-    public static final class CloseTargetParams extends CdpObject {
-        private CloseTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CloseTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CloseTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public CloseTargetParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new CloseTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Closes the target. If the target is a page that gets closed too.
-     */
-    public static final class CloseTargetResult extends CdpObject {
-        private CloseTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CloseTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CloseTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Always set to true. If an error occurs, the response indicates protocol error.
-         * @return the protocol field value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        @Nullable public Boolean success() {
-            return (Boolean) value("success");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Always set to true. If an error occurs, the response indicates protocol error.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder success(@Nullable Boolean value) {
-                if (value == null) values.remove("success");
-                else values.put("success", jsonValue(value));
-                return this;
-            }
-            public CloseTargetResult build() {
-                if (!values.containsKey("success")) throw new IllegalStateException("Missing required CDP field: success");
-                return new CloseTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
-     * <p>Injected object will be available as {@code window[bindingName]}.
-     * <p>The object has the following API: - {@code binding.send(json)} - a method to send messages over the remote debugging protocol - {@code binding.onmessage = json =&gt; handleMessage(json)} - a callback that will be called for the protocol notifications and command responses.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ExposeDevToolsProtocolParams extends CdpObject {
-        private ExposeDevToolsProtocolParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ExposeDevToolsProtocolParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ExposeDevToolsProtocolParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        /**
-         * Binding name, &#x27;cdp&#x27; if not specified.
-         * @return the protocol field value
-         */
-        @Nullable public String bindingName() {
-            return (String) value("bindingName");
-        }
-        /**
-         * If true, inherits the current root session&#x27;s permissions (default: false).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean inheritPermissions() {
-            return (Boolean) value("inheritPermissions");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Binding name, &#x27;cdp&#x27; if not specified.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder bindingName(@Nullable String value) {
-                if (value == null) values.remove("bindingName");
-                else values.put("bindingName", jsonValue(value));
-                return this;
-            }
-            /**
-             * If true, inherits the current root session&#x27;s permissions (default: false).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder inheritPermissions(@Nullable Boolean value) {
-                if (value == null) values.remove("inheritPermissions");
-                else values.put("inheritPermissions", jsonValue(value));
-                return this;
-            }
-            public ExposeDevToolsProtocolParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new ExposeDevToolsProtocolParams(values);
-            }
-        }
-    }
-    /**
-     * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
-     * <p>Injected object will be available as {@code window[bindingName]}.
-     * <p>The object has the following API: - {@code binding.send(json)} - a method to send messages over the remote debugging protocol - {@code binding.onmessage = json =&gt; handleMessage(json)} - a callback that will be called for the protocol notifications and command responses.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class ExposeDevToolsProtocolResult extends CdpObject {
-        private ExposeDevToolsProtocolResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ExposeDevToolsProtocolResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ExposeDevToolsProtocolResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ExposeDevToolsProtocolResult build() {
-                return new ExposeDevToolsProtocolResult(values);
-            }
-        }
-    }
-    /**
-     * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
-     */
-    public static final class CreateBrowserContextParams extends CdpObject {
-        private CreateBrowserContextParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CreateBrowserContextParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CreateBrowserContextParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * If specified, disposes this context when debugging session disconnects.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean disposeOnDetach() {
-            return (Boolean) value("disposeOnDetach");
-        }
-        /**
-         * Proxy server, similar to the one passed to --proxy-server
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public String proxyServer() {
-            return (String) value("proxyServer");
-        }
-        /**
-         * Proxy bypass list, similar to the one passed to --proxy-bypass-list
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public String proxyBypassList() {
-            return (String) value("proxyBypassList");
-        }
-        /**
-         * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<String> originsWithUniversalNetworkAccess() {
-            return list(value("originsWithUniversalNetworkAccess"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * If specified, disposes this context when debugging session disconnects.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder disposeOnDetach(@Nullable Boolean value) {
-                if (value == null) values.remove("disposeOnDetach");
-                else values.put("disposeOnDetach", jsonValue(value));
-                return this;
-            }
-            /**
-             * Proxy server, similar to the one passed to --proxy-server
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder proxyServer(@Nullable String value) {
-                if (value == null) values.remove("proxyServer");
-                else values.put("proxyServer", jsonValue(value));
-                return this;
-            }
-            /**
-             * Proxy bypass list, similar to the one passed to --proxy-bypass-list
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder proxyBypassList(@Nullable String value) {
-                if (value == null) values.remove("proxyBypassList");
-                else values.put("proxyBypassList", jsonValue(value));
-                return this;
-            }
-            /**
-             * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder originsWithUniversalNetworkAccess(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("originsWithUniversalNetworkAccess");
-                else values.put("originsWithUniversalNetworkAccess", jsonValue(value));
-                return this;
-            }
-            public CreateBrowserContextParams build() {
-                return new CreateBrowserContextParams(values);
-            }
-        }
-    }
-    /**
-     * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
-     */
-    public static final class CreateBrowserContextResult extends CdpObject {
-        private CreateBrowserContextResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CreateBrowserContextResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CreateBrowserContextResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The id of the context created.
-         * @return the protocol field value
-         */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The id of the context created.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            public CreateBrowserContextResult build() {
-                if (!values.containsKey("browserContextId")) throw new IllegalStateException("Missing required CDP field: browserContextId");
-                return new CreateBrowserContextResult(values);
-            }
-        }
-    }
-    /**
-     * Returns all browser contexts created with {@code Target.createBrowserContext} method.
-     */
-    public static final class GetBrowserContextsParams extends CdpObject {
-        private GetBrowserContextsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetBrowserContextsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetBrowserContextsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetBrowserContextsParams build() {
-                return new GetBrowserContextsParams(values);
-            }
+            throw new IllegalArgumentException("Unknown WindowState value: " + value);
         }
     }
     /**
      * Returns all browser contexts created with {@code Target.createBrowserContext} method.
      */
     public static final class GetBrowserContextsResult extends CdpObject {
+        public GetBrowserContextsResult() {}
         private GetBrowserContextsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetBrowserContextsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetBrowserContextsResult(values);
+        public static GetBrowserContextsResult fromMap(Map<String, Object> values) {
+            return new GetBrowserContextsResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * An array of browser context ids.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<String> browserContextIds() {
-            return list(value("browserContextIds"), element0 -> (String) element0);
+        public java.util.List<Browser.BrowserContextID> browserContextIds() {
+            return CdpObject.requireList(require("browserContextIds"), element0 -> new Browser.BrowserContextID((String) element0));
         }
         /**
          * The id of the default browser context if available.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String defaultBrowserContextId() {
-            return (String) value("defaultBrowserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An array of browser context ids.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextIds(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("browserContextIds");
-                else values.put("browserContextIds", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id of the default browser context if available.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder defaultBrowserContextId(@Nullable String value) {
-                if (value == null) values.remove("defaultBrowserContextId");
-                else values.put("defaultBrowserContextId", jsonValue(value));
-                return this;
-            }
-            public GetBrowserContextsResult build() {
-                if (!values.containsKey("browserContextIds")) throw new IllegalStateException("Missing required CDP field: browserContextIds");
-                return new GetBrowserContextsResult(values);
-            }
-        }
-    }
-    /**
-     * Creates a new page.
-     */
-    public static final class CreateTargetParams extends CdpObject {
-        private CreateTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CreateTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CreateTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The initial URL the page will be navigated to. An empty string indicates about:blank.
-         * @return the protocol field value
-         */
-        @Nullable public String url() {
-            return (String) value("url");
+        public Optional<Browser.BrowserContextID> defaultBrowserContextId() {
+            return Optional.ofNullable(raw("defaultBrowserContextId") == null ? null : new Browser.BrowserContextID((String) raw("defaultBrowserContextId")));
         }
         /**
-         * Frame left origin in DIP (requires newWindow to be true or headless shell).
+         * An array of browser context ids.
+         * @param browserContextIds field value
+         * @return this model
+         */
+        public GetBrowserContextsResult browserContextIds(java.util.List<Browser.BrowserContextID> browserContextIds) {
+            set("browserContextIds", browserContextIds);
+            return this;
+        }
+        /**
+         * The id of the default browser context if available.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @param defaultBrowserContextId field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Long left() {
-            return numberAsLong(value("left"));
+        public GetBrowserContextsResult defaultBrowserContextId(Optional<Browser.BrowserContextID> defaultBrowserContextId) {
+            set("defaultBrowserContextId", defaultBrowserContextId.orElse(null));
+            return this;
         }
         /**
-         * Frame top origin in DIP (requires newWindow to be true or headless shell).
+         * The id of the default browser context if available.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
+         * @param defaultBrowserContextId field value; null removes the value
+         * @return this model
          */
-        @Nullable public Long top() {
-            return numberAsLong(value("top"));
-        }
-        /**
-         * Frame width in DIP (requires newWindow to be true or headless shell).
-         * @return the protocol field value
-         */
-        @Nullable public Long width() {
-            return numberAsLong(value("width"));
-        }
-        /**
-         * Frame height in DIP (requires newWindow to be true or headless shell).
-         * @return the protocol field value
-         */
-        @Nullable public Long height() {
-            return numberAsLong(value("height"));
-        }
-        /**
-         * Frame window state (requires newWindow to be true or headless shell). Default is normal.
-         * @return the protocol field value
-         */
-        @Nullable public String windowState() {
-            return (String) value("windowState");
-        }
-        /**
-         * The browser context to create the page in.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        /**
-         * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean enableBeginFrameControl() {
-            return (Boolean) value("enableBeginFrameControl");
-        }
-        /**
-         * Whether to create a new Window or Tab (false by default, not supported by headless shell).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean newWindow() {
-            return (Boolean) value("newWindow");
-        }
-        /**
-         * Whether to create the target in background or foreground (false by default, not supported by headless shell).
-         * @return the protocol field value
-         */
-        @Nullable public Boolean background() {
-            return (Boolean) value("background");
-        }
-        /**
-         * Whether to create the target of type &quot;tab&quot;.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean forTab() {
-            return (Boolean) value("forTab");
-        }
-        /**
-         * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean hidden() {
-            return (Boolean) value("hidden");
-        }
-        /**
-         * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean focus() {
-            return (Boolean) value("focus");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The initial URL the page will be navigated to. An empty string indicates about:blank.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder url(@Nullable String value) {
-                if (value == null) values.remove("url");
-                else values.put("url", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame left origin in DIP (requires newWindow to be true or headless shell).
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder left(@Nullable Long value) {
-                if (value == null) values.remove("left");
-                else values.put("left", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame top origin in DIP (requires newWindow to be true or headless shell).
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder top(@Nullable Long value) {
-                if (value == null) values.remove("top");
-                else values.put("top", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame width in DIP (requires newWindow to be true or headless shell).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder width(@Nullable Long value) {
-                if (value == null) values.remove("width");
-                else values.put("width", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame height in DIP (requires newWindow to be true or headless shell).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder height(@Nullable Long value) {
-                if (value == null) values.remove("height");
-                else values.put("height", jsonValue(value));
-                return this;
-            }
-            /**
-             * Frame window state (requires newWindow to be true or headless shell). Default is normal.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder windowState(@Nullable String value) {
-                if (value == null) values.remove("windowState");
-                else values.put("windowState", jsonValue(value));
-                return this;
-            }
-            /**
-             * The browser context to create the page in.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder enableBeginFrameControl(@Nullable Boolean value) {
-                if (value == null) values.remove("enableBeginFrameControl");
-                else values.put("enableBeginFrameControl", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to create a new Window or Tab (false by default, not supported by headless shell).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder newWindow(@Nullable Boolean value) {
-                if (value == null) values.remove("newWindow");
-                else values.put("newWindow", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to create the target in background or foreground (false by default, not supported by headless shell).
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder background(@Nullable Boolean value) {
-                if (value == null) values.remove("background");
-                else values.put("background", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to create the target of type &quot;tab&quot;.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder forTab(@Nullable Boolean value) {
-                if (value == null) values.remove("forTab");
-                else values.put("forTab", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder hidden(@Nullable Boolean value) {
-                if (value == null) values.remove("hidden");
-                else values.put("hidden", jsonValue(value));
-                return this;
-            }
-            /**
-             * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder focus(@Nullable Boolean value) {
-                if (value == null) values.remove("focus");
-                else values.put("focus", jsonValue(value));
-                return this;
-            }
-            public CreateTargetParams build() {
-                if (!values.containsKey("url")) throw new IllegalStateException("Missing required CDP field: url");
-                return new CreateTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Creates a new page.
-     */
-    public static final class CreateTargetResult extends CdpObject {
-        private CreateTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CreateTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CreateTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The id of the page opened.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The id of the page opened.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public CreateTargetResult build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new CreateTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Detaches session with given id.
-     */
-    public static final class DetachFromTargetParams extends CdpObject {
-        private DetachFromTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DetachFromTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DetachFromTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Session to detach.
-         * @return the protocol field value
-         */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
-        }
-        /**
-         * Deprecated.
-         * @return the protocol field value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Session to detach.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Deprecated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public DetachFromTargetParams build() {
-                return new DetachFromTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Detaches session with given id.
-     */
-    public static final class DetachFromTargetResult extends CdpObject {
-        private DetachFromTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DetachFromTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DetachFromTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DetachFromTargetResult build() {
-                return new DetachFromTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
-     */
-    public static final class DisposeBrowserContextParams extends CdpObject {
-        private DisposeBrowserContextParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisposeBrowserContextParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisposeBrowserContextParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the browserContextId field.
-         * @return the protocol field value
-         */
-        @Nullable public String browserContextId() {
-            return (String) value("browserContextId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the browserContextId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder browserContextId(@Nullable String value) {
-                if (value == null) values.remove("browserContextId");
-                else values.put("browserContextId", jsonValue(value));
-                return this;
-            }
-            public DisposeBrowserContextParams build() {
-                if (!values.containsKey("browserContextId")) throw new IllegalStateException("Missing required CDP field: browserContextId");
-                return new DisposeBrowserContextParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
-     */
-    public static final class DisposeBrowserContextResult extends CdpObject {
-        private DisposeBrowserContextResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisposeBrowserContextResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisposeBrowserContextResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisposeBrowserContextResult build() {
-                return new DisposeBrowserContextResult(values);
-            }
-        }
-    }
-    /**
-     * Returns information about a target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTargetInfoParams extends CdpObject {
-        private GetTargetInfoParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTargetInfoParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTargetInfoParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public GetTargetInfoParams build() {
-                return new GetTargetInfoParams(values);
-            }
-        }
-    }
-    /**
-     * Returns information about a target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetTargetInfoResult extends CdpObject {
-        private GetTargetInfoResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTargetInfoResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTargetInfoResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetInfo field.
-         * @return the protocol field value
-         */
-        @Nullable public Target.TargetInfo targetInfo() {
-            return Target.TargetInfo.fromMap(objectMap(value("targetInfo")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetInfo field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetInfo(@Nullable Target.TargetInfo value) {
-                if (value == null) values.remove("targetInfo");
-                else values.put("targetInfo", jsonValue(value));
-                return this;
-            }
-            public GetTargetInfoResult build() {
-                if (!values.containsKey("targetInfo")) throw new IllegalStateException("Missing required CDP field: targetInfo");
-                return new GetTargetInfoResult(values);
-            }
-        }
-    }
-    /**
-     * Retrieves a list of available targets.
-     */
-    public static final class GetTargetsParams extends CdpObject {
-        private GetTargetsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTargetsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTargetsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.FilterEntry> filter() {
-            return list(value("filter"), element0 -> Target.FilterEntry.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder filter(@Nullable java.util.List<Target.FilterEntry> value) {
-                if (value == null) values.remove("filter");
-                else values.put("filter", jsonValue(value));
-                return this;
-            }
-            public GetTargetsParams build() {
-                return new GetTargetsParams(values);
-            }
-        }
-    }
-    /**
-     * Retrieves a list of available targets.
-     */
-    public static final class GetTargetsResult extends CdpObject {
-        private GetTargetsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetTargetsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetTargetsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The list of targets.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.TargetInfo> targetInfos() {
-            return list(value("targetInfos"), element0 -> Target.TargetInfo.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The list of targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetInfos(@Nullable java.util.List<Target.TargetInfo> value) {
-                if (value == null) values.remove("targetInfos");
-                else values.put("targetInfos", jsonValue(value));
-                return this;
-            }
-            public GetTargetsResult build() {
-                if (!values.containsKey("targetInfos")) throw new IllegalStateException("Missing required CDP field: targetInfos");
-                return new GetTargetsResult(values);
-            }
-        }
-    }
-    /**
-     * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SendMessageToTargetParams extends CdpObject {
-        private SendMessageToTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SendMessageToTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SendMessageToTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the message field.
-         * @return the protocol field value
-         */
-        @Nullable public String message() {
-            return (String) value("message");
-        }
-        /**
-         * Identifier of the session.
-         * @return the protocol field value
-         */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
-        }
-        /**
-         * Deprecated.
-         * @return the protocol field value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the message field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder message(@Nullable String value) {
-                if (value == null) values.remove("message");
-                else values.put("message", jsonValue(value));
-                return this;
-            }
-            /**
-             * Identifier of the session.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Deprecated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public SendMessageToTargetParams build() {
-                if (!values.containsKey("message")) throw new IllegalStateException("Missing required CDP field: message");
-                return new SendMessageToTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
-     * @deprecated Deprecated by the Chromium DevTools Protocol.
-     */
-    @Deprecated
-    public static final class SendMessageToTargetResult extends CdpObject {
-        private SendMessageToTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SendMessageToTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SendMessageToTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SendMessageToTargetResult build() {
-                return new SendMessageToTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
-     */
-    public static final class SetAutoAttachParams extends CdpObject {
-        private SetAutoAttachParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAutoAttachParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAutoAttachParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Whether to auto-attach to related targets.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean autoAttach() {
-            return (Boolean) value("autoAttach");
-        }
-        /**
-         * Whether to pause new targets when attaching to them. Use {@code Runtime.runIfWaitingForDebugger} to run paused targets.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean waitForDebuggerOnStart() {
-            return (Boolean) value("waitForDebuggerOnStart");
-        }
-        /**
-         * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean flatten() {
-            return (Boolean) value("flatten");
-        }
-        /**
-         * Only targets matching filter will be attached.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.FilterEntry> filter() {
-            return list(value("filter"), element0 -> Target.FilterEntry.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether to auto-attach to related targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder autoAttach(@Nullable Boolean value) {
-                if (value == null) values.remove("autoAttach");
-                else values.put("autoAttach", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to pause new targets when attaching to them. Use {@code Runtime.runIfWaitingForDebugger} to run paused targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder waitForDebuggerOnStart(@Nullable Boolean value) {
-                if (value == null) values.remove("waitForDebuggerOnStart");
-                else values.put("waitForDebuggerOnStart", jsonValue(value));
-                return this;
-            }
-            /**
-             * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder flatten(@Nullable Boolean value) {
-                if (value == null) values.remove("flatten");
-                else values.put("flatten", jsonValue(value));
-                return this;
-            }
-            /**
-             * Only targets matching filter will be attached.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder filter(@Nullable java.util.List<Target.FilterEntry> value) {
-                if (value == null) values.remove("filter");
-                else values.put("filter", jsonValue(value));
-                return this;
-            }
-            public SetAutoAttachParams build() {
-                if (!values.containsKey("autoAttach")) throw new IllegalStateException("Missing required CDP field: autoAttach");
-                if (!values.containsKey("waitForDebuggerOnStart")) throw new IllegalStateException("Missing required CDP field: waitForDebuggerOnStart");
-                return new SetAutoAttachParams(values);
-            }
-        }
-    }
-    /**
-     * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
-     */
-    public static final class SetAutoAttachResult extends CdpObject {
-        private SetAutoAttachResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetAutoAttachResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetAutoAttachResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetAutoAttachResult build() {
-                return new SetAutoAttachResult(values);
-            }
-        }
-    }
-    /**
-     * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AutoAttachRelatedParams extends CdpObject {
-        private AutoAttachRelatedParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AutoAttachRelatedParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AutoAttachRelatedParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the targetId field.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        /**
-         * Whether to pause new targets when attaching to them. Use {@code Runtime.runIfWaitingForDebugger} to run paused targets.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean waitForDebuggerOnStart() {
-            return (Boolean) value("waitForDebuggerOnStart");
-        }
-        /**
-         * Only targets matching filter will be attached.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.FilterEntry> filter() {
-            return list(value("filter"), element0 -> Target.FilterEntry.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Whether to pause new targets when attaching to them. Use {@code Runtime.runIfWaitingForDebugger} to run paused targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder waitForDebuggerOnStart(@Nullable Boolean value) {
-                if (value == null) values.remove("waitForDebuggerOnStart");
-                else values.put("waitForDebuggerOnStart", jsonValue(value));
-                return this;
-            }
-            /**
-             * Only targets matching filter will be attached.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder filter(@Nullable java.util.List<Target.FilterEntry> value) {
-                if (value == null) values.remove("filter");
-                else values.put("filter", jsonValue(value));
-                return this;
-            }
-            public AutoAttachRelatedParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                if (!values.containsKey("waitForDebuggerOnStart")) throw new IllegalStateException("Missing required CDP field: waitForDebuggerOnStart");
-                return new AutoAttachRelatedParams(values);
-            }
-        }
-    }
-    /**
-     * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class AutoAttachRelatedResult extends CdpObject {
-        private AutoAttachRelatedResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AutoAttachRelatedResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AutoAttachRelatedResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public AutoAttachRelatedResult build() {
-                return new AutoAttachRelatedResult(values);
-            }
-        }
-    }
-    /**
-     * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
-     */
-    public static final class SetDiscoverTargetsParams extends CdpObject {
-        private SetDiscoverTargetsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetDiscoverTargetsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetDiscoverTargetsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Whether to discover available targets.
-         * @return the protocol field value
-         */
-        @Nullable public Boolean discover() {
-            return (Boolean) value("discover");
-        }
-        /**
-         * Only targets matching filter will be attached. If {@code discover} is false, {@code filter} must be omitted or empty.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.FilterEntry> filter() {
-            return list(value("filter"), element0 -> Target.FilterEntry.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Whether to discover available targets.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder discover(@Nullable Boolean value) {
-                if (value == null) values.remove("discover");
-                else values.put("discover", jsonValue(value));
-                return this;
-            }
-            /**
-             * Only targets matching filter will be attached. If {@code discover} is false, {@code filter} must be omitted or empty.
-             * <p><b>Experimental:</b> this part of CDP may change without notice.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder filter(@Nullable java.util.List<Target.FilterEntry> value) {
-                if (value == null) values.remove("filter");
-                else values.put("filter", jsonValue(value));
-                return this;
-            }
-            public SetDiscoverTargetsParams build() {
-                if (!values.containsKey("discover")) throw new IllegalStateException("Missing required CDP field: discover");
-                return new SetDiscoverTargetsParams(values);
-            }
-        }
-    }
-    /**
-     * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
-     */
-    public static final class SetDiscoverTargetsResult extends CdpObject {
-        private SetDiscoverTargetsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetDiscoverTargetsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetDiscoverTargetsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetDiscoverTargetsResult build() {
-                return new SetDiscoverTargetsResult(values);
-            }
-        }
-    }
-    /**
-     * Enables target discovery for the specified locations, when {@code setDiscoverTargets} was set to {@code true}.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetRemoteLocationsParams extends CdpObject {
-        private SetRemoteLocationsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetRemoteLocationsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetRemoteLocationsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * List of remote locations.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<Target.RemoteLocation> locations() {
-            return list(value("locations"), element0 -> Target.RemoteLocation.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * List of remote locations.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder locations(@Nullable java.util.List<Target.RemoteLocation> value) {
-                if (value == null) values.remove("locations");
-                else values.put("locations", jsonValue(value));
-                return this;
-            }
-            public SetRemoteLocationsParams build() {
-                if (!values.containsKey("locations")) throw new IllegalStateException("Missing required CDP field: locations");
-                return new SetRemoteLocationsParams(values);
-            }
-        }
-    }
-    /**
-     * Enables target discovery for the specified locations, when {@code setDiscoverTargets} was set to {@code true}.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class SetRemoteLocationsResult extends CdpObject {
-        private SetRemoteLocationsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetRemoteLocationsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetRemoteLocationsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetRemoteLocationsResult build() {
-                return new SetRemoteLocationsResult(values);
-            }
-        }
-    }
-    /**
-     * Gets the targetId of the DevTools page target opened for the given target (if any).
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetDevToolsTargetParams extends CdpObject {
-        private GetDevToolsTargetParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDevToolsTargetParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDevToolsTargetParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Page or tab target ID.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Page or tab target ID.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public GetDevToolsTargetParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new GetDevToolsTargetParams(values);
-            }
-        }
-    }
-    /**
-     * Gets the targetId of the DevTools page target opened for the given target (if any).
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class GetDevToolsTargetResult extends CdpObject {
-        private GetDevToolsTargetResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetDevToolsTargetResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetDevToolsTargetResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The targetId of DevTools page target if exists.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The targetId of DevTools page target if exists.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public GetDevToolsTargetResult build() {
-                return new GetDevToolsTargetResult(values);
-            }
-        }
-    }
-    /**
-     * Opens a DevTools window for the target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class OpenDevToolsParams extends CdpObject {
-        private OpenDevToolsParams(Map<String, Object> values) { super(values); }
-        @Nullable public static OpenDevToolsParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OpenDevToolsParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * This can be the page or tab target ID.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        /**
-         * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
-         * @return the protocol field value
-         */
-        @Nullable public String panelId() {
-            return (String) value("panelId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * This can be the page or tab target ID.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder panelId(@Nullable String value) {
-                if (value == null) values.remove("panelId");
-                else values.put("panelId", jsonValue(value));
-                return this;
-            }
-            public OpenDevToolsParams build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new OpenDevToolsParams(values);
-            }
-        }
-    }
-    /**
-     * Opens a DevTools window for the target.
-     * <p><b>Experimental:</b> this part of CDP may change without notice.
-     */
-    public static final class OpenDevToolsResult extends CdpObject {
-        private OpenDevToolsResult(Map<String, Object> values) { super(values); }
-        @Nullable public static OpenDevToolsResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OpenDevToolsResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * The targetId of DevTools page target.
-         * @return the protocol field value
-         */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * The targetId of DevTools page target.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public OpenDevToolsResult build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new OpenDevToolsResult(values);
-            }
+        public GetBrowserContextsResult defaultBrowserContextId(Browser.BrowserContextID defaultBrowserContextId) {
+            set("defaultBrowserContextId", defaultBrowserContextId);
+            return this;
         }
     }
     /**
@@ -2046,70 +531,58 @@ public final class Target {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class AttachedToTargetEvent extends CdpObject {
+        public AttachedToTargetEvent() {}
         private AttachedToTargetEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static AttachedToTargetEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AttachedToTargetEvent(values);
+        public static AttachedToTargetEvent fromMap(Map<String, Object> values) {
+            return new AttachedToTargetEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Identifier assigned to the session used to send/receive messages.
          * @return the protocol field value
          */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
+        public Target.SessionID sessionId() {
+            return new Target.SessionID((String) require("sessionId"));
         }
         /**
          * Returns the targetInfo field.
          * @return the protocol field value
          */
-        @Nullable public Target.TargetInfo targetInfo() {
-            return Target.TargetInfo.fromMap(objectMap(value("targetInfo")));
+        public Target.TargetInfo targetInfo() {
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
         }
         /**
          * Returns the waitingForDebugger field.
          * @return the protocol field value
          */
-        @Nullable public Boolean waitingForDebugger() {
-            return (Boolean) value("waitingForDebugger");
+        public boolean waitingForDebugger() {
+            return (Boolean) require("waitingForDebugger");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier assigned to the session used to send/receive messages.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the targetInfo field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetInfo(@Nullable Target.TargetInfo value) {
-                if (value == null) values.remove("targetInfo");
-                else values.put("targetInfo", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the waitingForDebugger field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder waitingForDebugger(@Nullable Boolean value) {
-                if (value == null) values.remove("waitingForDebugger");
-                else values.put("waitingForDebugger", jsonValue(value));
-                return this;
-            }
-            public AttachedToTargetEvent build() {
-                if (!values.containsKey("sessionId")) throw new IllegalStateException("Missing required CDP field: sessionId");
-                if (!values.containsKey("targetInfo")) throw new IllegalStateException("Missing required CDP field: targetInfo");
-                if (!values.containsKey("waitingForDebugger")) throw new IllegalStateException("Missing required CDP field: waitingForDebugger");
-                return new AttachedToTargetEvent(values);
-            }
+        /**
+         * Identifier assigned to the session used to send/receive messages.
+         * @param sessionId field value
+         * @return this model
+         */
+        public AttachedToTargetEvent sessionId(Target.SessionID sessionId) {
+            set("sessionId", sessionId);
+            return this;
+        }
+        /**
+         * Sets the targetInfo field.
+         * @param targetInfo field value
+         * @return this model
+         */
+        public AttachedToTargetEvent targetInfo(Target.TargetInfo targetInfo) {
+            set("targetInfo", targetInfo);
+            return this;
+        }
+        /**
+         * Sets the waitingForDebugger field.
+         * @param waitingForDebugger field value
+         * @return this model
+         */
+        public AttachedToTargetEvent waitingForDebugger(boolean waitingForDebugger) {
+            set("waitingForDebugger", waitingForDebugger);
+            return this;
         }
     }
     /**
@@ -2117,300 +590,266 @@ public final class Target {
      * <p><b>Experimental:</b> this part of CDP may change without notice.
      */
     public static final class DetachedFromTargetEvent extends CdpObject {
+        public DetachedFromTargetEvent() {}
         private DetachedFromTargetEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DetachedFromTargetEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DetachedFromTargetEvent(values);
+        public static DetachedFromTargetEvent fromMap(Map<String, Object> values) {
+            return new DetachedFromTargetEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Detached session identifier.
          * @return the protocol field value
          */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
+        public Target.SessionID sessionId() {
+            return new Target.SessionID((String) require("sessionId"));
         }
         /**
          * Deprecated.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Optional<Target.TargetID> targetId() {
+            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Detached session identifier.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Deprecated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public DetachedFromTargetEvent build() {
-                if (!values.containsKey("sessionId")) throw new IllegalStateException("Missing required CDP field: sessionId");
-                return new DetachedFromTargetEvent(values);
-            }
+        /**
+         * Detached session identifier.
+         * @param sessionId field value
+         * @return this model
+         */
+        public DetachedFromTargetEvent sessionId(Target.SessionID sessionId) {
+            set("sessionId", sessionId);
+            return this;
+        }
+        /**
+         * Deprecated.
+         * @param targetId field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public DetachedFromTargetEvent targetId(Optional<Target.TargetID> targetId) {
+            set("targetId", targetId.orElse(null));
+            return this;
+        }
+        /**
+         * Deprecated.
+         * @param targetId field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public DetachedFromTargetEvent targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
         }
     }
     /**
      * Notifies about a new protocol message received from the session (as reported in {@code attachedToTarget} event).
      */
     public static final class ReceivedMessageFromTargetEvent extends CdpObject {
+        public ReceivedMessageFromTargetEvent() {}
         private ReceivedMessageFromTargetEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static ReceivedMessageFromTargetEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ReceivedMessageFromTargetEvent(values);
+        public static ReceivedMessageFromTargetEvent fromMap(Map<String, Object> values) {
+            return new ReceivedMessageFromTargetEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Identifier of a session which sends a message.
          * @return the protocol field value
          */
-        @Nullable public String sessionId() {
-            return (String) value("sessionId");
+        public Target.SessionID sessionId() {
+            return new Target.SessionID((String) require("sessionId"));
         }
         /**
          * Returns the message field.
          * @return the protocol field value
          */
-        @Nullable public String message() {
-            return (String) value("message");
+        public String message() {
+            return (String) require("message");
         }
         /**
          * Deprecated.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Optional<Target.TargetID> targetId() {
+            return Optional.ofNullable(raw("targetId") == null ? null : new Target.TargetID((String) raw("targetId")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Identifier of a session which sends a message.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder sessionId(@Nullable String value) {
-                if (value == null) values.remove("sessionId");
-                else values.put("sessionId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the message field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder message(@Nullable String value) {
-                if (value == null) values.remove("message");
-                else values.put("message", jsonValue(value));
-                return this;
-            }
-            /**
-             * Deprecated.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             * @deprecated Deprecated by the Chromium DevTools Protocol.
-             */
-            @Deprecated
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public ReceivedMessageFromTargetEvent build() {
-                if (!values.containsKey("sessionId")) throw new IllegalStateException("Missing required CDP field: sessionId");
-                if (!values.containsKey("message")) throw new IllegalStateException("Missing required CDP field: message");
-                return new ReceivedMessageFromTargetEvent(values);
-            }
+        /**
+         * Identifier of a session which sends a message.
+         * @param sessionId field value
+         * @return this model
+         */
+        public ReceivedMessageFromTargetEvent sessionId(Target.SessionID sessionId) {
+            set("sessionId", sessionId);
+            return this;
+        }
+        /**
+         * Sets the message field.
+         * @param message field value
+         * @return this model
+         */
+        public ReceivedMessageFromTargetEvent message(String message) {
+            set("message", message);
+            return this;
+        }
+        /**
+         * Deprecated.
+         * @param targetId field value; empty omits the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public ReceivedMessageFromTargetEvent targetId(Optional<Target.TargetID> targetId) {
+            set("targetId", targetId.orElse(null));
+            return this;
+        }
+        /**
+         * Deprecated.
+         * @param targetId field value; null removes the value
+         * @return this model
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public ReceivedMessageFromTargetEvent targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
         }
     }
     /**
      * Issued when a possible inspection target is created.
      */
     public static final class TargetCreatedEvent extends CdpObject {
+        public TargetCreatedEvent() {}
         private TargetCreatedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TargetCreatedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TargetCreatedEvent(values);
+        public static TargetCreatedEvent fromMap(Map<String, Object> values) {
+            return new TargetCreatedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the targetInfo field.
          * @return the protocol field value
          */
-        @Nullable public Target.TargetInfo targetInfo() {
-            return Target.TargetInfo.fromMap(objectMap(value("targetInfo")));
+        public Target.TargetInfo targetInfo() {
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetInfo field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetInfo(@Nullable Target.TargetInfo value) {
-                if (value == null) values.remove("targetInfo");
-                else values.put("targetInfo", jsonValue(value));
-                return this;
-            }
-            public TargetCreatedEvent build() {
-                if (!values.containsKey("targetInfo")) throw new IllegalStateException("Missing required CDP field: targetInfo");
-                return new TargetCreatedEvent(values);
-            }
+        /**
+         * Sets the targetInfo field.
+         * @param targetInfo field value
+         * @return this model
+         */
+        public TargetCreatedEvent targetInfo(Target.TargetInfo targetInfo) {
+            set("targetInfo", targetInfo);
+            return this;
         }
     }
     /**
      * Issued when a target is destroyed.
      */
     public static final class TargetDestroyedEvent extends CdpObject {
+        public TargetDestroyedEvent() {}
         private TargetDestroyedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TargetDestroyedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TargetDestroyedEvent(values);
+        public static TargetDestroyedEvent fromMap(Map<String, Object> values) {
+            return new TargetDestroyedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the targetId field.
          * @return the protocol field value
          */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Target.TargetID targetId() {
+            return new Target.TargetID((String) require("targetId"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            public TargetDestroyedEvent build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                return new TargetDestroyedEvent(values);
-            }
+        /**
+         * Sets the targetId field.
+         * @param targetId field value
+         * @return this model
+         */
+        public TargetDestroyedEvent targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
         }
     }
     /**
      * Issued when a target has crashed.
      */
     public static final class TargetCrashedEvent extends CdpObject {
+        public TargetCrashedEvent() {}
         private TargetCrashedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TargetCrashedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TargetCrashedEvent(values);
+        public static TargetCrashedEvent fromMap(Map<String, Object> values) {
+            return new TargetCrashedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the targetId field.
          * @return the protocol field value
          */
-        @Nullable public String targetId() {
-            return (String) value("targetId");
+        public Target.TargetID targetId() {
+            return new Target.TargetID((String) require("targetId"));
         }
         /**
          * Termination status type.
          * @return the protocol field value
          */
-        @Nullable public String status() {
-            return (String) value("status");
+        public String status() {
+            return (String) require("status");
         }
         /**
          * Termination error code.
          * @return the protocol field value
          */
-        @Nullable public Long errorCode() {
-            return numberAsLong(value("errorCode"));
+        public long errorCode() {
+            return ((Number) require("errorCode")).longValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetId(@Nullable String value) {
-                if (value == null) values.remove("targetId");
-                else values.put("targetId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Termination status type.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder status(@Nullable String value) {
-                if (value == null) values.remove("status");
-                else values.put("status", jsonValue(value));
-                return this;
-            }
-            /**
-             * Termination error code.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder errorCode(@Nullable Long value) {
-                if (value == null) values.remove("errorCode");
-                else values.put("errorCode", jsonValue(value));
-                return this;
-            }
-            public TargetCrashedEvent build() {
-                if (!values.containsKey("targetId")) throw new IllegalStateException("Missing required CDP field: targetId");
-                if (!values.containsKey("status")) throw new IllegalStateException("Missing required CDP field: status");
-                if (!values.containsKey("errorCode")) throw new IllegalStateException("Missing required CDP field: errorCode");
-                return new TargetCrashedEvent(values);
-            }
+        /**
+         * Sets the targetId field.
+         * @param targetId field value
+         * @return this model
+         */
+        public TargetCrashedEvent targetId(Target.TargetID targetId) {
+            set("targetId", targetId);
+            return this;
+        }
+        /**
+         * Termination status type.
+         * @param status field value
+         * @return this model
+         */
+        public TargetCrashedEvent status(String status) {
+            set("status", status);
+            return this;
+        }
+        /**
+         * Termination error code.
+         * @param errorCode field value
+         * @return this model
+         */
+        public TargetCrashedEvent errorCode(long errorCode) {
+            set("errorCode", errorCode);
+            return this;
         }
     }
     /**
      * Issued when some information about a target has changed. This only happens between {@code targetCreated} and {@code targetDestroyed}.
      */
     public static final class TargetInfoChangedEvent extends CdpObject {
+        public TargetInfoChangedEvent() {}
         private TargetInfoChangedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static TargetInfoChangedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new TargetInfoChangedEvent(values);
+        public static TargetInfoChangedEvent fromMap(Map<String, Object> values) {
+            return new TargetInfoChangedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the targetInfo field.
          * @return the protocol field value
          */
-        @Nullable public Target.TargetInfo targetInfo() {
-            return Target.TargetInfo.fromMap(objectMap(value("targetInfo")));
+        public Target.TargetInfo targetInfo() {
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the targetInfo field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder targetInfo(@Nullable Target.TargetInfo value) {
-                if (value == null) values.remove("targetInfo");
-                else values.put("targetInfo", jsonValue(value));
-                return this;
-            }
-            public TargetInfoChangedEvent build() {
-                if (!values.containsKey("targetInfo")) throw new IllegalStateException("Missing required CDP field: targetInfo");
-                return new TargetInfoChangedEvent(values);
-            }
+        /**
+         * Sets the targetInfo field.
+         * @param targetInfo field value
+         * @return this model
+         */
+        public TargetInfoChangedEvent targetInfo(Target.TargetInfo targetInfo) {
+            set("targetInfo", targetInfo);
+            return this;
         }
     }
     public static final class Client {
@@ -2418,193 +857,356 @@ public final class Target {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Activates (focuses) the target.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param targetId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ActivateTargetResult> activateTarget(ActivateTargetParams params) {
-            return client.call("Target.activateTarget", params, ActivateTargetResult::fromMap);
+        public CompletionStage<Void> activateTarget(Target.TargetID targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.activateTarget", params, result_ -> null);
         }
         /**
          * Attaches to the target with given id.
-         * @param params command parameters
+         * @param targetId protocol value
+         * @param flatten protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<AttachToTargetResult> attachToTarget(AttachToTargetParams params) {
-            return client.call("Target.attachToTarget", params, AttachToTargetResult::fromMap);
+        public CompletionStage<Target.SessionID> attachToTarget(Target.TargetID targetId, Optional<Boolean> flatten) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            flatten.ifPresent(value_ -> params.put("flatten", value_));
+            return client.call("Target.attachToTarget", params, result_ -> new Target.SessionID((String) java.util.Objects.requireNonNull(result_.get("sessionId"))));
+        }
+        /**
+         * Attaches to the target with given id.
+         * @param targetId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Target.SessionID> attachToTarget(Target.TargetID targetId) {
+            return attachToTarget(targetId, Optional.empty());
         }
         /**
          * Attaches to the browser target, only uses flat sessionId mode.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<AttachToBrowserTargetResult> attachToBrowserTarget() {
-            return client.call("Target.attachToBrowserTarget", null, AttachToBrowserTargetResult::fromMap);
+        public CompletionStage<Target.SessionID> attachToBrowserTarget() {
+            return client.call("Target.attachToBrowserTarget", null, result_ -> new Target.SessionID((String) java.util.Objects.requireNonNull(result_.get("sessionId"))));
         }
         /**
          * Closes the target. If the target is a page that gets closed too.
-         * @param params command parameters
+         * @param targetId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CloseTargetResult> closeTarget(CloseTargetParams params) {
-            return client.call("Target.closeTarget", params, CloseTargetResult::fromMap);
+        public CompletionStage<Boolean> closeTarget(Target.TargetID targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.closeTarget", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
         }
         /**
          * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
          * <p>Injected object will be available as {@code window[bindingName]}.
          * <p>The object has the following API: - {@code binding.send(json)} - a method to send messages over the remote debugging protocol - {@code binding.onmessage = json =&gt; handleMessage(json)} - a callback that will be called for the protocol notifications and command responses.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param targetId protocol value
+         * @param bindingName protocol value
+         * @param inheritPermissions protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ExposeDevToolsProtocolResult> exposeDevToolsProtocol(ExposeDevToolsProtocolParams params) {
-            return client.call("Target.exposeDevToolsProtocol", params, ExposeDevToolsProtocolResult::fromMap);
+        public CompletionStage<Void> exposeDevToolsProtocol(Target.TargetID targetId, Optional<String> bindingName, Optional<Boolean> inheritPermissions) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            bindingName.ifPresent(value_ -> params.put("bindingName", CdpObject.json(value_)));
+            inheritPermissions.ifPresent(value_ -> params.put("inheritPermissions", value_));
+            return client.call("Target.exposeDevToolsProtocol", params, result_ -> null);
+        }
+        /**
+         * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
+         * <p>Injected object will be available as {@code window[bindingName]}.
+         * <p>The object has the following API: - {@code binding.send(json)} - a method to send messages over the remote debugging protocol - {@code binding.onmessage = json =&gt; handleMessage(json)} - a callback that will be called for the protocol notifications and command responses.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param targetId protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> exposeDevToolsProtocol(Target.TargetID targetId) {
+            return exposeDevToolsProtocol(targetId, Optional.empty(), Optional.empty());
         }
         /**
          * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
-         * @param params command parameters
+         * @param disposeOnDetach protocol value
+         * @param proxyServer protocol value
+         * @param proxyBypassList protocol value
+         * @param originsWithUniversalNetworkAccess protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CreateBrowserContextResult> createBrowserContext(CreateBrowserContextParams params) {
-            return client.call("Target.createBrowserContext", params, CreateBrowserContextResult::fromMap);
+        public CompletionStage<Browser.BrowserContextID> createBrowserContext(Optional<Boolean> disposeOnDetach, Optional<String> proxyServer, Optional<String> proxyBypassList, Optional<java.util.List<String>> originsWithUniversalNetworkAccess) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            disposeOnDetach.ifPresent(value_ -> params.put("disposeOnDetach", value_));
+            proxyServer.ifPresent(value_ -> params.put("proxyServer", CdpObject.json(value_)));
+            proxyBypassList.ifPresent(value_ -> params.put("proxyBypassList", CdpObject.json(value_)));
+            originsWithUniversalNetworkAccess.ifPresent(value_ -> params.put("originsWithUniversalNetworkAccess", CdpObject.json(value_)));
+            return client.call("Target.createBrowserContext", params, result_ -> new Browser.BrowserContextID((String) java.util.Objects.requireNonNull(result_.get("browserContextId"))));
         }
         /**
          * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
          * @return a stage completing with the command result
          */
-        public CompletionStage<CreateBrowserContextResult> createBrowserContext() {
-            return createBrowserContext(CreateBrowserContextParams.builder().build());
+        public CompletionStage<Browser.BrowserContextID> createBrowserContext() {
+            return createBrowserContext(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Returns all browser contexts created with {@code Target.createBrowserContext} method.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetBrowserContextsResult> getBrowserContexts() {
-            return client.call("Target.getBrowserContexts", null, GetBrowserContextsResult::fromMap);
+            return client.call("Target.getBrowserContexts", null, result_ -> new GetBrowserContextsResult(result_));
         }
         /**
          * Creates a new page.
-         * @param params command parameters
+         * @param url protocol value
+         * @param left protocol value
+         * @param top protocol value
+         * @param width protocol value
+         * @param height protocol value
+         * @param windowState protocol value
+         * @param browserContextId protocol value
+         * @param enableBeginFrameControl protocol value
+         * @param newWindow protocol value
+         * @param background protocol value
+         * @param forTab protocol value
+         * @param hidden protocol value
+         * @param focus protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CreateTargetResult> createTarget(CreateTargetParams params) {
-            return client.call("Target.createTarget", params, CreateTargetResult::fromMap);
+        public CompletionStage<Target.TargetID> createTarget(String url, OptionalLong left, OptionalLong top, OptionalLong width, OptionalLong height, Optional<Target.WindowState> windowState, Optional<Browser.BrowserContextID> browserContextId, Optional<Boolean> enableBeginFrameControl, Optional<Boolean> newWindow, Optional<Boolean> background, Optional<Boolean> forTab, Optional<Boolean> hidden, Optional<Boolean> focus) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("url", CdpObject.json(url));
+            left.ifPresent(value_ -> params.put("left", value_));
+            top.ifPresent(value_ -> params.put("top", value_));
+            width.ifPresent(value_ -> params.put("width", value_));
+            height.ifPresent(value_ -> params.put("height", value_));
+            windowState.ifPresent(value_ -> params.put("windowState", CdpObject.json(value_)));
+            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            enableBeginFrameControl.ifPresent(value_ -> params.put("enableBeginFrameControl", value_));
+            newWindow.ifPresent(value_ -> params.put("newWindow", value_));
+            background.ifPresent(value_ -> params.put("background", value_));
+            forTab.ifPresent(value_ -> params.put("forTab", value_));
+            hidden.ifPresent(value_ -> params.put("hidden", value_));
+            focus.ifPresent(value_ -> params.put("focus", value_));
+            return client.call("Target.createTarget", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
+        }
+        /**
+         * Creates a new page.
+         * @param url protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Target.TargetID> createTarget(String url) {
+            return createTarget(url, OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Detaches session with given id.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param sessionId protocol value
+         * @param targetId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DetachFromTargetResult> detachFromTarget(DetachFromTargetParams params) {
-            return client.call("Target.detachFromTarget", params, DetachFromTargetResult::fromMap);
+        public CompletionStage<Void> detachFromTarget(Optional<Target.SessionID> sessionId, Optional<Target.TargetID> targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
+            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+            return client.call("Target.detachFromTarget", params, result_ -> null);
         }
         /**
          * Detaches session with given id.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DetachFromTargetResult> detachFromTarget() {
-            return detachFromTarget(DetachFromTargetParams.builder().build());
+        public CompletionStage<Void> detachFromTarget() {
+            return detachFromTarget(Optional.empty(), Optional.empty());
         }
         /**
          * Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param browserContextId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisposeBrowserContextResult> disposeBrowserContext(DisposeBrowserContextParams params) {
-            return client.call("Target.disposeBrowserContext", params, DisposeBrowserContextResult::fromMap);
+        public CompletionStage<Void> disposeBrowserContext(Browser.BrowserContextID browserContextId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("browserContextId", CdpObject.json(browserContextId));
+            return client.call("Target.disposeBrowserContext", params, result_ -> null);
         }
         /**
          * Returns information about a target.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param targetId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTargetInfoResult> getTargetInfo(GetTargetInfoParams params) {
-            return client.call("Target.getTargetInfo", params, GetTargetInfoResult::fromMap);
+        public CompletionStage<Target.TargetInfo> getTargetInfo(Optional<Target.TargetID> targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+            return client.call("Target.getTargetInfo", params, result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("targetInfo")))))));
         }
         /**
          * Returns information about a target.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTargetInfoResult> getTargetInfo() {
-            return getTargetInfo(GetTargetInfoParams.builder().build());
+        public CompletionStage<Target.TargetInfo> getTargetInfo() {
+            return getTargetInfo(Optional.empty());
         }
         /**
          * Retrieves a list of available targets.
-         * @param params command parameters
+         * @param filter protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTargetsResult> getTargets(GetTargetsParams params) {
-            return client.call("Target.getTargets", params, GetTargetsResult::fromMap);
+        public CompletionStage<java.util.List<Target.TargetInfo>> getTargets(Optional<java.util.List<Target.FilterEntry>> filter) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            return client.call("Target.getTargets", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Retrieves a list of available targets.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetTargetsResult> getTargets() {
-            return getTargets(GetTargetsParams.builder().build());
+        public CompletionStage<java.util.List<Target.TargetInfo>> getTargets() {
+            return getTargets(Optional.empty());
         }
         /**
          * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param message protocol value
+         * @param sessionId protocol value
+         * @param targetId protocol value
+         * @return a stage completing when the command completes
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<SendMessageToTargetResult> sendMessageToTarget(SendMessageToTargetParams params) {
-            return client.call("Target.sendMessageToTarget", params, SendMessageToTargetResult::fromMap);
+        public CompletionStage<Void> sendMessageToTarget(String message, Optional<Target.SessionID> sessionId, Optional<Target.TargetID> targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("message", CdpObject.json(message));
+            sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
+            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+            return client.call("Target.sendMessageToTarget", params, result_ -> null);
+        }
+        /**
+         * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
+         * @param message protocol value
+         * @return a stage completing when the command completes
+         * @deprecated Deprecated by the Chromium DevTools Protocol.
+         */
+        @Deprecated
+        public CompletionStage<Void> sendMessageToTarget(String message) {
+            return sendMessageToTarget(message, Optional.empty(), Optional.empty());
         }
         /**
          * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param autoAttach protocol value
+         * @param waitForDebuggerOnStart protocol value
+         * @param flatten protocol value
+         * @param filter protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetAutoAttachResult> setAutoAttach(SetAutoAttachParams params) {
-            return client.call("Target.setAutoAttach", params, SetAutoAttachResult::fromMap);
+        public CompletionStage<Void> setAutoAttach(boolean autoAttach, boolean waitForDebuggerOnStart, Optional<Boolean> flatten, Optional<java.util.List<Target.FilterEntry>> filter) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("autoAttach", CdpObject.json(autoAttach));
+            params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
+            flatten.ifPresent(value_ -> params.put("flatten", value_));
+            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            return client.call("Target.setAutoAttach", params, result_ -> null);
+        }
+        /**
+         * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
+         * @param autoAttach protocol value
+         * @param waitForDebuggerOnStart protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setAutoAttach(boolean autoAttach, boolean waitForDebuggerOnStart) {
+            return setAutoAttach(autoAttach, waitForDebuggerOnStart, Optional.empty(), Optional.empty());
         }
         /**
          * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param targetId protocol value
+         * @param waitForDebuggerOnStart protocol value
+         * @param filter protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<AutoAttachRelatedResult> autoAttachRelated(AutoAttachRelatedParams params) {
-            return client.call("Target.autoAttachRelated", params, AutoAttachRelatedResult::fromMap);
+        public CompletionStage<Void> autoAttachRelated(Target.TargetID targetId, boolean waitForDebuggerOnStart, Optional<java.util.List<Target.FilterEntry>> filter) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
+            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            return client.call("Target.autoAttachRelated", params, result_ -> null);
+        }
+        /**
+         * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param targetId protocol value
+         * @param waitForDebuggerOnStart protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> autoAttachRelated(Target.TargetID targetId, boolean waitForDebuggerOnStart) {
+            return autoAttachRelated(targetId, waitForDebuggerOnStart, Optional.empty());
         }
         /**
          * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param discover protocol value
+         * @param filter protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetDiscoverTargetsResult> setDiscoverTargets(SetDiscoverTargetsParams params) {
-            return client.call("Target.setDiscoverTargets", params, SetDiscoverTargetsResult::fromMap);
+        public CompletionStage<Void> setDiscoverTargets(boolean discover, Optional<java.util.List<Target.FilterEntry>> filter) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("discover", CdpObject.json(discover));
+            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            return client.call("Target.setDiscoverTargets", params, result_ -> null);
+        }
+        /**
+         * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
+         * @param discover protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> setDiscoverTargets(boolean discover) {
+            return setDiscoverTargets(discover, Optional.empty());
         }
         /**
          * Enables target discovery for the specified locations, when {@code setDiscoverTargets} was set to {@code true}.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param locations protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetRemoteLocationsResult> setRemoteLocations(SetRemoteLocationsParams params) {
-            return client.call("Target.setRemoteLocations", params, SetRemoteLocationsResult::fromMap);
+        public CompletionStage<Void> setRemoteLocations(java.util.List<Target.RemoteLocation> locations) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("locations", CdpObject.json(locations));
+            return client.call("Target.setRemoteLocations", params, result_ -> null);
         }
         /**
          * Gets the targetId of the DevTools page target opened for the given target (if any).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param targetId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetDevToolsTargetResult> getDevToolsTarget(GetDevToolsTargetParams params) {
-            return client.call("Target.getDevToolsTarget", params, GetDevToolsTargetResult::fromMap);
+        public CompletionStage<Optional<Target.TargetID>> getDevToolsTarget(Target.TargetID targetId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.getDevToolsTarget", params, result_ -> Optional.ofNullable(result_.get("targetId") == null ? null : new Target.TargetID((String) result_.get("targetId"))));
         }
         /**
          * Opens a DevTools window for the target.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param params command parameters
+         * @param targetId protocol value
+         * @param panelId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<OpenDevToolsResult> openDevTools(OpenDevToolsParams params) {
-            return client.call("Target.openDevTools", params, OpenDevToolsResult::fromMap);
+        public CompletionStage<Target.TargetID> openDevTools(Target.TargetID targetId, Optional<String> panelId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            panelId.ifPresent(value_ -> params.put("panelId", CdpObject.json(value_)));
+            return client.call("Target.openDevTools", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
+        }
+        /**
+         * Opens a DevTools window for the target.
+         * <p><b>Experimental:</b> this part of CDP may change without notice.
+         * @param targetId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<Target.TargetID> openDevTools(Target.TargetID targetId) {
+            return openDevTools(targetId, Optional.empty());
         }
         /**
          * Issued when attached to target because of auto-attach or {@code attachToTarget} command.

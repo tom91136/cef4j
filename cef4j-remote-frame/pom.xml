@@ -7,8 +7,8 @@
     <name>cef4j-remote-frame</name>
     <description>Transport-neutral raw/encoded frame API with shared-file, inline, codec, and MJPEG support</description>
     <dependencies>
-        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-core</artifactId><version>${project.version}</version></dependency>
-        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-api</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-core</artifactId></dependency>
+        <dependency><groupId>net.kurobako.cef4j</groupId><artifactId>cef4j-remote-api</artifactId></dependency>
         <dependency><groupId>com.google.code.findbugs</groupId><artifactId>jsr305</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-simple</artifactId><scope>test</scope></dependency>

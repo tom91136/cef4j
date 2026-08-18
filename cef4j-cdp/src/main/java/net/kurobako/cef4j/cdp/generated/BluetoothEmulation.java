@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain allows configuring virtual Bluetooth devices to test the web-bluetooth API.
@@ -17,1707 +21,739 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/BluetoothEmulation.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class BluetoothEmulation {
     private BluetoothEmulation() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Indicates the various states of Central.
      */
-    public static final class CentralState {
-        private CentralState() {}
-        public static final String ABSENT = "absent";
-        public static final String POWERED_OFF = "powered-off";
-        public static final String POWERED_ON = "powered-on";
+    public enum CentralState implements CdpValue<String> {
+        ABSENT("absent"),
+        POWERED_OFF("powered-off"),
+        POWERED_ON("powered-on");
+        public final String value;
+        CentralState(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static CentralState of(@Nonnull String value) {
+            for (CentralState constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown CentralState value: " + value);
+        }
     }
     /**
      * Indicates the various types of GATT event.
      */
-    public static final class GATTOperationType {
-        private GATTOperationType() {}
-        public static final String CONNECTION = "connection";
-        public static final String DISCOVERY = "discovery";
+    public enum GATTOperationType implements CdpValue<String> {
+        CONNECTION("connection"),
+        DISCOVERY("discovery");
+        public final String value;
+        GATTOperationType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static GATTOperationType of(@Nonnull String value) {
+            for (GATTOperationType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown GATTOperationType value: " + value);
+        }
     }
     /**
      * Indicates the various types of characteristic write.
      */
-    public static final class CharacteristicWriteType {
-        private CharacteristicWriteType() {}
-        public static final String WRITE_DEFAULT_DEPRECATED = "write-default-deprecated";
-        public static final String WRITE_WITH_RESPONSE = "write-with-response";
-        public static final String WRITE_WITHOUT_RESPONSE = "write-without-response";
+    public enum CharacteristicWriteType implements CdpValue<String> {
+        WRITE_DEFAULT_DEPRECATED("write-default-deprecated"),
+        WRITE_WITH_RESPONSE("write-with-response"),
+        WRITE_WITHOUT_RESPONSE("write-without-response");
+        public final String value;
+        CharacteristicWriteType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static CharacteristicWriteType of(@Nonnull String value) {
+            for (CharacteristicWriteType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown CharacteristicWriteType value: " + value);
+        }
     }
     /**
      * Indicates the various types of characteristic operation.
      */
-    public static final class CharacteristicOperationType {
-        private CharacteristicOperationType() {}
-        public static final String READ = "read";
-        public static final String WRITE = "write";
-        public static final String SUBSCRIBE_TO_NOTIFICATIONS = "subscribe-to-notifications";
-        public static final String UNSUBSCRIBE_FROM_NOTIFICATIONS = "unsubscribe-from-notifications";
+    public enum CharacteristicOperationType implements CdpValue<String> {
+        READ("read"),
+        WRITE("write"),
+        SUBSCRIBE_TO_NOTIFICATIONS("subscribe-to-notifications"),
+        UNSUBSCRIBE_FROM_NOTIFICATIONS("unsubscribe-from-notifications");
+        public final String value;
+        CharacteristicOperationType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static CharacteristicOperationType of(@Nonnull String value) {
+            for (CharacteristicOperationType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown CharacteristicOperationType value: " + value);
+        }
     }
     /**
      * Indicates the various types of descriptor operation.
      */
-    public static final class DescriptorOperationType {
-        private DescriptorOperationType() {}
-        public static final String READ = "read";
-        public static final String WRITE = "write";
+    public enum DescriptorOperationType implements CdpValue<String> {
+        READ("read"),
+        WRITE("write");
+        public final String value;
+        DescriptorOperationType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static DescriptorOperationType of(@Nonnull String value) {
+            for (DescriptorOperationType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown DescriptorOperationType value: " + value);
+        }
     }
     /**
      * Stores the manufacturer data
      */
     public static final class ManufacturerData extends CdpObject {
+        public ManufacturerData() {}
         private ManufacturerData(Map<String, Object> values) { super(values); }
-        @Nullable public static ManufacturerData fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ManufacturerData(values);
+        public static ManufacturerData fromMap(Map<String, Object> values) {
+            return new ManufacturerData(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Company identifier https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml https://usb.org/developers
          * @return the protocol field value
          */
-        @Nullable public Long key() {
-            return numberAsLong(value("key"));
+        public long key() {
+            return ((Number) require("key")).longValue();
         }
         /**
          * Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value
          */
-        @Nullable public String data() {
-            return (String) value("data");
+        public String data() {
+            return (String) require("data");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Company identifier https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml https://usb.org/developers
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable Long value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            /**
-             * Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            public ManufacturerData build() {
-                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
-                if (!values.containsKey("data")) throw new IllegalStateException("Missing required CDP field: data");
-                return new ManufacturerData(values);
-            }
+        /**
+         * Company identifier https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml https://usb.org/developers
+         * @param key field value
+         * @return this model
+         */
+        public ManufacturerData key(long key) {
+            set("key", key);
+            return this;
+        }
+        /**
+         * Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
+         * @param data field value
+         * @return this model
+         */
+        public ManufacturerData data(String data) {
+            set("data", data);
+            return this;
         }
     }
     /**
      * Stores the byte data of the advertisement packet sent by a Bluetooth device.
      */
     public static final class ScanRecord extends CdpObject {
+        public ScanRecord() {}
         private ScanRecord(Map<String, Object> values) { super(values); }
-        @Nullable public static ScanRecord fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScanRecord(values);
+        public static ScanRecord fromMap(Map<String, Object> values) {
+            return new ScanRecord(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the name field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public Optional<String> name() {
+            return Optional.ofNullable((String) raw("name"));
         }
         /**
          * Returns the uuids field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<String> uuids() {
-            return list(value("uuids"), element0 -> (String) element0);
+        public Optional<java.util.List<String>> uuids() {
+            return Optional.ofNullable(list(raw("uuids"), element0 -> (String) element0));
         }
         /**
          * Stores the external appearance description of the device.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long appearance() {
-            return numberAsLong(value("appearance"));
+        public OptionalLong appearance() {
+            Long value = CdpObject.numberAsLong(raw("appearance"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * Stores the transmission power of a broadcasting device.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Long txPower() {
-            return numberAsLong(value("txPower"));
+        public OptionalLong txPower() {
+            Long value = CdpObject.numberAsLong(raw("txPower"));
+            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
         }
         /**
          * Key is the company identifier and the value is an array of bytes of manufacturer specific data.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public java.util.List<BluetoothEmulation.ManufacturerData> manufacturerData() {
-            return list(value("manufacturerData"), element0 -> BluetoothEmulation.ManufacturerData.fromMap(objectMap(element0)));
+        public Optional<java.util.List<BluetoothEmulation.ManufacturerData>> manufacturerData() {
+            return Optional.ofNullable(list(raw("manufacturerData"), element0 -> java.util.Objects.requireNonNull(BluetoothEmulation.ManufacturerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the uuids field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder uuids(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("uuids");
-                else values.put("uuids", jsonValue(value));
-                return this;
-            }
-            /**
-             * Stores the external appearance description of the device.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder appearance(@Nullable Long value) {
-                if (value == null) values.remove("appearance");
-                else values.put("appearance", jsonValue(value));
-                return this;
-            }
-            /**
-             * Stores the transmission power of a broadcasting device.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder txPower(@Nullable Long value) {
-                if (value == null) values.remove("txPower");
-                else values.put("txPower", jsonValue(value));
-                return this;
-            }
-            /**
-             * Key is the company identifier and the value is an array of bytes of manufacturer specific data.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder manufacturerData(@Nullable java.util.List<BluetoothEmulation.ManufacturerData> value) {
-                if (value == null) values.remove("manufacturerData");
-                else values.put("manufacturerData", jsonValue(value));
-                return this;
-            }
-            public ScanRecord build() {
-                return new ScanRecord(values);
-            }
+        /**
+         * Sets the name field.
+         * @param name field value; empty omits the value
+         * @return this model
+         */
+        public ScanRecord name(Optional<String> name) {
+            set("name", name.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the name field.
+         * @param name field value; null removes the value
+         * @return this model
+         */
+        public ScanRecord name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Sets the uuids field.
+         * @param uuids field value; empty omits the value
+         * @return this model
+         */
+        public ScanRecord uuids(Optional<java.util.List<String>> uuids) {
+            set("uuids", uuids.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the uuids field.
+         * @param uuids field value; null removes the value
+         * @return this model
+         */
+        public ScanRecord uuids(java.util.List<String> uuids) {
+            set("uuids", uuids);
+            return this;
+        }
+        /**
+         * Stores the external appearance description of the device.
+         * @param appearance field value; empty omits the value
+         * @return this model
+         */
+        public ScanRecord appearance(OptionalLong appearance) {
+            set("appearance", appearance.isPresent() ? appearance.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Stores the external appearance description of the device.
+         * @param appearance field value; null removes the value
+         * @return this model
+         */
+        public ScanRecord appearance(Long appearance) {
+            set("appearance", appearance);
+            return this;
+        }
+        /**
+         * Stores the transmission power of a broadcasting device.
+         * @param txPower field value; empty omits the value
+         * @return this model
+         */
+        public ScanRecord txPower(OptionalLong txPower) {
+            set("txPower", txPower.isPresent() ? txPower.getAsLong() : null);
+            return this;
+        }
+        /**
+         * Stores the transmission power of a broadcasting device.
+         * @param txPower field value; null removes the value
+         * @return this model
+         */
+        public ScanRecord txPower(Long txPower) {
+            set("txPower", txPower);
+            return this;
+        }
+        /**
+         * Key is the company identifier and the value is an array of bytes of manufacturer specific data.
+         * @param manufacturerData field value; empty omits the value
+         * @return this model
+         */
+        public ScanRecord manufacturerData(Optional<java.util.List<BluetoothEmulation.ManufacturerData>> manufacturerData) {
+            set("manufacturerData", manufacturerData.orElse(null));
+            return this;
+        }
+        /**
+         * Key is the company identifier and the value is an array of bytes of manufacturer specific data.
+         * @param manufacturerData field value; null removes the value
+         * @return this model
+         */
+        public ScanRecord manufacturerData(java.util.List<BluetoothEmulation.ManufacturerData> manufacturerData) {
+            set("manufacturerData", manufacturerData);
+            return this;
         }
     }
     /**
      * Stores the advertisement packet information that is sent by a Bluetooth device.
      */
     public static final class ScanEntry extends CdpObject {
+        public ScanEntry() {}
         private ScanEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static ScanEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ScanEntry(values);
+        public static ScanEntry fromMap(Map<String, Object> values) {
+            return new ScanEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the deviceAddress field.
          * @return the protocol field value
          */
-        @Nullable public String deviceAddress() {
-            return (String) value("deviceAddress");
+        public String deviceAddress() {
+            return (String) require("deviceAddress");
         }
         /**
          * Returns the rssi field.
          * @return the protocol field value
          */
-        @Nullable public Long rssi() {
-            return numberAsLong(value("rssi"));
+        public long rssi() {
+            return ((Number) require("rssi")).longValue();
         }
         /**
          * Returns the scanRecord field.
          * @return the protocol field value
          */
-        @Nullable public BluetoothEmulation.ScanRecord scanRecord() {
-            return BluetoothEmulation.ScanRecord.fromMap(objectMap(value("scanRecord")));
+        public BluetoothEmulation.ScanRecord scanRecord() {
+            return java.util.Objects.requireNonNull(BluetoothEmulation.ScanRecord.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("scanRecord")))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the deviceAddress field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder deviceAddress(@Nullable String value) {
-                if (value == null) values.remove("deviceAddress");
-                else values.put("deviceAddress", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the rssi field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder rssi(@Nullable Long value) {
-                if (value == null) values.remove("rssi");
-                else values.put("rssi", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the scanRecord field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder scanRecord(@Nullable BluetoothEmulation.ScanRecord value) {
-                if (value == null) values.remove("scanRecord");
-                else values.put("scanRecord", jsonValue(value));
-                return this;
-            }
-            public ScanEntry build() {
-                if (!values.containsKey("deviceAddress")) throw new IllegalStateException("Missing required CDP field: deviceAddress");
-                if (!values.containsKey("rssi")) throw new IllegalStateException("Missing required CDP field: rssi");
-                if (!values.containsKey("scanRecord")) throw new IllegalStateException("Missing required CDP field: scanRecord");
-                return new ScanEntry(values);
-            }
+        /**
+         * Sets the deviceAddress field.
+         * @param deviceAddress field value
+         * @return this model
+         */
+        public ScanEntry deviceAddress(String deviceAddress) {
+            set("deviceAddress", deviceAddress);
+            return this;
+        }
+        /**
+         * Sets the rssi field.
+         * @param rssi field value
+         * @return this model
+         */
+        public ScanEntry rssi(long rssi) {
+            set("rssi", rssi);
+            return this;
+        }
+        /**
+         * Sets the scanRecord field.
+         * @param scanRecord field value
+         * @return this model
+         */
+        public ScanEntry scanRecord(BluetoothEmulation.ScanRecord scanRecord) {
+            set("scanRecord", scanRecord);
+            return this;
         }
     }
     /**
      * Describes the properties of a characteristic. This follows Bluetooth Core Specification BT 4.2 Vol 3 Part G 3.3.1. Characteristic Properties.
      */
     public static final class CharacteristicProperties extends CdpObject {
+        public CharacteristicProperties() {}
         private CharacteristicProperties(Map<String, Object> values) { super(values); }
-        @Nullable public static CharacteristicProperties fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CharacteristicProperties(values);
+        public static CharacteristicProperties fromMap(Map<String, Object> values) {
+            return new CharacteristicProperties(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the broadcast field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean broadcast() {
-            return (Boolean) value("broadcast");
+        public Optional<Boolean> broadcast() {
+            return Optional.ofNullable((Boolean) raw("broadcast"));
         }
         /**
          * Returns the read field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean read() {
-            return (Boolean) value("read");
+        public Optional<Boolean> read() {
+            return Optional.ofNullable((Boolean) raw("read"));
         }
         /**
          * Returns the writeWithoutResponse field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean writeWithoutResponse() {
-            return (Boolean) value("writeWithoutResponse");
+        public Optional<Boolean> writeWithoutResponse() {
+            return Optional.ofNullable((Boolean) raw("writeWithoutResponse"));
         }
         /**
          * Returns the write field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean write() {
-            return (Boolean) value("write");
+        public Optional<Boolean> write() {
+            return Optional.ofNullable((Boolean) raw("write"));
         }
         /**
          * Returns the notify field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean notifyValue() {
-            return (Boolean) value("notify");
+        public Optional<Boolean> notifyValue() {
+            return Optional.ofNullable((Boolean) raw("notify"));
         }
         /**
          * Returns the indicate field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean indicate() {
-            return (Boolean) value("indicate");
+        public Optional<Boolean> indicate() {
+            return Optional.ofNullable((Boolean) raw("indicate"));
         }
         /**
          * Returns the authenticatedSignedWrites field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean authenticatedSignedWrites() {
-            return (Boolean) value("authenticatedSignedWrites");
+        public Optional<Boolean> authenticatedSignedWrites() {
+            return Optional.ofNullable((Boolean) raw("authenticatedSignedWrites"));
         }
         /**
          * Returns the extendedProperties field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Boolean extendedProperties() {
-            return (Boolean) value("extendedProperties");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the broadcast field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder broadcast(@Nullable Boolean value) {
-                if (value == null) values.remove("broadcast");
-                else values.put("broadcast", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the read field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder read(@Nullable Boolean value) {
-                if (value == null) values.remove("read");
-                else values.put("read", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the writeWithoutResponse field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder writeWithoutResponse(@Nullable Boolean value) {
-                if (value == null) values.remove("writeWithoutResponse");
-                else values.put("writeWithoutResponse", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the write field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder write(@Nullable Boolean value) {
-                if (value == null) values.remove("write");
-                else values.put("write", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the notify field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder notifyValue(@Nullable Boolean value) {
-                if (value == null) values.remove("notify");
-                else values.put("notify", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the indicate field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder indicate(@Nullable Boolean value) {
-                if (value == null) values.remove("indicate");
-                else values.put("indicate", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the authenticatedSignedWrites field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder authenticatedSignedWrites(@Nullable Boolean value) {
-                if (value == null) values.remove("authenticatedSignedWrites");
-                else values.put("authenticatedSignedWrites", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the extendedProperties field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder extendedProperties(@Nullable Boolean value) {
-                if (value == null) values.remove("extendedProperties");
-                else values.put("extendedProperties", jsonValue(value));
-                return this;
-            }
-            public CharacteristicProperties build() {
-                return new CharacteristicProperties(values);
-            }
-        }
-    }
-    /**
-     * Enable the BluetoothEmulation domain.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * State of the simulated central.
-         * @return the protocol field value
-         */
-        @Nullable public String state() {
-            return (String) value("state");
+        public Optional<Boolean> extendedProperties() {
+            return Optional.ofNullable((Boolean) raw("extendedProperties"));
         }
         /**
-         * If the simulated central supports low-energy.
-         * @return the protocol field value
+         * Sets the broadcast field.
+         * @param broadcast field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Boolean leSupported() {
-            return (Boolean) value("leSupported");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * State of the simulated central.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder state(@Nullable String value) {
-                if (value == null) values.remove("state");
-                else values.put("state", jsonValue(value));
-                return this;
-            }
-            /**
-             * If the simulated central supports low-energy.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder leSupported(@Nullable Boolean value) {
-                if (value == null) values.remove("leSupported");
-                else values.put("leSupported", jsonValue(value));
-                return this;
-            }
-            public EnableParams build() {
-                if (!values.containsKey("state")) throw new IllegalStateException("Missing required CDP field: state");
-                if (!values.containsKey("leSupported")) throw new IllegalStateException("Missing required CDP field: leSupported");
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enable the BluetoothEmulation domain.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Set the state of the simulated central.
-     */
-    public static final class SetSimulatedCentralStateParams extends CdpObject {
-        private SetSimulatedCentralStateParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSimulatedCentralStateParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSimulatedCentralStateParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * State of the simulated central.
-         * @return the protocol field value
-         */
-        @Nullable public String state() {
-            return (String) value("state");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * State of the simulated central.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder state(@Nullable String value) {
-                if (value == null) values.remove("state");
-                else values.put("state", jsonValue(value));
-                return this;
-            }
-            public SetSimulatedCentralStateParams build() {
-                if (!values.containsKey("state")) throw new IllegalStateException("Missing required CDP field: state");
-                return new SetSimulatedCentralStateParams(values);
-            }
-        }
-    }
-    /**
-     * Set the state of the simulated central.
-     */
-    public static final class SetSimulatedCentralStateResult extends CdpObject {
-        private SetSimulatedCentralStateResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SetSimulatedCentralStateResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SetSimulatedCentralStateResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SetSimulatedCentralStateResult build() {
-                return new SetSimulatedCentralStateResult(values);
-            }
-        }
-    }
-    /**
-     * Disable the BluetoothEmulation domain.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disable the BluetoothEmulation domain.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates a peripheral with |address|, |name| and |knownServiceUuids| that has already been connected to the system.
-     */
-    public static final class SimulatePreconnectedPeripheralParams extends CdpObject {
-        private SimulatePreconnectedPeripheralParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulatePreconnectedPeripheralParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulatePreconnectedPeripheralParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the address field.
-         * @return the protocol field value
-         */
-        @Nullable public String address() {
-            return (String) value("address");
+        public CharacteristicProperties broadcast(Optional<Boolean> broadcast) {
+            set("broadcast", broadcast.orElse(null));
+            return this;
         }
         /**
-         * Returns the name field.
-         * @return the protocol field value
+         * Sets the broadcast field.
+         * @param broadcast field value; null removes the value
+         * @return this model
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public CharacteristicProperties broadcast(Boolean broadcast) {
+            set("broadcast", broadcast);
+            return this;
         }
         /**
-         * Returns the manufacturerData field.
-         * @return the protocol field value
+         * Sets the read field.
+         * @param read field value; empty omits the value
+         * @return this model
          */
-        @Nullable public java.util.List<BluetoothEmulation.ManufacturerData> manufacturerData() {
-            return list(value("manufacturerData"), element0 -> BluetoothEmulation.ManufacturerData.fromMap(objectMap(element0)));
+        public CharacteristicProperties read(Optional<Boolean> read) {
+            set("read", read.orElse(null));
+            return this;
         }
         /**
-         * Returns the knownServiceUuids field.
-         * @return the protocol field value
+         * Sets the read field.
+         * @param read field value; null removes the value
+         * @return this model
          */
-        @Nullable public java.util.List<String> knownServiceUuids() {
-            return list(value("knownServiceUuids"), element0 -> (String) element0);
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the address field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder address(@Nullable String value) {
-                if (value == null) values.remove("address");
-                else values.put("address", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the manufacturerData field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder manufacturerData(@Nullable java.util.List<BluetoothEmulation.ManufacturerData> value) {
-                if (value == null) values.remove("manufacturerData");
-                else values.put("manufacturerData", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the knownServiceUuids field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder knownServiceUuids(@Nullable java.util.List<String> value) {
-                if (value == null) values.remove("knownServiceUuids");
-                else values.put("knownServiceUuids", jsonValue(value));
-                return this;
-            }
-            public SimulatePreconnectedPeripheralParams build() {
-                if (!values.containsKey("address")) throw new IllegalStateException("Missing required CDP field: address");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("manufacturerData")) throw new IllegalStateException("Missing required CDP field: manufacturerData");
-                if (!values.containsKey("knownServiceUuids")) throw new IllegalStateException("Missing required CDP field: knownServiceUuids");
-                return new SimulatePreconnectedPeripheralParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates a peripheral with |address|, |name| and |knownServiceUuids| that has already been connected to the system.
-     */
-    public static final class SimulatePreconnectedPeripheralResult extends CdpObject {
-        private SimulatePreconnectedPeripheralResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulatePreconnectedPeripheralResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulatePreconnectedPeripheralResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulatePreconnectedPeripheralResult build() {
-                return new SimulatePreconnectedPeripheralResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates an advertisement packet described in |entry| being received by the central.
-     */
-    public static final class SimulateAdvertisementParams extends CdpObject {
-        private SimulateAdvertisementParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateAdvertisementParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateAdvertisementParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the entry field.
-         * @return the protocol field value
-         */
-        @Nullable public BluetoothEmulation.ScanEntry entry() {
-            return BluetoothEmulation.ScanEntry.fromMap(objectMap(value("entry")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the entry field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder entry(@Nullable BluetoothEmulation.ScanEntry value) {
-                if (value == null) values.remove("entry");
-                else values.put("entry", jsonValue(value));
-                return this;
-            }
-            public SimulateAdvertisementParams build() {
-                if (!values.containsKey("entry")) throw new IllegalStateException("Missing required CDP field: entry");
-                return new SimulateAdvertisementParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates an advertisement packet described in |entry| being received by the central.
-     */
-    public static final class SimulateAdvertisementResult extends CdpObject {
-        private SimulateAdvertisementResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateAdvertisementResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateAdvertisementResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulateAdvertisementResult build() {
-                return new SimulateAdvertisementResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response code from the peripheral with |address| for a GATT operation of |type|. The |code| value follows the HCI Error Codes from Bluetooth Core Specification Vol 2 Part D 1.3 List Of Error Codes.
-     */
-    public static final class SimulateGATTOperationResponseParams extends CdpObject {
-        private SimulateGATTOperationResponseParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateGATTOperationResponseParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateGATTOperationResponseParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the address field.
-         * @return the protocol field value
-         */
-        @Nullable public String address() {
-            return (String) value("address");
+        public CharacteristicProperties read(Boolean read) {
+            set("read", read);
+            return this;
         }
         /**
-         * Returns the type field.
-         * @return the protocol field value
+         * Sets the writeWithoutResponse field.
+         * @param writeWithoutResponse field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public CharacteristicProperties writeWithoutResponse(Optional<Boolean> writeWithoutResponse) {
+            set("writeWithoutResponse", writeWithoutResponse.orElse(null));
+            return this;
         }
         /**
-         * Returns the code field.
-         * @return the protocol field value
+         * Sets the writeWithoutResponse field.
+         * @param writeWithoutResponse field value; null removes the value
+         * @return this model
          */
-        @Nullable public Long code() {
-            return numberAsLong(value("code"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the address field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder address(@Nullable String value) {
-                if (value == null) values.remove("address");
-                else values.put("address", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the code field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder code(@Nullable Long value) {
-                if (value == null) values.remove("code");
-                else values.put("code", jsonValue(value));
-                return this;
-            }
-            public SimulateGATTOperationResponseParams build() {
-                if (!values.containsKey("address")) throw new IllegalStateException("Missing required CDP field: address");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("code")) throw new IllegalStateException("Missing required CDP field: code");
-                return new SimulateGATTOperationResponseParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response code from the peripheral with |address| for a GATT operation of |type|. The |code| value follows the HCI Error Codes from Bluetooth Core Specification Vol 2 Part D 1.3 List Of Error Codes.
-     */
-    public static final class SimulateGATTOperationResponseResult extends CdpObject {
-        private SimulateGATTOperationResponseResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateGATTOperationResponseResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateGATTOperationResponseResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulateGATTOperationResponseResult build() {
-                return new SimulateGATTOperationResponseResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-     */
-    public static final class SimulateCharacteristicOperationResponseParams extends CdpObject {
-        private SimulateCharacteristicOperationResponseParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateCharacteristicOperationResponseParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateCharacteristicOperationResponseParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the characteristicId field.
-         * @return the protocol field value
-         */
-        @Nullable public String characteristicId() {
-            return (String) value("characteristicId");
+        public CharacteristicProperties writeWithoutResponse(Boolean writeWithoutResponse) {
+            set("writeWithoutResponse", writeWithoutResponse);
+            return this;
         }
         /**
-         * Returns the type field.
-         * @return the protocol field value
+         * Sets the write field.
+         * @param write field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public CharacteristicProperties write(Optional<Boolean> write) {
+            set("write", write.orElse(null));
+            return this;
         }
         /**
-         * Returns the code field.
-         * @return the protocol field value
+         * Sets the write field.
+         * @param write field value; null removes the value
+         * @return this model
          */
-        @Nullable public Long code() {
-            return numberAsLong(value("code"));
+        public CharacteristicProperties write(Boolean write) {
+            set("write", write);
+            return this;
         }
         /**
-         * Returns the data field.
-         * @return the protocol field value
+         * Sets the notify field.
+         * @param notifyValue field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String data() {
-            return (String) value("data");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the characteristicId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicId(@Nullable String value) {
-                if (value == null) values.remove("characteristicId");
-                else values.put("characteristicId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the code field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder code(@Nullable Long value) {
-                if (value == null) values.remove("code");
-                else values.put("code", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the data field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            public SimulateCharacteristicOperationResponseParams build() {
-                if (!values.containsKey("characteristicId")) throw new IllegalStateException("Missing required CDP field: characteristicId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("code")) throw new IllegalStateException("Missing required CDP field: code");
-                return new SimulateCharacteristicOperationResponseParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-     */
-    public static final class SimulateCharacteristicOperationResponseResult extends CdpObject {
-        private SimulateCharacteristicOperationResponseResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateCharacteristicOperationResponseResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateCharacteristicOperationResponseResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulateCharacteristicOperationResponseResult build() {
-                return new SimulateCharacteristicOperationResponseResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-     */
-    public static final class SimulateDescriptorOperationResponseParams extends CdpObject {
-        private SimulateDescriptorOperationResponseParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateDescriptorOperationResponseParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateDescriptorOperationResponseParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the descriptorId field.
-         * @return the protocol field value
-         */
-        @Nullable public String descriptorId() {
-            return (String) value("descriptorId");
+        public CharacteristicProperties notifyValue(Optional<Boolean> notifyValue) {
+            set("notify", notifyValue.orElse(null));
+            return this;
         }
         /**
-         * Returns the type field.
-         * @return the protocol field value
+         * Sets the notify field.
+         * @param notifyValue field value; null removes the value
+         * @return this model
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public CharacteristicProperties notifyValue(Boolean notifyValue) {
+            set("notify", notifyValue);
+            return this;
         }
         /**
-         * Returns the code field.
-         * @return the protocol field value
+         * Sets the indicate field.
+         * @param indicate field value; empty omits the value
+         * @return this model
          */
-        @Nullable public Long code() {
-            return numberAsLong(value("code"));
+        public CharacteristicProperties indicate(Optional<Boolean> indicate) {
+            set("indicate", indicate.orElse(null));
+            return this;
         }
         /**
-         * Returns the data field.
-         * @return the protocol field value
+         * Sets the indicate field.
+         * @param indicate field value; null removes the value
+         * @return this model
          */
-        @Nullable public String data() {
-            return (String) value("data");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the descriptorId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descriptorId(@Nullable String value) {
-                if (value == null) values.remove("descriptorId");
-                else values.put("descriptorId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the code field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder code(@Nullable Long value) {
-                if (value == null) values.remove("code");
-                else values.put("code", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the data field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            public SimulateDescriptorOperationResponseParams build() {
-                if (!values.containsKey("descriptorId")) throw new IllegalStateException("Missing required CDP field: descriptorId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                if (!values.containsKey("code")) throw new IllegalStateException("Missing required CDP field: code");
-                return new SimulateDescriptorOperationResponseParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-     */
-    public static final class SimulateDescriptorOperationResponseResult extends CdpObject {
-        private SimulateDescriptorOperationResponseResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateDescriptorOperationResponseResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateDescriptorOperationResponseResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulateDescriptorOperationResponseResult build() {
-                return new SimulateDescriptorOperationResponseResult(values);
-            }
-        }
-    }
-    /**
-     * Adds a service with |serviceUuid| to the peripheral with |address|.
-     */
-    public static final class AddServiceParams extends CdpObject {
-        private AddServiceParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AddServiceParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddServiceParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the address field.
-         * @return the protocol field value
-         */
-        @Nullable public String address() {
-            return (String) value("address");
+        public CharacteristicProperties indicate(Boolean indicate) {
+            set("indicate", indicate);
+            return this;
         }
         /**
-         * Returns the serviceUuid field.
-         * @return the protocol field value
+         * Sets the authenticatedSignedWrites field.
+         * @param authenticatedSignedWrites field value; empty omits the value
+         * @return this model
          */
-        @Nullable public String serviceUuid() {
-            return (String) value("serviceUuid");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the address field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder address(@Nullable String value) {
-                if (value == null) values.remove("address");
-                else values.put("address", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the serviceUuid field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serviceUuid(@Nullable String value) {
-                if (value == null) values.remove("serviceUuid");
-                else values.put("serviceUuid", jsonValue(value));
-                return this;
-            }
-            public AddServiceParams build() {
-                if (!values.containsKey("address")) throw new IllegalStateException("Missing required CDP field: address");
-                if (!values.containsKey("serviceUuid")) throw new IllegalStateException("Missing required CDP field: serviceUuid");
-                return new AddServiceParams(values);
-            }
-        }
-    }
-    /**
-     * Adds a service with |serviceUuid| to the peripheral with |address|.
-     */
-    public static final class AddServiceResult extends CdpObject {
-        private AddServiceResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AddServiceResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddServiceResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An identifier that uniquely represents this service.
-         * @return the protocol field value
-         */
-        @Nullable public String serviceId() {
-            return (String) value("serviceId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An identifier that uniquely represents this service.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serviceId(@Nullable String value) {
-                if (value == null) values.remove("serviceId");
-                else values.put("serviceId", jsonValue(value));
-                return this;
-            }
-            public AddServiceResult build() {
-                if (!values.containsKey("serviceId")) throw new IllegalStateException("Missing required CDP field: serviceId");
-                return new AddServiceResult(values);
-            }
-        }
-    }
-    /**
-     * Removes the service respresented by |serviceId| from the simulated central.
-     */
-    public static final class RemoveServiceParams extends CdpObject {
-        private RemoveServiceParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveServiceParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveServiceParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the serviceId field.
-         * @return the protocol field value
-         */
-        @Nullable public String serviceId() {
-            return (String) value("serviceId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the serviceId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serviceId(@Nullable String value) {
-                if (value == null) values.remove("serviceId");
-                else values.put("serviceId", jsonValue(value));
-                return this;
-            }
-            public RemoveServiceParams build() {
-                if (!values.containsKey("serviceId")) throw new IllegalStateException("Missing required CDP field: serviceId");
-                return new RemoveServiceParams(values);
-            }
-        }
-    }
-    /**
-     * Removes the service respresented by |serviceId| from the simulated central.
-     */
-    public static final class RemoveServiceResult extends CdpObject {
-        private RemoveServiceResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveServiceResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveServiceResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RemoveServiceResult build() {
-                return new RemoveServiceResult(values);
-            }
-        }
-    }
-    /**
-     * Adds a characteristic with |characteristicUuid| and |properties| to the service represented by |serviceId|.
-     */
-    public static final class AddCharacteristicParams extends CdpObject {
-        private AddCharacteristicParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AddCharacteristicParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddCharacteristicParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the serviceId field.
-         * @return the protocol field value
-         */
-        @Nullable public String serviceId() {
-            return (String) value("serviceId");
+        public CharacteristicProperties authenticatedSignedWrites(Optional<Boolean> authenticatedSignedWrites) {
+            set("authenticatedSignedWrites", authenticatedSignedWrites.orElse(null));
+            return this;
         }
         /**
-         * Returns the characteristicUuid field.
-         * @return the protocol field value
+         * Sets the authenticatedSignedWrites field.
+         * @param authenticatedSignedWrites field value; null removes the value
+         * @return this model
          */
-        @Nullable public String characteristicUuid() {
-            return (String) value("characteristicUuid");
+        public CharacteristicProperties authenticatedSignedWrites(Boolean authenticatedSignedWrites) {
+            set("authenticatedSignedWrites", authenticatedSignedWrites);
+            return this;
         }
         /**
-         * Returns the properties field.
-         * @return the protocol field value
+         * Sets the extendedProperties field.
+         * @param extendedProperties field value; empty omits the value
+         * @return this model
          */
-        @Nullable public BluetoothEmulation.CharacteristicProperties properties() {
-            return BluetoothEmulation.CharacteristicProperties.fromMap(objectMap(value("properties")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the serviceId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder serviceId(@Nullable String value) {
-                if (value == null) values.remove("serviceId");
-                else values.put("serviceId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the characteristicUuid field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicUuid(@Nullable String value) {
-                if (value == null) values.remove("characteristicUuid");
-                else values.put("characteristicUuid", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the properties field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder properties(@Nullable BluetoothEmulation.CharacteristicProperties value) {
-                if (value == null) values.remove("properties");
-                else values.put("properties", jsonValue(value));
-                return this;
-            }
-            public AddCharacteristicParams build() {
-                if (!values.containsKey("serviceId")) throw new IllegalStateException("Missing required CDP field: serviceId");
-                if (!values.containsKey("characteristicUuid")) throw new IllegalStateException("Missing required CDP field: characteristicUuid");
-                if (!values.containsKey("properties")) throw new IllegalStateException("Missing required CDP field: properties");
-                return new AddCharacteristicParams(values);
-            }
-        }
-    }
-    /**
-     * Adds a characteristic with |characteristicUuid| and |properties| to the service represented by |serviceId|.
-     */
-    public static final class AddCharacteristicResult extends CdpObject {
-        private AddCharacteristicResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AddCharacteristicResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddCharacteristicResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An identifier that uniquely represents this characteristic.
-         * @return the protocol field value
-         */
-        @Nullable public String characteristicId() {
-            return (String) value("characteristicId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An identifier that uniquely represents this characteristic.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicId(@Nullable String value) {
-                if (value == null) values.remove("characteristicId");
-                else values.put("characteristicId", jsonValue(value));
-                return this;
-            }
-            public AddCharacteristicResult build() {
-                if (!values.containsKey("characteristicId")) throw new IllegalStateException("Missing required CDP field: characteristicId");
-                return new AddCharacteristicResult(values);
-            }
-        }
-    }
-    /**
-     * Removes the characteristic respresented by |characteristicId| from the simulated central.
-     */
-    public static final class RemoveCharacteristicParams extends CdpObject {
-        private RemoveCharacteristicParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveCharacteristicParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveCharacteristicParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the characteristicId field.
-         * @return the protocol field value
-         */
-        @Nullable public String characteristicId() {
-            return (String) value("characteristicId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the characteristicId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicId(@Nullable String value) {
-                if (value == null) values.remove("characteristicId");
-                else values.put("characteristicId", jsonValue(value));
-                return this;
-            }
-            public RemoveCharacteristicParams build() {
-                if (!values.containsKey("characteristicId")) throw new IllegalStateException("Missing required CDP field: characteristicId");
-                return new RemoveCharacteristicParams(values);
-            }
-        }
-    }
-    /**
-     * Removes the characteristic respresented by |characteristicId| from the simulated central.
-     */
-    public static final class RemoveCharacteristicResult extends CdpObject {
-        private RemoveCharacteristicResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveCharacteristicResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveCharacteristicResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RemoveCharacteristicResult build() {
-                return new RemoveCharacteristicResult(values);
-            }
-        }
-    }
-    /**
-     * Adds a descriptor with |descriptorUuid| to the characteristic respresented by |characteristicId|.
-     */
-    public static final class AddDescriptorParams extends CdpObject {
-        private AddDescriptorParams(Map<String, Object> values) { super(values); }
-        @Nullable public static AddDescriptorParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddDescriptorParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the characteristicId field.
-         * @return the protocol field value
-         */
-        @Nullable public String characteristicId() {
-            return (String) value("characteristicId");
+        public CharacteristicProperties extendedProperties(Optional<Boolean> extendedProperties) {
+            set("extendedProperties", extendedProperties.orElse(null));
+            return this;
         }
         /**
-         * Returns the descriptorUuid field.
-         * @return the protocol field value
+         * Sets the extendedProperties field.
+         * @param extendedProperties field value; null removes the value
+         * @return this model
          */
-        @Nullable public String descriptorUuid() {
-            return (String) value("descriptorUuid");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the characteristicId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicId(@Nullable String value) {
-                if (value == null) values.remove("characteristicId");
-                else values.put("characteristicId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the descriptorUuid field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descriptorUuid(@Nullable String value) {
-                if (value == null) values.remove("descriptorUuid");
-                else values.put("descriptorUuid", jsonValue(value));
-                return this;
-            }
-            public AddDescriptorParams build() {
-                if (!values.containsKey("characteristicId")) throw new IllegalStateException("Missing required CDP field: characteristicId");
-                if (!values.containsKey("descriptorUuid")) throw new IllegalStateException("Missing required CDP field: descriptorUuid");
-                return new AddDescriptorParams(values);
-            }
-        }
-    }
-    /**
-     * Adds a descriptor with |descriptorUuid| to the characteristic respresented by |characteristicId|.
-     */
-    public static final class AddDescriptorResult extends CdpObject {
-        private AddDescriptorResult(Map<String, Object> values) { super(values); }
-        @Nullable public static AddDescriptorResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new AddDescriptorResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * An identifier that uniquely represents this descriptor.
-         * @return the protocol field value
-         */
-        @Nullable public String descriptorId() {
-            return (String) value("descriptorId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An identifier that uniquely represents this descriptor.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descriptorId(@Nullable String value) {
-                if (value == null) values.remove("descriptorId");
-                else values.put("descriptorId", jsonValue(value));
-                return this;
-            }
-            public AddDescriptorResult build() {
-                if (!values.containsKey("descriptorId")) throw new IllegalStateException("Missing required CDP field: descriptorId");
-                return new AddDescriptorResult(values);
-            }
-        }
-    }
-    /**
-     * Removes the descriptor with |descriptorId| from the simulated central.
-     */
-    public static final class RemoveDescriptorParams extends CdpObject {
-        private RemoveDescriptorParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveDescriptorParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveDescriptorParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the descriptorId field.
-         * @return the protocol field value
-         */
-        @Nullable public String descriptorId() {
-            return (String) value("descriptorId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the descriptorId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descriptorId(@Nullable String value) {
-                if (value == null) values.remove("descriptorId");
-                else values.put("descriptorId", jsonValue(value));
-                return this;
-            }
-            public RemoveDescriptorParams build() {
-                if (!values.containsKey("descriptorId")) throw new IllegalStateException("Missing required CDP field: descriptorId");
-                return new RemoveDescriptorParams(values);
-            }
-        }
-    }
-    /**
-     * Removes the descriptor with |descriptorId| from the simulated central.
-     */
-    public static final class RemoveDescriptorResult extends CdpObject {
-        private RemoveDescriptorResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RemoveDescriptorResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RemoveDescriptorResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public RemoveDescriptorResult build() {
-                return new RemoveDescriptorResult(values);
-            }
-        }
-    }
-    /**
-     * Simulates a GATT disconnection from the peripheral with |address|.
-     */
-    public static final class SimulateGATTDisconnectionParams extends CdpObject {
-        private SimulateGATTDisconnectionParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateGATTDisconnectionParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateGATTDisconnectionParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the address field.
-         * @return the protocol field value
-         */
-        @Nullable public String address() {
-            return (String) value("address");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the address field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder address(@Nullable String value) {
-                if (value == null) values.remove("address");
-                else values.put("address", jsonValue(value));
-                return this;
-            }
-            public SimulateGATTDisconnectionParams build() {
-                if (!values.containsKey("address")) throw new IllegalStateException("Missing required CDP field: address");
-                return new SimulateGATTDisconnectionParams(values);
-            }
-        }
-    }
-    /**
-     * Simulates a GATT disconnection from the peripheral with |address|.
-     */
-    public static final class SimulateGATTDisconnectionResult extends CdpObject {
-        private SimulateGATTDisconnectionResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SimulateGATTDisconnectionResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SimulateGATTDisconnectionResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SimulateGATTDisconnectionResult build() {
-                return new SimulateGATTDisconnectionResult(values);
-            }
+        public CharacteristicProperties extendedProperties(Boolean extendedProperties) {
+            set("extendedProperties", extendedProperties);
+            return this;
         }
     }
     /**
      * Event for when a GATT operation of |type| to the peripheral with |address| happened.
      */
     public static final class GattOperationReceivedEvent extends CdpObject {
+        public GattOperationReceivedEvent() {}
         private GattOperationReceivedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static GattOperationReceivedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GattOperationReceivedEvent(values);
+        public static GattOperationReceivedEvent fromMap(Map<String, Object> values) {
+            return new GattOperationReceivedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the address field.
          * @return the protocol field value
          */
-        @Nullable public String address() {
-            return (String) value("address");
+        public String address() {
+            return (String) require("address");
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public BluetoothEmulation.GATTOperationType type() {
+            return BluetoothEmulation.GATTOperationType.of((String) require("type"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the address field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder address(@Nullable String value) {
-                if (value == null) values.remove("address");
-                else values.put("address", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            public GattOperationReceivedEvent build() {
-                if (!values.containsKey("address")) throw new IllegalStateException("Missing required CDP field: address");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                return new GattOperationReceivedEvent(values);
-            }
+        /**
+         * Sets the address field.
+         * @param address field value
+         * @return this model
+         */
+        public GattOperationReceivedEvent address(String address) {
+            set("address", address);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public GattOperationReceivedEvent type(BluetoothEmulation.GATTOperationType type) {
+            set("type", type);
+            return this;
         }
     }
     /**
      * Event for when a characteristic operation of |type| to the characteristic respresented by |characteristicId| happened. |data| and |writeType| is expected to exist when |type| is write.
      */
     public static final class CharacteristicOperationReceivedEvent extends CdpObject {
+        public CharacteristicOperationReceivedEvent() {}
         private CharacteristicOperationReceivedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static CharacteristicOperationReceivedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CharacteristicOperationReceivedEvent(values);
+        public static CharacteristicOperationReceivedEvent fromMap(Map<String, Object> values) {
+            return new CharacteristicOperationReceivedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the characteristicId field.
          * @return the protocol field value
          */
-        @Nullable public String characteristicId() {
-            return (String) value("characteristicId");
+        public String characteristicId() {
+            return (String) require("characteristicId");
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public BluetoothEmulation.CharacteristicOperationType type() {
+            return BluetoothEmulation.CharacteristicOperationType.of((String) require("type"));
         }
         /**
          * Returns the data field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String data() {
-            return (String) value("data");
+        public Optional<String> data() {
+            return Optional.ofNullable((String) raw("data"));
         }
         /**
          * Returns the writeType field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String writeType() {
-            return (String) value("writeType");
+        public Optional<BluetoothEmulation.CharacteristicWriteType> writeType() {
+            return Optional.ofNullable(raw("writeType") == null ? null : BluetoothEmulation.CharacteristicWriteType.of((String) raw("writeType")));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the characteristicId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder characteristicId(@Nullable String value) {
-                if (value == null) values.remove("characteristicId");
-                else values.put("characteristicId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the data field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the writeType field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder writeType(@Nullable String value) {
-                if (value == null) values.remove("writeType");
-                else values.put("writeType", jsonValue(value));
-                return this;
-            }
-            public CharacteristicOperationReceivedEvent build() {
-                if (!values.containsKey("characteristicId")) throw new IllegalStateException("Missing required CDP field: characteristicId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                return new CharacteristicOperationReceivedEvent(values);
-            }
+        /**
+         * Sets the characteristicId field.
+         * @param characteristicId field value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent characteristicId(String characteristicId) {
+            set("characteristicId", characteristicId);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent type(BluetoothEmulation.CharacteristicOperationType type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value; empty omits the value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent data(Optional<String> data) {
+            set("data", data.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value; null removes the value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent data(String data) {
+            set("data", data);
+            return this;
+        }
+        /**
+         * Sets the writeType field.
+         * @param writeType field value; empty omits the value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent writeType(Optional<BluetoothEmulation.CharacteristicWriteType> writeType) {
+            set("writeType", writeType.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the writeType field.
+         * @param writeType field value; null removes the value
+         * @return this model
+         */
+        public CharacteristicOperationReceivedEvent writeType(BluetoothEmulation.CharacteristicWriteType writeType) {
+            set("writeType", writeType);
+            return this;
         }
     }
     /**
      * Event for when a descriptor operation of |type| to the descriptor respresented by |descriptorId| happened. |data| is expected to exist when |type| is write.
      */
     public static final class DescriptorOperationReceivedEvent extends CdpObject {
+        public DescriptorOperationReceivedEvent() {}
         private DescriptorOperationReceivedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DescriptorOperationReceivedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DescriptorOperationReceivedEvent(values);
+        public static DescriptorOperationReceivedEvent fromMap(Map<String, Object> values) {
+            return new DescriptorOperationReceivedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the descriptorId field.
          * @return the protocol field value
          */
-        @Nullable public String descriptorId() {
-            return (String) value("descriptorId");
+        public String descriptorId() {
+            return (String) require("descriptorId");
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
-        @Nullable public String type() {
-            return (String) value("type");
+        public BluetoothEmulation.DescriptorOperationType type() {
+            return BluetoothEmulation.DescriptorOperationType.of((String) require("type"));
         }
         /**
          * Returns the data field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String data() {
-            return (String) value("data");
+        public Optional<String> data() {
+            return Optional.ofNullable((String) raw("data"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the descriptorId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder descriptorId(@Nullable String value) {
-                if (value == null) values.remove("descriptorId");
-                else values.put("descriptorId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the type field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder type(@Nullable String value) {
-                if (value == null) values.remove("type");
-                else values.put("type", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the data field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder data(@Nullable String value) {
-                if (value == null) values.remove("data");
-                else values.put("data", jsonValue(value));
-                return this;
-            }
-            public DescriptorOperationReceivedEvent build() {
-                if (!values.containsKey("descriptorId")) throw new IllegalStateException("Missing required CDP field: descriptorId");
-                if (!values.containsKey("type")) throw new IllegalStateException("Missing required CDP field: type");
-                return new DescriptorOperationReceivedEvent(values);
-            }
+        /**
+         * Sets the descriptorId field.
+         * @param descriptorId field value
+         * @return this model
+         */
+        public DescriptorOperationReceivedEvent descriptorId(String descriptorId) {
+            set("descriptorId", descriptorId);
+            return this;
+        }
+        /**
+         * Sets the type field.
+         * @param type field value
+         * @return this model
+         */
+        public DescriptorOperationReceivedEvent type(BluetoothEmulation.DescriptorOperationType type) {
+            set("type", type);
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value; empty omits the value
+         * @return this model
+         */
+        public DescriptorOperationReceivedEvent data(Optional<String> data) {
+            set("data", data.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the data field.
+         * @param data field value; null removes the value
+         * @return this model
+         */
+        public DescriptorOperationReceivedEvent data(String data) {
+            set("data", data);
+            return this;
         }
     }
     public static final class Client {
@@ -1725,122 +761,202 @@ public final class BluetoothEmulation {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Enable the BluetoothEmulation domain.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param state protocol value
+         * @param leSupported protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable(EnableParams params) {
-            return client.call("BluetoothEmulation.enable", params, EnableResult::fromMap);
+        public CompletionStage<Void> enable(BluetoothEmulation.CentralState state, boolean leSupported) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("state", CdpObject.json(state));
+            params.put("leSupported", CdpObject.json(leSupported));
+            return client.call("BluetoothEmulation.enable", params, result_ -> null);
         }
         /**
          * Set the state of the simulated central.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param state protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SetSimulatedCentralStateResult> setSimulatedCentralState(SetSimulatedCentralStateParams params) {
-            return client.call("BluetoothEmulation.setSimulatedCentralState", params, SetSimulatedCentralStateResult::fromMap);
+        public CompletionStage<Void> setSimulatedCentralState(BluetoothEmulation.CentralState state) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("state", CdpObject.json(state));
+            return client.call("BluetoothEmulation.setSimulatedCentralState", params, result_ -> null);
         }
         /**
          * Disable the BluetoothEmulation domain.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("BluetoothEmulation.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("BluetoothEmulation.disable", null, result_ -> null);
         }
         /**
          * Simulates a peripheral with |address|, |name| and |knownServiceUuids| that has already been connected to the system.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param address protocol value
+         * @param name protocol value
+         * @param manufacturerData protocol value
+         * @param knownServiceUuids protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulatePreconnectedPeripheralResult> simulatePreconnectedPeripheral(SimulatePreconnectedPeripheralParams params) {
-            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", params, SimulatePreconnectedPeripheralResult::fromMap);
+        public CompletionStage<Void> simulatePreconnectedPeripheral(String address, String name, java.util.List<BluetoothEmulation.ManufacturerData> manufacturerData, java.util.List<String> knownServiceUuids) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("address", CdpObject.json(address));
+            params.put("name", CdpObject.json(name));
+            params.put("manufacturerData", CdpObject.json(manufacturerData));
+            params.put("knownServiceUuids", CdpObject.json(knownServiceUuids));
+            return client.call("BluetoothEmulation.simulatePreconnectedPeripheral", params, result_ -> null);
         }
         /**
          * Simulates an advertisement packet described in |entry| being received by the central.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param entry protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulateAdvertisementResult> simulateAdvertisement(SimulateAdvertisementParams params) {
-            return client.call("BluetoothEmulation.simulateAdvertisement", params, SimulateAdvertisementResult::fromMap);
+        public CompletionStage<Void> simulateAdvertisement(BluetoothEmulation.ScanEntry entry) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("entry", CdpObject.json(entry));
+            return client.call("BluetoothEmulation.simulateAdvertisement", params, result_ -> null);
         }
         /**
          * Simulates the response code from the peripheral with |address| for a GATT operation of |type|. The |code| value follows the HCI Error Codes from Bluetooth Core Specification Vol 2 Part D 1.3 List Of Error Codes.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param address protocol value
+         * @param type protocol value
+         * @param code protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulateGATTOperationResponseResult> simulateGATTOperationResponse(SimulateGATTOperationResponseParams params) {
-            return client.call("BluetoothEmulation.simulateGATTOperationResponse", params, SimulateGATTOperationResponseResult::fromMap);
+        public CompletionStage<Void> simulateGATTOperationResponse(String address, BluetoothEmulation.GATTOperationType type, long code) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("address", CdpObject.json(address));
+            params.put("type", CdpObject.json(type));
+            params.put("code", CdpObject.json(code));
+            return client.call("BluetoothEmulation.simulateGATTOperationResponse", params, result_ -> null);
         }
         /**
          * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param characteristicId protocol value
+         * @param type protocol value
+         * @param code protocol value
+         * @param data protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulateCharacteristicOperationResponseResult> simulateCharacteristicOperationResponse(SimulateCharacteristicOperationResponseParams params) {
-            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", params, SimulateCharacteristicOperationResponseResult::fromMap);
+        public CompletionStage<Void> simulateCharacteristicOperationResponse(String characteristicId, BluetoothEmulation.CharacteristicOperationType type, long code, Optional<String> data) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("characteristicId", CdpObject.json(characteristicId));
+            params.put("type", CdpObject.json(type));
+            params.put("code", CdpObject.json(code));
+            data.ifPresent(value_ -> params.put("data", CdpObject.json(value_)));
+            return client.call("BluetoothEmulation.simulateCharacteristicOperationResponse", params, result_ -> null);
+        }
+        /**
+         * Simulates the response from the characteristic with |characteristicId| for a characteristic operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
+         * @param characteristicId protocol value
+         * @param type protocol value
+         * @param code protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> simulateCharacteristicOperationResponse(String characteristicId, BluetoothEmulation.CharacteristicOperationType type, long code) {
+            return simulateCharacteristicOperationResponse(characteristicId, type, code, Optional.empty());
         }
         /**
          * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param descriptorId protocol value
+         * @param type protocol value
+         * @param code protocol value
+         * @param data protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulateDescriptorOperationResponseResult> simulateDescriptorOperationResponse(SimulateDescriptorOperationResponseParams params) {
-            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", params, SimulateDescriptorOperationResponseResult::fromMap);
+        public CompletionStage<Void> simulateDescriptorOperationResponse(String descriptorId, BluetoothEmulation.DescriptorOperationType type, long code, Optional<String> data) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("descriptorId", CdpObject.json(descriptorId));
+            params.put("type", CdpObject.json(type));
+            params.put("code", CdpObject.json(code));
+            data.ifPresent(value_ -> params.put("data", CdpObject.json(value_)));
+            return client.call("BluetoothEmulation.simulateDescriptorOperationResponse", params, result_ -> null);
+        }
+        /**
+         * Simulates the response from the descriptor with |descriptorId| for a descriptor operation of |type|. The |code| value follows the Error Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response. The |data| is expected to exist when simulating a successful read operation response.
+         * @param descriptorId protocol value
+         * @param type protocol value
+         * @param code protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> simulateDescriptorOperationResponse(String descriptorId, BluetoothEmulation.DescriptorOperationType type, long code) {
+            return simulateDescriptorOperationResponse(descriptorId, type, code, Optional.empty());
         }
         /**
          * Adds a service with |serviceUuid| to the peripheral with |address|.
-         * @param params command parameters
+         * @param address protocol value
+         * @param serviceUuid protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<AddServiceResult> addService(AddServiceParams params) {
-            return client.call("BluetoothEmulation.addService", params, AddServiceResult::fromMap);
+        public CompletionStage<String> addService(String address, String serviceUuid) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("address", CdpObject.json(address));
+            params.put("serviceUuid", CdpObject.json(serviceUuid));
+            return client.call("BluetoothEmulation.addService", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("serviceId")));
         }
         /**
          * Removes the service respresented by |serviceId| from the simulated central.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param serviceId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RemoveServiceResult> removeService(RemoveServiceParams params) {
-            return client.call("BluetoothEmulation.removeService", params, RemoveServiceResult::fromMap);
+        public CompletionStage<Void> removeService(String serviceId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("serviceId", CdpObject.json(serviceId));
+            return client.call("BluetoothEmulation.removeService", params, result_ -> null);
         }
         /**
          * Adds a characteristic with |characteristicUuid| and |properties| to the service represented by |serviceId|.
-         * @param params command parameters
+         * @param serviceId protocol value
+         * @param characteristicUuid protocol value
+         * @param properties protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<AddCharacteristicResult> addCharacteristic(AddCharacteristicParams params) {
-            return client.call("BluetoothEmulation.addCharacteristic", params, AddCharacteristicResult::fromMap);
+        public CompletionStage<String> addCharacteristic(String serviceId, String characteristicUuid, BluetoothEmulation.CharacteristicProperties properties) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("serviceId", CdpObject.json(serviceId));
+            params.put("characteristicUuid", CdpObject.json(characteristicUuid));
+            params.put("properties", CdpObject.json(properties));
+            return client.call("BluetoothEmulation.addCharacteristic", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("characteristicId")));
         }
         /**
          * Removes the characteristic respresented by |characteristicId| from the simulated central.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param characteristicId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RemoveCharacteristicResult> removeCharacteristic(RemoveCharacteristicParams params) {
-            return client.call("BluetoothEmulation.removeCharacteristic", params, RemoveCharacteristicResult::fromMap);
+        public CompletionStage<Void> removeCharacteristic(String characteristicId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("characteristicId", CdpObject.json(characteristicId));
+            return client.call("BluetoothEmulation.removeCharacteristic", params, result_ -> null);
         }
         /**
          * Adds a descriptor with |descriptorUuid| to the characteristic respresented by |characteristicId|.
-         * @param params command parameters
+         * @param characteristicId protocol value
+         * @param descriptorUuid protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<AddDescriptorResult> addDescriptor(AddDescriptorParams params) {
-            return client.call("BluetoothEmulation.addDescriptor", params, AddDescriptorResult::fromMap);
+        public CompletionStage<String> addDescriptor(String characteristicId, String descriptorUuid) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("characteristicId", CdpObject.json(characteristicId));
+            params.put("descriptorUuid", CdpObject.json(descriptorUuid));
+            return client.call("BluetoothEmulation.addDescriptor", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("descriptorId")));
         }
         /**
          * Removes the descriptor with |descriptorId| from the simulated central.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param descriptorId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<RemoveDescriptorResult> removeDescriptor(RemoveDescriptorParams params) {
-            return client.call("BluetoothEmulation.removeDescriptor", params, RemoveDescriptorResult::fromMap);
+        public CompletionStage<Void> removeDescriptor(String descriptorId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("descriptorId", CdpObject.json(descriptorId));
+            return client.call("BluetoothEmulation.removeDescriptor", params, result_ -> null);
         }
         /**
          * Simulates a GATT disconnection from the peripheral with |address|.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param address protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SimulateGATTDisconnectionResult> simulateGATTDisconnection(SimulateGATTDisconnectionParams params) {
-            return client.call("BluetoothEmulation.simulateGATTDisconnection", params, SimulateGATTDisconnectionResult::fromMap);
+        public CompletionStage<Void> simulateGATTDisconnection(String address) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("address", CdpObject.json(address));
+            return client.call("BluetoothEmulation.simulateGATTDisconnection", params, result_ -> null);
         }
         /**
          * Event for when a GATT operation of |type| to the peripheral with |address| happened.

@@ -43,6 +43,8 @@ public final class JvmCallbackTable<T> {
     }
 
     /** Looks up a callback by id, or {@code null} if it's unknown / already released. */
+    // null means no callback registered under the id (consumed by generated routing code)
+    @SuppressWarnings("NullableForbidden")
     @Nullable
     public T lookup(int id) {
         if (id == 0) return null;

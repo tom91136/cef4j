@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 
 /** Opaque native pointer wrapper. Raw pointers without a known bound is lowered to this representation, use with caution. */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public class NativePointer {
 
     public final long address;

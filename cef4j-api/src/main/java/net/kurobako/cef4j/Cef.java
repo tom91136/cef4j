@@ -237,17 +237,13 @@ public enum Cef {
             }
 
             if (settings.browserSubprocessPath == null) {
-                settings.browserSubprocessPath = SystemBootstrap.helperPath();
+                settings.browserSubprocessPath = SystemBootstrap.helperPath().orElse(null);
             }
 
             if (settings.resourcesDirPath == null) {
-                Path baseDir = null;
-                Path extDir = SystemBootstrap.extractionDir();
-                if (extDir != null) {
-                    baseDir = extDir;
-                } else {
-                    baseDir = SystemBootstrap.libcefDir();
-                }
+                Path baseDir = SystemBootstrap.extractionDir()
+                        .or(() -> SystemBootstrap.libcefDir())
+                        .orElse(null);
                 if (baseDir != null) {
                     if (OS.isMacOS()) {
                         Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");

@@ -7,12 +7,14 @@ import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +60,7 @@ public final class SystemBootstrap {
                 System.loadLibrary("cef4j");
                 if (OS.isMacOS()) {
                     // Even when loaded from system path, CEF must be loaded via cef_load_library().
-                    Path libcefDir = libcefDir();
+                    Path libcefDir = libcefDir().orElse(null);
                     if (libcefDir == null) {
                         throw new UnsatisfiedLinkError("LIBCEF_DIR must be set on macOS to locate the CEF framework");
                     }
@@ -116,20 +118,20 @@ public final class SystemBootstrap {
     }
 
     /**
-     * Returns the directory where native files were extracted, or null if the library was loaded from the system path.
+     * Returns the directory where native files were extracted, or empty if the library was loaded from the system path.
      */
-    public static @Nullable Path extractionDir() {
-        return extractionDir;
+    public static Optional<Path> extractionDir() {
+        return Optional.ofNullable(extractionDir);
     }
 
-    /** Returns the resolved LIBCEF_DIR, or null if not set. Result is cached after first call. */
-    public static @Nullable Path libcefDir() {
-        if (libcefDirResolved) return cachedLibcefDir;
+    /** Returns the resolved LIBCEF_DIR, or empty if not set. Result is cached after first call. */
+    public static Optional<Path> libcefDir() {
+        if (libcefDirResolved) return Optional.ofNullable(cachedLibcefDir);
         Path configured = configuredLibcefDir();
         Path result = configured != null ? configured : discoverCefDist();
         cachedLibcefDir = result;
         libcefDirResolved = true;
-        return result;
+        return Optional.ofNullable(result);
     }
 
     private static @Nullable Path configuredLibcefDir() {
@@ -172,24 +174,24 @@ public final class SystemBootstrap {
 
     /**
      * Returns the path to the cef4j_launcher executable. Prefers the extraction directory, falls back to LIBCEF_DIR,
-     * then null.
+     * then empty.
      */
-    public static @Nullable String helperPath() {
+    public static Optional<String> helperPath() {
         String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
         if (extractionDir != null) {
             Path launcher = extractionDir.resolve(launcherName);
             if (Files.exists(launcher)) {
-                return launcher.toAbsolutePath().toString();
+                return Optional.of(launcher.toAbsolutePath().toString());
             }
         }
-        Path libcefDir = libcefDir();
+        Path libcefDir = libcefDir().orElse(null);
         if (libcefDir != null) {
             Path launcher = libcefDir.resolve(launcherName);
             if (Files.exists(launcher)) {
-                return launcher.toAbsolutePath().toString();
+                return Optional.of(launcher.toAbsolutePath().toString());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private static void loadFromClasspath() throws IOException {
@@ -261,7 +263,8 @@ public final class SystemBootstrap {
                                 "-d",
                                 "com.apple.quarantine",
                                 cacheDir.toAbsolutePath().toString())
-                        .redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        .redirectError(ProcessBuilder.Redirect.DISCARD)
                         .start()
                         .waitFor();
             } catch (IOException ignored) {
@@ -360,10 +363,15 @@ public final class SystemBootstrap {
             while ((line = reader.readLine()) != null) {
                 line = line.trim().replace('\\', '/');
                 if (line.isEmpty()) continue;
-                Path target = cacheDir.resolve(line);
-                if (Files.exists(target) && Files.size(target) > 0) continue;
+                Path target = cacheDir.resolve(line).normalize();
+                if (!target.startsWith(cacheDir)) {
+                    throw new IOException("manifest entry escapes extraction directory: " + line);
+                }
+                if (isUsableExistingFile(target)) continue;
                 Path parent = target.getParent();
                 if (parent != null) Files.createDirectories(parent);
+                // Never write through a pre-existing symlink planted in the cache dir.
+                Files.deleteIfExists(target);
                 extractResource(platformRuntimeResource(line), target);
                 Path fileName = target.getFileName();
                 String fileNameStr = fileName == null ? "" : fileName.toString();
@@ -376,6 +384,14 @@ public final class SystemBootstrap {
                     target.toFile().setExecutable(true);
                 }
             }
+        }
+    }
+
+    private static boolean isUsableExistingFile(Path target) {
+        try {
+            return Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS) && Files.size(target) > 0;
+        } catch (IOException e) {
+            return false;
         }
     }
 

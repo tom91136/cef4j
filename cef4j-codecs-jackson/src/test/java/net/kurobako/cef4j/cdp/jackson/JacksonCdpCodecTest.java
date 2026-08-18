@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -39,10 +40,10 @@ final class JacksonCdpCodecTest {
         assertThat(transport.subscribedMethod).isEqualTo("Runtime.consoleAPICalled");
         assertThat(events).singleElement().satisfies(event -> {
             assertThat(event.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
-            assertThat(event.executionContextId()).isEqualTo(7);
-            assertThat(Objects.requireNonNull(event.args())).singleElement().satisfies(argument -> {
-                assertThat(argument.type()).isEqualTo("string");
-                assertThat(argument.value()).isEqualTo("ready");
+            assertThat(event.executionContextId()).isEqualTo(new Runtime.ExecutionContextId(7));
+            assertThat(event.args()).singleElement().satisfies(argument -> {
+                assertThat(argument.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
+                assertThat(argument.value()).isEqualTo(Optional.of("ready"));
             });
         });
 

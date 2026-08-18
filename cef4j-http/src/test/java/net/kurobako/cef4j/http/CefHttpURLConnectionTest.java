@@ -8,15 +8,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(10)
 class CefHttpURLConnectionTest {
 
-    private static CefHttpURLConnection conn(String s, FakeCefHttpEngine engine) throws Exception {
+    private static CefHttpURLConnection conn(String s, CefHttpEngine engine) throws Exception {
         URL u = new URL(null, s, new CefStreamHandler(engine));
         return (CefHttpURLConnection) u.openConnection();
     }
@@ -160,5 +163,72 @@ class CefHttpURLConnectionTest {
         FakeCefHttpEngine engine = new FakeCefHttpEngine().stage(200, Map.of(), new byte[0]);
         CefHttpURLConnection c = conn("http://example.com/", engine);
         assertThat(c.getResponseMessage()).isEqualTo("OK");
+    }
+
+    @Test
+    void zeroLengthReadDoesNotBlock() throws Exception {
+        FakeCefHttpEngine engine = FakeCefHttpEngine.empty();
+        CefHttpURLConnection c = conn("http://example.com/", engine);
+        c.connect();
+        engine.capturedSink().onResponse(200, "OK", Map.of());
+        InputStream in = c.getInputStream();
+        CompletableFuture<Integer> result = CompletableFuture.supplyAsync(() -> {
+            try {
+                return in.read(new byte[0], 0, 0);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        assertThat(result.get(2, TimeUnit.SECONDS)).isZero();
+        c.disconnect();
+    }
+
+    @Test
+    void midBodyFailureSurfacesAsIOException() throws Exception {
+        FakeCefHttpEngine engine = FakeCefHttpEngine.empty();
+        CefHttpURLConnection c = conn("http://example.com/", engine);
+        c.connect();
+        engine.capturedSink().onResponse(200, "OK", Map.of());
+        InputStream in = c.getInputStream();
+        engine.capturedSink().onData("part".getBytes(StandardCharsets.UTF_8));
+        engine.capturedSink().onError(new IOException("boom"));
+        assertThatIOException().isThrownBy(in::readAllBytes).withMessageContaining("boom");
+        c.disconnect();
+    }
+
+    @Test
+    void followsRedirectToFinalUrl() throws Exception {
+        List<String> requestedUrls = new ArrayList<>();
+        CefHttpEngine redirecting = (spec, sink) -> {
+            requestedUrls.add(spec.url);
+            if (spec.url.equals("http://example.com/start")) {
+                sink.onResponse(302, "Found", Map.of("Location", List.of("http://example.com/new")));
+                sink.onComplete();
+            } else {
+                sink.onResponse(200, "OK", Map.of());
+                sink.onData("final".getBytes(StandardCharsets.UTF_8));
+                sink.onComplete();
+            }
+            return () -> {};
+        };
+        CefHttpURLConnection c = conn("http://example.com/start", redirecting);
+        assertThat(c.getResponseCode()).isEqualTo(200);
+        assertThat(requestedUrls).containsExactly("http://example.com/start", "http://example.com/new");
+        assertThat(c.getURL().toString()).isEqualTo("http://example.com/new");
+        try (InputStream in = c.getInputStream()) {
+            assertThat(in.readAllBytes()).isEqualTo("final".getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void requestBodyBeyondLimitFails() throws Exception {
+        FakeCefHttpEngine engine = new FakeCefHttpEngine().stage(200, Map.of(), new byte[0]);
+        CefHttpURLConnection c = new CefHttpURLConnection(new URL("http://example.com/"), engine, 16);
+        c.setRequestMethod("POST");
+        c.setDoOutput(true);
+        OutputStream out = c.getOutputStream();
+        out.write(new byte[16]);
+        assertThatIOException().isThrownBy(() -> out.write(1)).withMessageContaining("exceeds");
+        c.disconnect();
     }
 }

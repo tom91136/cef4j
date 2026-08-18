@@ -1,9 +1,7 @@
-package net.kurobako.cef4j.ipc.devtools.gson;
+package net.kurobako.cef4j.ipc.devtools;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -14,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kurobako.cef4j.cdp.CdpCodec;
+import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
@@ -31,8 +31,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Correlates raw Chrome DevTools Protocol messages over a {@link CefSession}.
  *
- * <p>This class knows nothing about the session's concrete transport. The same instance works over ZeroMQ, Unix domain
- * sockets, WebSocket, recording/replay, or an in-memory loopback transport.
+ * <p>This class knows nothing about the session's concrete transport or JSON implementation. The same instance works
+ * over ZeroMQ, Unix domain sockets, WebSocket, recording/replay, or an in-memory loopback transport with either the
+ * Gson or Jackson codec.
  */
 public final class DevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(DevToolsSession.class);
@@ -40,11 +41,13 @@ public final class DevToolsSession implements CdpTransport {
     private final CefSession session;
     private final RemoteHandle browser;
     private final BrowserHost host;
+    private final CdpCodec codec;
     private final AtomicInteger nextMessageId = new AtomicInteger();
     private final AtomicBoolean open = new AtomicBoolean(true);
     private final Object closeLock = new Object();
-    private final ConcurrentHashMap<Integer, CompletableFuture<JsonObject>> pending = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<JsonObject>>> eventHandlers =
+    private final ConcurrentHashMap<Integer, CompletableFuture<Map<String, Object>>> pending =
+            new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CopyOnWriteArrayList<Consumer<Map<String, Object>>>> eventHandlers =
             new ConcurrentHashMap<>();
     private final CefSession.HandlerRegistration messageRegistration;
     private final CefSession.HandlerRegistration detachedRegistration;
@@ -55,10 +58,11 @@ public final class DevToolsSession implements CdpTransport {
     @Nullable
     private CompletableFuture<Void> closeFuture;
 
-    private DevToolsSession(CefSession session, RemoteHandle browser, BrowserHost host) {
+    private DevToolsSession(CefSession session, RemoteHandle browser, BrowserHost host, CdpCodec codec) {
         this.session = session;
         this.browser = browser;
         this.host = host;
+        this.codec = codec;
         messageRegistration =
                 session.on(DevToolsMessageEvent.MESSAGE_ID, DevToolsMessageEvent.DECODER, this::handleMessage);
         detachedRegistration =
@@ -72,11 +76,15 @@ public final class DevToolsSession implements CdpTransport {
     /** Registers the server-side observer after installing client event handlers, avoiding an attach race. */
     @Nonnull
     public static CompletableFuture<DevToolsSession> attach(
-            @Nonnull CefSession session, @Nonnull RemoteHandle browser, @Nonnull BrowserHost host) {
+            @Nonnull CefSession session,
+            @Nonnull RemoteHandle browser,
+            @Nonnull BrowserHost host,
+            @Nonnull CdpCodec codec) {
         Objects.requireNonNull(session, "session");
         Objects.requireNonNull(browser, "browser");
         Objects.requireNonNull(host, "host");
-        DevToolsSession devTools = new DevToolsSession(session, browser, host);
+        Objects.requireNonNull(codec, "codec");
+        DevToolsSession devTools = new DevToolsSession(session, browser, host, codec);
         return session.request(new DevToolsAttachRequest(browser), DevToolsAttachResponse.DECODER)
                 .thenApply(ignored -> devTools)
                 .whenComplete((ignored, failure) -> {
@@ -86,31 +94,30 @@ public final class DevToolsSession implements CdpTransport {
 
     /** Sends a CDP method and completes with its result object. */
     @Nonnull
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public CompletableFuture<JsonObject> send(@Nonnull String method, @Nullable JsonObject params) {
+    @SuppressWarnings({"FutureReturnValueIgnored", "NullableForbidden"}) // null params omit the CDP request body
+    public CompletableFuture<Map<String, Object>> send(@Nonnull String method, @Nullable Map<String, Object> params) {
         Objects.requireNonNull(method, "method");
         if (!open.get()) return failedFuture(new IllegalStateException("DevTools session is closed"));
 
         int id = nextMessageId.updateAndGet(previous -> previous == Integer.MAX_VALUE ? 1 : previous + 1);
-        JsonObject command = new JsonObject();
-        command.addProperty("id", id);
-        command.addProperty("method", method);
-        if (params != null) command.add("params", params);
+        Map<String, Object> command = new java.util.HashMap<>();
+        command.put("id", id);
+        command.put("method", method);
+        if (params != null) command.put("params", params);
 
-        CompletableFuture<JsonObject> result = new CompletableFuture<>();
+        CompletableFuture<Map<String, Object>> result = new CompletableFuture<>();
         pending.put(id, result);
         if (!open.get() && pending.remove(id, result)) {
             result.completeExceptionally(new IllegalStateException("DevTools session is closed"));
             return result;
         }
-        host.sendDevToolsMessage(command.toString().getBytes(StandardCharsets.UTF_8))
-                .whenComplete((accepted, failure) -> {
-                    if (failure != null) {
-                        completeSendFailure(id, failure);
-                    } else if (accepted == null || accepted == 0) {
-                        completeSendFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
-                    }
-                });
+        host.sendDevToolsMessage(codec.encode(command)).whenComplete((accepted, failure) -> {
+            if (failure != null) {
+                completeSendFailure(id, failure);
+            } else if (accepted == null || accepted == 0) {
+                completeSendFailure(id, new IllegalStateException("CEF rejected DevTools message " + id));
+            }
+        });
         return result;
     }
 
@@ -118,13 +125,13 @@ public final class DevToolsSession implements CdpTransport {
     @Override
     @Nonnull
     public CompletableFuture<byte[]> execute(@Nonnull String method, @Nullable byte[] params) {
-        JsonObject object = null;
+        Map<String, Object> object = null;
         if (params != null) {
-            JsonElement parsed = JsonParser.parseString(new String(params, StandardCharsets.UTF_8));
-            if (!parsed.isJsonObject()) throw new IllegalArgumentException("CDP params must be a JSON object");
-            object = parsed.getAsJsonObject();
+            Object decoded = codec.decode(params);
+            if (!(decoded instanceof Map)) throw new IllegalArgumentException("CDP params must be a JSON object");
+            object = asMap(decoded);
         }
-        return send(method, object).thenApply(result -> result.toString().getBytes(StandardCharsets.UTF_8));
+        return send(method, object).thenApply(codec::encode);
     }
 
     /** Raw codec-neutral event entry point used by the typed {@code cef4j-cdp} facade. */
@@ -132,15 +139,15 @@ public final class DevToolsSession implements CdpTransport {
     @Nonnull
     public CdpSubscription subscribe(@Nonnull String method, @Nonnull Consumer<byte[]> handler) {
         Objects.requireNonNull(handler, "handler");
-        return on(method, params -> handler.accept(params.toString().getBytes(StandardCharsets.UTF_8)))::unregister;
+        return on(method, params -> handler.accept(codec.encode(params)))::unregister;
     }
 
     /** Subscribes to one CDP event method. Callbacks run on the IPC transport's receive thread. */
     @Nonnull
-    public EventRegistration on(@Nonnull String method, @Nonnull Consumer<JsonObject> handler) {
+    public EventRegistration on(@Nonnull String method, @Nonnull Consumer<Map<String, Object>> handler) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
-        CopyOnWriteArrayList<Consumer<JsonObject>> handlers =
+        CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers =
                 eventHandlers.computeIfAbsent(method, ignored -> new CopyOnWriteArrayList<>());
         handlers.add(handler);
         return () -> handlers.remove(handler);
@@ -174,41 +181,43 @@ public final class DevToolsSession implements CdpTransport {
     private void handleMessage(DevToolsMessageEvent event) {
         if (!open.get() || !browser.equals(event.browser())) return;
         try {
-            JsonElement parsed = JsonParser.parseString(new String(event.message(), StandardCharsets.UTF_8));
-            if (!parsed.isJsonObject()) throw new IllegalArgumentException("CDP message is not an object");
-            JsonObject message = parsed.getAsJsonObject();
-            JsonElement idElement = message.get("id");
-            if (idElement != null && idElement.isJsonPrimitive()) {
-                completeResult(idElement.getAsInt(), message);
+            Object decoded = codec.decode(event.message());
+            if (!(decoded instanceof Map)) throw new IllegalArgumentException("CDP message is not an object");
+            Map<String, Object> message = asMap(decoded);
+            Object id = message.get("id");
+            if (id instanceof Number) {
+                completeResult(((Number) id).intValue(), message);
                 return;
             }
-            JsonElement methodElement = message.get("method");
-            if (methodElement != null && methodElement.isJsonPrimitive()) {
-                dispatchEvent(methodElement.getAsString(), objectOrEmpty(message.get("params")));
+            Object method = message.get("method");
+            if (method instanceof String) {
+                dispatchEvent((String) method, objectOrEmpty(message.get("params")));
             }
         } catch (RuntimeException failure) {
             LOG.warn("Discarding malformed DevTools protocol message", failure);
         }
     }
 
-    private void completeResult(int id, JsonObject message) {
-        CompletableFuture<JsonObject> future = pending.remove(id);
+    private void completeResult(int id, Map<String, Object> message) {
+        CompletableFuture<Map<String, Object>> future = pending.remove(id);
         if (future == null) return;
-        JsonElement errorElement = message.get("error");
-        if (errorElement != null && errorElement.isJsonObject()) {
-            JsonObject error = errorElement.getAsJsonObject();
-            int code = error.has("code") ? error.get("code").getAsInt() : -1;
-            String text = error.has("message") ? error.get("message").getAsString() : "CDP command failed";
-            future.completeExceptionally(new CdpException(code, text, error.get("data")));
+        Object error = message.get("error");
+        if (error instanceof Map) {
+            Map<String, Object> errorMap = asMap(error);
+            Object codeValue = errorMap.get("code");
+            int code = codeValue instanceof Number ? ((Number) codeValue).intValue() : -1;
+            Object messageValue = errorMap.get("message");
+            String text = messageValue instanceof String ? (String) messageValue : "CDP command failed";
+            future.completeExceptionally(new CdpException(code, text, errorMap.get("data")));
         } else {
             future.complete(objectOrEmpty(message.get("result")));
         }
     }
 
-    private void dispatchEvent(String method, JsonObject params) {
-        CopyOnWriteArrayList<Consumer<JsonObject>> handlers = eventHandlers.get(method);
+    private void dispatchEvent(String method, Map<String, Object> params) {
+        CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers = eventHandlers.get(method);
         if (handlers == null) return;
-        for (Consumer<JsonObject> handler : handlers) {
+        for (Consumer<Map<String, Object>> handler : handlers) {
             try {
                 handler.accept(params);
             } catch (RuntimeException failure) {
@@ -217,12 +226,17 @@ public final class DevToolsSession implements CdpTransport {
         }
     }
 
-    private static JsonObject objectOrEmpty(@Nullable JsonElement element) {
-        return element != null && element.isJsonObject() ? element.getAsJsonObject() : new JsonObject();
+    private static Map<String, Object> objectOrEmpty(@Nullable Object value) {
+        return value instanceof Map ? asMap(value) : Collections.emptyMap();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> asMap(Object value) {
+        return (Map<String, Object>) value;
     }
 
     private void completeSendFailure(int id, Throwable failure) {
-        CompletableFuture<JsonObject> future = pending.remove(id);
+        CompletableFuture<Map<String, Object>> future = pending.remove(id);
         if (future != null) future.completeExceptionally(failure);
     }
 

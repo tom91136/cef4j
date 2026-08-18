@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import net.kurobako.cef4j.gen.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -120,16 +121,11 @@ class CefXmlReaderTest extends CefTestBase {
                 .orElseThrow();
     }
 
-    private static Path makeTmpDir() throws Exception {
-        Path dir = Files.createTempDirectory("cef4j-xml-test-");
-        dir.toFile().deleteOnExit();
-        return dir;
-    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void parseElementsAndText(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://simple.xml")) {
+    void parseElementsAndText(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir)
+            throws Exception {
+        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://simple.xml")) {
             List<String> elementNames = new ArrayList<>();
             List<String> textValues = new ArrayList<>();
 
@@ -152,8 +148,8 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void parseAttributes(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://attrs.xml")) {
+    void parseAttributes(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
+        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://attrs.xml")) {
             List<String> attrValues = new ArrayList<>();
 
             while (xr.moveToNextNode()) {
@@ -171,8 +167,8 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void emptyElement(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://empty.xml")) {
+    void emptyElement(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
+        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://empty.xml")) {
             boolean foundEmpty = false;
 
             while (xr.moveToNextNode()) {
@@ -193,8 +189,8 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void depthAndLineNumbers(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
-        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, makeTmpDir(), "test://depth.xml")) {
+    void depthAndLineNumbers(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
+        try (CefXmlReader xr = openXml(factory, SIMPLE_XML, tmpDir, "test://depth.xml")) {
             int maxDepth = 0;
             List<Integer> elementLines = new ArrayList<>();
 
@@ -215,8 +211,9 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void namespacePrefixAndUri(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
-        try (CefXmlReader xr = openXml(factory, NS_XML, makeTmpDir(), "test://ns.xml")) {
+    void namespacePrefixAndUri(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir)
+            throws Exception {
+        try (CefXmlReader xr = openXml(factory, NS_XML, tmpDir, "test://ns.xml")) {
             boolean foundChild = false;
 
             while (xr.moveToNextNode()) {
@@ -239,9 +236,9 @@ class CefXmlReaderTest extends CefTestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("streamFactories")
-    void innerAndOuterXml(BiFunction<byte[], Path, CefStreamReader> factory) throws Exception {
+    void innerAndOuterXml(BiFunction<byte[], Path, CefStreamReader> factory, @TempDir Path tmpDir) throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><child>text</child></root>\n";
-        try (CefXmlReader xr = openXml(factory, xml, makeTmpDir(), "test://innerxml.xml")) {
+        try (CefXmlReader xr = openXml(factory, xml, tmpDir, "test://innerxml.xml")) {
             while (xr.moveToNextNode()) {
                 if (xr.getType().kind().orElse(null) == CefXmlNodeType.Kind.ELEMENT_START
                         && xr.getLocalName().orElse("").equals("root")) {

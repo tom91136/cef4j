@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.gen.CefRect;
 
@@ -62,14 +63,16 @@ public final class CefFrameBuffer<I> {
          * <p>When {@code dirtyRects} is non-null, only those regions have been updated in the {@code pixels} array -
          * the implementation may choose to blit only those regions into the image for better performance.
          *
-         * @param prev the previous image, or {@code null} if this is the first frame
+         * @param prev the previous image, or empty if this is the first frame
          * @param pixels ARGB pixel data; at least {@code width * height} elements are valid
          * @param width frame width in pixels
          * @param height frame height in pixels
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        I stamp(@Nullable I prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
+        // null dirtyRects means a full-frame update
+        @SuppressWarnings("NullableForbidden")
+        I stamp(Optional<I> prev, int[] pixels, int width, int height, @Nullable CefRect[] dirtyRects);
     }
 
     private int[] pixelBuffer;
@@ -121,15 +124,15 @@ public final class CefFrameBuffer<I> {
      * delegates to the {@link ImageWriter} to stamp the pixels into a toolkit image. The {@code ByteBuffer} is a
      * zero-copy view of native memory and is only valid for the duration of this call.
      *
-     * <p>Returns {@code null} if back-pressure suppressed this frame (the consumer hasn't called {@link #consume()}
-     * since the last successful {@code onPaint}).
+     * <p>Returns empty if back-pressure suppressed this frame (the consumer hasn't called {@link #consume()} since the
+     * last successful {@code onPaint}).
      *
      * @param buffer direct ByteBuffer wrapping CEF's BGRA pixel data ({@code width * height * 4} bytes)
      * @param width frame width in pixels
      * @param height frame height in pixels
-     * @return the stamped image, or {@code null} if the frame was skipped
+     * @return the stamped image, or empty if the frame was skipped
      */
-    public @Nullable I onPaint(ByteBuffer buffer, int width, int height) {
+    public Optional<I> onPaint(ByteBuffer buffer, int width, int height) {
         return onPaint(buffer, width, height, null);
     }
 
@@ -144,16 +147,18 @@ public final class CefFrameBuffer<I> {
      * @param width frame width in pixels
      * @param height frame height in pixels
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
-     * @return the stamped image, or {@code null} if the frame was skipped
+     * @return the stamped image, or empty if the frame was skipped
      */
-    public @Nullable I onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
-        if (width <= 0 || height <= 0 || buffer == null) return null;
+    // null dirtyRects means a full-frame update
+    @SuppressWarnings("NullableForbidden")
+    public Optional<I> onPaint(ByteBuffer buffer, int width, int height, @Nullable CefRect[] dirtyRects) {
+        if (width <= 0 || height <= 0 || buffer == null) return Optional.empty();
 
         // Back-pressure: skip if consumer hasn't consumed the last frame.
         // Accumulate dirty rects so the next successful paint covers them.
         if (!ready) {
             accumulateRects(dirtyRects);
-            return null;
+            return Optional.empty();
         }
         ready = false;
 
@@ -196,10 +201,10 @@ public final class CefFrameBuffer<I> {
         lastHeight = height;
 
         // Stamp into the back buffer, then swap: volatile write creates happens-before edge.
-        I img = writer.stamp(backImage, pixelBuffer, width, height, stampRects);
+        I img = writer.stamp(Optional.ofNullable(backImage), pixelBuffer, width, height, stampRects);
         backImage = frontImage;
         frontImage = img;
-        return img;
+        return Optional.of(img);
     }
 
     /**
@@ -207,11 +212,11 @@ public final class CefFrameBuffer<I> {
      *
      * <p>Returns the current image and resets back-pressure so the next {@code onPaint} will produce a new frame.
      *
-     * @return the current image, or {@code null} if no frame has been produced yet
+     * @return the current image, or empty if no frame has been produced yet
      */
-    public @Nullable I consume() {
+    public Optional<I> consume() {
         ready = true;
-        return frontImage;
+        return Optional.ofNullable(frontImage);
     }
 
     /**

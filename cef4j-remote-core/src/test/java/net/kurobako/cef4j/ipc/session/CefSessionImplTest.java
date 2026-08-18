@@ -352,4 +352,41 @@ class CefSessionImplTest {
         TestMessages.BytesView v = fut.get(2, TimeUnit.SECONDS);
         assertThat(v.bytes).containsExactly(9);
     }
+
+    @Test
+    void requestWithFailingEncoderCompletesFutureExceptionally() {
+        CompletableFuture<TestMessages.BytesView> fut =
+                session.request(new FailingEncoder(), TestMessages.bytesDecoder(MSG_PING));
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(2, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void sessionSurvivesAFailedEncode() throws Exception {
+        session.request(new FailingEncoder(), TestMessages.bytesDecoder(MSG_PING));
+        CompletableFuture<TestMessages.BytesView> healthy = session.request(
+                new TestMessages.BytesEncoder(MSG_PING, "ok".getBytes(StandardCharsets.UTF_8)),
+                TestMessages.bytesDecoder(MSG_PING));
+        TestPeer.DecodedFrame frame = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "healthy request");
+        peer.sendResponse(frame.header.corrId, MSG_PING, "ack".getBytes(StandardCharsets.UTF_8));
+        assertThat(healthy.get(2, TimeUnit.SECONDS).bytes).isEqualTo("ack".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static final class FailingEncoder implements CefMessageEncoder {
+        @Override
+        public int messageId() {
+            return MSG_PING;
+        }
+
+        @Override
+        public int encodedSize() {
+            return 4;
+        }
+
+        @Override
+        public void encodeInto(@Nonnull ByteBuffer destination) {
+            throw new IllegalStateException("deliberate encode failure");
+        }
+    }
 }

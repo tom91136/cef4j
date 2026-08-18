@@ -3,20 +3,24 @@ package net.kurobako.cef4j.ipc.devtools.jackson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.jackson.JacksonCdpCodec;
+import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.devtools.RemoteDevToolsSessionFactory;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest;
@@ -48,20 +52,19 @@ class DevToolsSessionTest {
             RemoteHandle browser = new RemoteHandle(11);
             BrowserHost host = new BrowserHost(session, new RemoteHandle(22));
 
-            var attaching = DevToolsSession.attach(session, browser, host);
+            var attaching = DevToolsSession.attach(session, browser, host, new JacksonCdpCodec());
             Frame attach = peer.receive();
             assertThat(attach.messageId).isEqualTo(27);
             peer.respond(attach, null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
-            ObjectNode params = JSON.createObjectNode();
-            params.put("expression", "6 * 7");
+            Map<String, Object> params = Map.of("expression", "6 * 7");
             var command = devTools.send("Runtime.evaluate", params);
             Frame send = peer.receive();
             assertThat(send.messageId).isEqualTo(BrowserHostSendDevToolsMessageRequest.MESSAGE_ID);
             BrowserHostSendDevToolsMessageRequest request =
                     BrowserHostSendDevToolsMessageRequest.DECODER.decode(ByteBuffer.wrap(send.payload));
-            ObjectNode wireJson = (ObjectNode) JSON.readTree(request.message());
+            JsonNode wireJson = JSON.readTree(request.message());
             assertThat(wireJson.get("method").asText()).isEqualTo("Runtime.evaluate");
             assertThat(wireJson.get("params").get("expression").asText()).isEqualTo("6 * 7");
             int commandId = wireJson.get("id").asInt();
@@ -69,15 +72,30 @@ class DevToolsSessionTest {
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + commandId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
-            assertThat(command.get(2, TimeUnit.SECONDS).get("answer").asInt()).isEqualTo(42);
+            Map<String, Object> response = command.get(2, TimeUnit.SECONDS);
+            assertThat(((Number) Objects.requireNonNull(response.get("answer"))).intValue())
+                    .isEqualTo(42);
 
             CdpClient typed = new CdpClient(devTools, new JacksonCdpCodec());
             var typedCommand = typed.domains()
                     .runtime()
-                    .evaluate(net.kurobako.cef4j.cdp.generated.Runtime.EvaluateParams.builder()
-                            .expression("document.title")
-                            .returnByValue(true)
-                            .build());
+                    .evaluate(
+                            "document.title",
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.of(true),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.empty());
             Frame typedSend = peer.receive();
             int typedId = commandId(typedSend);
             peer.respond(typedSend, new BrowserHostSendDevToolsMessageResponse(1));
@@ -85,21 +103,20 @@ class DevToolsSessionTest {
                     browser,
                     ("{\"id\":" + typedId + ",\"result\":{\"result\":{\"type\":\"string\",\"value\":\"cef4j\"}}}")
                             .getBytes(StandardCharsets.UTF_8)));
-            assertThat(Objects.requireNonNull(typedCommand
-                                    .toCompletableFuture()
-                                    .get(2, TimeUnit.SECONDS)
-                                    .result())
+            assertThat(typedCommand
+                            .toCompletableFuture()
+                            .get(2, TimeUnit.SECONDS)
+                            .result()
                             .value())
-                    .isEqualTo("cef4j");
+                    .isEqualTo(Optional.of("cef4j"));
 
-            BlockingQueue<ObjectNode> consoleEvents = new LinkedBlockingQueue<>();
+            BlockingQueue<Map<String, Object>> consoleEvents = new LinkedBlockingQueue<>();
             devTools.on("Runtime.consoleAPICalled", consoleEvents::offer);
             peer.event(new DevToolsMessageEvent(
                     browser,
                     "{\"method\":\"Runtime.consoleAPICalled\",\"params\":{\"type\":\"log\"}}"
                             .getBytes(StandardCharsets.UTF_8)));
-            assertThat(consoleEvents.poll(2, TimeUnit.SECONDS).get("type").asText())
-                    .isEqualTo("log");
+            assertThat(consoleEvents.poll(2, TimeUnit.SECONDS).get("type")).isEqualTo("log");
 
             CompletableFuture<Void> closing = devTools.closeAsync().toCompletableFuture();
             Frame detach = peer.receive();
@@ -116,7 +133,8 @@ class DevToolsSessionTest {
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
             RemoteHandle browser = new RemoteHandle(31);
-            var attaching = DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(32)));
+            var attaching = DevToolsSession.attach(
+                    session, browser, new BrowserHost(session, new RemoteHandle(32)), new JacksonCdpCodec());
             peer.respond(peer.receive(), null);
             DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 

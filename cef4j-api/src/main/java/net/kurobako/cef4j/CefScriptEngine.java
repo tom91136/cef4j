@@ -1,6 +1,7 @@
 package net.kurobako.cef4j;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -127,9 +128,9 @@ public final class CefScriptEngine {
         }
 
         /** Returns the JSON string payload. Only valid when {@link #isJson()} is true. */
-        public @Nullable String json() {
+        public Optional<String> json() {
             if (type != TYPE_JSON) throw new IllegalStateException("Not a JSON result");
-            return stringPayload;
+            return Optional.ofNullable(stringPayload);
         }
 
         /** Returns the V8 handle ID. Only valid when {@link #isHandle()} is true. */
@@ -139,9 +140,9 @@ public final class CefScriptEngine {
         }
 
         /** Returns the error message. Only valid when {@link #isError()} is true. */
-        public @Nullable String error() {
+        public Optional<String> error() {
             if (type != TYPE_ERROR) throw new IllegalStateException("Not an error result");
-            return stringPayload;
+            return Optional.ofNullable(stringPayload);
         }
 
         @Override
@@ -194,8 +195,8 @@ public final class CefScriptEngine {
     public CompletableFuture<String> evaluate(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
         return sendEval(frame(), expression, MODE_JSON).thenApply(result -> {
-            if (result.isError()) throw new CefScriptException(result.error());
-            if (result.isJson()) return result.json();
+            if (result.isError()) throw new CefScriptException(result.error().orElse(null));
+            if (result.isJson()) return result.json().orElse(null);
             if (result.isVoid()) return null;
             throw new IllegalStateException("Unexpected result type for JSON eval: " + result);
         });
@@ -212,7 +213,7 @@ public final class CefScriptEngine {
     public CompletableFuture<Integer> evaluateHandle(@Nonnull String expression) {
         Objects.requireNonNull(expression, "expression");
         return sendEval(frame(), expression, MODE_HANDLE).thenApply(result -> {
-            if (result.isError()) throw new CefScriptException(result.error());
+            if (result.isError()) throw new CefScriptException(result.error().orElse(null));
             if (result.isHandle()) return result.handle();
             throw new IllegalStateException("Unexpected result type for handle eval: " + result);
         });
@@ -256,7 +257,8 @@ public final class CefScriptEngine {
                     args.setString(3, valueJson);
                 })
                 .thenApply(result -> {
-                    if (result.isError()) throw new CefScriptException(result.error());
+                    if (result.isError())
+                        throw new CefScriptException(result.error().orElse(null));
                     return null;
                 });
     }
@@ -350,7 +352,7 @@ public final class CefScriptEngine {
                 .thenApply(result -> {
                     if (result.isError()) {
                         callbacks.remove(callbackId);
-                        throw new CefScriptException(result.error());
+                        throw new CefScriptException(result.error().orElse(null));
                     }
                     if (result.isHandle()) return result.handle();
                     callbacks.remove(callbackId);
@@ -363,6 +365,8 @@ public final class CefScriptEngine {
      *
      * @return true if the message was handled
      */
+    // CEF passes null for absent process-message args
+    @SuppressWarnings("NullableForbidden")
     public boolean handleMessage(
             @Nullable CefBrowser browser,
             @Nullable CefFrame frame,

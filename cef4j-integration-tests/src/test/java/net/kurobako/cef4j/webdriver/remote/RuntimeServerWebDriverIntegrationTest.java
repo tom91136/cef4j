@@ -13,7 +13,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import javax.annotation.Nullable;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.ImmutableCapabilities;
@@ -67,8 +67,7 @@ class RuntimeServerWebDriverIntegrationTest {
 
     @Test
     @DisabledOnOs(value = OS.WINDOWS, disabledReason = "Unix-domain sockets are not a Windows transport")
-    void servesM1CommandsOverUnixDomainSocket() throws Exception {
-        Path socketDirectory = Files.createTempDirectory("cef4j-webdriver-uds");
+    void servesM1CommandsOverUnixDomainSocket(@TempDir Path socketDirectory) throws Exception {
         verifyTransport("uds", "unix://" + socketDirectory.resolve("control.sock"), "inline");
     }
 

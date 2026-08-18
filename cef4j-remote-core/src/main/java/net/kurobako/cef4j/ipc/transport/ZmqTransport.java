@@ -40,6 +40,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
     private static final long BOOTSTRAP_REPLY_TIMEOUT_NANOS = 500_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
+    private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
 
     /**
@@ -53,7 +54,7 @@ public final class ZmqTransport implements CefTransport {
     private volatile String endpoint;
     private final boolean runtimeServerClient;
     private final ConcurrentLinkedQueue<ZMonitor.Event> monitorEvents = new ConcurrentLinkedQueue<>();
-    private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>();
+    private final BlockingQueue<byte[]> outbound = new LinkedBlockingQueue<>(MAX_QUEUED_FRAMES);
     private final ArrayDeque<byte[]> pending = new ArrayDeque<>();
     private final Thread worker;
 
@@ -157,9 +158,14 @@ public final class ZmqTransport implements CefTransport {
                 dispatchPendingIfReady();
             }
         } catch (ZMQException e) {
-            setup.completeExceptionally(e);
             LOG.debug("worker on {} exiting due to {}", endpoint, e.toString());
         } finally {
+            if (!closed) {
+                // The worker died without a DISCONNECTED monitor event (fatal poll/socket error). Surface the
+                // disconnect so pending sessions fail instead of hanging on a dead pipe.
+                disconnected = true;
+                fireDisconnectIfReady();
+            }
             poller.close();
             // ZeroMQ sockets are thread-confined. The worker is the sole socket owner, so it also closes the
             // transport's independently owned context.
@@ -184,7 +190,9 @@ public final class ZmqTransport implements CefTransport {
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
         byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
-        outbound.add(copy);
+        if (!outbound.offer(copy)) {
+            throw new CefTransportException(endpoint + ": outbound queue full (max " + MAX_QUEUED_FRAMES + " frames)");
+        }
     }
 
     @Override

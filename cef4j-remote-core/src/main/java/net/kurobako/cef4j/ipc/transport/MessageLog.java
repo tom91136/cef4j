@@ -12,8 +12,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * On-disk recording format used by {@link RecordingTransport} / {@link ReplayTransport}.
@@ -141,23 +141,22 @@ public final class MessageLog {
             this.in = in;
         }
 
-        @Nullable
-        public Entry next() throws IOException {
-            if (closed) return null;
+        public Optional<Entry> next() throws IOException {
+            if (closed) return Optional.empty();
             int dirByte;
             try {
                 dirByte = in.read();
             } catch (EOFException eof) {
-                return null;
+                return Optional.empty();
             }
-            if (dirByte < 0) return null;
+            if (dirByte < 0) return Optional.empty();
             Direction dir = Direction.of((byte) dirByte);
             long ts = in.readLong();
             int len = in.readInt();
             if (len < 0) throw new IOException("negative payload length: " + len);
             byte[] payload = new byte[len];
             in.readFully(payload);
-            return new Entry(dir, ts, payload);
+            return Optional.of(new Entry(dir, ts, payload));
         }
 
         @Override

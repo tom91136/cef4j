@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -29,19 +30,32 @@ final class GsonCdpCodecTest {
         CdpClient client = new CdpClient(transport, new GsonCdpCodec());
         Runtime.EvaluateResult result = client.domains()
                 .runtime()
-                .evaluate(Runtime.EvaluateParams.builder()
-                        .expression("'hello'")
-                        .returnByValue(true)
-                        .build())
+                .evaluate(
+                        "'hello'",
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.of(true),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty())
                 .toCompletableFuture()
                 .join();
 
         assertThat(transport.method).isEqualTo("Runtime.evaluate");
         assertThat(JsonParser.parseString(new String(transport.params, StandardCharsets.UTF_8)))
                 .isEqualTo(JsonParser.parseString("{\"expression\":\"'hello'\",\"returnByValue\":true}"));
-        Runtime.RemoteObject remoteObject = Objects.requireNonNull(result.result());
-        assertThat(remoteObject.type()).isEqualTo("string");
-        assertThat(remoteObject.value()).isEqualTo("hello");
+        Runtime.RemoteObject remoteObject = result.result();
+        assertThat(remoteObject.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
+        assertThat(remoteObject.value()).isEqualTo(Optional.of("hello"));
     }
 
     @Test
@@ -74,14 +88,6 @@ final class GsonCdpCodecTest {
     }
 
     @Test
-    void buildersRejectMissingRequiredProtocolFields() {
-        assertThatThrownBy(() ->
-                        Runtime.EvaluateParams.builder().returnByValue(true).build())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("expression");
-    }
-
-    @Test
     void typedEventsDecodeNestedValuesAndCanBeUnsubscribed() {
         FakeTransport transport = new FakeTransport(new byte[0]);
         CdpClient client = new CdpClient(transport, new GsonCdpCodec());
@@ -94,10 +100,10 @@ final class GsonCdpCodecTest {
         assertThat(transport.subscribedMethod).isEqualTo("Runtime.consoleAPICalled");
         assertThat(events).singleElement().satisfies(event -> {
             assertThat(event.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
-            assertThat(event.executionContextId()).isEqualTo(7);
-            assertThat(Objects.requireNonNull(event.args())).singleElement().satisfies(argument -> {
-                assertThat(argument.type()).isEqualTo("string");
-                assertThat(argument.value()).isEqualTo("ready");
+            assertThat(event.executionContextId()).isEqualTo(new Runtime.ExecutionContextId(7));
+            assertThat(event.args()).singleElement().satisfies(argument -> {
+                assertThat(argument.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
+                assertThat(argument.value()).isEqualTo(Optional.of("ready"));
             });
         });
 

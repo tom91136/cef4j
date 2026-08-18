@@ -53,6 +53,9 @@ public final class MmapFrameTransport implements FrameTransport {
 
     private final Object mappingLock = new Object();
 
+    /** Serialises frame delivery so a consumer installed mid-paint is never invoked concurrently. */
+    private final Object deliveryLock = new Object();
+
     @Nullable
     private String mappedShmName;
 
@@ -122,27 +125,29 @@ public final class MmapFrameTransport implements FrameTransport {
     }
 
     private void deliver(OsrPaintEvent ev, FrameConsumer c) {
-        ByteBuffer pixels;
-        synchronized (mappingLock) {
+        synchronized (deliveryLock) {
             if (closed) return;
-            ByteBuffer view = ensureMappingLocked(ev);
-            if (view == null) return;
-            // Keep the mapping lock through the native-memory copy. close() explicitly unmaps the buffer and may
-            // run on a caller thread while this method runs on the transport worker; unmapping between
-            // ensureMapping and ByteBuffer.put would crash the JVM inside Unsafe.copyMemory.
-            pixels = copyStableFrame(ev, view);
-        }
-        if (pixels == null) return;
-        FrameMetadata meta = new FrameMetadata(
-                sequence.incrementAndGet(),
-                ev.frameSequence(),
-                System.nanoTime(),
-                PixelFormat.BGRA,
-                Collections.singletonList(new Rect(ev.dirtyX(), ev.dirtyY(), ev.dirtyWidth(), ev.dirtyHeight())));
-        try {
-            c.accept(ev.width(), ev.height(), pixels, meta);
-        } catch (RuntimeException re) {
-            LOG.warn("frame consumer threw on browser={} seq={}", browserIdForLog(), meta.sequenceId(), re);
+            ByteBuffer pixels;
+            synchronized (mappingLock) {
+                ByteBuffer view = ensureMappingLocked(ev);
+                if (view == null) return;
+                // Keep the mapping lock through the native-memory copy. close() explicitly unmaps the buffer and may
+                // run on a caller thread while this method runs on the transport worker; unmapping between
+                // ensureMapping and ByteBuffer.put would crash the JVM inside Unsafe.copyMemory.
+                pixels = copyStableFrame(ev, view);
+            }
+            if (pixels == null) return;
+            FrameMetadata meta = new FrameMetadata(
+                    sequence.incrementAndGet(),
+                    ev.frameSequence(),
+                    System.nanoTime(),
+                    PixelFormat.BGRA,
+                    Collections.singletonList(new Rect(ev.dirtyX(), ev.dirtyY(), ev.dirtyWidth(), ev.dirtyHeight())));
+            try {
+                c.accept(ev.width(), ev.height(), pixels, meta);
+            } catch (RuntimeException re) {
+                LOG.warn("frame consumer threw on browser={} seq={}", browserIdForLog(), meta.sequenceId(), re);
+            }
         }
     }
 
@@ -190,15 +195,30 @@ public final class MmapFrameTransport implements FrameTransport {
                     return null;
                 }
                 RandomAccessFile raf = new RandomAccessFile(realPath.toFile(), "r");
-                FileChannel ch = raf.getChannel();
-                long size = ch.size();
-                ByteBuffer mapped = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
-                this.mappedFile = raf;
-                this.mappedChannel = ch;
-                this.mappedBuffer = mapped;
-                this.mappedSize = size;
-                this.mappedShmName = name;
-            } catch (IOException e) {
+                boolean opened = false;
+                try {
+                    FileChannel ch = raf.getChannel();
+                    long size = ch.size();
+                    if (size <= 0) {
+                        LOG.warn("shared-frame file {} is empty for browser={}", realPath, browserIdForLog());
+                        return null;
+                    }
+                    ByteBuffer mapped = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                    this.mappedFile = raf;
+                    this.mappedChannel = ch;
+                    this.mappedBuffer = mapped;
+                    this.mappedSize = size;
+                    this.mappedShmName = name;
+                    opened = true;
+                } finally {
+                    if (!opened) {
+                        try {
+                            raf.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+            } catch (IOException | RuntimeException e) {
                 LOG.warn("failed to open shared-frame file {} for browser={}", sharedPath, browserIdForLog(), e);
                 return null;
             }
@@ -263,13 +283,15 @@ public final class MmapFrameTransport implements FrameTransport {
 
     @Override
     public void close() {
-        if (closed) return;
-        closed = true;
-        consumer = null;
-        pendingPaint.set(null);
-        if (registration != null) registration.unregister();
-        synchronized (mappingLock) {
-            disposeMappingLocked();
+        synchronized (deliveryLock) {
+            if (closed) return;
+            closed = true;
+            consumer = null;
+            pendingPaint.set(null);
+            if (registration != null) registration.unregister();
+            synchronized (mappingLock) {
+                disposeMappingLocked();
+            }
         }
     }
 }

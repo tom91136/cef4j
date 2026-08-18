@@ -13,7 +13,9 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +27,8 @@ import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.CefTestLaunch;
+import net.kurobako.cef4j.test.DisplayLock;
+import net.kurobako.cef4j.test.TestTempDirs;
 import net.kurobako.cef4j.webdriver.WebDriverServer;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessBrowserRuntime;
 import net.kurobako.cef4j.webdriver.inprocess.InProcessWebDriverServer;
@@ -32,22 +36,31 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Proves that the common W3C/CDP implementation can automate CEF hosted in this JVM. */
 @Timeout(90)
+@ExtendWith(DisplayLock.class)
 class InProcessWebDriverIntegrationTest {
+    @TempDir(cleanup = CleanupMode.NEVER)
+    @SuppressWarnings("NullAway.Init")
+    static Path tempDir;
+
     @BeforeAll
     static void initialiseCef() throws Exception {
         assumeDisplayServer();
         startJavaFx();
+        TestTempDirs.cleanupAtExit(tempDir);
         CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.cachePath = Files.createTempDirectory("cef4j-inprocess-webdriver-cache")
-                .toAbsolutePath()
-                .toString();
-        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), null);
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        settings.rootCachePath = cacheDir.toAbsolutePath().toString();
+        CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
         Platform.setImplicitExit(false);
     }
 

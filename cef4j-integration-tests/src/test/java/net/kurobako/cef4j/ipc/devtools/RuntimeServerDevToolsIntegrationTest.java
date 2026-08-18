@@ -16,6 +16,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -37,7 +40,6 @@ import net.kurobako.cef4j.cdp.generated.Network;
 import net.kurobako.cef4j.cdp.generated.Page;
 import net.kurobako.cef4j.cdp.generated.Runtime;
 import net.kurobako.cef4j.cdp.gson.GsonCdpCodec;
-import net.kurobako.cef4j.ipc.devtools.gson.DevToolsSession;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
@@ -96,7 +98,7 @@ class RuntimeServerDevToolsIntegrationTest {
 
             Browser browser = new Browser(session, browserHandle.get(20, TimeUnit.SECONDS));
             DevToolsSession devTools = DevToolsSession.attach(
-                            session, browser.handle(), browser.getHost().get(5, TimeUnit.SECONDS))
+                            session, browser.handle(), browser.getHost().get(5, TimeUnit.SECONDS), new GsonCdpCodec())
                     .get(10, TimeUnit.SECONDS);
             CdpClient cdp = new CdpClient(devTools, new GsonCdpCodec());
             try {
@@ -135,30 +137,28 @@ class RuntimeServerDevToolsIntegrationTest {
                 CdpSubscription ignoredResponses = network.onResponseReceived(responses::add);
                 CdpSubscription ignoredExceptions = runtime.onExceptionThrown(exceptions::add)) {
             get(page.enable());
-            get(network.enable(Network.EnableParams.builder().build()));
+            get(network.enable());
             get(runtime.enable());
-            get(dom.enable(DOM.EnableParams.builder().build()));
+            get(dom.enable());
 
             URI pageUri = site.uri("/cdp/automation.html?run=" + run);
-            Page.NavigateResult navigation = get(page.navigate(
-                    Page.NavigateParams.builder().url(pageUri.toString()).build()));
-            assertThat(navigation.errorText()).isNull();
-            assertThat(navigation.frameId()).isNotBlank();
+            Page.NavigateResult navigation = get(page.navigate(pageUri.toString()));
+            assertThat(navigation.errorText()).isEmpty();
+            assertThat(navigation.frameId().value()).isNotBlank();
 
             Page.FrameNavigatedEvent navigated = frames.await(
                     event -> event.frame() != null
                             && pageUri.toString().equals(event.frame().url()),
                     EVENT_TIMEOUT);
-            assertThat(Objects.requireNonNull(navigated.frame()).loaderId()).isNotBlank();
+            assertThat(navigated.frame().loaderId().value()).isNotBlank();
             loads.await(event -> true, EVENT_TIMEOUT);
 
             Network.RequestWillBeSentEvent documentRequest =
                     requests.await(event -> requestUrl(event).equals(pageUri.toString()), EVENT_TIMEOUT);
-            assertThat(documentRequest.type()).isEqualTo("Document");
+            assertThat(documentRequest.type()).hasValue(Network.ResourceType.DOCUMENT);
             Network.ResponseReceivedEvent documentResponse =
                     responses.await(event -> responseUrl(event).equals(pageUri.toString()), EVENT_TIMEOUT);
-            assertThat(Objects.requireNonNull(documentResponse.response()).status())
-                    .isEqualTo(200L);
+            assertThat(documentResponse.response().status()).isEqualTo(200L);
             assertThat(documentResponse.response().mimeType()).isEqualTo("text/html");
             requests.await(event -> requestUrl(event).contains("/cdp/automation.js"), EVENT_TIMEOUT);
             requests.await(event -> requestUrl(event).contains("/cdp/pixel.png"), EVENT_TIMEOUT);
@@ -166,31 +166,25 @@ class RuntimeServerDevToolsIntegrationTest {
             Runtime.ConsoleAPICalledEvent ready = console.await(
                     event -> consoleContains(event, "cef4j-fixture-ready") && consoleContains(event, run),
                     EVENT_TIMEOUT);
-            assertThat(ready.type()).isEqualTo("log");
+            assertThat(ready.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
 
-            DOM.GetDocumentResult document = get(
-                    dom.getDocument(DOM.GetDocumentParams.builder().depth(2L).build()));
-            long rootId = Objects.requireNonNull(
-                    Objects.requireNonNull(document.root()).nodeId());
-            long inputId = query(dom, rootId, "#name-input");
-            long buttonId = query(dom, rootId, "#action-button");
-            DOM.GetAttributesResult buttonAttributes = get(dom.getAttributes(
-                    DOM.GetAttributesParams.builder().nodeId(buttonId).build()));
-            assertThat(buttonAttributes.attributes()).contains("id", "action-button", "data-action", "increment");
+            DOM.Node document = get(dom.getDocument(OptionalLong.of(2L), Optional.empty()));
+            DOM.NodeId rootId = document.nodeId();
+            DOM.NodeId inputId = query(dom, rootId, "#name-input");
+            DOM.NodeId buttonId = query(dom, rootId, "#action-button");
+            List<String> buttonAttributes = get(dom.getAttributes(buttonId));
+            assertThat(buttonAttributes).contains("id", "action-button", "data-action", "increment");
 
-            get(dom.focus(DOM.FocusParams.builder().nodeId(inputId).build()));
-            get(input.insertText(
-                    Input.InsertTextParams.builder().text("typed through CDP").build()));
+            get(dom.focus(Optional.of(inputId), Optional.empty(), Optional.empty()));
+            get(input.insertText("typed through CDP"));
             assertThat(remoteValue(evaluate(runtime, "document.querySelector('#name-input').value", true, false)))
                     .isEqualTo("typed through CDP");
             assertThat(remoteValue(
                             evaluate(runtime, "document.querySelector('#typed-output').textContent", true, false)))
                     .isEqualTo("typed through CDP");
 
-            DOM.BoxModel model = Objects.requireNonNull(get(dom.getBoxModel(
-                            DOM.GetBoxModelParams.builder().nodeId(buttonId).build()))
-                    .model());
-            double[] center = quadCenter(Objects.requireNonNull(model.content()));
+            DOM.BoxModel model = get(dom.getBoxModel(Optional.of(buttonId), Optional.empty(), Optional.empty()));
+            double[] center = quadCenter(model.content());
             dispatchMouse(input, "mouseMoved", center[0], center[1], "none", 0L);
             dispatchMouse(input, "mousePressed", center[0], center[1], "left", 1L);
             dispatchMouse(input, "mouseReleased", center[0], center[1], "left", 1L);
@@ -213,18 +207,17 @@ class RuntimeServerDevToolsIntegrationTest {
             Object delayed = remoteValue(evaluate(runtime, "window.delayedFixtureValue()", true, true));
             assertThat(Objects.requireNonNull(delayed).toString()).contains("answer=42", run);
             evaluate(runtime, "setTimeout(()=>window.throwFixtureError(), 0); 'scheduled'", true, false);
-            Runtime.ExceptionThrownEvent thrown = exceptions.await(
-                    event -> event.exceptionDetails() != null
-                            && String.valueOf(event.exceptionDetails().text()).contains("Uncaught"),
-                    EVENT_TIMEOUT);
-            assertThat(Objects.requireNonNull(thrown.exceptionDetails()).exception())
-                    .isNotNull();
+            Runtime.ExceptionThrownEvent thrown =
+                    exceptions.await(event -> event.exceptionDetails().text().contains("Uncaught"), EVENT_TIMEOUT);
+            assertThat(thrown.exceptionDetails().exception().isPresent()).isTrue();
 
-            String screenshot = Objects.requireNonNull(get(page.captureScreenshot(Page.CaptureScreenshotParams.builder()
-                            .format("png")
-                            .fromSurface(true)
-                            .build()))
-                    .data());
+            String screenshot = get(page.captureScreenshot(
+                    Optional.of(Page.CaptureScreenshotFormatValues.PNG),
+                    OptionalLong.empty(),
+                    Optional.empty(),
+                    Optional.of(true),
+                    Optional.empty(),
+                    Optional.empty()));
             assertThat(Base64.getDecoder().decode(screenshot)).startsWith(0x89, 0x50, 0x4e, 0x47);
 
             consoleSubscription.close();
@@ -254,25 +247,21 @@ class RuntimeServerDevToolsIntegrationTest {
             if (request == null || event.requestId() == null) return;
             CompletableFuture<?> action;
             if (continuedUrl.equals(request.url())) {
-                action = fetch.continueRequest(Fetch.ContinueRequestParams.builder()
-                                .requestId(event.requestId())
-                                .build())
-                        .toCompletableFuture();
+                action = fetch.continueRequest(event.requestId()).toCompletableFuture();
             } else if (mockUrl.equals(request.url())) {
-                action = fetch.fulfillRequest(Fetch.FulfillRequestParams.builder()
-                                .requestId(event.requestId())
-                                .responseCode(200L)
-                                .responseHeaders(List.of(
-                                        Fetch.HeaderEntry.builder()
+                action = fetch.fulfillRequest(
+                                event.requestId(),
+                                200L,
+                                Optional.of(List.of(
+                                        new Fetch.HeaderEntry()
                                                 .name("Content-Type")
-                                                .value("application/json; charset=utf-8")
-                                                .build(),
-                                        Fetch.HeaderEntry.builder()
+                                                .value("application/json; charset=utf-8"),
+                                        new Fetch.HeaderEntry()
                                                 .name("X-Cef4j-Source")
-                                                .value("generated-cdp")
-                                                .build()))
-                                .body(mockBody)
-                                .build())
+                                                .value("generated-cdp"))),
+                                Optional.empty(),
+                                Optional.of(mockBody),
+                                Optional.empty())
                         .toCompletableFuture();
             } else {
                 return;
@@ -282,12 +271,11 @@ class RuntimeServerDevToolsIntegrationTest {
             });
             callbackActions.add(observed);
         })) {
-            get(fetch.enable(Fetch.EnableParams.builder()
-                    .patterns(List.of(Fetch.RequestPattern.builder()
+            get(fetch.enable(
+                    Optional.of(List.of(new Fetch.RequestPattern()
                             .urlPattern(site.origin() + "/cdp/api/*")
-                            .requestStage("Request")
-                            .build()))
-                    .build()));
+                            .requestStage(Fetch.RequestStage.REQUEST))),
+                    Optional.empty()));
 
             Object continued = remoteValue(evaluate(runtime, "window.loadContinuedResource()", true, true));
             paused.await(
@@ -315,27 +303,35 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static Runtime.EvaluateResult evaluate(
             Runtime.Client runtime, String expression, boolean returnByValue, boolean awaitPromise) throws Exception {
-        return get(runtime.evaluate(Runtime.EvaluateParams.builder()
-                .expression(expression)
-                .returnByValue(returnByValue)
-                .awaitPromise(awaitPromise)
-                .build()));
+        return get(runtime.evaluate(
+                expression,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(returnByValue),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(awaitPromise),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()));
     }
 
     @Nullable
     private static Object remoteValue(Runtime.EvaluateResult result) {
-        assertThat(result.exceptionDetails()).isNull();
-        return Objects.requireNonNull(result.result()).value();
+        assertThat(result.exceptionDetails()).isEmpty();
+        return result.result().value().orElse(null);
     }
 
-    private static long query(DOM.Client dom, long rootId, String selector) throws Exception {
-        Long nodeId = get(dom.querySelector(DOM.QuerySelectorParams.builder()
-                        .nodeId(rootId)
-                        .selector(selector)
-                        .build()))
-                .nodeId();
-        assertThat(nodeId).as(selector).isNotNull().isPositive();
-        return Objects.requireNonNull(nodeId);
+    private static DOM.NodeId query(DOM.Client dom, DOM.NodeId rootId, String selector) throws Exception {
+        DOM.NodeId nodeId = get(dom.querySelector(rootId, selector));
+        assertThat(nodeId.value()).as(selector).isPositive();
+        return nodeId;
     }
 
     private static double[] quadCenter(List<Double> quad) {
@@ -348,18 +344,28 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static void dispatchMouse(
             Input.Client input, String type, double x, double y, String button, long clickCount) throws Exception {
-        get(input.dispatchMouseEvent(Input.DispatchMouseEventParams.builder()
-                .type(type)
-                .x(x)
-                .y(y)
-                .button(button)
-                .clickCount(clickCount)
-                .build()));
+        get(input.dispatchMouseEvent(
+                Input.DispatchMouseEventTypeValues.of(type),
+                x,
+                y,
+                OptionalLong.empty(),
+                Optional.empty(),
+                Optional.of(Input.MouseButton.of(button)),
+                OptionalLong.empty(),
+                OptionalLong.of(clickCount),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
+                OptionalLong.empty(),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
+                Optional.empty()));
     }
 
     private static boolean consoleContains(Runtime.ConsoleAPICalledEvent event, Object value) {
-        List<Runtime.RemoteObject> args = event.args();
-        return args != null && args.stream().anyMatch(arg -> Objects.equals(arg.value(), value));
+        return event.args().stream()
+                .anyMatch(arg -> arg.value().map(v -> Objects.equals(v, value)).orElse(false));
     }
 
     private static String requestUrl(Network.RequestWillBeSentEvent event) {

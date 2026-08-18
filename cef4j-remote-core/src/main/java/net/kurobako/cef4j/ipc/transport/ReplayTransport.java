@@ -52,7 +52,7 @@ public final class ReplayTransport implements CefTransport {
         List<byte[]> in = new ArrayList<>();
         List<byte[]> out = new ArrayList<>();
         MessageLog.Entry e;
-        while ((e = reader.next()) != null) {
+        while ((e = reader.next().orElse(null)) != null) {
             switch (e.direction) {
                 case INBOUND:
                     in.add(e.payload);

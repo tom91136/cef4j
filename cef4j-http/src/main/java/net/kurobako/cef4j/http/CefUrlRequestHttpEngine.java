@@ -130,7 +130,21 @@ final class CefUrlRequestHttpEngine implements CefHttpEngine {
             sink.onError(new IOException("CefUrlRequest.create() returned empty"));
             return () -> {};
         }
-        return handle::cancel;
+        return () -> cancelOnUi(handle);
+    }
+
+    private static void cancelOnUi(@Nonnull CefUrlRequest handle) {
+        if (CefGlobals.currentlyOn(UI) != 0) {
+            handle.cancel();
+        } else {
+            // CefUrlRequest.cancel() is only legal on the CEF UI thread; the Cancellation may fire anywhere.
+            CefGlobals.postTask(UI, new CefTask() {
+                @Override
+                public void execute() {
+                    handle.cancel();
+                }
+            });
+        }
     }
 
     @Nullable

@@ -29,6 +29,7 @@
         <cef4j.reactor.runtime.root>${maven.multiModuleProjectDirectory}/cef4j-platform/target/reactor-runtime</cef4j.reactor.runtime.root>
         <cef4j.reactor.runtime.dir>${cef4j.reactor.runtime.root}/cef-runtime/${cef.platform}</cef4j.reactor.runtime.dir>
         <runtime.server.executable>cef4j-runtime-server</runtime.server.executable>
+        <cef4j.nonJavafxModules>!cef4j-inprocess-jfx,!cef4j-remote-jfx,!cef4j-integration-tests,!cef4j-sample</cef4j.nonJavafxModules>
 
         <!-- Dependency versions -->
         <scala.version>3.8.4</scala.version>
@@ -49,7 +50,7 @@
         <junixsocket.version>2.11.0</junixsocket.version>
         <gson.version>2.14.0</gson.version>
         <jackson.version>2.22.2</jackson.version>
-        <upickle.version>4.4.3</upickle.version>
+        <ujson.version>4.4.3</ujson.version>
         <commons.compress.version>1.28.0</commons.compress.version>
         <selenium.version>4.47.0</selenium.version>
         <spotbugs.version>4.10.3.0</spotbugs.version>
@@ -83,6 +84,7 @@
 
     <modules>
         <module>cef4j-codegen</module>
+        <module>cef4j-code-policy</module>
         <module>cef4j-platform</module>
         <module>cef4j-platform-all</module>
         <module>cef4j-api</module>
@@ -192,6 +194,21 @@
                 <version>${flatlaf.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_check_api</artifactId>
+                <version>${errorprone.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotation</artifactId>
+                <version>${errorprone.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>${errorprone.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service-annotations</artifactId>
                 <version>${autoservice.version}</version>
@@ -224,14 +241,117 @@
             </dependency>
             <dependency>
                 <groupId>com.lihaoyi</groupId>
-                <artifactId>upickle_3</artifactId>
-                <version>${upickle.version}</version>
+                <artifactId>ujson_3</artifactId>
+                <version>${ujson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-java</artifactId>
                 <version>${selenium.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-cdp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-codecs-gson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-codecs-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-codegen</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-http</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-inprocess-jfx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-inprocess-jfx</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-inprocess-swing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-inprocess-webdriver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-platform</artifactId>
+                <version>${project.version}</version>
+                <classifier>${cef.classifier}</classifier>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-frame</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-jfx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-swing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-remote-webdriver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-runtime-server</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-test-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-webdriver</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -479,7 +599,92 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    
+    <profile>
+        <id>javafx-macos-software-rendering</id>
+        <activation>
+            <os><name>Mac OS X</name></os>
+        </activation>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration combine.self="merge">
+                        <!-- GitHub's macOS WindowServer session has no usable CGL context.
+                             Exercise the same JavaFX scene graph and CEF pixel path through
+                             Prism's software pipeline instead of aborting in libglass. -->
+                        <systemPropertyVariables>
+                            <glass.platform>Monocle</glass.platform>
+                            <monocle.platform>Headless</monocle.platform>
+                            <prism.order>sw</prism.order>
+                            <javafx.macosx.embedded>true</javafx.macosx.embedded>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    <profile>
+        <id>javafx-monocle-13</id>
+        <activation>
+            <os><name>Mac OS X</name></os>
+            <property><name>javafx.test.version</name><value>13.0.2</value></property>
+        </activation>
+        <dependencies>
+            <dependency>
+                <groupId>org.testfx</groupId>
+                <artifactId>openjfx-monocle</artifactId>
+                <version>jdk-12.0.1+2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </profile>
+    <profile>
+        <id>javafx-monocle-17</id>
+        <activation>
+            <os><name>Mac OS X</name></os>
+            <property><name>javafx.test.version</name><value>17.0.15</value></property>
+        </activation>
+        <dependencies>
+            <dependency>
+                <groupId>org.testfx</groupId>
+                <artifactId>openjfx-monocle</artifactId>
+                <version>17.0.10</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </profile>
+    <profile>
+        <id>javafx-monocle-21</id>
+        <activation>
+            <os><name>Mac OS X</name></os>
+            <property><name>javafx.test.version</name><value>21.0.12</value></property>
+        </activation>
+        <dependencies>
+            <dependency>
+                <groupId>org.testfx</groupId>
+                <artifactId>openjfx-monocle</artifactId>
+                <version>21.0.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </profile>
+    <profile>
+        <id>javafx-monocle-25</id>
+        <activation>
+            <os><name>Mac OS X</name></os>
+            <property><name>javafx.test.version</name><value>25.0.4</value></property>
+        </activation>
+        <dependencies>
+            <dependency>
+                <groupId>org.testfx</groupId>
+                <artifactId>openjfx-monocle</artifactId>
+                <version>21.0.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </profile></profiles>
 
     <build>
         <plugins>
@@ -620,10 +825,13 @@
                             <!-- Error Prone (+ NullAway) wiring.
                                  NullAway checks every package under net.kurobako.cef4j, including the
                                  generated cef4j-api .gen bindings; generated code is expected to pass
-                                 the same nullness discipline as hand-rolled code. -->
+                                 the same nullness discipline as hand-rolled code.
+                                 NullableForbidden (cef4j-code-policy) bans @Nullable on public/protected
+                                 API; AllowedPackages lists the packages still under migration and shrinks
+                                 as each is cleaned up. -->
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>-XDshould-stop.ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=net.kurobako.cef4j -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepOpt:NullAway:JSpecifyMode=false -Xep:NullableForbidden:ERROR -XepOpt:NullableForbidden:AllowedPackages=</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>
@@ -635,6 +843,11 @@
                                 <groupId>com.uber.nullaway</groupId>
                                 <artifactId>nullaway</artifactId>
                                 <version>${nullaway.version}</version>
+                            </path>
+                            <path>
+                                <groupId>net.kurobako.cef4j</groupId>
+                                <artifactId>cef4j-code-policy</artifactId>
+                                <version>${project.version}</version>
                             </path>
                         </annotationProcessorPaths>
                         <showWarnings>true</showWarnings>

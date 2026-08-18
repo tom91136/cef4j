@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#UPDATE_IN_PROGRESS}, {@link Kind#UPDATE_CANCELED}, {@link Kind#RETRY_LATER}, {@link Kind#SERVICE_ERROR}, {@link Kind#UPDATE_CHECK_ERROR}, {@link Kind#CRX_NOT_FOUND}, {@link Kind#INVALID_ARGUMENT}, {@link Kind#BAD_CRX_DATA_CALLBACK}
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefComponentUpdateError implements CefEnum<CefComponentUpdateError> {
 
     /** Known constants for {@link CefComponentUpdateError}. */

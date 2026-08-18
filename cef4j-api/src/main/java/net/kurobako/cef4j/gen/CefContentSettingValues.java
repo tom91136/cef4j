@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * <p>Possible values: {@link Kind#DEFAULT}, {@link Kind#ALLOW}, {@link Kind#BLOCK}, {@link Kind#ASK}, {@link Kind#SESSION_ONLY}, {@link Kind#DETECT_IMPORTANT_CONTENT_DEPRECATED}, {@link Kind#NUM_VALUES}
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefContentSettingValues implements CefEnum<CefContentSettingValues> {
 
     /** Known constants for {@link CefContentSettingValues}. */

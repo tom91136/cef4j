@@ -14,24 +14,29 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.Cef;
 import net.kurobako.cef4j.CefScriptEngine;
+import net.kurobako.cef4j.test.DisplayLock;
+import net.kurobako.cef4j.test.TestTempDirs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 @Timeout(30)
+@ExtendWith(DisplayLock.class)
 class CefWebViewV117PlusMultiBrowserTest {
 
     @BeforeAll
     static void setup(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws Exception {
         assumeDisplayServer();
+        TestTempDirs.cleanupAtExit(tempDir);
 
         Cef.LaunchArgs launch = Cef.osrLaunchArgs();
-        launch.settings().cachePath = Files.createDirectories(tempDir.resolve("cef-cache"))
-                .toAbsolutePath()
-                .toString();
+        Path cacheDir = Files.createDirectories(tempDir.resolve("cef-cache"));
+        launch.settings().cachePath = cacheDir.toAbsolutePath().toString();
+        launch.settings().rootCachePath = cacheDir.toAbsolutePath().toString();
         java.util.List<String> args = new java.util.ArrayList<>(launch.args());
         args.addAll(net.kurobako.cef4j.test.CefTestLaunch.extraArgs());
         startJavaFx();

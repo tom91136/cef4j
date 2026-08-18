@@ -644,7 +644,7 @@ struct Client : cef_client_t {
                                     net_kurobako_cef4j_ipc_protocol_gen::V8GetPropertyResponse::kMessageId,
                                     wire.data(), wire.size());
                     }
-                } else { // v8_execute_function_resp
+                } else if (name == "v8_execute_function_resp") {
                     net_kurobako_cef4j_ipc_protocol_gen::V8ExecuteFunctionResponse resp;
                     resp.valueKind = valueKind;
                     resp.boolValue = boolValue != 0;
@@ -661,6 +661,146 @@ struct Client : cef_client_t {
                                 net_kurobako_cef4j_ipc_protocol_gen::V8ExecuteFunctionResponse::kMessageId,
                                 wire.data(), wire.size());
                     }
+                } else { // v8_get_value_by_index_resp
+                    net_kurobako_cef4j_ipc_protocol_gen::V8GetValueByIndexResponse resp;
+                    resp.valueKind = valueKind;
+                    resp.boolValue = boolValue != 0;
+                    resp.intValue = intValue;
+                    resp.doubleValue = doubleBits;
+                    resp.stringValue = std::move(stringValue);
+                    resp.errorMessage = std::move(errorMessage);
+                    resp.valueHandle = valueHandle;
+                    std::vector<std::uint8_t> wire(resp.encodedSize());
+                    resp.encodeInto(wire.data());
+                    if (g_ipc) {
+                        g_ipc->send(
+                                Kind::Response, 0, corrId,
+                                net_kurobako_cef4j_ipc_protocol_gen::V8GetValueByIndexResponse::kMessageId,
+                                wire.data(), wire.size());
+                    }
+                }
+                return 1;
+            }
+            if (name == "v8_set_property_resp") {
+                auto* args = msg->get_argument_list(msg);
+                if (!args || args->get_size(args) < 2) {
+                    if (args) {
+                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                        ab->release(ab);
+                    }
+                    return 1;
+                }
+                std::int32_t corrId = args->get_int(args, 0);
+                bool ok = args->get_bool(args, 1) != 0;
+                std::string errorMessage;
+                if (args->get_size(args) >= 3) {
+                    cef_string_userfree_t s = args->get_string(args, 2);
+                    if (s) {
+                        cef_string_utf8_t u{};
+                        cef_string_utf16_to_utf8(s->str, s->length, &u);
+                        errorMessage.assign(u.str, u.length);
+                        cef_string_utf8_clear(&u);
+                        cef_string_userfree_free(s);
+                    }
+                }
+                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                ab->release(ab);
+                net_kurobako_cef4j_ipc_protocol_gen::V8SetPropertyResponse resp;
+                resp.ok = ok;
+                resp.errorMessage = std::move(errorMessage);
+                std::vector<std::uint8_t> wire(resp.encodedSize());
+                resp.encodeInto(wire.data());
+                if (g_ipc) {
+                    g_ipc->send(Kind::Response, 0, corrId,
+                                net_kurobako_cef4j_ipc_protocol_gen::V8SetPropertyResponse::kMessageId,
+                                wire.data(), wire.size());
+                }
+                return 1;
+            }
+            if (name == "v8_has_property_resp") {
+                auto* args = msg->get_argument_list(msg);
+                if (!args || args->get_size(args) < 2) {
+                    if (args) {
+                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                        ab->release(ab);
+                    }
+                    return 1;
+                }
+                std::int32_t corrId = args->get_int(args, 0);
+                bool has = args->get_bool(args, 1) != 0;
+                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                ab->release(ab);
+                net_kurobako_cef4j_ipc_protocol_gen::V8HasPropertyResponse resp;
+                resp.has = has;
+                std::vector<std::uint8_t> wire(resp.encodedSize());
+                resp.encodeInto(wire.data());
+                if (g_ipc) {
+                    g_ipc->send(Kind::Response, 0, corrId,
+                                net_kurobako_cef4j_ipc_protocol_gen::V8HasPropertyResponse::kMessageId,
+                                wire.data(), wire.size());
+                }
+                return 1;
+            }
+            if (name == "v8_get_keys_resp") {
+                auto* args = msg->get_argument_list(msg);
+                if (!args || args->get_size(args) < 3) {
+                    if (args) {
+                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                        ab->release(ab);
+                    }
+                    return 1;
+                }
+                std::int32_t corrId = args->get_int(args, 0);
+                bool ok = args->get_bool(args, 1) != 0;
+                std::int32_t count = args->get_int(args, 2);
+                net_kurobako_cef4j_ipc_protocol_gen::V8GetKeysResponse resp;
+                resp.ok = ok;
+                for (std::int32_t i = 0; i < count; ++i) {
+                    std::string key;
+                    cef_string_userfree_t s = args->get_string(args, 3 + i);
+                    if (s) {
+                        cef_string_utf8_t u{};
+                        cef_string_utf16_to_utf8(s->str, s->length, &u);
+                        key.assign(u.str, u.length);
+                        cef_string_utf8_clear(&u);
+                        cef_string_userfree_free(s);
+                    }
+                    resp.keys.push_back(std::move(key));
+                }
+                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                ab->release(ab);
+                std::vector<std::uint8_t> wire(resp.encodedSize());
+                resp.encodeInto(wire.data());
+                if (g_ipc) {
+                    g_ipc->send(Kind::Response, 0, corrId,
+                                net_kurobako_cef4j_ipc_protocol_gen::V8GetKeysResponse::kMessageId,
+                                wire.data(), wire.size());
+                }
+                return 1;
+            }
+            if (name == "v8_get_array_length_resp") {
+                auto* args = msg->get_argument_list(msg);
+                if (!args || args->get_size(args) < 3) {
+                    if (args) {
+                        auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                        ab->release(ab);
+                    }
+                    return 1;
+                }
+                std::int32_t corrId = args->get_int(args, 0);
+                bool ok = args->get_bool(args, 1) != 0;
+                std::int32_t length = args->get_int(args, 2);
+                auto* ab = reinterpret_cast<cef_base_ref_counted_t*>(args);
+                ab->release(ab);
+                net_kurobako_cef4j_ipc_protocol_gen::V8GetArrayLengthResponse resp;
+                resp.ok = ok;
+                resp.length = length;
+                std::vector<std::uint8_t> wire(resp.encodedSize());
+                resp.encodeInto(wire.data());
+                if (g_ipc) {
+                    g_ipc->send(Kind::Response, 0, corrId,
+                                net_kurobako_cef4j_ipc_protocol_gen::V8GetArrayLengthResponse::kMessageId,
+                                wire.data(), wire.size());
                 }
                 return 1;
             }
@@ -1256,6 +1396,8 @@ static cef_v8_value_t* materialiseV8Value(std::int32_t valueKind, int boolValue,
             return cef_v8_value_create_double(d);
         }
         case 4: {
+            // A kind-4 value with a non-zero handle is a retained object, not a string.
+            if (valueHandle != 0) return gendisp::tables::v8Value.find(valueHandle);
             cef_string_t cs{};
             if (!stringValue.empty()) cef_string_utf8_to_utf16(stringValue.data(), stringValue.size(), &cs);
             cef_v8_value_t* v = cef_v8_value_create_string(&cs);
@@ -2550,12 +2692,13 @@ int main(int argc, char* argv[]) {
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: CEF message loop returned\n");
     releaseAllDevToolsRegistrations();
     releaseTrackedBrowsers();
-    cef_shutdown();
-    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: cef_shutdown complete\n");
-    g_ipc = nullptr;
-    genhandlers::g_ipc = nullptr;
+    // Join the IPC worker before tearing down CEF so no worker sends on g_ipc during shutdown.
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: stopping IPC transport\n");
     ipc->stop();
     std::fprintf(stderr, "[cef4j-runtime-server] shutdown: IPC transport stopped\n");
+    g_ipc = nullptr;
+    genhandlers::g_ipc = nullptr;
+    cef_shutdown();
+    std::fprintf(stderr, "[cef4j-runtime-server] shutdown: cef_shutdown complete\n");
     return 0;
 }

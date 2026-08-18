@@ -195,23 +195,30 @@ public final class ReplayCefSession implements CefSession {
     @Override
     public void close() {
         List<Runnable> handlers;
+        RuntimeException mismatch = null;
         synchronized (lock) {
             if (closed) return;
-            prepareForActionLocked();
-            if (cursor < entries.size()) expectActionLocked(SessionTrace.Kind.CLOSE, 0);
-            closed = true;
-            for (Pending<?> value : pending.values()) {
-                value.future.completeExceptionally(new IllegalStateException("replay session closed"));
+            try {
+                prepareForActionLocked();
+                if (cursor < entries.size()) expectActionLocked(SessionTrace.Kind.CLOSE, 0);
+            } catch (RuntimeException failure) {
+                mismatch = failure;
+            } finally {
+                closed = true;
+                for (Pending<?> value : pending.values()) {
+                    value.future.completeExceptionally(new IllegalStateException("replay session closed"));
+                }
+                pending.clear();
+                subscriptions.clear();
+                intercepts.clear();
+                if (timedTask != null) timedTask.cancel(false);
+                if (scheduler != null) scheduler.shutdownNow();
+                handlers = new ArrayList<>(closeHandlers);
+                closeHandlers.clear();
             }
-            pending.clear();
-            subscriptions.clear();
-            intercepts.clear();
-            if (timedTask != null) timedTask.cancel(false);
-            if (scheduler != null) scheduler.shutdownNow();
-            handlers = new ArrayList<>(closeHandlers);
-            closeHandlers.clear();
         }
         handlers.forEach(this::runCloseHandler);
+        if (mismatch != null) throw mismatch;
     }
 
     private void runCloseHandler(Runnable handler) {

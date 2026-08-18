@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
  * <p>Possible values: {@link Kind#NONE}, {@link Kind#STANDARD}, {@link Kind#LOCAL}, {@link Kind#DISPLAY_ISOLATED}, {@link Kind#SECURE}, {@link Kind#CORS_ENABLED}, {@link Kind#CSP_BYPASSING}, {@link Kind#FETCH_ENABLED}
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused", "NullableForbidden"})
 public final class CefSchemeOptions implements CefEnum<CefSchemeOptions> {
 
     /** Known constants for {@link CefSchemeOptions}. */

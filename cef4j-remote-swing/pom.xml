@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>cef4j-remote-swing</artifactId>
-    <packaging>jar</packaging>
     <name>cef4j-remote-swing</name>
     <description>Swing browser panel backed by a Remote CEF runtime server</description>
 
@@ -19,12 +18,10 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-remote-frame</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

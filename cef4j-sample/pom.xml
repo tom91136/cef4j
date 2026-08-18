@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>cef4j-sample</artifactId>
-    <packaging>jar</packaging>
     <name>cef4j-sample</name>
     <description>Sample Swing and JavaFX browsers using cef4j</description>
 
@@ -28,22 +27,18 @@
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-inprocess-swing</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-inprocess-jfx</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.kurobako.cef4j</groupId>
             <artifactId>cef4j-platform</artifactId>
-            <version>${project.version}</version>
             <classifier>${cef.classifier}</classifier>
         </dependency>
         <dependency>
@@ -71,13 +66,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <release>11</release>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>

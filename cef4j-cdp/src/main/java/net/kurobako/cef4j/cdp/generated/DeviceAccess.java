@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol DeviceAccess domain.
@@ -17,295 +21,121 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/DeviceAccess.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class DeviceAccess {
     private DeviceAccess() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Device request id.
+     */
+    public static final class RequestId implements CdpValue<String> {
+        public final String value;
+        public RequestId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof RequestId)) return false;
+            return value.equals(((RequestId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "RequestId(" + value + ")"; }
+    }
+    /**
+     * A device id.
+     */
+    public static final class DeviceId implements CdpValue<String> {
+        public final String value;
+        public DeviceId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof DeviceId)) return false;
+            return value.equals(((DeviceId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "DeviceId(" + value + ")"; }
+    }
     /**
      * Device information displayed in a user prompt to select a device.
      */
     public static final class PromptDevice extends CdpObject {
+        public PromptDevice() {}
         private PromptDevice(Map<String, Object> values) { super(values); }
-        @Nullable public static PromptDevice fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new PromptDevice(values);
+        public static PromptDevice fromMap(Map<String, Object> values) {
+            return new PromptDevice(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the id field.
          * @return the protocol field value
          */
-        @Nullable public String id() {
-            return (String) value("id");
+        public DeviceAccess.DeviceId id() {
+            return new DeviceAccess.DeviceId((String) require("id"));
         }
         /**
          * Display name as it appears in a device request user prompt.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the id field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder id(@Nullable String value) {
-                if (value == null) values.remove("id");
-                else values.put("id", jsonValue(value));
-                return this;
-            }
-            /**
-             * Display name as it appears in a device request user prompt.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            public PromptDevice build() {
-                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                return new PromptDevice(values);
-            }
-        }
-    }
-    /**
-     * Enable events in this domain.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Enable events in this domain.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Disable events in this domain.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Disable events in this domain.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
-     */
-    public static final class SelectPromptParams extends CdpObject {
-        private SelectPromptParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SelectPromptParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SelectPromptParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the id field.
-         * @return the protocol field value
-         */
-        @Nullable public String id() {
-            return (String) value("id");
+        public String name() {
+            return (String) require("name");
         }
         /**
-         * Returns the deviceId field.
-         * @return the protocol field value
+         * Sets the id field.
+         * @param id field value
+         * @return this model
          */
-        @Nullable public String deviceId() {
-            return (String) value("deviceId");
+        public PromptDevice id(DeviceAccess.DeviceId id) {
+            set("id", id);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the id field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder id(@Nullable String value) {
-                if (value == null) values.remove("id");
-                else values.put("id", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the deviceId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder deviceId(@Nullable String value) {
-                if (value == null) values.remove("deviceId");
-                else values.put("deviceId", jsonValue(value));
-                return this;
-            }
-            public SelectPromptParams build() {
-                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
-                if (!values.containsKey("deviceId")) throw new IllegalStateException("Missing required CDP field: deviceId");
-                return new SelectPromptParams(values);
-            }
-        }
-    }
-    /**
-     * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
-     */
-    public static final class SelectPromptResult extends CdpObject {
-        private SelectPromptResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SelectPromptResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SelectPromptResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SelectPromptResult build() {
-                return new SelectPromptResult(values);
-            }
-        }
-    }
-    /**
-     * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
-     */
-    public static final class CancelPromptParams extends CdpObject {
-        private CancelPromptParams(Map<String, Object> values) { super(values); }
-        @Nullable public static CancelPromptParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CancelPromptParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the id field.
-         * @return the protocol field value
+         * Display name as it appears in a device request user prompt.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public String id() {
-            return (String) value("id");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the id field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder id(@Nullable String value) {
-                if (value == null) values.remove("id");
-                else values.put("id", jsonValue(value));
-                return this;
-            }
-            public CancelPromptParams build() {
-                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
-                return new CancelPromptParams(values);
-            }
-        }
-    }
-    /**
-     * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
-     */
-    public static final class CancelPromptResult extends CdpObject {
-        private CancelPromptResult(Map<String, Object> values) { super(values); }
-        @Nullable public static CancelPromptResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CancelPromptResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public CancelPromptResult build() {
-                return new CancelPromptResult(values);
-            }
+        public PromptDevice name(String name) {
+            set("name", name);
+            return this;
         }
     }
     /**
      * A device request opened a user prompt to select a device. Respond with the selectPrompt or cancelPrompt command.
      */
     public static final class DeviceRequestPromptedEvent extends CdpObject {
+        public DeviceRequestPromptedEvent() {}
         private DeviceRequestPromptedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DeviceRequestPromptedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeviceRequestPromptedEvent(values);
+        public static DeviceRequestPromptedEvent fromMap(Map<String, Object> values) {
+            return new DeviceRequestPromptedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the id field.
          * @return the protocol field value
          */
-        @Nullable public String id() {
-            return (String) value("id");
+        public DeviceAccess.RequestId id() {
+            return new DeviceAccess.RequestId((String) require("id"));
         }
         /**
          * Returns the devices field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<DeviceAccess.PromptDevice> devices() {
-            return list(value("devices"), element0 -> DeviceAccess.PromptDevice.fromMap(objectMap(element0)));
+        public java.util.List<DeviceAccess.PromptDevice> devices() {
+            return CdpObject.requireList(require("devices"), element0 -> java.util.Objects.requireNonNull(DeviceAccess.PromptDevice.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the id field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder id(@Nullable String value) {
-                if (value == null) values.remove("id");
-                else values.put("id", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the devices field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder devices(@Nullable java.util.List<DeviceAccess.PromptDevice> value) {
-                if (value == null) values.remove("devices");
-                else values.put("devices", jsonValue(value));
-                return this;
-            }
-            public DeviceRequestPromptedEvent build() {
-                if (!values.containsKey("id")) throw new IllegalStateException("Missing required CDP field: id");
-                if (!values.containsKey("devices")) throw new IllegalStateException("Missing required CDP field: devices");
-                return new DeviceRequestPromptedEvent(values);
-            }
+        /**
+         * Sets the id field.
+         * @param id field value
+         * @return this model
+         */
+        public DeviceRequestPromptedEvent id(DeviceAccess.RequestId id) {
+            set("id", id);
+            return this;
+        }
+        /**
+         * Sets the devices field.
+         * @param devices field value
+         * @return this model
+         */
+        public DeviceRequestPromptedEvent devices(java.util.List<DeviceAccess.PromptDevice> devices) {
+            set("devices", devices);
+            return this;
         }
     }
     public static final class Client {
@@ -313,33 +143,39 @@ public final class DeviceAccess {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Enable events in this domain.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return client.call("DeviceAccess.enable", null, EnableResult::fromMap);
+        public CompletionStage<Void> enable() {
+            return client.call("DeviceAccess.enable", null, result_ -> null);
         }
         /**
          * Disable events in this domain.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("DeviceAccess.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("DeviceAccess.disable", null, result_ -> null);
         }
         /**
          * Select a device in response to a DeviceAccess.deviceRequestPrompted event.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param id protocol value
+         * @param deviceId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SelectPromptResult> selectPrompt(SelectPromptParams params) {
-            return client.call("DeviceAccess.selectPrompt", params, SelectPromptResult::fromMap);
+        public CompletionStage<Void> selectPrompt(DeviceAccess.RequestId id, DeviceAccess.DeviceId deviceId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("id", CdpObject.json(id));
+            params.put("deviceId", CdpObject.json(deviceId));
+            return client.call("DeviceAccess.selectPrompt", params, result_ -> null);
         }
         /**
          * Cancel a prompt in response to a DeviceAccess.deviceRequestPrompted event.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param id protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<CancelPromptResult> cancelPrompt(CancelPromptParams params) {
-            return client.call("DeviceAccess.cancelPrompt", params, CancelPromptResult::fromMap);
+        public CompletionStage<Void> cancelPrompt(DeviceAccess.RequestId id) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("id", CdpObject.json(id));
+            return client.call("DeviceAccess.cancelPrompt", params, result_ -> null);
         }
         /**
          * A device request opened a user prompt to select a device. Respond with the selectPrompt or cancelPrompt command.

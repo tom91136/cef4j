@@ -61,7 +61,7 @@ public final class SwingBrowserApp {
 
         CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.cachePath = cacheDir.toAbsolutePath().toString();
-        CefBrowserPanel.initialise(settings, List.of(), null);
+        CefBrowserPanel.initialise(settings, List.of(), Optional.empty());
 
         SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
         SigintHelper.install(SwingBrowserApp::requestShutdown);

@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain allows interacting with the FedCM dialog.
@@ -17,779 +21,387 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/FedCm.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class FedCm {
     private FedCm() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Whether this is a sign-up or sign-in action for this account, i.e. whether this account has ever been used to sign in to this RP before.
      */
-    public static final class LoginState {
-        private LoginState() {}
-        public static final String SIGNIN = "SignIn";
-        public static final String SIGNUP = "SignUp";
+    public enum LoginState implements CdpValue<String> {
+        SIGNIN("SignIn"),
+        SIGNUP("SignUp");
+        public final String value;
+        LoginState(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static LoginState of(@Nonnull String value) {
+            for (LoginState constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown LoginState value: " + value);
+        }
     }
     /**
      * The types of FedCM dialogs.
      */
-    public static final class DialogType {
-        private DialogType() {}
-        public static final String ACCOUNTCHOOSER = "AccountChooser";
-        public static final String AUTOREAUTHN = "AutoReauthn";
-        public static final String CONFIRMIDPLOGIN = "ConfirmIdpLogin";
-        public static final String ERROR = "Error";
+    public enum DialogType implements CdpValue<String> {
+        ACCOUNTCHOOSER("AccountChooser"),
+        AUTOREAUTHN("AutoReauthn"),
+        CONFIRMIDPLOGIN("ConfirmIdpLogin"),
+        ERROR("Error");
+        public final String value;
+        DialogType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static DialogType of(@Nonnull String value) {
+            for (DialogType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown DialogType value: " + value);
+        }
     }
     /**
      * The buttons on the FedCM dialog.
      */
-    public static final class DialogButton {
-        private DialogButton() {}
-        public static final String CONFIRMIDPLOGINCONTINUE = "ConfirmIdpLoginContinue";
-        public static final String ERRORGOTIT = "ErrorGotIt";
-        public static final String ERRORMOREDETAILS = "ErrorMoreDetails";
+    public enum DialogButton implements CdpValue<String> {
+        CONFIRMIDPLOGINCONTINUE("ConfirmIdpLoginContinue"),
+        ERRORGOTIT("ErrorGotIt"),
+        ERRORMOREDETAILS("ErrorMoreDetails");
+        public final String value;
+        DialogButton(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static DialogButton of(@Nonnull String value) {
+            for (DialogButton constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown DialogButton value: " + value);
+        }
     }
     /**
      * The URLs that each account has
      */
-    public static final class AccountUrlType {
-        private AccountUrlType() {}
-        public static final String TERMSOFSERVICE = "TermsOfService";
-        public static final String PRIVACYPOLICY = "PrivacyPolicy";
+    public enum AccountUrlType implements CdpValue<String> {
+        TERMSOFSERVICE("TermsOfService"),
+        PRIVACYPOLICY("PrivacyPolicy");
+        public final String value;
+        AccountUrlType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static AccountUrlType of(@Nonnull String value) {
+            for (AccountUrlType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown AccountUrlType value: " + value);
+        }
     }
     /**
      * Corresponds to IdentityRequestAccount
      */
     public static final class Account extends CdpObject {
+        public Account() {}
         private Account(Map<String, Object> values) { super(values); }
-        @Nullable public static Account fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Account(values);
+        public static Account fromMap(Map<String, Object> values) {
+            return new Account(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the accountId field.
          * @return the protocol field value
          */
-        @Nullable public String accountId() {
-            return (String) value("accountId");
+        public String accountId() {
+            return (String) require("accountId");
         }
         /**
          * Returns the email field.
          * @return the protocol field value
          */
-        @Nullable public String email() {
-            return (String) value("email");
+        public String email() {
+            return (String) require("email");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Returns the givenName field.
          * @return the protocol field value
          */
-        @Nullable public String givenName() {
-            return (String) value("givenName");
+        public String givenName() {
+            return (String) require("givenName");
         }
         /**
          * Returns the pictureUrl field.
          * @return the protocol field value
          */
-        @Nullable public String pictureUrl() {
-            return (String) value("pictureUrl");
+        public String pictureUrl() {
+            return (String) require("pictureUrl");
         }
         /**
          * Returns the idpConfigUrl field.
          * @return the protocol field value
          */
-        @Nullable public String idpConfigUrl() {
-            return (String) value("idpConfigUrl");
+        public String idpConfigUrl() {
+            return (String) require("idpConfigUrl");
         }
         /**
          * Returns the idpLoginUrl field.
          * @return the protocol field value
          */
-        @Nullable public String idpLoginUrl() {
-            return (String) value("idpLoginUrl");
+        public String idpLoginUrl() {
+            return (String) require("idpLoginUrl");
         }
         /**
          * Returns the loginState field.
          * @return the protocol field value
          */
-        @Nullable public String loginState() {
-            return (String) value("loginState");
+        public FedCm.LoginState loginState() {
+            return FedCm.LoginState.of((String) require("loginState"));
         }
         /**
          * These two are only set if the loginState is signUp
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String termsOfServiceUrl() {
-            return (String) value("termsOfServiceUrl");
+        public Optional<String> termsOfServiceUrl() {
+            return Optional.ofNullable((String) raw("termsOfServiceUrl"));
         }
         /**
          * Returns the privacyPolicyUrl field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String privacyPolicyUrl() {
-            return (String) value("privacyPolicyUrl");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the accountId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accountId(@Nullable String value) {
-                if (value == null) values.remove("accountId");
-                else values.put("accountId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the email field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder email(@Nullable String value) {
-                if (value == null) values.remove("email");
-                else values.put("email", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the givenName field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder givenName(@Nullable String value) {
-                if (value == null) values.remove("givenName");
-                else values.put("givenName", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the pictureUrl field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pictureUrl(@Nullable String value) {
-                if (value == null) values.remove("pictureUrl");
-                else values.put("pictureUrl", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the idpConfigUrl field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder idpConfigUrl(@Nullable String value) {
-                if (value == null) values.remove("idpConfigUrl");
-                else values.put("idpConfigUrl", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the idpLoginUrl field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder idpLoginUrl(@Nullable String value) {
-                if (value == null) values.remove("idpLoginUrl");
-                else values.put("idpLoginUrl", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the loginState field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder loginState(@Nullable String value) {
-                if (value == null) values.remove("loginState");
-                else values.put("loginState", jsonValue(value));
-                return this;
-            }
-            /**
-             * These two are only set if the loginState is signUp
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder termsOfServiceUrl(@Nullable String value) {
-                if (value == null) values.remove("termsOfServiceUrl");
-                else values.put("termsOfServiceUrl", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the privacyPolicyUrl field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder privacyPolicyUrl(@Nullable String value) {
-                if (value == null) values.remove("privacyPolicyUrl");
-                else values.put("privacyPolicyUrl", jsonValue(value));
-                return this;
-            }
-            public Account build() {
-                if (!values.containsKey("accountId")) throw new IllegalStateException("Missing required CDP field: accountId");
-                if (!values.containsKey("email")) throw new IllegalStateException("Missing required CDP field: email");
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("givenName")) throw new IllegalStateException("Missing required CDP field: givenName");
-                if (!values.containsKey("pictureUrl")) throw new IllegalStateException("Missing required CDP field: pictureUrl");
-                if (!values.containsKey("idpConfigUrl")) throw new IllegalStateException("Missing required CDP field: idpConfigUrl");
-                if (!values.containsKey("idpLoginUrl")) throw new IllegalStateException("Missing required CDP field: idpLoginUrl");
-                if (!values.containsKey("loginState")) throw new IllegalStateException("Missing required CDP field: loginState");
-                return new Account(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.enable.
-     */
-    public static final class EnableParams extends CdpObject {
-        private EnableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
-         * @return the protocol field value
-         */
-        @Nullable public Boolean disableRejectionDelay() {
-            return (Boolean) value("disableRejectionDelay");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Allows callers to disable the promise rejection delay that would normally happen, if this is unimportant to what&#x27;s being tested. (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder disableRejectionDelay(@Nullable Boolean value) {
-                if (value == null) values.remove("disableRejectionDelay");
-                else values.put("disableRejectionDelay", jsonValue(value));
-                return this;
-            }
-            public EnableParams build() {
-                return new EnableParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FedCm.enable.
-     */
-    public static final class EnableResult extends CdpObject {
-        private EnableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static EnableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new EnableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public EnableResult build() {
-                return new EnableResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.disable.
-     */
-    public static final class DisableParams extends CdpObject {
-        private DisableParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableParams build() {
-                return new DisableParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FedCm.disable.
-     */
-    public static final class DisableResult extends CdpObject {
-        private DisableResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DisableResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DisableResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DisableResult build() {
-                return new DisableResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.selectAccount.
-     */
-    public static final class SelectAccountParams extends CdpObject {
-        private SelectAccountParams(Map<String, Object> values) { super(values); }
-        @Nullable public static SelectAccountParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SelectAccountParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the dialogId field.
-         * @return the protocol field value
-         */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public Optional<String> privacyPolicyUrl() {
+            return Optional.ofNullable((String) raw("privacyPolicyUrl"));
         }
         /**
-         * Returns the accountIndex field.
-         * @return the protocol field value
+         * Sets the accountId field.
+         * @param accountId field value
+         * @return this model
          */
-        @Nullable public Long accountIndex() {
-            return numberAsLong(value("accountIndex"));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the accountIndex field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accountIndex(@Nullable Long value) {
-                if (value == null) values.remove("accountIndex");
-                else values.put("accountIndex", jsonValue(value));
-                return this;
-            }
-            public SelectAccountParams build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                if (!values.containsKey("accountIndex")) throw new IllegalStateException("Missing required CDP field: accountIndex");
-                return new SelectAccountParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FedCm.selectAccount.
-     */
-    public static final class SelectAccountResult extends CdpObject {
-        private SelectAccountResult(Map<String, Object> values) { super(values); }
-        @Nullable public static SelectAccountResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new SelectAccountResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public SelectAccountResult build() {
-                return new SelectAccountResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.clickDialogButton.
-     */
-    public static final class ClickDialogButtonParams extends CdpObject {
-        private ClickDialogButtonParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ClickDialogButtonParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClickDialogButtonParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the dialogId field.
-         * @return the protocol field value
-         */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public Account accountId(String accountId) {
+            set("accountId", accountId);
+            return this;
         }
         /**
-         * Returns the dialogButton field.
-         * @return the protocol field value
+         * Sets the email field.
+         * @param email field value
+         * @return this model
          */
-        @Nullable public String dialogButton() {
-            return (String) value("dialogButton");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the dialogButton field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogButton(@Nullable String value) {
-                if (value == null) values.remove("dialogButton");
-                else values.put("dialogButton", jsonValue(value));
-                return this;
-            }
-            public ClickDialogButtonParams build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                if (!values.containsKey("dialogButton")) throw new IllegalStateException("Missing required CDP field: dialogButton");
-                return new ClickDialogButtonParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FedCm.clickDialogButton.
-     */
-    public static final class ClickDialogButtonResult extends CdpObject {
-        private ClickDialogButtonResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ClickDialogButtonResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ClickDialogButtonResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ClickDialogButtonResult build() {
-                return new ClickDialogButtonResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.openUrl.
-     */
-    public static final class OpenUrlParams extends CdpObject {
-        private OpenUrlParams(Map<String, Object> values) { super(values); }
-        @Nullable public static OpenUrlParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OpenUrlParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the dialogId field.
-         * @return the protocol field value
-         */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public Account email(String email) {
+            set("email", email);
+            return this;
         }
         /**
-         * Returns the accountIndex field.
-         * @return the protocol field value
+         * Sets the name field.
+         * @param name field value
+         * @return this model
          */
-        @Nullable public Long accountIndex() {
-            return numberAsLong(value("accountIndex"));
+        public Account name(String name) {
+            set("name", name);
+            return this;
         }
         /**
-         * Returns the accountUrlType field.
-         * @return the protocol field value
+         * Sets the givenName field.
+         * @param givenName field value
+         * @return this model
          */
-        @Nullable public String accountUrlType() {
-            return (String) value("accountUrlType");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the accountIndex field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accountIndex(@Nullable Long value) {
-                if (value == null) values.remove("accountIndex");
-                else values.put("accountIndex", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the accountUrlType field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accountUrlType(@Nullable String value) {
-                if (value == null) values.remove("accountUrlType");
-                else values.put("accountUrlType", jsonValue(value));
-                return this;
-            }
-            public OpenUrlParams build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                if (!values.containsKey("accountIndex")) throw new IllegalStateException("Missing required CDP field: accountIndex");
-                if (!values.containsKey("accountUrlType")) throw new IllegalStateException("Missing required CDP field: accountUrlType");
-                return new OpenUrlParams(values);
-            }
-        }
-    }
-    /**
-     * Result of FedCm.openUrl.
-     */
-    public static final class OpenUrlResult extends CdpObject {
-        private OpenUrlResult(Map<String, Object> values) { super(values); }
-        @Nullable public static OpenUrlResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new OpenUrlResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public OpenUrlResult build() {
-                return new OpenUrlResult(values);
-            }
-        }
-    }
-    /**
-     * Parameters for FedCm.dismissDialog.
-     */
-    public static final class DismissDialogParams extends CdpObject {
-        private DismissDialogParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DismissDialogParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DismissDialogParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Returns the dialogId field.
-         * @return the protocol field value
-         */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public Account givenName(String givenName) {
+            set("givenName", givenName);
+            return this;
         }
         /**
-         * Returns the triggerCooldown field.
-         * @return the protocol field value
+         * Sets the pictureUrl field.
+         * @param pictureUrl field value
+         * @return this model
          */
-        @Nullable public Boolean triggerCooldown() {
-            return (Boolean) value("triggerCooldown");
+        public Account pictureUrl(String pictureUrl) {
+            set("pictureUrl", pictureUrl);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the triggerCooldown field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder triggerCooldown(@Nullable Boolean value) {
-                if (value == null) values.remove("triggerCooldown");
-                else values.put("triggerCooldown", jsonValue(value));
-                return this;
-            }
-            public DismissDialogParams build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                return new DismissDialogParams(values);
-            }
+        /**
+         * Sets the idpConfigUrl field.
+         * @param idpConfigUrl field value
+         * @return this model
+         */
+        public Account idpConfigUrl(String idpConfigUrl) {
+            set("idpConfigUrl", idpConfigUrl);
+            return this;
         }
-    }
-    /**
-     * Result of FedCm.dismissDialog.
-     */
-    public static final class DismissDialogResult extends CdpObject {
-        private DismissDialogResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DismissDialogResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DismissDialogResult(values);
+        /**
+         * Sets the idpLoginUrl field.
+         * @param idpLoginUrl field value
+         * @return this model
+         */
+        public Account idpLoginUrl(String idpLoginUrl) {
+            set("idpLoginUrl", idpLoginUrl);
+            return this;
         }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DismissDialogResult build() {
-                return new DismissDialogResult(values);
-            }
+        /**
+         * Sets the loginState field.
+         * @param loginState field value
+         * @return this model
+         */
+        public Account loginState(FedCm.LoginState loginState) {
+            set("loginState", loginState);
+            return this;
         }
-    }
-    /**
-     * Resets the cooldown time, if any, to allow the next FedCM call to show a dialog even if one was recently dismissed by the user.
-     */
-    public static final class ResetCooldownParams extends CdpObject {
-        private ResetCooldownParams(Map<String, Object> values) { super(values); }
-        @Nullable public static ResetCooldownParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResetCooldownParams(values);
+        /**
+         * These two are only set if the loginState is signUp
+         * @param termsOfServiceUrl field value; empty omits the value
+         * @return this model
+         */
+        public Account termsOfServiceUrl(Optional<String> termsOfServiceUrl) {
+            set("termsOfServiceUrl", termsOfServiceUrl.orElse(null));
+            return this;
         }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ResetCooldownParams build() {
-                return new ResetCooldownParams(values);
-            }
+        /**
+         * These two are only set if the loginState is signUp
+         * @param termsOfServiceUrl field value; null removes the value
+         * @return this model
+         */
+        public Account termsOfServiceUrl(String termsOfServiceUrl) {
+            set("termsOfServiceUrl", termsOfServiceUrl);
+            return this;
         }
-    }
-    /**
-     * Resets the cooldown time, if any, to allow the next FedCM call to show a dialog even if one was recently dismissed by the user.
-     */
-    public static final class ResetCooldownResult extends CdpObject {
-        private ResetCooldownResult(Map<String, Object> values) { super(values); }
-        @Nullable public static ResetCooldownResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new ResetCooldownResult(values);
+        /**
+         * Sets the privacyPolicyUrl field.
+         * @param privacyPolicyUrl field value; empty omits the value
+         * @return this model
+         */
+        public Account privacyPolicyUrl(Optional<String> privacyPolicyUrl) {
+            set("privacyPolicyUrl", privacyPolicyUrl.orElse(null));
+            return this;
         }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public ResetCooldownResult build() {
-                return new ResetCooldownResult(values);
-            }
+        /**
+         * Sets the privacyPolicyUrl field.
+         * @param privacyPolicyUrl field value; null removes the value
+         * @return this model
+         */
+        public Account privacyPolicyUrl(String privacyPolicyUrl) {
+            set("privacyPolicyUrl", privacyPolicyUrl);
+            return this;
         }
     }
     /**
      * Payload of the FedCm.dialogShown event.
      */
     public static final class DialogShownEvent extends CdpObject {
+        public DialogShownEvent() {}
         private DialogShownEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DialogShownEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DialogShownEvent(values);
+        public static DialogShownEvent fromMap(Map<String, Object> values) {
+            return new DialogShownEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the dialogId field.
          * @return the protocol field value
          */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public String dialogId() {
+            return (String) require("dialogId");
         }
         /**
          * Returns the dialogType field.
          * @return the protocol field value
          */
-        @Nullable public String dialogType() {
-            return (String) value("dialogType");
+        public FedCm.DialogType dialogType() {
+            return FedCm.DialogType.of((String) require("dialogType"));
         }
         /**
          * Returns the accounts field.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<FedCm.Account> accounts() {
-            return list(value("accounts"), element0 -> FedCm.Account.fromMap(objectMap(element0)));
+        public java.util.List<FedCm.Account> accounts() {
+            return CdpObject.requireList(require("accounts"), element0 -> java.util.Objects.requireNonNull(FedCm.Account.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
         /**
          * These exist primarily so that the caller can verify the RP context was used appropriately.
          * @return the protocol field value
          */
-        @Nullable public String title() {
-            return (String) value("title");
+        public String title() {
+            return (String) require("title");
         }
         /**
          * Returns the subtitle field.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public String subtitle() {
-            return (String) value("subtitle");
+        public Optional<String> subtitle() {
+            return Optional.ofNullable((String) raw("subtitle"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the dialogType field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogType(@Nullable String value) {
-                if (value == null) values.remove("dialogType");
-                else values.put("dialogType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the accounts field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder accounts(@Nullable java.util.List<FedCm.Account> value) {
-                if (value == null) values.remove("accounts");
-                else values.put("accounts", jsonValue(value));
-                return this;
-            }
-            /**
-             * These exist primarily so that the caller can verify the RP context was used appropriately.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder title(@Nullable String value) {
-                if (value == null) values.remove("title");
-                else values.put("title", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the subtitle field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder subtitle(@Nullable String value) {
-                if (value == null) values.remove("subtitle");
-                else values.put("subtitle", jsonValue(value));
-                return this;
-            }
-            public DialogShownEvent build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                if (!values.containsKey("dialogType")) throw new IllegalStateException("Missing required CDP field: dialogType");
-                if (!values.containsKey("accounts")) throw new IllegalStateException("Missing required CDP field: accounts");
-                if (!values.containsKey("title")) throw new IllegalStateException("Missing required CDP field: title");
-                return new DialogShownEvent(values);
-            }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public DialogShownEvent dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
+        }
+        /**
+         * Sets the dialogType field.
+         * @param dialogType field value
+         * @return this model
+         */
+        public DialogShownEvent dialogType(FedCm.DialogType dialogType) {
+            set("dialogType", dialogType);
+            return this;
+        }
+        /**
+         * Sets the accounts field.
+         * @param accounts field value
+         * @return this model
+         */
+        public DialogShownEvent accounts(java.util.List<FedCm.Account> accounts) {
+            set("accounts", accounts);
+            return this;
+        }
+        /**
+         * These exist primarily so that the caller can verify the RP context was used appropriately.
+         * @param title field value
+         * @return this model
+         */
+        public DialogShownEvent title(String title) {
+            set("title", title);
+            return this;
+        }
+        /**
+         * Sets the subtitle field.
+         * @param subtitle field value; empty omits the value
+         * @return this model
+         */
+        public DialogShownEvent subtitle(Optional<String> subtitle) {
+            set("subtitle", subtitle.orElse(null));
+            return this;
+        }
+        /**
+         * Sets the subtitle field.
+         * @param subtitle field value; null removes the value
+         * @return this model
+         */
+        public DialogShownEvent subtitle(String subtitle) {
+            set("subtitle", subtitle);
+            return this;
         }
     }
     /**
      * Triggered when a dialog is closed, either by user action, JS abort, or a command below.
      */
     public static final class DialogClosedEvent extends CdpObject {
+        public DialogClosedEvent() {}
         private DialogClosedEvent(Map<String, Object> values) { super(values); }
-        @Nullable public static DialogClosedEvent fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DialogClosedEvent(values);
+        public static DialogClosedEvent fromMap(Map<String, Object> values) {
+            return new DialogClosedEvent(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the dialogId field.
          * @return the protocol field value
          */
-        @Nullable public String dialogId() {
-            return (String) value("dialogId");
+        public String dialogId() {
+            return (String) require("dialogId");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the dialogId field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder dialogId(@Nullable String value) {
-                if (value == null) values.remove("dialogId");
-                else values.put("dialogId", jsonValue(value));
-                return this;
-            }
-            public DialogClosedEvent build() {
-                if (!values.containsKey("dialogId")) throw new IllegalStateException("Missing required CDP field: dialogId");
-                return new DialogClosedEvent(values);
-            }
+        /**
+         * Sets the dialogId field.
+         * @param dialogId field value
+         * @return this model
+         */
+        public DialogClosedEvent dialogId(String dialogId) {
+            set("dialogId", dialogId);
+            return this;
         }
     }
     public static final class Client {
@@ -797,64 +409,92 @@ public final class FedCm {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Invokes FedCm.enable.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param disableRejectionDelay protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable(EnableParams params) {
-            return client.call("FedCm.enable", params, EnableResult::fromMap);
+        public CompletionStage<Void> enable(Optional<Boolean> disableRejectionDelay) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            disableRejectionDelay.ifPresent(value_ -> params.put("disableRejectionDelay", value_));
+            return client.call("FedCm.enable", params, result_ -> null);
         }
         /**
          * Invokes FedCm.enable with default parameters.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<EnableResult> enable() {
-            return enable(EnableParams.builder().build());
+        public CompletionStage<Void> enable() {
+            return enable(Optional.empty());
         }
         /**
          * Invokes FedCm.disable.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DisableResult> disable() {
-            return client.call("FedCm.disable", null, DisableResult::fromMap);
+        public CompletionStage<Void> disable() {
+            return client.call("FedCm.disable", null, result_ -> null);
         }
         /**
          * Invokes FedCm.selectAccount.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param dialogId protocol value
+         * @param accountIndex protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<SelectAccountResult> selectAccount(SelectAccountParams params) {
-            return client.call("FedCm.selectAccount", params, SelectAccountResult::fromMap);
+        public CompletionStage<Void> selectAccount(String dialogId, long accountIndex) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("dialogId", CdpObject.json(dialogId));
+            params.put("accountIndex", CdpObject.json(accountIndex));
+            return client.call("FedCm.selectAccount", params, result_ -> null);
         }
         /**
          * Invokes FedCm.clickDialogButton.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param dialogId protocol value
+         * @param dialogButton protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ClickDialogButtonResult> clickDialogButton(ClickDialogButtonParams params) {
-            return client.call("FedCm.clickDialogButton", params, ClickDialogButtonResult::fromMap);
+        public CompletionStage<Void> clickDialogButton(String dialogId, FedCm.DialogButton dialogButton) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("dialogId", CdpObject.json(dialogId));
+            params.put("dialogButton", CdpObject.json(dialogButton));
+            return client.call("FedCm.clickDialogButton", params, result_ -> null);
         }
         /**
          * Invokes FedCm.openUrl.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param dialogId protocol value
+         * @param accountIndex protocol value
+         * @param accountUrlType protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<OpenUrlResult> openUrl(OpenUrlParams params) {
-            return client.call("FedCm.openUrl", params, OpenUrlResult::fromMap);
+        public CompletionStage<Void> openUrl(String dialogId, long accountIndex, FedCm.AccountUrlType accountUrlType) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("dialogId", CdpObject.json(dialogId));
+            params.put("accountIndex", CdpObject.json(accountIndex));
+            params.put("accountUrlType", CdpObject.json(accountUrlType));
+            return client.call("FedCm.openUrl", params, result_ -> null);
         }
         /**
          * Invokes FedCm.dismissDialog.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param dialogId protocol value
+         * @param triggerCooldown protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DismissDialogResult> dismissDialog(DismissDialogParams params) {
-            return client.call("FedCm.dismissDialog", params, DismissDialogResult::fromMap);
+        public CompletionStage<Void> dismissDialog(String dialogId, Optional<Boolean> triggerCooldown) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("dialogId", CdpObject.json(dialogId));
+            triggerCooldown.ifPresent(value_ -> params.put("triggerCooldown", value_));
+            return client.call("FedCm.dismissDialog", params, result_ -> null);
+        }
+        /**
+         * Invokes FedCm.dismissDialog with the required parameters.
+         * @param dialogId protocol value
+         * @return a stage completing when the command completes
+         */
+        public CompletionStage<Void> dismissDialog(String dialogId) {
+            return dismissDialog(dialogId, Optional.empty());
         }
         /**
          * Resets the cooldown time, if any, to allow the next FedCM call to show a dialog even if one was recently dismissed by the user.
-         * @return a stage completing with the command result
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<ResetCooldownResult> resetCooldown() {
-            return client.call("FedCm.resetCooldown", null, ResetCooldownResult::fromMap);
+        public CompletionStage<Void> resetCooldown() {
+            return client.call("FedCm.resetCooldown", null, result_ -> null);
         }
         /**
          * Subscribes to FedCm.dialogShown.

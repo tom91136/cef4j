@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * Chrome DevTools Protocol CacheStorage domain.
@@ -17,831 +21,388 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/CacheStorage.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class CacheStorage {
     private CacheStorage() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
+    /**
+     * Unique identifier of the Cache object.
+     */
+    public static final class CacheId implements CdpValue<String> {
+        public final String value;
+        public CacheId(@Nonnull String value) { this.value = java.util.Objects.requireNonNull(value); }
+        @Nonnull public String value() { return value; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            if (!(other instanceof CacheId)) return false;
+            return value.equals(((CacheId) other).value);
+        }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public String toString() { return "CacheId(" + value + ")"; }
+    }
     /**
      * type of HTTP response cached
      */
-    public static final class CachedResponseType {
-        private CachedResponseType() {}
-        public static final String BASIC = "basic";
-        public static final String CORS = "cors";
-        public static final String DEFAULT = "default";
-        public static final String ERROR = "error";
-        public static final String OPAQUERESPONSE = "opaqueResponse";
-        public static final String OPAQUEREDIRECT = "opaqueRedirect";
+    public enum CachedResponseType implements CdpValue<String> {
+        BASIC("basic"),
+        CORS("cors"),
+        DEFAULT("default"),
+        ERROR("error"),
+        OPAQUERESPONSE("opaqueResponse"),
+        OPAQUEREDIRECT("opaqueRedirect");
+        public final String value;
+        CachedResponseType(String value) { this.value = value; }
+        @Nonnull public String value() { return value; }
+        public static CachedResponseType of(@Nonnull String value) {
+            for (CachedResponseType constant : values()) {
+                if (constant.value.equals(value)) return constant;
+            }
+            throw new IllegalArgumentException("Unknown CachedResponseType value: " + value);
+        }
     }
     /**
      * Data entry.
      */
     public static final class DataEntry extends CdpObject {
+        public DataEntry() {}
         private DataEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static DataEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DataEntry(values);
+        public static DataEntry fromMap(Map<String, Object> values) {
+            return new DataEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Request URL.
          * @return the protocol field value
          */
-        @Nullable public String requestURL() {
-            return (String) value("requestURL");
+        public String requestURL() {
+            return (String) require("requestURL");
         }
         /**
          * Request method.
          * @return the protocol field value
          */
-        @Nullable public String requestMethod() {
-            return (String) value("requestMethod");
+        public String requestMethod() {
+            return (String) require("requestMethod");
         }
         /**
          * Request headers
          * @return the protocol field value
          */
-        @Nullable public java.util.List<CacheStorage.Header> requestHeaders() {
-            return list(value("requestHeaders"), element0 -> CacheStorage.Header.fromMap(objectMap(element0)));
+        public java.util.List<CacheStorage.Header> requestHeaders() {
+            return CdpObject.requireList(require("requestHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
         /**
          * Number of seconds since epoch.
          * @return the protocol field value
          */
-        @Nullable public Double responseTime() {
-            return numberAsDouble(value("responseTime"));
+        public double responseTime() {
+            return ((Number) require("responseTime")).doubleValue();
         }
         /**
          * HTTP response status code.
          * @return the protocol field value
          */
-        @Nullable public Long responseStatus() {
-            return numberAsLong(value("responseStatus"));
+        public long responseStatus() {
+            return ((Number) require("responseStatus")).longValue();
         }
         /**
          * HTTP response status text.
          * @return the protocol field value
          */
-        @Nullable public String responseStatusText() {
-            return (String) value("responseStatusText");
+        public String responseStatusText() {
+            return (String) require("responseStatusText");
         }
         /**
          * HTTP response type
          * @return the protocol field value
          */
-        @Nullable public String responseType() {
-            return (String) value("responseType");
+        public CacheStorage.CachedResponseType responseType() {
+            return CacheStorage.CachedResponseType.of((String) require("responseType"));
         }
         /**
          * Response headers
          * @return the protocol field value
          */
-        @Nullable public java.util.List<CacheStorage.Header> responseHeaders() {
-            return list(value("responseHeaders"), element0 -> CacheStorage.Header.fromMap(objectMap(element0)));
+        public java.util.List<CacheStorage.Header> responseHeaders() {
+            return CdpObject.requireList(require("responseHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Request URL.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestURL(@Nullable String value) {
-                if (value == null) values.remove("requestURL");
-                else values.put("requestURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * Request method.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestMethod(@Nullable String value) {
-                if (value == null) values.remove("requestMethod");
-                else values.put("requestMethod", jsonValue(value));
-                return this;
-            }
-            /**
-             * Request headers
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestHeaders(@Nullable java.util.List<CacheStorage.Header> value) {
-                if (value == null) values.remove("requestHeaders");
-                else values.put("requestHeaders", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of seconds since epoch.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseTime(@Nullable Double value) {
-                if (value == null) values.remove("responseTime");
-                else values.put("responseTime", jsonValue(value));
-                return this;
-            }
-            /**
-             * HTTP response status code.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseStatus(@Nullable Long value) {
-                if (value == null) values.remove("responseStatus");
-                else values.put("responseStatus", jsonValue(value));
-                return this;
-            }
-            /**
-             * HTTP response status text.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseStatusText(@Nullable String value) {
-                if (value == null) values.remove("responseStatusText");
-                else values.put("responseStatusText", jsonValue(value));
-                return this;
-            }
-            /**
-             * HTTP response type
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseType(@Nullable String value) {
-                if (value == null) values.remove("responseType");
-                else values.put("responseType", jsonValue(value));
-                return this;
-            }
-            /**
-             * Response headers
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder responseHeaders(@Nullable java.util.List<CacheStorage.Header> value) {
-                if (value == null) values.remove("responseHeaders");
-                else values.put("responseHeaders", jsonValue(value));
-                return this;
-            }
-            public DataEntry build() {
-                if (!values.containsKey("requestURL")) throw new IllegalStateException("Missing required CDP field: requestURL");
-                if (!values.containsKey("requestMethod")) throw new IllegalStateException("Missing required CDP field: requestMethod");
-                if (!values.containsKey("requestHeaders")) throw new IllegalStateException("Missing required CDP field: requestHeaders");
-                if (!values.containsKey("responseTime")) throw new IllegalStateException("Missing required CDP field: responseTime");
-                if (!values.containsKey("responseStatus")) throw new IllegalStateException("Missing required CDP field: responseStatus");
-                if (!values.containsKey("responseStatusText")) throw new IllegalStateException("Missing required CDP field: responseStatusText");
-                if (!values.containsKey("responseType")) throw new IllegalStateException("Missing required CDP field: responseType");
-                if (!values.containsKey("responseHeaders")) throw new IllegalStateException("Missing required CDP field: responseHeaders");
-                return new DataEntry(values);
-            }
+        /**
+         * Request URL.
+         * @param requestURL field value
+         * @return this model
+         */
+        public DataEntry requestURL(String requestURL) {
+            set("requestURL", requestURL);
+            return this;
+        }
+        /**
+         * Request method.
+         * @param requestMethod field value
+         * @return this model
+         */
+        public DataEntry requestMethod(String requestMethod) {
+            set("requestMethod", requestMethod);
+            return this;
+        }
+        /**
+         * Request headers
+         * @param requestHeaders field value
+         * @return this model
+         */
+        public DataEntry requestHeaders(java.util.List<CacheStorage.Header> requestHeaders) {
+            set("requestHeaders", requestHeaders);
+            return this;
+        }
+        /**
+         * Number of seconds since epoch.
+         * @param responseTime field value
+         * @return this model
+         */
+        public DataEntry responseTime(double responseTime) {
+            set("responseTime", responseTime);
+            return this;
+        }
+        /**
+         * HTTP response status code.
+         * @param responseStatus field value
+         * @return this model
+         */
+        public DataEntry responseStatus(long responseStatus) {
+            set("responseStatus", responseStatus);
+            return this;
+        }
+        /**
+         * HTTP response status text.
+         * @param responseStatusText field value
+         * @return this model
+         */
+        public DataEntry responseStatusText(String responseStatusText) {
+            set("responseStatusText", responseStatusText);
+            return this;
+        }
+        /**
+         * HTTP response type
+         * @param responseType field value
+         * @return this model
+         */
+        public DataEntry responseType(CacheStorage.CachedResponseType responseType) {
+            set("responseType", responseType);
+            return this;
+        }
+        /**
+         * Response headers
+         * @param responseHeaders field value
+         * @return this model
+         */
+        public DataEntry responseHeaders(java.util.List<CacheStorage.Header> responseHeaders) {
+            set("responseHeaders", responseHeaders);
+            return this;
         }
     }
     /**
      * Cache identifier.
      */
     public static final class Cache extends CdpObject {
+        public Cache() {}
         private Cache(Map<String, Object> values) { super(values); }
-        @Nullable public static Cache fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Cache(values);
+        public static Cache fromMap(Map<String, Object> values) {
+            return new Cache(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * An opaque unique id of the cache.
          * @return the protocol field value
          */
-        @Nullable public String cacheId() {
-            return (String) value("cacheId");
+        public CacheStorage.CacheId cacheId() {
+            return new CacheStorage.CacheId((String) require("cacheId"));
         }
         /**
          * Security origin of the cache.
          * @return the protocol field value
          */
-        @Nullable public String securityOrigin() {
-            return (String) value("securityOrigin");
+        public String securityOrigin() {
+            return (String) require("securityOrigin");
         }
         /**
          * Storage key of the cache.
          * @return the protocol field value
          */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
+        public String storageKey() {
+            return (String) require("storageKey");
         }
         /**
          * Storage bucket of the cache.
-         * @return the protocol field value
+         * @return the protocol field value, empty when absent
          */
-        @Nullable public Storage.StorageBucket storageBucket() {
-            return Storage.StorageBucket.fromMap(objectMap(value("storageBucket")));
+        public Optional<Storage.StorageBucket> storageBucket() {
+            return Optional.ofNullable(raw("storageBucket") == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(raw("storageBucket")))));
         }
         /**
          * The name of the cache.
          * @return the protocol field value
          */
-        @Nullable public String cacheName() {
-            return (String) value("cacheName");
+        public String cacheName() {
+            return (String) require("cacheName");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * An opaque unique id of the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheId(@Nullable String value) {
-                if (value == null) values.remove("cacheId");
-                else values.put("cacheId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Security origin of the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder securityOrigin(@Nullable String value) {
-                if (value == null) values.remove("securityOrigin");
-                else values.put("securityOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key of the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket of the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageBucket(@Nullable Storage.StorageBucket value) {
-                if (value == null) values.remove("storageBucket");
-                else values.put("storageBucket", jsonValue(value));
-                return this;
-            }
-            /**
-             * The name of the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheName(@Nullable String value) {
-                if (value == null) values.remove("cacheName");
-                else values.put("cacheName", jsonValue(value));
-                return this;
-            }
-            public Cache build() {
-                if (!values.containsKey("cacheId")) throw new IllegalStateException("Missing required CDP field: cacheId");
-                if (!values.containsKey("securityOrigin")) throw new IllegalStateException("Missing required CDP field: securityOrigin");
-                if (!values.containsKey("storageKey")) throw new IllegalStateException("Missing required CDP field: storageKey");
-                if (!values.containsKey("cacheName")) throw new IllegalStateException("Missing required CDP field: cacheName");
-                return new Cache(values);
-            }
+        /**
+         * An opaque unique id of the cache.
+         * @param cacheId field value
+         * @return this model
+         */
+        public Cache cacheId(CacheStorage.CacheId cacheId) {
+            set("cacheId", cacheId);
+            return this;
+        }
+        /**
+         * Security origin of the cache.
+         * @param securityOrigin field value
+         * @return this model
+         */
+        public Cache securityOrigin(String securityOrigin) {
+            set("securityOrigin", securityOrigin);
+            return this;
+        }
+        /**
+         * Storage key of the cache.
+         * @param storageKey field value
+         * @return this model
+         */
+        public Cache storageKey(String storageKey) {
+            set("storageKey", storageKey);
+            return this;
+        }
+        /**
+         * Storage bucket of the cache.
+         * @param storageBucket field value; empty omits the value
+         * @return this model
+         */
+        public Cache storageBucket(Optional<Storage.StorageBucket> storageBucket) {
+            set("storageBucket", storageBucket.orElse(null));
+            return this;
+        }
+        /**
+         * Storage bucket of the cache.
+         * @param storageBucket field value; null removes the value
+         * @return this model
+         */
+        public Cache storageBucket(Storage.StorageBucket storageBucket) {
+            set("storageBucket", storageBucket);
+            return this;
+        }
+        /**
+         * The name of the cache.
+         * @param cacheName field value
+         * @return this model
+         */
+        public Cache cacheName(String cacheName) {
+            set("cacheName", cacheName);
+            return this;
         }
     }
     /**
      */
     public static final class Header extends CdpObject {
+        public Header() {}
         private Header(Map<String, Object> values) { super(values); }
-        @Nullable public static Header fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new Header(values);
+        public static Header fromMap(Map<String, Object> values) {
+            return new Header(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
-        @Nullable public String name() {
-            return (String) value("name");
+        public String name() {
+            return (String) require("name");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public String value() {
+            return (String) require("value");
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the name field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder name(@Nullable String value) {
-                if (value == null) values.remove("name");
-                else values.put("name", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the value field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            public Header build() {
-                if (!values.containsKey("name")) throw new IllegalStateException("Missing required CDP field: name");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                return new Header(values);
-            }
+        /**
+         * Sets the name field.
+         * @param name field value
+         * @return this model
+         */
+        public Header name(String name) {
+            set("name", name);
+            return this;
+        }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public Header value(String value) {
+            set("value", value);
+            return this;
         }
     }
     /**
      * Cached response
      */
     public static final class CachedResponse extends CdpObject {
+        public CachedResponse() {}
         private CachedResponse(Map<String, Object> values) { super(values); }
-        @Nullable public static CachedResponse fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CachedResponse(values);
+        public static CachedResponse fromMap(Map<String, Object> values) {
+            return new CachedResponse(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Entry content, base64-encoded. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value
          */
-        @Nullable public String body() {
-            return (String) value("body");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Entry content, base64-encoded. (Encoded as a base64 string when passed over JSON)
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder body(@Nullable String value) {
-                if (value == null) values.remove("body");
-                else values.put("body", jsonValue(value));
-                return this;
-            }
-            public CachedResponse build() {
-                if (!values.containsKey("body")) throw new IllegalStateException("Missing required CDP field: body");
-                return new CachedResponse(values);
-            }
-        }
-    }
-    /**
-     * Deletes a cache.
-     */
-    public static final class DeleteCacheParams extends CdpObject {
-        private DeleteCacheParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteCacheParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteCacheParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of cache for deletion.
-         * @return the protocol field value
-         */
-        @Nullable public String cacheId() {
-            return (String) value("cacheId");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of cache for deletion.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheId(@Nullable String value) {
-                if (value == null) values.remove("cacheId");
-                else values.put("cacheId", jsonValue(value));
-                return this;
-            }
-            public DeleteCacheParams build() {
-                if (!values.containsKey("cacheId")) throw new IllegalStateException("Missing required CDP field: cacheId");
-                return new DeleteCacheParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes a cache.
-     */
-    public static final class DeleteCacheResult extends CdpObject {
-        private DeleteCacheResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteCacheResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteCacheResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DeleteCacheResult build() {
-                return new DeleteCacheResult(values);
-            }
-        }
-    }
-    /**
-     * Deletes a cache entry.
-     */
-    public static final class DeleteEntryParams extends CdpObject {
-        private DeleteEntryParams(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteEntryParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteEntryParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of cache where the entry will be deleted.
-         * @return the protocol field value
-         */
-        @Nullable public String cacheId() {
-            return (String) value("cacheId");
+        public String body() {
+            return (String) require("body");
         }
         /**
-         * URL spec of the request.
-         * @return the protocol field value
+         * Entry content, base64-encoded. (Encoded as a base64 string when passed over JSON)
+         * @param body field value
+         * @return this model
          */
-        @Nullable public String request() {
-            return (String) value("request");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of cache where the entry will be deleted.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheId(@Nullable String value) {
-                if (value == null) values.remove("cacheId");
-                else values.put("cacheId", jsonValue(value));
-                return this;
-            }
-            /**
-             * URL spec of the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder request(@Nullable String value) {
-                if (value == null) values.remove("request");
-                else values.put("request", jsonValue(value));
-                return this;
-            }
-            public DeleteEntryParams build() {
-                if (!values.containsKey("cacheId")) throw new IllegalStateException("Missing required CDP field: cacheId");
-                if (!values.containsKey("request")) throw new IllegalStateException("Missing required CDP field: request");
-                return new DeleteEntryParams(values);
-            }
-        }
-    }
-    /**
-     * Deletes a cache entry.
-     */
-    public static final class DeleteEntryResult extends CdpObject {
-        private DeleteEntryResult(Map<String, Object> values) { super(values); }
-        @Nullable public static DeleteEntryResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new DeleteEntryResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public DeleteEntryResult build() {
-                return new DeleteEntryResult(values);
-            }
-        }
-    }
-    /**
-     * Requests cache names.
-     */
-    public static final class RequestCacheNamesParams extends CdpObject {
-        private RequestCacheNamesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestCacheNamesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestCacheNamesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * At least and at most one of securityOrigin, storageKey, storageBucket must be specified. Security origin.
-         * @return the protocol field value
-         */
-        @Nullable public String securityOrigin() {
-            return (String) value("securityOrigin");
-        }
-        /**
-         * Storage key.
-         * @return the protocol field value
-         */
-        @Nullable public String storageKey() {
-            return (String) value("storageKey");
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @return the protocol field value
-         */
-        @Nullable public Storage.StorageBucket storageBucket() {
-            return Storage.StorageBucket.fromMap(objectMap(value("storageBucket")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * At least and at most one of securityOrigin, storageKey, storageBucket must be specified. Security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder securityOrigin(@Nullable String value) {
-                if (value == null) values.remove("securityOrigin");
-                else values.put("securityOrigin", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage key.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageKey(@Nullable String value) {
-                if (value == null) values.remove("storageKey");
-                else values.put("storageKey", jsonValue(value));
-                return this;
-            }
-            /**
-             * Storage bucket. If not specified, it uses the default bucket.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder storageBucket(@Nullable Storage.StorageBucket value) {
-                if (value == null) values.remove("storageBucket");
-                else values.put("storageBucket", jsonValue(value));
-                return this;
-            }
-            public RequestCacheNamesParams build() {
-                return new RequestCacheNamesParams(values);
-            }
-        }
-    }
-    /**
-     * Requests cache names.
-     */
-    public static final class RequestCacheNamesResult extends CdpObject {
-        private RequestCacheNamesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestCacheNamesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestCacheNamesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Caches for the security origin.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<CacheStorage.Cache> caches() {
-            return list(value("caches"), element0 -> CacheStorage.Cache.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Caches for the security origin.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder caches(@Nullable java.util.List<CacheStorage.Cache> value) {
-                if (value == null) values.remove("caches");
-                else values.put("caches", jsonValue(value));
-                return this;
-            }
-            public RequestCacheNamesResult build() {
-                if (!values.containsKey("caches")) throw new IllegalStateException("Missing required CDP field: caches");
-                return new RequestCacheNamesResult(values);
-            }
-        }
-    }
-    /**
-     * Fetches cache entry.
-     */
-    public static final class RequestCachedResponseParams extends CdpObject {
-        private RequestCachedResponseParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestCachedResponseParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestCachedResponseParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Id of cache that contains the entry.
-         * @return the protocol field value
-         */
-        @Nullable public String cacheId() {
-            return (String) value("cacheId");
-        }
-        /**
-         * URL spec of the request.
-         * @return the protocol field value
-         */
-        @Nullable public String requestURL() {
-            return (String) value("requestURL");
-        }
-        /**
-         * headers of the request.
-         * @return the protocol field value
-         */
-        @Nullable public java.util.List<CacheStorage.Header> requestHeaders() {
-            return list(value("requestHeaders"), element0 -> CacheStorage.Header.fromMap(objectMap(element0)));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Id of cache that contains the entry.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheId(@Nullable String value) {
-                if (value == null) values.remove("cacheId");
-                else values.put("cacheId", jsonValue(value));
-                return this;
-            }
-            /**
-             * URL spec of the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestURL(@Nullable String value) {
-                if (value == null) values.remove("requestURL");
-                else values.put("requestURL", jsonValue(value));
-                return this;
-            }
-            /**
-             * headers of the request.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder requestHeaders(@Nullable java.util.List<CacheStorage.Header> value) {
-                if (value == null) values.remove("requestHeaders");
-                else values.put("requestHeaders", jsonValue(value));
-                return this;
-            }
-            public RequestCachedResponseParams build() {
-                if (!values.containsKey("cacheId")) throw new IllegalStateException("Missing required CDP field: cacheId");
-                if (!values.containsKey("requestURL")) throw new IllegalStateException("Missing required CDP field: requestURL");
-                if (!values.containsKey("requestHeaders")) throw new IllegalStateException("Missing required CDP field: requestHeaders");
-                return new RequestCachedResponseParams(values);
-            }
-        }
-    }
-    /**
-     * Fetches cache entry.
-     */
-    public static final class RequestCachedResponseResult extends CdpObject {
-        private RequestCachedResponseResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestCachedResponseResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestCachedResponseResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * Response read from the cache.
-         * @return the protocol field value
-         */
-        @Nullable public CacheStorage.CachedResponse response() {
-            return CacheStorage.CachedResponse.fromMap(objectMap(value("response")));
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Response read from the cache.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder response(@Nullable CacheStorage.CachedResponse value) {
-                if (value == null) values.remove("response");
-                else values.put("response", jsonValue(value));
-                return this;
-            }
-            public RequestCachedResponseResult build() {
-                if (!values.containsKey("response")) throw new IllegalStateException("Missing required CDP field: response");
-                return new RequestCachedResponseResult(values);
-            }
-        }
-    }
-    /**
-     * Requests data from cache.
-     */
-    public static final class RequestEntriesParams extends CdpObject {
-        private RequestEntriesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestEntriesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestEntriesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        /**
-         * ID of cache to get entries from.
-         * @return the protocol field value
-         */
-        @Nullable public String cacheId() {
-            return (String) value("cacheId");
-        }
-        /**
-         * Number of records to skip.
-         * @return the protocol field value
-         */
-        @Nullable public Long skipCount() {
-            return numberAsLong(value("skipCount"));
-        }
-        /**
-         * Number of records to fetch.
-         * @return the protocol field value
-         */
-        @Nullable public Long pageSize() {
-            return numberAsLong(value("pageSize"));
-        }
-        /**
-         * If present, only return the entries containing this substring in the path
-         * @return the protocol field value
-         */
-        @Nullable public String pathFilter() {
-            return (String) value("pathFilter");
-        }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * ID of cache to get entries from.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheId(@Nullable String value) {
-                if (value == null) values.remove("cacheId");
-                else values.put("cacheId", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of records to skip.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder skipCount(@Nullable Long value) {
-                if (value == null) values.remove("skipCount");
-                else values.put("skipCount", jsonValue(value));
-                return this;
-            }
-            /**
-             * Number of records to fetch.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pageSize(@Nullable Long value) {
-                if (value == null) values.remove("pageSize");
-                else values.put("pageSize", jsonValue(value));
-                return this;
-            }
-            /**
-             * If present, only return the entries containing this substring in the path
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder pathFilter(@Nullable String value) {
-                if (value == null) values.remove("pathFilter");
-                else values.put("pathFilter", jsonValue(value));
-                return this;
-            }
-            public RequestEntriesParams build() {
-                if (!values.containsKey("cacheId")) throw new IllegalStateException("Missing required CDP field: cacheId");
-                return new RequestEntriesParams(values);
-            }
+        public CachedResponse body(String body) {
+            set("body", body);
+            return this;
         }
     }
     /**
      * Requests data from cache.
      */
     public static final class RequestEntriesResult extends CdpObject {
+        public RequestEntriesResult() {}
         private RequestEntriesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static RequestEntriesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new RequestEntriesResult(values);
+        public static RequestEntriesResult fromMap(Map<String, Object> values) {
+            return new RequestEntriesResult(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Array of object store data entries.
          * @return the protocol field value
          */
-        @Nullable public java.util.List<CacheStorage.DataEntry> cacheDataEntries() {
-            return list(value("cacheDataEntries"), element0 -> CacheStorage.DataEntry.fromMap(objectMap(element0)));
+        public java.util.List<CacheStorage.DataEntry> cacheDataEntries() {
+            return CdpObject.requireList(require("cacheDataEntries"), element0 -> java.util.Objects.requireNonNull(CacheStorage.DataEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
         }
         /**
          * Count of returned entries from this storage. If pathFilter is empty, it is the count of all entries from this storage.
          * @return the protocol field value
          */
-        @Nullable public Double returnCount() {
-            return numberAsDouble(value("returnCount"));
+        public double returnCount() {
+            return ((Number) require("returnCount")).doubleValue();
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Array of object store data entries.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder cacheDataEntries(@Nullable java.util.List<CacheStorage.DataEntry> value) {
-                if (value == null) values.remove("cacheDataEntries");
-                else values.put("cacheDataEntries", jsonValue(value));
-                return this;
-            }
-            /**
-             * Count of returned entries from this storage. If pathFilter is empty, it is the count of all entries from this storage.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder returnCount(@Nullable Double value) {
-                if (value == null) values.remove("returnCount");
-                else values.put("returnCount", jsonValue(value));
-                return this;
-            }
-            public RequestEntriesResult build() {
-                if (!values.containsKey("cacheDataEntries")) throw new IllegalStateException("Missing required CDP field: cacheDataEntries");
-                if (!values.containsKey("returnCount")) throw new IllegalStateException("Missing required CDP field: returnCount");
-                return new RequestEntriesResult(values);
-            }
+        /**
+         * Array of object store data entries.
+         * @param cacheDataEntries field value
+         * @return this model
+         */
+        public RequestEntriesResult cacheDataEntries(java.util.List<CacheStorage.DataEntry> cacheDataEntries) {
+            set("cacheDataEntries", cacheDataEntries);
+            return this;
+        }
+        /**
+         * Count of returned entries from this storage. If pathFilter is empty, it is the count of all entries from this storage.
+         * @param returnCount field value
+         * @return this model
+         */
+        public RequestEntriesResult returnCount(double returnCount) {
+            set("returnCount", returnCount);
+            return this;
         }
     }
     public static final class Client {
@@ -849,50 +410,84 @@ public final class CacheStorage {
         public Client(CdpClient client) { this.client = client; }
         /**
          * Deletes a cache.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param cacheId protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DeleteCacheResult> deleteCache(DeleteCacheParams params) {
-            return client.call("CacheStorage.deleteCache", params, DeleteCacheResult::fromMap);
+        public CompletionStage<Void> deleteCache(CacheStorage.CacheId cacheId) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cacheId", CdpObject.json(cacheId));
+            return client.call("CacheStorage.deleteCache", params, result_ -> null);
         }
         /**
          * Deletes a cache entry.
-         * @param params command parameters
-         * @return a stage completing with the command result
+         * @param cacheId protocol value
+         * @param request protocol value
+         * @return a stage completing when the command completes
          */
-        public CompletionStage<DeleteEntryResult> deleteEntry(DeleteEntryParams params) {
-            return client.call("CacheStorage.deleteEntry", params, DeleteEntryResult::fromMap);
+        public CompletionStage<Void> deleteEntry(CacheStorage.CacheId cacheId, String request) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cacheId", CdpObject.json(cacheId));
+            params.put("request", CdpObject.json(request));
+            return client.call("CacheStorage.deleteEntry", params, result_ -> null);
         }
         /**
          * Requests cache names.
-         * @param params command parameters
+         * @param securityOrigin protocol value
+         * @param storageKey protocol value
+         * @param storageBucket protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestCacheNamesResult> requestCacheNames(RequestCacheNamesParams params) {
-            return client.call("CacheStorage.requestCacheNames", params, RequestCacheNamesResult::fromMap);
+        public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
+            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
+            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+            return client.call("CacheStorage.requestCacheNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
         /**
          * Requests cache names.
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestCacheNamesResult> requestCacheNames() {
-            return requestCacheNames(RequestCacheNamesParams.builder().build());
+        public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames() {
+            return requestCacheNames(Optional.empty(), Optional.empty(), Optional.empty());
         }
         /**
          * Fetches cache entry.
-         * @param params command parameters
+         * @param cacheId protocol value
+         * @param requestURL protocol value
+         * @param requestHeaders protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestCachedResponseResult> requestCachedResponse(RequestCachedResponseParams params) {
-            return client.call("CacheStorage.requestCachedResponse", params, RequestCachedResponseResult::fromMap);
+        public CompletionStage<CacheStorage.CachedResponse> requestCachedResponse(CacheStorage.CacheId cacheId, String requestURL, java.util.List<CacheStorage.Header> requestHeaders) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cacheId", CdpObject.json(cacheId));
+            params.put("requestURL", CdpObject.json(requestURL));
+            params.put("requestHeaders", CdpObject.json(requestHeaders));
+            return client.call("CacheStorage.requestCachedResponse", params, result_ -> java.util.Objects.requireNonNull(CacheStorage.CachedResponse.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("response")))))));
         }
         /**
          * Requests data from cache.
-         * @param params command parameters
+         * @param cacheId protocol value
+         * @param skipCount protocol value
+         * @param pageSize protocol value
+         * @param pathFilter protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestEntriesResult> requestEntries(RequestEntriesParams params) {
-            return client.call("CacheStorage.requestEntries", params, RequestEntriesResult::fromMap);
+        public CompletionStage<RequestEntriesResult> requestEntries(CacheStorage.CacheId cacheId, OptionalLong skipCount, OptionalLong pageSize, Optional<String> pathFilter) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cacheId", CdpObject.json(cacheId));
+            skipCount.ifPresent(value_ -> params.put("skipCount", value_));
+            pageSize.ifPresent(value_ -> params.put("pageSize", value_));
+            pathFilter.ifPresent(value_ -> params.put("pathFilter", CdpObject.json(value_)));
+            return client.call("CacheStorage.requestEntries", params, result_ -> new RequestEntriesResult(result_));
+        }
+        /**
+         * Requests data from cache.
+         * @param cacheId protocol value
+         * @return a stage completing with the command result
+         */
+        public CompletionStage<RequestEntriesResult> requestEntries(CacheStorage.CacheId cacheId) {
+            return requestEntries(cacheId, OptionalLong.empty(), OptionalLong.empty(), Optional.empty());
         }
     }
 }

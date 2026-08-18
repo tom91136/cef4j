@@ -3,13 +3,17 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
+import net.kurobako.cef4j.cdp.CdpValue;
 
 /**
  * This domain exposes the current state of the CrashReportContext API.
@@ -17,129 +21,65 @@ import net.kurobako.cef4j.cdp.CdpSubscription;
  * @see <a href="https://chromium.googlesource.com/chromium/src/+/refs/tags/150.0.7871.213/third_party/blink/public/devtools_protocol/domains/CrashReportContext.pdl">Pinned protocol source</a>
  */
 @Generated("mvn generate-sources -pl cef4j-platform -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"EscapedEntity", "JavaLangClash", "MissingSummary", "UnusedMethod"})
+@SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
 public final class CrashReportContext {
     private CrashReportContext() {}
-    @Nullable private static Long numberAsLong(@Nullable Object value) { return value == null ? null : ((Number) value).longValue(); }
-    @Nullable private static Double numberAsDouble(@Nullable Object value) { return value == null ? null : ((Number) value).doubleValue(); }
     /**
      * Key-value pair in CrashReportContext.
      */
     public static final class CrashReportContextEntry extends CdpObject {
+        public CrashReportContextEntry() {}
         private CrashReportContextEntry(Map<String, Object> values) { super(values); }
-        @Nullable public static CrashReportContextEntry fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new CrashReportContextEntry(values);
+        public static CrashReportContextEntry fromMap(Map<String, Object> values) {
+            return new CrashReportContextEntry(values);
         }
-        public static Builder builder() { return new Builder(); }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
-        @Nullable public String key() {
-            return (String) value("key");
+        public String key() {
+            return (String) require("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
-        @Nullable public String value() {
-            return (String) value("value");
+        public String value() {
+            return (String) require("value");
         }
         /**
          * The ID of the frame where the key-value pair was set.
          * @return the protocol field value
          */
-        @Nullable public String frameId() {
-            return (String) value("frameId");
+        public Page.FrameId frameId() {
+            return new Page.FrameId((String) require("frameId"));
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the key field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder key(@Nullable String value) {
-                if (value == null) values.remove("key");
-                else values.put("key", jsonValue(value));
-                return this;
-            }
-            /**
-             * Sets the value field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder value(@Nullable String value) {
-                if (value == null) values.remove("value");
-                else values.put("value", jsonValue(value));
-                return this;
-            }
-            /**
-             * The ID of the frame where the key-value pair was set.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder frameId(@Nullable String value) {
-                if (value == null) values.remove("frameId");
-                else values.put("frameId", jsonValue(value));
-                return this;
-            }
-            public CrashReportContextEntry build() {
-                if (!values.containsKey("key")) throw new IllegalStateException("Missing required CDP field: key");
-                if (!values.containsKey("value")) throw new IllegalStateException("Missing required CDP field: value");
-                if (!values.containsKey("frameId")) throw new IllegalStateException("Missing required CDP field: frameId");
-                return new CrashReportContextEntry(values);
-            }
-        }
-    }
-    /**
-     * Returns all entries in the CrashReportContext across all frames in the page.
-     */
-    public static final class GetEntriesParams extends CdpObject {
-        private GetEntriesParams(Map<String, Object> values) { super(values); }
-        @Nullable public static GetEntriesParams fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetEntriesParams(values);
-        }
-        public static Builder builder() { return new Builder(); }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            public GetEntriesParams build() {
-                return new GetEntriesParams(values);
-            }
-        }
-    }
-    /**
-     * Returns all entries in the CrashReportContext across all frames in the page.
-     */
-    public static final class GetEntriesResult extends CdpObject {
-        private GetEntriesResult(Map<String, Object> values) { super(values); }
-        @Nullable public static GetEntriesResult fromMap(@Nullable Map<String, Object> values) {
-            return values == null ? null : new GetEntriesResult(values);
-        }
-        public static Builder builder() { return new Builder(); }
         /**
-         * Returns the entries field.
-         * @return the protocol field value
+         * Sets the key field.
+         * @param key field value
+         * @return this model
          */
-        @Nullable public java.util.List<CrashReportContext.CrashReportContextEntry> entries() {
-            return list(value("entries"), element0 -> CrashReportContext.CrashReportContextEntry.fromMap(objectMap(element0)));
+        public CrashReportContextEntry key(String key) {
+            set("key", key);
+            return this;
         }
-        public static final class Builder {
-            private final Map<String, Object> values = new LinkedHashMap<>();
-            /**
-             * Sets the entries field.
-             * @param value field value; null removes an optional value
-             * @return this builder
-             */
-            public Builder entries(@Nullable java.util.List<CrashReportContext.CrashReportContextEntry> value) {
-                if (value == null) values.remove("entries");
-                else values.put("entries", jsonValue(value));
-                return this;
-            }
-            public GetEntriesResult build() {
-                if (!values.containsKey("entries")) throw new IllegalStateException("Missing required CDP field: entries");
-                return new GetEntriesResult(values);
-            }
+        /**
+         * Sets the value field.
+         * @param value field value
+         * @return this model
+         */
+        public CrashReportContextEntry value(String value) {
+            set("value", value);
+            return this;
+        }
+        /**
+         * The ID of the frame where the key-value pair was set.
+         * @param frameId field value
+         * @return this model
+         */
+        public CrashReportContextEntry frameId(Page.FrameId frameId) {
+            set("frameId", frameId);
+            return this;
         }
     }
     public static final class Client {
@@ -149,8 +89,8 @@ public final class CrashReportContext {
          * Returns all entries in the CrashReportContext across all frames in the page.
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetEntriesResult> getEntries() {
-            return client.call("CrashReportContext.getEntries", null, GetEntriesResult::fromMap);
+        public CompletionStage<java.util.List<CrashReportContext.CrashReportContextEntry>> getEntries() {
+            return client.call("CrashReportContext.getEntries", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(CrashReportContext.CrashReportContextEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
         }
     }
 }

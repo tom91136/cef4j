@@ -65,7 +65,8 @@ public enum CefPlatform {
                 .filter(platform -> normalize(platform.externalName).equals(normalized)
                         || normalize(platform.cefName).equals(normalized)
                         || (platform.externalName.startsWith("macos-")
-                                && normalize(platform.externalName.replace("macos-", "macosx-")).equals(normalized)))
+                                && normalize(platform.externalName.replace("macos-", "macosx-"))
+                                        .equals(normalized)))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported CEF platform: " + value));
     }
