@@ -964,6 +964,11 @@
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
                     <version>1.13.0</version>
+                    <!-- Parallel reactor (-T1C) modules download the same CEF archive; wait for the lock
+                         holder instead of timing out at the 30s default. -->
+                    <configuration>
+                        <maxLockWaitTime>600000</maxLockWaitTime>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
