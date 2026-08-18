@@ -4,10 +4,14 @@ set -euo pipefail
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "${repo_root}"
 
-# XXX Required env: CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION JAVA_HOME.
-for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION JAVA_HOME; do
+# XXX Required env: CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION.
+for name in CEF_VERSION CEF_API CEF_PLATFORM ARCH JDK_VERSION; do
     [ -n "${!name:-}" ] || { echo "${name} is required" >&2; exit 1; }
 done
+# setup-java does not always emit the java-home output; fall back to the java on PATH.
+if [ -z "${JAVA_HOME:-}" ] || [ ! -d "${JAVA_HOME}/bin" ]; then
+    JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
+fi
 [ -d "${JAVA_HOME}/bin" ] || { echo "invalid JAVA_HOME: ${JAVA_HOME}" >&2; exit 1; }
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
