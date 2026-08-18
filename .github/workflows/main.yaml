@@ -247,6 +247,9 @@ jobs:
           platform: linux64
           save-cache: false
 
+      - name: Install annotation-processor checker
+        run: ./mvnw -B -pl cef4j-code-policy install -DskipTests -Dcef.version=${CONSUMER_CEF_VERSION}
+
       - name: Build and install reactor
         run: ./mvnw -B install -DskipTests -Dcef.version=${CONSUMER_CEF_VERSION}
 
