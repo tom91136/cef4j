@@ -38,7 +38,7 @@ public final class ZmqTransport implements CefTransport {
     private static final int POLL_TIMEOUT_MS = 10;
     private static final int HEARTBEAT_INTERVAL_MS = 1_000;
     private static final int HEARTBEAT_TIMEOUT_MS = 10_000;
-    private static final long HANDSHAKE_TIMEOUT_NANOS = 500_000_000L;
+    private static final long HANDSHAKE_TIMEOUT_NANOS = 2_000_000_000L;
     private static final int CLOSE_JOIN_TIMEOUT_MS = 3000;
     private static final int MAX_QUEUED_FRAMES = 4096;
     private static final AtomicInteger INSTANCE = new AtomicInteger();
@@ -115,11 +115,8 @@ public final class ZmqTransport implements CefTransport {
             main.setHeartbeatIvl(HEARTBEAT_INTERVAL_MS);
             main.setHeartbeatTimeout(HEARTBEAT_TIMEOUT_MS);
 
-            int eventMask = ZMQ.EVENT_CONNECTED
-                    | ZMQ.EVENT_ACCEPTED
-                    | ZMQ.EVENT_CONNECT_RETRIED
-                    | ZMQ.EVENT_DISCONNECTED
-                    | ZMQ.EVENT_HANDSHAKE_PROTOCOL;
+            int eventMask =
+                    ZMQ.EVENT_CONNECTED | ZMQ.EVENT_ACCEPTED | ZMQ.EVENT_DISCONNECTED | ZMQ.EVENT_HANDSHAKE_PROTOCOL;
             // The event callback runs on JeroMQ's I/O thread. It only transfers immutable event values to the socket
             // owner; application callbacks and socket operations stay on this worker.
             if (!main.setEventHook(event -> monitorEvents.add(event.getEvent()), eventMask)) {
@@ -234,13 +231,13 @@ public final class ZmqTransport implements CefTransport {
             if (event == ZMonitor.Event.CONNECTED || event == ZMonitor.Event.ACCEPTED) {
                 tcpConnected = true;
                 peerReady = true;
-                if (!zmtpHandshaken) {
+                if (!zmtpHandshaken && handshakeDeadlineNanos == 0) {
                     handshakeDeadlineNanos = System.nanoTime() + HANDSHAKE_TIMEOUT_NANOS;
                 }
             } else if (event == ZMonitor.Event.HANDSHAKE_PROTOCOL || event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
                 zmtpHandshaken = true;
                 handshakeDeadlineNanos = 0;
-            } else if (event == ZMonitor.Event.DISCONNECTED || event == ZMonitor.Event.CONNECT_RETRIED) {
+            } else if (event == ZMonitor.Event.DISCONNECTED) {
                 tcpConnected = false;
                 zmtpHandshaken = false;
                 handshakeDeadlineNanos = 0;
