@@ -326,6 +326,7 @@
                                 <argument>--config</argument>
                                 <argument>Release</argument>
                                 <argument>--parallel</argument>
+                                <argument>2</argument>
                             </arguments>
                         </configuration>
                     </execution>
